@@ -10,10 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @SuppressWarnings("checkstyle:LineLength")
 @JsonDeserialize(builder = OcrCacheStatsBuilder.class)
-public record OcrCacheStats(
-    @JsonProperty("total_files") long totalFiles,
-    @JsonProperty("total_size_mb") double totalSizeMb
-) {
+public record OcrCacheStats(@JsonProperty("total_files") long totalFiles,
+        @JsonProperty("total_size_mb") double totalSizeMb) {
     public static OcrCacheStatsBuilder builder() {
         return new OcrCacheStatsBuilder();
     }

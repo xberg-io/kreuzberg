@@ -13,10 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonDeserialize(builder = ResolvedStyleBuilder.class)
-public record ResolvedStyle(
-    @JsonProperty("paragraph_properties") String paragraphProperties,
-    @JsonProperty("run_properties") String runProperties
-) {
+public record ResolvedStyle(@JsonProperty("paragraph_properties") String paragraphProperties,
+        @JsonProperty("run_properties") String runProperties) {
     public static ResolvedStyleBuilder builder() {
         return new ResolvedStyleBuilder();
     }

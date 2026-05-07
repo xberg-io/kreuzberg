@@ -19,25 +19,23 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TreeSitterProcessConfigBuilder.class)
 public record TreeSitterProcessConfig(
-    /** Extract structural items (functions, classes, structs, etc.). Default: true. */
-    boolean structure,
-    /** Extract import statements. Default: true. */
-    boolean imports,
-    /** Extract export statements. Default: true. */
-    boolean exports,
-    /** Extract comments. Default: false. */
-    boolean comments,
-    /** Extract docstrings. Default: false. */
-    boolean docstrings,
-    /** Extract symbol definitions. Default: false. */
-    boolean symbols,
-    /** Include parse diagnostics. Default: false. */
-    boolean diagnostics,
-    /** Maximum chunk size in bytes. {@code None} disables chunking. */
-    @Nullable @JsonProperty("chunk_max_size") Long chunkMaxSize,
-    /** Content rendering mode for code extraction. */
-    @JsonProperty("content_mode") CodeContentMode contentMode
-) {
+        /** Extract structural items (functions, classes, structs, etc.). Default: true. */
+        boolean structure,
+        /** Extract import statements. Default: true. */
+        boolean imports,
+        /** Extract export statements. Default: true. */
+        boolean exports,
+        /** Extract comments. Default: false. */
+        boolean comments,
+        /** Extract docstrings. Default: false. */
+        boolean docstrings,
+        /** Extract symbol definitions. Default: false. */
+        boolean symbols,
+        /** Include parse diagnostics. Default: false. */
+        boolean diagnostics,
+        /** Maximum chunk size in bytes. {@code None} disables chunking. */
+        @Nullable @JsonProperty("chunk_max_size") Long chunkMaxSize, /** Content rendering mode for code extraction. */
+        @JsonProperty("content_mode") CodeContentMode contentMode) {
     public static TreeSitterProcessConfigBuilder builder() {
         return new TreeSitterProcessConfigBuilder();
     }

@@ -20,37 +20,35 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PptxAppPropertiesBuilder.class)
 public record PptxAppProperties(
-    /** Application name (e.g., "Microsoft Office PowerPoint") */
-    @Nullable String application,
-    /** Application version */
-    @Nullable @JsonProperty("app_version") String appVersion,
-    /** Total editing time in minutes */
-    @Nullable @JsonProperty("total_time") Integer totalTime,
-    /** Company name */
-    @Nullable String company,
-    /** Document security level */
-    @Nullable @JsonProperty("doc_security") Integer docSecurity,
-    /** Scale crop flag */
-    @Nullable @JsonProperty("scale_crop") Boolean scaleCrop,
-    /** Links up to date flag */
-    @Nullable @JsonProperty("links_up_to_date") Boolean linksUpToDate,
-    /** Shared document flag */
-    @Nullable @JsonProperty("shared_doc") Boolean sharedDoc,
-    /** Hyperlinks changed flag */
-    @Nullable @JsonProperty("hyperlinks_changed") Boolean hyperlinksChanged,
-    /** Number of slides */
-    @Nullable Integer slides,
-    /** Number of notes */
-    @Nullable Integer notes,
-    /** Number of hidden slides */
-    @Nullable @JsonProperty("hidden_slides") Integer hiddenSlides,
-    /** Number of multimedia clips */
-    @Nullable @JsonProperty("multimedia_clips") Integer multimediaClips,
-    /** Presentation format (e.g., "Widescreen", "Standard") */
-    @Nullable @JsonProperty("presentation_format") String presentationFormat,
-    /** Slide titles */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("slide_titles") List<String> slideTitles
-) {
+        /** Application name (e.g., "Microsoft Office PowerPoint") */
+        @Nullable String application,
+        /** Application version */
+        @Nullable @JsonProperty("app_version") String appVersion,
+        /** Total editing time in minutes */
+        @Nullable @JsonProperty("total_time") Integer totalTime,
+        /** Company name */
+        @Nullable String company,
+        /** Document security level */
+        @Nullable @JsonProperty("doc_security") Integer docSecurity,
+        /** Scale crop flag */
+        @Nullable @JsonProperty("scale_crop") Boolean scaleCrop,
+        /** Links up to date flag */
+        @Nullable @JsonProperty("links_up_to_date") Boolean linksUpToDate,
+        /** Shared document flag */
+        @Nullable @JsonProperty("shared_doc") Boolean sharedDoc,
+        /** Hyperlinks changed flag */
+        @Nullable @JsonProperty("hyperlinks_changed") Boolean hyperlinksChanged,
+        /** Number of slides */
+        @Nullable Integer slides,
+        /** Number of notes */
+        @Nullable Integer notes,
+        /** Number of hidden slides */
+        @Nullable @JsonProperty("hidden_slides") Integer hiddenSlides,
+        /** Number of multimedia clips */
+        @Nullable @JsonProperty("multimedia_clips") Integer multimediaClips,
+        /** Presentation format (e.g., "Widescreen", "Standard") */
+        @Nullable @JsonProperty("presentation_format") String presentationFormat, /** Slide titles */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("slide_titles") List<String> slideTitles) {
     public static PptxAppPropertiesBuilder builder() {
         return new PptxAppPropertiesBuilder();
     }

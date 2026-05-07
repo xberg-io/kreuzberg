@@ -19,27 +19,26 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PptxExtractionResult(
-    /** Extracted text content from all slides */
-    String content,
-    /** Presentation metadata */
-    PptxMetadata metadata,
-    /** Total number of slides */
-    @JsonProperty("slide_count") long slideCount,
-    /** Total number of embedded images */
-    @JsonProperty("image_count") long imageCount,
-    /** Total number of tables */
-    @JsonProperty("table_count") long tableCount,
-    /** Extracted images from the presentation */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedImage> images,
-    /** Slide structure with boundaries (when page tracking is enabled) */
-    @Nullable @JsonProperty("page_structure") PageStructure pageStructure,
-    /** Per-slide content (when page tracking is enabled) */
-    @Nullable @JsonProperty("page_contents") List<PageContent> pageContents,
-    /** Structured document representation */
-    @Nullable DocumentStructure document,
-    /** Hyperlinks discovered in slides as (url, optional_label) pairs. */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> hyperlinks,
-    /** Office metadata extracted from docProps/core.xml and docProps/app.xml. */
-    @JsonProperty("office_metadata") Map<String, String> officeMetadata
-) {
+        /** Extracted text content from all slides */
+        String content,
+        /** Presentation metadata */
+        PptxMetadata metadata,
+        /** Total number of slides */
+        @JsonProperty("slide_count") long slideCount,
+        /** Total number of embedded images */
+        @JsonProperty("image_count") long imageCount,
+        /** Total number of tables */
+        @JsonProperty("table_count") long tableCount,
+        /** Extracted images from the presentation */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedImage> images,
+        /** Slide structure with boundaries (when page tracking is enabled) */
+        @Nullable @JsonProperty("page_structure") PageStructure pageStructure,
+        /** Per-slide content (when page tracking is enabled) */
+        @Nullable @JsonProperty("page_contents") List<PageContent> pageContents,
+        /** Structured document representation */
+        @Nullable DocumentStructure document,
+        /** Hyperlinks discovered in slides as (url, optional_label) pairs. */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> hyperlinks,
+        /** Office metadata extracted from docProps/core.xml and docProps/app.xml. */
+        @JsonProperty("office_metadata") Map<String, String> officeMetadata) {
 }

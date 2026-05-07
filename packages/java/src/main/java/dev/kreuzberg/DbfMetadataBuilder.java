@@ -39,10 +39,6 @@ public class DbfMetadataBuilder {
 
     /** Builds the DbfMetadata instance. */
     public DbfMetadata build() {
-        return new DbfMetadata(
-            recordCount,
-            fieldCount,
-            fields
-        );
+        return new DbfMetadata(recordCount, fieldCount, fields);
     }
 }

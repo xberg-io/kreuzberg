@@ -15,15 +15,14 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ChunkTextParams(
-    /** Text content to split into chunks */
-    String text,
-    /** Maximum characters per chunk (default: 2000) */
-    @Nullable @JsonProperty("max_characters") Long maxCharacters,
-    /** Number of overlapping characters between chunks (default: 100) */
-    @Nullable Long overlap,
-    /** Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") */
-    @Nullable @JsonProperty("chunker_type") String chunkerType,
-    /** Topic threshold for semantic chunking (0.0-1.0, default: 0.75) */
-    @Nullable @JsonProperty("topic_threshold") Float topicThreshold
-) {
+        /** Text content to split into chunks */
+        String text,
+        /** Maximum characters per chunk (default: 2000) */
+        @Nullable @JsonProperty("max_characters") Long maxCharacters,
+        /** Number of overlapping characters between chunks (default: 100) */
+        @Nullable Long overlap,
+        /** Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") */
+        @Nullable @JsonProperty("chunker_type") String chunkerType,
+        /** Topic threshold for semantic chunking (0.0-1.0, default: 0.75) */
+        @Nullable @JsonProperty("topic_threshold") Float topicThreshold) {
 }

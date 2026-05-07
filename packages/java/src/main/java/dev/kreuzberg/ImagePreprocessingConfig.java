@@ -12,33 +12,32 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 /**
  * Image preprocessing configuration for OCR.
  *
- * These settings control how images are preprocessed before OCR to improve
- * text recognition quality. Different preprocessing strategies work better
- * for different document types.
+ * These settings control how images are preprocessed before OCR to improve text recognition quality. Different
+ * preprocessing strategies work better for different document types.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = ImagePreprocessingConfigBuilder.class)
 public record ImagePreprocessingConfig(
-    /** Target DPI for the image (300 is standard, 600 for small text). */
-    @JsonProperty("target_dpi") int targetDpi,
-    /** Auto-detect and correct image rotation. */
-    @JsonProperty("auto_rotate") boolean autoRotate,
-    /** Correct skew (tilted images). */
-    boolean deskew,
-    /** Remove noise from the image. */
-    boolean denoise,
-    /** Enhance contrast for better text visibility. */
-    @JsonProperty("contrast_enhance") boolean contrastEnhance,
-    /** Binarization method: "otsu", "sauvola", "adaptive". */
-    @JsonProperty("binarization_method") String binarizationMethod,
-    /** Invert colors (white text on black → black on white). */
-    @JsonProperty("invert_colors") boolean invertColors
-) {
+        /** Target DPI for the image (300 is standard, 600 for small text). */
+        @JsonProperty("target_dpi") int targetDpi,
+        /** Auto-detect and correct image rotation. */
+        @JsonProperty("auto_rotate") boolean autoRotate,
+        /** Correct skew (tilted images). */
+        boolean deskew,
+        /** Remove noise from the image. */
+        boolean denoise,
+        /** Enhance contrast for better text visibility. */
+        @JsonProperty("contrast_enhance") boolean contrastEnhance,
+        /** Binarization method: "otsu", "sauvola", "adaptive". */
+        @JsonProperty("binarization_method") String binarizationMethod,
+        /** Invert colors (white text on black → black on white). */
+        @JsonProperty("invert_colors") boolean invertColors) {
     public static ImagePreprocessingConfigBuilder builder() {
         return new ImagePreprocessingConfigBuilder();
     }
-    public ImagePreprocessingConfig{
-        if (targetDpi == 0) targetDpi = 300;
+    public ImagePreprocessingConfig {
+        if (targetDpi == 0)
+            targetDpi = 300;
     }
 }

@@ -16,13 +16,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = LanguageDetectionConfigBuilder.class)
 public record LanguageDetectionConfig(
-    /** Enable language detection */
-    boolean enabled,
-    /** Minimum confidence threshold (0.0-1.0) */
-    @JsonProperty("min_confidence") double minConfidence,
-    /** Detect multiple languages in the document */
-    @JsonProperty("detect_multiple") boolean detectMultiple
-) {
+        /** Enable language detection */
+        boolean enabled,
+        /** Minimum confidence threshold (0.0-1.0) */
+        @JsonProperty("min_confidence") double minConfidence, /** Detect multiple languages in the document */
+        @JsonProperty("detect_multiple") boolean detectMultiple) {
     public static LanguageDetectionConfigBuilder builder() {
         return new LanguageDetectionConfigBuilder();
     }

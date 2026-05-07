@@ -13,23 +13,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * Layout detection configuration.
  *
- * Controls layout detection behavior in the extraction pipeline.
- * When set on ExtractionConfig(super::ExtractionConfig), layout detection
- * is enabled for PDF extraction.
+ * Controls layout detection behavior in the extraction pipeline. When set on ExtractionConfig(super::ExtractionConfig),
+ * layout detection is enabled for PDF extraction.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = LayoutDetectionConfigBuilder.class)
 public record LayoutDetectionConfig(
-    /** Confidence threshold override (None = use model default). */
-    @Nullable @JsonProperty("confidence_threshold") Float confidenceThreshold,
-    /** Whether to apply postprocessing heuristics (default: true). */
-    @JsonProperty("apply_heuristics") boolean applyHeuristics,
-    /** Table structure recognition model. */
-    @JsonProperty("table_model") TableModel tableModel,
-    /** Hardware acceleration for ONNX models (layout detection + table structure). */
-    @Nullable AccelerationConfig acceleration
-) {
+        /** Confidence threshold override (None = use model default). */
+        @Nullable @JsonProperty("confidence_threshold") Float confidenceThreshold,
+        /** Whether to apply postprocessing heuristics (default: true). */
+        @JsonProperty("apply_heuristics") boolean applyHeuristics,
+        /** Table structure recognition model. */
+        @JsonProperty("table_model") TableModel tableModel,
+        /** Hardware acceleration for ONNX models (layout detection + table structure). */
+        @Nullable AccelerationConfig acceleration) {
     public static LayoutDetectionConfigBuilder builder() {
         return new LayoutDetectionConfigBuilder();
     }

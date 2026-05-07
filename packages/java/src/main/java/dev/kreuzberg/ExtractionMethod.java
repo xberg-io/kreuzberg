@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 @SuppressWarnings("checkstyle:LineLength")
 public enum ExtractionMethod {
-    Native("native"),
-    Ocr("ocr"),
-    Mixed("mixed");
+    Native("native"), Ocr("ocr"), Mixed("mixed");
 
     /** The string value. */
     private final String value;

@@ -16,9 +16,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record OpenWebDocumentResponse(
-    /** Extracted text content */
-    @JsonProperty("page_content") String pageContent,
-    /** Document metadata */
-    String metadata
-) {
+        /** Extracted text content */
+        @JsonProperty("page_content") String pageContent,
+        /** Document metadata */
+        String metadata) {
 }

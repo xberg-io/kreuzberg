@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * HTML metadata extracted from HTML documents.
  *
- * Includes document-level metadata, Open Graph data, Twitter Card metadata,
- * and extracted structural elements (headers, links, images, structured data).
+ * Includes document-level metadata, Open Graph data, Twitter Card metadata, and extracted structural elements (headers,
+ * links, images, structured data).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -128,22 +128,8 @@ public class HtmlMetadataBuilder {
 
     /** Builds the HtmlMetadata instance. */
     public HtmlMetadata build() {
-        return new HtmlMetadata(
-            title.orElse(null),
-            description.orElse(null),
-            keywords,
-            author.orElse(null),
-            canonicalUrl.orElse(null),
-            baseHref.orElse(null),
-            language.orElse(null),
-            textDirection.orElse(null),
-            openGraph,
-            twitterCard,
-            metaTags,
-            headers,
-            links,
-            images,
-            structuredData
-        );
+        return new HtmlMetadata(title.orElse(null), description.orElse(null), keywords, author.orElse(null),
+                canonicalUrl.orElse(null), baseHref.orElse(null), language.orElse(null), textDirection.orElse(null),
+                openGraph, twitterCard, metaTags, headers, links, images, structuredData);
     }
 }

@@ -24,8 +24,6 @@ public class PstMetadataBuilder {
 
     /** Builds the PstMetadata instance. */
     public PstMetadata build() {
-        return new PstMetadata(
-            messageCount
-        );
+        return new PstMetadata(messageCount);
     }
 }

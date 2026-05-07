@@ -14,30 +14,29 @@ import org.jspecify.annotations.Nullable;
 /**
  * A unified OCR element representing detected text with full metadata.
  *
- * This is the primary type for structured OCR output, preserving all information
- * from both Tesseract and PaddleOCR backends.
+ * This is the primary type for structured OCR output, preserving all information from both Tesseract and PaddleOCR
+ * backends.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OcrElementBuilder.class)
 public record OcrElement(
-    /** The recognized text content. */
-    String text,
-    /** Bounding geometry (rectangle or quadrilateral). */
-    OcrBoundingGeometry geometry,
-    /** Confidence scores for detection and recognition. */
-    OcrConfidence confidence,
-    /** Hierarchical level (word, line, block, page). */
-    OcrElementLevel level,
-    /** Rotation information (if detected). */
-    @Nullable OcrRotation rotation,
-    /** Page number (1-indexed). */
-    @JsonProperty("page_number") long pageNumber,
-    /** Parent element ID for hierarchical relationships. */
-    @Nullable @JsonProperty("parent_id") String parentId,
-    /** Backend-specific metadata that doesn't fit the unified schema. */
-    @JsonProperty("backend_metadata") Map<String, Object> backendMetadata
-) {
+        /** The recognized text content. */
+        String text,
+        /** Bounding geometry (rectangle or quadrilateral). */
+        OcrBoundingGeometry geometry,
+        /** Confidence scores for detection and recognition. */
+        OcrConfidence confidence,
+        /** Hierarchical level (word, line, block, page). */
+        OcrElementLevel level,
+        /** Rotation information (if detected). */
+        @Nullable OcrRotation rotation,
+        /** Page number (1-indexed). */
+        @JsonProperty("page_number") long pageNumber,
+        /** Parent element ID for hierarchical relationships. */
+        @Nullable @JsonProperty("parent_id") String parentId,
+        /** Backend-specific metadata that doesn't fit the unified schema. */
+        @JsonProperty("backend_metadata") Map<String, Object> backendMetadata) {
     public static OcrElementBuilder builder() {
         return new OcrElementBuilder();
     }

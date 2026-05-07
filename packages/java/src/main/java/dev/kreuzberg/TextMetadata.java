@@ -14,26 +14,24 @@ import org.jspecify.annotations.Nullable;
 /**
  * Text/Markdown metadata.
  *
- * Extracted from plain text and Markdown files. Includes word counts and,
- * for Markdown, structural elements like headers and links.
+ * Extracted from plain text and Markdown files. Includes word counts and, for Markdown, structural elements like
+ * headers and links.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TextMetadataBuilder.class)
 public record TextMetadata(
-    /** Number of lines in the document */
-    @JsonProperty("line_count") long lineCount,
-    /** Number of words */
-    @JsonProperty("word_count") long wordCount,
-    /** Number of characters */
-    @JsonProperty("character_count") long characterCount,
-    /** Markdown headers (headings text only, for Markdown files) */
-    @Nullable List<String> headers,
-    /** Markdown links as (text, url) tuples (for Markdown files) */
-    @Nullable List<String> links,
-    /** Code blocks as (language, code) tuples (for Markdown files) */
-    @Nullable @JsonProperty("code_blocks") List<String> codeBlocks
-) {
+        /** Number of lines in the document */
+        @JsonProperty("line_count") long lineCount,
+        /** Number of words */
+        @JsonProperty("word_count") long wordCount,
+        /** Number of characters */
+        @JsonProperty("character_count") long characterCount,
+        /** Markdown headers (headings text only, for Markdown files) */
+        @Nullable List<String> headers,
+        /** Markdown links as (text, url) tuples (for Markdown files) */
+        @Nullable List<String> links, /** Code blocks as (language, code) tuples (for Markdown files) */
+        @Nullable @JsonProperty("code_blocks") List<String> codeBlocks) {
     public static TextMetadataBuilder builder() {
         return new TextMetadataBuilder();
     }

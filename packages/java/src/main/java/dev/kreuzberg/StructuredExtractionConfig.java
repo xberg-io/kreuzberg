@@ -12,23 +12,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * Configuration for LLM-based structured data extraction.
  *
- * Sends extracted document content to a VLM with a JSON schema,
- * returning structured data that conforms to the schema.
+ * Sends extracted document content to a VLM with a JSON schema, returning structured data that conforms to the schema.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record StructuredExtractionConfig(
-    /** JSON Schema defining the desired output structure. */
-    Object schema,
-    /** Schema name passed to the LLM's structured output mode. */
-    @JsonProperty("schema_name") String schemaName,
-    /** Optional schema description for the LLM. */
-    @Nullable @JsonProperty("schema_description") String schemaDescription,
-    /** Enable strict mode — output must exactly match the schema. */
-    boolean strict,
-    /** Custom Jinja2 extraction prompt template. When {@code None}, a default template is used. */
-    @Nullable String prompt,
-    /** LLM configuration for the extraction. */
-    LlmConfig llm
-) {
+        /** JSON Schema defining the desired output structure. */
+        Object schema,
+        /** Schema name passed to the LLM's structured output mode. */
+        @JsonProperty("schema_name") String schemaName,
+        /** Optional schema description for the LLM. */
+        @Nullable @JsonProperty("schema_description") String schemaDescription,
+        /** Enable strict mode — output must exactly match the schema. */
+        boolean strict,
+        /** Custom Jinja2 extraction prompt template. When {@code None}, a default template is used. */
+        @Nullable String prompt,
+        /** LLM configuration for the extraction. */
+        LlmConfig llm) {
 }

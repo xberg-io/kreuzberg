@@ -18,23 +18,22 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PdfConfigBuilder.class)
 public record PdfConfig(
-    /** Extract images from PDF */
-    @JsonProperty("extract_images") boolean extractImages,
-    /** List of passwords to try when opening encrypted PDFs */
-    @Nullable List<String> passwords,
-    /** Extract PDF metadata */
-    @JsonProperty("extract_metadata") boolean extractMetadata,
-    /** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
-    @Nullable HierarchyConfig hierarchy,
-    /** Extract PDF annotations (text notes, highlights, links, stamps). */
-    @JsonProperty("extract_annotations") boolean extractAnnotations,
-    /** Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. */
-    @Nullable @JsonProperty("top_margin_fraction") Float topMarginFraction,
-    /** Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. */
-    @Nullable @JsonProperty("bottom_margin_fraction") Float bottomMarginFraction,
-    /** Allow single-column pseudo tables in extraction results. */
-    @JsonProperty("allow_single_column_tables") boolean allowSingleColumnTables
-) {
+        /** Extract images from PDF */
+        @JsonProperty("extract_images") boolean extractImages,
+        /** List of passwords to try when opening encrypted PDFs */
+        @Nullable List<String> passwords,
+        /** Extract PDF metadata */
+        @JsonProperty("extract_metadata") boolean extractMetadata,
+        /** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
+        @Nullable HierarchyConfig hierarchy,
+        /** Extract PDF annotations (text notes, highlights, links, stamps). */
+        @JsonProperty("extract_annotations") boolean extractAnnotations,
+        /** Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. */
+        @Nullable @JsonProperty("top_margin_fraction") Float topMarginFraction,
+        /** Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. */
+        @Nullable @JsonProperty("bottom_margin_fraction") Float bottomMarginFraction,
+        /** Allow single-column pseudo tables in extraction results. */
+        @JsonProperty("allow_single_column_tables") boolean allowSingleColumnTables) {
     public static PdfConfigBuilder builder() {
         return new PdfConfigBuilder();
     }

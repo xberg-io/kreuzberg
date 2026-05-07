@@ -18,13 +18,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record InlineElement(
-    /** Type of inline element */
-    @JsonProperty("element_type") InlineType elementType,
-    /** Text content */
-    String content,
-    /** Element attributes */
-    @Nullable String attributes,
-    /** Additional metadata (e.g., href for links, src/alt for images) */
-    @Nullable Map<String, String> metadata
-) {
+        /** Type of inline element */
+        @JsonProperty("element_type") InlineType elementType,
+        /** Text content */
+        String content,
+        /** Element attributes */
+        @Nullable String attributes,
+        /** Additional metadata (e.g., href for links, src/alt for images) */
+        @Nullable Map<String, String> metadata) {
 }

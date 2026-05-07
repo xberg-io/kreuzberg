@@ -18,15 +18,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TableCellBuilder.class)
 public record TableCell(
-    /** Cell content as text */
-    String content,
-    /** Row span (number of rows this cell spans) */
-    @JsonProperty("row_span") long rowSpan,
-    /** Column span (number of columns this cell spans) */
-    @JsonProperty("col_span") long colSpan,
-    /** Whether this is a header cell */
-    @JsonProperty("is_header") boolean isHeader
-) {
+        /** Cell content as text */
+        String content,
+        /** Row span (number of rows this cell spans) */
+        @JsonProperty("row_span") long rowSpan,
+        /** Column span (number of columns this cell spans) */
+        @JsonProperty("col_span") long colSpan, /** Whether this is a header cell */
+        @JsonProperty("is_header") boolean isHeader) {
     public static TableCellBuilder builder() {
         return new TableCellBuilder();
     }

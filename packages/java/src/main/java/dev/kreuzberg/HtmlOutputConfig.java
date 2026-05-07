@@ -13,26 +13,23 @@ import org.jspecify.annotations.Nullable;
 /**
  * Configuration for styled HTML output.
  *
- * When set on ExtractionConfig::html_output alongside
- * {@code output_format = OutputFormat::Html}, the pipeline builds a
- * StyledHtmlRenderer(crate::rendering::StyledHtmlRenderer) instead of
- * the plain comrak-based renderer.
+ * When set on ExtractionConfig::html_output alongside {@code output_format = OutputFormat::Html}, the pipeline builds a
+ * StyledHtmlRenderer(crate::rendering::StyledHtmlRenderer) instead of the plain comrak-based renderer.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = HtmlOutputConfigBuilder.class)
 public record HtmlOutputConfig(
-    /** Inline CSS string injected into the output after the theme stylesheet. */
-    @Nullable String css,
-    /** Path to a CSS file loaded once at renderer construction time. */
-    @JsonProperty("css_file") java.nio.file.@Nullable Path cssFile,
-    /** Built-in colour/typography theme. Default: [{@code HtmlTheme::Unstyled}]. */
-    HtmlTheme theme,
-    /** CSS class prefix applied to every emitted class name. */
-    @JsonProperty("class_prefix") String classPrefix,
-    /** When {@code true} (default), write the resolved CSS into a {@code &lt;style&gt;} block */
-    @JsonProperty("embed_css") boolean embedCss
-) {
+        /** Inline CSS string injected into the output after the theme stylesheet. */
+        @Nullable String css,
+        /** Path to a CSS file loaded once at renderer construction time. */
+        @JsonProperty("css_file") java.nio.file.@Nullable Path cssFile,
+        /** Built-in colour/typography theme. Default: [{@code HtmlTheme::Unstyled}]. */
+        HtmlTheme theme,
+        /** CSS class prefix applied to every emitted class name. */
+        @JsonProperty("class_prefix") String classPrefix,
+        /** When {@code true} (default), write the resolved CSS into a {@code &lt;style&gt;} block */
+        @JsonProperty("embed_css") boolean embedCss) {
     public static HtmlOutputConfigBuilder builder() {
         return new HtmlOutputConfigBuilder();
     }

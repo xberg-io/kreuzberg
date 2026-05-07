@@ -15,21 +15,20 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ExtractStructuredParams(
-    /** File path to extract from */
-    String path,
-    /** JSON schema for structured output */
-    Object schema,
-    /** LLM model (e.g., "openai/gpt-4o") */
-    String model,
-    /** Schema name (default: "extraction") */
-    @JsonProperty("schema_name") String schemaName,
-    /** Schema description for the LLM */
-    @Nullable @JsonProperty("schema_description") String schemaDescription,
-    /** Custom Jinja2 prompt template */
-    @Nullable String prompt,
-    /** API key (optional, falls back to env) */
-    @Nullable @JsonProperty("api_key") String apiKey,
-    /** Enable strict mode */
-    boolean strict
-) {
+        /** File path to extract from */
+        String path,
+        /** JSON schema for structured output */
+        Object schema,
+        /** LLM model (e.g., "openai/gpt-4o") */
+        String model,
+        /** Schema name (default: "extraction") */
+        @JsonProperty("schema_name") String schemaName,
+        /** Schema description for the LLM */
+        @Nullable @JsonProperty("schema_description") String schemaDescription,
+        /** Custom Jinja2 prompt template */
+        @Nullable String prompt,
+        /** API key (optional, falls back to env) */
+        @Nullable @JsonProperty("api_key") String apiKey,
+        /** Enable strict mode */
+        boolean strict) {
 }

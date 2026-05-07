@@ -16,17 +16,16 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record LinkMetadata(
-    /** The href URL value */
-    String href,
-    /** Link text content (normalized) */
-    String text,
-    /** Optional title attribute */
-    @Nullable String title,
-    /** Link type classification */
-    @JsonProperty("link_type") LinkType linkType,
-    /** Rel attribute values */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> rel,
-    /** Additional attributes as key-value pairs */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes
-) {
+        /** The href URL value */
+        String href,
+        /** Link text content (normalized) */
+        String text,
+        /** Optional title attribute */
+        @Nullable String title,
+        /** Link type classification */
+        @JsonProperty("link_type") LinkType linkType,
+        /** Rel attribute values */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> rel,
+        /** Additional attributes as key-value pairs */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes) {
 }

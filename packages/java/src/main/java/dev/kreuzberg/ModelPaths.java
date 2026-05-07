@@ -14,13 +14,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ModelPaths(
-    /** Path to the detection model directory. */
-    @JsonProperty("det_model") java.nio.file.Path detModel,
-    /** Path to the classification model directory. */
-    @JsonProperty("cls_model") java.nio.file.Path clsModel,
-    /** Path to the recognition model directory. */
-    @JsonProperty("rec_model") java.nio.file.Path recModel,
-    /** Path to the character dictionary file. */
-    @JsonProperty("dict_file") java.nio.file.Path dictFile
-) {
+        /** Path to the detection model directory. */
+        @JsonProperty("det_model") java.nio.file.Path detModel,
+        /** Path to the classification model directory. */
+        @JsonProperty("cls_model") java.nio.file.Path clsModel,
+        /** Path to the recognition model directory. */
+        @JsonProperty("rec_model") java.nio.file.Path recModel,
+        /** Path to the character dictionary file. */
+        @JsonProperty("dict_file") java.nio.file.Path dictFile) {
 }

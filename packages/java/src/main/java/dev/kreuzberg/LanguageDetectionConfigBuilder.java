@@ -38,10 +38,6 @@ public class LanguageDetectionConfigBuilder {
 
     /** Builds the LanguageDetectionConfig instance. */
     public LanguageDetectionConfig build() {
-        return new LanguageDetectionConfig(
-            enabled,
-            minConfidence,
-            detectMultiple
-        );
+        return new LanguageDetectionConfig(enabled, minConfidence, detectMultiple);
     }
 }

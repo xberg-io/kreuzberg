@@ -49,11 +49,6 @@ public class PptxMetadataBuilder {
 
     /** Builds the PptxMetadata instance. */
     public PptxMetadata build() {
-        return new PptxMetadata(
-            slideCount,
-            slideNames,
-            imageCount.orElse(null),
-            tableCount.orElse(null)
-        );
+        return new PptxMetadata(slideCount, slideNames, imageCount.orElse(null), tableCount.orElse(null));
     }
 }

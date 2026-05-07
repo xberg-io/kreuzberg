@@ -13,17 +13,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 @SuppressWarnings("checkstyle:LineLength")
 public enum PSMMode {
-    OsdOnly("osdonly"),
-    AutoOsd("autoosd"),
-    AutoOnly("autoonly"),
-    Auto("auto"),
-    SingleColumn("singlecolumn"),
-    SingleBlockVertical("singleblockvertical"),
-    SingleBlock("singleblock"),
-    SingleLine("singleline"),
-    SingleWord("singleword"),
-    CircleWord("circleword"),
-    SingleChar("singlechar");
+    OsdOnly("osdonly"), AutoOsd("autoosd"), AutoOnly("autoonly"), Auto("auto"), SingleColumn(
+            "singlecolumn"), SingleBlockVertical("singleblockvertical"), SingleBlock("singleblock"), SingleLine(
+                    "singleline"), SingleWord("singleword"), CircleWord("circleword"), SingleChar("singlechar");
 
     /** The string value. */
     private final String value;

@@ -18,25 +18,24 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = KeywordConfigBuilder.class)
 public record KeywordConfig(
-    /** Algorithm to use for extraction. */
-    KeywordAlgorithm algorithm,
-    /** Maximum number of keywords to extract (default: 10). */
-    @JsonProperty("max_keywords") long maxKeywords,
-    /** Minimum score threshold (0.0-1.0, default: 0.0). */
-    @JsonProperty("min_score") float minScore,
-    /** N-gram range for keyword extraction (min, max). */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("ngram_range") List<Long> ngramRange,
-    /** Language code for stopword filtering (e.g., "en", "de", "fr"). */
-    @Nullable String language,
-    /** YAKE-specific tuning parameters. */
-    @Nullable @JsonProperty("yake_params") YakeParams yakeParams,
-    /** RAKE-specific tuning parameters. */
-    @Nullable @JsonProperty("rake_params") RakeParams rakeParams
-) {
+        /** Algorithm to use for extraction. */
+        KeywordAlgorithm algorithm,
+        /** Maximum number of keywords to extract (default: 10). */
+        @JsonProperty("max_keywords") long maxKeywords,
+        /** Minimum score threshold (0.0-1.0, default: 0.0). */
+        @JsonProperty("min_score") float minScore,
+        /** N-gram range for keyword extraction (min, max). */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("ngram_range") List<Long> ngramRange,
+        /** Language code for stopword filtering (e.g., "en", "de", "fr"). */
+        @Nullable String language,
+        /** YAKE-specific tuning parameters. */
+        @Nullable @JsonProperty("yake_params") YakeParams yakeParams, /** RAKE-specific tuning parameters. */
+        @Nullable @JsonProperty("rake_params") RakeParams rakeParams) {
     public static KeywordConfigBuilder builder() {
         return new KeywordConfigBuilder();
     }
-    public KeywordConfig{
-        if (maxKeywords == 0) maxKeywords = 10;
+    public KeywordConfig {
+        if (maxKeywords == 0)
+            maxKeywords = 10;
     }
 }

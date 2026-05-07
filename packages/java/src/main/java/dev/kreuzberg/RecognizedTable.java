@@ -15,11 +15,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record RecognizedTable(
-    /** Detection bbox that this table corresponds to (for matching). */
-    @JsonProperty("detection_bbox") BBox detectionBbox,
-    /** Table cells as a 2D vector (rows x columns). */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
-    /** Rendered markdown table. */
-    String markdown
-) {
+        /** Detection bbox that this table corresponds to (for matching). */
+        @JsonProperty("detection_bbox") BBox detectionBbox,
+        /** Table cells as a 2D vector (rows x columns). */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
+        /** Rendered markdown table. */
+        String markdown) {
 }

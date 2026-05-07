@@ -13,27 +13,26 @@ import org.jspecify.annotations.Nullable;
 /**
  * Hierarchy extraction configuration for PDF text structure analysis.
  *
- * Enables extraction of document hierarchy levels (H1-H6) based on font size
- * clustering and semantic analysis. When enabled, hierarchical blocks are
- * included in page content.
+ * Enables extraction of document hierarchy levels (H1-H6) based on font size clustering and semantic analysis. When
+ * enabled, hierarchical blocks are included in page content.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = HierarchyConfigBuilder.class)
 public record HierarchyConfig(
-    /** Enable hierarchy extraction */
-    boolean enabled,
-    /** Number of font size clusters to use for hierarchy levels (1-7) */
-    @JsonProperty("k_clusters") long kClusters,
-    /** Include bounding box information in hierarchy blocks */
-    @JsonProperty("include_bbox") boolean includeBbox,
-    /** OCR coverage threshold for smart OCR triggering (0.0-1.0) */
-    @Nullable @JsonProperty("ocr_coverage_threshold") Float ocrCoverageThreshold
-) {
+        /** Enable hierarchy extraction */
+        boolean enabled,
+        /** Number of font size clusters to use for hierarchy levels (1-7) */
+        @JsonProperty("k_clusters") long kClusters,
+        /** Include bounding box information in hierarchy blocks */
+        @JsonProperty("include_bbox") boolean includeBbox,
+        /** OCR coverage threshold for smart OCR triggering (0.0-1.0) */
+        @Nullable @JsonProperty("ocr_coverage_threshold") Float ocrCoverageThreshold) {
     public static HierarchyConfigBuilder builder() {
         return new HierarchyConfigBuilder();
     }
-    public HierarchyConfig{
-        if (kClusters == 0) kClusters = 3;
+    public HierarchyConfig {
+        if (kClusters == 0)
+            kClusters = 3;
     }
 }

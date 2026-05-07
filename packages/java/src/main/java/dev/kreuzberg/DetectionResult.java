@@ -14,9 +14,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public record DetectionResult(
-    @JsonProperty("page_width") int pageWidth,
-    @JsonProperty("page_height") int pageHeight,
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<LayoutDetection> detections
-) {
+public record DetectionResult(@JsonProperty("page_width") int pageWidth, @JsonProperty("page_height") int pageHeight,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<LayoutDetection> detections) {
 }

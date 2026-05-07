@@ -13,11 +13,10 @@ import org.jspecify.annotations.Nullable;
  */
 @SuppressWarnings("checkstyle:LineLength")
 public record EmbeddedFile(
-    /** The filename as stored in the PDF name tree. */
-    String name,
-    /** Raw file bytes from the embedded stream. */
-    byte[] data,
-    /** MIME type if specified in the filespec, otherwise {@code None}. */
-    @Nullable @JsonProperty("mime_type") String mimeType
-) {
+        /** The filename as stored in the PDF name tree. */
+        String name,
+        /** Raw file bytes from the embedded stream. */
+        byte[] data,
+        /** MIME type if specified in the filespec, otherwise {@code None}. */
+        @Nullable @JsonProperty("mime_type") String mimeType) {
 }

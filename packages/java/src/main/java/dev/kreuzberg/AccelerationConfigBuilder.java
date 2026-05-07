@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Hardware acceleration configuration for ONNX Runtime models.
  *
- * Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
- * for inference in layout detection and embedding generation.
+ * Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used for inference in layout detection and
+ * embedding generation.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -34,9 +34,6 @@ public class AccelerationConfigBuilder {
 
     /** Builds the AccelerationConfig instance. */
     public AccelerationConfig build() {
-        return new AccelerationConfig(
-            provider,
-            deviceId
-        );
+        return new AccelerationConfig(provider, deviceId);
     }
 }

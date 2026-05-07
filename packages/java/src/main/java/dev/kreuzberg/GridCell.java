@@ -15,19 +15,18 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record GridCell(
-    /** Cell text content. */
-    String content,
-    /** Zero-indexed row position. */
-    int row,
-    /** Zero-indexed column position. */
-    int col,
-    /** Number of rows this cell spans. */
-    @JsonProperty("row_span") int rowSpan,
-    /** Number of columns this cell spans. */
-    @JsonProperty("col_span") int colSpan,
-    /** Whether this is a header cell. */
-    @JsonProperty("is_header") boolean isHeader,
-    /** Bounding box for this cell (if available). */
-    @Nullable String bbox
-) {
+        /** Cell text content. */
+        String content,
+        /** Zero-indexed row position. */
+        int row,
+        /** Zero-indexed column position. */
+        int col,
+        /** Number of rows this cell spans. */
+        @JsonProperty("row_span") int rowSpan,
+        /** Number of columns this cell spans. */
+        @JsonProperty("col_span") int colSpan,
+        /** Whether this is a header cell. */
+        @JsonProperty("is_header") boolean isHeader,
+        /** Bounding box for this cell (if available). */
+        @Nullable String bbox) {
 }

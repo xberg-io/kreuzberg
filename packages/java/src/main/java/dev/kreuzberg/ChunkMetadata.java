@@ -15,21 +15,20 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ChunkMetadata(
-    /** Byte offset where this chunk starts in the original text (UTF-8 valid boundary). */
-    @JsonProperty("byte_start") long byteStart,
-    /** Byte offset where this chunk ends in the original text (UTF-8 valid boundary). */
-    @JsonProperty("byte_end") long byteEnd,
-    /** Number of tokens in this chunk (if available). */
-    @Nullable @JsonProperty("token_count") Long tokenCount,
-    /** Zero-based index of this chunk in the document. */
-    @JsonProperty("chunk_index") long chunkIndex,
-    /** Total number of chunks in the document. */
-    @JsonProperty("total_chunks") long totalChunks,
-    /** First page number this chunk spans (1-indexed). */
-    @Nullable @JsonProperty("first_page") Long firstPage,
-    /** Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). */
-    @Nullable @JsonProperty("last_page") Long lastPage,
-    /** Heading context when using Markdown chunker. */
-    @Nullable @JsonProperty("heading_context") HeadingContext headingContext
-) {
+        /** Byte offset where this chunk starts in the original text (UTF-8 valid boundary). */
+        @JsonProperty("byte_start") long byteStart,
+        /** Byte offset where this chunk ends in the original text (UTF-8 valid boundary). */
+        @JsonProperty("byte_end") long byteEnd,
+        /** Number of tokens in this chunk (if available). */
+        @Nullable @JsonProperty("token_count") Long tokenCount,
+        /** Zero-based index of this chunk in the document. */
+        @JsonProperty("chunk_index") long chunkIndex,
+        /** Total number of chunks in the document. */
+        @JsonProperty("total_chunks") long totalChunks,
+        /** First page number this chunk spans (1-indexed). */
+        @Nullable @JsonProperty("first_page") Long firstPage,
+        /** Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). */
+        @Nullable @JsonProperty("last_page") Long lastPage,
+        /** Heading context when using Markdown chunker. */
+        @Nullable @JsonProperty("heading_context") HeadingContext headingContext) {
 }

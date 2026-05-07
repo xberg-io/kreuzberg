@@ -14,11 +14,10 @@ import org.jspecify.annotations.Nullable;
  */
 @SuppressWarnings("checkstyle:LineLength")
 public record ImageOcrResult(
-    /** Extracted text content */
-    String content,
-    /** Character byte boundaries per frame (for multi-frame TIFFs) */
-    @Nullable List<PageBoundary> boundaries,
-    /** Per-frame content information */
-    @Nullable @JsonProperty("page_contents") List<PageContent> pageContents
-) {
+        /** Extracted text content */
+        String content,
+        /** Character byte boundaries per frame (for multi-frame TIFFs) */
+        @Nullable List<PageBoundary> boundaries,
+        /** Per-frame content information */
+        @Nullable @JsonProperty("page_contents") List<PageContent> pageContents) {
 }

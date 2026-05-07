@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Page hierarchy structure containing heading levels and block information.
  *
- * Used when PDF text hierarchy extraction is enabled. Contains hierarchical
- * blocks with heading levels (H1-H6) for semantic document structure.
+ * Used when PDF text hierarchy extraction is enabled. Contains hierarchical blocks with heading levels (H1-H6) for
+ * semantic document structure.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PageHierarchy(
-    /** Number of hierarchy blocks on this page */
-    @JsonProperty("block_count") long blockCount,
-    /** Hierarchical blocks with heading levels */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<HierarchicalBlock> blocks
-) {
+        /** Number of hierarchy blocks on this page */
+        @JsonProperty("block_count") long blockCount,
+        /** Hierarchical blocks with heading levels */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<HierarchicalBlock> blocks) {
 }

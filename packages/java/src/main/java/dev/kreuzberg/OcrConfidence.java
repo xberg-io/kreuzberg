@@ -12,8 +12,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * Confidence scores for an OCR element.
  *
- * Separates detection confidence (how confident that text exists at this location)
- * from recognition confidence (how confident about the actual text content).
+ * Separates detection confidence (how confident that text exists at this location) from recognition confidence (how
+ * confident about the actual text content).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)

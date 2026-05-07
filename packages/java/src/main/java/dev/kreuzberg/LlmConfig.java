@@ -13,28 +13,26 @@ import org.jspecify.annotations.Nullable;
 /**
  * Configuration for an LLM provider/model via liter-llm.
  *
- * Each feature (VLM OCR, VLM embeddings, structured extraction) carries
- * its own {@code LlmConfig}, allowing different providers per feature.
+ * Each feature (VLM OCR, VLM embeddings, structured extraction) carries its own {@code LlmConfig}, allowing different
+ * providers per feature.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = LlmConfigBuilder.class)
 public record LlmConfig(
-    /** Provider/model string using liter-llm routing format. */
-    String model,
-    /** API key for the provider. When {@code None}, liter-llm falls back to */
-    @Nullable @JsonProperty("api_key") String apiKey,
-    /** Custom base URL override for the provider endpoint. */
-    @Nullable @JsonProperty("base_url") String baseUrl,
-    /** Request timeout in seconds (default: 60). */
-    @Nullable @JsonProperty("timeout_secs") Long timeoutSecs,
-    /** Maximum retry attempts (default: 3). */
-    @Nullable @JsonProperty("max_retries") Integer maxRetries,
-    /** Sampling temperature for generation tasks. */
-    @Nullable Double temperature,
-    /** Maximum tokens to generate. */
-    @Nullable @JsonProperty("max_tokens") Long maxTokens
-) {
+        /** Provider/model string using liter-llm routing format. */
+        String model,
+        /** API key for the provider. When {@code None}, liter-llm falls back to */
+        @Nullable @JsonProperty("api_key") String apiKey,
+        /** Custom base URL override for the provider endpoint. */
+        @Nullable @JsonProperty("base_url") String baseUrl,
+        /** Request timeout in seconds (default: 60). */
+        @Nullable @JsonProperty("timeout_secs") Long timeoutSecs,
+        /** Maximum retry attempts (default: 3). */
+        @Nullable @JsonProperty("max_retries") Integer maxRetries,
+        /** Sampling temperature for generation tasks. */
+        @Nullable Double temperature, /** Maximum tokens to generate. */
+        @Nullable @JsonProperty("max_tokens") Long maxTokens) {
     public static LlmConfigBuilder builder() {
         return new LlmConfigBuilder();
     }

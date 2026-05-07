@@ -18,13 +18,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TableGridBuilder.class)
 public record TableGrid(
-    /** Number of rows in the table. */
-    int rows,
-    /** Number of columns in the table. */
-    int cols,
-    /** All cells in row-major order. */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<GridCell> cells
-) {
+        /** Number of rows in the table. */
+        int rows,
+        /** Number of columns in the table. */
+        int cols, /** All cells in row-major order. */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<GridCell> cells) {
     public static TableGridBuilder builder() {
         return new TableGridBuilder();
     }

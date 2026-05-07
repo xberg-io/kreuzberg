@@ -14,9 +14,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record Footnote(
-    /** Footnote label */
-    String label,
-    /** Footnote content blocks */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<FormattedBlock> content
-) {
+        /** Footnote label */
+        String label,
+        /** Footnote content blocks */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<FormattedBlock> content) {
 }

@@ -14,13 +14,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record EmbedResponse(
-    /** Generated embeddings (one per input text) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<List<Float>> embeddings,
-    /** Model used for embedding generation */
-    String model,
-    /** Dimensionality of the embeddings */
-    long dimensions,
-    /** Number of embeddings generated */
-    long count
-) {
+        /** Generated embeddings (one per input text) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<List<Float>> embeddings,
+        /** Model used for embedding generation */
+        String model,
+        /** Dimensionality of the embeddings */
+        long dimensions,
+        /** Number of embeddings generated */
+        long count) {
 }

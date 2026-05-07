@@ -13,27 +13,25 @@ import org.jspecify.annotations.Nullable;
 /**
  * Metadata for individual page/slide/sheet.
  *
- * Captures per-page information including dimensions, content counts,
- * and visibility state (for presentations).
+ * Captures per-page information including dimensions, content counts, and visibility state (for presentations).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PageInfo(
-    /** Page number (1-indexed) */
-    long number,
-    /** Page title (usually for presentations) */
-    @Nullable String title,
-    /** Dimensions in points (PDF) or pixels (images): (width, height) */
-    @Nullable List<Double> dimensions,
-    /** Number of images on this page */
-    @Nullable @JsonProperty("image_count") Long imageCount,
-    /** Number of tables on this page */
-    @Nullable @JsonProperty("table_count") Long tableCount,
-    /** Whether this page is hidden (e.g., in presentations) */
-    @Nullable Boolean hidden,
-    /** Whether this page is blank (no meaningful text, no images, no tables) */
-    @Nullable @JsonProperty("is_blank") Boolean isBlank,
-    /** Whether this page contains non-trivial vector graphics (paths, shapes, curves) */
-    @JsonProperty("has_vector_graphics") boolean hasVectorGraphics
-) {
+        /** Page number (1-indexed) */
+        long number,
+        /** Page title (usually for presentations) */
+        @Nullable String title,
+        /** Dimensions in points (PDF) or pixels (images): (width, height) */
+        @Nullable List<Double> dimensions,
+        /** Number of images on this page */
+        @Nullable @JsonProperty("image_count") Long imageCount,
+        /** Number of tables on this page */
+        @Nullable @JsonProperty("table_count") Long tableCount,
+        /** Whether this page is hidden (e.g., in presentations) */
+        @Nullable Boolean hidden,
+        /** Whether this page is blank (no meaningful text, no images, no tables) */
+        @Nullable @JsonProperty("is_blank") Boolean isBlank,
+        /** Whether this page contains non-trivial vector graphics (paths, shapes, curves) */
+        @JsonProperty("has_vector_graphics") boolean hasVectorGraphics) {
 }

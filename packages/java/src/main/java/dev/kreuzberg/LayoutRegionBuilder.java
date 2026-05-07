@@ -10,9 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * A detected layout region on a page.
  *
- * When layout detection is enabled, each page may have layout regions
- * identifying different content types (text, pictures, tables, etc.)
- * with confidence scores and spatial positions.
+ * When layout detection is enabled, each page may have layout regions identifying different content types (text,
+ * pictures, tables, etc.) with confidence scores and spatial positions.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -49,11 +48,6 @@ public class LayoutRegionBuilder {
 
     /** Builds the LayoutRegion instance. */
     public LayoutRegion build() {
-        return new LayoutRegion(
-            className,
-            confidence,
-            boundingBox,
-            areaFraction
-        );
+        return new LayoutRegion(className, confidence, boundingBox, areaFraction);
     }
 }

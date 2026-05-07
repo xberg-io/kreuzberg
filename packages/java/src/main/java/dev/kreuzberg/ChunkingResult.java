@@ -17,9 +17,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ChunkingResult(
-    /** List of text chunks */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<Chunk> chunks,
-    /** Total number of chunks generated */
-    @JsonProperty("chunk_count") long chunkCount
-) {
+        /** List of text chunks */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<Chunk> chunks,
+        /** Total number of chunks generated */
+        @JsonProperty("chunk_count") long chunkCount) {
 }

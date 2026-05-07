@@ -16,17 +16,16 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ImageMetadataType(
-    /** Image source (URL, data URI, or SVG content) */
-    String src,
-    /** Alternative text from alt attribute */
-    @Nullable String alt,
-    /** Title attribute */
-    @Nullable String title,
-    /** Image dimensions as (width, height) if available */
-    @Nullable List<Integer> dimensions,
-    /** Image type classification */
-    @JsonProperty("image_type") ImageType imageType,
-    /** Additional attributes as key-value pairs */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes
-) {
+        /** Image source (URL, data URI, or SVG content) */
+        String src,
+        /** Alternative text from alt attribute */
+        @Nullable String alt,
+        /** Title attribute */
+        @Nullable String title,
+        /** Image dimensions as (width, height) if available */
+        @Nullable List<Integer> dimensions,
+        /** Image type classification */
+        @JsonProperty("image_type") ImageType imageType,
+        /** Additional attributes as key-value pairs */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes) {
 }

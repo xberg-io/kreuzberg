@@ -14,9 +14,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record DetectedBoundary(
-    /** Byte offset of the start of the line in the original text. */
-    @JsonProperty("byte_offset") long byteOffset,
-    /** Whether this boundary looks like a header/section title. */
-    @JsonProperty("is_header") boolean isHeader
-) {
+        /** Byte offset of the start of the line in the original text. */
+        @JsonProperty("byte_offset") long byteOffset,
+        /** Whether this boundary looks like a header/section title. */
+        @JsonProperty("is_header") boolean isHeader) {
 }

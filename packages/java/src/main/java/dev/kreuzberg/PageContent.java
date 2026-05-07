@@ -13,35 +13,33 @@ import org.jspecify.annotations.Nullable;
 /**
  * Content for a single page/slide.
  *
- * When page extraction is enabled, documents are split into per-page content
- * with associated tables and images mapped to each page.
+ * When page extraction is enabled, documents are split into per-page content with associated tables and images mapped
+ * to each page.
  *
  * # Performance
  *
- * Uses Arc-wrapped tables and images for memory efficiency:
- * - {@code Vec&lt;Arc&lt;Table&gt;&gt;} enables zero-copy sharing of table data
- * - {@code Vec&lt;Arc&lt;ExtractedImage&gt;&gt;} enables zero-copy sharing of image data
- * - Maintains exact JSON compatibility via custom Serialize/Deserialize
+ * Uses Arc-wrapped tables and images for memory efficiency: - {@code Vec&lt;Arc&lt;Table&gt;&gt;} enables zero-copy
+ * sharing of table data - {@code Vec&lt;Arc&lt;ExtractedImage&gt;&gt;} enables zero-copy sharing of image data -
+ * Maintains exact JSON compatibility via custom Serialize/Deserialize
  *
- * This reduces memory overhead for documents with shared tables/images
- * by avoiding redundant copies during serialization.
+ * This reduces memory overhead for documents with shared tables/images by avoiding redundant copies during
+ * serialization.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PageContent(
-    /** Page number (1-indexed) */
-    @JsonProperty("page_number") long pageNumber,
-    /** Text content for this page */
-    String content,
-    /** Tables found on this page (uses Arc for memory efficiency) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<Table> tables,
-    /** Images found on this page (uses Arc for memory efficiency) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedImage> images,
-    /** Hierarchy information for the page (when hierarchy extraction is enabled) */
-    @Nullable PageHierarchy hierarchy,
-    /** Whether this page is blank (no meaningful text content) */
-    @Nullable @JsonProperty("is_blank") Boolean isBlank,
-    /** Layout detection regions for this page (when layout detection is enabled). */
-    @Nullable @JsonProperty("layout_regions") List<LayoutRegion> layoutRegions
-) {
+        /** Page number (1-indexed) */
+        @JsonProperty("page_number") long pageNumber,
+        /** Text content for this page */
+        String content,
+        /** Tables found on this page (uses Arc for memory efficiency) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<Table> tables,
+        /** Images found on this page (uses Arc for memory efficiency) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedImage> images,
+        /** Hierarchy information for the page (when hierarchy extraction is enabled) */
+        @Nullable PageHierarchy hierarchy,
+        /** Whether this page is blank (no meaningful text content) */
+        @Nullable @JsonProperty("is_blank") Boolean isBlank,
+        /** Layout detection regions for this page (when layout detection is enabled). */
+        @Nullable @JsonProperty("layout_regions") List<LayoutRegion> layoutRegions) {
 }

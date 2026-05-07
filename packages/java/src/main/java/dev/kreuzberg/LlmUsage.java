@@ -13,29 +13,27 @@ import org.jspecify.annotations.Nullable;
 /**
  * Token usage and cost data for a single LLM call made during extraction.
  *
- * Populated when VLM OCR, structured extraction, or LLM-based embeddings
- * are used. Multiple entries may be present when multiple LLM calls occur
- * within one extraction (e.g. VLM OCR + structured extraction).
+ * Populated when VLM OCR, structured extraction, or LLM-based embeddings are used. Multiple entries may be present when
+ * multiple LLM calls occur within one extraction (e.g. VLM OCR + structured extraction).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = LlmUsageBuilder.class)
 public record LlmUsage(
-    /** The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). */
-    String model,
-    /** The pipeline stage that triggered this LLM call */
-    String source,
-    /** Number of input/prompt tokens consumed. */
-    @Nullable @JsonProperty("input_tokens") Long inputTokens,
-    /** Number of output/completion tokens generated. */
-    @Nullable @JsonProperty("output_tokens") Long outputTokens,
-    /** Total tokens (input + output). */
-    @Nullable @JsonProperty("total_tokens") Long totalTokens,
-    /** Estimated cost in USD based on the provider's published pricing. */
-    @Nullable @JsonProperty("estimated_cost") Double estimatedCost,
-    /** Why the model stopped generating (e.g. "stop", "length", "content_filter"). */
-    @Nullable @JsonProperty("finish_reason") String finishReason
-) {
+        /** The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). */
+        String model,
+        /** The pipeline stage that triggered this LLM call */
+        String source,
+        /** Number of input/prompt tokens consumed. */
+        @Nullable @JsonProperty("input_tokens") Long inputTokens,
+        /** Number of output/completion tokens generated. */
+        @Nullable @JsonProperty("output_tokens") Long outputTokens,
+        /** Total tokens (input + output). */
+        @Nullable @JsonProperty("total_tokens") Long totalTokens,
+        /** Estimated cost in USD based on the provider's published pricing. */
+        @Nullable @JsonProperty("estimated_cost") Double estimatedCost,
+        /** Why the model stopped generating (e.g. "stop", "length", "content_filter"). */
+        @Nullable @JsonProperty("finish_reason") String finishReason) {
     public static LlmUsageBuilder builder() {
         return new LlmUsageBuilder();
     }

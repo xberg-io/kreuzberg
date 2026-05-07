@@ -15,12 +15,7 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ExtractedInlineImage(
-    /** Uses {@code bytes::Bytes} for cheap cloning of large buffers. */
-    byte[] data,
-    String format,
-    @Nullable String filename,
-    @Nullable String description,
-    @Nullable List<Integer> dimensions,
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes
-) {
+        /** Uses {@code bytes::Bytes} for cheap cloning of large buffers. */
+        byte[] data, String format, @Nullable String filename, @Nullable String description,
+        @Nullable List<Integer> dimensions, @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attributes) {
 }

@@ -11,17 +11,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * A single file extracted from an archive.
  *
- * When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
- * enabled, each processable file produces its own full {@code ExtractionResult}.
+ * When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction enabled, each processable file produces
+ * its own full {@code ExtractionResult}.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ArchiveEntry(
-    /** Archive-relative file path (e.g. "folder/document.pdf"). */
-    String path,
-    /** Detected MIME type of the file. */
-    @JsonProperty("mime_type") String mimeType,
-    /** Full extraction result for this file. */
-    ExtractionResult result
-) {
+        /** Archive-relative file path (e.g. "folder/document.pdf"). */
+        String path,
+        /** Detected MIME type of the file. */
+        @JsonProperty("mime_type") String mimeType,
+        /** Full extraction result for this file. */
+        ExtractionResult result) {
 }

@@ -14,13 +14,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record DjotImage(
-    /** Image source URL or path */
-    String src,
-    /** Alternative text */
-    String alt,
-    /** Optional title */
-    @Nullable String title,
-    /** Element attributes */
-    @Nullable String attributes
-) {
+        /** Image source URL or path */
+        String src,
+        /** Alternative text */
+        String alt,
+        /** Optional title */
+        @Nullable String title,
+        /** Element attributes */
+        @Nullable String attributes) {
 }

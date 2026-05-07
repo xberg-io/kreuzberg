@@ -14,22 +14,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * Extracted table structure.
  *
- * Represents a table detected and extracted from a document (PDF, image, etc.).
- * Tables are converted to both structured cell data and Markdown format.
+ * Represents a table detected and extracted from a document (PDF, image, etc.). Tables are converted to both structured
+ * cell data and Markdown format.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = TableBuilder.class)
 public record Table(
-    /** Table cells as a 2D vector (rows × columns) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
-    /** Markdown representation of the table */
-    String markdown,
-    /** Page number where the table was found (1-indexed) */
-    @JsonProperty("page_number") long pageNumber,
-    /** Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). */
-    @Nullable @JsonProperty("bounding_box") String boundingBox
-) {
+        /** Table cells as a 2D vector (rows × columns) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
+        /** Markdown representation of the table */
+        String markdown,
+        /** Page number where the table was found (1-indexed) */
+        @JsonProperty("page_number") long pageNumber,
+        /** Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). */
+        @Nullable @JsonProperty("bounding_box") String boundingBox) {
     public static TableBuilder builder() {
         return new TableBuilder();
     }

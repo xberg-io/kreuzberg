@@ -15,13 +15,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record Keyword(
-    /** The keyword text. */
-    String text,
-    /** Relevance score (higher is better, algorithm-specific range). */
-    float score,
-    /** Algorithm that extracted this keyword. */
-    KeywordAlgorithm algorithm,
-    /** Optional positions where keyword appears in text (character offsets). */
-    @Nullable List<Long> positions
-) {
+        /** The keyword text. */
+        String text,
+        /** Relevance score (higher is better, algorithm-specific range). */
+        float score,
+        /** Algorithm that extracted this keyword. */
+        KeywordAlgorithm algorithm,
+        /** Optional positions where keyword appears in text (character offsets). */
+        @Nullable List<Long> positions) {
 }

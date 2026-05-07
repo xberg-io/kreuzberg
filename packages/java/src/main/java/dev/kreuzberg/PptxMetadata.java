@@ -20,15 +20,13 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PptxMetadataBuilder.class)
 public record PptxMetadata(
-    /** Total number of slides in the presentation */
-    @JsonProperty("slide_count") long slideCount,
-    /** Names of slides (if available) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("slide_names") List<String> slideNames,
-    /** Number of embedded images */
-    @Nullable @JsonProperty("image_count") Long imageCount,
-    /** Number of tables */
-    @Nullable @JsonProperty("table_count") Long tableCount
-) {
+        /** Total number of slides in the presentation */
+        @JsonProperty("slide_count") long slideCount,
+        /** Names of slides (if available) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("slide_names") List<String> slideNames,
+        /** Number of embedded images */
+        @Nullable @JsonProperty("image_count") Long imageCount, /** Number of tables */
+        @Nullable @JsonProperty("table_count") Long tableCount) {
     public static PptxMetadataBuilder builder() {
         return new PptxMetadataBuilder();
     }

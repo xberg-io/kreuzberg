@@ -19,17 +19,14 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = OcrMetadataBuilder.class)
 public record OcrMetadata(
-    /** OCR language code(s) used */
-    String language,
-    /** Tesseract Page Segmentation Mode (PSM) */
-    int psm,
-    /** Output format (e.g., "text", "hocr") */
-    @JsonProperty("output_format") String outputFormat,
-    /** Number of tables detected */
-    @JsonProperty("table_count") long tableCount,
-    @Nullable @JsonProperty("table_rows") Long tableRows,
-    @Nullable @JsonProperty("table_cols") Long tableCols
-) {
+        /** OCR language code(s) used */
+        String language,
+        /** Tesseract Page Segmentation Mode (PSM) */
+        int psm,
+        /** Output format (e.g., "text", "hocr") */
+        @JsonProperty("output_format") String outputFormat, /** Number of tables detected */
+        @JsonProperty("table_count") long tableCount, @Nullable @JsonProperty("table_rows") Long tableRows,
+        @Nullable @JsonProperty("table_cols") Long tableCols) {
     public static OcrMetadataBuilder builder() {
         return new OcrMetadataBuilder();
     }

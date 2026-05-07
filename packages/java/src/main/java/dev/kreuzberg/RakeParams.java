@@ -16,16 +16,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = RakeParamsBuilder.class)
 public record RakeParams(
-    /** Minimum word length to consider (default: 1). */
-    @JsonProperty("min_word_length") long minWordLength,
-    /** Maximum words in a keyword phrase (default: 3). */
-    @JsonProperty("max_words_per_phrase") long maxWordsPerPhrase
-) {
+        /** Minimum word length to consider (default: 1). */
+        @JsonProperty("min_word_length") long minWordLength, /** Maximum words in a keyword phrase (default: 3). */
+        @JsonProperty("max_words_per_phrase") long maxWordsPerPhrase) {
     public static RakeParamsBuilder builder() {
         return new RakeParamsBuilder();
     }
-    public RakeParams{
-        if (minWordLength == 0) minWordLength = 1;
-        if (maxWordsPerPhrase == 0) maxWordsPerPhrase = 3;
+    public RakeParams {
+        if (minWordLength == 0)
+            minWordLength = 1;
+        if (maxWordsPerPhrase == 0)
+            maxWordsPerPhrase = 3;
     }
 }

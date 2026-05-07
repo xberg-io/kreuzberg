@@ -13,23 +13,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * Single Excel worksheet.
  *
- * Represents one sheet from an Excel workbook with its content
- * converted to Markdown format and dimensional statistics.
+ * Represents one sheet from an Excel workbook with its content converted to Markdown format and dimensional statistics.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ExcelSheet(
-    /** Sheet name as it appears in Excel */
-    String name,
-    /** Sheet content converted to Markdown tables */
-    String markdown,
-    /** Number of rows */
-    @JsonProperty("row_count") long rowCount,
-    /** Number of columns */
-    @JsonProperty("col_count") long colCount,
-    /** Total number of non-empty cells */
-    @JsonProperty("cell_count") long cellCount,
-    /** Pre-extracted table cells (2D vector of cell values) */
-    @Nullable @JsonProperty("table_cells") List<List<String>> tableCells
-) {
+        /** Sheet name as it appears in Excel */
+        String name,
+        /** Sheet content converted to Markdown tables */
+        String markdown,
+        /** Number of rows */
+        @JsonProperty("row_count") long rowCount,
+        /** Number of columns */
+        @JsonProperty("col_count") long colCount,
+        /** Total number of non-empty cells */
+        @JsonProperty("cell_count") long cellCount,
+        /** Pre-extracted table cells (2D vector of cell values) */
+        @Nullable @JsonProperty("table_cells") List<List<String>> tableCells) {
 }

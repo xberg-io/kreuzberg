@@ -18,13 +18,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record OcrTable(
-    /** Table cells as a 2D vector (rows × columns) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
-    /** Markdown representation of the table */
-    String markdown,
-    /** Page number where the table was found (1-indexed) */
-    @JsonProperty("page_number") long pageNumber,
-    /** Bounding box of the table in pixel coordinates (from OCR word positions). */
-    @Nullable @JsonProperty("bounding_box") OcrTableBoundingBox boundingBox
-) {
+        /** Table cells as a 2D vector (rows × columns) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<List<String>> cells,
+        /** Markdown representation of the table */
+        String markdown,
+        /** Page number where the table was found (1-indexed) */
+        @JsonProperty("page_number") long pageNumber,
+        /** Bounding box of the table in pixel coordinates (from OCR word positions). */
+        @Nullable @JsonProperty("bounding_box") OcrTableBoundingBox boundingBox) {
 }

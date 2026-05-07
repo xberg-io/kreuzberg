@@ -18,19 +18,18 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record FormattedBlock(
-    /** Type of block element */
-    @JsonProperty("block_type") BlockType blockType,
-    /** Heading level (1-6) for headings, or nesting level for lists */
-    @Nullable Long level,
-    /** Inline content within the block */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("inline_content") List<InlineElement> inlineContent,
-    /** Element attributes (classes, IDs, key-value pairs) */
-    @Nullable String attributes,
-    /** Language identifier for code blocks */
-    @Nullable String language,
-    /** Raw code content for code blocks */
-    @Nullable String code,
-    /** Nested blocks for containers (blockquotes, list items, divs) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<FormattedBlock> children
-) {
+        /** Type of block element */
+        @JsonProperty("block_type") BlockType blockType,
+        /** Heading level (1-6) for headings, or nesting level for lists */
+        @Nullable Long level,
+        /** Inline content within the block */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("inline_content") List<InlineElement> inlineContent,
+        /** Element attributes (classes, IDs, key-value pairs) */
+        @Nullable String attributes,
+        /** Language identifier for code blocks */
+        @Nullable String language,
+        /** Raw code content for code blocks */
+        @Nullable String code,
+        /** Nested blocks for containers (blockquotes, list items, divs) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<FormattedBlock> children) {
 }

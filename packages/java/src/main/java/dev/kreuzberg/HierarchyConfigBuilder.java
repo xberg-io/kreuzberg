@@ -11,9 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Hierarchy extraction configuration for PDF text structure analysis.
  *
- * Enables extraction of document hierarchy levels (H1-H6) based on font size
- * clustering and semantic analysis. When enabled, hierarchical blocks are
- * included in page content.
+ * Enables extraction of document hierarchy levels (H1-H6) based on font size clustering and semantic analysis. When
+ * enabled, hierarchical blocks are included in page content.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -50,11 +49,6 @@ public class HierarchyConfigBuilder {
 
     /** Builds the HierarchyConfig instance. */
     public HierarchyConfig build() {
-        return new HierarchyConfig(
-            enabled,
-            kClusters,
-            includeBbox,
-            ocrCoverageThreshold.orElse(null)
-        );
+        return new HierarchyConfig(enabled, kClusters, includeBbox, ocrCoverageThreshold.orElse(null));
     }
 }

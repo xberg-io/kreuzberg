@@ -83,16 +83,7 @@ public class TreeSitterProcessConfigBuilder {
 
     /** Builds the TreeSitterProcessConfig instance. */
     public TreeSitterProcessConfig build() {
-        return new TreeSitterProcessConfig(
-            structure,
-            imports,
-            exports,
-            comments,
-            docstrings,
-            symbols,
-            diagnostics,
-            chunkMaxSize.orElse(null),
-            contentMode
-        );
+        return new TreeSitterProcessConfig(structure, imports, exports, comments, docstrings, symbols, diagnostics,
+                chunkMaxSize.orElse(null), contentMode);
     }
 }

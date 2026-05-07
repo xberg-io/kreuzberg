@@ -15,9 +15,8 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record OcrRotation(
-    /** Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). */
-    @JsonProperty("angle_degrees") double angleDegrees,
-    /** Confidence score for the rotation detection. */
-    @Nullable Double confidence
-) {
+        /** Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). */
+        @JsonProperty("angle_degrees") double angleDegrees,
+        /** Confidence score for the rotation detection. */
+        @Nullable Double confidence) {
 }

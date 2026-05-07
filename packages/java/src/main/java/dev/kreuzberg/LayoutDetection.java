@@ -13,9 +13,5 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public record LayoutDetection(
-    @JsonProperty("class_name") LayoutClass className,
-    float confidence,
-    BBox bbox
-) {
+public record LayoutDetection(@JsonProperty("class_name") LayoutClass className, float confidence, BBox bbox) {
 }

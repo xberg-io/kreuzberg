@@ -14,11 +14,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record StructuredExtractionResponse(
-    /** Structured data conforming to the provided JSON schema */
-    @JsonProperty("structured_output") Object structuredOutput,
-    /** Extracted document text content */
-    String content,
-    /** Detected MIME type of the input file */
-    @JsonProperty("mime_type") String mimeType
-) {
+        /** Structured data conforming to the provided JSON schema */
+        @JsonProperty("structured_output") Object structuredOutput,
+        /** Extracted document text content */
+        String content,
+        /** Detected MIME type of the input file */
+        @JsonProperty("mime_type") String mimeType) {
 }

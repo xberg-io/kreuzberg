@@ -15,11 +15,10 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record StructuredData(
-    /** Type of structured data */
-    @JsonProperty("data_type") StructuredDataType dataType,
-    /** Raw JSON string representation */
-    @JsonProperty("raw_json") String rawJson,
-    /** Schema type if detectable (e.g., "Article", "Event", "Product") */
-    @Nullable @JsonProperty("schema_type") String schemaType
-) {
+        /** Type of structured data */
+        @JsonProperty("data_type") StructuredDataType dataType,
+        /** Raw JSON string representation */
+        @JsonProperty("raw_json") String rawJson,
+        /** Schema type if detectable (e.g., "Article", "Event", "Product") */
+        @Nullable @JsonProperty("schema_type") String schemaType) {
 }

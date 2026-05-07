@@ -14,23 +14,21 @@ import org.jspecify.annotations.Nullable;
 /**
  * OCR extraction result.
  *
- * Result of performing OCR on an image or scanned document,
- * including recognized text and detected tables.
+ * Result of performing OCR on an image or scanned document, including recognized text and detected tables.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record OcrExtractionResult(
-    /** Recognized text content */
-    String content,
-    /** Original MIME type of the processed image */
-    @JsonProperty("mime_type") String mimeType,
-    /** OCR processing metadata (confidence scores, language, etc.) */
-    Map<String, Object> metadata,
-    /** Tables detected and extracted via OCR */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<OcrTable> tables,
-    /** Structured OCR elements with bounding boxes and confidence scores. */
-    @Nullable @JsonProperty("ocr_elements") List<OcrElement> ocrElements,
-    /** Structured document produced from hOCR parsing. */
-    @Nullable @JsonProperty("internal_document") String internalDocument
-) {
+        /** Recognized text content */
+        String content,
+        /** Original MIME type of the processed image */
+        @JsonProperty("mime_type") String mimeType,
+        /** OCR processing metadata (confidence scores, language, etc.) */
+        Map<String, Object> metadata,
+        /** Tables detected and extracted via OCR */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<OcrTable> tables,
+        /** Structured OCR elements with bounding boxes and confidence scores. */
+        @Nullable @JsonProperty("ocr_elements") List<OcrElement> ocrElements,
+        /** Structured document produced from hOCR parsing. */
+        @Nullable @JsonProperty("internal_document") String internalDocument) {
 }

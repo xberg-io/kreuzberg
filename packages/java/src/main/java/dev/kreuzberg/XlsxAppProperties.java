@@ -20,25 +20,23 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = XlsxAppPropertiesBuilder.class)
 public record XlsxAppProperties(
-    /** Application name (e.g., "Microsoft Excel") */
-    @Nullable String application,
-    /** Application version */
-    @Nullable @JsonProperty("app_version") String appVersion,
-    /** Document security level */
-    @Nullable @JsonProperty("doc_security") Integer docSecurity,
-    /** Scale crop flag */
-    @Nullable @JsonProperty("scale_crop") Boolean scaleCrop,
-    /** Links up to date flag */
-    @Nullable @JsonProperty("links_up_to_date") Boolean linksUpToDate,
-    /** Shared document flag */
-    @Nullable @JsonProperty("shared_doc") Boolean sharedDoc,
-    /** Hyperlinks changed flag */
-    @Nullable @JsonProperty("hyperlinks_changed") Boolean hyperlinksChanged,
-    /** Company name */
-    @Nullable String company,
-    /** Worksheet names */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("worksheet_names") List<String> worksheetNames
-) {
+        /** Application name (e.g., "Microsoft Excel") */
+        @Nullable String application,
+        /** Application version */
+        @Nullable @JsonProperty("app_version") String appVersion,
+        /** Document security level */
+        @Nullable @JsonProperty("doc_security") Integer docSecurity,
+        /** Scale crop flag */
+        @Nullable @JsonProperty("scale_crop") Boolean scaleCrop,
+        /** Links up to date flag */
+        @Nullable @JsonProperty("links_up_to_date") Boolean linksUpToDate,
+        /** Shared document flag */
+        @Nullable @JsonProperty("shared_doc") Boolean sharedDoc,
+        /** Hyperlinks changed flag */
+        @Nullable @JsonProperty("hyperlinks_changed") Boolean hyperlinksChanged,
+        /** Company name */
+        @Nullable String company, /** Worksheet names */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("worksheet_names") List<String> worksheetNames) {
     public static XlsxAppPropertiesBuilder builder() {
         return new XlsxAppPropertiesBuilder();
     }

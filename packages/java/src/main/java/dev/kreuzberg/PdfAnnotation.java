@@ -15,13 +15,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PdfAnnotation(
-    /** The type of annotation. */
-    @JsonProperty("annotation_type") PdfAnnotationType annotationType,
-    /** Text content of the annotation (e.g., comment text, link URL). */
-    @Nullable String content,
-    /** Page number where the annotation appears (1-indexed). */
-    @JsonProperty("page_number") long pageNumber,
-    /** Bounding box of the annotation on the page. */
-    @Nullable @JsonProperty("bounding_box") String boundingBox
-) {
+        /** The type of annotation. */
+        @JsonProperty("annotation_type") PdfAnnotationType annotationType,
+        /** Text content of the annotation (e.g., comment text, link URL). */
+        @Nullable String content,
+        /** Page number where the annotation appears (1-indexed). */
+        @JsonProperty("page_number") long pageNumber,
+        /** Bounding box of the annotation on the page. */
+        @Nullable @JsonProperty("bounding_box") String boundingBox) {
 }

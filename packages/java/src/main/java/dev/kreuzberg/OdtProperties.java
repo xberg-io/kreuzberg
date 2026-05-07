@@ -12,49 +12,48 @@ import org.jspecify.annotations.Nullable;
 /**
  * OpenDocument metadata from meta.xml
  *
- * Contains metadata fields defined by the OASIS OpenDocument Format standard.
- * Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
+ * Contains metadata fields defined by the OASIS OpenDocument Format standard. Uses Dublin Core elements (dc:) and
+ * OpenDocument meta elements (meta:).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonDeserialize(builder = OdtPropertiesBuilder.class)
 public record OdtProperties(
-    /** Document title (dc:title) */
-    @Nullable String title,
-    /** Document subject/topic (dc:subject) */
-    @Nullable String subject,
-    /** Current document creator/author (dc:creator) */
-    @Nullable String creator,
-    /** Initial creator of the document (meta:initial-creator) */
-    @Nullable @JsonProperty("initial_creator") String initialCreator,
-    /** Keywords or tags (meta:keyword) */
-    @Nullable String keywords,
-    /** Document description (dc:description) */
-    @Nullable String description,
-    /** Current modification date (dc:date) */
-    @Nullable String date,
-    /** Initial creation date (meta:creation-date) */
-    @Nullable @JsonProperty("creation_date") String creationDate,
-    /** Document language (dc:language) */
-    @Nullable String language,
-    /** Generator/application that created the document (meta:generator) */
-    @Nullable String generator,
-    /** Editing duration in ISO 8601 format (meta:editing-duration) */
-    @Nullable @JsonProperty("editing_duration") String editingDuration,
-    /** Number of edits/revisions (meta:editing-cycles) */
-    @Nullable @JsonProperty("editing_cycles") String editingCycles,
-    /** Document statistics - page count (meta:page-count) */
-    @Nullable @JsonProperty("page_count") Integer pageCount,
-    /** Document statistics - word count (meta:word-count) */
-    @Nullable @JsonProperty("word_count") Integer wordCount,
-    /** Document statistics - character count (meta:character-count) */
-    @Nullable @JsonProperty("character_count") Integer characterCount,
-    /** Document statistics - paragraph count (meta:paragraph-count) */
-    @Nullable @JsonProperty("paragraph_count") Integer paragraphCount,
-    /** Document statistics - table count (meta:table-count) */
-    @Nullable @JsonProperty("table_count") Integer tableCount,
-    /** Document statistics - image count (meta:image-count) */
-    @Nullable @JsonProperty("image_count") Integer imageCount
-) {
+        /** Document title (dc:title) */
+        @Nullable String title,
+        /** Document subject/topic (dc:subject) */
+        @Nullable String subject,
+        /** Current document creator/author (dc:creator) */
+        @Nullable String creator,
+        /** Initial creator of the document (meta:initial-creator) */
+        @Nullable @JsonProperty("initial_creator") String initialCreator,
+        /** Keywords or tags (meta:keyword) */
+        @Nullable String keywords,
+        /** Document description (dc:description) */
+        @Nullable String description,
+        /** Current modification date (dc:date) */
+        @Nullable String date,
+        /** Initial creation date (meta:creation-date) */
+        @Nullable @JsonProperty("creation_date") String creationDate,
+        /** Document language (dc:language) */
+        @Nullable String language,
+        /** Generator/application that created the document (meta:generator) */
+        @Nullable String generator,
+        /** Editing duration in ISO 8601 format (meta:editing-duration) */
+        @Nullable @JsonProperty("editing_duration") String editingDuration,
+        /** Number of edits/revisions (meta:editing-cycles) */
+        @Nullable @JsonProperty("editing_cycles") String editingCycles,
+        /** Document statistics - page count (meta:page-count) */
+        @Nullable @JsonProperty("page_count") Integer pageCount,
+        /** Document statistics - word count (meta:word-count) */
+        @Nullable @JsonProperty("word_count") Integer wordCount,
+        /** Document statistics - character count (meta:character-count) */
+        @Nullable @JsonProperty("character_count") Integer characterCount,
+        /** Document statistics - paragraph count (meta:paragraph-count) */
+        @Nullable @JsonProperty("paragraph_count") Integer paragraphCount,
+        /** Document statistics - table count (meta:table-count) */
+        @Nullable @JsonProperty("table_count") Integer tableCount,
+        /** Document statistics - image count (meta:image-count) */
+        @Nullable @JsonProperty("image_count") Integer imageCount) {
     public static OdtPropertiesBuilder builder() {
         return new OdtPropertiesBuilder();
     }

@@ -5,23 +5,17 @@ package dev.kreuzberg;
 /**
  * Main error type for all Kreuzberg operations.
  *
- * All errors in Kreuzberg use this enum, which preserves error chains
- * and provides context for debugging.
+ * All errors in Kreuzberg use this enum, which preserves error chains and provides context for debugging.
  *
  * # Variants
  *
- * - {@code Io} - File system and I/O errors (always bubble up)
- * - {@code Parsing} - Document parsing errors (corrupt files, unsupported features)
- * - {@code Ocr} - OCR processing errors
- * - {@code Validation} - Input validation errors (invalid paths, config, parameters)
- * - {@code Cache} - Cache operation errors (non-fatal, can be ignored)
- * - {@code ImageProcessing} - Image manipulation errors
- * - {@code Serialization} - JSON/MessagePack serialization errors
- * - {@code MissingDependency} - Missing optional dependencies (tesseract, etc.)
- * - {@code Plugin} - Plugin-specific errors
- * - {@code LockPoisoned} - Mutex/RwLock poisoning (should not happen in normal operation)
- * - {@code UnsupportedFormat} - Unsupported MIME type or file format
- * - {@code Other} - Catch-all for uncommon errors
+ * - {@code Io} - File system and I/O errors (always bubble up) - {@code Parsing} - Document parsing errors (corrupt
+ * files, unsupported features) - {@code Ocr} - OCR processing errors - {@code Validation} - Input validation errors
+ * (invalid paths, config, parameters) - {@code Cache} - Cache operation errors (non-fatal, can be ignored) -
+ * {@code ImageProcessing} - Image manipulation errors - {@code Serialization} - JSON/MessagePack serialization errors -
+ * {@code MissingDependency} - Missing optional dependencies (tesseract, etc.) - {@code Plugin} - Plugin-specific errors
+ * - {@code LockPoisoned} - Mutex/RwLock poisoning (should not happen in normal operation) - {@code UnsupportedFormat} -
+ * Unsupported MIME type or file format - {@code Other} - Catch-all for uncommon errors
  */
 public class KreuzbergErrorException extends Exception {
     /** Creates a new KreuzbergErrorException with the given message. */

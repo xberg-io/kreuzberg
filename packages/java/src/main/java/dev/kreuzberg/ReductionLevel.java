@@ -10,11 +10,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 @SuppressWarnings("checkstyle:LineLength")
 public enum ReductionLevel {
-    Off("off"),
-    Light("light"),
-    Moderate("moderate"),
-    Aggressive("aggressive"),
-    Maximum("maximum");
+    Off("off"), Light("light"), Moderate("moderate"), Aggressive("aggressive"), Maximum("maximum");
 
     /** The string value. */
     private final String value;

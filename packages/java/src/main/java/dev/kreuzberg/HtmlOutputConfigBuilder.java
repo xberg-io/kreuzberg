@@ -11,10 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Configuration for styled HTML output.
  *
- * When set on ExtractionConfig::html_output alongside
- * {@code output_format = OutputFormat::Html}, the pipeline builds a
- * StyledHtmlRenderer(crate::rendering::StyledHtmlRenderer) instead of
- * the plain comrak-based renderer.
+ * When set on ExtractionConfig::html_output alongside {@code output_format = OutputFormat::Html}, the pipeline builds a
+ * StyledHtmlRenderer(crate::rendering::StyledHtmlRenderer) instead of the plain comrak-based renderer.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -58,12 +56,6 @@ public class HtmlOutputConfigBuilder {
 
     /** Builds the HtmlOutputConfig instance. */
     public HtmlOutputConfig build() {
-        return new HtmlOutputConfig(
-            css.orElse(null),
-            cssFile.orElse(null),
-            theme,
-            classPrefix,
-            embedCss
-        );
+        return new HtmlOutputConfig(css.orElse(null), cssFile.orElse(null), theme, classPrefix, embedCss);
     }
 }

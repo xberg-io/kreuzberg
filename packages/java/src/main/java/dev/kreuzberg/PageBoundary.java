@@ -11,18 +11,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Byte offset boundary for a page.
  *
- * Tracks where a specific page's content starts and ends in the main content string,
- * enabling mapping from byte positions to page numbers. Offsets are guaranteed to be
- * at valid UTF-8 character boundaries when using standard String methods (push_str, push, etc.).
+ * Tracks where a specific page's content starts and ends in the main content string, enabling mapping from byte
+ * positions to page numbers. Offsets are guaranteed to be at valid UTF-8 character boundaries when using standard
+ * String methods (push_str, push, etc.).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record PageBoundary(
-    /** Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive) */
-    @JsonProperty("byte_start") long byteStart,
-    /** Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive) */
-    @JsonProperty("byte_end") long byteEnd,
-    /** Page number (1-indexed) */
-    @JsonProperty("page_number") long pageNumber
-) {
+        /** Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive) */
+        @JsonProperty("byte_start") long byteStart,
+        /** Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive) */
+        @JsonProperty("byte_end") long byteEnd,
+        /** Page number (1-indexed) */
+        @JsonProperty("page_number") long pageNumber) {
 }

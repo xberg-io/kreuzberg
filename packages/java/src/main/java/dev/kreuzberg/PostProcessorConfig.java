@@ -18,17 +18,16 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = PostProcessorConfigBuilder.class)
 public record PostProcessorConfig(
-    /** Enable post-processors */
-    boolean enabled,
-    /** Whitelist of processor names to run (None = all enabled) */
-    @Nullable @JsonProperty("enabled_processors") List<String> enabledProcessors,
-    /** Blacklist of processor names to skip (None = none disabled) */
-    @Nullable @JsonProperty("disabled_processors") List<String> disabledProcessors,
-    /** Pre-computed AHashSet for O(1) enabled processor lookup */
-    @Nullable @JsonProperty("enabled_set") String enabledSet,
-    /** Pre-computed AHashSet for O(1) disabled processor lookup */
-    @Nullable @JsonProperty("disabled_set") String disabledSet
-) {
+        /** Enable post-processors */
+        boolean enabled,
+        /** Whitelist of processor names to run (None = all enabled) */
+        @Nullable @JsonProperty("enabled_processors") List<String> enabledProcessors,
+        /** Blacklist of processor names to skip (None = none disabled) */
+        @Nullable @JsonProperty("disabled_processors") List<String> disabledProcessors,
+        /** Pre-computed AHashSet for O(1) enabled processor lookup */
+        @Nullable @JsonProperty("enabled_set") String enabledSet,
+        /** Pre-computed AHashSet for O(1) disabled processor lookup */
+        @Nullable @JsonProperty("disabled_set") String disabledSet) {
     public static PostProcessorConfigBuilder builder() {
         return new PostProcessorConfigBuilder();
     }

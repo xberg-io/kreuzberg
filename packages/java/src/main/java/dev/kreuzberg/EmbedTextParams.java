@@ -16,15 +16,14 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record EmbedTextParams(
-    /** List of text strings to generate embeddings for */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> texts,
-    /** Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" */
-    @Nullable String preset,
-    /** LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). */
-    @Nullable String model,
-    /** API key for the LLM provider (optional, falls back to env). */
-    @Nullable @JsonProperty("api_key") String apiKey,
-    /** Name of a pre-registered in-process embedding plugin backend. */
-    @Nullable @JsonProperty("embedding_plugin") String embeddingPlugin
-) {
+        /** List of text strings to generate embeddings for */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> texts,
+        /** Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" */
+        @Nullable String preset,
+        /** LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). */
+        @Nullable String model,
+        /** API key for the LLM provider (optional, falls back to env). */
+        @Nullable @JsonProperty("api_key") String apiKey,
+        /** Name of a pre-registered in-process embedding plugin backend. */
+        @Nullable @JsonProperty("embedding_plugin") String embeddingPlugin) {
 }

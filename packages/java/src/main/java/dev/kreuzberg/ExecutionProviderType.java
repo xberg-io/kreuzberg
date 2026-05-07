@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * ONNX Runtime execution provider type.
  *
- * Determines which hardware backend is used for model inference.
- * {@code Auto} (default) selects the best available provider per platform.
+ * Determines which hardware backend is used for model inference. {@code Auto} (default) selects the best available
+ * provider per platform.
  */
 @SuppressWarnings("checkstyle:LineLength")
 public enum ExecutionProviderType {

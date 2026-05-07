@@ -15,9 +15,8 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record DetectResponse(
-    /** Detected MIME type */
-    @JsonProperty("mime_type") String mimeType,
-    /** Original filename (if provided) */
-    @Nullable String filename
-) {
+        /** Detected MIME type */
+        @JsonProperty("mime_type") String mimeType,
+        /** Original filename (if provided) */
+        @Nullable String filename) {
 }

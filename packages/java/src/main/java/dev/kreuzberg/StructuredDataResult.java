@@ -12,10 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public record StructuredDataResult(
-    String content,
-    String format,
-    Map<String, String> metadata,
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("text_fields") List<String> textFields
-) {
+public record StructuredDataResult(String content, String format, Map<String, String> metadata,
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("text_fields") List<String> textFields) {
 }

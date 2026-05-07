@@ -14,28 +14,27 @@ import org.jspecify.annotations.Nullable;
 /**
  * Top-level structured document representation.
  *
- * A flat array of nodes with index-based parent/child references forming a tree.
- * Root-level nodes have {@code parent: None}. Use {@code body_roots()} and {@code furniture_roots()}
- * to iterate over top-level content by layer.
+ * A flat array of nodes with index-based parent/child references forming a tree. Root-level nodes have
+ * {@code parent: None}. Use {@code body_roots()} and {@code furniture_roots()} to iterate over top-level content by
+ * layer.
  *
  * # Validation
  *
- * Call {@code validate()} after construction to verify all node indices are in bounds
- * and parent-child relationships are bidirectionally consistent.
+ * Call {@code validate()} after construction to verify all node indices are in bounds and parent-child relationships
+ * are bidirectionally consistent.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = DocumentStructureBuilder.class)
 public record DocumentStructure(
-    /** All nodes in document/reading order. */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<DocumentNode> nodes,
-    /** Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). */
-    @Nullable @JsonProperty("source_format") String sourceFormat,
-    /** Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<DocumentRelationship> relationships,
-    /** Sorted, deduplicated list of node type names present in this document. */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("node_types") List<String> nodeTypes
-) {
+        /** All nodes in document/reading order. */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<DocumentNode> nodes,
+        /** Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). */
+        @Nullable @JsonProperty("source_format") String sourceFormat,
+        /** Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<DocumentRelationship> relationships,
+        /** Sorted, deduplicated list of node type names present in this document. */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("node_types") List<String> nodeTypes) {
     public static DocumentStructureBuilder builder() {
         return new DocumentStructureBuilder();
     }

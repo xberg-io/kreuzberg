@@ -15,9 +15,8 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record CacheWarmParams(
-    /** Download all embedding model presets */
-    @JsonProperty("all_embeddings") boolean allEmbeddings,
-    /** Specific embedding preset name to download (e.g. "balanced", "speed", "quality") */
-    @Nullable @JsonProperty("embedding_model") String embeddingModel
-) {
+        /** Download all embedding model presets */
+        @JsonProperty("all_embeddings") boolean allEmbeddings,
+        /** Specific embedding preset name to download (e.g. "balanced", "speed", "quality") */
+        @Nullable @JsonProperty("embedding_model") String embeddingModel) {
 }

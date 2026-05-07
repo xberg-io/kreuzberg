@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public record HtmlExtractionResult(
-    String markdown,
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedInlineImage> images,
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> warnings
-) {
+public record HtmlExtractionResult(String markdown,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<ExtractedInlineImage> images,
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> warnings) {
 }

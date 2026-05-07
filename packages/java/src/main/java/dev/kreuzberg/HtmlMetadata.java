@@ -15,44 +15,43 @@ import org.jspecify.annotations.Nullable;
 /**
  * HTML metadata extracted from HTML documents.
  *
- * Includes document-level metadata, Open Graph data, Twitter Card metadata,
- * and extracted structural elements (headers, links, images, structured data).
+ * Includes document-level metadata, Open Graph data, Twitter Card metadata, and extracted structural elements (headers,
+ * links, images, structured data).
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = HtmlMetadataBuilder.class)
 public record HtmlMetadata(
-    /** Document title from {@code &lt;title&gt;} tag */
-    @Nullable String title,
-    /** Document description from {@code &lt;meta name="description"&gt;} tag */
-    @Nullable String description,
-    /** Document keywords from {@code &lt;meta name="keywords"&gt;} tag, split on commas */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> keywords,
-    /** Document author from {@code &lt;meta name="author"&gt;} tag */
-    @Nullable String author,
-    /** Canonical URL from {@code &lt;link rel="canonical"&gt;} tag */
-    @Nullable @JsonProperty("canonical_url") String canonicalUrl,
-    /** Base URL from {@code &lt;base href=""&gt;} tag for resolving relative URLs */
-    @Nullable @JsonProperty("base_href") String baseHref,
-    /** Document language from {@code lang} attribute */
-    @Nullable String language,
-    /** Document text direction from {@code dir} attribute */
-    @Nullable @JsonProperty("text_direction") TextDirection textDirection,
-    /** Open Graph metadata (og:* properties) for social media */
-    @JsonProperty("open_graph") Map<String, String> openGraph,
-    /** Twitter Card metadata (twitter:* properties) */
-    @JsonProperty("twitter_card") Map<String, String> twitterCard,
-    /** Additional meta tags not covered by specific fields */
-    @JsonProperty("meta_tags") Map<String, String> metaTags,
-    /** Extracted header elements with hierarchy */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<HeaderMetadata> headers,
-    /** Extracted hyperlinks with type classification */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<LinkMetadata> links,
-    /** Extracted images with source and dimensions */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<ImageMetadataType> images,
-    /** Extracted structured data blocks */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("structured_data") List<StructuredData> structuredData
-) {
+        /** Document title from {@code &lt;title&gt;} tag */
+        @Nullable String title,
+        /** Document description from {@code &lt;meta name="description"&gt;} tag */
+        @Nullable String description,
+        /** Document keywords from {@code &lt;meta name="keywords"&gt;} tag, split on commas */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> keywords,
+        /** Document author from {@code &lt;meta name="author"&gt;} tag */
+        @Nullable String author,
+        /** Canonical URL from {@code &lt;link rel="canonical"&gt;} tag */
+        @Nullable @JsonProperty("canonical_url") String canonicalUrl,
+        /** Base URL from {@code &lt;base href=""&gt;} tag for resolving relative URLs */
+        @Nullable @JsonProperty("base_href") String baseHref,
+        /** Document language from {@code lang} attribute */
+        @Nullable String language,
+        /** Document text direction from {@code dir} attribute */
+        @Nullable @JsonProperty("text_direction") TextDirection textDirection,
+        /** Open Graph metadata (og:* properties) for social media */
+        @JsonProperty("open_graph") Map<String, String> openGraph,
+        /** Twitter Card metadata (twitter:* properties) */
+        @JsonProperty("twitter_card") Map<String, String> twitterCard,
+        /** Additional meta tags not covered by specific fields */
+        @JsonProperty("meta_tags") Map<String, String> metaTags,
+        /** Extracted header elements with hierarchy */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<HeaderMetadata> headers,
+        /** Extracted hyperlinks with type classification */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<LinkMetadata> links,
+        /** Extracted images with source and dimensions */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<ImageMetadataType> images,
+        /** Extracted structured data blocks */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("structured_data") List<StructuredData> structuredData) {
     public static HtmlMetadataBuilder builder() {
         return new HtmlMetadataBuilder();
     }

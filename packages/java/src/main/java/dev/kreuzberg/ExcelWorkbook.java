@@ -12,15 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Excel workbook representation.
  *
- * Contains all sheets from an Excel file (.xlsx, .xls, etc.) with
- * extracted content and metadata.
+ * Contains all sheets from an Excel file (.xlsx, .xls, etc.) with extracted content and metadata.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ExcelWorkbook(
-    /** All sheets in the workbook */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<ExcelSheet> sheets,
-    /** Workbook-level metadata (author, creation date, etc.) */
-    Map<String, String> metadata
-) {
+        /** All sheets in the workbook */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<ExcelSheet> sheets,
+        /** Workbook-level metadata (author, creation date, etc.) */
+        Map<String, String> metadata) {
 }

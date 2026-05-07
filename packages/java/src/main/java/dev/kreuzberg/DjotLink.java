@@ -14,13 +14,12 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record DjotLink(
-    /** Link URL */
-    String url,
-    /** Link text content */
-    String text,
-    /** Optional title */
-    @Nullable String title,
-    /** Element attributes */
-    @Nullable String attributes
-) {
+        /** Link URL */
+        String url,
+        /** Link text content */
+        String text,
+        /** Optional title */
+        @Nullable String title,
+        /** Element attributes */
+        @Nullable String attributes) {
 }

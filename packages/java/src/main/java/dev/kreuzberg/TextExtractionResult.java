@@ -13,25 +13,24 @@ import org.jspecify.annotations.Nullable;
 /**
  * Plain text and Markdown extraction result.
  *
- * Contains the extracted text along with statistics and,
- * for Markdown files, structural elements like headers and links.
+ * Contains the extracted text along with statistics and, for Markdown files, structural elements like headers and
+ * links.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record TextExtractionResult(
-    /** Extracted text content */
-    String content,
-    /** Number of lines */
-    @JsonProperty("line_count") long lineCount,
-    /** Number of words */
-    @JsonProperty("word_count") long wordCount,
-    /** Number of characters */
-    @JsonProperty("character_count") long characterCount,
-    /** Markdown headers (text only, Markdown files only) */
-    @Nullable List<String> headers,
-    /** Markdown links as (text, URL) tuples (Markdown files only) */
-    @Nullable List<String> links,
-    /** Code blocks as (language, code) tuples (Markdown files only) */
-    @Nullable @JsonProperty("code_blocks") List<String> codeBlocks
-) {
+        /** Extracted text content */
+        String content,
+        /** Number of lines */
+        @JsonProperty("line_count") long lineCount,
+        /** Number of words */
+        @JsonProperty("word_count") long wordCount,
+        /** Number of characters */
+        @JsonProperty("character_count") long characterCount,
+        /** Markdown headers (text only, Markdown files only) */
+        @Nullable List<String> headers,
+        /** Markdown links as (text, URL) tuples (Markdown files only) */
+        @Nullable List<String> links,
+        /** Code blocks as (language, code) tuples (Markdown files only) */
+        @Nullable @JsonProperty("code_blocks") List<String> codeBlocks) {
 }

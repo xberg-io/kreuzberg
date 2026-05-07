@@ -17,17 +17,16 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record EmailAttachment(
-    /** Attachment name (from Content-Disposition header) */
-    @Nullable String name,
-    /** Filename of the attachment */
-    @Nullable String filename,
-    /** MIME type of the attachment */
-    @Nullable @JsonProperty("mime_type") String mimeType,
-    /** Size in bytes */
-    @Nullable Long size,
-    /** Whether this attachment is an image */
-    @JsonProperty("is_image") boolean isImage,
-    /** Attachment data (if extracted). */
-    @Nullable byte[] data
-) {
+        /** Attachment name (from Content-Disposition header) */
+        @Nullable String name,
+        /** Filename of the attachment */
+        @Nullable String filename,
+        /** MIME type of the attachment */
+        @Nullable @JsonProperty("mime_type") String mimeType,
+        /** Size in bytes */
+        @Nullable Long size,
+        /** Whether this attachment is an image */
+        @JsonProperty("is_image") boolean isImage,
+        /** Attachment data (if extracted). */
+        @Nullable byte[] data) {
 }

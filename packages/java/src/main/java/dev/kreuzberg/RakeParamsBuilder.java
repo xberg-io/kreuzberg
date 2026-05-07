@@ -31,9 +31,6 @@ public class RakeParamsBuilder {
 
     /** Builds the RakeParams instance. */
     public RakeParams build() {
-        return new RakeParams(
-            minWordLength,
-            maxWordsPerPhrase
-        );
+        return new RakeParams(minWordLength, maxWordsPerPhrase);
     }
 }

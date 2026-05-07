@@ -15,9 +15,8 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record EmbedRequest(
-    /** Text strings to generate embeddings for (at least one non-empty string required) */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> texts,
-    /** Optional embedding configuration (model, batch size, etc.) */
-    @Nullable EmbeddingConfig config
-) {
+        /** Text strings to generate embeddings for (at least one non-empty string required) */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> texts,
+        /** Optional embedding configuration (model, batch size, etc.) */
+        @Nullable EmbeddingConfig config) {
 }

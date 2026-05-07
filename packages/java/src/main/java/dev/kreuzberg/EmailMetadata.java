@@ -20,21 +20,19 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = EmailMetadataBuilder.class)
 public record EmailMetadata(
-    /** Sender's email address */
-    @Nullable @JsonProperty("from_email") String fromEmail,
-    /** Sender's display name */
-    @Nullable @JsonProperty("from_name") String fromName,
-    /** Primary recipients */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("to_emails") List<String> toEmails,
-    /** CC recipients */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("cc_emails") List<String> ccEmails,
-    /** BCC recipients */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("bcc_emails") List<String> bccEmails,
-    /** Message-ID header value */
-    @Nullable @JsonProperty("message_id") String messageId,
-    /** List of attachment filenames */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attachments
-) {
+        /** Sender's email address */
+        @Nullable @JsonProperty("from_email") String fromEmail,
+        /** Sender's display name */
+        @Nullable @JsonProperty("from_name") String fromName,
+        /** Primary recipients */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("to_emails") List<String> toEmails,
+        /** CC recipients */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("cc_emails") List<String> ccEmails,
+        /** BCC recipients */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("bcc_emails") List<String> bccEmails,
+        /** Message-ID header value */
+        @Nullable @JsonProperty("message_id") String messageId, /** List of attachment filenames */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<String> attachments) {
     public static EmailMetadataBuilder builder() {
         return new EmailMetadataBuilder();
     }

@@ -15,11 +15,10 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ChunkRequest(
-    /** Text to chunk (must not be empty) */
-    String text,
-    /** Optional chunking configuration */
-    @Nullable String config,
-    /** Chunker type (text, markdown, yaml, or semantic) */
-    @JsonProperty("chunker_type") String chunkerType
-) {
+        /** Text to chunk (must not be empty) */
+        String text,
+        /** Optional chunking configuration */
+        @Nullable String config,
+        /** Chunker type (text, markdown, yaml, or semantic) */
+        @JsonProperty("chunker_type") String chunkerType) {
 }

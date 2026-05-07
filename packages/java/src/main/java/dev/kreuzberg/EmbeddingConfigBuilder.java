@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Embedding configuration for text chunks.
  *
- * Configures embedding generation using ONNX models via the vendored embedding engine.
- * Requires the {@code embeddings} feature to be enabled.
+ * Configures embedding generation using ONNX models via the vendored embedding engine. Requires the {@code embeddings}
+ * feature to be enabled.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -70,14 +70,7 @@ public class EmbeddingConfigBuilder {
 
     /** Builds the EmbeddingConfig instance. */
     public EmbeddingConfig build() {
-        return new EmbeddingConfig(
-            model,
-            normalize,
-            batchSize,
-            showDownloadProgress,
-            cacheDir.orElse(null),
-            acceleration.orElse(null),
-            maxEmbedDurationSecs.orElse(null)
-        );
+        return new EmbeddingConfig(model, normalize, batchSize, showDownloadProgress, cacheDir.orElse(null),
+                acceleration.orElse(null), maxEmbedDurationSecs.orElse(null));
     }
 }

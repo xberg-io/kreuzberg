@@ -13,32 +13,32 @@ import org.jspecify.annotations.Nullable;
 /**
  * Embedding configuration for text chunks.
  *
- * Configures embedding generation using ONNX models via the vendored embedding engine.
- * Requires the {@code embeddings} feature to be enabled.
+ * Configures embedding generation using ONNX models via the vendored embedding engine. Requires the {@code embeddings}
+ * feature to be enabled.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = EmbeddingConfigBuilder.class)
 public record EmbeddingConfig(
-    /** The embedding model to use (defaults to "balanced" preset if not specified) */
-    EmbeddingModelType model,
-    /** Whether to normalize embedding vectors (recommended for cosine similarity) */
-    boolean normalize,
-    /** Batch size for embedding generation */
-    @JsonProperty("batch_size") long batchSize,
-    /** Show model download progress */
-    @JsonProperty("show_download_progress") boolean showDownloadProgress,
-    /** Custom cache directory for model files */
-    @JsonProperty("cache_dir") java.nio.file.@Nullable Path cacheDir,
-    /** Hardware acceleration for the embedding ONNX model. */
-    @Nullable AccelerationConfig acceleration,
-    /** Maximum wall-clock duration (in seconds) for a single {@code embed()} call when */
-    @Nullable @JsonProperty("max_embed_duration_secs") Long maxEmbedDurationSecs
-) {
+        /** The embedding model to use (defaults to "balanced" preset if not specified) */
+        EmbeddingModelType model,
+        /** Whether to normalize embedding vectors (recommended for cosine similarity) */
+        boolean normalize,
+        /** Batch size for embedding generation */
+        @JsonProperty("batch_size") long batchSize,
+        /** Show model download progress */
+        @JsonProperty("show_download_progress") boolean showDownloadProgress,
+        /** Custom cache directory for model files */
+        @JsonProperty("cache_dir") java.nio.file.@Nullable Path cacheDir,
+        /** Hardware acceleration for the embedding ONNX model. */
+        @Nullable AccelerationConfig acceleration,
+        /** Maximum wall-clock duration (in seconds) for a single {@code embed()} call when */
+        @Nullable @JsonProperty("max_embed_duration_secs") Long maxEmbedDurationSecs) {
     public static EmbeddingConfigBuilder builder() {
         return new EmbeddingConfigBuilder();
     }
-    public EmbeddingConfig{
-        if (batchSize == 0) batchSize = 32;
+    public EmbeddingConfig {
+        if (batchSize == 0)
+            batchSize = 32;
     }
 }

@@ -40,10 +40,6 @@ public class FictionBookMetadataBuilder {
 
     /** Builds the FictionBookMetadata instance. */
     public FictionBookMetadata build() {
-        return new FictionBookMetadata(
-            genres,
-            sequences,
-            annotation.orElse(null)
-        );
+        return new FictionBookMetadata(genres, sequences, annotation.orElse(null));
     }
 }

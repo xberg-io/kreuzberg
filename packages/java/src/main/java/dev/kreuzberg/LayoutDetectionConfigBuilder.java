@@ -11,9 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Layout detection configuration.
  *
- * Controls layout detection behavior in the extraction pipeline.
- * When set on ExtractionConfig(super::ExtractionConfig), layout detection
- * is enabled for PDF extraction.
+ * Controls layout detection behavior in the extraction pipeline. When set on ExtractionConfig(super::ExtractionConfig),
+ * layout detection is enabled for PDF extraction.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -50,11 +49,7 @@ public class LayoutDetectionConfigBuilder {
 
     /** Builds the LayoutDetectionConfig instance. */
     public LayoutDetectionConfig build() {
-        return new LayoutDetectionConfig(
-            confidenceThreshold.orElse(null),
-            applyHeuristics,
-            tableModel,
-            acceleration.orElse(null)
-        );
+        return new LayoutDetectionConfig(confidenceThreshold.orElse(null), applyHeuristics, tableModel,
+                acceleration.orElse(null));
     }
 }

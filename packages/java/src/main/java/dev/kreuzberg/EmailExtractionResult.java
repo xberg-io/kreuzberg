@@ -14,35 +14,34 @@ import org.jspecify.annotations.Nullable;
 /**
  * Email extraction result.
  *
- * Complete representation of an extracted email message (.eml or .msg)
- * including headers, body content, and attachments.
+ * Complete representation of an extracted email message (.eml or .msg) including headers, body content, and
+ * attachments.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record EmailExtractionResult(
-    /** Email subject line */
-    @Nullable String subject,
-    /** Sender email address */
-    @Nullable @JsonProperty("from_email") String fromEmail,
-    /** Primary recipient email addresses */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("to_emails") List<String> toEmails,
-    /** CC recipient email addresses */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("cc_emails") List<String> ccEmails,
-    /** BCC recipient email addresses */
-    @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("bcc_emails") List<String> bccEmails,
-    /** Email date/timestamp */
-    @Nullable String date,
-    /** Message-ID header value */
-    @Nullable @JsonProperty("message_id") String messageId,
-    /** Plain text version of the email body */
-    @Nullable @JsonProperty("plain_text") String plainText,
-    /** HTML version of the email body */
-    @Nullable @JsonProperty("html_content") String htmlContent,
-    /** Cleaned/processed text content. Aliased as {@code cleaned_text} for back-compat. */
-    String content,
-    /** List of email attachments */
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<EmailAttachment> attachments,
-    /** Additional email headers and metadata */
-    Map<String, String> metadata
-) {
+        /** Email subject line */
+        @Nullable String subject,
+        /** Sender email address */
+        @Nullable @JsonProperty("from_email") String fromEmail,
+        /** Primary recipient email addresses */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("to_emails") List<String> toEmails,
+        /** CC recipient email addresses */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("cc_emails") List<String> ccEmails,
+        /** BCC recipient email addresses */
+        @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("bcc_emails") List<String> bccEmails,
+        /** Email date/timestamp */
+        @Nullable String date,
+        /** Message-ID header value */
+        @Nullable @JsonProperty("message_id") String messageId,
+        /** Plain text version of the email body */
+        @Nullable @JsonProperty("plain_text") String plainText,
+        /** HTML version of the email body */
+        @Nullable @JsonProperty("html_content") String htmlContent,
+        /** Cleaned/processed text content. Aliased as {@code cleaned_text} for back-compat. */
+        String content,
+        /** List of email attachments */
+        @JsonInclude(JsonInclude.Include.NON_NULL) List<EmailAttachment> attachments,
+        /** Additional email headers and metadata */
+        Map<String, String> metadata) {
 }

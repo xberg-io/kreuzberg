@@ -31,9 +31,6 @@ public class TokenReductionOptionsBuilder {
 
     /** Builds the TokenReductionOptions instance. */
     public TokenReductionOptions build() {
-        return new TokenReductionOptions(
-            mode,
-            preserveImportantWords
-        );
+        return new TokenReductionOptions(mode, preserveImportantWords);
     }
 }

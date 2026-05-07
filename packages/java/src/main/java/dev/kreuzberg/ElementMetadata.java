@@ -16,15 +16,14 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record ElementMetadata(
-    /** Page number (1-indexed) */
-    @Nullable @JsonProperty("page_number") Long pageNumber,
-    /** Source filename or document name */
-    @Nullable String filename,
-    /** Bounding box coordinates if available */
-    @Nullable String coordinates,
-    /** Position index in the element sequence */
-    @Nullable @JsonProperty("element_index") Long elementIndex,
-    /** Additional custom metadata */
-    Map<String, String> additional
-) {
+        /** Page number (1-indexed) */
+        @Nullable @JsonProperty("page_number") Long pageNumber,
+        /** Source filename or document name */
+        @Nullable String filename,
+        /** Bounding box coordinates if available */
+        @Nullable String coordinates,
+        /** Position index in the element sequence */
+        @Nullable @JsonProperty("element_index") Long elementIndex,
+        /** Additional custom metadata */
+        Map<String, String> additional) {
 }

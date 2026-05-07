@@ -10,10 +10,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 @SuppressWarnings("checkstyle:LineLength")
 public enum FracType {
-    Bar("bar"),
-    NoBar("nobar"),
-    Linear("linear"),
-    Skewed("skewed");
+    Bar("bar"), NoBar("nobar"), Linear("linear"), Skewed("skewed");
 
     /** The string value. */
     private final String value;

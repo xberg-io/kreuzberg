@@ -12,23 +12,21 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 /**
  * A detected layout region on a page.
  *
- * When layout detection is enabled, each page may have layout regions
- * identifying different content types (text, pictures, tables, etc.)
- * with confidence scores and spatial positions.
+ * When layout detection is enabled, each page may have layout regions identifying different content types (text,
+ * pictures, tables, etc.) with confidence scores and spatial positions.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = LayoutRegionBuilder.class)
 public record LayoutRegion(
-    /** Layout class name (e.g. "picture", "table", "text", "section_header"). */
-    @JsonProperty("class_name") String className,
-    /** Confidence score from the layout detection model (0.0 to 1.0). */
-    double confidence,
-    /** Bounding box in document coordinate space. */
-    @JsonProperty("bounding_box") String boundingBox,
-    /** Fraction of the page area covered by this region (0.0 to 1.0). */
-    @JsonProperty("area_fraction") double areaFraction
-) {
+        /** Layout class name (e.g. "picture", "table", "text", "section_header"). */
+        @JsonProperty("class_name") String className,
+        /** Confidence score from the layout detection model (0.0 to 1.0). */
+        double confidence,
+        /** Bounding box in document coordinate space. */
+        @JsonProperty("bounding_box") String boundingBox,
+        /** Fraction of the page area covered by this region (0.0 to 1.0). */
+        @JsonProperty("area_fraction") double areaFraction) {
     public static LayoutRegionBuilder builder() {
         return new LayoutRegionBuilder();
     }

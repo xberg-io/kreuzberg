@@ -15,17 +15,16 @@ import org.jspecify.annotations.Nullable;
 @SuppressWarnings("checkstyle:LineLength")
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record OcrPipelineStage(
-    /** Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. */
-    String backend,
-    /** Priority weight (higher = tried first). Stages are sorted by priority descending. */
-    int priority,
-    /** Language override for this stage (None = use parent OcrConfig.language). */
-    @Nullable String language,
-    /** Tesseract-specific config override for this stage. */
-    @Nullable @JsonProperty("tesseract_config") TesseractConfig tesseractConfig,
-    /** PaddleOCR-specific config for this stage. */
-    @Nullable @JsonProperty("paddle_ocr_config") Object paddleOcrConfig,
-    /** VLM config override for this pipeline stage. */
-    @Nullable @JsonProperty("vlm_config") LlmConfig vlmConfig
-) {
+        /** Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. */
+        String backend,
+        /** Priority weight (higher = tried first). Stages are sorted by priority descending. */
+        int priority,
+        /** Language override for this stage (None = use parent OcrConfig.language). */
+        @Nullable String language,
+        /** Tesseract-specific config override for this stage. */
+        @Nullable @JsonProperty("tesseract_config") TesseractConfig tesseractConfig,
+        /** PaddleOCR-specific config for this stage. */
+        @Nullable @JsonProperty("paddle_ocr_config") Object paddleOcrConfig,
+        /** VLM config override for this pipeline stage. */
+        @Nullable @JsonProperty("vlm_config") LlmConfig vlmConfig) {
 }

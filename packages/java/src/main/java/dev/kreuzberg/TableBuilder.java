@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 /**
  * Extracted table structure.
  *
- * Represents a table detected and extracted from a document (PDF, image, etc.).
- * Tables are converted to both structured cell data and Markdown format.
+ * Represents a table detected and extracted from a document (PDF, image, etc.). Tables are converted to both structured
+ * cell data and Markdown format.
  */
 @SuppressWarnings("checkstyle:LineLength")
 @JsonPOJOBuilder(withPrefix = "with")
@@ -50,11 +50,6 @@ public class TableBuilder {
 
     /** Builds the Table instance. */
     public Table build() {
-        return new Table(
-            cells,
-            markdown,
-            pageNumber,
-            boundingBox.orElse(null)
-        );
+        return new Table(cells, markdown, pageNumber, boundingBox.orElse(null));
     }
 }

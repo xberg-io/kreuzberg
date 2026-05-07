@@ -13,21 +13,20 @@ import org.jspecify.annotations.Nullable;
  */
 @SuppressWarnings("checkstyle:LineLength")
 public record StyleDefinition(
-    /** The style ID ({@code w:styleId} attribute). */
-    String id,
-    /** Human-readable name ({@code &lt;w:name w:val="..."/&gt;}). */
-    @Nullable String name,
-    /** Style type: paragraph, character, table, or numbering. */
-    @JsonProperty("style_type") String styleType,
-    /** ID of the parent style ({@code &lt;w:basedOn w:val="..."/&gt;}). */
-    @Nullable @JsonProperty("based_on") String basedOn,
-    /** ID of the style to apply to the next paragraph ({@code &lt;w:next w:val="..."/&gt;}). */
-    @Nullable @JsonProperty("next_style") String nextStyle,
-    /** Whether this is the default style for its type. */
-    @JsonProperty("is_default") boolean isDefault,
-    /** Paragraph properties defined directly on this style. */
-    @JsonProperty("paragraph_properties") String paragraphProperties,
-    /** Run properties defined directly on this style. */
-    @JsonProperty("run_properties") String runProperties
-) {
+        /** The style ID ({@code w:styleId} attribute). */
+        String id,
+        /** Human-readable name ({@code &lt;w:name w:val="..."/&gt;}). */
+        @Nullable String name,
+        /** Style type: paragraph, character, table, or numbering. */
+        @JsonProperty("style_type") String styleType,
+        /** ID of the parent style ({@code &lt;w:basedOn w:val="..."/&gt;}). */
+        @Nullable @JsonProperty("based_on") String basedOn,
+        /** ID of the style to apply to the next paragraph ({@code &lt;w:next w:val="..."/&gt;}). */
+        @Nullable @JsonProperty("next_style") String nextStyle,
+        /** Whether this is the default style for its type. */
+        @JsonProperty("is_default") boolean isDefault,
+        /** Paragraph properties defined directly on this style. */
+        @JsonProperty("paragraph_properties") String paragraphProperties,
+        /** Run properties defined directly on this style. */
+        @JsonProperty("run_properties") String runProperties) {
 }
