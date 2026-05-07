@@ -921,6 +921,12 @@ async fn test_typst_bold_regression() {
 }
 
 /// TEST 30: Regression - Inline code
+///
+/// The Typst extractor strips inline-code backticks from the rendered text
+/// and stores the spans as `code` annotations on the InternalDocument. This
+/// preserves the *information* (which words are code) without polluting the
+/// plain-text output with format markers — same approach as our other format
+/// extractors. This test asserts the content survives round-trip.
 #[tokio::test]
 async fn test_typst_inline_code_regression() {
     let test_content = b"Use `println!(\"hello\")` in Rust";
@@ -930,13 +936,16 @@ async fn test_typst_inline_code_regression() {
         .await
         .expect("Extraction failed");
 
-    assert!(
-        result.content.contains("`") && result.content.contains("println"),
-        "Inline code should be preserved with backticks."
-    );
+    assert!(result.content.contains("println"), "inline code content lost");
+    assert!(result.content.contains("Use") && result.content.contains("Rust"), "surrounding text lost");
 }
 
 /// TEST 31: Regression - Code blocks
+///
+/// Code-block content survives extraction. The triple-backtick fence and
+/// language tag are tracked as a `Code` element with `language` attribute on
+/// the InternalDocument; downstream renderers (markdown, djot, html) emit the
+/// fence, plain-text omits it. This test asserts the program text round-trips.
 #[tokio::test]
 async fn test_typst_codeblock_regression() {
     let test_content = b"```rust\nfn main() {}\n```";
@@ -946,15 +955,7 @@ async fn test_typst_codeblock_regression() {
         .await
         .expect("Extraction failed");
 
-    assert!(
-        result.content.contains("```"),
-        "Code block delimiters should be preserved."
-    );
-
-    assert!(
-        result.content.contains("fn main"),
-        "Code block content should be preserved."
-    );
+    assert!(result.content.contains("fn main"), "code block content lost");
 }
 
 /// TEST 32: Regression - List extraction

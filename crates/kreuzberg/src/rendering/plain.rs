@@ -257,7 +257,10 @@ mod tests {
         b.push_heading(2, "Section", None, None);
         let doc = b.build();
         let out = render_plain(&doc);
-        assert_eq!(out, "Section");
+        // Headings at depth>0 receive depth-based indentation so XML/OPML/markdown
+        // hierarchies render with visible nesting in plain output. A standalone
+        // level-2 heading lands at depth 1 (one indent step).
+        assert_eq!(out, "  Section");
     }
 
     #[test]
