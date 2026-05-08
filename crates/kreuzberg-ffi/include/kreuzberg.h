@@ -820,6 +820,18 @@ const char *kreuzberg_last_error_context(void);
 void kreuzberg_free_string(char *ptr);
 
 /**
+ * Free a byte buffer previously returned by this library via out-params.
+ * `ptr`, `len`, and `cap` must match the values written by the library function,
+ * or the call must pass `ptr = null` (in which case it is a no-op).
+ * # Safety
+ * Pointer must have been returned by this library (via out_ptr / out_len / out_cap
+ * out-params), or be null. The len and cap values must be unchanged since the call.
+ */
+void kreuzberg_free_bytes(uint8_t *ptr,
+                          uintptr_t len,
+                          uintptr_t cap);
+
+/**
  * Return the library version string. The pointer is static and must NOT be freed.
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
@@ -11627,6 +11639,36 @@ int32_t kreuzberg_clear_validators(void);
  */
 char *kreuzberg_embed_texts_async(const char *texts,
                                   const KREUZBERGEmbeddingConfig *config);
+
+/**
+ * Render a single PDF page to PNG bytes.
+ *
+ * Returns raw PNG-encoded bytes for the specified page at the given DPI.
+ * Uses pdf_oxide with tiny-skia for pure-Rust rendering.
+ *
+ * # Arguments
+ *
+ * * `pdf_bytes` - Raw PDF file bytes
+ * * `page_index` - Zero-based page index
+ * * `dpi` - Resolution in dots per inch (default: 150)
+ * * `password` - Optional password for encrypted PDFs
+ *
+ * # Errors
+ *
+ * Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
+ * or rendered, or if `page_index` is out of range.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+int32_t kreuzberg_render_pdf_page_to_png(const uint8_t *pdf_bytes,
+                                         uintptr_t pdf_bytes_len,
+                                         uintptr_t page_index,
+                                         int32_t dpi,
+                                         const char *password,
+                                         uint8_t **out_ptr,
+                                         uintptr_t *out_len,
+                                         uintptr_t *out_cap);
 
 /**
  * Detect the MIME type of a file at the given path.
