@@ -2669,17 +2669,22 @@ pub const LayoutClass = enum {
 ///
 /// This function is only available with the `tokio-runtime` feature. For WASM targets,
 /// use a truly synchronous extraction approach instead.
-pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: ExtractionConfig) (KreuzbergError||error{OutOfMemory})!ExtractionResult {
+pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})!ExtractionResult {
     const path_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{path}, 0);
-    const mime_type_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{mime_type}, 0);
-    const _result = c.kreuzberg_extract_file_sync(path_z, mime_type_z, config);
+    const mime_type_z: ?[:0]u8 = if (mime_type) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
+    const config_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_extract_file_sync(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     std.heap.c_allocator.free(path_z);
-    std.heap.c_allocator.free(mime_type_z);
+    if (mime_type_z) |z| std.heap.c_allocator.free(z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return _result;
 }
 
@@ -2690,14 +2695,19 @@ pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: Extra
 ///
 /// With the `tokio-runtime` feature, this blocks the current thread using the global
 /// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
-pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: ExtractionConfig) (KreuzbergError||error{OutOfMemory})!ExtractionResult {
+pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})!ExtractionResult {
     const mime_type_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
-    const _result = c.kreuzberg_extract_bytes_sync(content.ptr, content.len, mime_type_z, config);
+    const config_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_extract_bytes_sync(content.ptr, content.len, mime_type_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     std.heap.c_allocator.free(mime_type_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return _result;
 }
 
@@ -2705,15 +2715,20 @@ pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: Ex
 ///
 /// Uses the global Tokio runtime for optimal performance.
 /// Only available with `tokio-runtime` (WASM has no filesystem).
-pub fn batch_extract_files_sync(items: []const u8, config: ExtractionConfig) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_files_sync(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
-    const _result = c.kreuzberg_batch_extract_files_sync(items_z, config);
+    const config_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_batch_extract_files_sync(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     std.heap.c_allocator.free(items_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const slice = std.mem.sliceTo(_result, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
@@ -2728,15 +2743,20 @@ pub fn batch_extract_files_sync(items: []const u8, config: ExtractionConfig) (Kr
 /// With the `tokio-runtime` feature, this blocks the current thread using the global
 /// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 /// that iterates through items and calls `extract_bytes_sync()`.
-pub fn batch_extract_bytes_sync(items: []const u8, config: ExtractionConfig) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
-    const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config);
+    const config_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     std.heap.c_allocator.free(items_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const slice = std.mem.sliceTo(_result, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
@@ -2910,13 +2930,13 @@ pub fn clear_validators() (KreuzbergError||error{OutOfMemory})!void {
 /// Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
 /// or rendered, or if `page_index` is out of range.
 pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32, password: ?[]const u8) (KreuzbergError||error{OutOfMemory})![]const u8 {
-    const password_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{password}, 0);
-    const _result = c.kreuzberg_render_pdf_page_to_png(pdf_bytes.ptr, pdf_bytes.len, page_index, dpi, password_z);
+    const password_z: ?[:0]u8 = if (password) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
+    const _result = c.kreuzberg_render_pdf_page_to_png(pdf_bytes.ptr, pdf_bytes.len, page_index, dpi, if (password_z) |z| z.ptr else null);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
-    std.heap.c_allocator.free(password_z);
+    if (password_z) |z| std.heap.c_allocator.free(z);
     return _result;
 }
 
@@ -2943,15 +2963,20 @@ pub fn detect_mime_type(path: []const u8, check_exists: bool) (KreuzbergError||e
 /// Embed a list of texts using the configured embedding model.
 ///
 /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-pub fn embed_texts(texts: []const u8, config: EmbeddingConfig) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn embed_texts(texts: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const texts_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{texts}, 0);
-    const _result = c.kreuzberg_embed_texts(texts_z, config);
+    const config_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
+    const _result = c.kreuzberg_embed_texts(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     std.heap.c_allocator.free(texts_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         const slice = std.mem.sliceTo(_result, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
