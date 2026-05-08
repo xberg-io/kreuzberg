@@ -82,7 +82,7 @@ serde_json = { version = "1.0.149" }
 serde_toon_format = "0.1"
 tempfile = "3.27.0"
 thiserror = "2.0.18"
-tokio = { version = "1.52.2", features = [
+tokio = { version = "1.52.3", features = [
     "rt",
     "rt-multi-thread",
     "macros",
