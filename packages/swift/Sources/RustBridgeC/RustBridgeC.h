@@ -657,6 +657,18 @@ void* __swift_bridge__$Vec_TableProperties$get_mut(void* vec_ptr, uintptr_t inde
 uintptr_t __swift_bridge__$Vec_TableProperties$len(void* vec_ptr);
 void* __swift_bridge__$Vec_TableProperties$as_ptr(void* vec_ptr);
 
+typedef struct DocxAppProperties DocxAppProperties;
+void __swift_bridge__$DocxAppProperties$_free(void* self);
+
+void* __swift_bridge__$Vec_DocxAppProperties$new(void);
+void __swift_bridge__$Vec_DocxAppProperties$drop(void* vec_ptr);
+void __swift_bridge__$Vec_DocxAppProperties$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_DocxAppProperties$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_DocxAppProperties$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_DocxAppProperties$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_DocxAppProperties$len(void* vec_ptr);
+void* __swift_bridge__$Vec_DocxAppProperties$as_ptr(void* vec_ptr);
+
 typedef struct XlsxAppProperties XlsxAppProperties;
 void __swift_bridge__$XlsxAppProperties$_free(void* self);
 
@@ -680,6 +692,18 @@ void* __swift_bridge__$Vec_PptxAppProperties$get(void* vec_ptr, uintptr_t index)
 void* __swift_bridge__$Vec_PptxAppProperties$get_mut(void* vec_ptr, uintptr_t index);
 uintptr_t __swift_bridge__$Vec_PptxAppProperties$len(void* vec_ptr);
 void* __swift_bridge__$Vec_PptxAppProperties$as_ptr(void* vec_ptr);
+
+typedef struct CoreProperties CoreProperties;
+void __swift_bridge__$CoreProperties$_free(void* self);
+
+void* __swift_bridge__$Vec_CoreProperties$new(void);
+void __swift_bridge__$Vec_CoreProperties$drop(void* vec_ptr);
+void __swift_bridge__$Vec_CoreProperties$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_CoreProperties$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_CoreProperties$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_CoreProperties$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_CoreProperties$len(void* vec_ptr);
+void* __swift_bridge__$Vec_CoreProperties$as_ptr(void* vec_ptr);
 
 typedef struct CustomProperties CustomProperties;
 void __swift_bridge__$CustomProperties$_free(void* self);
@@ -2930,6 +2954,23 @@ void* __swift_bridge__$TableProperties$borders(void* self);
 void* __swift_bridge__$TableProperties$cell_margins(void* self);
 void* __swift_bridge__$TableProperties$indent(void* self);
 void* __swift_bridge__$TableProperties$caption(void* self);
+void* __swift_bridge__$DocxAppProperties$new(void* application, void* app_version, void* template, struct __private__OptionI32 total_time, struct __private__OptionI32 pages, struct __private__OptionI32 words, struct __private__OptionI32 characters, struct __private__OptionI32 characters_with_spaces, struct __private__OptionI32 lines, struct __private__OptionI32 paragraphs, void* company, struct __private__OptionI32 doc_security, struct __private__OptionBool scale_crop, struct __private__OptionBool links_up_to_date, struct __private__OptionBool shared_doc, struct __private__OptionBool hyperlinks_changed);
+void* __swift_bridge__$DocxAppProperties$application(void* self);
+void* __swift_bridge__$DocxAppProperties$app_version(void* self);
+void* __swift_bridge__$DocxAppProperties$template(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$total_time(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$pages(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$words(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$characters(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$characters_with_spaces(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$lines(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$paragraphs(void* self);
+void* __swift_bridge__$DocxAppProperties$company(void* self);
+struct __private__OptionI32 __swift_bridge__$DocxAppProperties$doc_security(void* self);
+struct __private__OptionBool __swift_bridge__$DocxAppProperties$scale_crop(void* self);
+struct __private__OptionBool __swift_bridge__$DocxAppProperties$links_up_to_date(void* self);
+struct __private__OptionBool __swift_bridge__$DocxAppProperties$shared_doc(void* self);
+struct __private__OptionBool __swift_bridge__$DocxAppProperties$hyperlinks_changed(void* self);
 void* __swift_bridge__$XlsxAppProperties$new(void* application, void* app_version, struct __private__OptionI32 doc_security, struct __private__OptionBool scale_crop, struct __private__OptionBool links_up_to_date, struct __private__OptionBool shared_doc, struct __private__OptionBool hyperlinks_changed, void* company, void* worksheet_names);
 void* __swift_bridge__$XlsxAppProperties$application(void* self);
 void* __swift_bridge__$XlsxAppProperties$app_version(void* self);
@@ -2956,6 +2997,22 @@ struct __private__OptionI32 __swift_bridge__$PptxAppProperties$hidden_slides(voi
 struct __private__OptionI32 __swift_bridge__$PptxAppProperties$multimedia_clips(void* self);
 void* __swift_bridge__$PptxAppProperties$presentation_format(void* self);
 void* __swift_bridge__$PptxAppProperties$slide_titles(void* self);
+void* __swift_bridge__$CoreProperties$new(void* title, void* subject, void* creator, void* keywords, void* description, void* last_modified_by, void* revision, void* created, void* modified, void* category, void* content_status, void* language, void* identifier, void* version, void* last_printed);
+void* __swift_bridge__$CoreProperties$title(void* self);
+void* __swift_bridge__$CoreProperties$subject(void* self);
+void* __swift_bridge__$CoreProperties$creator(void* self);
+void* __swift_bridge__$CoreProperties$keywords(void* self);
+void* __swift_bridge__$CoreProperties$description(void* self);
+void* __swift_bridge__$CoreProperties$last_modified_by(void* self);
+void* __swift_bridge__$CoreProperties$revision(void* self);
+void* __swift_bridge__$CoreProperties$created(void* self);
+void* __swift_bridge__$CoreProperties$modified(void* self);
+void* __swift_bridge__$CoreProperties$category(void* self);
+void* __swift_bridge__$CoreProperties$content_status(void* self);
+void* __swift_bridge__$CoreProperties$language(void* self);
+void* __swift_bridge__$CoreProperties$identifier(void* self);
+void* __swift_bridge__$CoreProperties$version(void* self);
+void* __swift_bridge__$CoreProperties$last_printed(void* self);
 void* __swift_bridge__$OdtProperties$new(void* title, void* subject, void* creator, void* initial_creator, void* keywords, void* description, void* date, void* creation_date, void* language, void* generator, void* editing_duration, void* editing_cycles, struct __private__OptionI32 page_count, struct __private__OptionI32 word_count, struct __private__OptionI32 character_count, struct __private__OptionI32 paragraph_count, struct __private__OptionI32 table_count, struct __private__OptionI32 image_count);
 void* __swift_bridge__$OdtProperties$title(void* self);
 void* __swift_bridge__$OdtProperties$subject(void* self);

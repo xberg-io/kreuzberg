@@ -942,7 +942,7 @@ public enum OutputFormat {
     case structured
     /// Custom renderer registered via the RendererRegistry.
     /// The string is the renderer name (e.g., "docx", "latex").
-    case custom()
+    case custom(field0: String)
 }
 
 /// Built-in HTML theme selection.
@@ -1001,20 +1001,20 @@ public enum ChunkSizing {
     /// Size measured in Unicode characters (default).
     case characters
     /// Size measured in tokens from a HuggingFace tokenizer.
-    case tokenizer()
+    case tokenizer(model: String, cacheDir: URL)
 }
 
 /// Embedding model types supported by Kreuzberg.
 public enum EmbeddingModelType {
     /// Use a preset model configuration (recommended)
-    case preset()
+    case preset(name: String)
     /// Use a custom ONNX model from HuggingFace
-    case custom()
+    case custom(modelId: String, dimensions: UInt)
     /// Provider-hosted embedding model via liter-llm.
     ///
     /// Uses the model specified in the nested `LlmConfig` (e.g.,
     /// `"openai/text-embedding-3-small"`).
-    case llm()
+    case llm(llm: LlmConfig)
     /// In-process embedding backend registered via the plugin system.
     ///
     /// The caller registers an [`EmbeddingBackend`](crate::plugins::EmbeddingBackend) once
@@ -1034,7 +1034,7 @@ public enum EmbeddingModelType {
     /// context window via `max_characters` directly.
     ///
     /// See `register_embedding_backend`.
-    case plugin()
+    case plugin(name: String)
 }
 
 /// Content rendering mode for code extraction.
@@ -1199,53 +1199,53 @@ public enum ContentLayer {
 /// Go/Java/TypeScript bindings.
 public enum NodeContent {
     /// Document title.
-    case title()
+    case title(text: String)
     /// Section heading with level (1-6).
-    case heading()
+    case heading(level: UInt8, text: String)
     /// Body text paragraph.
-    case paragraph()
+    case paragraph(text: String)
     /// List container — children are `ListItem` nodes.
-    case list()
+    case list(ordered: Bool)
     /// Individual list item.
-    case listItem()
+    case listItem(text: String)
     /// Table with structured cell grid.
-    case table()
+    case table(grid: TableGrid)
     /// Image reference.
-    case image()
+    case image(description: String, imageIndex: UInt32, src: String)
     /// Code block.
-    case code()
+    case code(text: String, language: String)
     /// Block quote — container, children carry the quoted content.
     case quote
     /// Mathematical formula / equation.
-    case formula()
+    case formula(text: String)
     /// Footnote reference content.
-    case footnote()
+    case footnote(text: String)
     /// Logical grouping container (section, key-value area).
     ///
     /// `heading_level` + `heading_text` capture the section heading directly
     /// rather than relying on a first-child positional convention.
-    case group()
+    case group(label: String, headingLevel: UInt8, headingText: String)
     /// Page break marker.
     case pageBreak
     /// Presentation slide container — children are the slide's content nodes.
-    case slide()
+    case slide(number: UInt32, title: String)
     /// Definition list container — children are `DefinitionItem` nodes.
     case definitionList
     /// Individual definition list entry with term and definition.
-    case definitionItem()
+    case definitionItem(term: String, definition: String)
     /// Citation or bibliographic reference.
-    case citation()
+    case citation(key: String, text: String)
     /// Admonition / callout container (note, warning, tip, etc.).
     ///
     /// Children carry the admonition body content.
-    case admonition()
+    case admonition(kind: String, title: String)
     /// Raw block preserved verbatim from the source format.
     ///
     /// Used for content that cannot be mapped to a semantic node type
     /// (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML).
-    case rawBlock()
+    case rawBlock(format: String, content: String)
     /// Structured metadata block (email headers, YAML frontmatter, etc.).
-    case metadataBlock()
+    case metadataBlock(entries: [String])
 }
 
 /// Types of inline text annotations.
@@ -1257,15 +1257,15 @@ public enum AnnotationKind {
     case code
     case subscript_
     case superscript
-    case link()
+    case link(url: String, title: String)
     /// Highlighted text (PDF highlights, HTML `<mark>`).
     case highlight
     /// Text color (CSS-compatible value, e.g. "#ff0000", "red").
-    case color()
+    case color(value: String)
     /// Font size with units (e.g. "12pt", "1.2em", "16px").
-    case fontSize()
+    case fontSize(value: String)
     /// Extensible annotation for format-specific styling.
-    case custom()
+    case custom(name: String, value: String)
 }
 
 /// How the extracted text was produced.
@@ -1381,26 +1381,26 @@ public enum ElementType {
 /// Only one format type can exist per extraction result. This provides
 /// type-safe, clean metadata without nested optionals.
 public enum FormatMetadata {
-    case pdf()
-    case docx()
-    case excel()
-    case email()
-    case pptx()
-    case archive()
-    case image()
-    case xml()
-    case text()
-    case html()
-    case ocr()
-    case csv()
-    case bibtex()
-    case citation()
-    case fictionBook()
-    case dbf()
-    case jats()
-    case epub()
-    case pst()
-    case code()
+    case pdf(field0: String)
+    case docx(field0: DocxMetadata)
+    case excel(field0: ExcelMetadata)
+    case email(field0: EmailMetadata)
+    case pptx(field0: PptxMetadata)
+    case archive(field0: ArchiveMetadata)
+    case image(field0: String)
+    case xml(field0: XmlMetadata)
+    case text(field0: TextMetadata)
+    case html(field0: HtmlMetadata)
+    case ocr(field0: OcrMetadata)
+    case csv(field0: CsvMetadata)
+    case bibtex(field0: BibtexMetadata)
+    case citation(field0: CitationMetadata)
+    case fictionBook(field0: FictionBookMetadata)
+    case dbf(field0: DbfMetadata)
+    case jats(field0: JatsMetadata)
+    case epub(field0: EpubMetadata)
+    case pst(field0: PstMetadata)
+    case code(field0: String)
 }
 
 /// Text direction enumeration for HTML documents.
@@ -1457,12 +1457,12 @@ public enum StructuredDataType {
 /// (from PaddleOCR and rotated text detection).
 public enum OcrBoundingGeometry {
     /// Axis-aligned bounding box (typical for Tesseract output).
-    case rectangle()
+    case rectangle(left: UInt32, top: UInt32, width: UInt32, height: UInt32)
     /// 4-point quadrilateral for rotated/skewed text (PaddleOCR).
     ///
     /// Points are in clockwise order starting from top-left:
     /// `[top_left, top_right, bottom_right, bottom_left]`
-    case quadrilateral()
+    case quadrilateral(points: String)
 }
 
 /// Hierarchical level of an OCR element.

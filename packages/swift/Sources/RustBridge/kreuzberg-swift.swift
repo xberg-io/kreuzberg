@@ -4403,6 +4403,151 @@ extension TableProperties: Vectorizable {
 }
 
 
+public class DocxAppProperties: DocxAppPropertiesRefMut {
+    var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$DocxAppProperties$_free(ptr)
+        }
+    }
+}
+extension DocxAppProperties {
+    public convenience init<GenericIntoRustString: IntoRustString>(_ application: Optional<GenericIntoRustString>, _ app_version: Optional<GenericIntoRustString>, _ template: Optional<GenericIntoRustString>, _ total_time: Optional<Int32>, _ pages: Optional<Int32>, _ words: Optional<Int32>, _ characters: Optional<Int32>, _ characters_with_spaces: Optional<Int32>, _ lines: Optional<Int32>, _ paragraphs: Optional<Int32>, _ company: Optional<GenericIntoRustString>, _ doc_security: Optional<Int32>, _ scale_crop: Optional<Bool>, _ links_up_to_date: Optional<Bool>, _ shared_doc: Optional<Bool>, _ hyperlinks_changed: Optional<Bool>) {
+        self.init(ptr: __swift_bridge__$DocxAppProperties$new({ if let rustString = optionalStringIntoRustString(application) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(app_version) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(template) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), total_time.intoFfiRepr(), pages.intoFfiRepr(), words.intoFfiRepr(), characters.intoFfiRepr(), characters_with_spaces.intoFfiRepr(), lines.intoFfiRepr(), paragraphs.intoFfiRepr(), { if let rustString = optionalStringIntoRustString(company) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), doc_security.intoFfiRepr(), scale_crop.intoFfiRepr(), links_up_to_date.intoFfiRepr(), shared_doc.intoFfiRepr(), hyperlinks_changed.intoFfiRepr()))
+    }
+}
+public class DocxAppPropertiesRefMut: DocxAppPropertiesRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class DocxAppPropertiesRef {
+    var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension DocxAppPropertiesRef {
+    public func application() -> Optional<RustString> {
+        { let val = __swift_bridge__$DocxAppProperties$application(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func app_version() -> Optional<RustString> {
+        { let val = __swift_bridge__$DocxAppProperties$app_version(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func template() -> Optional<RustString> {
+        { let val = __swift_bridge__$DocxAppProperties$template(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func total_time() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$total_time(ptr).intoSwiftRepr()
+    }
+
+    public func pages() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$pages(ptr).intoSwiftRepr()
+    }
+
+    public func words() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$words(ptr).intoSwiftRepr()
+    }
+
+    public func characters() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$characters(ptr).intoSwiftRepr()
+    }
+
+    public func characters_with_spaces() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$characters_with_spaces(ptr).intoSwiftRepr()
+    }
+
+    public func lines() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$lines(ptr).intoSwiftRepr()
+    }
+
+    public func paragraphs() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$paragraphs(ptr).intoSwiftRepr()
+    }
+
+    public func company() -> Optional<RustString> {
+        { let val = __swift_bridge__$DocxAppProperties$company(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func doc_security() -> Optional<Int32> {
+        __swift_bridge__$DocxAppProperties$doc_security(ptr).intoSwiftRepr()
+    }
+
+    public func scale_crop() -> Optional<Bool> {
+        __swift_bridge__$DocxAppProperties$scale_crop(ptr).intoSwiftRepr()
+    }
+
+    public func links_up_to_date() -> Optional<Bool> {
+        __swift_bridge__$DocxAppProperties$links_up_to_date(ptr).intoSwiftRepr()
+    }
+
+    public func shared_doc() -> Optional<Bool> {
+        __swift_bridge__$DocxAppProperties$shared_doc(ptr).intoSwiftRepr()
+    }
+
+    public func hyperlinks_changed() -> Optional<Bool> {
+        __swift_bridge__$DocxAppProperties$hyperlinks_changed(ptr).intoSwiftRepr()
+    }
+}
+extension DocxAppProperties: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_DocxAppProperties$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_DocxAppProperties$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: DocxAppProperties) {
+        __swift_bridge__$Vec_DocxAppProperties$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_DocxAppProperties$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (DocxAppProperties(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<DocxAppPropertiesRef> {
+        let pointer = __swift_bridge__$Vec_DocxAppProperties$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return DocxAppPropertiesRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<DocxAppPropertiesRefMut> {
+        let pointer = __swift_bridge__$Vec_DocxAppProperties$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return DocxAppPropertiesRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<DocxAppPropertiesRef> {
+        UnsafePointer<DocxAppPropertiesRef>(OpaquePointer(__swift_bridge__$Vec_DocxAppProperties$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_DocxAppProperties$len(vecPtr)
+    }
+}
+
+
 public class XlsxAppProperties: XlsxAppPropertiesRefMut {
     var isOwned: Bool = true
 
@@ -4657,6 +4802,147 @@ extension PptxAppProperties: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_PptxAppProperties$len(vecPtr)
+    }
+}
+
+
+public class CoreProperties: CorePropertiesRefMut {
+    var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$CoreProperties$_free(ptr)
+        }
+    }
+}
+extension CoreProperties {
+    public convenience init<GenericIntoRustString: IntoRustString>(_ title: Optional<GenericIntoRustString>, _ subject: Optional<GenericIntoRustString>, _ creator: Optional<GenericIntoRustString>, _ keywords: Optional<GenericIntoRustString>, _ description: Optional<GenericIntoRustString>, _ last_modified_by: Optional<GenericIntoRustString>, _ revision: Optional<GenericIntoRustString>, _ created: Optional<GenericIntoRustString>, _ modified: Optional<GenericIntoRustString>, _ category: Optional<GenericIntoRustString>, _ content_status: Optional<GenericIntoRustString>, _ language: Optional<GenericIntoRustString>, _ identifier: Optional<GenericIntoRustString>, _ version: Optional<GenericIntoRustString>, _ last_printed: Optional<GenericIntoRustString>) {
+        self.init(ptr: __swift_bridge__$CoreProperties$new({ if let rustString = optionalStringIntoRustString(title) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(subject) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(creator) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(keywords) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(description) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(last_modified_by) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(revision) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(created) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(modified) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(category) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(content_status) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(language) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(identifier) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(version) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(last_printed) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
+    }
+}
+public class CorePropertiesRefMut: CorePropertiesRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class CorePropertiesRef {
+    var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension CorePropertiesRef {
+    public func title() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func subject() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$subject(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func creator() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$creator(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func keywords() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$keywords(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func description() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$description(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func last_modified_by() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$last_modified_by(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func revision() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$revision(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func created() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$created(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func modified() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$modified(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func category() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$category(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func content_status() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$content_status(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func language() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$language(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func identifier() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$identifier(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func version() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$version(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+
+    public func last_printed() -> Optional<RustString> {
+        { let val = __swift_bridge__$CoreProperties$last_printed(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    }
+}
+extension CoreProperties: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_CoreProperties$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_CoreProperties$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: CoreProperties) {
+        __swift_bridge__$Vec_CoreProperties$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_CoreProperties$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (CoreProperties(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<CorePropertiesRef> {
+        let pointer = __swift_bridge__$Vec_CoreProperties$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return CorePropertiesRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<CorePropertiesRefMut> {
+        let pointer = __swift_bridge__$Vec_CoreProperties$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return CorePropertiesRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<CorePropertiesRef> {
+        UnsafePointer<CorePropertiesRef>(OpaquePointer(__swift_bridge__$Vec_CoreProperties$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_CoreProperties$len(vecPtr)
     }
 }
 
@@ -10483,8 +10769,8 @@ public class DocxMetadata: DocxMetadataRefMut {
     }
 }
 extension DocxMetadata {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ core_properties: Optional<GenericIntoRustString>, _ app_properties: Optional<GenericIntoRustString>, _ custom_properties: GenericIntoRustString) {
-        self.init(ptr: __swift_bridge__$DocxMetadata$new({ if let rustString = optionalStringIntoRustString(core_properties) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(app_properties) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { let rustString = custom_properties.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ core_properties: Optional<CoreProperties>, _ app_properties: Optional<DocxAppProperties>, _ custom_properties: GenericIntoRustString) {
+        self.init(ptr: __swift_bridge__$DocxMetadata$new({ if let val = core_properties { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = app_properties { val.isOwned = false; return val.ptr } else { return nil } }(), { let rustString = custom_properties.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
     }
 }
 public class DocxMetadataRefMut: DocxMetadataRef {
@@ -10500,12 +10786,12 @@ public class DocxMetadataRef {
     }
 }
 extension DocxMetadataRef {
-    public func core_properties() -> Optional<RustString> {
-        { let val = __swift_bridge__$DocxMetadata$core_properties(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    public func core_properties() -> Optional<CoreProperties> {
+        { let val = __swift_bridge__$DocxMetadata$core_properties(ptr); if val != nil { return CoreProperties(ptr: val!) } else { return nil } }()
     }
 
-    public func app_properties() -> Optional<RustString> {
-        { let val = __swift_bridge__$DocxMetadata$app_properties(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
+    public func app_properties() -> Optional<DocxAppProperties> {
+        { let val = __swift_bridge__$DocxMetadata$app_properties(ptr); if val != nil { return DocxAppProperties(ptr: val!) } else { return nil } }()
     }
 
     public func custom_properties() -> RustString {
