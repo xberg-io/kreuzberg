@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.9.7] - 2026-05-08
+
+LTS patch release. Publish-pipeline fixes only — no library code changes.
+
+### Fixed
+
+- **Hex package build**: re-track `packages/elixir/native/kreuzberg_rustler/Cargo.lock`. `mix.exs` declares it in the `files:` allowlist; commit `c29420511` had untracked it on the assumption that the workspace `Cargo.lock` was authoritative, but Hex packages ship without workspace context and need their own lockfile for reproducible NIF builds.
+- **macOS arm64 wheel build**: disable sccache for the native wheel `Setup Rust toolchain (native)` and `PyO3/maturin-action`. The hosted sccache backend was returning `Mismatch of client/server versions?` from `sccache --show-stats` in the post-step, marking jobs as failed even when wheels built successfully.
+
 ## [4.9.6] - 2026-05-07
 
 LTS patch release. Bug fixes backported from `main` (v5 development). The

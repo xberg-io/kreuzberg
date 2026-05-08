@@ -592,6 +592,7 @@ jobs:
         with:
           cache-key-prefix: python-wheels-${{ matrix.label }}
           target: ${{ matrix.rust_target }}
+          use-sccache: 'false'
 
       - name: Clean previous wheel artifacts
         shell: bash
@@ -670,7 +671,7 @@ jobs:
           args: --release -i python${{ matrix.python }} --out ../../target/wheels ${{ matrix.extra_args }}
           target: ${{ matrix.rust_target }}
           working-directory: packages/python
-          sccache: true
+          sccache: false
 
       - name: Setup Python (macOS)
         if: matrix.label == 'macos-arm64'
