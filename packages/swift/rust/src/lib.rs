@@ -2870,10 +2870,7 @@ impl ExtractionConfig {
         self.0.acceleration.clone().map(AccelerationConfig)
     }
     pub fn cache_namespace(&self) -> Option<String> {
-        self.0
-            .cache_namespace
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.cache_namespace.clone()
     }
     pub fn cache_ttl_secs(&self) -> Option<u64> {
         self.0.cache_ttl_secs.as_ref().and_then(|v| {
@@ -3275,7 +3272,7 @@ impl HtmlOutputConfig {
         HtmlOutputConfig(__target)
     }
     pub fn css(&self) -> Option<String> {
-        self.0.css.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.css.clone()
     }
     pub fn css_file(&self) -> Option<String> {
         self.0.css_file.as_ref().and_then(|v| serde_json::to_string(v).ok())
@@ -3373,10 +3370,10 @@ impl LlmConfig {
         serde_json::to_string(&self.0.model).unwrap_or_default()
     }
     pub fn api_key(&self) -> Option<String> {
-        self.0.api_key.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.api_key.clone()
     }
     pub fn base_url(&self) -> Option<String> {
-        self.0.base_url.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.base_url.clone()
     }
     pub fn timeout_secs(&self) -> Option<u64> {
         self.0.timeout_secs.as_ref().and_then(|v| {
@@ -3417,10 +3414,7 @@ impl StructuredExtractionConfig {
         serde_json::to_string(&self.0.schema_name).unwrap_or_default()
     }
     pub fn schema_description(&self) -> Option<String> {
-        self.0
-            .schema_description
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.schema_description.clone()
     }
     pub fn strict(&self) -> bool {
         ::serde_json::to_value(&self.0.strict)
@@ -3429,7 +3423,7 @@ impl StructuredExtractionConfig {
             .unwrap_or_default()
     }
     pub fn prompt(&self) -> Option<String> {
-        self.0.prompt.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.prompt.clone()
     }
     pub fn llm(&self) -> LlmConfig {
         LlmConfig(self.0.llm.clone())
@@ -3585,7 +3579,7 @@ impl OcrPipelineStage {
             .unwrap_or_default()
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn tesseract_config(&self) -> Option<TesseractConfig> {
         self.0.tesseract_config.clone().map(TesseractConfig)
@@ -3723,7 +3717,7 @@ impl OcrConfig {
         self.0.vlm_config.clone().map(LlmConfig)
     }
     pub fn vlm_prompt(&self) -> Option<String> {
-        self.0.vlm_prompt.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.vlm_prompt.clone()
     }
     pub fn acceleration(&self) -> Option<AccelerationConfig> {
         self.0.acceleration.clone().map(AccelerationConfig)
@@ -4004,7 +3998,7 @@ impl ChunkingConfig {
         self.0.embedding.clone().map(EmbeddingConfig)
     }
     pub fn preset(&self) -> Option<String> {
-        self.0.preset.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.preset.clone()
     }
     pub fn sizing(&self) -> ChunkSizing {
         ChunkSizing::from(self.0.sizing.clone())
@@ -4386,10 +4380,10 @@ impl ExtractedInlineImage {
         serde_json::to_string(&self.0.format).unwrap_or_default()
     }
     pub fn filename(&self) -> Option<String> {
-        self.0.filename.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.filename.clone()
     }
     pub fn description(&self) -> Option<String> {
-        self.0.description.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.description.clone()
     }
     pub fn dimensions(&self) -> Option<Vec<u32>> {
         self.0.dimensions.as_ref().and_then(|v| {
@@ -4456,7 +4450,7 @@ impl Drawing {
             .and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn image_ref(&self) -> Option<String> {
-        self.0.image_ref.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.image_ref.clone()
     }
 }
 
@@ -4693,16 +4687,16 @@ impl TableProperties {
         TableProperties(__target)
     }
     pub fn style_id(&self) -> Option<String> {
-        self.0.style_id.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.style_id.clone()
     }
     pub fn width(&self) -> Option<String> {
         self.0.width.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn alignment(&self) -> Option<String> {
-        self.0.alignment.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.alignment.clone()
     }
     pub fn layout(&self) -> Option<String> {
-        self.0.layout.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.layout.clone()
     }
     pub fn look(&self) -> Option<String> {
         self.0.look.as_ref().and_then(|v| serde_json::to_string(v).ok())
@@ -4717,7 +4711,7 @@ impl TableProperties {
         self.0.indent.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn caption(&self) -> Option<String> {
-        self.0.caption.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.caption.clone()
     }
 }
 
@@ -4786,13 +4780,13 @@ impl DocxAppProperties {
         DocxAppProperties(__target)
     }
     pub fn application(&self) -> Option<String> {
-        self.0.application.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.application.clone()
     }
     pub fn app_version(&self) -> Option<String> {
-        self.0.app_version.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.app_version.clone()
     }
     pub fn template(&self) -> Option<String> {
-        self.0.template.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.template.clone()
     }
     pub fn total_time(&self) -> Option<i32> {
         self.0.total_time.as_ref().and_then(|v| {
@@ -4844,7 +4838,7 @@ impl DocxAppProperties {
         })
     }
     pub fn company(&self) -> Option<String> {
-        self.0.company.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.company.clone()
     }
     pub fn doc_security(&self) -> Option<i32> {
         self.0.doc_security.as_ref().and_then(|v| {
@@ -4932,10 +4926,10 @@ impl XlsxAppProperties {
         XlsxAppProperties(__target)
     }
     pub fn application(&self) -> Option<String> {
-        self.0.application.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.application.clone()
     }
     pub fn app_version(&self) -> Option<String> {
-        self.0.app_version.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.app_version.clone()
     }
     pub fn doc_security(&self) -> Option<i32> {
         self.0.doc_security.as_ref().and_then(|v| {
@@ -4973,7 +4967,7 @@ impl XlsxAppProperties {
         })
     }
     pub fn company(&self) -> Option<String> {
-        self.0.company.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.company.clone()
     }
     pub fn worksheet_names(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.worksheet_names)
@@ -5050,10 +5044,10 @@ impl PptxAppProperties {
         PptxAppProperties(__target)
     }
     pub fn application(&self) -> Option<String> {
-        self.0.application.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.application.clone()
     }
     pub fn app_version(&self) -> Option<String> {
-        self.0.app_version.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.app_version.clone()
     }
     pub fn total_time(&self) -> Option<i32> {
         self.0.total_time.as_ref().and_then(|v| {
@@ -5063,7 +5057,7 @@ impl PptxAppProperties {
         })
     }
     pub fn company(&self) -> Option<String> {
-        self.0.company.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.company.clone()
     }
     pub fn doc_security(&self) -> Option<i32> {
         self.0.doc_security.as_ref().and_then(|v| {
@@ -5129,10 +5123,7 @@ impl PptxAppProperties {
         })
     }
     pub fn presentation_format(&self) -> Option<String> {
-        self.0
-            .presentation_format
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.presentation_format.clone()
     }
     pub fn slide_titles(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.slide_titles)
@@ -5270,55 +5261,49 @@ impl CoreProperties {
         CoreProperties(__target)
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn subject(&self) -> Option<String> {
-        self.0.subject.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.subject.clone()
     }
     pub fn creator(&self) -> Option<String> {
-        self.0.creator.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.creator.clone()
     }
     pub fn keywords(&self) -> Option<String> {
-        self.0.keywords.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.keywords.clone()
     }
     pub fn description(&self) -> Option<String> {
-        self.0.description.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.description.clone()
     }
     pub fn last_modified_by(&self) -> Option<String> {
-        self.0
-            .last_modified_by
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.last_modified_by.clone()
     }
     pub fn revision(&self) -> Option<String> {
-        self.0.revision.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.revision.clone()
     }
     pub fn created(&self) -> Option<String> {
-        self.0.created.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.created.clone()
     }
     pub fn modified(&self) -> Option<String> {
-        self.0.modified.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.modified.clone()
     }
     pub fn category(&self) -> Option<String> {
-        self.0.category.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.category.clone()
     }
     pub fn content_status(&self) -> Option<String> {
-        self.0
-            .content_status
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.content_status.clone()
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn identifier(&self) -> Option<String> {
-        self.0.identifier.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.identifier.clone()
     }
     pub fn version(&self) -> Option<String> {
-        self.0.version.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.version.clone()
     }
     pub fn last_printed(&self) -> Option<String> {
-        self.0.last_printed.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.last_printed.clone()
     }
 }
 
@@ -5553,10 +5538,7 @@ impl TokenReductionConfig {
         ReductionLevel::from(self.0.level.clone())
     }
     pub fn language_hint(&self) -> Option<String> {
-        self.0
-            .language_hint
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.language_hint.clone()
     }
     pub fn preserve_markdown(&self) -> bool {
         ::serde_json::to_value(&self.0.preserve_markdown)
@@ -5618,7 +5600,7 @@ impl PdfAnnotation {
         PdfAnnotationType::from(self.0.annotation_type.clone())
     }
     pub fn content(&self) -> Option<String> {
-        self.0.content.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.content.clone()
     }
     pub fn page_number(&self) -> usize {
         ::serde_json::to_value(&self.0.page_number)
@@ -5685,10 +5667,10 @@ impl FormattedBlock {
         self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn code(&self) -> Option<String> {
-        self.0.code.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.code.clone()
     }
     pub fn children(&self) -> Vec<FormattedBlock> {
         self.0
@@ -5724,7 +5706,7 @@ impl DjotImage {
         serde_json::to_string(&self.0.alt).unwrap_or_default()
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn attributes(&self) -> Option<String> {
         self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
@@ -5740,7 +5722,7 @@ impl DjotLink {
         serde_json::to_string(&self.0.text).unwrap_or_default()
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn attributes(&self) -> Option<String> {
         self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
@@ -5786,10 +5768,7 @@ impl DocumentStructure {
         self.0.nodes.iter().map(|elem| DocumentNode(elem.clone())).collect()
     }
     pub fn source_format(&self) -> Option<String> {
-        self.0
-            .source_format
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.source_format.clone()
     }
     pub fn relationships(&self) -> Vec<DocumentRelationship> {
         self.0
@@ -6186,10 +6165,7 @@ impl ExtractionResult {
             .map(|v| v.iter().map(|elem| LlmUsage(elem.clone())).collect())
     }
     pub fn formatted_content(&self) -> Option<String> {
-        self.0
-            .formatted_content
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.formatted_content.clone()
     }
     // alef: skipped getter `ocr_internal_document` — type cannot be bridged through swift-bridge
 }
@@ -6287,10 +6263,7 @@ impl LlmUsage {
         })
     }
     pub fn finish_reason(&self) -> Option<String> {
-        self.0
-            .finish_reason
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.finish_reason.clone()
     }
 }
 
@@ -6422,7 +6395,7 @@ impl ExtractedImage {
         })
     }
     pub fn colorspace(&self) -> Option<String> {
-        self.0.colorspace.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.colorspace.clone()
     }
     pub fn bits_per_component(&self) -> Option<u32> {
         self.0.bits_per_component.as_ref().and_then(|v| {
@@ -6438,7 +6411,7 @@ impl ExtractedImage {
             .unwrap_or_default()
     }
     pub fn description(&self) -> Option<String> {
-        self.0.description.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.description.clone()
     }
     pub fn ocr_result(&self) -> Option<ExtractionResult> {
         self.0.ocr_result.clone().map(|w| ExtractionResult(*w))
@@ -6447,7 +6420,7 @@ impl ExtractedImage {
         self.0.bounding_box.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn source_path(&self) -> Option<String> {
-        self.0.source_path.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.source_path.clone()
     }
     pub fn image_kind(&self) -> Option<ImageKind> {
         self.0.image_kind.clone().map(ImageKind::from)
@@ -6478,7 +6451,7 @@ impl ElementMetadata {
         })
     }
     pub fn filename(&self) -> Option<String> {
-        self.0.filename.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.filename.clone()
     }
     pub fn coordinates(&self) -> Option<String> {
         self.0.coordinates.as_ref().and_then(|v| serde_json::to_string(v).ok())
@@ -6672,10 +6645,10 @@ impl PptxExtractionResult {
 pub struct EmailExtractionResult(pub kreuzberg::EmailExtractionResult);
 impl EmailExtractionResult {
     pub fn subject(&self) -> Option<String> {
-        self.0.subject.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.subject.clone()
     }
     pub fn from_email(&self) -> Option<String> {
-        self.0.from_email.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.from_email.clone()
     }
     pub fn to_emails(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.to_emails)
@@ -6696,16 +6669,16 @@ impl EmailExtractionResult {
             .unwrap_or_default()
     }
     pub fn date(&self) -> Option<String> {
-        self.0.date.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.date.clone()
     }
     pub fn message_id(&self) -> Option<String> {
-        self.0.message_id.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.message_id.clone()
     }
     pub fn plain_text(&self) -> Option<String> {
-        self.0.plain_text.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.plain_text.clone()
     }
     pub fn html_content(&self) -> Option<String> {
-        self.0.html_content.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.html_content.clone()
     }
     pub fn content(&self) -> String {
         serde_json::to_string(&self.0.content).unwrap_or_default()
@@ -6725,13 +6698,13 @@ impl EmailExtractionResult {
 pub struct EmailAttachment(pub kreuzberg::EmailAttachment);
 impl EmailAttachment {
     pub fn name(&self) -> Option<String> {
-        self.0.name.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.name.clone()
     }
     pub fn filename(&self) -> Option<String> {
-        self.0.filename.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.filename.clone()
     }
     pub fn mime_type(&self) -> Option<String> {
-        self.0.mime_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.mime_type.clone()
     }
     pub fn size(&self) -> Option<usize> {
         self.0.size.as_ref().and_then(|v| {
@@ -7135,7 +7108,7 @@ impl ImagePreprocessingMetadata {
             .unwrap_or_default()
     }
     pub fn resize_error(&self) -> Option<String> {
-        self.0.resize_error.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.resize_error.clone()
     }
 }
 
@@ -7283,10 +7256,10 @@ impl Metadata {
         Metadata(__target)
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn subject(&self) -> Option<String> {
-        self.0.subject.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.subject.clone()
     }
     pub fn authors(&self) -> Option<Vec<String>> {
         self.0.authors.as_ref().and_then(|v| {
@@ -7303,19 +7276,19 @@ impl Metadata {
         })
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn created_at(&self) -> Option<String> {
-        self.0.created_at.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.created_at.clone()
     }
     pub fn modified_at(&self) -> Option<String> {
-        self.0.modified_at.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.modified_at.clone()
     }
     pub fn created_by(&self) -> Option<String> {
-        self.0.created_by.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.created_by.clone()
     }
     pub fn modified_by(&self) -> Option<String> {
-        self.0.modified_by.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.modified_by.clone()
     }
     pub fn pages(&self) -> Option<PageStructure> {
         self.0.pages.clone().map(PageStructure)
@@ -7340,7 +7313,7 @@ impl Metadata {
         })
     }
     pub fn category(&self) -> Option<String> {
-        self.0.category.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.category.clone()
     }
     pub fn tags(&self) -> Option<Vec<String>> {
         self.0.tags.as_ref().and_then(|v| {
@@ -7350,22 +7323,13 @@ impl Metadata {
         })
     }
     pub fn document_version(&self) -> Option<String> {
-        self.0
-            .document_version
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.document_version.clone()
     }
     pub fn abstract_text(&self) -> Option<String> {
-        self.0
-            .abstract_text
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.abstract_text.clone()
     }
     pub fn output_format(&self) -> Option<String> {
-        self.0
-            .output_format
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.output_format.clone()
     }
     pub fn additional(&self) -> String {
         serde_json::to_string(&self.0.additional).expect("serializable additional")
@@ -7456,10 +7420,10 @@ impl EmailMetadata {
         EmailMetadata(__target)
     }
     pub fn from_email(&self) -> Option<String> {
-        self.0.from_email.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.from_email.clone()
     }
     pub fn from_name(&self) -> Option<String> {
-        self.0.from_name.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.from_name.clone()
     }
     pub fn to_emails(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.to_emails)
@@ -7480,7 +7444,7 @@ impl EmailMetadata {
             .unwrap_or_default()
     }
     pub fn message_id(&self) -> Option<String> {
-        self.0.message_id.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.message_id.clone()
     }
     pub fn attachments(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.attachments)
@@ -7655,7 +7619,7 @@ impl HeaderMetadata {
         serde_json::to_string(&self.0.text).unwrap_or_default()
     }
     pub fn id(&self) -> Option<String> {
-        self.0.id.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.id.clone()
     }
     pub fn depth(&self) -> usize {
         ::serde_json::to_value(&self.0.depth)
@@ -7680,7 +7644,7 @@ impl LinkMetadata {
         serde_json::to_string(&self.0.text).unwrap_or_default()
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn link_type(&self) -> LinkType {
         LinkType::from(self.0.link_type.clone())
@@ -7705,10 +7669,10 @@ impl ImageMetadataType {
         serde_json::to_string(&self.0.src).unwrap_or_default()
     }
     pub fn alt(&self) -> Option<String> {
-        self.0.alt.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.alt.clone()
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn dimensions(&self) -> Option<Vec<u32>> {
         self.0.dimensions.as_ref().and_then(|v| {
@@ -7737,7 +7701,7 @@ impl StructuredData {
         serde_json::to_string(&self.0.raw_json).unwrap_or_default()
     }
     pub fn schema_type(&self) -> Option<String> {
-        self.0.schema_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.schema_type.clone()
     }
 }
 
@@ -7831,10 +7795,10 @@ impl HtmlMetadata {
         HtmlMetadata(__target)
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn description(&self) -> Option<String> {
-        self.0.description.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.description.clone()
     }
     pub fn keywords(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.keywords)
@@ -7843,19 +7807,16 @@ impl HtmlMetadata {
             .unwrap_or_default()
     }
     pub fn author(&self) -> Option<String> {
-        self.0.author.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.author.clone()
     }
     pub fn canonical_url(&self) -> Option<String> {
-        self.0
-            .canonical_url
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.canonical_url.clone()
     }
     pub fn base_href(&self) -> Option<String> {
-        self.0.base_href.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.base_href.clone()
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn text_direction(&self) -> Option<TextDirection> {
         self.0.text_direction.clone().map(TextDirection::from)
@@ -8081,7 +8042,7 @@ impl CsvMetadata {
             .unwrap_or_default()
     }
     pub fn delimiter(&self) -> Option<String> {
-        self.0.delimiter.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.delimiter.clone()
     }
     pub fn has_header(&self) -> bool {
         ::serde_json::to_value(&self.0.has_header)
@@ -8201,7 +8162,7 @@ impl CitationMetadata {
             .unwrap_or_default()
     }
     pub fn format(&self) -> Option<String> {
-        self.0.format.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.format.clone()
     }
     pub fn authors(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.authors)
@@ -8286,7 +8247,7 @@ impl FictionBookMetadata {
             .unwrap_or_default()
     }
     pub fn annotation(&self) -> Option<String> {
-        self.0.annotation.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.annotation.clone()
     }
 }
 
@@ -8358,10 +8319,10 @@ impl JatsMetadata {
         JatsMetadata(__target)
     }
     pub fn copyright(&self) -> Option<String> {
-        self.0.copyright.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.copyright.clone()
     }
     pub fn license(&self) -> Option<String> {
-        self.0.license.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.license.clone()
     }
     pub fn history_dates(&self) -> String {
         serde_json::to_string(&self.0.history_dates).expect("serializable history_dates")
@@ -8381,7 +8342,7 @@ impl ContributorRole {
         serde_json::to_string(&self.0.name).unwrap_or_default()
     }
     pub fn role(&self) -> Option<String> {
-        self.0.role.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.role.clone()
     }
 }
 
@@ -8441,22 +8402,22 @@ impl EpubMetadata {
         EpubMetadata(__target)
     }
     pub fn coverage(&self) -> Option<String> {
-        self.0.coverage.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.coverage.clone()
     }
     pub fn dc_format(&self) -> Option<String> {
-        self.0.dc_format.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.dc_format.clone()
     }
     pub fn relation(&self) -> Option<String> {
-        self.0.relation.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.relation.clone()
     }
     pub fn source(&self) -> Option<String> {
-        self.0.source.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.source.clone()
     }
     pub fn dc_type(&self) -> Option<String> {
-        self.0.dc_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.dc_type.clone()
     }
     pub fn cover_image(&self) -> Option<String> {
-        self.0.cover_image.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.cover_image.clone()
     }
 }
 
@@ -8576,7 +8537,7 @@ impl OcrElement {
             .unwrap_or_default()
     }
     pub fn parent_id(&self) -> Option<String> {
-        self.0.parent_id.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.parent_id.clone()
     }
     pub fn backend_metadata(&self) -> String {
         serde_json::to_string(&self.0.backend_metadata).expect("serializable backend_metadata")
@@ -8677,7 +8638,7 @@ impl PageInfo {
             .unwrap_or_default()
     }
     pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.title.clone()
     }
     pub fn dimensions(&self) -> Option<Vec<f64>> {
         self.0.dimensions.as_ref().and_then(|v| {
@@ -8923,7 +8884,7 @@ impl Uri {
         serde_json::to_string(&self.0.url).unwrap_or_default()
     }
     pub fn label(&self) -> Option<String> {
-        self.0.label.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.label.clone()
     }
     pub fn page(&self) -> Option<u32> {
         self.0.page.as_ref().and_then(|v| {
@@ -9042,7 +9003,7 @@ impl DetectResponse {
         serde_json::to_string(&self.0.mime_type).unwrap_or_default()
     }
     pub fn filename(&self) -> Option<String> {
-        self.0.filename.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.filename.clone()
     }
 }
 
@@ -9165,10 +9126,7 @@ impl CacheWarmParams {
             .unwrap_or_default()
     }
     pub fn embedding_model(&self) -> Option<String> {
-        self.0
-            .embedding_model
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.embedding_model.clone()
     }
 }
 
@@ -9181,19 +9139,16 @@ impl EmbedTextParams {
             .unwrap_or_default()
     }
     pub fn preset(&self) -> Option<String> {
-        self.0.preset.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.preset.clone()
     }
     pub fn model(&self) -> Option<String> {
-        self.0.model.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.model.clone()
     }
     pub fn api_key(&self) -> Option<String> {
-        self.0.api_key.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.api_key.clone()
     }
     pub fn embedding_plugin(&self) -> Option<String> {
-        self.0
-            .embedding_plugin
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.embedding_plugin.clone()
     }
 }
 
@@ -9212,16 +9167,13 @@ impl ExtractStructuredParams {
         serde_json::to_string(&self.0.schema_name).unwrap_or_default()
     }
     pub fn schema_description(&self) -> Option<String> {
-        self.0
-            .schema_description
-            .as_ref()
-            .and_then(|v| serde_json::to_string(v).ok())
+        self.0.schema_description.clone()
     }
     pub fn prompt(&self) -> Option<String> {
-        self.0.prompt.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.prompt.clone()
     }
     pub fn api_key(&self) -> Option<String> {
-        self.0.api_key.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.api_key.clone()
     }
     pub fn strict(&self) -> bool {
         ::serde_json::to_value(&self.0.strict)
@@ -9251,7 +9203,7 @@ impl ChunkTextParams {
         })
     }
     pub fn chunker_type(&self) -> Option<String> {
-        self.0.chunker_type.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.chunker_type.clone()
     }
     pub fn topic_threshold(&self) -> Option<f32> {
         self.0.topic_threshold.as_ref().and_then(|v| {
@@ -9435,7 +9387,7 @@ impl KeywordConfig {
             .unwrap_or_default()
     }
     pub fn language(&self) -> Option<String> {
-        self.0.language.as_ref().and_then(|v| serde_json::to_string(v).ok())
+        self.0.language.clone()
     }
     pub fn yake_params(&self) -> Option<YakeParams> {
         self.0.yake_params.clone().map(YakeParams)
