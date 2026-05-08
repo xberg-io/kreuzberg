@@ -58,7 +58,7 @@ office = [
     "html",
 ]
 hwp = ["dep:cfb", "dep:flate2"]
-hwpx = ["dep:unhwp"]
+hwpx = ["dep:unhwp", "dep:zip"]
 iwork = ["dep:zip", "dep:snap"]
 email = ["dep:mail-parser", "dep:cfb", "dep:outlook-pst", "dep:tempfile", "dep:chrono"]
 html = ["dep:html-to-markdown-rs", "dep:v_htmlescape"]

@@ -3,12 +3,14 @@
 //! Extracts text, headings, tables, and images from HWPX documents using the `unhwp` crate.
 
 use std::borrow::Cow;
+use std::io::Cursor;
 
 use async_trait::async_trait;
 use bytes::Bytes;
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
+use crate::extractors::security::ZipBombValidator;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::internal::InternalDocument;
@@ -175,8 +177,25 @@ impl DocumentExtractor for HwpxExtractor {
         &self,
         content: &[u8],
         mime_type: &str,
-        _config: &ExtractionConfig,
+        config: &ExtractionConfig,
     ) -> Result<InternalDocument> {
+        let limits = config.security_limits.clone().unwrap_or_default();
+
+        if content.len() as u64 > limits.max_archive_size as u64 {
+            return Err(crate::KreuzbergError::validation(format!(
+                "HWPX file exceeds size limit ({} > {} bytes)",
+                content.len(),
+                limits.max_archive_size
+            )));
+        }
+
+        let cursor = Cursor::new(content);
+        let mut archive = zip::ZipArchive::new(cursor)
+            .map_err(|e| crate::KreuzbergError::parsing(format!("invalid HWPX zip: {e}")))?;
+        ZipBombValidator::new(limits)
+            .validate(&mut archive)
+            .map_err(|e| crate::KreuzbergError::validation(e.to_string()))?;
+
         let doc = unhwp::parse_bytes(content)
             .map_err(|e| crate::KreuzbergError::parsing(format!("Failed to parse HWPX: {e}")))?;
         Ok(build_hwpx_internal_document(doc, mime_type))
@@ -235,5 +254,78 @@ mod tests {
             .extract_bytes(b"not a zip", "application/haansofthwpx", &ExtractionConfig::default())
             .await;
         assert!(result.is_err(), "corrupted input must return Err, not panic");
+    }
+
+    fn make_zip_with_ratio(uncompressed_len: usize) -> Vec<u8> {
+        use std::io::Write as _;
+        let mut buf = std::io::Cursor::new(Vec::new());
+        let mut zw = zip::ZipWriter::new(&mut buf);
+        let opts = zip::write::FileOptions::<()>::default().compression_method(zip::CompressionMethod::Deflated);
+        zw.start_file("content.hml", opts).unwrap();
+        zw.write_all(&vec![0u8; uncompressed_len]).unwrap();
+        zw.finish().unwrap();
+        buf.into_inner()
+    }
+
+    #[tokio::test]
+    async fn test_hwpx_rejects_zip_bomb_default_limits() {
+        let zip_bytes = make_zip_with_ratio(256 * 1024);
+        let extractor = HwpxExtractor::new();
+        let result = extractor
+            .extract_bytes(&zip_bytes, "application/haansofthwpx", &ExtractionConfig::default())
+            .await;
+        assert!(result.is_err(), "default limits must block a >100:1 zip bomb");
+        let err = result.unwrap_err().to_string();
+        assert!(
+            err.contains("ZIP bomb") || err.contains("ratio") || err.contains("validation"),
+            "error should mention bomb/ratio/validation, got: {err}"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hwpx_rejects_zip_bomb() {
+        use crate::extractors::security::SecurityLimits;
+        let zip_bytes = make_zip_with_ratio(8 * 1024);
+        let config = ExtractionConfig {
+            security_limits: Some(SecurityLimits {
+                max_compression_ratio: 1,
+                ..SecurityLimits::default()
+            }),
+            ..ExtractionConfig::default()
+        };
+        let extractor = HwpxExtractor::new();
+        let result = extractor
+            .extract_bytes(&zip_bytes, "application/haansofthwpx", &config)
+            .await;
+        assert!(result.is_err(), "zip bomb must be rejected");
+        let err = result.unwrap_err().to_string();
+        assert!(
+            err.contains("ZIP bomb") || err.contains("ratio") || err.contains("validation"),
+            "error should mention bomb/ratio/validation, got: {err}"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hwpx_rejects_oversized_file() {
+        use crate::extractors::security::SecurityLimits;
+        let limits = SecurityLimits {
+            max_archive_size: 10,
+            ..SecurityLimits::default()
+        };
+        let config = ExtractionConfig {
+            security_limits: Some(limits),
+            ..ExtractionConfig::default()
+        };
+        let oversized = vec![0u8; 11];
+        let extractor = HwpxExtractor::new();
+        let result = extractor
+            .extract_bytes(&oversized, "application/haansofthwpx", &config)
+            .await;
+        assert!(result.is_err(), "oversized file must be rejected");
+        let err = result.unwrap_err().to_string();
+        assert!(
+            err.contains("size limit") || err.contains("validation"),
+            "error should mention size limit, got: {err}"
+        );
     }
 }

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **[GHSA-gg9g-p963-p7x4]**: `HwpxExtractor` now validates the ZIP container against `SecurityLimits` before passing bytes to `unhwp::parse_bytes`. Previously the `ExtractionConfig` was silently discarded (`_config`), allowing a crafted HWPX file with a >100:1 DEFLATE ratio to exhaust process memory (CWE-409). The fix adds an upfront byte-count check (`max_archive_size`) and a `ZipBombValidator` pass over the central directory before any decompression occurs. Affects all builds with the `hwpx`, `formats`, or `full` feature enabled since `5.0.0-rc.1`.
+
 ### Added
 
 - **#619 follow-up**: `POST /extract-async` now returns HTTP 429 when more than 100 jobs are active simultaneously, preventing unbounded memory growth under load.
