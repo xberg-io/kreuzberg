@@ -333,7 +333,6 @@ impl InternalElement {
 
     /// Set the page number.
     #[cfg(any(
-        test,
         feature = "ocr",
         feature = "pdf",
         feature = "paddle-ocr",
