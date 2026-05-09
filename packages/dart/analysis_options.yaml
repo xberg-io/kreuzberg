@@ -8,6 +8,10 @@ analyzer:
     - lib/src/frb/**
     - lib/src/kreuzberg_bridge_generated/**
     - example/**
+    # traits.dart is alef-generated documentation of Rust trait surfaces;
+    # references to OcrBackendType/ProcessingStage await alef
+    # `#[frb(unignore)]` plumbing in the flutter_rust_bridge backend.
+    - lib/src/traits.dart
 
 linter:
   rules:
