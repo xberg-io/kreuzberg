@@ -1685,14 +1685,14 @@ public func extractBytes(
 public func detectMimeTypeFromBytes(
     content: String
 ) throws -> String {
-    return try RustBridge.detectMimeTypeFromBytes(makeByteVec(Array(content.utf8))).toString()
+    return try detectMimeTypeFromBytes(makeByteVec(Array(content.utf8))).toString()
 }
 
 /// Convenience overload: accepts a `[UInt8]` byte array.
 public func detectMimeTypeFromBytes(
     content: [UInt8]
 ) throws -> String {
-    return try RustBridge.detectMimeTypeFromBytes(makeByteVec(content)).toString()
+    return try detectMimeTypeFromBytes(makeByteVec(content)).toString()
 }
 
 /// Convenience overload: accepts a UTF-8 `String` and converts it to bytes.
@@ -1702,7 +1702,7 @@ public func renderPdfPageToPng(
     dpi: Int32?,
     password: String?
 ) throws -> [UInt8] {
-    return try RustBridge.renderPdfPageToPng(makeByteVec(Array(content.utf8)), pageIndex, dpi, password).map { $0 }
+    return try renderPdfPageToPng(makeByteVec(Array(content.utf8)), pageIndex, dpi, password).map { $0 }
 }
 
 /// Convenience overload: accepts a `[UInt8]` byte array.
@@ -1712,7 +1712,7 @@ public func renderPdfPageToPng(
     dpi: Int32?,
     password: String?
 ) throws -> [UInt8] {
-    return try RustBridge.renderPdfPageToPng(makeByteVec(content), pageIndex, dpi, password).map { $0 }
+    return try renderPdfPageToPng(makeByteVec(content), pageIndex, dpi, password).map { $0 }
 }
 
 /// Convenience overload: accepts a file path as a `String`.
