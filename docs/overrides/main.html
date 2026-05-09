@@ -79,4 +79,22 @@
   content="{% if page and page.meta and page.meta.description %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}"
 />
 <meta name="twitter:image" content="{{ config.site_url }}assets/og-image.png" />
-{% endblock %}
+{% endblock %} {% block content %} {{ super() }} {% if page and page.edit_url %}
+<p
+  style="
+    margin-top: 2rem;
+    margin-bottom: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  "
+>
+  <a
+    href="{{ page.edit_url }}"
+    style="
+      color: var(--md-default-fg-color--lighter, #737373);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    "
+    >Edit this page on GitHub</a>
+</p>
+{% endif %} {% endblock %}
