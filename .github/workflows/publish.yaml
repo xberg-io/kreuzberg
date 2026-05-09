@@ -112,24 +112,13 @@ jobs:
 
       - name: Ensure GitHub Release exists for tag
         if: ${{ steps.meta.outputs.is_tag == 'true' && steps.meta.outputs.dry_run != 'true' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.meta.outputs.tag }}
-          IS_PRERELEASE: ${{ steps.meta.outputs.is_prerelease }}
-        # Inline: `gh release create` requires `--target <sha>` to anchor the
-        # release to the current commit when the tag does not yet exist on the
-        # remote. The shared `publish-github-release` action does not yet
-        # support a `target` input, so we keep the inline version.
-        run: |
-          if gh release view "${TAG}" >/dev/null 2>&1; then
-            echo "Release ${TAG} already exists"
-          else
-            args=(--title "${TAG}" --notes "Release ${TAG}" --target "$(git rev-parse HEAD)" --draft)
-            if [[ "${IS_PRERELEASE}" == "true" ]]; then
-              args+=(--prerelease)
-            fi
-            gh release create "${TAG}" "${args[@]}"
-          fi
+        uses: kreuzberg-dev/actions/publish-github-release@v1
+        with:
+          tag: ${{ steps.meta.outputs.tag }}
+          target: ${{ steps.meta.outputs.target_sha }}
+          notes: "Release ${{ steps.meta.outputs.tag }}"
+          draft: "true"
+          prerelease: ${{ steps.meta.outputs.is_prerelease }}
 
   validate-versions:
     name: Validate language manifest versions
