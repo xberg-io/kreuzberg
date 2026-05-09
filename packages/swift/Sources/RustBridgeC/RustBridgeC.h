@@ -1257,6 +1257,18 @@ void* __swift_bridge__$Vec_ArchiveMetadata$get_mut(void* vec_ptr, uintptr_t inde
 uintptr_t __swift_bridge__$Vec_ArchiveMetadata$len(void* vec_ptr);
 void* __swift_bridge__$Vec_ArchiveMetadata$as_ptr(void* vec_ptr);
 
+typedef struct ImageMetadata ImageMetadata;
+void __swift_bridge__$ImageMetadata$_free(void* self);
+
+void* __swift_bridge__$Vec_ImageMetadata$new(void);
+void __swift_bridge__$Vec_ImageMetadata$drop(void* vec_ptr);
+void __swift_bridge__$Vec_ImageMetadata$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_ImageMetadata$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_ImageMetadata$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_ImageMetadata$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_ImageMetadata$len(void* vec_ptr);
+void* __swift_bridge__$Vec_ImageMetadata$as_ptr(void* vec_ptr);
+
 typedef struct XmlMetadata XmlMetadata;
 void __swift_bridge__$XmlMetadata$_free(void* self);
 
@@ -2180,18 +2192,6 @@ void* __swift_bridge__$Vec_PdfMetadata$get(void* vec_ptr, uintptr_t index);
 void* __swift_bridge__$Vec_PdfMetadata$get_mut(void* vec_ptr, uintptr_t index);
 uintptr_t __swift_bridge__$Vec_PdfMetadata$len(void* vec_ptr);
 void* __swift_bridge__$Vec_PdfMetadata$as_ptr(void* vec_ptr);
-
-typedef struct CommonPdfMetadata CommonPdfMetadata;
-void __swift_bridge__$CommonPdfMetadata$_free(void* self);
-
-void* __swift_bridge__$Vec_CommonPdfMetadata$new(void);
-void __swift_bridge__$Vec_CommonPdfMetadata$drop(void* vec_ptr);
-void __swift_bridge__$Vec_CommonPdfMetadata$push(void* vec_ptr, void* item_ptr);
-void* __swift_bridge__$Vec_CommonPdfMetadata$pop(void* vec_ptr);
-void* __swift_bridge__$Vec_CommonPdfMetadata$get(void* vec_ptr, uintptr_t index);
-void* __swift_bridge__$Vec_CommonPdfMetadata$get_mut(void* vec_ptr, uintptr_t index);
-uintptr_t __swift_bridge__$Vec_CommonPdfMetadata$len(void* vec_ptr);
-void* __swift_bridge__$Vec_CommonPdfMetadata$as_ptr(void* vec_ptr);
 
 typedef struct ExecutionProviderType ExecutionProviderType;
 void __swift_bridge__$ExecutionProviderType$_free(void* self);
@@ -3361,6 +3361,11 @@ uintptr_t __swift_bridge__$ArchiveMetadata$file_count(void* self);
 void* __swift_bridge__$ArchiveMetadata$file_list(void* self);
 uintptr_t __swift_bridge__$ArchiveMetadata$total_size(void* self);
 struct __private__OptionUsize __swift_bridge__$ArchiveMetadata$compressed_size(void* self);
+void* __swift_bridge__$ImageMetadata$new(uint32_t width, uint32_t height, void* format, void* exif);
+uint32_t __swift_bridge__$ImageMetadata$width(void* self);
+uint32_t __swift_bridge__$ImageMetadata$height(void* self);
+void* __swift_bridge__$ImageMetadata$format(void* self);
+void* __swift_bridge__$ImageMetadata$exif(void* self);
 void* __swift_bridge__$XmlMetadata$new(uintptr_t element_count, void* unique_elements);
 uintptr_t __swift_bridge__$XmlMetadata$element_count(void* self);
 void* __swift_bridge__$XmlMetadata$unique_elements(void* self);
@@ -3674,12 +3679,6 @@ struct __private__OptionBool __swift_bridge__$PdfMetadata$is_encrypted(void* sel
 struct __private__OptionI64 __swift_bridge__$PdfMetadata$width(void* self);
 struct __private__OptionI64 __swift_bridge__$PdfMetadata$height(void* self);
 struct __private__OptionUsize __swift_bridge__$PdfMetadata$page_count(void* self);
-void* __swift_bridge__$CommonPdfMetadata$new(void* title, void* subject, void* authors, void* keywords, void* created_at, void* modified_at, void* created_by);
-void* __swift_bridge__$CommonPdfMetadata$title(void* self);
-void* __swift_bridge__$CommonPdfMetadata$subject(void* self);
-void* __swift_bridge__$CommonPdfMetadata$created_at(void* self);
-void* __swift_bridge__$CommonPdfMetadata$modified_at(void* self);
-void* __swift_bridge__$CommonPdfMetadata$created_by(void* self);
 struct __private__ResultPtrAndPtr __swift_bridge__$extract_bytes(void* content, void* mime_type, void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$extract_file(void* path, void* mime_type, void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$extract_file_sync(void* path, void* mime_type, void* config);
