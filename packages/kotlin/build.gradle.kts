@@ -70,6 +70,10 @@ tasks.withType<Test>().configureEach {
 publishing {
   publications {
     create<MavenPublication>("maven") {
+      // Override the default artifactId (which would otherwise inherit
+      // rootProject.name = "kreuzberg" and collide with the Java FFM
+      // package's dev.kreuzberg:kreuzberg coordinates).
+      artifactId = "kreuzberg-kotlin"
       from(components["java"])
     }
   }

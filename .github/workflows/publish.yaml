@@ -307,11 +307,11 @@ jobs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
       - id: check
-        # pub.dev isn't in alef's check-registry catalog yet; treat as
-        # idempotent (publish-pub is idempotent on the server) and let the
-        # publish step decide. Default to "false" so publish always runs.
-        run: echo "exists=false" >> "$GITHUB_OUTPUT"
-        shell: bash
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: pub
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
 
   check-zig:
     name: Check Zig package presence (tag-based)
@@ -321,12 +321,14 @@ jobs:
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      # Zig has no central registry; presence == git tag exists, which is
-      # already true by the time this workflow runs. Skip-gating is left to
-      # the publish step itself (which is a no-op SHA recompute).
+      # Zig has no central registry; existence === GitHub release tag exists.
       - id: check
-        run: echo "exists=false" >> "$GITHUB_OUTPUT"
-        shell: bash
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: zig
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
+          repo: ${{ github.repository }}
 
   check-spi-swift:
     name: Check Swift Package Index for existing tag
@@ -336,11 +338,15 @@ jobs:
     outputs:
       exists: ${{ steps.check.outputs.exists }}
     steps:
-      # Same pattern as Zig — SPI auto-discovers tags. publish-swift is a
-      # cache-warming ping; safe to re-run.
+      # Swift has no central registry; SPI auto-discovers GitHub tags, so
+      # existence === GitHub release tag exists.
       - id: check
-        run: echo "exists=false" >> "$GITHUB_OUTPUT"
-        shell: bash
+        uses: kreuzberg-dev/actions/check-registry@v1
+        with:
+          registry: swift
+          package: kreuzberg
+          version: ${{ needs.prepare.outputs.version }}
+          repo: ${{ github.repository }}
 
   check-homebrew:
     name: Check Homebrew tap for formula
