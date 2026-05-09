@@ -56,6 +56,14 @@ ktlint {
   version.set("1.4.1")
   outputToConsole.set(true)
   ignoreFailures.set(false)
+  filter {
+    // The Java facade (alef-emitted) is included via sourceSets.main.java.srcDir
+    // above; ktlint must not check those Java files since they are generated and
+    // follow the Java codegen's conventions, not Kotlin's.
+    exclude { entry -> entry.file.toString().contains("/packages/java/") }
+    exclude("**/build/**")
+    exclude("**/generated/**")
+  }
 }
 
 // JNA needs the native lib on java.library.path; default to the workspace

@@ -1,5 +1,14 @@
 include: package:lints/recommended.yaml
 
+analyzer:
+  exclude:
+    # flutter_rust_bridge-generated bridge code is machine-generated and
+    # uses inline-class extension types that require the analyzer's language
+    # version to match the package SDK floor.
+    - lib/src/frb/**
+    - lib/src/kreuzberg_bridge_generated/**
+    - example/**
+
 linter:
   rules:
     - avoid_empty_else
