@@ -386,6 +386,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImageKind dco_decode_box_autoadd_image_kind(dynamic raw);
 
   @protected
+  ImageMetadata dco_decode_box_autoadd_image_metadata(dynamic raw);
+
+  @protected
   ImagePreprocessingConfig dco_decode_box_autoadd_image_preprocessing_config(
       dynamic raw);
 
@@ -670,6 +673,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImageKind dco_decode_image_kind(dynamic raw);
+
+  @protected
+  ImageMetadata dco_decode_image_metadata(dynamic raw);
 
   @protected
   ImageMetadataType dco_decode_image_metadata_type(dynamic raw);
@@ -1580,6 +1586,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImageKind sse_decode_box_autoadd_image_kind(SseDeserializer deserializer);
 
   @protected
+  ImageMetadata sse_decode_box_autoadd_image_metadata(
+      SseDeserializer deserializer);
+
+  @protected
   ImagePreprocessingConfig sse_decode_box_autoadd_image_preprocessing_config(
       SseDeserializer deserializer);
 
@@ -1889,6 +1899,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImageKind sse_decode_image_kind(SseDeserializer deserializer);
+
+  @protected
+  ImageMetadata sse_decode_image_metadata(SseDeserializer deserializer);
 
   @protected
   ImageMetadataType sse_decode_image_metadata_type(
@@ -2903,6 +2916,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ImageKind self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_image_metadata(
+      ImageMetadata self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_image_preprocessing_config(
       ImagePreprocessingConfig self, SseSerializer serializer);
 
@@ -3243,6 +3260,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_image_kind(ImageKind self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_image_metadata(ImageMetadata self, SseSerializer serializer);
 
   @protected
   void sse_encode_image_metadata_type(

@@ -1368,7 +1368,7 @@ const _: fn() = || {
             let _: crate::ArchiveMetadata = field0;
         }
         crate::FormatMetadata::Image { field0 } => {
-            let _: String = field0;
+            let _: crate::ImageMetadata = field0;
         }
         crate::FormatMetadata::Xml { field0 } => {
             let _: crate::XmlMetadata = field0;
@@ -1498,6 +1498,13 @@ const _: fn() = || {
         let _: i64 = ImageExtractionConfig.max_dpi;
         let _: Option<i64> = ImageExtractionConfig.max_images_per_page;
         let _: bool = ImageExtractionConfig.classify;
+    }
+    {
+        let ImageMetadata = None::<crate::ImageMetadata>.unwrap();
+        let _: i64 = ImageMetadata.width;
+        let _: i64 = ImageMetadata.height;
+        let _: String = ImageMetadata.format;
+        let _: std::collections::HashMap<String, String> = ImageMetadata.exif;
     }
     {
         let ImageMetadataType = None::<crate::ImageMetadataType>.unwrap();
@@ -3680,7 +3687,7 @@ impl SseDecode for crate::FormatMetadata {
                 return crate::FormatMetadata::Archive { field0: var_field0 };
             }
             6 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
+                let mut var_field0 = <crate::ImageMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Image { field0: var_field0 };
             }
             7 => {
@@ -3984,6 +3991,22 @@ impl SseDecode for crate::ImageKind {
             9 => crate::ImageKind::Mask,
             10 => crate::ImageKind::Unknown,
             _ => unreachable!("Invalid variant for ImageKind: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::ImageMetadata {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_width = <i64>::sse_decode(deserializer);
+        let mut var_height = <i64>::sse_decode(deserializer);
+        let mut var_format = <String>::sse_decode(deserializer);
+        let mut var_exif = <std::collections::HashMap<String, String>>::sse_decode(deserializer);
+        return crate::ImageMetadata {
+            width: var_width,
+            height: var_height,
+            format: var_format,
+            exif: var_exif,
         };
     }
 }
@@ -8436,6 +8459,24 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::ImageKind>> for crate::
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageMetadata> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.width.into_into_dart().into_dart(),
+            self.0.height.into_into_dart().into_dart(),
+            self.0.format.into_into_dart().into_dart(),
+            self.0.exif.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::ImageMetadata> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::ImageMetadata>> for crate::ImageMetadata {
+    fn into_into_dart(self) -> FrbWrapper<crate::ImageMetadata> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageMetadataType> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -11116,7 +11157,7 @@ impl SseEncode for crate::FormatMetadata {
             }
             crate::FormatMetadata::Image { field0 } => {
                 <i32>::sse_encode(6, serializer);
-                <String>::sse_encode(field0, serializer);
+                <crate::ImageMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Xml { field0 } => {
                 <i32>::sse_encode(7, serializer);
@@ -11351,6 +11392,16 @@ impl SseEncode for crate::ImageKind {
             },
             serializer,
         );
+    }
+}
+
+impl SseEncode for crate::ImageMetadata {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.width, serializer);
+        <i64>::sse_encode(self.height, serializer);
+        <String>::sse_encode(self.format, serializer);
+        <std::collections::HashMap<String, String>>::sse_encode(self.exif, serializer);
     }
 }
 

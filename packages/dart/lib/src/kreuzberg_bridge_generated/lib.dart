@@ -8,8 +8,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AnchorProperties`, `ApiDoc`, `BBox`, `ByteBufferPool`, `CacheWarmParams`, `CharShape`, `ChunkRequest`, `ChunkResponse`, `ChunkTextParams`, `ChunkingResult`, `CommonPdfMetadata`, `CustomProperties`, `DetectMimeTypeParams`, `DetectResponse`, `DetectedBoundary`, `DetectionResult`, `DoclingCompatResponse`, `Drawing`, `EmailAttachment`, `EmailExtractionResult`, `EmbedRequest`, `EmbedResponse`, `EmbedTextParams`, `EmbeddedFile`, `ExcelSheet`, `ExcelWorkbook`, `ExtractResponse`, `ExtractStructuredParams`, `ExtractedInlineImage`, `FracType`, `HtmlExtractionResult`, `HwpImage`, `ImageOcrResult`, `InfoResponse`, `LayoutClass`, `LayoutDetection`, `ManifestEntryResponse`, `ManifestResponse`, `MergedChunk`, `ModelPaths`, `OcrBackendType`, `OcrCacheStats`, `OcrExtractionResult`, `OcrTableBoundingBox`, `OcrTable`, `OdtProperties`, `OpenWebDocumentResponse`, `OrientationResult`, `PSMMode`, `PaddleLanguage`, `PaddleOcrConfig`, `PageMarginsPoints`, `PoolError`, `PptxAppProperties`, `PptxExtractionResult`, `ProcessingStage`, `RecognizedTable`, `ReductionLevel`, `ResolvedStyle`, `ServerConfig`, `StreamReader`, `StringBufferPool`, `StructuredDataResult`, `StructuredExtractionResponse`, `StyleDefinition`, `SupportedFormat`, `TableCell`, `TableProperties`, `TessdataManager`, `TextExtractionResult`, `TokenReductionConfig`, `TracingLayer`, `WarmResponse`, `XlsxAppProperties`, `XmlExtractionResult`, `ZipBombValidator`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `dimensions`, `embed`, `estimated_duration_ms`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AnchorProperties`, `ApiDoc`, `BBox`, `ByteBufferPool`, `CacheWarmParams`, `CharShape`, `ChunkRequest`, `ChunkResponse`, `ChunkTextParams`, `ChunkingResult`, `CustomProperties`, `DetectMimeTypeParams`, `DetectResponse`, `DetectedBoundary`, `DetectionResult`, `DoclingCompatResponse`, `Drawing`, `EmailAttachment`, `EmailExtractionResult`, `EmbedRequest`, `EmbedResponse`, `EmbedTextParams`, `EmbeddedFile`, `ExcelSheet`, `ExcelWorkbook`, `ExtractResponse`, `ExtractStructuredParams`, `ExtractedInlineImage`, `FracType`, `HtmlExtractionResult`, `HwpImage`, `ImageOcrResult`, `InfoResponse`, `LayoutClass`, `LayoutDetection`, `ManifestEntryResponse`, `ManifestResponse`, `MergedChunk`, `ModelPaths`, `OcrBackendType`, `OcrCacheStats`, `OcrExtractionResult`, `OcrTableBoundingBox`, `OcrTable`, `OdtProperties`, `OpenWebDocumentResponse`, `OrientationResult`, `PSMMode`, `PaddleLanguage`, `PaddleOcrConfig`, `PageMarginsPoints`, `PoolError`, `PptxAppProperties`, `PptxExtractionResult`, `ProcessingStage`, `RecognizedTable`, `ReductionLevel`, `ResolvedStyle`, `ServerConfig`, `StreamReader`, `StringBufferPool`, `StructuredDataResult`, `StructuredExtractionResponse`, `StyleDefinition`, `SupportedFormat`, `TableCell`, `TableProperties`, `TessdataManager`, `TextExtractionResult`, `TokenReductionConfig`, `TracingLayer`, `WarmResponse`, `XlsxAppProperties`, `XmlExtractionResult`, `ZipBombValidator`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `dimensions`, `embed`, `estimated_duration_ms`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -2253,7 +2253,7 @@ sealed class FormatMetadata with _$FormatMetadata {
     required ArchiveMetadata field0,
   }) = FormatMetadata_Archive;
   const factory FormatMetadata.image({
-    required String field0,
+    required ImageMetadata field0,
   }) = FormatMetadata_Image;
   const factory FormatMetadata.xml({
     required XmlMetadata field0,
@@ -2698,6 +2698,34 @@ enum ImageKind {
   mask,
   unknown,
   ;
+}
+
+class ImageMetadata {
+  final PlatformInt64 width;
+  final PlatformInt64 height;
+  final String format;
+  final Map<String, String> exif;
+
+  const ImageMetadata({
+    required this.width,
+    required this.height,
+    required this.format,
+    required this.exif,
+  });
+
+  @override
+  int get hashCode =>
+      width.hashCode ^ height.hashCode ^ format.hashCode ^ exif.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ImageMetadata &&
+          runtimeType == other.runtimeType &&
+          width == other.width &&
+          height == other.height &&
+          format == other.format &&
+          exif == other.exif;
 }
 
 class ImageMetadataType {

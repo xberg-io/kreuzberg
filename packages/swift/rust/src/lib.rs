@@ -1506,6 +1506,16 @@ mod ffi {
     }
 
     extern "Rust" {
+        type ImageMetadata;
+        #[swift_bridge(init)]
+        fn new(width: u32, height: u32, format: String, exif: String) -> ImageMetadata;
+        fn width(&self) -> u32;
+        fn height(&self) -> u32;
+        fn format(&self) -> String;
+        fn exif(&self) -> String;
+    }
+
+    extern "Rust" {
         type XmlMetadata;
         #[swift_bridge(init)]
         fn new(element_count: usize, unique_elements: Vec<String>) -> XmlMetadata;
@@ -2262,25 +2272,6 @@ mod ffi {
         fn width(&self) -> Option<i64>;
         fn height(&self) -> Option<i64>;
         fn page_count(&self) -> Option<usize>;
-    }
-
-    extern "Rust" {
-        type CommonPdfMetadata;
-        #[swift_bridge(init)]
-        fn new(
-            title: Option<String>,
-            subject: Option<String>,
-            authors: Option<Vec<String>>,
-            keywords: Option<Vec<String>>,
-            created_at: Option<String>,
-            modified_at: Option<String>,
-            created_by: Option<String>,
-        ) -> CommonPdfMetadata;
-        fn title(&self) -> Option<String>;
-        fn subject(&self) -> Option<String>;
-        fn created_at(&self) -> Option<String>;
-        fn modified_at(&self) -> Option<String>;
-        fn created_by(&self) -> Option<String>;
     }
 
     extern "Rust" {
@@ -4367,7 +4358,7 @@ impl HwpImage {
     pub fn new(name: String, data: Vec<u8>) -> HwpImage {
         let mut __target: kreuzberg::extraction::hwp::model::HwpImage = ::std::default::Default::default();
         // alef: name — String fallback in non-serde struct, left at default
-        __target.data = data;
+        __target.data = data.into();
         HwpImage(__target)
     }
     pub fn name(&self) -> String {
@@ -7547,6 +7538,44 @@ impl ArchiveMetadata {
     }
 }
 
+pub struct ImageMetadata(pub kreuzberg::ImageMetadata);
+impl ImageMetadata {
+    pub fn new(width: u32, height: u32, format: String, exif: String) -> ImageMetadata {
+        let mut __target: kreuzberg::ImageMetadata = ::std::default::Default::default();
+        __target.width = width;
+        __target.height = height;
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&format) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.format = t;
+            }
+        }
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&exif) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.exif = t;
+            }
+        }
+        ImageMetadata(__target)
+    }
+    pub fn width(&self) -> u32 {
+        ::serde_json::to_value(&self.0.width)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn height(&self) -> u32 {
+        ::serde_json::to_value(&self.0.height)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn format(&self) -> String {
+        self.0.format.clone()
+    }
+    pub fn exif(&self) -> String {
+        serde_json::to_string(&self.0.exif).expect("serializable exif")
+    }
+}
+
 pub struct XmlMetadata(pub kreuzberg::XmlMetadata);
 impl XmlMetadata {
     pub fn new(element_count: usize, unique_elements: Vec<String>) -> XmlMetadata {
@@ -9775,46 +9804,6 @@ impl PdfMetadata {
                 .ok()
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
-    }
-}
-
-pub struct CommonPdfMetadata(pub kreuzberg::pdf::metadata::CommonPdfMetadata);
-impl CommonPdfMetadata {
-    pub fn new(
-        title: Option<String>,
-        subject: Option<String>,
-        authors: Option<Vec<String>>,
-        keywords: Option<Vec<String>>,
-        created_at: Option<String>,
-        modified_at: Option<String>,
-        created_by: Option<String>,
-    ) -> CommonPdfMetadata {
-        let mut __target: kreuzberg::pdf::metadata::CommonPdfMetadata = ::std::default::Default::default();
-        // alef: title — String fallback in non-serde struct, left at default
-        // alef: subject — String fallback in non-serde struct, left at default
-        // alef: authors — Vec field type may differ from IR in non-serde struct, left at default
-        // alef: keywords — Vec field type may differ from IR in non-serde struct, left at default
-        // alef: created_at — String fallback in non-serde struct, left at default
-        // alef: modified_at — String fallback in non-serde struct, left at default
-        // alef: created_by — String fallback in non-serde struct, left at default
-        CommonPdfMetadata(__target)
-    }
-    pub fn title(&self) -> Option<String> {
-        self.0.title.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn subject(&self) -> Option<String> {
-        self.0.subject.as_ref().map(|v| format!("{v:?}"))
-    }
-    // alef: skipped getter `authors` — type cannot be bridged through swift-bridge
-    // alef: skipped getter `keywords` — type cannot be bridged through swift-bridge
-    pub fn created_at(&self) -> Option<String> {
-        self.0.created_at.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn modified_at(&self) -> Option<String> {
-        self.0.modified_at.as_ref().map(|v| format!("{v:?}"))
-    }
-    pub fn created_by(&self) -> Option<String> {
-        self.0.created_by.as_ref().map(|v| format!("{v:?}"))
     }
 }
 

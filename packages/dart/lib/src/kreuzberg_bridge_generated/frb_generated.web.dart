@@ -216,6 +216,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 
 @protected ImageKind dco_decode_box_autoadd_image_kind(dynamic raw);
 
+@protected ImageMetadata dco_decode_box_autoadd_image_metadata(dynamic raw);
+
 @protected ImagePreprocessingConfig dco_decode_box_autoadd_image_preprocessing_config(dynamic raw);
 
 @protected ImagePreprocessingMetadata dco_decode_box_autoadd_image_preprocessing_metadata(dynamic raw);
@@ -401,6 +403,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 @protected ImageExtractionConfig dco_decode_image_extraction_config(dynamic raw);
 
 @protected ImageKind dco_decode_image_kind(dynamic raw);
+
+@protected ImageMetadata dco_decode_image_metadata(dynamic raw);
 
 @protected ImageMetadataType dco_decode_image_metadata_type(dynamic raw);
 
@@ -934,6 +938,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 
 @protected ImageKind sse_decode_box_autoadd_image_kind(SseDeserializer deserializer);
 
+@protected ImageMetadata sse_decode_box_autoadd_image_metadata(SseDeserializer deserializer);
+
 @protected ImagePreprocessingConfig sse_decode_box_autoadd_image_preprocessing_config(SseDeserializer deserializer);
 
 @protected ImagePreprocessingMetadata sse_decode_box_autoadd_image_preprocessing_metadata(SseDeserializer deserializer);
@@ -1119,6 +1125,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 @protected ImageExtractionConfig sse_decode_image_extraction_config(SseDeserializer deserializer);
 
 @protected ImageKind sse_decode_image_kind(SseDeserializer deserializer);
+
+@protected ImageMetadata sse_decode_image_metadata(SseDeserializer deserializer);
 
 @protected ImageMetadataType sse_decode_image_metadata_type(SseDeserializer deserializer);
 
@@ -1652,6 +1660,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 
 @protected void sse_encode_box_autoadd_image_kind(ImageKind self, SseSerializer serializer);
 
+@protected void sse_encode_box_autoadd_image_metadata(ImageMetadata self, SseSerializer serializer);
+
 @protected void sse_encode_box_autoadd_image_preprocessing_config(ImagePreprocessingConfig self, SseSerializer serializer);
 
 @protected void sse_encode_box_autoadd_image_preprocessing_metadata(ImagePreprocessingMetadata self, SseSerializer serializer);
@@ -1837,6 +1847,8 @@ CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ValidatorDartImplP
 @protected void sse_encode_image_extraction_config(ImageExtractionConfig self, SseSerializer serializer);
 
 @protected void sse_encode_image_kind(ImageKind self, SseSerializer serializer);
+
+@protected void sse_encode_image_metadata(ImageMetadata self, SseSerializer serializer);
 
 @protected void sse_encode_image_metadata_type(ImageMetadataType self, SseSerializer serializer);
 

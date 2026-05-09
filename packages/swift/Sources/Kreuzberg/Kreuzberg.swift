@@ -576,6 +576,11 @@ public typealias EmailMetadata = RustBridge.EmailMetadata
 /// Extracted from compressed archive files containing file lists and size information.
 public typealias ArchiveMetadata = RustBridge.ArchiveMetadata
 
+/// Image metadata extracted from image files.
+///
+/// Includes dimensions, format, and EXIF data.
+public typealias ImageMetadata = RustBridge.ImageMetadata
+
 /// XML metadata extracted during XML parsing.
 ///
 /// Provides statistics about XML document structure.
@@ -909,11 +914,6 @@ public typealias EmbeddedFile = RustBridge.EmbeddedFile
 /// `Metadata` structure. Common fields like title, authors, keywords, and dates
 /// are at the `Metadata` level.
 public typealias PdfMetadata = RustBridge.PdfMetadata
-
-/// Common PDF metadata fields extracted from the document info dictionary.
-///
-/// Used as an intermediate type during extraction before building `PdfExtractionMetadata`.
-public typealias CommonPdfMetadata = RustBridge.CommonPdfMetadata
 
 /// ONNX Runtime execution provider type.
 ///
@@ -1399,7 +1399,7 @@ public enum FormatMetadata {
     case email(field0: EmailMetadata)
     case pptx(field0: PptxMetadata)
     case archive(field0: ArchiveMetadata)
-    case image(field0: String)
+    case image(field0: ImageMetadata)
     case xml(field0: XmlMetadata)
     case text(field0: TextMetadata)
     case html(field0: HtmlMetadata)

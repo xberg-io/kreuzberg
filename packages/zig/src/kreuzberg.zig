@@ -1446,6 +1446,16 @@ pub const ArchiveMetadata = struct {
     compressed_size: ?u64,
 };
 
+/// Image metadata extracted from image files.
+///
+/// Includes dimensions, format, and EXIF data.
+pub const ImageMetadata = struct {
+    width: u32,
+    height: u32,
+    format: [:0]const u8,
+    exif: std.StringHashMap([:0]const u8),
+};
+
 /// XML metadata extracted during XML parsing.
 ///
 /// Provides statistics about XML document structure.
@@ -2134,19 +2144,6 @@ pub const PdfMetadata = struct {
     page_count: ?u64,
 };
 
-/// Common PDF metadata fields extracted from the document info dictionary.
-///
-/// Used as an intermediate type during extraction before building `PdfExtractionMetadata`.
-pub const CommonPdfMetadata = struct {
-    title: ?[:0]const u8,
-    subject: ?[:0]const u8,
-    authors: ?[]const [:0]const u8,
-    keywords: ?[]const [:0]const u8,
-    created_at: ?[:0]const u8,
-    modified_at: ?[:0]const u8,
-    created_by: ?[:0]const u8,
-};
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -2521,7 +2518,7 @@ pub const FormatMetadata = union(enum) {
     email: EmailMetadata,
     pptx: PptxMetadata,
     archive: ArchiveMetadata,
-    image: [:0]const u8,
+    image: ImageMetadata,
     xml: XmlMetadata,
     text: TextMetadata,
     html: HtmlMetadata,

@@ -1927,6 +1927,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ImageMetadata dco_decode_box_autoadd_image_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_image_metadata(raw);
+  }
+
+  @protected
   ImagePreprocessingConfig dco_decode_box_autoadd_image_preprocessing_config(
       dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
@@ -2852,7 +2858,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         );
       case 6:
         return FormatMetadata_Image(
-          field0: dco_decode_String(raw[1]),
+          field0: dco_decode_box_autoadd_image_metadata(raw[1]),
         );
       case 7:
         return FormatMetadata_Xml(
@@ -3092,6 +3098,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ImageKind dco_decode_image_kind(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ImageKind.values[raw as int];
+  }
+
+  @protected
+  ImageMetadata dco_decode_image_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return ImageMetadata(
+      width: dco_decode_i_64(arr[0]),
+      height: dco_decode_i_64(arr[1]),
+      format: dco_decode_String(arr[2]),
+      exif: dco_decode_Map_String_String_None(arr[3]),
+    );
   }
 
   @protected
@@ -5588,6 +5608,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ImageMetadata sse_decode_box_autoadd_image_metadata(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_image_metadata(deserializer));
+  }
+
+  @protected
   ImagePreprocessingConfig sse_decode_box_autoadd_image_preprocessing_config(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -6683,7 +6710,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_field0 = sse_decode_box_autoadd_archive_metadata(deserializer);
         return FormatMetadata_Archive(field0: var_field0);
       case 6:
-        var var_field0 = sse_decode_String(deserializer);
+        var var_field0 = sse_decode_box_autoadd_image_metadata(deserializer);
         return FormatMetadata_Image(field0: var_field0);
       case 7:
         var var_field0 = sse_decode_box_autoadd_xml_metadata(deserializer);
@@ -6933,6 +6960,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return ImageKind.values[inner];
+  }
+
+  @protected
+  ImageMetadata sse_decode_image_metadata(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_width = sse_decode_i_64(deserializer);
+    var var_height = sse_decode_i_64(deserializer);
+    var var_format = sse_decode_String(deserializer);
+    var var_exif = sse_decode_Map_String_String_None(deserializer);
+    return ImageMetadata(
+        width: var_width,
+        height: var_height,
+        format: var_format,
+        exif: var_exif);
   }
 
   @protected
@@ -10187,6 +10228,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_image_metadata(
+      ImageMetadata self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_image_metadata(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_image_preprocessing_config(
       ImagePreprocessingConfig self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -10991,7 +11039,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_archive_metadata(field0, serializer);
       case FormatMetadata_Image(field0: final field0):
         sse_encode_i_32(6, serializer);
-        sse_encode_String(field0, serializer);
+        sse_encode_box_autoadd_image_metadata(field0, serializer);
       case FormatMetadata_Xml(field0: final field0):
         sse_encode_i_32(7, serializer);
         sse_encode_box_autoadd_xml_metadata(field0, serializer);
@@ -11172,6 +11220,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_image_kind(ImageKind self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_image_metadata(ImageMetadata self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.width, serializer);
+    sse_encode_i_64(self.height, serializer);
+    sse_encode_String(self.format, serializer);
+    sse_encode_Map_String_String_None(self.exif, serializer);
   }
 
   @protected

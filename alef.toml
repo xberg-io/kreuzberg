@@ -755,7 +755,7 @@ types = [
 
   # Duplicate types with internal-only versions — use public types instead
   "BoundingBox", # kreuzberg::pdf::hierarchy::bounding_box::BoundingBox (internal; use kreuzberg::types::BoundingBox)
-  "ImageMetadata", # kreuzberg::extraction::image::ImageMetadata (internal; use kreuzberg::types::ImageMetadata)
+  "kreuzberg::extraction::image::ImageMetadata", # internal; kreuzberg::types::ImageMetadata is the public API type
   "Attributes", # kreuzberg::extractors::djot_format::attributes::Attributes (internal type with lifetime issues)
 
   # Content format OutputFormat (from core::config::formats) — exclude by fully-qualified path so
@@ -1241,7 +1241,7 @@ bigint_fields = ["cacheTtlSecs", "extractionTimeoutSecs"]
 
 [crates.e2e.call.overrides.php]
 class = "Kreuzberg\\Kreuzberg"
-function = "extractFile"
+function = "extractFileAsync"
 options_type = "ExtractionConfig"
 
 [crates.e2e.call.overrides.r]
@@ -1276,6 +1276,9 @@ args = [
 function = "extract_bytes"
 async = true
 
+[crates.e2e.calls.extract_file.overrides.php]
+function = "extractFileAsync"
+
 [crates.e2e.calls.extract_bytes]
 function = "extract_bytes"
 module = "kreuzberg"
@@ -1297,6 +1300,9 @@ options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_bytes.overrides.r]
 arg_name_map = { data = "content" }
+
+[crates.e2e.calls.extract_bytes.overrides.php]
+function = "extractBytesAsync"
 
 [crates.e2e.calls.extract_bytes.overrides.zig]
 function = "extract_bytes_sync"
@@ -1497,6 +1503,9 @@ options_type = "ExtractionConfig"
 [crates.e2e.calls.batch_extract_files.overrides.r]
 arg_name_map = { paths = "items" }
 
+[crates.e2e.calls.batch_extract_files.overrides.php]
+function = "batchExtractFilesAsync"
+
 [crates.e2e.calls.batch_extract_files.overrides.zig]
 function = "batch_extract_files_sync"
 async = false
@@ -1615,6 +1624,9 @@ options_type = "ExtractionConfig"
 result_is_vec = true
 options_type = "ExtractionConfig"
 enum_fields = { outputFormat = "OutputFormat" }
+
+[crates.e2e.calls.batch_extract_bytes.overrides.php]
+function = "batchExtractBytesAsync"
 
 [crates.e2e.calls.batch_extract_bytes.overrides.zig]
 function = "batch_extract_bytes_sync"

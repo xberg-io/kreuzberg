@@ -773,6 +773,16 @@ ArchiveMetadata$from_json <- function(json) .Call("wrap__ArchiveMetadata__from_j
 }
 #' @export
 `[[.ArchiveMetadata` <- `$.ArchiveMetadata`
+ImageMetadata <- new.env(parent = emptyenv())
+ImageMetadata$from_json <- function(json) .Call("wrap__ImageMetadata__from_json", json, PACKAGE = "kreuzberg")
+#' @export
+`$.ImageMetadata` <- function(self, name) {
+  func <- ImageMetadata[[name]]
+  environment(func) <- environment()
+  func
+}
+#' @export
+`[[.ImageMetadata` <- `$.ImageMetadata`
 XmlMetadata <- new.env(parent = emptyenv())
 XmlMetadata$from_json <- function(json) .Call("wrap__XmlMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1357,15 +1367,6 @@ PdfMetadata$from_json <- function(json) .Call("wrap__PdfMetadata__from_json", js
 }
 #' @export
 `[[.PdfMetadata` <- `$.PdfMetadata`
-CommonPdfMetadata <- new.env(parent = emptyenv())
-#' @export
-`$.CommonPdfMetadata` <- function(self, name) {
-  func <- CommonPdfMetadata[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.CommonPdfMetadata` <- `$.CommonPdfMetadata`
 OutputFormat <- new.env(parent = emptyenv())
 #' @export
 `$.OutputFormat` <- function(self, name) {

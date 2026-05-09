@@ -1567,6 +1567,18 @@ pub type ArchiveMetadata {
   )
 }
 
+/// Image metadata extracted from image files.
+///
+/// Includes dimensions, format, and EXIF data.
+pub type ImageMetadata {
+  ImageMetadata(
+    width: Int,
+    height: Int,
+    format: String,
+    exif: Dict(String, String)
+  )
+}
+
 /// XML metadata extracted during XML parsing.
 ///
 /// Provides statistics about XML document structure.
@@ -2404,21 +2416,6 @@ pub type PdfMetadata {
   )
 }
 
-/// Common PDF metadata fields extracted from the document info dictionary.
-///
-/// Used as an intermediate type during extraction before building `PdfExtractionMetadata`.
-pub type CommonPdfMetadata {
-  CommonPdfMetadata(
-    title: Option(String),
-    subject: Option(String),
-    authors: Option(List(String)),
-    keywords: Option(List(String)),
-    created_at: Option(String),
-    modified_at: Option(String),
-    created_by: Option(String)
-  )
-}
-
 /// ONNX Runtime execution provider type.
 ///
 /// Determines which hardware backend is used for model inference.
@@ -2834,7 +2831,7 @@ pub type FormatMetadata {
     ArchiveMetadata
   )
   FormatMetadataImage(
-    String
+    ImageMetadata
   )
   Xml(
     XmlMetadata

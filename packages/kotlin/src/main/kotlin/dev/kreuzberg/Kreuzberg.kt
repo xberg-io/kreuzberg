@@ -103,6 +103,7 @@ typealias Metadata = dev.kreuzberg.Metadata
 typealias ExcelMetadata = dev.kreuzberg.ExcelMetadata
 typealias EmailMetadata = dev.kreuzberg.EmailMetadata
 typealias ArchiveMetadata = dev.kreuzberg.ArchiveMetadata
+typealias ImageMetadata = dev.kreuzberg.ImageMetadata
 typealias XmlMetadata = dev.kreuzberg.XmlMetadata
 typealias TextMetadata = dev.kreuzberg.TextMetadata
 typealias HeaderMetadata = dev.kreuzberg.HeaderMetadata
@@ -180,7 +181,6 @@ typealias LayoutDetection = dev.kreuzberg.LayoutDetection
 typealias DetectionResult = dev.kreuzberg.DetectionResult
 typealias EmbeddedFile = dev.kreuzberg.EmbeddedFile
 typealias PdfMetadata = dev.kreuzberg.PdfMetadata
-typealias CommonPdfMetadata = dev.kreuzberg.CommonPdfMetadata
 
 typealias ExecutionProviderType = dev.kreuzberg.ExecutionProviderType
 typealias OutputFormat = dev.kreuzberg.OutputFormat
