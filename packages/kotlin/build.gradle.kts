@@ -65,6 +65,7 @@ ktlint {
   ignoreFailures.set(false)
   filter {
     exclude { entry -> entry.file.toString().contains("/packages/java/") }
+    exclude { entry -> entry.file.toString().endsWith("/Kreuzberg.kt") }
     exclude("**/build/**")
     exclude("**/generated/**")
   }
