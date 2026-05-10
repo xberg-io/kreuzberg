@@ -1,4 +1,4 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="Gleam targets Erlang/JS and inherits the BEAM actor-model boundary; Rustler-style trait callbacks are not feasible from a pure Gleam process. Custom plugins must be implemented in Rust." -->
 
 ```gleam title="Gleam"
 import kreuzberg
