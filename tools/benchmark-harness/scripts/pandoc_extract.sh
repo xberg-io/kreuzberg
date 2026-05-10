@@ -6,12 +6,12 @@ FORMAT="markdown"
 FILE_PATH=""
 for arg in "$@"; do
   case "$arg" in
-    --format=*)
-      FORMAT="${arg#--format=}"
-      ;;
-    *)
-      FILE_PATH="$arg"
-      ;;
+  --format=*)
+    FORMAT="${arg#--format=}"
+    ;;
+  *)
+    FILE_PATH="$arg"
+    ;;
   esac
 done
 

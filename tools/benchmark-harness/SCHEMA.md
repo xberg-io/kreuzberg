@@ -22,6 +22,7 @@ This document describes the structure of `aggregated.json` produced by `benchmar
 ## Output Format Discriminator
 
 The `output_format` field determines:
+
 - **`markdown`**: Supports all metrics including SF1 (structural F1), layout percentiles, and all ranking tables
 - **`plaintext`**: Text-only extraction; SF1 and layout percentiles are `null`; plaintext frameworks never appear in SF1 rankings
 
@@ -30,11 +31,13 @@ The `output_format` field determines:
 Key format: `{framework}:{output_format}:{execution_mode}`
 
 Examples:
+
 - `kreuzberg-rust:markdown:single`
 - `pdfplumber-python:plaintext:batch`
 - `docling:markdown:single`
 
 Each entry contains:
+
 ```json
 {
   "framework": "string",                     // Framework name without format/mode

@@ -592,7 +592,7 @@ async fn main() -> Result<()> {
 
             // Parse output format
             let parsed_format =
-                OutputFormat::from_str(&output_format).map_err(|e| benchmark_harness::Error::Config(e))?;
+                OutputFormat::from_str(&output_format).map_err(benchmark_harness::Error::Config)?;
 
             let mut runner = BenchmarkRunner::with_output_format(config, registry, parsed_format);
             runner.load_fixtures(&fixtures)?;
