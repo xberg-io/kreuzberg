@@ -97,7 +97,11 @@ fn infer_language_from_path(path: &Path, base_dir: &Path) -> Option<Language> {
 fn parse_annotation(comment: &str) -> Option<SnippetAnnotation> {
     let inner = comment.trim().strip_prefix("<!--")?.strip_suffix("-->")?.trim();
 
-    match inner {
+    // Accept the bare directive or the directive followed by attribute syntax
+    // (e.g. `snippet:skip reason="upstream-blocker..."`).
+    let directive = inner.split_whitespace().next()?;
+
+    match directive {
         "snippet:skip" => Some(SnippetAnnotation::Skip),
         "snippet:compile-only" => Some(SnippetAnnotation::CompileOnly),
         "snippet:syntax-only" => Some(SnippetAnnotation::SyntaxOnly),
@@ -123,6 +127,14 @@ mod tests {
     #[test]
     fn test_parse_annotation_skip() {
         assert_eq!(parse_annotation("<!-- snippet:skip -->"), Some(SnippetAnnotation::Skip));
+    }
+
+    #[test]
+    fn test_parse_annotation_skip_with_reason() {
+        assert_eq!(
+            parse_annotation("<!-- snippet:skip reason=\"upstream codegen gap\" -->"),
+            Some(SnippetAnnotation::Skip)
+        );
     }
 
     #[test]
