@@ -41,15 +41,7 @@ Keywords are returned in `result.extracted_keywords` as objects with `text` and 
 
 ## Configuration
 
-| Parameter      | Type               | Default  | Description                                                  |
-| -------------- | ------------------ | -------- | ------------------------------------------------------------ |
-| `algorithm`    | `KeywordAlgorithm` | `YAKE`   | `YAKE` or `RAKE`                                             |
-| `max_keywords` | `int`              | `10`     | Maximum keywords to extract                                  |
-| `min_score`    | `float`            | `0.0`    | Score threshold (upper bound for YAKE, lower bound for RAKE) |
-| `ngram_range`  | `tuple[int, int]`  | `(1, 3)` | Min and max phrase length in words                           |
-| `language`     | `str \| None`      | `"en"`   | Language for stopword filtering (`None` disables)            |
-| `yake_params`  | `YakeParams`       | —        | YAKE-specific tuning                                         |
-| `rake_params`  | `RakeParams`       | —        | RAKE-specific tuning                                         |
+See [KeywordConfig reference](../reference/configuration.md#keywordconfig) for all configuration options.
 
 === "Python"
 
@@ -81,7 +73,7 @@ Keywords are returned in `result.extracted_keywords` as objects with `text` and 
 
 ## YAKE Score Tuning
 
-Lower YAKE scores = higher relevance. Use `min_score` as an upper bound:
+Use `min_score` as upper bound. Lower YAKE scores = higher relevance:
 
 | `min_score` | Effect              |
 | ----------- | ------------------- |
@@ -89,11 +81,11 @@ Lower YAKE scores = higher relevance. Use `min_score` as an upper bound:
 | `0.3`       | Main topics only    |
 | `0.1`       | Core concepts only  |
 
-`YakeParams.window_size` controls co-occurrence context: `1–2` for narrow domains, `2–3` for general (default: `2`), `3–4` for discussion-heavy content.
+`yake_params.window_size` controls co-occurrence context: `1–2` for narrow domains, `2–3` for general (default: `2`), `3–4` for discussion-heavy content.
 
 ## RAKE Score Tuning
 
-Higher RAKE scores = higher relevance. Use `min_score` as a lower bound:
+Use `min_score` as lower bound. Higher RAKE scores = higher relevance:
 
 | `min_score` | Effect                       |
 | ----------- | ---------------------------- |
@@ -101,7 +93,7 @@ Higher RAKE scores = higher relevance. Use `min_score` as a lower bound:
 | `5.0`       | Main phrases only            |
 | `20.0`      | Only highly specific phrases |
 
-`RakeParams`: `min_word_length` (default: `1`), `max_words_per_phrase` (default: `3`).
+`rake_params.min_word_length` (default: `1`) and `rake_params.max_words_per_phrase` (default: `3`) control phrase boundaries.
 
 ## Troubleshooting
 

@@ -2,7 +2,7 @@
 
 !!! Info "Added in v4.8.1"
 
-Render extracted document content as styled HTML with semantic `kb-*` CSS classes. Unlike plain text or Markdown output, HTML output preserves document structure with configurable themes and full CSS customization.
+Render extracted document content as styled HTML with semantic `kb-*` CSS classes, configurable themes, and full CSS customization.
 
 ## Quick Start
 
@@ -66,13 +66,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 
 ## Configuration
 
-| Field          | Type        | Default    | Description                                                              |
-| -------------- | ----------- | ---------- | ------------------------------------------------------------------------ |
-| `theme`        | `HtmlTheme` | `unstyled` | Built-in colour/typography theme                                         |
-| `css`          | `string?`   | `None`     | Inline CSS string appended after theme style sheet                       |
-| `css_file`     | `path?`     | `None`     | CSS file loaded at render time (max 1 MiB)                               |
-| `class_prefix` | `string`    | `"kb-"`    | CSS class prefix (alphanumeric, hyphens, underscores only)               |
-| `embed_css`    | `bool`      | `true`     | Include `<style>` block in output. Set `false` for external style sheets |
+See [HtmlOutputConfig](../reference/configuration.md#htmloutputconfig) for detailed field documentation.
 
 === "Python"
 
@@ -126,15 +120,13 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 
 ## CLI Flags
 
-```text
---html-theme <THEME>        default | github | dark | light | unstyled
---html-css <CSS>            Inline CSS appended after the theme stylesheet
---html-css-file <PATH>      CSS file loaded at render time
---html-class-prefix <PREFIX> Default: "kb-"
---html-no-embed-css         Suppress the <style> block entirely
-```
-
-!!! Note Any `--html-*` flag implicitly sets `--content-format html`.
+| Flag | Description |
+|------|-------------|
+| `--html-theme <THEME>` | Built-in theme: `default`, `github`, `dark`, `light`, `unstyled`. Implies `--content-format html`. |
+| `--html-css <CSS>` | Inline CSS string appended after the theme stylesheet. |
+| `--html-css-file <PATH>` | Path to CSS file loaded at render time (max 1 MiB). |
+| `--html-class-prefix <PREFIX>` | CSS class prefix; default: `"kb-"`. Alphanumeric, hyphens, underscores only. |
+| `--html-no-embed-css` | Suppress the `<style>` block; use external stylesheet instead. |
 
 ## CSS Customization
 

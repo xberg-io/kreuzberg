@@ -1,4 +1,4 @@
-# Plugin System <span class="version-badge">v4.0.0</span>
+# Plugin System <span class="version-badge">v5.0.0</span>
 
 Kreuzberg's extraction pipeline is entirely plugin-driven. Every format extractor, OCR engine, post-processor, validator, and renderer is a plugin that registers itself into a typed registry. The pipeline queries these registries at each stage to find the right handler. You extend Kreuzberg by writing your own plugin and registering it. The pipeline picks it up automatically.
 
@@ -66,25 +66,11 @@ You register a plugin once. From that point on, the pipeline uses it wherever th
 
 ### DocumentExtractor
 
-A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file format. It declares which MIME types it supports and provides two extraction methods: one for file paths, one for raw bytes.
+A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file format. It declares supported MIME types and provides async methods to extract from file paths or raw bytes.
 
-```rust title="extractor_trait.rs"
-#[async_trait]
-pub trait DocumentExtractor: Plugin {
-    fn supported_mime_types(&self) -> Vec<&str>;
-    fn priority(&self) -> i32 { 0 }
+See [`DocumentExtractor`](../reference/types.md#documentextractor) for the trait signature.
 
-    async fn extract_file(
-        &self, path: &Path, mime_type: &str, config: &ExtractionConfig,
-    ) -> Result<ExtractionResult>;
-
-    async fn extract_bytes(
-        &self, data: &[u8], mime_type: &str, config: &ExtractionConfig,
-    ) -> Result<ExtractionResult>;
-}
-```
-
-Kreuzberg ships with built-in extractors for PDF (via pdf_oxide), Excel (via calamine), images (routes to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
+Kreuzberg ships with built-in extractors for PDF, Excel, images (routed to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
 
 **Priority resolution.** When two extractors are registered for the same MIME type, the one with the higher `priority()` value wins. Every built-in extractor has a priority of 0. To override the built-in PDF extractor with your own, register yours with a higher priority:
 
@@ -101,18 +87,9 @@ Now when the pipeline encounters `application/pdf`, it selects `BetterPDFExtract
 
 ### OcrBackend
 
-An `OcrBackend` performs optical character recognition on image data. It declares which languages it supports and provides a `process_image` method that takes raw image bytes and returns recognized text.
+An `OcrBackend` performs optical character recognition on image data. It declares supported languages and provides async methods to process image bytes or files.
 
-```rust title="ocr_trait.rs"
-#[async_trait]
-pub trait OcrBackend: Plugin {
-    fn supports_language(&self, language: &str) -> bool;
-
-    async fn process_image(
-        &self, image_data: &[u8], language: Option<&str>, config: &OcrConfig,
-    ) -> Result<OcrResult>;
-}
-```
+See [`OcrBackend`](../reference/types.md#ocrbackend) for the trait signature.
 
 Three backends ship out of the box:
 
@@ -128,22 +105,9 @@ You can register your own OCR backend (for example, a cloud-based API, a custom 
 
 ### PostProcessor
 
-A `PostProcessor` transforms the extraction result after the main extraction and OCR stages are complete. Each processor declares a `stage` that determines its execution order relative to other processors.
+A `PostProcessor` transforms extraction results after the main extraction and OCR stages are complete. Each processor declares a processing stage that determines its execution order.
 
-```rust title="postprocessor_trait.rs"
-#[async_trait]
-pub trait PostProcessor: Plugin {
-    fn stage(&self) -> ProcessingStage;
-
-    fn should_process(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
-        true
-    }
-
-    async fn process(
-        &self, result: ExtractionResult, config: &ExtractionConfig,
-    ) -> Result<ExtractionResult>;
-}
-```
+See [`PostProcessor`](../reference/types.md#postprocessor) for the trait signature.
 
 The three stages execute in fixed order:
 
@@ -153,24 +117,15 @@ The three stages execute in fixed order:
 | `Middle` | Second | Analyze content      | Extract named entities, detect language, classify document type |
 | `Late`   | Third  | Final output shaping | Format output, generate summaries, redact PII                   |
 
-A design decision worth noting: **post-processor errors do not fail the extraction.** If a processor throws an exception, the error is logged and the pipeline continues with the result unchanged. This ensures a buggy or experimental processor can't take down your extraction pipeline.
+**Error handling:** Post-processor errors do not fail the extraction. Errors are logged and the pipeline continues unchanged, ensuring no processor can take down extraction.
 
 ---
 
 ### Validator
 
-A `Validator` inspects the extraction result and can reject it if it doesn't meet your requirements. Unlike post-processors, **validator errors stop the pipeline immediately.** They're a hard gate.
+A `Validator` inspects extraction results and can reject them if they don't meet requirements. Unlike post-processors, validator errors stop the pipeline immediately — they're a hard gate.
 
-```rust title="validator_trait.rs"
-#[async_trait]
-pub trait Validator: Plugin {
-    fn should_validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
-        true
-    }
-
-    async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> Result<()>;
-}
-```
+See [`Validator`](../reference/types.md#validator) for the trait signature.
 
 Two common validator patterns:
 
@@ -192,14 +147,13 @@ Validators run before post-processors. This means you can catch and reject bad r
 
 ---
 
-### Renderer <span class="version-badge">v4.7.0</span>
+### Renderer
 
-A `Renderer` converts the internal document representation into a specific output format. It declares a name and provides a `render` method that takes an `InternalDocument` and produces formatted text.
+A `Renderer` converts the internal document representation into a specific output format. It declares a name and provides a render method.
 
-```rust title="renderer_trait.rs"
-pub trait Renderer: Plugin {
+```rust
+pub trait Renderer: Send + Sync {
     fn name(&self) -> &str;
-
     fn render(&self, document: &InternalDocument) -> Result<String>;
 }
 ```
@@ -230,7 +184,7 @@ Custom renderers participate in the pipeline just like built-in ones. When the u
 
 ## Plugin Lifecycle
 
-Every plugin, regardless of type, follows the same lifecycle from creation to shutdown.
+Every plugin follows the same lifecycle from creation to shutdown.
 
 ```mermaid
 stateDiagram-v2
@@ -241,46 +195,21 @@ stateDiagram-v2
     Active --> [*]: shutdown()
 ```
 
-The base `Plugin` trait that all four plugin types extend:
+See [`Plugin`](../reference/types.md#plugin) for the base trait signature.
 
-```rust title="base_trait.rs"
-pub trait Plugin: Send + Sync {
-    fn name(&self) -> &str;
-    fn version(&self) -> String;
-    fn initialize(&self) -> Result<()>;
-    fn shutdown(&self) -> Result<()>;
-}
-```
-
-`initialize()` is called lazily the first time the plugin is used, not when it's registered. This avoids startup overhead for plugins that may never be invoked. `shutdown()` runs when the plugin is removed from the registry or when the process exits. Both methods have default no-op implementations, so you only override them if your plugin needs setup or cleanup logic.
+Key behaviors: `initialize()` is called lazily the first time the plugin is used, not at registration. This avoids startup overhead for plugins that may never be invoked. `shutdown()` runs when the plugin is unregistered or on process exit. Both have default no-op implementations — override only if your plugin needs setup or cleanup.
 
 ---
 
 ## Registering Plugins
 
-The registration pattern is the same in every language. Get the registry, call register.
-
-=== "Rust"
-`rust
-    let registry = get_document_extractor_registry();
-    let mut registry = registry.write().unwrap();
-    registry.register("my-pdf", Arc::new(MyPDFExtractor::new()))?;`
-
-=== "Python" ```python from Kreuzberg import get_document_extractor_registry
-
-    registry = get_document_extractor_registry()
-    registry.register(MyPDFExtractor())
-    ```
-
-Once registered, the pipeline automatically uses your plugin for any matching MIME type (extractors), backend name (OCR), processing stage (post-processors), or validator name (validators).
+Get the appropriate registry for your plugin type and call `register()`. Once registered, the pipeline automatically dispatches to your plugin based on MIME type (extractors), backend name (OCR), processing stage (post-processors), or validator name.
 
 ---
 
 ## Cross-Language Plugins
 
-Plugins written in Python can integrate directly with the Rust extraction pipeline. The PyO3 bridge layer handles all type conversion between Python and Rust automatically.
-
-Here is what happens when a Python plugin is registered and then invoked during extraction:
+Plugins written in Python can integrate directly with the Rust extraction pipeline via PyO3 FFI. The bridge layer handles all type conversion automatically.
 
 ```mermaid
 sequenceDiagram
@@ -295,39 +224,25 @@ sequenceDiagram
     R->>B: extract_file(path, mime, config)
     B->>P: Call plugin.extract_file()
     P-->>B: Return result as dict
-    B-->>R: Convert to ExtractionResult struct
+    B-->>R: Convert to ExtractionResult
 ```
 
-The bridge handles type conversion between languages:
-
-| Rust      | Python      | TypeScript    |
-| --------- | ----------- | ------------- |
-| `Vec<u8>` | `bytes`     | `Buffer`      |
-| `String`  | `str`       | `string`      |
-| Structs   | Dataclasses | Plain objects |
-
-For large data like file bytes and image buffers, the bindings are designed to minimize copying and use buffer protocols where supported. A Python plugin may receive file data as `bytes` or another buffer-compatible type, depending on the binding implementation and runtime behavior.
+Type mapping: `Vec<u8>` ↔ `bytes`, `String` ↔ `str`, Rust structs ↔ Python dataclasses. Large buffers use Python's buffer protocol to minimize copying.
 
 ---
 
 ## Thread Safety
 
-All plugins must implement `Send + Sync` because the extraction pipeline invokes them concurrently from Tokio's worker thread pool.
-
-- **`Send`** means the plugin value can be moved to a different thread.
-- **`Sync`** means multiple threads can hold references to the plugin simultaneously.
-
-If your plugin needs mutable internal state (counters, connection pools, caches), wrap it in `Mutex`, `RwLock`, or use atomic types. The compiler will enforce this at build time.
+All plugins must implement `Send + Sync` because the extraction pipeline invokes them concurrently from Tokio's worker thread pool. For mutable internal state, use `Mutex`, `RwLock`, or atomic types. The compiler will enforce this requirement.
 
 ---
 
 ## Plugin Discovery
 
-Plugins can be registered in three ways:
+Plugins can be registered in two ways:
 
 1. **Built-in** — automatically registered when Kreuzberg initializes. These are the default extractors, OCR backends, and processors.
-2. **Programmatic** — registered manually via the registry API, as shown above.
-3. **Configuration-based** — loaded from `kreuzberg.toml` at startup (planned for a future release).
+2. **Programmatic** — registered manually via the registry API at runtime.
 
 ---
 
