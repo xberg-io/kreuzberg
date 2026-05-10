@@ -231,10 +231,14 @@ mod tests {
         // 0 -> 0 (bold)
         // 5 -> 1 (italic)
         let runs = vec![(0, 0), (5, 1)];
-        let mut shape1 = CharShape::default();
-        shape1.bold = true;
-        let mut shape2 = CharShape::default();
-        shape2.italic = true;
+        let shape1 = CharShape {
+            bold: true,
+            ..Default::default()
+        };
+        let shape2 = CharShape {
+            italic: true,
+            ..Default::default()
+        };
         let char_shapes = vec![shape1, shape2];
 
         let annotations = apply_char_shapes(text, &runs, &char_shapes);
@@ -252,8 +256,10 @@ mod tests {
     fn test_build_hwp_internal_document() {
         use crate::extraction::hwp::model::{HwpImage, ParaText, Paragraph, Section};
 
-        let mut shape1 = CharShape::default();
-        shape1.bold = true;
+        let shape1 = CharShape {
+            bold: true,
+            ..Default::default()
+        };
 
         let para = Paragraph {
             outline_level: 1, // Heading 1
