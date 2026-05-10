@@ -4,7 +4,7 @@ description: "Install Kreuzberg — pick Python, TypeScript, Rust, Go, CLI/Docke
 
 # Installation
 
-Native bindings for 12 languages plus a standalone CLI. Every package ships **prebuilt binaries** for Linux (x86_64/aarch64), macOS (Apple Silicon), and Windows — no compile step needed.
+Native bindings for 17 languages plus a standalone CLI. Every package ships **prebuilt binaries** for Linux (x86_64/aarch64), macOS (Apple Silicon), and Windows — no compile step needed.
 
 !!! Warning "Windows — ONNX Runtime required for Go, Elixir, and C/C++" Go, Elixir, and C/C++ bindings on Windows link against ONNX Runtime dynamically. You must have `onnxruntime.dll` on your `PATH` at runtime. Download it from the [ONNX Runtime releases](https://github.com/microsoft/onnxruntime/releases) (for example `onnxruntime-win-x64-1.24.1.zip`). Python, TypeScript, Java, C#, Ruby, PHP, and Wasm are unaffected.
 
@@ -124,6 +124,17 @@ No SDK, no code — just your terminal.
   [API Reference](../reference/api-java.md){ .install-btn .install-btn--ghost }
   [:material-lightning-bolt: Quick Start](#java){ .install-btn .install-btn--solid }
 
+- :fontawesome-brands-kotlin:{ .lg .middle } **Kotlin**
+
+  ***
+
+  ```kotlin
+  implementation("dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.1")
+  ```
+
+  [API Reference](../reference/api-kotlin.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#kotlin){ .install-btn .install-btn--solid }
+
 - :material-language-ruby:{ .lg .middle } **Ruby**
 
   ***
@@ -134,6 +145,17 @@ No SDK, no code — just your terminal.
 
   [API Reference](../reference/api-ruby.md){ .install-btn .install-btn--ghost }
   [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
+
+- :fontawesome-brands-swift:{ .lg .middle } **Swift**
+
+  ***
+
+  ```swift
+  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.1")
+  ```
+
+  [API Reference](../reference/api-swift.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#swift){ .install-btn .install-btn--solid }
 
 - :material-language-csharp:{ .lg .middle } **C# / .NET**
 
@@ -168,6 +190,17 @@ No SDK, no code — just your terminal.
   [API Reference](../reference/api-elixir.md){ .install-btn .install-btn--ghost }
   [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid }
 
+- :simple-gleam:{ .lg .middle } **Gleam**
+
+  ***
+
+  ```bash
+  gleam add kreuzberg
+  ```
+
+  [API Reference](../reference/api-gleam.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#gleam){ .install-btn .install-btn--solid }
+
 - :simple-r:{ .lg .middle } **R**
 
   ***
@@ -190,6 +223,28 @@ No SDK, no code — just your terminal.
 
   [API Reference](../reference/api-c.md){ .install-btn .install-btn--ghost }
   [:material-lightning-bolt: Quick Start](#c--c){ .install-btn .install-btn--solid }
+
+- :material-language-dart:{ .lg .middle } **Dart / Flutter**
+
+  ***
+
+  ```bash
+  dart pub add kreuzberg
+  ```
+
+  [API Reference](../reference/api-dart.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#dart){ .install-btn .install-btn--solid }
+
+- :material-language-zig:{ .lg .middle } **Zig**
+
+  ***
+
+  ```bash
+  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.1.tar.gz
+  ```
+
+  [API Reference](../reference/api-zig.md){ .install-btn .install-btn--ghost }
+  [:material-lightning-bolt: Quick Start](#zig){ .install-btn .install-btn--solid }
 
 </div>
 
@@ -378,6 +433,26 @@ my_app: my_app.c
 !!! Warning "Windows" The Windows FFI library links against ONNX Runtime dynamically. `onnxruntime.dll` must be on your `PATH` at runtime — see the note at the top of this page.
 
 [API Reference →](../reference/api-c.md)
+
+### Dart / Flutter { #dart }
+
+Pure-Dart and Flutter consumers share the same package. Dart SDK 3.0 or higher is required. Flutter is supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported because the runtime is a native dynamic library delivered via flutter_rust_bridge. For Flutter projects use `flutter pub add kreuzberg` instead of `dart pub add kreuzberg`.
+
+### Gleam { #gleam }
+
+The Gleam binding shares the BEAM runtime with the Elixir binding through the same `kreuzberg` Hex package and Erlang FFI shim, so a single set of pre-compiled NIFs covers both. Requires Gleam 1.14 or higher and Erlang/OTP 27 or higher. Mixed Gleam/Elixir umbrella projects can also pull the dependency via `mix.exs` if they are already managing other Mix-only packages.
+
+### Kotlin { #kotlin }
+
+The Kotlin module sits on top of the Java facade and reuses its Foreign Function & Memory native loader, so the same bundled binaries serve both bindings. Requires JDK 25 or higher. Use the Kotlin DSL block above for `build.gradle.kts` consumers; Maven and Groovy DSL are also supported — see the README at packages/kotlin/ for both.
+
+### Swift { #swift }
+
+Swift Package Manager from `swift-tools-version: 6.0` upward. Targets macOS 13+ and iOS 16+; Linux is not currently declared in `Package.swift`. Once the package ships its `binaryTarget`, no manual cargo build is needed; in the interim, building the library locally requires `cargo build -p kreuzberg-swift` against the workspace.
+
+### Zig { #zig }
+
+Requires Zig 0.16.0 or higher (declared via `minimum_zig_version` in `build.zig.zon`). The Zig binding consumes the C FFI surface from `kreuzberg-ffi` via `linkSystemLibrary`; the build expects the consumer to provide a search path to the prebuilt `libkreuzberg_ffi` and the C header `kreuzberg.h`. The `zig fetch` command above pins the source archive in `build.zig.zon`; wire it into `build.zig` via `b.dependency("kreuzberg", ...)`.
 
 ---
 

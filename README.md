@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.9.5" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -69,13 +69,13 @@
   </a>
 </div>
 
-Extract text, metadata, and code intelligence from 97+ file formats and 305 programming languages at native speeds without needing a GPU.
+Extract text, metadata, and code intelligence from 91+ file formats and 248 programming languages at native speeds without needing a GPU.
 
 ## Key Features
 
 - **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [248 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
-- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, C#, PHP, Elixir, R, and C
+- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Gleam, Swift, Zig, and C
 - **91+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
 - **LLM intelligence** – VLM OCR (GPT-4o, Claude, Gemini, Ollama), structured JSON extraction with schema constraints, and provider-hosted embeddings via 146 LLM providers (including local engines: Ollama, LM Studio, vLLM, llama.cpp) through [liter-llm](https://github.com/kreuzberg-dev/liter-llm)
 - **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), VLM OCR (146 vision model providers including local engines), extensible via plugin API
@@ -96,9 +96,11 @@ Each language binding provides comprehensive documentation with examples and bes
 
 - **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, PaddleOCR, EasyOCR)
 - **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby)** – RubyGems package, idiomatic Ruby API, native bindings
-- **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php)** – Composer package, modern PHP 8.4+ support, type-safe API, async extraction
+- **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php)** – Composer package, modern PHP 8.2+ support, type-safe API, async extraction
 - **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir)** – Hex package, OTP integration, concurrent processing
 - **[R](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/r)** – r-universe package, idiomatic R API, extendr bindings
+- **[Dart / Flutter](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/dart)** – pub.dev package, flutter_rust_bridge runtime, native bindings for macOS/iOS/Android/Linux/Windows
+- **[Gleam](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/gleam)** – Hex package, BEAM-native (shares the Elixir runtime through the same NIF)
 
 **JavaScript/TypeScript:**
 
@@ -107,13 +109,16 @@ Each language binding provides comprehensive documentation with examples and bes
 
 **Compiled Languages:**
 
-- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go)** – Go module with FFI bindings, context-aware async
+- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v5)** – Go module with FFI bindings, context-aware async
 - **[Java](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/java)** – Maven Central, Foreign Function & Memory API
+- **[Kotlin](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/kotlin)** – Maven Central, Kotlin/JVM with idiomatic data classes, sealed enums, and coroutine-based async
 - **[C#](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/csharp)** – NuGet package, .NET 6.0+, full async/await support
+- **[Swift](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/swift)** – Swift Package Manager, macOS 13+/iOS 16+, native Swift types and async/await
 
 **Native:**
 
 - **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg)** – Core library, flexible feature flags, zero-copy APIs
+- **[Zig](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/zig)** – `zig fetch` + `build.zig.zon`, idiomatic error sets, optional types, slice-based memory
 - **[C (FFI)](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-ffi)** – C header + shared library, pkg-config/CMake support, cross-platform
 
 **Containers:**
@@ -140,8 +145,13 @@ Complete architecture coverage across all language bindings:
 | Elixir   |      ✅      |      ✅       |     ✅      |     ✅      |
 | Go       |      ✅      |      ✅       |     ✅      |     ✅      |
 | Java     |      ✅      |      ✅       |     ✅      |     ✅      |
+| Kotlin   |      ✅      |      ✅       |     ✅      |     ✅      |
 | C#       |      ✅      |      ✅       |     ✅      |     ✅      |
 | PHP      |      ✅      |      ✅       |     ✅      |     ✅      |
+| Swift    |      -       |      -        |     ✅      |      -      |
+| Dart     |      ✅      |      ✅       |     ✅      |     ✅      |
+| Gleam    |      ✅      |      ✅       |     ✅      |     ✅      |
+| Zig      |      ✅      |      ✅       |     ✅      |     ✅      |
 | Rust     |      ✅      |      ✅       |     ✅      |     ✅      |
 | C (FFI)  |      ✅      |      ✅       |     ✅      |     ✅      |
 | CLI      |      ✅      |      ✅       |     ✅      |     ✅      |

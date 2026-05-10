@@ -18,6 +18,10 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 
     --8<-- "snippets/csharp/extract_file_sync.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/api/extract_file_sync.md"
+
 === "Go"
 
     --8<-- "snippets/go/api/extract_file_sync.md"
@@ -25,6 +29,10 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 === "Java"
 
     --8<-- "snippets/java/api/extract_file_sync.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/api/extract_file_sync.md"
 
 === "Python"
 
@@ -42,9 +50,17 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 
     --8<-- "snippets/rust/api/extract_file_sync.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/api/extract_file_sync.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/core/extract_file_sync.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/api/extract_file_sync.md"
 
 === "TypeScript"
 
@@ -53,6 +69,10 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 === "Wasm"
 
     --8<-- "snippets/wasm/getting-started/extract_file_sync.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/api/extract_file_sync.md"
 
 === "CLI"
 
@@ -71,6 +91,10 @@ exceptions for missing files, parse failures, and OCR problems:
 
     --8<-- "snippets/csharp/error_handling.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/api/error_handling.md"
+
 === "Go"
 
     --8<-- "snippets/go/api/error_handling.md"
@@ -78,6 +102,10 @@ exceptions for missing files, parse failures, and OCR problems:
 === "Java"
 
     --8<-- "snippets/java/api/error_handling.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/api/error_handling.md"
 
 === "Python"
 
@@ -95,9 +123,17 @@ exceptions for missing files, parse failures, and OCR problems:
 
     --8<-- "snippets/rust/api/error_handling.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/api/error_handling.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/core/error_handling.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/api/error_handling.md"
 
 === "TypeScript"
 
@@ -106,6 +142,10 @@ exceptions for missing files, parse failures, and OCR problems:
 === "Wasm"
 
     --8<-- "snippets/wasm/api/error_handling.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/api/error_handling.md"
 
 ## OCR for Scanned Documents
 
@@ -120,6 +160,10 @@ You can also force OCR on any document:
 
     --8<-- "snippets/csharp/ocr_extraction.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/ocr/ocr_extraction.md"
+
 === "Go"
 
     --8<-- "snippets/go/ocr/ocr_extraction.md"
@@ -127,6 +171,10 @@ You can also force OCR on any document:
 === "Java"
 
     --8<-- "snippets/java/ocr/ocr_extraction.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/ocr/ocr_extraction.md"
 
 === "Python"
 
@@ -144,9 +192,17 @@ You can also force OCR on any document:
 
     --8<-- "snippets/rust/ocr/ocr_extraction.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/ocr/ocr_extraction.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/ocr/tesseract_basic.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/ocr/ocr_extraction.md"
 
 === "TypeScript"
 
@@ -155,6 +211,10 @@ You can also force OCR on any document:
 === "Wasm"
 
     --8<-- "snippets/wasm/ocr/ocr_extraction.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/ocr/ocr_extraction.md"
 
 === "CLI"
 
@@ -172,6 +232,10 @@ Pass a list of paths to extract them in parallel:
 
     --8<-- "snippets/csharp/batch_extract_files_sync.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/api/batch_extract_files_sync.md"
+
 === "Go"
 
     --8<-- "snippets/go/api/batch_extract_files_sync.md"
@@ -179,6 +243,10 @@ Pass a list of paths to extract them in parallel:
 === "Java"
 
     --8<-- "snippets/java/api/batch_extract_files_sync.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/api/batch_extract_files_sync.md"
 
 === "Python"
 
@@ -196,9 +264,17 @@ Pass a list of paths to extract them in parallel:
 
     --8<-- "snippets/rust/api/batch_extract_files_sync.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/api/batch_extract_files_sync.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/core/batch_extract_files_sync.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/api/batch_extract_files_sync.md"
 
 === "TypeScript"
 
@@ -207,6 +283,10 @@ Pass a list of paths to extract them in parallel:
 === "Wasm"
 
     --8<-- "snippets/wasm/getting-started/batch_extract_files_sync.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/api/batch_extract_files_sync.md"
 
 === "CLI"
 
@@ -225,6 +305,10 @@ sheet names for Excel, dimensions for images:
 
     --8<-- "snippets/csharp/metadata.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/metadata/metadata.md"
+
 === "Go"
 
     --8<-- "snippets/go/metadata/metadata.md"
@@ -232,6 +316,10 @@ sheet names for Excel, dimensions for images:
 === "Java"
 
     --8<-- "snippets/java/metadata/metadata.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/metadata/metadata.md"
 
 === "Python"
 
@@ -249,9 +337,17 @@ sheet names for Excel, dimensions for images:
 
     --8<-- "snippets/rust/metadata/metadata.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/metadata/metadata.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/advanced/metadata_extraction.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/metadata/metadata.md"
 
 === "TypeScript"
 
@@ -260,6 +356,10 @@ sheet names for Excel, dimensions for images:
 === "Wasm"
 
     --8<-- "snippets/wasm/metadata/metadata.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/metadata/metadata.md"
 
 === "CLI"
 
@@ -330,6 +430,10 @@ from PDFs, spreadsheets, and HTML:
 
     --8<-- "snippets/csharp/tables.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/metadata/tables.md"
+
 === "Go"
 
     --8<-- "snippets/go/metadata/tables.md"
@@ -337,6 +441,10 @@ from PDFs, spreadsheets, and HTML:
 === "Java"
 
     --8<-- "snippets/java/metadata/tables.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/metadata/tables.md"
 
 === "Python"
 
@@ -354,9 +462,17 @@ from PDFs, spreadsheets, and HTML:
 
     --8<-- "snippets/rust/metadata/tables.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/metadata/tables.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/advanced/table_extraction.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/metadata/tables.md"
 
 === "TypeScript"
 
@@ -365,6 +481,10 @@ from PDFs, spreadsheets, and HTML:
 === "Wasm"
 
     --8<-- "snippets/wasm/api/tables.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/metadata/tables.md"
 
 === "CLI"
 
@@ -420,6 +540,10 @@ non-blocking I/O:
 
     --8<-- "snippets/csharp/extract_file_async.md"
 
+=== "Dart"
+
+    --8<-- "snippets/dart/api/extract_file_async.md"
+
 === "Go"
 
     --8<-- "snippets/go/api/extract_file_async.md"
@@ -427,6 +551,10 @@ non-blocking I/O:
 === "Java"
 
     --8<-- "snippets/java/api/extract_file_async.md"
+
+=== "Kotlin"
+
+    --8<-- "snippets/kotlin/api/extract_file_async.md"
 
 === "Python"
 
@@ -444,9 +572,17 @@ non-blocking I/O:
 
     --8<-- "snippets/rust/api/extract_file_async.md"
 
+=== "Swift"
+
+    --8<-- "snippets/swift/api/extract_file_async.md"
+
 === "Elixir"
 
     --8<-- "snippets/elixir/core/extract_file_async.exs"
+
+=== "Gleam"
+
+    --8<-- "snippets/gleam/api/extract_file_async.md"
 
 === "TypeScript"
 
@@ -455,6 +591,10 @@ non-blocking I/O:
 === "Wasm"
 
     --8<-- "snippets/wasm/getting-started/extract_file_async.md"
+
+=== "Zig"
+
+    --8<-- "snippets/zig/api/extract_file_async.md"
 
 === "CLI"
 
