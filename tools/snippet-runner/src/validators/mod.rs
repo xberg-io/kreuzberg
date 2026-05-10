@@ -20,6 +20,7 @@ pub mod zig;
 use crate::error::Result;
 use crate::types::{Language, Snippet, SnippetStatus, ValidationLevel};
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 /// Trait for language-specific snippet validators.
 pub trait SnippetValidator: Send + Sync {
@@ -47,7 +48,12 @@ pub struct ValidatorRegistry {
 }
 
 impl ValidatorRegistry {
-    pub fn new() -> Self {
+    /// Create a registry with repo-root path wiring for validators that need it.
+    ///
+    /// Validators for Dart, Gleam, Kotlin, and Swift use `repo_root` to locate
+    /// the in-tree binding packages and write correct path dependencies so snippets
+    /// that import the kreuzberg library resolve without errors.
+    pub fn new(repo_root: PathBuf) -> Self {
         let mut reg = Self {
             validators: HashMap::new(),
         };
@@ -65,10 +71,10 @@ impl ValidatorRegistry {
         reg.register(Box::new(c::CValidator));
         reg.register(Box::new(bash::BashValidator));
         reg.register(Box::new(toml_validator::TomlValidator));
-        reg.register(Box::new(gleam::GleamValidator));
-        reg.register(Box::new(dart::DartValidator));
-        reg.register(Box::new(kotlin::KotlinValidator));
-        reg.register(Box::new(swift::SwiftValidator));
+        reg.register(Box::new(gleam::GleamValidator::new(repo_root.clone())));
+        reg.register(Box::new(dart::DartValidator::new(repo_root.clone())));
+        reg.register(Box::new(kotlin::KotlinValidator::new(repo_root.clone())));
+        reg.register(Box::new(swift::SwiftValidator::new(repo_root)));
         reg.register(Box::new(zig::ZigValidator));
 
         reg
@@ -96,7 +102,7 @@ impl ValidatorRegistry {
 
 impl Default for ValidatorRegistry {
     fn default() -> Self {
-        Self::new()
+        Self::new(PathBuf::new())
     }
 }
 

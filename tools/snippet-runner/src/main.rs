@@ -7,6 +7,21 @@ use snippet_runner::validators::ValidatorRegistry;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+/// Walk up from `start` until a directory containing `Cargo.lock` is found.
+/// Falls back to `start` if no workspace root is found.
+fn find_repo_root(start: &std::path::Path) -> PathBuf {
+    let mut dir = start.to_path_buf();
+    loop {
+        if dir.join("Cargo.lock").exists() {
+            return dir;
+        }
+        match dir.parent() {
+            Some(parent) => dir = parent.to_path_buf(),
+            None => return start.to_path_buf(),
+        }
+    }
+}
+
 #[derive(Parser)]
 #[command(name = "snippet-runner")]
 #[command(about = "Validate documentation code snippets across languages")]
@@ -73,6 +88,11 @@ enum Commands {
         /// Show snippet source code for failures
         #[arg(long)]
         show_code: bool,
+
+        /// Repository root for resolving in-tree binding packages (Dart, Gleam, Kotlin, Swift).
+        /// Defaults to walking up from the current directory to find the workspace Cargo.lock.
+        #[arg(long)]
+        repo_root: Option<PathBuf>,
     },
 
     /// Debug: parse and display code blocks from a file
@@ -127,6 +147,7 @@ fn main() -> ExitCode {
             fail_fast,
             include,
             show_code,
+            repo_root,
         } => {
             let filter = parse_language_filter(languages.as_deref());
             let mut dirs = snippets;
@@ -155,7 +176,11 @@ fn main() -> ExitCode {
 
             println!("Validating {} snippets at level '{level}'...", found.len());
 
-            let registry = ValidatorRegistry::new();
+            let resolved_root = repo_root.unwrap_or_else(|| {
+                let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+                find_repo_root(&cwd)
+            });
+            let registry = ValidatorRegistry::new(resolved_root);
             let config = RunnerConfig {
                 level,
                 parallelism: jobs,

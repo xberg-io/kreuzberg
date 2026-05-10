@@ -2,11 +2,18 @@ use crate::error::Result;
 use crate::types::{Language, Snippet, SnippetStatus, ValidationLevel};
 use crate::validators::{SnippetValidator, run_command};
 use std::io::Write;
+use std::path::PathBuf;
 use tempfile::TempDir;
 
-pub struct DartValidator;
+pub struct DartValidator {
+    repo_root: PathBuf,
+}
 
 impl DartValidator {
+    pub fn new(repo_root: PathBuf) -> Self {
+        Self { repo_root }
+    }
+
     /// Dedent code that has uniform leading whitespace (from markdown indentation).
     fn dedent(code: &str) -> String {
         let min_indent = code
@@ -64,6 +71,25 @@ impl DartValidator {
 
         format!("Future<void> main() async {{\n{code}\n}}")
     }
+
+    /// Write the pubspec.yaml for the temp project.
+    ///
+    /// If the kreuzberg Dart package exists at `repo_root/packages/dart`, a path
+    /// dependency is declared so `import 'package:kreuzberg/...'` resolves.
+    /// Falls back to a stub pubspec with no package dependencies when the path
+    /// does not exist (e.g. the tool is run outside the kreuzberg repo).
+    fn write_pubspec(&self, dir: &std::path::Path) -> std::io::Result<()> {
+        let dart_pkg = self.repo_root.join("packages").join("dart");
+        let pubspec = if dart_pkg.exists() {
+            format!(
+                "name: snippet_check\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\ndependencies:\n  kreuzberg:\n    path: {}\n",
+                dart_pkg.display()
+            )
+        } else {
+            "name: snippet_check\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\n".to_string()
+        };
+        std::fs::write(dir.join("pubspec.yaml"), pubspec)
+    }
 }
 
 impl SnippetValidator for DartValidator {
@@ -83,10 +109,7 @@ impl SnippetValidator for DartValidator {
     ) -> Result<(SnippetStatus, Option<String>)> {
         let dir = TempDir::new()?;
 
-        // Scaffold a minimal pubspec so `dart analyze` and `dart run` work without
-        // requiring external dependency resolution for snippets that don't import packages.
-        let pubspec = "name: snippet_check\nenvironment:\n  sdk: '>=3.0.0 <4.0.0'\n";
-        std::fs::write(dir.path().join("pubspec.yaml"), pubspec)?;
+        self.write_pubspec(dir.path())?;
 
         let bin_dir = dir.path().join("bin");
         std::fs::create_dir_all(&bin_dir)?;
@@ -95,6 +118,19 @@ impl SnippetValidator for DartValidator {
         let main_path = bin_dir.join("main.dart");
         let mut file = std::fs::File::create(&main_path)?;
         file.write_all(code.as_bytes())?;
+
+        // Run `dart pub get` to resolve path dep before analyzing.
+        // We run this unconditionally — for snippets without kreuzberg imports it is
+        // a fast no-op (no network traffic when the dep is a local path).
+        let dart_pkg = self.repo_root.join("packages").join("dart");
+        if dart_pkg.exists() {
+            let mut pub_cmd = std::process::Command::new("dart");
+            pub_cmd.args(["pub", "get"]).current_dir(dir.path());
+            let (ok, pub_out) = run_command(&mut pub_cmd, timeout_secs)?;
+            if !ok {
+                return Ok((SnippetStatus::Fail, Some(format!("dart pub get failed:\n{pub_out}"))));
+            }
+        }
 
         let mut cmd = match level {
             ValidationLevel::Syntax | ValidationLevel::Compile => {
@@ -138,6 +174,7 @@ impl SnippetValidator for DartValidator {
                         || t.contains("URI")
                         || t.contains("Undefined")
                         || t.contains("isn't defined")
+                        || t.contains("isn't a")
                         || t.contains("not found")
                         || t.contains("Couldn't resolve"))
             })
@@ -153,7 +190,10 @@ impl SnippetValidator for DartValidator {
                 || line.contains("Undefined name")
                 || line.contains("Undefined class")
                 || line.contains("Undefined identifier")
+                || line.contains("undefined_identifier")
                 || line.contains("isn't defined")
+                || line.contains("isn't a class")
+                || line.contains("isn't a type")
                 || line.contains("not found")
                 || line.contains("Couldn't resolve")
                 || line.contains("uri_does_not_exist")
@@ -172,6 +212,10 @@ impl SnippetValidator for DartValidator {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn validator() -> DartValidator {
+        DartValidator::new(PathBuf::new())
+    }
 
     #[test]
     fn test_dedent_removes_uniform_indentation() {
@@ -241,5 +285,67 @@ mod tests {
         let input = "    final x = 42;\n    print(x);";
         let output = DartValidator::wrap_if_fragment(input);
         assert_eq!(output, "Future<void> main() async {\nfinal x = 42;\nprint(x);\n}");
+    }
+
+    #[test]
+    fn test_pubspec_with_valid_repo_root_includes_path_dep() {
+        let dir = tempfile::tempdir().unwrap();
+        // Simulate a repo_root that has packages/dart/
+        let packages_dart = dir.path().join("packages").join("dart");
+        std::fs::create_dir_all(&packages_dart).unwrap();
+        let validator = DartValidator::new(dir.path().to_path_buf());
+        let output_dir = tempfile::tempdir().unwrap();
+        validator.write_pubspec(output_dir.path()).unwrap();
+        let content = std::fs::read_to_string(output_dir.path().join("pubspec.yaml")).unwrap();
+        assert!(content.contains("kreuzberg:"), "pubspec should declare kreuzberg dep");
+        assert!(content.contains("path:"), "pubspec should use path dep");
+        assert!(
+            content.contains(&packages_dart.display().to_string()),
+            "path dep should point to packages/dart"
+        );
+    }
+
+    #[test]
+    fn test_pubspec_without_repo_root_is_minimal() {
+        let validator = DartValidator::new(PathBuf::from("/nonexistent/path"));
+        let output_dir = tempfile::tempdir().unwrap();
+        validator.write_pubspec(output_dir.path()).unwrap();
+        let content = std::fs::read_to_string(output_dir.path().join("pubspec.yaml")).unwrap();
+        assert!(!content.contains("path:"), "fallback pubspec should not have path dep");
+        assert!(content.contains("snippet_check"), "pubspec should have project name");
+    }
+
+    #[test]
+    fn test_is_dependency_error_uri_does_not_exist() {
+        let v = validator();
+        let output = "  error - main.dart:1:8 - Target of URI doesn't exist: 'package:kreuzberg/kreuzberg.dart'. - uri_does_not_exist\n1 issue found.";
+        assert!(v.is_dependency_error(output));
+    }
+
+    #[test]
+    fn test_is_dependency_error_isnt_a_class() {
+        let v = validator();
+        let output = "  error - main.dart:3:16 - The name 'ChunkingConfig' isn't a class. - creation_with_non_type\n1 issue found.";
+        assert!(v.is_dependency_error(output));
+    }
+
+    #[test]
+    fn test_is_dependency_error_mixed_dep_errors_all_pass() {
+        let v = validator();
+        // Multiple dependency-style errors should all pass
+        let output = "  error - main.dart:1:8 - Target of URI doesn't exist: 'package:kreuzberg/kreuzberg.dart'. - uri_does_not_exist\n  error - main.dart:3:16 - The name 'ChunkingConfig' isn't a class. - creation_with_non_type\n  error - main.dart:4:20 - Undefined name 'ResultFormat'. - undefined_identifier\n10 issues found.";
+        assert!(v.is_dependency_error(output));
+    }
+
+    #[test]
+    fn test_is_dependency_error_real_syntax_error_returns_false() {
+        let v = validator();
+        let output = "  error - main.dart:5:3 - Expected to find ';'. - expected_token\n1 issue found.";
+        assert!(!v.is_dependency_error(output));
+    }
+
+    #[test]
+    fn test_language_is_dart() {
+        assert_eq!(validator().language(), Language::Dart);
     }
 }

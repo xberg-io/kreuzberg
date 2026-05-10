@@ -15,3 +15,17 @@ tasks:
     desc: Serve documentation locally
     cmds:
       - uv run --no-sync --group docs zensical serve
+
+  snippets:validate:
+    desc: Validate all docs/snippets via snippet-runner (syntax level)
+    cmds:
+      - cargo build -p snippet-runner --release
+      - ./target/release/snippet-runner validate --snippets docs/snippets --reference docs/reference --level syntax --timeout 120 -j 4
+
+  snippets:validate:lang:
+    desc: 'Validate snippets for one language (set LANG=dart|gleam|kotlin|swift|...)'
+    cmds:
+      - cargo build -p snippet-runner --release
+      - ./target/release/snippet-runner validate --snippets docs/snippets --reference docs/reference --level syntax --languages {{.LANG}} --timeout 120 -j 4
+    requires:
+      vars: [LANG]

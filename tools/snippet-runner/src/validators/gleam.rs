@@ -2,11 +2,18 @@ use crate::error::Result;
 use crate::types::{Language, Snippet, SnippetStatus, ValidationLevel};
 use crate::validators::{SnippetValidator, run_command};
 use std::io::Write;
+use std::path::PathBuf;
 use tempfile::TempDir;
 
-pub struct GleamValidator;
+pub struct GleamValidator {
+    repo_root: PathBuf,
+}
 
 impl GleamValidator {
+    pub fn new(repo_root: PathBuf) -> Self {
+        Self { repo_root }
+    }
+
     /// Dedent code that has uniform leading whitespace (from markdown indentation).
     fn dedent(code: &str) -> String {
         let min_indent = code
@@ -78,6 +85,31 @@ impl GleamValidator {
         out.push_str("\n}\n");
         out
     }
+
+    /// Path to the Gleam package cache directory.
+    ///
+    /// We place it under `<repo_root>/target/snippet-runner/gleam-cache` so that
+    /// the downloaded `gleam_stdlib` is shared across snippets in the same run.
+    fn gleam_home(&self) -> PathBuf {
+        self.repo_root.join("target").join("snippet-runner").join("gleam-cache")
+    }
+
+    /// Build the `gleam.toml` content for the temp project.
+    ///
+    /// When `repo_root/packages/gleam` exists, a path dep on the local kreuzberg
+    /// Gleam package is declared. This makes `import kreuzberg` resolve without
+    /// fetching from Hex.
+    fn gleam_toml(&self) -> String {
+        let gleam_pkg = self.repo_root.join("packages").join("gleam");
+        if gleam_pkg.exists() {
+            format!(
+                "name = \"snippet_check\"\nversion = \"0.1.0\"\n\n[dependencies]\ngleam_stdlib = \">= 0.34.0 and < 2.0.0\"\nkreuzberg = {{ path = \"{}\" }}\n",
+                gleam_pkg.display()
+            )
+        } else {
+            "name = \"snippet_check\"\nversion = \"0.1.0\"\n\n[dependencies]\ngleam_stdlib = \">= 0.34.0 and < 2.0.0\"\n".to_string()
+        }
+    }
 }
 
 impl SnippetValidator for GleamValidator {
@@ -97,9 +129,7 @@ impl SnippetValidator for GleamValidator {
     ) -> Result<(SnippetStatus, Option<String>)> {
         let dir = TempDir::new()?;
 
-        // Scaffold a minimal Gleam project so `gleam check` has something to operate on.
-        let gleam_toml = "name = \"snippet_check\"\nversion = \"0.1.0\"\n";
-        std::fs::write(dir.path().join("gleam.toml"), gleam_toml)?;
+        std::fs::write(dir.path().join("gleam.toml"), self.gleam_toml())?;
 
         let src_dir = dir.path().join("src");
         std::fs::create_dir_all(&src_dir)?;
@@ -108,12 +138,30 @@ impl SnippetValidator for GleamValidator {
         let mut file = std::fs::File::create(src_dir.join("snippet_check.gleam"))?;
         file.write_all(code.as_bytes())?;
 
+        let gleam_home = self.gleam_home();
+
+        // Fetch gleam_stdlib (and kreuzberg path dep when present).
+        // With GLEAM_HOME pointing at a persistent cache dir, subsequent snippets
+        // in the same run skip the network entirely.
+        let mut deps_cmd = std::process::Command::new("gleam");
+        deps_cmd
+            .args(["deps", "download"])
+            .current_dir(dir.path())
+            .env("GLEAM_HOME", &gleam_home);
+        let (ok, deps_out) = run_command(&mut deps_cmd, timeout_secs)?;
+        if !ok {
+            return Ok((
+                SnippetStatus::Fail,
+                Some(format!("gleam deps download failed:\n{deps_out}")),
+            ));
+        }
+
         // Gleam has no separate syntax-only mode; `gleam check` covers Syntax and Compile.
         // Run level is intentionally clamped to Compile via max_level().
         let mut cmd = match level {
             ValidationLevel::Syntax | ValidationLevel::Compile | ValidationLevel::Run => {
                 let mut c = std::process::Command::new("gleam");
-                c.args(["check"]).current_dir(dir.path());
+                c.args(["check"]).current_dir(dir.path()).env("GLEAM_HOME", &gleam_home);
                 c
             }
         };
@@ -224,5 +272,48 @@ mod tests {
         assert!(import_pos < main_pos);
         assert!(main_pos < body_pos);
         assert!(output.contains("io.println(\"hi\")"));
+    }
+
+    #[test]
+    fn test_gleam_toml_with_valid_repo_root_includes_path_dep() {
+        let dir = tempfile::tempdir().unwrap();
+        let gleam_pkg = dir.path().join("packages").join("gleam");
+        std::fs::create_dir_all(&gleam_pkg).unwrap();
+        let v = GleamValidator::new(dir.path().to_path_buf());
+        let toml = v.gleam_toml();
+        assert!(toml.contains("kreuzberg"), "toml should declare kreuzberg dep");
+        assert!(toml.contains("path ="), "toml should use path dep");
+        assert!(
+            toml.contains(&gleam_pkg.display().to_string()),
+            "path should point at packages/gleam"
+        );
+        assert!(toml.contains("gleam_stdlib"), "toml should include gleam_stdlib");
+    }
+
+    #[test]
+    fn test_gleam_toml_without_repo_root_has_stdlib_only() {
+        let v = GleamValidator::new(PathBuf::from("/nonexistent"));
+        let toml = v.gleam_toml();
+        assert!(toml.contains("gleam_stdlib"), "toml should include gleam_stdlib");
+        assert!(
+            !toml.contains("kreuzberg"),
+            "toml should not include kreuzberg when packages/gleam missing"
+        );
+    }
+
+    #[test]
+    fn test_gleam_home_path_is_under_target() {
+        let dir = tempfile::tempdir().unwrap();
+        let v = GleamValidator::new(dir.path().to_path_buf());
+        let home = v.gleam_home();
+        assert!(home.starts_with(dir.path()), "gleam_home should be under repo_root");
+        assert!(
+            home.to_string_lossy().contains("snippet-runner"),
+            "gleam_home should be under snippet-runner"
+        );
+        assert!(
+            home.to_string_lossy().contains("gleam-cache"),
+            "gleam_home should be under gleam-cache"
+        );
     }
 }

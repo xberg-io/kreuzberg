@@ -2,11 +2,20 @@ use crate::error::Result;
 use crate::types::{Language, Snippet, SnippetStatus, ValidationLevel};
 use crate::validators::{SnippetValidator, run_command};
 use std::io::Write;
+use std::path::PathBuf;
 use tempfile::TempDir;
 
-pub struct SwiftValidator;
+pub struct SwiftValidator {
+    /// Repository root — stored for future SwiftPM path-dep wiring if needed.
+    #[allow(dead_code)]
+    repo_root: PathBuf,
+}
 
 impl SwiftValidator {
+    pub fn new(repo_root: PathBuf) -> Self {
+        Self { repo_root }
+    }
+
     /// Dedent code that has uniform leading whitespace (from markdown indentation).
     fn dedent(code: &str) -> String {
         let min_indent = code
@@ -95,7 +104,9 @@ impl SnippetValidator for SwiftValidator {
     }
 
     fn is_available(&self) -> bool {
-        which::which("swift").is_ok()
+        // Swift 6 split the driver: `swift` is a launcher and `swiftc` is the compiler.
+        // We need `swiftc` for `-typecheck`.
+        which::which("swiftc").is_ok()
     }
 
     fn validate(
@@ -111,20 +122,13 @@ impl SnippetValidator for SwiftValidator {
         let mut file = std::fs::File::create(&file_path)?;
         file.write_all(code.as_bytes())?;
 
+        // Use `swiftc -typecheck` — not `swift -typecheck`.
+        // Swift 6 removed `-typecheck` from the `swift` launcher; it is only available
+        // via `swiftc`. Both Syntax and Compile levels use this check; we cap at Compile
+        // via max_level() since running a full SwiftPM executable is out of scope.
         let mut cmd = match level {
-            // Both Syntax and Compile use `swift -typecheck`. `swift run` is too heavy
-            // (would require building a SwiftPM package), so we cap at Compile.
-            ValidationLevel::Syntax | ValidationLevel::Compile => {
-                let mut c = std::process::Command::new("swift");
-                c.arg("-typecheck");
-                if parse_as_library {
-                    c.arg("-parse-as-library");
-                }
-                c.arg(&file_path).current_dir(dir.path());
-                c
-            }
-            ValidationLevel::Run => {
-                let mut c = std::process::Command::new("swift");
+            ValidationLevel::Syntax | ValidationLevel::Compile | ValidationLevel::Run => {
+                let mut c = std::process::Command::new("swiftc");
                 c.arg("-typecheck");
                 if parse_as_library {
                     c.arg("-parse-as-library");
@@ -176,6 +180,10 @@ impl SnippetValidator for SwiftValidator {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn validator() -> SwiftValidator {
+        SwiftValidator::new(PathBuf::new())
+    }
 
     #[test]
     fn test_dedent_uniform_indent() {
@@ -240,47 +248,45 @@ mod tests {
 
     #[test]
     fn test_language_is_swift() {
-        let v = SwiftValidator;
-        assert_eq!(v.language(), Language::Swift);
+        assert_eq!(validator().language(), Language::Swift);
     }
 
     #[test]
     fn test_max_level_is_compile() {
-        let v = SwiftValidator;
-        assert_eq!(v.max_level(), ValidationLevel::Compile);
+        assert_eq!(validator().max_level(), ValidationLevel::Compile);
     }
 
     #[test]
     fn test_is_dependency_error_no_such_module() {
-        let v = SwiftValidator;
+        let v = validator();
         let output = "snippet.swift:1:8: error: no such module 'KreuzbergSwift'";
         assert!(v.is_dependency_error(output));
     }
 
     #[test]
     fn test_is_dependency_error_cannot_find_in_scope() {
-        let v = SwiftValidator;
+        let v = validator();
         let output = "snippet.swift:3:5: error: cannot find 'someValue' in scope";
         assert!(v.is_dependency_error(output));
     }
 
     #[test]
     fn test_is_dependency_error_cannot_find_type() {
-        let v = SwiftValidator;
+        let v = validator();
         let output = "snippet.swift:2:10: error: cannot find type 'Foo' in scope";
         assert!(v.is_dependency_error(output));
     }
 
     #[test]
     fn test_is_dependency_error_real_syntax_error_returns_false() {
-        let v = SwiftValidator;
+        let v = validator();
         let output = "snippet.swift:1:1: error: expected expression";
         assert!(!v.is_dependency_error(output));
     }
 
     #[test]
     fn test_is_dependency_error_empty_returns_false() {
-        let v = SwiftValidator;
+        let v = validator();
         assert!(!v.is_dependency_error(""));
     }
 }
