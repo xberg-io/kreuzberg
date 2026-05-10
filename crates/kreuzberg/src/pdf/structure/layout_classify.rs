@@ -36,13 +36,8 @@ pub(crate) fn apply_layout_overrides(
         // Spatial matching for paragraphs with positional data
         apply_spatial_overrides(paragraphs, hints, min_confidence, min_containment, body_font_size);
     } else {
-        // For structure tree pages (no positional data), the structure tree's own
-        // font-size classification is more reliable than proportional position matching.
-        // Proportional matching can misalign paragraphs that reorder between
-        // font-clustering and RT-DETR detection. Skip applying layout hints here.
-        tracing::debug!(
-            "Skipping proportional layout overrides: structure tree pages use font-size classification"
-        );
+        // Proportional matching for structure tree pages (no positional data)
+        apply_proportional_overrides(paragraphs, hints, min_confidence);
     }
 
     tracing::debug!(
@@ -66,12 +61,6 @@ pub(crate) fn apply_layout_overrides(
 ///    left-aligned detection box).
 ///
 /// The vertical fallback requires higher confidence to reduce false positives.
-///
-/// For promotion classes (Title, SectionHeader, Caption, Footnote, ListItem), also
-/// validates text content matches the hint type: e.g., SectionHeader hints only apply
-/// to short paragraphs (≤200 chars), ListItem hints to list marker prefixes. This
-/// prevents false promotion of long body paragraphs that happen to spatially overlap
-/// a heading hint.
 fn apply_spatial_overrides(
     paragraphs: &mut [PdfParagraph],
     hints: &[LayoutHint],
@@ -98,11 +87,6 @@ fn apply_spatial_overrides(
                 let hint_rect = Rect::from_lbrt(hint.left, hint.bottom, hint.right, hint.top);
                 let containment = para_bbox.intersection_over_self(&hint_rect);
                 if containment >= min_containment {
-                    // For promotion classes, validate text content matches hint type
-                    let para_text = paragraph_text(para);
-                    if !matches_hint_text(hint, &para_text) {
-                        return None;
-                    }
                     Some((*hint, containment))
                 } else {
                     None
@@ -122,44 +106,6 @@ fn apply_spatial_overrides(
     }
 }
 
-/// Check if text matches the content expectations of a layout hint class.
-///
-/// For promotion classes (Title, SectionHeader, Caption, Footnote, ListItem),
-/// validate that the paragraph content aligns with the hint type:
-/// - Title/SectionHeader/Caption/Footnote: short text (≤200 chars)
-/// - ListItem: text starts with list marker (digit, bullet, dash, etc.)
-/// - Other classes: always match (no text constraint)
-fn matches_hint_text(hint: &LayoutHint, para_text: &str) -> bool {
-    use LayoutHintClass as L;
-    match hint.class_name {
-        L::Title | L::SectionHeader => para_text.chars().count() <= 200,
-        L::Caption | L::Footnote => para_text.chars().count() <= 200,
-        L::ListItem => {
-            let trimmed = para_text.trim_start();
-            trimmed.starts_with(|c: char| c.is_ascii_digit())
-                || trimmed.starts_with('•')
-                || trimmed.starts_with('-')
-                || trimmed.starts_with('*')
-                || trimmed.starts_with('·')
-        }
-        _ => true,  // no text constraint
-    }
-}
-
-/// Extract full text from a paragraph.
-fn paragraph_text(para: &PdfParagraph) -> String {
-    if !para.text.is_empty() {
-        para.text.clone()
-    } else {
-        para.lines
-            .iter()
-            .flat_map(|l| l.segments.iter())
-            .map(|s| s.text.as_str())
-            .collect::<Vec<_>>()
-            .join(" ")
-    }
-}
-
 /// Proportional matching: match paragraphs to hints using range-overlap.
 ///
 /// Structure tree paragraphs have no positional data but are in reading order
@@ -175,10 +121,6 @@ fn paragraph_text(para: &PdfParagraph) -> String {
 /// We use conservative fractional-overlap matching: each paragraph is assigned a
 /// fraction of the page [i/n, (i+1)/n] and matched against hint bounding boxes
 /// converted to page fractions. Only high-confidence, high-overlap matches are applied.
-///
-/// Note: Currently unused in favor of font-size classification on structure-tree pages,
-/// but retained for potential future use or debugging.
-#[allow(dead_code)]
 fn apply_proportional_overrides(paragraphs: &mut [PdfParagraph], hints: &[LayoutHint], min_confidence: f32) {
     let n = paragraphs.len();
     if n == 0 {
@@ -738,11 +680,9 @@ mod tests {
     // ── proportional matching tests (structure tree path) ──
 
     #[test]
-    fn test_no_positional_data_skips_layout_overrides() {
-        // When paragraphs have no positional data (structure-tree pages),
-        // proportional matching is skipped in favor of font-size classification.
-        // This is because the structure tree's own classification (font-clustering)
-        // is more reliable than proportional position matching.
+    fn test_no_positional_data_proportional_applies_page_furniture() {
+        // Proportional matching only applies PageHeader/PageFooter (furniture)
+        // because positional imprecision makes heading/list/code overrides unreliable.
         let lines = vec![make_line(vec![make_segment("text", 0.0, 0.0, 0.0, 0.0)])];
         let word_count = PdfParagraph::compute_word_count("", &lines);
         let mut paragraphs = vec![PdfParagraph {
@@ -761,21 +701,21 @@ mod tests {
             word_count,
         }];
 
-        // Title hint is NOT applied when there's no positional data
+        // Title hint IS applied via proportional matching (heading level inferred)
         let hints = vec![make_hint(LayoutHintClass::Title, 0.9, 40.0, 0.0, 560.0, 760.0)];
         apply_layout_overrides(&mut paragraphs, &hints, 0.5, 0.5, None);
-        assert_eq!(paragraphs[0].heading_level, None);
-        assert_eq!(paragraphs[0].layout_class, None);
+        assert_eq!(paragraphs[0].heading_level, Some(1));
+        assert_eq!(paragraphs[0].layout_class, Some(LayoutHintClass::Title));
 
         // Reset for next test
         paragraphs[0].heading_level = None;
         paragraphs[0].layout_class = None;
 
-        // PageHeader hint is also NOT applied when there's no positional data
+        // PageHeader hint SHOULD be applied via proportional matching
         let hints = vec![make_hint(LayoutHintClass::PageHeader, 0.9, 40.0, 0.0, 560.0, 760.0)];
         apply_layout_overrides(&mut paragraphs, &hints, 0.5, 0.5, None);
-        assert!(!paragraphs[0].is_page_furniture);
-        assert_eq!(paragraphs[0].layout_class, None);
+        assert!(paragraphs[0].is_page_furniture);
+        assert_eq!(paragraphs[0].layout_class, Some(LayoutHintClass::PageHeader));
     }
 
     // ── is_separator_text tests ──
@@ -892,8 +832,6 @@ mod tests {
     #[test]
     fn test_list_item_override() {
         let mut paragraphs = vec![make_para(50.0, 600.0, 300.0, 16.0)];
-        // ListItem hint requires text starting with list marker
-        paragraphs[0].text = "• Item one".to_string();
         let hints = vec![make_hint(LayoutHintClass::ListItem, 0.9, 40.0, 598.0, 400.0, 620.0)];
         apply_layout_overrides(&mut paragraphs, &hints, 0.5, 0.5, None);
         assert!(paragraphs[0].is_list_item);

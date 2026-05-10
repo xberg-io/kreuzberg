@@ -74,7 +74,7 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
             !para.lines.is_empty() && para.lines.iter().all(|l| l.segments.iter().all(|s| s.is_italic))
         };
         let layout_text_overridable = if layout_says_text {
-            body_font_size > 0.0 && para.dominant_font_size > body_font_size + 1.0
+            body_font_size > 0.0 && para.dominant_font_size > body_font_size + 0.5
         } else {
             true
         };
@@ -133,7 +133,7 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
                 let at_or_above_body = body_font_size <= 0.0 || para.dominant_font_size >= body_font_size - 0.5;
                 // Guard against layout model saying this is body text
                 let layout_ok = !layout_says_text
-                    || (body_font_size > 0.0 && para.dominant_font_size > body_font_size + 1.0)
+                    || (body_font_size > 0.0 && para.dominant_font_size > body_font_size + 0.5)
                     || para.is_bold;
                 if at_or_above_body && layout_ok {
                     let level = infer_section_level(t);
@@ -172,7 +172,7 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
             && !para.is_code_block
             && !para.is_page_furniture
             && body_font_size > 0.0
-            && para.dominant_font_size >= body_font_size + 1.0
+            && para.dominant_font_size >= body_font_size + 0.5
         {
             let rescue_text = para_text.trim();
             let rescue_wc = rescue_text.split_whitespace().count();

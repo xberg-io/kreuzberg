@@ -564,6 +564,8 @@ jobs:
         with:
           target: wasm32-unknown-unknown
 
+      - uses: kreuzberg-dev/actions/install-wasi-sdk@v1
+
       - uses: kreuzberg-dev/actions/setup-node-workspace@v1
         with:
           node-version: "24"
@@ -1134,7 +1136,8 @@ jobs:
 
       - uses: kreuzberg-dev/actions/build-dart-package@v1
         with:
-          package-dir: packages/dart
+          # flutter_rust_bridge.yaml lives in packages/dart/rust/, where rust_root: .
+          package-dir: packages/dart/rust
           crate-name: kreuzberg-dart
 
       - uses: actions/upload-artifact@v7

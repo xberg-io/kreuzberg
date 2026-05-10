@@ -11,7 +11,7 @@ pub(super) const MIN_HEADING_FONT_RATIO: f32 = 1.15;
 /// 1.5pt captures academic sub-headings (11.5pt vs 10pt body).
 pub(super) const MIN_HEADING_FONT_GAP: f32 = 1.5;
 /// Maximum word count for a bold paragraph to be promoted to a section heading.
-pub(super) const MAX_BOLD_HEADING_WORD_COUNT: usize = 12;
+pub(super) const MAX_BOLD_HEADING_WORD_COUNT: usize = 15;
 /// Fraction of the maximum right edge that a line must reach to be considered "full"
 /// (used for dehyphenation to avoid false joins on short/indented lines).
 pub(super) const FULL_LINE_FRACTION: f32 = 0.85;
