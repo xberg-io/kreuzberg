@@ -349,7 +349,7 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 **TypeScript: Two flavors**
 
 - **Native** (`@kreuzberg/node`) — Full speed, complete feature parity (servers, plugins, config file discovery)
-- **WASM** (`@kreuzberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required, but no filesystem access, server modes, layout detection, hardware acceleration, or email extraction
+- **WASM** (`@kreuzberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent (paddle-ocr, layout detection, embeddings, auto-rotate), server modes (api/mcp), CLI binary, and filesystem-dependent paths. All formats including email (.eml/.msg), PDF, all office formats (DOCX/XLSX/PPTX/ODT/RTF/EPUB/iWork/HWP), archives, plus Tesseract OCR (via the kreuzberg-tesseract WASI build), chunking, keywords, language detection, stopwords, tree-sitter, and liter-llm are supported.
 
 Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
 

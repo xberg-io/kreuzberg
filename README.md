@@ -105,7 +105,7 @@ Each language binding provides comprehensive documentation with examples and bes
 **JavaScript/TypeScript:**
 
 - **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node)** – Native NAPI-RS bindings for Node.js/Bun, fastest performance
-- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/typescript)** – WebAssembly for browsers/Deno/Cloudflare Workers, full feature parity (PDF, Excel, OCR, archives)
+- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/typescript)** – WebAssembly for browsers/Deno/Cloudflare Workers, comprehensive format and OCR support (PDF, Excel, archives, all office formats, real Tesseract via the WASI build) — only ORT-dependent features (paddle-ocr, layout detection, embeddings, auto-rotate) and server modes (api/mcp/cli) are excluded
 
 **Compiled Languages:**
 

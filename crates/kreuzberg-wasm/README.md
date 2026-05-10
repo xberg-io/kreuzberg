@@ -81,7 +81,11 @@ pnpm add @kreuzberg/wasm
 ### System Requirements
 
 - Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
-- Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
+- Tesseract OCR runs in-binary via the `kreuzberg-tesseract` WASI build — no
+  external `tesseract.js` package or CDN is required. The `bundle-tessdata-eng`
+  cargo feature embeds English language data into the WASM module (~4 MB)
+  for zero-config OCR; other languages can be supplied at runtime via
+  `OcrConfig.tessdataBytes`.
 
 
 ## Quick Start
@@ -120,24 +124,19 @@ Most use cases benefit from configuration to control extraction behavior:
 **With OCR (for scanned documents):**
 
 ```ts
-import { enableOcr, extractBytes, initWasm } from "@kreuzberg/wasm";
+import { extractBytes, initWasm } from "@kreuzberg/wasm";
 
 async function extractWithOcr() {
   await initWasm();
 
-  try {
-    await enableOcr();
-    console.log("OCR enabled successfully");
-  } catch (error) {
-    console.error("Failed to enable OCR:", error);
-    return;
-  }
-
   const bytes = new Uint8Array(await fetch("scanned-page.png").then((r) => r.arrayBuffer()));
 
+  // Tesseract is registered automatically when the WASM module loads. With the
+  // `bundle-tessdata-eng` feature on the build, English works out of the box;
+  // for other languages, supply tessdata bytes via `OcrConfig.tessdataBytes`.
   const result = await extractBytes(bytes, "image/png", {
     ocr: {
-      backend: "tesseract-wasm",
+      backend: "tesseract",
       language: "eng",
     },
   });
@@ -255,6 +254,7 @@ extractDocuments(fileBytes, mimes)
 | **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
 | **Database** | `.dbf` | Table data extraction, field type support |
 | **Hangul** | `.hwp`, `.hwpx` | Korean document format, text extraction |
+| **iWork** | `.pages`, `.numbers`, `.key` | Apple iWork bundles (Pages, Numbers, Keynote), text extraction |
 
 #### Images (OCR-Enabled)
 
@@ -337,33 +337,31 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 
 ## OCR Support
 
-Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+WASM ships a real Tesseract OCR engine built from the same source as native
+kreuzberg, compiled to WebAssembly via the WASI SDK. There is no JavaScript
+shim, no `tesseract.js` dependency, and no CDN tessdata fetch — the recognition
+runs entirely in the WASM module from in-memory tessdata bytes.
 
-
-- **Tesseract-Wasm**
-
+- **Tesseract** (`backend: "tesseract"`) — the only OCR backend on WASM.
+  PaddleOCR, EasyOCR, and VLM OCR all require ORT (ONNX Runtime), which
+  isn't available on `wasm32`.
 
 ### OCR Configuration Example
 
 ```ts
-import { enableOcr, extractBytes, initWasm } from "@kreuzberg/wasm";
+import { extractBytes, initWasm } from "@kreuzberg/wasm";
 
 async function extractWithOcr() {
   await initWasm();
 
-  try {
-    await enableOcr();
-    console.log("OCR enabled successfully");
-  } catch (error) {
-    console.error("Failed to enable OCR:", error);
-    return;
-  }
-
   const bytes = new Uint8Array(await fetch("scanned-page.png").then((r) => r.arrayBuffer()));
 
+  // The WASM module ships Tesseract via the kreuzberg-tesseract WASI build.
+  // English tessdata is bundled when the `bundle-tessdata-eng` feature is on;
+  // additional languages can be supplied at runtime via `OcrConfig.tessdataBytes`.
   const result = await extractBytes(bytes, "image/png", {
     ocr: {
-      backend: "tesseract-wasm",
+      backend: "tesseract",
       language: "eng",
     },
   });
@@ -375,6 +373,26 @@ async function extractWithOcr() {
 extractWithOcr().catch(console.error);
 ```
 
+
+## Excluded on WASM
+
+The following features are unavailable on WebAssembly because they depend on
+[ONNX Runtime](https://onnxruntime.ai/) (no `wasm32` target) or on
+infrastructure that has no place in a browser/edge runtime:
+
+- **PaddleOCR** (`paddle-ocr`) — ORT-only.
+- **Layout detection** (`layout-detection`) — ORT model (RT-DETR) for region
+  classification on PDFs and images.
+- **Embeddings** (`embeddings`) — ORT-based sentence-transformer pipelines.
+  The static `embedding-presets` metadata IS available and works for chunk
+  sizing, just not the actual ORT inference.
+- **Auto-rotate** (`auto-rotate`) — ORT orientation classifier.
+- **Server modes** (`api`, `mcp`) — HTTP server / MCP server harnesses.
+  Cloudflare Workers users typically want their own router anyway.
+- **CLI binary** (`cli`) — only meaningful with a process model.
+
+Everything else — every format, OCR, chunking, keywords, language detection,
+stopwords, tree-sitter, liter-llm — runs on WASM.
 
 ## Async Support
 
