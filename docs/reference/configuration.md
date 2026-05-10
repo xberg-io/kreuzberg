@@ -1404,3 +1404,272 @@ are at the `Metadata` level.
 | `page_count` | `int | None` | `None` | Total number of pages in the PDF document |
 
 ---
+
+### Enums
+
+#### ChunkSizing
+
+How chunk size is measured.
+
+Defaults to `Characters` (Unicode character count). When using token-based sizing,
+chunks are sized by token count according to the specified tokenizer.
+
+Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
+available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
+(e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
+
+| Variant | Description |
+|---------|-------------|
+| `Characters` | Size measured in Unicode characters (default). |
+| `Tokenizer` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `String`, `cache_dir`: `PathBuf` |
+
+---
+
+#### ChunkerType
+
+Type of text chunker to use.
+
+# Variants
+
+* `Text` - Generic text splitter, splits on whitespace and punctuation
+* `Markdown` - Markdown-aware splitter, preserves formatting and structure
+* `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+* `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+  embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
+  lower = more splits). Without an embedding, falls back to a
+  structural-boundary heuristic (ALL-CAPS headers, numbered sections,
+  blank-line paragraphs) and merges groups into chunks capped at
+  `max_characters` (default 1000). `topic_threshold` has no effect in the
+  fallback path. For best results, pair with an embedding model.
+
+| Variant | Description |
+|---------|-------------|
+| `Text` | Text format |
+| `Markdown` | Markdown format |
+| `Yaml` | Yaml format |
+| `Semantic` | Semantic |
+
+---
+
+#### CodeContentMode
+
+Content rendering mode for code extraction.
+
+Controls how extracted code content is represented in the `content` field
+of `ExtractionResult`.
+
+| Variant | Description |
+|---------|-------------|
+| `Chunks` | Use TSLP semantic chunks as content (default). |
+| `Raw` | Use raw source code as content. |
+| `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+---
+
+#### EmbeddingModelType
+
+Embedding model types supported by Kreuzberg.
+
+| Variant | Description |
+|---------|-------------|
+| `Preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
+| `Custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
+| `Llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
+| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
+
+---
+
+#### ExecutionProviderType
+
+ONNX Runtime execution provider type.
+
+Determines which hardware backend is used for model inference.
+`Auto` (default) selects the best available provider per platform.
+
+| Variant | Description |
+|---------|-------------|
+| `Auto` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
+| `Cpu` | CPU execution provider (always available). |
+| `CoreMl` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
+| `Cuda` | NVIDIA CUDA GPU acceleration. |
+| `TensorRt` | NVIDIA TensorRT (optimized CUDA inference). |
+
+---
+
+#### ExtractionMethod
+
+How the extracted text was produced.
+
+| Variant | Description |
+|---------|-------------|
+| `Native` | Native |
+| `Ocr` | Ocr |
+| `Mixed` | Mixed |
+
+---
+
+#### FormatMetadata
+
+Format-specific metadata (discriminated union).
+
+Only one format type can exist per extraction result. This provides
+type-safe, clean metadata without nested optionals.
+
+| Variant | Description |
+|---------|-------------|
+| `Pdf` | Pdf format — Fields: `_0`: `PdfMetadata` |
+| `Docx` | Docx format — Fields: `_0`: `DocxMetadata` |
+| `Excel` | Excel — Fields: `_0`: `ExcelMetadata` |
+| `Email` | Email — Fields: `_0`: `EmailMetadata` |
+| `Pptx` | Pptx format — Fields: `_0`: `PptxMetadata` |
+| `Archive` | Archive — Fields: `_0`: `ArchiveMetadata` |
+| `Image` | Image element — Fields: `_0`: `ImageMetadata` |
+| `Xml` | Xml format — Fields: `_0`: `XmlMetadata` |
+| `Text` | Text format — Fields: `_0`: `TextMetadata` |
+| `Html` | Preserve as HTML `<mark>` tags — Fields: `_0`: `HtmlMetadata` |
+| `Ocr` | Ocr — Fields: `_0`: `OcrMetadata` |
+| `Csv` | Csv format — Fields: `_0`: `CsvMetadata` |
+| `Bibtex` | Bibtex — Fields: `_0`: `BibtexMetadata` |
+| `Citation` | Citation — Fields: `_0`: `CitationMetadata` |
+| `FictionBook` | Fiction book — Fields: `_0`: `FictionBookMetadata` |
+| `Dbf` | Dbf — Fields: `_0`: `DbfMetadata` |
+| `Jats` | Jats — Fields: `_0`: `JatsMetadata` |
+| `Epub` | Epub format — Fields: `_0`: `EpubMetadata` |
+| `Pst` | Pst — Fields: `_0`: `PstMetadata` |
+| `Code` | Code — Fields: `_0`: `String` |
+
+---
+
+#### HtmlTheme
+
+Built-in HTML theme selection.
+
+| Variant | Description |
+|---------|-------------|
+| `Default` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
+| `GitHub` | GitHub Markdown-inspired palette and spacing. |
+| `Dark` | Dark background, light text. |
+| `Light` | Minimal light theme with generous whitespace. |
+| `Unstyled` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
+
+---
+
+#### KeywordAlgorithm
+
+Keyword algorithm selection.
+
+| Variant | Description |
+|---------|-------------|
+| `Yake` | YAKE (Yet Another Keyword Extractor) - statistical approach |
+| `Rake` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
+
+---
+
+#### OcrBoundingGeometry
+
+Bounding geometry for an OCR element.
+
+Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
+(from PaddleOCR and rotated text detection).
+
+| Variant | Description |
+|---------|-------------|
+| `Rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `u32`, `top`: `u32`, `width`: `u32`, `height`: `u32` |
+| `Quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
+
+---
+
+#### OcrElementLevel
+
+Hierarchical level of an OCR element.
+
+Maps to Tesseract's page segmentation hierarchy and provides
+equivalent semantics for PaddleOCR.
+
+| Variant | Description |
+|---------|-------------|
+| `Word` | Individual word |
+| `Line` | Line of text (default for PaddleOCR) |
+| `Block` | Paragraph or text block |
+| `Page` | Page-level element |
+
+---
+
+#### OutputFormat
+
+Output format for extraction results.
+
+Controls the format of the `content` field in `ExtractionResult`.
+When set to `Markdown`, `Djot`, or `Html`, the output will be formatted
+accordingly. `Plain` returns the raw extracted text.
+`Structured` returns JSON with full OCR element data including bounding
+boxes and confidence scores.
+
+| Variant | Description |
+|---------|-------------|
+| `Plain` | Plain text content only (default) |
+| `Markdown` | Markdown format |
+| `Djot` | Djot markup format |
+| `Html` | HTML format |
+| `Json` | JSON tree format with heading-driven sections. |
+| `Structured` | Structured JSON format with full OCR element metadata. |
+| `Custom` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `_0`: `String` |
+
+---
+
+#### ReductionLevel
+
+| Variant | Description |
+|---------|-------------|
+| `Off` | Off |
+| `Light` | Light |
+| `Moderate` | Moderate |
+| `Aggressive` | Aggressive |
+| `Maximum` | Maximum |
+
+---
+
+#### ResultFormat
+
+Result-shape selection for extraction results.
+
+Distinct from `OutputFormat` (which controls rendering — Plain, Markdown,
+HTML, etc.). `ResultFormat` controls the *shape* of the result: a unified content
+blob vs. an element-based decomposition.
+
+| Variant | Description |
+|---------|-------------|
+| `Unified` | Unified format with all content in `content` field |
+| `ElementBased` | Element-based format with semantic element extraction |
+
+---
+
+#### TableModel
+
+Which table structure recognition model to use.
+
+Controls the model used for table cell detection within layout-detected
+table regions.
+
+| Variant | Description |
+|---------|-------------|
+| `Tatr` | TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. |
+| `SlanetWired` | SLANeXT wired variant -- 365MB, optimized for bordered tables. |
+| `SlanetWireless` | SLANeXT wireless variant -- 365MB, optimized for borderless tables. |
+| `SlanetPlus` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
+| `SlanetAuto` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
+| `Disabled` | Disable table structure model inference entirely; use heuristic path only. |
+
+---
+
+#### TextDirection
+
+Text direction enumeration for HTML documents.
+
+| Variant | Description |
+|---------|-------------|
+| `LeftToRight` | Left-to-right text direction |
+| `RightToLeft` | Right-to-left text direction |
+| `Auto` | Automatic text direction detection |
+
+---

@@ -2961,3 +2961,686 @@ Embedded file descriptor extracted from the PDF name tree.
 | `mime_type` | `Option<String>` | `None` | MIME type if specified in the filespec, otherwise `None`. |
 
 ---
+
+### Enums
+
+#### AnnotationKind
+
+Types of inline text annotations.
+
+| Variant | Description |
+|---------|-------------|
+| `Bold` | Bold |
+| `Italic` | Italic |
+| `Underline` | Underline |
+| `Strikethrough` | Strikethrough |
+| `Code` | Code |
+| `Subscript` | Subscript |
+| `Superscript` | Superscript |
+| `Link` | Link — Fields: `url`: `String`, `title`: `String` |
+| `Highlight` | Highlighted text (PDF highlights, HTML `<mark>`). |
+| `Color` | Text color (CSS-compatible value, e.g. "#ff0000", "red"). — Fields: `value`: `String` |
+| `FontSize` | Font size with units (e.g. "12pt", "1.2em", "16px"). — Fields: `value`: `String` |
+| `Custom` | Extensible annotation for format-specific styling. — Fields: `name`: `String`, `value`: `String` |
+
+---
+
+#### BlockType
+
+Types of block-level elements in Djot.
+
+| Variant | Description |
+|---------|-------------|
+| `Paragraph` | Paragraph element |
+| `Heading` | Heading element |
+| `Blockquote` | Blockquote element |
+| `CodeBlock` | Code block |
+| `ListItem` | List item |
+| `OrderedList` | Ordered list |
+| `BulletList` | Bullet list |
+| `TaskList` | Task list |
+| `DefinitionList` | Definition list |
+| `DefinitionTerm` | Definition term |
+| `DefinitionDescription` | Definition description |
+| `Div` | Div |
+| `Section` | Section element |
+| `ThematicBreak` | Thematic break |
+| `RawBlock` | Raw block |
+| `MathDisplay` | Math display |
+
+---
+
+#### ChunkSizing
+
+How chunk size is measured.
+
+Defaults to `Characters` (Unicode character count). When using token-based sizing,
+chunks are sized by token count according to the specified tokenizer.
+
+Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
+available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
+(e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
+
+| Variant | Description |
+|---------|-------------|
+| `Characters` | Size measured in Unicode characters (default). |
+| `Tokenizer` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `String`, `cache_dir`: `PathBuf` |
+
+---
+
+#### ChunkType
+
+Semantic structural classification of a text chunk.
+
+Assigned by the heuristic classifier in `chunking.classifier`.
+Defaults to `Unknown` when no rule matches.
+Designed to be extended in future versions without breaking changes.
+
+| Variant | Description |
+|---------|-------------|
+| `Heading` | Section heading or document title. |
+| `PartyList` | Party list: names, addresses, and signatories. |
+| `Definitions` | Definition clause ("X means…", "X shall mean…"). |
+| `OperativeClause` | Operative clause containing legal/contractual action verbs. |
+| `SignatureBlock` | Signature block with signatures, names, and dates. |
+| `Schedule` | Schedule, annex, appendix, or exhibit section. |
+| `TableLike` | Table-like content with aligned columns or repeated patterns. |
+| `Formula` | Mathematical formula or equation. |
+| `CodeBlock` | Code block or preformatted content. |
+| `Image` | Embedded or referenced image content. |
+| `OrgChart` | Organizational chart or hierarchy diagram. |
+| `Diagram` | Diagram, figure, or visual illustration. |
+| `Unknown` | Unclassified or mixed content. |
+
+---
+
+#### ChunkerType
+
+Type of text chunker to use.
+
+# Variants
+
+* `Text` - Generic text splitter, splits on whitespace and punctuation
+* `Markdown` - Markdown-aware splitter, preserves formatting and structure
+* `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+* `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+  embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
+  lower = more splits). Without an embedding, falls back to a
+  structural-boundary heuristic (ALL-CAPS headers, numbered sections,
+  blank-line paragraphs) and merges groups into chunks capped at
+  `max_characters` (default 1000). `topic_threshold` has no effect in the
+  fallback path. For best results, pair with an embedding model.
+
+| Variant | Description |
+|---------|-------------|
+| `Text` | Text format |
+| `Markdown` | Markdown format |
+| `Yaml` | Yaml format |
+| `Semantic` | Semantic |
+
+---
+
+#### CodeContentMode
+
+Content rendering mode for code extraction.
+
+Controls how extracted code content is represented in the `content` field
+of `ExtractionResult`.
+
+| Variant | Description |
+|---------|-------------|
+| `Chunks` | Use TSLP semantic chunks as content (default). |
+| `Raw` | Use raw source code as content. |
+| `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+---
+
+#### ContentLayer
+
+Content layer classification for document nodes.
+
+Replaces separate body/furniture arrays with per-node granularity.
+
+| Variant | Description |
+|---------|-------------|
+| `Body` | Main document body content. |
+| `Header` | Page/section header (running header). |
+| `Footer` | Page/section footer (running footer). |
+| `Footnote` | Footnote content. |
+
+---
+
+#### ElementType
+
+Semantic element type classification.
+
+Categorizes text content into semantic units for downstream processing.
+Supports the element types commonly found in Unstructured documents.
+
+| Variant | Description |
+|---------|-------------|
+| `Title` | Document title |
+| `NarrativeText` | Main narrative text body |
+| `Heading` | Section heading |
+| `ListItem` | List item (bullet, numbered, etc.) |
+| `Table` | Table element |
+| `Image` | Image element |
+| `PageBreak` | Page break marker |
+| `CodeBlock` | Code block |
+| `BlockQuote` | Block quote |
+| `Footer` | Footer text |
+| `Header` | Header text |
+
+---
+
+#### EmbeddingModelType
+
+Embedding model types supported by Kreuzberg.
+
+| Variant | Description |
+|---------|-------------|
+| `Preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
+| `Custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
+| `Llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
+| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
+
+---
+
+#### ExecutionProviderType
+
+ONNX Runtime execution provider type.
+
+Determines which hardware backend is used for model inference.
+`Auto` (default) selects the best available provider per platform.
+
+| Variant | Description |
+|---------|-------------|
+| `Auto` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
+| `Cpu` | CPU execution provider (always available). |
+| `CoreMl` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
+| `Cuda` | NVIDIA CUDA GPU acceleration. |
+| `TensorRt` | NVIDIA TensorRT (optimized CUDA inference). |
+
+---
+
+#### ExtractionMethod
+
+How the extracted text was produced.
+
+| Variant | Description |
+|---------|-------------|
+| `Native` | Native |
+| `Ocr` | Ocr |
+| `Mixed` | Mixed |
+
+---
+
+#### FormatMetadata
+
+Format-specific metadata (discriminated union).
+
+Only one format type can exist per extraction result. This provides
+type-safe, clean metadata without nested optionals.
+
+| Variant | Description |
+|---------|-------------|
+| `Pdf` | Pdf format — Fields: `_0`: `PdfMetadata` |
+| `Docx` | Docx format — Fields: `_0`: `DocxMetadata` |
+| `Excel` | Excel — Fields: `_0`: `ExcelMetadata` |
+| `Email` | Email — Fields: `_0`: `EmailMetadata` |
+| `Pptx` | Pptx format — Fields: `_0`: `PptxMetadata` |
+| `Archive` | Archive — Fields: `_0`: `ArchiveMetadata` |
+| `Image` | Image element — Fields: `_0`: `ImageMetadata` |
+| `Xml` | Xml format — Fields: `_0`: `XmlMetadata` |
+| `Text` | Text format — Fields: `_0`: `TextMetadata` |
+| `Html` | Preserve as HTML `<mark>` tags — Fields: `_0`: `HtmlMetadata` |
+| `Ocr` | Ocr — Fields: `_0`: `OcrMetadata` |
+| `Csv` | Csv format — Fields: `_0`: `CsvMetadata` |
+| `Bibtex` | Bibtex — Fields: `_0`: `BibtexMetadata` |
+| `Citation` | Citation — Fields: `_0`: `CitationMetadata` |
+| `FictionBook` | Fiction book — Fields: `_0`: `FictionBookMetadata` |
+| `Dbf` | Dbf — Fields: `_0`: `DbfMetadata` |
+| `Jats` | Jats — Fields: `_0`: `JatsMetadata` |
+| `Epub` | Epub format — Fields: `_0`: `EpubMetadata` |
+| `Pst` | Pst — Fields: `_0`: `PstMetadata` |
+| `Code` | Code — Fields: `_0`: `String` |
+
+---
+
+#### FracType
+
+| Variant | Description |
+|---------|-------------|
+| `Bar` | Bar |
+| `NoBar` | No bar |
+| `Linear` | Linear |
+| `Skewed` | Skewed |
+
+---
+
+#### HtmlTheme
+
+Built-in HTML theme selection.
+
+| Variant | Description |
+|---------|-------------|
+| `Default` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
+| `GitHub` | GitHub Markdown-inspired palette and spacing. |
+| `Dark` | Dark background, light text. |
+| `Light` | Minimal light theme with generous whitespace. |
+| `Unstyled` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
+
+---
+
+#### ImageKind
+
+Heuristic classification of what an image likely depicts.
+
+| Variant | Description |
+|---------|-------------|
+| `Photograph` | Photographic image (natural scene, photograph) |
+| `Diagram` | Technical or schematic diagram |
+| `Chart` | Chart, graph, or plot |
+| `Drawing` | Freehand or technical drawing |
+| `TextBlock` | Text-heavy image (scanned text, document) |
+| `Decoration` | Decorative element or border |
+| `Logo` | Logo or brand mark |
+| `Icon` | Small icon |
+| `TileFragment` | Fragment of a larger tiled image (tile of a technical drawing) |
+| `Mask` | Mask or transparency map |
+| `Unknown` | Could not classify with reasonable confidence |
+
+---
+
+#### ImageType
+
+Image type classification.
+
+| Variant | Description |
+|---------|-------------|
+| `DataUri` | Data URI image |
+| `InlineSvg` | Inline SVG |
+| `External` | External image URL |
+| `Relative` | Relative path image |
+
+---
+
+#### InlineType
+
+Types of inline elements in Djot.
+
+| Variant | Description |
+|---------|-------------|
+| `Text` | Text format |
+| `Strong` | Strong |
+| `Emphasis` | Emphasis |
+| `Highlight` | Highlight |
+| `Subscript` | Subscript |
+| `Superscript` | Superscript |
+| `Insert` | Insert |
+| `Delete` | Delete |
+| `Code` | Code |
+| `Link` | Link |
+| `Image` | Image element |
+| `Span` | Span |
+| `Math` | Math |
+| `RawInline` | Raw inline |
+| `FootnoteRef` | Footnote ref |
+| `Symbol` | Symbol |
+
+---
+
+#### KeywordAlgorithm
+
+Keyword algorithm selection.
+
+| Variant | Description |
+|---------|-------------|
+| `Yake` | YAKE (Yet Another Keyword Extractor) - statistical approach |
+| `Rake` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
+
+---
+
+#### LayoutClass
+
+The 17 canonical document layout classes.
+
+All model backends (RT-DETR, YOLO, etc.) map their native class IDs
+to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
+map to the closest equivalent.
+
+| Variant | Description |
+|---------|-------------|
+| `Caption` | Caption element |
+| `Footnote` | Footnote element |
+| `Formula` | Formula |
+| `ListItem` | List item |
+| `PageFooter` | Page footer |
+| `PageHeader` | Page header |
+| `Picture` | Picture |
+| `SectionHeader` | Section header |
+| `Table` | Table element |
+| `Text` | Text format |
+| `Title` | Title element |
+| `DocumentIndex` | Document index |
+| `Code` | Code |
+| `CheckboxSelected` | Checkbox selected |
+| `CheckboxUnselected` | Checkbox unselected |
+| `Form` | Form |
+| `KeyValueRegion` | Key value region |
+
+---
+
+#### LinkType
+
+Link type classification.
+
+| Variant | Description |
+|---------|-------------|
+| `Anchor` | Anchor link (#section) |
+| `Internal` | Internal link (same domain) |
+| `External` | External link (different domain) |
+| `Email` | Email link (mailto:) |
+| `Phone` | Phone link (tel:) |
+| `Other` | Other link type |
+
+---
+
+#### NodeContent
+
+Tagged enum for node content. Each variant carries only type-specific data.
+
+Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
+Go/Java/TypeScript bindings.
+
+| Variant | Description |
+|---------|-------------|
+| `Title` | Document title. — Fields: `text`: `String` |
+| `Heading` | Section heading with level (1-6). — Fields: `level`: `u8`, `text`: `String` |
+| `Paragraph` | Body text paragraph. — Fields: `text`: `String` |
+| `List` | List container — children are `ListItem` nodes. — Fields: `ordered`: `bool` |
+| `ListItem` | Individual list item. — Fields: `text`: `String` |
+| `Table` | Table with structured cell grid. — Fields: `grid`: `TableGrid` |
+| `Image` | Image reference. — Fields: `description`: `String`, `image_index`: `u32`, `src`: `String` |
+| `Code` | Code block. — Fields: `text`: `String`, `language`: `String` |
+| `Quote` | Block quote — container, children carry the quoted content. |
+| `Formula` | Mathematical formula / equation. — Fields: `text`: `String` |
+| `Footnote` | Footnote reference content. — Fields: `text`: `String` |
+| `Group` | Logical grouping container (section, key-value area). `heading_level` + `heading_text` capture the section heading directly rather than relying on a first-child positional convention. — Fields: `label`: `String`, `heading_level`: `u8`, `heading_text`: `String` |
+| `PageBreak` | Page break marker. |
+| `Slide` | Presentation slide container — children are the slide's content nodes. — Fields: `number`: `u32`, `title`: `String` |
+| `DefinitionList` | Definition list container — children are `DefinitionItem` nodes. |
+| `DefinitionItem` | Individual definition list entry with term and definition. — Fields: `term`: `String`, `definition`: `String` |
+| `Citation` | Citation or bibliographic reference. — Fields: `key`: `String`, `text`: `String` |
+| `Admonition` | Admonition / callout container (note, warning, tip, etc.). Children carry the admonition body content. — Fields: `kind`: `String`, `title`: `String` |
+| `RawBlock` | Raw block preserved verbatim from the source format. Used for content that cannot be mapped to a semantic node type (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML). — Fields: `format`: `String`, `content`: `String` |
+| `MetadataBlock` | Structured metadata block (email headers, YAML frontmatter, etc.). — Fields: `entries`: `Vec<String>` |
+
+---
+
+#### OcrBackendType
+
+OCR backend types.
+
+| Variant | Description |
+|---------|-------------|
+| `Tesseract` | Tesseract OCR (native Rust binding) |
+| `EasyOCR` | EasyOCR (Python-based, via FFI) |
+| `PaddleOCR` | PaddleOCR (Python-based, via FFI) |
+| `Custom` | Custom/third-party OCR backend |
+
+---
+
+#### OcrBoundingGeometry
+
+Bounding geometry for an OCR element.
+
+Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
+(from PaddleOCR and rotated text detection).
+
+| Variant | Description |
+|---------|-------------|
+| `Rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `u32`, `top`: `u32`, `width`: `u32`, `height`: `u32` |
+| `Quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
+
+---
+
+#### OcrElementLevel
+
+Hierarchical level of an OCR element.
+
+Maps to Tesseract's page segmentation hierarchy and provides
+equivalent semantics for PaddleOCR.
+
+| Variant | Description |
+|---------|-------------|
+| `Word` | Individual word |
+| `Line` | Line of text (default for PaddleOCR) |
+| `Block` | Paragraph or text block |
+| `Page` | Page-level element |
+
+---
+
+#### OutputFormat
+
+Output format for extraction results.
+
+Controls the format of the `content` field in `ExtractionResult`.
+When set to `Markdown`, `Djot`, or `Html`, the output will be formatted
+accordingly. `Plain` returns the raw extracted text.
+`Structured` returns JSON with full OCR element data including bounding
+boxes and confidence scores.
+
+| Variant | Description |
+|---------|-------------|
+| `Plain` | Plain text content only (default) |
+| `Markdown` | Markdown format |
+| `Djot` | Djot markup format |
+| `Html` | HTML format |
+| `Json` | JSON tree format with heading-driven sections. |
+| `Structured` | Structured JSON format with full OCR element metadata. |
+| `Custom` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `_0`: `String` |
+
+---
+
+#### PSMMode
+
+Page Segmentation Mode for Tesseract OCR
+
+| Variant | Description |
+|---------|-------------|
+| `OsdOnly` | Osd only |
+| `AutoOsd` | Auto osd |
+| `AutoOnly` | Auto only |
+| `Auto` | Auto |
+| `SingleColumn` | Single column |
+| `SingleBlockVertical` | Single block vertical |
+| `SingleBlock` | Single block |
+| `SingleLine` | Single line |
+| `SingleWord` | Single word |
+| `CircleWord` | Circle word |
+| `SingleChar` | Single char |
+
+---
+
+#### PaddleLanguage
+
+Supported languages in PaddleOCR.
+
+Maps user-friendly language codes to paddle-ocr-rs language identifiers.
+
+| Variant | Description |
+|---------|-------------|
+| `English` | English |
+| `Chinese` | Simplified Chinese |
+| `Japanese` | Japanese |
+| `Korean` | Korean |
+| `German` | German |
+| `French` | French |
+| `Latin` | Latin script (covers most European languages) |
+| `Cyrillic` | Cyrillic (Russian and related) |
+| `TraditionalChinese` | Traditional Chinese |
+| `Thai` | Thai |
+| `Greek` | Greek |
+| `EastSlavic` | East Slavic (Russian, Ukrainian, Belarusian) |
+| `Arabic` | Arabic (Arabic, Persian, Urdu) |
+| `Devanagari` | Devanagari (Hindi, Marathi, Sanskrit, Nepali) |
+| `Tamil` | Tamil |
+| `Telugu` | Telugu |
+
+---
+
+#### PageUnitType
+
+Type of paginated unit in a document.
+
+Distinguishes between different types of "pages" (PDF pages, presentation slides, spreadsheet sheets).
+
+| Variant | Description |
+|---------|-------------|
+| `Page` | Standard document pages (PDF, DOCX, images) |
+| `Slide` | Presentation slides (PPTX, ODP) |
+| `Sheet` | Spreadsheet sheets (XLSX, ODS) |
+
+---
+
+#### PdfAnnotationType
+
+Type of PDF annotation.
+
+| Variant | Description |
+|---------|-------------|
+| `Text` | Sticky note / text annotation |
+| `Highlight` | Highlighted text region |
+| `Link` | Hyperlink annotation |
+| `Stamp` | Rubber stamp annotation |
+| `Underline` | Underline text markup |
+| `StrikeOut` | Strikeout text markup |
+| `Other` | Any other annotation type |
+
+---
+
+#### PoolError
+
+Error type for pool operations.
+
+| Variant | Description |
+|---------|-------------|
+| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
+
+---
+
+#### ProcessingStage
+
+Processing stages for post-processors.
+
+Post-processors are executed in stage order (Early → Middle → Late).
+Use stages to control the order of post-processing operations.
+
+| Variant | Description |
+|---------|-------------|
+| `Early` | Early stage - foundational processing. Use for: - Language detection - Character encoding normalization - Entity extraction (NER) - Text quality scoring |
+| `Middle` | Middle stage - content transformation. Use for: - Keyword extraction - Token reduction - Text summarization - Semantic analysis |
+| `Late` | Late stage - final enrichment. Use for: - Custom user hooks - Analytics/logging - Final validation - Output formatting |
+
+---
+
+#### ReductionLevel
+
+| Variant | Description |
+|---------|-------------|
+| `Off` | Off |
+| `Light` | Light |
+| `Moderate` | Moderate |
+| `Aggressive` | Aggressive |
+| `Maximum` | Maximum |
+
+---
+
+#### RelationshipKind
+
+Semantic kind of a relationship between document elements.
+
+| Variant | Description |
+|---------|-------------|
+| `FootnoteReference` | Footnote marker -> footnote definition. |
+| `CitationReference` | Citation marker -> bibliography entry. |
+| `InternalLink` | Internal anchor link (`#id`) -> target heading/element. |
+| `Caption` | Caption paragraph -> figure/table it describes. |
+| `Label` | Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`). |
+| `TocEntry` | TOC entry -> target section. |
+| `CrossReference` | Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field). |
+
+---
+
+#### ResultFormat
+
+Result-shape selection for extraction results.
+
+Distinct from `OutputFormat` (which controls rendering — Plain, Markdown,
+HTML, etc.). `ResultFormat` controls the *shape* of the result: a unified content
+blob vs. an element-based decomposition.
+
+| Variant | Description |
+|---------|-------------|
+| `Unified` | Unified format with all content in `content` field |
+| `ElementBased` | Element-based format with semantic element extraction |
+
+---
+
+#### StructuredDataType
+
+Structured data type classification.
+
+| Variant | Description |
+|---------|-------------|
+| `JsonLd` | JSON-LD structured data |
+| `Microdata` | Microdata |
+| `RDFa` | RDFa |
+
+---
+
+#### TableModel
+
+Which table structure recognition model to use.
+
+Controls the model used for table cell detection within layout-detected
+table regions.
+
+| Variant | Description |
+|---------|-------------|
+| `Tatr` | TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. |
+| `SlanetWired` | SLANeXT wired variant -- 365MB, optimized for bordered tables. |
+| `SlanetWireless` | SLANeXT wireless variant -- 365MB, optimized for borderless tables. |
+| `SlanetPlus` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
+| `SlanetAuto` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
+| `Disabled` | Disable table structure model inference entirely; use heuristic path only. |
+
+---
+
+#### TextDirection
+
+Text direction enumeration for HTML documents.
+
+| Variant | Description |
+|---------|-------------|
+| `LeftToRight` | Left-to-right text direction |
+| `RightToLeft` | Right-to-left text direction |
+| `Auto` | Automatic text direction detection |
+
+---
+
+#### UriKind
+
+Semantic classification of an extracted URI.
+
+| Variant | Description |
+|---------|-------------|
+| `Hyperlink` | A clickable hyperlink (web URL, file link). |
+| `Image` | An image or media resource reference. |
+| `Anchor` | An internal anchor or cross-reference target. |
+| `Citation` | A citation or bibliographic reference (DOI, academic ref). |
+| `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
+| `Email` | An email address (`mailto:` link or bare email). |
+
+---
