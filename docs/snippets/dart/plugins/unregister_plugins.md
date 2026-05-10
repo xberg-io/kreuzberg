@@ -1,13 +1,23 @@
-<!-- snippet:skip -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: the Dart binding does not expose per-plugin unregistration
-  // (`registry.remove(name)`). flutter_rust_bridge surfaces only the
-  // bulk-clear entry points: `clearOcrBackends`, `clearPostProcessors`,
-  // and `clearValidators`. To remove a single plugin, clear the relevant
-  // registry and re-register the plugins you want to keep from the Rust
-  // core (or from a Rust shim crate that links kreuzberg).
+  // Custom-plugin construction (createXxxDartImpl) is unreachable from Dart
+  // due to opaque BoxFn closure types in the flutter_rust_bridge binding,
+  // so this snippet exercises the lifecycle against the *built-in* renderer
+  // registry (markdown / html / djot / plain).
+
+  var renderers = await KreuzbergBridge.listRenderers();
+  print('Renderers before unregister: $renderers');
+
+  // Unregister a single renderer by name.
+  await KreuzbergBridge.unregisterRenderer('plain');
+  renderers = await KreuzbergBridge.listRenderers();
+  print('Renderers after unregister: $renderers');
+
+  // Bulk-clear all renderers (including remaining built-ins).
+  await KreuzbergBridge.clearRenderers();
+  renderers = await KreuzbergBridge.listRenderers();
+  print('Renderers after clear: $renderers');
 }
 ```

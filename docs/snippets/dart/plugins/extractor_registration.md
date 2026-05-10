@@ -1,16 +1,15 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="DocumentExtractor trait has no createDocumentExtractorDartImpl factory; custom extractors must be implemented in Rust." -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: the Dart binding does not expose `registerDocumentExtractor` /
-  // `getDocumentExtractorRegistry`. flutter_rust_bridge does not surface
-  // a Dart-side `DocumentExtractor` trait class, and the global registry
-  // accessors are Rust-only.
+  // Custom document extractors cannot be registered from Dart. While
+  // registerDocumentExtractor exists in the KreuzbergBridge API, there is
+  // no createDocumentExtractorDartImpl factory to construct a Dart-based
+  // extractor implementation.
   //
-  // Built-in extractors (PDF, DOCX, HTML, etc.) are registered automatically
-  // by the kreuzberg core when the library initializes. Custom extractors
-  // must be written in Rust and linked into a Rust shim crate that is
-  // loaded before the Dart host process opens the dynamic library.
+  // Built-in extractors are registered automatically when the library
+  // initializes. Custom extractors must be written in Rust and linked into
+  // a Rust shim crate before the Dart host process loads the dynamic library.
 }
 ```

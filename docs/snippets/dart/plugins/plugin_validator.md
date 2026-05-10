@@ -1,16 +1,16 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="Dart cannot construct the opaque BoxFn closure types required by createValidatorDartImpl — flutter_rust_bridge generates them as RustOpaqueInterface with no Dart-side wrapper. Custom validators must be written in Rust." -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: while flutter_rust_bridge surfaces a `Validator` abstract class
-  // and a `createValidatorDartImpl` factory, the Dart binding does not
-  // expose `registerValidator`. Without a registration entry point, a
-  // Dart-side `ValidatorDartImpl` cannot be plugged into the global
-  // validator registry.
+  // A Dart implementation of the `Validator` trait that gates on MIME type
+  // cannot be plugged into the global validator registry.
+  // `Kreuzberg.registerValidator(impl)` exists, but its
+  // `createValidatorDartImpl` factory requires opaque `BoxFn*` closure
+  // values whose constructors are not surfaced through
+  // flutter_rust_bridge.
   //
-  // Custom validators must be written in Rust and registered via a Rust
-  // shim crate that links kreuzberg before the Dart host process loads
-  // the dynamic library.
+  // Implement the validator in Rust and register it via `register_validator`
+  // in a Rust shim crate.
 }
 ```

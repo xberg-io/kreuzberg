@@ -1,16 +1,15 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="DocumentExtractor trait has no createDocumentExtractorDartImpl factory; custom extractors must be implemented in Rust." -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: the Dart binding does not expose `registerPostProcessor`. A
-  // Dart implementation of the `PostProcessor` trait that enriches PDF
-  // extraction results with additional metadata cannot be plugged into
-  // the global post-processor registry from Dart.
+  // Custom document extractors cannot be implemented in Dart. Creating a
+  // PDF metadata extractor would require implementing the DocumentExtractor
+  // trait, but flutter_rust_bridge does not generate the
+  // createDocumentExtractorDartImpl factory function.
   //
-  // Implement the post-processor in Rust as `Plugin + PostProcessor` and
-  // register it via `register_post_processor` in a Rust shim crate that
-  // links kreuzberg before the Dart host process loads the dynamic
-  // library.
+  // Implement the PDF metadata extractor in Rust and register it via a
+  // Rust shim crate that links kreuzberg before the Dart host loads the
+  // dynamic library.
 }
 ```

@@ -1,18 +1,15 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="Dart cannot construct the opaque BoxFn closure types required by createEmbeddingBackendDartImpl — flutter_rust_bridge generates them as RustOpaqueInterface with no Dart-side wrapper. Custom embedding backends must be written in Rust." -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: the Dart binding surfaces an `EmbeddingBackend` abstract class
-  // and a `createEmbeddingBackendDartImpl` factory, but does not expose
-  // `registerEmbeddingBackend`. Without a registration entry point, a
-  // Dart-side `EmbeddingBackendDartImpl` cannot be wired into
-  // `EmbeddingModelType.plugin { name }` dispatch.
+  // A Dart implementation of the `EmbeddingBackend` trait cannot be plugged
+  // into the global registry. `Kreuzberg.registerEmbeddingBackend(impl)`
+  // exists, but its `createEmbeddingBackendDartImpl` factory takes opaque
+  // `BoxFn*` closure values whose constructors are not surfaced through
+  // flutter_rust_bridge.
   //
-  // Implement the backend in Rust as `Plugin + EmbeddingBackend` and
-  // register it via `register_embedding_backend` in a Rust shim crate
-  // that links kreuzberg before the Dart host process loads the dynamic
-  // library. Dart code can then call `KreuzbergBridge.embedTextsAsync`
-  // with an `EmbeddingConfig` whose model selects the registered plugin.
+  // Implement the backend in Rust as `Plugin + EmbeddingBackend` and register
+  // it via `register_embedding_backend` in a Rust shim crate.
 }
 ```

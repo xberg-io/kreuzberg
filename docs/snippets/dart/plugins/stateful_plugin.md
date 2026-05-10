@@ -1,16 +1,16 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="Dart cannot construct the opaque BoxFn closure types required by createPostProcessorDartImpl — flutter_rust_bridge generates them as RustOpaqueInterface with no Dart-side wrapper. The closure-captured state pattern is therefore unreachable. Custom plugins must be written in Rust." -->
 ```dart title="Dart"
 import 'package:kreuzberg/kreuzberg.dart';
 
 Future<void> main() async {
-  // Note: the Dart binding does not expose `registerPostProcessor`. A
-  // Dart implementation of the `PostProcessor` trait that maintains
-  // mutable state (counters, caches) across invocations cannot be
-  // plugged into the global post-processor registry from Dart.
+  // A stateful Dart `PostProcessor` that captures mutable counters in its
+  // closure cannot be plugged into the global registry.
+  // `Kreuzberg.registerPostProcessor(impl)` exists, but the
+  // `createPostProcessorDartImpl` factory takes opaque `BoxFn*` closure
+  // values whose constructors are not surfaced through flutter_rust_bridge,
+  // so the closure-capture pattern is unreachable from Dart.
   //
-  // Implement the stateful plugin in Rust as `Plugin + PostProcessor`
-  // (using `AtomicUsize` / `Mutex` for shared state) and register it via
-  // `register_post_processor` in a Rust shim crate that links kreuzberg
-  // before the Dart host process loads the dynamic library.
+  // Implement stateful plugins in Rust using `Mutex`/`AtomicU64` for
+  // interior mutability, then register them in a Rust shim crate.
 }
 ```
