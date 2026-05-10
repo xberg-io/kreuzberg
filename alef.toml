@@ -2335,27 +2335,20 @@ unregister_fn = "unregister_embedding_backend"
 clear_fn = "clear_embedding_backends"
 exclude_languages = ["r"]
 
-# DocumentExtractor and Renderer are intentionally NOT bridged cross-language yet:
-# their trait methods take/return `InternalDocument`, a private internal type that
-# alef cannot serialize across the FFI boundary without per-backend excluded-type-paths
-# integration (alef >= 0.16). The Rust core exposes the full register/unregister/clear/list
-# free-function surface for both (see `register_document_extractor`, `register_renderer`,
-# etc. in `crates/kreuzberg/src/lib.rs`); these bindings remain Rust-only extension points
-# until alef gains InternalDocument bridging support.
-# [[crates.trait_bridges]]
-# trait_name = "DocumentExtractor"
-# super_trait = "kreuzberg::plugins::Plugin"
-# registry_getter = "kreuzberg::plugins::registry::get_document_extractor_registry"
-# register_fn = "register_document_extractor"
-# unregister_fn = "unregister_document_extractor"
-# clear_fn = "clear_document_extractors"
-# exclude_languages = ["r"]
-#
-# [[crates.trait_bridges]]
-# trait_name = "Renderer"
-# super_trait = "kreuzberg::plugins::Plugin"
-# registry_getter = "kreuzberg::plugins::registry::get_renderer_registry"
-# register_fn = "register_renderer"
-# unregister_fn = "unregister_renderer"
-# clear_fn = "clear_renderers"
-# exclude_languages = ["r"]
+[[crates.trait_bridges]]
+trait_name = "DocumentExtractor"
+super_trait = "kreuzberg::plugins::Plugin"
+registry_getter = "kreuzberg::plugins::registry::get_document_extractor_registry"
+register_fn = "register_document_extractor"
+unregister_fn = "unregister_document_extractor"
+clear_fn = "clear_document_extractors"
+exclude_languages = ["r"]
+
+[[crates.trait_bridges]]
+trait_name = "Renderer"
+super_trait = "kreuzberg::plugins::Plugin"
+registry_getter = "kreuzberg::plugins::registry::get_renderer_registry"
+register_fn = "register_renderer"
+unregister_fn = "unregister_renderer"
+clear_fn = "clear_renderers"
+exclude_languages = ["r"]
