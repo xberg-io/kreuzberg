@@ -159,10 +159,7 @@ profiling-results-*/
 profile.json.gz
 profile.pb.gz
 *.heap
-bench/pre-q-*.log
-bench/pre-m-*.log
-bench/post-q-*.log
-bench/post-m-*.log
+bench/
 
 # Docs
 docs/_build/
