@@ -181,13 +181,40 @@ pub(crate) fn take_or_create_slanet(
     }
 }
 
-/// Returns `true` if the TATR table structure model has been successfully loaded.
+/// Returns `true` if the TATR table structure model is loadable.
+///
+/// On first call, attempts to load TATR (using default acceleration) to populate
+/// `TATR_TRIED`. Subsequent calls return the cached result. This makes the check
+/// safe to use as a fail-fast guard before code paths that would otherwise be
+/// the first to attempt the load — without this, the check would always return
+/// `false` until some other call site tried to load.
 pub(crate) fn is_tatr_available() -> bool {
-    TATR_TRIED.get().copied().unwrap_or(false)
+    if let Some(&result) = TATR_TRIED.get() {
+        return result;
+    }
+    if let Some(model) = take_or_create_tatr(None) {
+        return_tatr(model);
+        true
+    } else {
+        false
+    }
 }
 
-/// Returns `true` if any SLANeXT table model variant has been successfully loaded.
+/// Returns `true` if any SLANeXT table model variant is loadable.
+///
+/// On first call (when no SLANeXT variant has been tried yet), attempts to
+/// load `slanet_wired` (the default variant) to populate the tried flag. Same
+/// rationale as [`is_tatr_available`]: without this, the check would always
+/// return `false` until some other call site tried to load.
 pub(crate) fn is_slanet_available() -> bool {
+    if SLANET_WIRED_TRIED.get().is_none()
+        && SLANET_WIRELESS_TRIED.get().is_none()
+        && SLANET_PLUS_TRIED.get().is_none()
+    {
+        // Side effect: take_or_create_slanet populates SLANET_WIRED_TRIED.
+        // We drop the model — the caller will reload from cache when needed.
+        drop(take_or_create_slanet("slanet_wired", None));
+    }
     SLANET_WIRED_TRIED.get().copied().unwrap_or(false)
         || SLANET_WIRELESS_TRIED.get().copied().unwrap_or(false)
         || SLANET_PLUS_TRIED.get().copied().unwrap_or(false)
