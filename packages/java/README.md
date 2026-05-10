@@ -45,7 +45,7 @@
 
   <!-- Project Info -->
   <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
+    <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
     <img src="https://img.shields.io/badge/docs-kreuzberg.dev-007ec6" alt="Documentation">
@@ -73,28 +73,34 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 ### Package Installation
 
 
-Install via one of the supported package managers:
+Add to your `pom.xml`:
 
-
-**Maven:**
 ```xml
 <dependency>
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg</artifactId>
-    <version>4.0.0</version>
+    <version>5.0.0-rc.1</version>
 </dependency>
 ```
 
 
-**Gradle:**
-```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.0.0'
+Kotlin DSL (`build.gradle.kts`):
+
+```kotlin
+implementation("dev.kreuzberg:kreuzberg:5.0.0-rc.1")
+```
+
+Groovy DSL (`build.gradle`):
+
+```groovy
+implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.1'
 ```
 
 
 ### System Requirements
 
-- **Java 11+** required
+- **Java 25+** required (Foreign Function & Memory API; build run with `--enable-preview` and `--enable-native-access=ALL-UNNAMED`)
+- Native libraries bundled in the JAR for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
@@ -445,7 +451,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg
 
 ## License
 
-MIT License - see LICENSE file for details.
+Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 
 ## Support
 

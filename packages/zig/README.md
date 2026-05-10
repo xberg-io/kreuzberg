@@ -45,7 +45,7 @@
 
   <!-- Project Info -->
   <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
+    <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
     <img src="https://img.shields.io/badge/docs-kreuzberg.dev-007ec6" alt="Documentation">
@@ -73,9 +73,29 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 ### Package Installation
 
 
+Fetch the package and pin it in `build.zig.zon`:
+
+```bash
+zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.1.tar.gz
+```
+
+Then wire it into `build.zig`:
+
+```zig
+const kreuzberg_dep = b.dependency("kreuzberg", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.root_module.addImport("kreuzberg", kreuzberg_dep.module("kreuzberg"));
+```
+
+
 ### System Requirements
 
-- See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
+- **Zig 0.16.0+** required (`minimum_zig_version` declared in `build.zig.zon`)
+- Links the C FFI surface from `kreuzberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
 ## Quick Start
@@ -407,7 +427,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg
 
 ## License
 
-MIT License - see LICENSE file for details.
+Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 
 ## Support
 

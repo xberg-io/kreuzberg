@@ -1,7 +1,6 @@
 ### Package Installation
 
-{% if package_manager | length == 1 %}
-{% set pm = package_manager[0] %}
+{% for pm in package_manager %}
 {% if pm == "pip" %}
 Install via pip:
 
@@ -15,28 +14,22 @@ For async support and additional features:
 pip install {{ package_name }}[async]
 ```
 
-{% elif pm == "npm" or pm == "pnpm" or pm == "yarn" %}
-Install via your preferred package manager:
-
-{% if "npm" in package_manager %}
+{% elif pm == "npm" %}
 ```bash
 npm install {{ package_name }}
 ```
-{% endif %}
-{% if "pnpm" in package_manager %}
+
+{% elif pm == "pnpm" %}
 ```bash
 pnpm add {{ package_name }}
 ```
-{% endif %}
-{% if "yarn" in package_manager %}
+
+{% elif pm == "yarn" %}
 ```bash
 yarn add {{ package_name }}
 ```
-{% endif %}
 
 {% elif pm == "go get" %}
-Install with go get:
-
 ```bash
 go get {{ package_name }}
 ```
@@ -44,20 +37,28 @@ go get {{ package_name }}
 For more details on FFI setup and native library linking, see the [Go API Reference](https://kreuzberg.dev/reference/api-go/).
 
 {% elif pm == "maven" %}
+{% set maven_parts = package_name | split(":") %}
 Add to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg</artifactId>
-    <version>4.0.0</version>
+    <groupId>{{ maven_parts[0] }}</groupId>
+    <artifactId>{{ maven_parts[1] }}</artifactId>
+    <version>{{ version }}</version>
 </dependency>
 ```
 
-Or use Gradle:
+{% elif pm == "gradle" %}
+Kotlin DSL (`build.gradle.kts`):
 
-```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.0.0'
+```kotlin
+implementation("{{ package_name }}:{{ version }}")
+```
+
+Groovy DSL (`build.gradle`):
+
+```groovy
+implementation '{{ package_name }}:{{ version }}'
 ```
 
 {% elif pm == "rubygems" %}
@@ -67,6 +68,7 @@ Install via gem:
 gem install {{ package_name }}
 ```
 
+{% elif pm == "bundler" %}
 Or add to your Gemfile:
 
 ```ruby
@@ -86,7 +88,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {{ package_name | replace("/", "_") }}: "~> 4.0"
+    {:{{ package_name }}, "~> {{ version }}"}
   ]
 end
 ```
@@ -110,94 +112,91 @@ Or via NuGet Package Manager:
 Install-Package {{ package_name }}
 ```
 
-{% endif %}
-{% else %}
-Install via one of the supported package managers:
+{% elif pm == "pub" %}
+Install via pub:
 
-{% for pm in package_manager %}
-{% if pm == "pip" %}
-**pip:**
 ```bash
-pip install {{ package_name }}
+dart pub add {{ package_name }}
 ```
 
-{% elif pm == "npm" %}
-**npm:**
+For Flutter projects:
+
 ```bash
-npm install {{ package_name }}
+flutter pub add {{ package_name }}
 ```
 
-{% elif pm == "pnpm" %}
-**pnpm:**
+{% elif pm == "spm" %}
+Add to your `Package.swift` dependencies:
+
+```swift
+.package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "{{ version }}"),
+```
+
+Then add the product to the relevant target:
+
+```swift
+.target(
+    name: "YourTarget",
+    dependencies: [
+        .product(name: "{{ package_name }}", package: "kreuzberg"),
+    ]
+),
+```
+
+{% elif pm == "gleam" %}
+Install via Gleam:
+
 ```bash
-pnpm add {{ package_name }}
+gleam add {{ package_name }}
 ```
 
-{% elif pm == "yarn" %}
-**yarn:**
-```bash
-yarn add {{ package_name }}
-```
+{% elif pm == "hex" %}
+The Gleam binding shares the Erlang-side runtime with the Elixir binding via the same hex package, so `gleam add {{ package_name }}` is sufficient. Mixed Gleam/Elixir umbrella projects can also reference the package directly through `mix.exs`:
 
-{% elif pm == "go get" %}
-**go get:**
-```bash
-go get {{ package_name }}
-```
-
-{% elif pm == "maven" %}
-**Maven:**
-```xml
-<dependency>
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg</artifactId>
-    <version>4.0.0</version>
-</dependency>
-```
-
-{% elif pm == "gradle" %}
-**Gradle:**
-```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.0.0'
-```
-
-{% elif pm == "rubygems" %}
-**gem:**
-```bash
-gem install {{ package_name }}
-```
-
-{% elif pm == "bundler" %}
-**Bundler:**
-```ruby
-gem '{{ package_name }}'
-```
-
-{% elif pm == "composer" %}
-**Composer:**
-```bash
-composer require {{ package_name }}
-```
-
-{% elif pm == "mix" %}
-**mix:**
 ```elixir
 def deps do
   [
-    {{ package_name | replace("/", "_") }}: "~> 4.0"
+    {:{{ package_name }}, "~> {{ version }}"}
   ]
 end
 ```
 
-{% elif pm == "nuget" %}
-**NuGet:**
+{% elif pm == "zig" %}
+Fetch the package and pin it in `build.zig.zon`:
+
 ```bash
-dotnet add package {{ package_name }}
+zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v{{ version }}.tar.gz
 ```
+
+Then wire it into `build.zig`:
+
+```zig
+const kreuzberg_dep = b.dependency("{{ package_name }}", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.root_module.addImport("{{ package_name }}", kreuzberg_dep.module("{{ package_name }}"));
+```
+
+{% elif pm == "install.packages" %}
+Install from the kreuzberg R-universe:
+
+```r
+install.packages("{{ package_name }}",
+  repos = c("https://kreuzberg-dev.r-universe.dev", getOption("repos")))
+```
+
+{% elif pm == "cargo" %}
+Build the shared library from the workspace:
+
+```bash
+cargo build --release -p {{ package_name }}
+```
+
+The built artifacts are emitted under `target/release/` (`lib{{ package_name | replace("-", "_") }}.{so,dylib,a}`) along with the C header at `crates/{{ package_name }}/include/kreuzberg.h`.
 
 {% endif %}
 {% endfor %}
-{% endif %}
 
 ### System Requirements
 {% if language == "python" %}
@@ -221,7 +220,13 @@ Pre-built binaries available for:
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "java" %}
-- **Java 11+** required
+- **Java 25+** required (Foreign Function & Memory API; build run with `--enable-preview` and `--enable-native-access=ALL-UNNAMED`)
+- Native libraries bundled in the JAR for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "kotlin" %}
+- **JDK 25+** required
+- Native libraries bundled via the Java facade JAR
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "ruby" %}
@@ -229,10 +234,8 @@ Pre-built binaries available for:
 - Ruby 4.0+ is fully supported with no code changes required
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
-
-**Ruby 4.0 Compatibility:** Kreuzberg is fully compatible with Ruby 4.0 (released December 25, 2025) and all Ruby 4.x versions. All tests pass with 100% compatibility. The gem compiles without any breaking changes. Key Ruby 4.0 features like Ruby Box, ZJIT compiler, and Ractor improvements work seamlessly with Kreuzberg.
 {% elif language == "php" %}
-- **PHP 8.0+** required
+- **PHP 8.2+** required
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "csharp" %}
@@ -240,12 +243,42 @@ Pre-built binaries available for:
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "elixir" %}
-- **Elixir 1.12+** and **Erlang/OTP 24+** required
+- **Elixir 1.14+** and **Erlang/OTP 26+** required
+- Pre-compiled NIFs bundled via `rustler_precompiled` for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "gleam" %}
+- **Gleam 1.14+** with **Erlang/OTP 27+** required
+- Native runtime is the same Rustler NIF used by the Elixir binding; pre-compiled binaries are pulled transparently for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "wasm" %}
 - Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
 - Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
+{% elif language == "r" %}
+- **R 4.1+** required (extendr bindings)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "ffi" %}
+- A C/C++ toolchain (clang, gcc, or MSVC) and a Rust toolchain (`rustup`) for building from source
+- A `pkg-config` or CMake-aware build system that can locate `libkreuzberg_ffi` and `kreuzberg.h`
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "dart" %}
+- **Dart SDK 3.0+** for pure-Dart consumers
+- Flutter projects supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported
+- Native runtime delivered via `flutter_rust_bridge` with bundled binaries for the supported platforms
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "swift" %}
+- **Swift 6.0+** (`swift-tools-version: 6.0`) on macOS 13+ or iOS 16+
+- Native runtime delivered through the C FFI surface from `kreuzberg-ffi`; published artifacts ship as a binary target
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "zig" %}
+- **Zig 0.16.0+** required (`minimum_zig_version` declared in `build.zig.zon`)
+- Links the C FFI surface from `kreuzberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% else %}
 - See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
 {% endif %}

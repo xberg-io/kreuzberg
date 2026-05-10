@@ -45,7 +45,7 @@
 
   <!-- Project Info -->
   <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
+    <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
     <img src="https://img.shields.io/badge/docs-kreuzberg.dev-007ec6" alt="Documentation">
@@ -73,12 +73,30 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 ### Package Installation
 
 
-Install via one of the supported package managers:
+Install via Gleam:
+
+```bash
+gleam add kreuzberg
+```
+
+
+The Gleam binding shares the Erlang-side runtime with the Elixir binding via the same hex package, so `gleam add kreuzberg` is sufficient. Mixed Gleam/Elixir umbrella projects can also reference the package directly through `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:kreuzberg, "~> 5.0.0-rc.1"}
+  ]
+end
+```
 
 
 ### System Requirements
 
-- See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
+- **Gleam 1.14+** with **Erlang/OTP 27+** required
+- Native runtime is the same Rustler NIF used by the Elixir binding; pre-compiled binaries are pulled transparently for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
 ## Quick Start
@@ -674,7 +692,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg
 
 ## License
 
-MIT License - see LICENSE file for details.
+Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 
 ## Support
 

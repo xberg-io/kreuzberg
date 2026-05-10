@@ -99,7 +99,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg
 
 ## License
 
-MIT License - see LICENSE file for details.
+{{ license }} License — see [LICENSE](../../LICENSE) for details.
 
 ## Support
 

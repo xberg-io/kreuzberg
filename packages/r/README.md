@@ -45,7 +45,7 @@
 
   <!-- Project Info -->
   <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
+    <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
     <img src="https://img.shields.io/badge/docs-kreuzberg.dev-007ec6" alt="Documentation">
@@ -73,9 +73,19 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 ### Package Installation
 
 
+Install from the kreuzberg R-universe:
+
+```r
+install.packages("kreuzberg",
+  repos = c("https://kreuzberg-dev.r-universe.dev", getOption("repos")))
+```
+
+
 ### System Requirements
 
-- See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
+- **R 4.1+** required (extendr bindings)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 
 ## Quick Start
@@ -364,7 +374,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg
 
 ## License
 
-MIT License - see LICENSE file for details.
+Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 
 ## Support
 
