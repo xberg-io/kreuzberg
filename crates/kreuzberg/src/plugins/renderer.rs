@@ -75,21 +75,30 @@ pub fn register_renderer(renderer: Arc<dyn Renderer>) -> Result<()> {
 }
 
 /// Unregister a renderer by format name.
-pub fn unregister_renderer(name: &str) {
+///
+/// # Errors
+///
+/// Returns an error if the registry lock is poisoned.
+pub fn unregister_renderer(name: &str) -> Result<()> {
     use crate::plugins::registry::get_renderer_registry;
 
     let registry = get_renderer_registry();
     let mut registry = registry.write();
     registry.remove(name);
+    Ok(())
 }
 
 /// List names of all registered renderers.
-pub fn list_renderers() -> Vec<String> {
+///
+/// # Errors
+///
+/// Returns an error if the registry lock is poisoned.
+pub fn list_renderers() -> Result<Vec<String>> {
     use crate::plugins::registry::get_renderer_registry;
 
     let registry = get_renderer_registry();
     let registry = registry.read();
-    registry.list()
+    Ok(registry.list())
 }
 
 /// Clear all renderers from the global registry.
@@ -97,12 +106,17 @@ pub fn list_renderers() -> Vec<String> {
 /// Removes every renderer, including the built-in defaults (markdown, html,
 /// djot, plain). After calling this no renderers are registered; re-register
 /// as needed.
-pub fn clear_renderers() {
+///
+/// # Errors
+///
+/// Returns an error if the registry lock is poisoned.
+pub fn clear_renderers() -> Result<()> {
     use crate::plugins::registry::get_renderer_registry;
 
     let registry = get_renderer_registry();
     let mut registry = registry.write();
     registry.clear_all();
+    Ok(())
 }
 
 #[cfg(test)]
@@ -128,19 +142,19 @@ mod tests {
     #[test]
     fn register_list_unregister_roundtrip() {
         register_renderer(Arc::new(MockRenderer { format: "test-fmt-a" })).unwrap();
-        assert!(list_renderers().contains(&"test-fmt-a".to_string()));
+        assert!(list_renderers().unwrap().contains(&"test-fmt-a".to_string()));
 
-        unregister_renderer("test-fmt-a");
-        assert!(!list_renderers().contains(&"test-fmt-a".to_string()));
+        unregister_renderer("test-fmt-a").unwrap();
+        assert!(!list_renderers().unwrap().contains(&"test-fmt-a".to_string()));
     }
 
     #[test]
     fn register_list_clear_list_roundtrip() {
         register_renderer(Arc::new(MockRenderer { format: "test-fmt-b" })).unwrap();
-        assert!(list_renderers().contains(&"test-fmt-b".to_string()));
+        assert!(list_renderers().unwrap().contains(&"test-fmt-b".to_string()));
 
-        clear_renderers();
-        assert!(list_renderers().is_empty());
+        clear_renderers().unwrap();
+        assert!(list_renderers().unwrap().is_empty());
 
         // Restore built-ins so other tests are unaffected.
         use crate::plugins::registry::get_renderer_registry;

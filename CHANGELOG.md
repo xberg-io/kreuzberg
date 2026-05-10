@@ -26,10 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Renderer plugin**: `Renderer` now extends `Plugin`, picking up the
   shared `name/version/initialize/shutdown` lifecycle (with no-op defaults
   on `Plugin` so stateless renderers stay boilerplate-free). Public
-  helpers `register_renderer`, `unregister_renderer`, `list_renderers`
-  match the convention of the other plugin registries. Cross-language
-  bridging is gated on alef >= 0.16; until then custom renderers remain
-  a Rust-only extension point.
+  helpers `register_renderer`, `unregister_renderer`, `list_renderers`,
+  `clear_renderers` match the convention of the other plugin registries
+  and now all return `Result` for symmetric cross-language codegen.
 
 ### Changed
 
