@@ -64,7 +64,6 @@ internal static partial class NativeMethods
         {
             return RuntimeInformation.ProcessArchitecture switch
             {
-                Architecture.X64 => "osx-x64",
                 Architecture.Arm64 => "osx-arm64",
                 _ => null,
             };
