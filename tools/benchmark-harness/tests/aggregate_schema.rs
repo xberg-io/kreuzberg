@@ -49,9 +49,9 @@ fn make_benchmark_result(
 }
 
 #[test]
-fn test_schema_version_2_3_0() {
+fn test_schema_version_2_4_0() {
     let results = vec![make_benchmark_result(
-        "kreuzberg-rust",
+        "kreuzberg-markdown-baseline",
         OutputFormat::Markdown,
         "test.pdf",
         false,
@@ -68,14 +68,14 @@ fn test_schema_version_2_3_0() {
     )];
 
     let aggregated = aggregate_new_format(&results);
-    assert_eq!(aggregated.schema_version, "2.3.0");
+    assert_eq!(aggregated.schema_version, "2.4.0");
 }
 
 #[test]
 fn test_per_fixture_results_populated() {
     let results = vec![
         make_benchmark_result(
-            "kreuzberg-rust",
+            "kreuzberg-markdown-baseline",
             OutputFormat::Markdown,
             "fixture_1.pdf",
             false,
@@ -91,7 +91,7 @@ fn test_per_fixture_results_populated() {
             }),
         ),
         make_benchmark_result(
-            "kreuzberg-rust",
+            "kreuzberg-markdown-baseline",
             OutputFormat::Markdown,
             "fixture_2.pdf",
             false,
@@ -413,7 +413,7 @@ fn test_empty_results() {
     let results = vec![];
     let aggregated = aggregate_new_format(&results);
 
-    assert_eq!(aggregated.schema_version, "2.3.0");
+    assert_eq!(aggregated.schema_version, "2.4.0");
     assert!(aggregated.by_framework_mode.is_empty());
     assert!(aggregated.per_fixture_results.is_empty());
     assert_eq!(aggregated.metadata.total_results, 0);

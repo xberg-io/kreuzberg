@@ -1,4 +1,4 @@
-# Aggregation Schema v2.3.0
+# Aggregation Schema v2.4.0
 
 This document describes the structure of `aggregated.json` produced by `benchmark-harness consolidate`.
 
@@ -6,9 +6,9 @@ This document describes the structure of `aggregated.json` produced by `benchmar
 
 ```json
 {
-  "schema_version": "2.3.0",
+  "schema_version": "2.4.0",
   "by_framework_mode": {
-    "framework:output_format:execution_mode": { /* FrameworkModeAggregation */ }
+    "<aggregate_key>": { /* FrameworkModeAggregation */ }
   },
   "disk_sizes": {
     "framework": { /* DiskSizeInfo */ }
@@ -28,19 +28,26 @@ The `output_format` field determines:
 
 ## by_framework_mode
 
-Key format: `{framework}:{output_format}:{execution_mode}`
+Key format differs by framework family:
+
+- **kreuzberg** (`kreuzberg-*`): `{framework_name}:{mode}` — the output format is already encoded
+  in the framework name (e.g. `kreuzberg-markdown-baseline`), so repeating it in the key is
+  redundant.
+- **competitors** (all other frameworks): `{framework}:{output_format}:{mode}` — format is not
+  encoded in the name, so the key carries it explicitly.
 
 Examples:
 
-- `kreuzberg-rust:markdown:single`
-- `pdfplumber-python:plaintext:batch`
+- `kreuzberg-markdown-baseline:single`
+- `kreuzberg-plaintext-paddle-ocr:batch`
+- `pdfplumber:plaintext:single`
 - `docling:markdown:single`
 
 Each entry contains:
 
 ```json
 {
-  "framework": "string",                     // Framework name without format/mode
+  "framework": "string",                     // Framework name without mode suffix
   "output_format": "markdown|plaintext",     // Output format used
   "mode": "single|batch|...",                // Execution mode
   "cold_start": { /* DurationPercentiles */ },  // Optional, if cold start data available
@@ -106,7 +113,7 @@ One row per unique combination of (framework, output_format, execution_mode, fix
 
 ```json
 {
-  "framework": "kreuzberg-rust",
+  "framework": "kreuzberg-markdown-baseline",
   "output_format": "markdown",
   "execution_mode": "single",
   "ocr": false,
@@ -140,7 +147,7 @@ Contains all cross-framework rankings split by output format for quality metrics
   "pdf_tf1_ranking_plaintext": [ /* RankedFramework[] — plaintext-only */ ],
   "pdf_sf1_ranking_markdown": [ /* RankedFramework[] — markdown-only, never plaintext */ ],
   "deltas_vs_baseline": {
-    "framework:output_format:mode": { /* DeltaMetrics */ }
+    "<aggregate_key>": { /* DeltaMetrics */ }
   }
 }
 ```
@@ -149,12 +156,43 @@ Contains all cross-framework rankings split by output format for quality metrics
 
 ```json
 {
-  "framework_mode": "kreuzberg-rust:markdown:single",
+  "framework_mode": "kreuzberg-markdown-baseline:single",
   "rank": 1,
   "value": 95.5,      // The metric value (duration, throughput, etc.)
   "relative": 1.0     // Ratio relative to best (1.0 = best)
 }
 ```
+
+## Migration from v2.3.0 to v2.4.0
+
+### Breaking Changes
+
+1. **Schema version**: Bumped to `"2.4.0"`
+2. **Kreuzberg aggregate key format**: Changed from `framework:output_format:mode` to
+   `framework_name:mode` for all `kreuzberg-*` frameworks. Competitor key format
+   (`framework:output_format:mode`) is unchanged.
+
+### Kreuzberg Consolidation
+
+Language-binding frameworks (`kreuzberg-py`, `kreuzberg-node`, `kreuzberg-rb`, `kreuzberg-go`,
+`kreuzberg-java`, `kreuzberg-csharp`, `kreuzberg-elixir`, `kreuzberg-php`, `kreuzberg-rust`, etc.)
+have been removed. They are replaced by three native pipelines run directly via the kreuzberg CLI:
+
+| Pipeline | Markdown name | Plaintext name |
+|---|---|---|
+| Baseline | `kreuzberg-markdown-baseline` | `kreuzberg-plaintext-baseline` |
+| Layout | `kreuzberg-markdown-layout` | `kreuzberg-plaintext-layout` |
+| PaddleOCR | `kreuzberg-markdown-paddle-ocr` | `kreuzberg-plaintext-paddle-ocr` |
+
+Batch variants append `-batch` to the framework name (e.g. `kreuzberg-markdown-baseline-batch`),
+which the harness normalises to aggregate key `kreuzberg-markdown-baseline:batch`.
+
+### Key Format Rationale
+
+The format component is implicit in the kreuzberg framework name itself. Duplicating it in the
+aggregate key (`kreuzberg-markdown-baseline:markdown:single`) would be redundant and confusing.
+Competitor names carry no format information, so they continue to need it in the key
+(`docling:markdown:single`).
 
 ## Migration from v2.2.0 to v2.3.0
 

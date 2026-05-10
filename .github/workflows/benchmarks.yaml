@@ -1140,35 +1140,36 @@ jobs:
 
           AGGREGATED_FILE="consolidated-output/aggregated.json"
 
-          echo "=== Validating framework completeness ==="
+          echo "=== Validating framework completeness (schema v2.4.0) ==="
 
-          # Define expected framework:mode combinations
+          # Keys follow the v2.4.0 aggregate-key convention:
+          #   kreuzberg-*  →  "{framework_name}:{mode}"       (format is encoded in the name)
+          #   competitors  →  "{framework}:{output_format}:{mode}"
+          #
+          # kreuzberg: 3 pipelines × 2 output formats × 2 modes = 12
+          # competitors: 16 entries (format varies per tool — see SCHEMA.md for derivation)
+          # total expected: 28
           EXPECTED_FRAMEWORKS=(
-            "kreuzberg-rust:single" "kreuzberg-rust:batch"
-            "kreuzberg-rust-paddle:single" "kreuzberg-rust-paddle:batch"
-            "kreuzberg-python:single" "kreuzberg-python:batch"
-            "kreuzberg-node:single" "kreuzberg-node:batch"
-            "kreuzberg-wasm:single" "kreuzberg-wasm:batch"
-            "kreuzberg-ruby:single" "kreuzberg-ruby:batch"
-            "kreuzberg-go:single" "kreuzberg-go:batch"
-            "kreuzberg-java:single" "kreuzberg-java:batch"
-            "kreuzberg-csharp:single" "kreuzberg-csharp:batch"
-            "kreuzberg-elixir:single" "kreuzberg-elixir:batch"
-            "kreuzberg-php:single" "kreuzberg-php:batch"
-            "kreuzberg-r:single" "kreuzberg-r:batch"
-            "kreuzberg-c:single" "kreuzberg-c:batch"
-            "docling:single" "docling:batch"
-            "markitdown:single" "markitdown:batch"
-            "pandoc:single" "pandoc:batch"
-            "unstructured:single" "unstructured:batch"
-            "tika:single" "tika:batch"
-            "pymupdf4llm:single" "pymupdf4llm:batch"
-            "pdfplumber:single" "pdfplumber:batch"
-            "mineru:single" "mineru:batch"
-            "pypdf:single" "pypdf:batch"
-            "pdfminer:single" "pdfminer:batch"
-            "pdftotext:single" "pdftotext:batch"
-            "playa-pdf:single" "playa-pdf:batch"
+            # kreuzberg-* (slim keys — format encoded in name)
+            "kreuzberg-markdown-baseline:single"   "kreuzberg-markdown-baseline:batch"
+            "kreuzberg-markdown-layout:single"     "kreuzberg-markdown-layout:batch"
+            "kreuzberg-markdown-paddle-ocr:single" "kreuzberg-markdown-paddle-ocr:batch"
+            "kreuzberg-plaintext-baseline:single"   "kreuzberg-plaintext-baseline:batch"
+            "kreuzberg-plaintext-layout:single"     "kreuzberg-plaintext-layout:batch"
+            "kreuzberg-plaintext-paddle-ocr:single" "kreuzberg-plaintext-paddle-ocr:batch"
+            # competitors (format in key; single-file only — no batch API)
+            "docling:markdown:single"    "docling:plaintext:single"
+            "markitdown:markdown:single"
+            "pandoc:markdown:single"     "pandoc:plaintext:single"
+            "unstructured:markdown:single" "unstructured:plaintext:single"
+            "tika:plaintext:single"
+            "pymupdf4llm:markdown:single"
+            "pdfplumber:plaintext:single"
+            "mineru:markdown:single"     "mineru:plaintext:single"
+            "pypdf:plaintext:single"
+            "pdfminer:plaintext:single"
+            "pdftotext:plaintext:single"
+            "playa-pdf:plaintext:single"
           )
 
           # Get actual frameworks from aggregated.json
@@ -1196,7 +1197,7 @@ jobs:
             echo ""
             echo "::warning::Missing $MISSING_COUNT of $TOTAL_EXPECTED expected framework:mode combinations (${ACTUAL_COUNT} present):"
             echo "$MISSING_LIST"
-            echo "This is expected when some binding jobs fail — results will be published with available data."
+            echo "This is expected when some jobs fail — results will be published with available data."
           else
             echo ""
             echo "All ${TOTAL_EXPECTED} expected framework:mode combinations present"

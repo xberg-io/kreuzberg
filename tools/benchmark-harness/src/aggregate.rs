@@ -1,8 +1,8 @@
-//! Aggregation module for benchmark results (v2.3.0 output schema).
+//! Aggregation module for benchmark results (v2.4.0 output schema).
 //!
 //! Groups [`BenchmarkResult`] records by framework-and-mode, output format, file type, and
 //! OCR usage (yes/no), then computes percentile-based statistics for each
-//! group. The output schema (`schema_version: "2.3.0"`) surfaces TF1 and SF1 separately
+//! group. The output schema (`schema_version: "2.4.0"`) surfaces TF1 and SF1 separately
 //! with per-fixture rows preserved and split rankings by output format.
 //!
 //! # Percentile methodology
@@ -22,13 +22,26 @@
 //!
 //! Plaintext-only frameworks must NEVER appear in SF1 rankings or quality metrics
 //! that require layout information. Markdown frameworks appear in all rankings.
+//!
+//! # Aggregate key format
+//!
+//! Keys in `by_framework_mode` differ by framework family:
+//!
+//! - **kreuzberg** (`kreuzberg-*`): `{framework_name}:{mode}` — the output format is already
+//!   encoded in the framework name (e.g. `kreuzberg-markdown-baseline`), so repeating it in
+//!   the key would be redundant.
+//! - **competitors** (all other frameworks): `{framework}:{output_format}:{mode}` — format is
+//!   not encoded in the name, so the key must carry it explicitly.
 
 use crate::stats::{percentile_r7, sanitize_f64};
 use crate::types::{BenchmarkResult, DiskSizeInfo, ErrorKind, OutputFormat};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// Consolidated results using new aggregation format (v2.3.0)
+/// Schema version for the aggregated output format.
+pub const SCHEMA_VERSION: &str = "2.4.0";
+
+/// Consolidated results using new aggregation format (v2.4.0)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NewConsolidatedResults {
     /// Schema version for this output format
@@ -113,7 +126,7 @@ pub struct ComparisonData {
 /// A framework entry in a ranking
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RankedFramework {
-    /// Framework:mode key (e.g., "kreuzberg-rust:single")
+    /// Framework:mode key (e.g., "kreuzberg-markdown-baseline:single" or "docling:markdown:single")
     pub framework_mode: String,
     /// Rank (1-based)
     pub rank: usize,
@@ -287,7 +300,7 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
     // Validate input
     if results.is_empty() {
         return NewConsolidatedResults {
-            schema_version: "2.3.0".to_string(),
+            schema_version: SCHEMA_VERSION.to_string(),
             by_framework_mode: HashMap::new(),
             disk_sizes: HashMap::new(),
             comparison: ComparisonData {
@@ -312,15 +325,19 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
         };
     }
 
-    // Group by framework:output_format:mode and file type
+    // Group by aggregate key (see make_aggregate_key) and file type
     let mut by_framework_mode_format: HashMap<String, HashMap<String, Vec<&BenchmarkResult>>> = HashMap::new();
     let mut disk_sizes: HashMap<String, DiskSizeInfo> = HashMap::new();
     let mut file_types = std::collections::HashSet::new();
 
-    // Group results by framework:output_format:mode and file type
+    // Group results by their aggregate key and file type.
+    //
+    // Key format differs by family (see module-level doc):
+    //   kreuzberg-*  →  "{framework_name}:{mode}"
+    //   competitors  →  "{framework}:{output_format}:{mode}"
     for result in results {
         let (framework, mode) = extract_framework_and_mode(&result.framework);
-        let key = format!("{}:{}:{}", framework, result.output_format, mode);
+        let key = make_aggregate_key(framework, result.output_format, mode);
 
         by_framework_mode_format
             .entry(key)
@@ -337,26 +354,26 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
         }
     }
 
-    // Aggregate each framework:output_format:mode combination
+    // Aggregate each key combination.
+    //
+    // Key shapes (see make_aggregate_key):
+    //   kreuzberg-* →  "framework_name:mode"          (2 colon-separated parts)
+    //   competitors →  "framework:output_format:mode" (3 colon-separated parts)
     let mut aggregated_by_framework_mode = HashMap::new();
 
     for (framework_mode_format_key, file_type_results) in by_framework_mode_format {
-        let parts: Vec<&str> = framework_mode_format_key.split(':').collect();
-        if parts.len() < 3 {
-            continue;
-        }
-        let framework = parts[0].to_string();
-        let output_format_str = parts[1];
-        let output_format = match output_format_str.parse::<OutputFormat>() {
-            Ok(fmt) => fmt,
-            Err(_) => {
-                eprintln!("Warning: invalid output_format '{}', skipping", output_format_str);
-                continue;
-            }
-        };
-        let mode = parts[2].to_string();
+        // Retrieve output_format from the first result in this group; it is the same for all
+        // entries in the group because the key was built from result.output_format.
+        let output_format = file_type_results
+            .values()
+            .flatten()
+            .next()
+            .map(|r| r.output_format)
+            .unwrap_or(OutputFormat::Markdown);
 
-        // Collect all results for this framework:output_format:mode for cold start calculation
+        let (framework, mode) = parse_aggregate_key(&framework_mode_format_key);
+
+        // Collect all results for this aggregate key group for cold start calculation
         let all_results: Vec<&BenchmarkResult> = file_type_results.values().flat_map(|v| v.iter().copied()).collect();
         let cold_start = aggregate_cold_starts(&all_results);
 
@@ -377,9 +394,9 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
         aggregated_by_framework_mode.insert(
             framework_mode_format_key.clone(),
             FrameworkModeAggregation {
-                framework,
+                framework: framework.to_string(),
                 output_format,
-                mode,
+                mode: mode.to_string(),
                 cold_start,
                 by_file_type,
             },
@@ -399,7 +416,7 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
     let comparison = build_comparison(&aggregated_by_framework_mode);
 
     NewConsolidatedResults {
-        schema_version: "2.3.0".to_string(),
+        schema_version: SCHEMA_VERSION.to_string(),
         by_framework_mode: aggregated_by_framework_mode,
         disk_sizes,
         comparison,
@@ -726,36 +743,57 @@ fn aggregate_cold_starts(results: &[&BenchmarkResult]) -> Option<DurationPercent
     })
 }
 
-/// Extract framework name and mode from framework string
+/// Extract framework name and mode from a raw framework string.
 ///
-/// Framework naming convention: {base}-{variant}-{mode}
-/// Examples: kreuzberg-rust, kreuzberg-python-sync, kreuzberg-python-batch
-/// Variants: -sync, -async (mapped to "single" mode)
-/// Modes: -batch (mapped to "batch" mode), absence (mapped to "single" mode)
+/// Modes: `-batch` suffix → `"batch"`, anything else → `"single"`.
+/// Legacy `-sync`/`-async` suffixes (no longer emitted by current adapters, but present in
+/// historical result files) are stripped from the base name to preserve backward compatibility.
 ///
-/// Returns (framework_name, mode) where mode is one of:
-/// - "batch" if ends with "-batch"
-/// - "single" otherwise (default)
-///
-/// The -sync/-async suffixes are stripped for aggregation because we unify
-/// implementations per language — sync vs async is a language-specific detail.
+/// Returns `(framework_name, mode)` where `mode` is `"batch"` or `"single"`.
 fn extract_framework_and_mode(framework_name: &str) -> (&str, &str) {
-    // First, check and strip -batch suffix (mode indicator)
     if let Some(base) = framework_name.strip_suffix("-batch") {
-        // Then strip -sync/-async suffixes from the base (implementation details)
+        // Strip legacy -sync/-async suffixes from the base if present
         let normalized = base
             .strip_suffix("-sync")
             .or_else(|| base.strip_suffix("-async"))
             .unwrap_or(base);
         (normalized, "batch")
     } else {
-        // No -batch suffix, so check and strip -sync/-async suffixes (implementation details)
         let normalized = framework_name
             .strip_suffix("-sync")
             .or_else(|| framework_name.strip_suffix("-async"))
             .unwrap_or(framework_name);
         (normalized, "single")
     }
+}
+
+/// Build the `by_framework_mode` map key for a result.
+///
+/// - `kreuzberg-*` frameworks already encode the output format in their name, so the key is
+///   `"{framework}:{mode}"` — no redundant format component.
+/// - All other (competitor) frameworks use `"{framework}:{output_format}:{mode}"`.
+fn make_aggregate_key(framework: &str, output_format: OutputFormat, mode: &str) -> String {
+    if framework.starts_with("kreuzberg-") {
+        format!("{framework}:{mode}")
+    } else {
+        format!("{framework}:{output_format}:{mode}")
+    }
+}
+
+/// Parse an aggregate key back into `(framework, mode)`.
+///
+/// Handles both key shapes produced by [`make_aggregate_key`]:
+/// - `"framework:mode"` (kreuzberg family, 2 parts)
+/// - `"framework:output_format:mode"` (competitors, 3 parts)
+fn parse_aggregate_key(key: &str) -> (&str, &str) {
+    let mut parts = key.rsplitn(2, ':');
+    let mode = parts.next().unwrap_or("single");
+    // For kreuzberg keys the remainder is just the framework name.
+    // For competitor keys the remainder is "framework:output_format" — we want only the
+    // framework portion, which is everything before the first colon.
+    let remainder = parts.next().unwrap_or(key);
+    let framework = remainder.split(':').next().unwrap_or(remainder);
+    (framework, mode)
 }
 
 /// Build cross-framework comparison rankings from aggregated data
@@ -1084,11 +1122,23 @@ mod tests {
 
     #[test]
     fn test_extract_framework_and_mode() {
-        // Sync/async suffixes are normalized to "single" mode
+        // Current kreuzberg pipeline naming (format encoded in name)
+        assert_eq!(
+            extract_framework_and_mode("kreuzberg-markdown-baseline"),
+            ("kreuzberg-markdown-baseline", "single")
+        );
+        assert_eq!(
+            extract_framework_and_mode("kreuzberg-plaintext-paddle-ocr"),
+            ("kreuzberg-plaintext-paddle-ocr", "single")
+        );
+        assert_eq!(
+            extract_framework_and_mode("kreuzberg-markdown-baseline-batch"),
+            ("kreuzberg-markdown-baseline", "batch")
+        );
+
+        // Legacy -sync/-async suffixes are still stripped for backward compatibility
         assert_eq!(extract_framework_and_mode("kreuzberg-sync"), ("kreuzberg", "single"));
         assert_eq!(extract_framework_and_mode("kreuzberg-async"), ("kreuzberg", "single"));
-        assert_eq!(extract_framework_and_mode("python-sync"), ("python", "single"));
-        assert_eq!(extract_framework_and_mode("python-async"), ("python", "single"));
 
         // Batch mode is preserved
         assert_eq!(extract_framework_and_mode("kreuzberg-batch"), ("kreuzberg", "batch"));
@@ -1097,6 +1147,65 @@ mod tests {
         // No suffix defaults to single mode
         assert_eq!(extract_framework_and_mode("kreuzberg"), ("kreuzberg", "single"));
         assert_eq!(extract_framework_and_mode("docling"), ("docling", "single"));
+    }
+
+    #[test]
+    fn test_make_aggregate_key_kreuzberg_family() {
+        // kreuzberg-* frameworks get slim keys (no redundant format component)
+        assert_eq!(
+            make_aggregate_key("kreuzberg-markdown-baseline", OutputFormat::Markdown, "single"),
+            "kreuzberg-markdown-baseline:single"
+        );
+        assert_eq!(
+            make_aggregate_key("kreuzberg-plaintext-layout", OutputFormat::Plaintext, "batch"),
+            "kreuzberg-plaintext-layout:batch"
+        );
+    }
+
+    #[test]
+    fn test_make_aggregate_key_competitors() {
+        // Competitor frameworks include format in key
+        assert_eq!(
+            make_aggregate_key("docling", OutputFormat::Markdown, "single"),
+            "docling:markdown:single"
+        );
+        assert_eq!(
+            make_aggregate_key("pdfplumber", OutputFormat::Plaintext, "batch"),
+            "pdfplumber:plaintext:batch"
+        );
+    }
+
+    #[test]
+    fn test_aggregate_new_format_kreuzberg_key_shape() {
+        // kreuzberg-markdown-baseline results should produce slim keys
+        let results = vec![
+            create_test_result(
+                "kreuzberg-markdown-baseline",
+                "pdf",
+                OcrStatus::NotUsed,
+                100,
+                1_000_000.0,
+                10_000_000,
+            ),
+            create_test_result(
+                "kreuzberg-markdown-baseline-batch",
+                "pdf",
+                OcrStatus::NotUsed,
+                80,
+                1_000_000.0,
+                10_000_000,
+            ),
+        ];
+
+        let aggregated = aggregate_new_format(&results);
+
+        assert_eq!(aggregated.by_framework_mode.len(), 2);
+        assert!(aggregated.by_framework_mode.contains_key("kreuzberg-markdown-baseline:single"));
+        assert!(aggregated.by_framework_mode.contains_key("kreuzberg-markdown-baseline:batch"));
+
+        let single_agg = &aggregated.by_framework_mode["kreuzberg-markdown-baseline:single"];
+        assert_eq!(single_agg.framework, "kreuzberg-markdown-baseline");
+        assert_eq!(single_agg.mode, "single");
     }
 
     #[test]
