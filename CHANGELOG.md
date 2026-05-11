@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Unreleased
+
+### Fixed
+
+- **#934**: RTF hex byte escapes now honor `\ansicpgNNNN`, so CP1251 Cyrillic byte runs decode as readable text instead of Windows-1252 mojibake.
+
 ## [4.9.7] - 2026-05-08
 
 LTS patch release. Publish-pipeline fixes only — no library code changes.
