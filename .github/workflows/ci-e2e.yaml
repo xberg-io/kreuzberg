@@ -277,6 +277,11 @@ jobs:
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
 
+      - name: Compile Ruby native extension
+        if: matrix.lang == 'ruby'
+        working-directory: packages/ruby
+        run: bundle install && bundle exec rake compile
+
       - name: Run tests
         run: ${{ matrix.test-cmd }}
         shell: bash
