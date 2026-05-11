@@ -334,3 +334,96 @@ public final class SwiftEmbeddingBackendBox {
     } catch { return encodeErrEnvelope("\(error)") }
   }
 }
+
+// MARK: - DocumentExtractor
+
+/// Swift-native protocol mirroring the Rust `DocumentExtractor` plugin trait.
+///
+/// User-facing extraction surface: implement `extractBytes` (returns a JSON-encoded
+/// `InternalDocument`) and `supportedMimeTypes`. The remaining methods have default
+/// implementations that mirror the Rust trait's defaults.
+public protocol DocumentExtractor: AnyObject {
+  func name() -> String
+  func version() -> String
+  func initialize() throws
+  func shutdown() throws
+  /// Extract from raw bytes. Return a JSON-encoded `InternalDocument`.
+  func extractBytes(content: [UInt8], mimeType: String, config: String) throws -> String
+  /// Extract from a filesystem path. Default reads the file and forwards to `extractBytes`.
+  func extractFile(path: String, mimeType: String, config: String) throws -> String
+  /// MIME types this extractor claims to support.
+  func supportedMimeTypes() -> [String]
+  /// Priority for the registry's selection ordering (0–255, default 50).
+  func priority() -> Int32
+  /// Whether this extractor can handle the given path + MIME pair.
+  func canHandle(path: String, mimeType: String) -> Bool
+  /// JSON-encoded handle to a synchronous extractor, if any. Default returns the
+  /// JSON `null` sentinel (the Rust bridge does not currently dispatch sync paths).
+  func asSyncExtractor() -> String
+}
+
+extension DocumentExtractor {
+  public func initialize() throws {}
+  public func shutdown() throws {}
+  public func extractFile(path: String, mimeType: String, config: String) throws -> String {
+    let data = try Data(contentsOf: URL(fileURLWithPath: path))
+    return try extractBytes(content: [UInt8](data), mimeType: mimeType, config: config)
+  }
+  public func priority() -> Int32 { 50 }
+  public func canHandle(path: String, mimeType: String) -> Bool { true }
+  public func asSyncExtractor() -> String { "null" }
+}
+
+public final class SwiftDocumentExtractorBox {
+  private let inner: DocumentExtractor
+
+  public init(_ inner: DocumentExtractor) {
+    self.inner = inner
+  }
+
+  public func alef_name() -> RustString { RustString(inner.name()) }
+  public func alef_version() -> RustString { RustString(inner.version()) }
+
+  public func alef_initialize() -> RustString {
+    do {
+      try inner.initialize()
+      return encodeOkVoidEnvelope()
+    } catch { return encodeErrEnvelope("\(error)") }
+  }
+  public func alef_shutdown() -> RustString {
+    do {
+      try inner.shutdown()
+      return encodeOkVoidEnvelope()
+    } catch { return encodeErrEnvelope("\(error)") }
+  }
+
+  public func alef_extract_bytes(content: RustVec<UInt8>, mime_type: RustString, config: RustString) -> RustString {
+    do {
+      let bytes = Array(content)
+      let result = try inner.extractBytes(content: bytes, mimeType: mime_type.toString(), config: config.toString())
+      return RustString("{\"ok\":\(result)}")
+    } catch { return encodeErrEnvelope("\(error)") }
+  }
+
+  public func alef_extract_file(path: RustString, mime_type: RustString, config: RustString) -> RustString {
+    do {
+      let result = try inner.extractFile(path: path.toString(), mimeType: mime_type.toString(), config: config.toString())
+      return RustString("{\"ok\":\(result)}")
+    } catch { return encodeErrEnvelope("\(error)") }
+  }
+
+  public func alef_supported_mime_types() -> RustVec<RustString> {
+    let mimes = inner.supportedMimeTypes()
+    let vec = RustVec<RustString>()
+    for mime in mimes { vec.push(value: RustString(mime)) }
+    return vec
+  }
+
+  public func alef_priority() -> Int32 { inner.priority() }
+
+  public func alef_can_handle(path: RustString, mime_type: RustString) -> Bool {
+    inner.canHandle(path: path.toString(), mimeType: mime_type.toString())
+  }
+
+  public func alef_as_sync_extractor() -> RustString { RustString(inner.asSyncExtractor()) }
+}

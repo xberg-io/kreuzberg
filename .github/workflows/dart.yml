@@ -14,13 +14,13 @@ jobs:
         working-directory: packages/dart
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          sdk: stable
-      - name: Get Dart dependencies
-        run: dart pub get
+          channel: stable
+      - name: Get Flutter dependencies
+        run: flutter pub get
       - name: Analyze Dart code
-        run: dart analyze
+        run: flutter analyze
       - name: Run tests
-        run: dart test
+        run: flutter test
