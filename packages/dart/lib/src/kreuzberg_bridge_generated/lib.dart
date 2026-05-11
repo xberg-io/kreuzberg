@@ -8,8 +8,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AnchorProperties`, `ApiDoc`, `BBox`, `ByteBufferPool`, `CacheWarmParams`, `CharShape`, `ChunkRequest`, `ChunkResponse`, `ChunkTextParams`, `ChunkingResult`, `CustomProperties`, `DetectMimeTypeParams`, `DetectResponse`, `DetectedBoundary`, `DetectionResult`, `DoclingCompatResponse`, `Drawing`, `EmailAttachment`, `EmailExtractionResult`, `EmbedRequest`, `EmbedResponse`, `EmbedTextParams`, `EmbeddedFile`, `ExcelSheet`, `ExcelWorkbook`, `ExtractResponse`, `ExtractStructuredParams`, `ExtractedInlineImage`, `FracType`, `HtmlExtractionResult`, `HwpImage`, `ImageOcrResult`, `InfoResponse`, `LayoutClass`, `LayoutDetection`, `ManifestEntryResponse`, `ManifestResponse`, `MergedChunk`, `ModelPaths`, `OcrBackendType`, `OcrCacheStats`, `OcrExtractionResult`, `OcrTableBoundingBox`, `OcrTable`, `OdtProperties`, `OpenWebDocumentResponse`, `OrientationResult`, `PSMMode`, `PaddleLanguage`, `PaddleOcrConfig`, `PageMarginsPoints`, `PoolError`, `PptxAppProperties`, `PptxExtractionResult`, `ProcessingStage`, `RecognizedTable`, `ReductionLevel`, `ResolvedStyle`, `ServerConfig`, `StreamReader`, `StringBufferPool`, `StructuredDataResult`, `StructuredExtractionResponse`, `StyleDefinition`, `SupportedFormat`, `TableCell`, `TableProperties`, `TessdataManager`, `TextExtractionResult`, `TokenReductionConfig`, `TracingLayer`, `WarmResponse`, `XlsxAppProperties`, `XmlExtractionResult`, `ZipBombValidator`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `dimensions`, `embed`, `estimated_duration_ms`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AnchorProperties`, `ApiDoc`, `BBox`, `ByteBufferPool`, `CacheWarmParams`, `CharShape`, `ChunkRequest`, `ChunkResponse`, `ChunkTextParams`, `ChunkingResult`, `CustomProperties`, `DetectMimeTypeParams`, `DetectResponse`, `DetectedBoundary`, `DetectionResult`, `DoclingCompatResponse`, `Drawing`, `EmailAttachment`, `EmailExtractionResult`, `EmbedRequest`, `EmbedResponse`, `EmbedTextParams`, `EmbeddedFile`, `ExcelSheet`, `ExcelWorkbook`, `ExtractResponse`, `ExtractStructuredParams`, `ExtractedInlineImage`, `FracType`, `HtmlExtractionResult`, `HwpImage`, `HwpxExtractor`, `ImageOcrResult`, `InfoResponse`, `LayoutClass`, `LayoutDetection`, `ManifestEntryResponse`, `ManifestResponse`, `MergedChunk`, `ModelPaths`, `OcrBackendType`, `OcrCacheStats`, `OcrExtractionResult`, `OcrTableBoundingBox`, `OcrTable`, `OdtProperties`, `OpenWebDocumentResponse`, `OrientationResult`, `PSMMode`, `PaddleLanguage`, `PaddleOcrConfig`, `PageMarginsPoints`, `PoolError`, `PptxAppProperties`, `PptxExtractionResult`, `ProcessingStage`, `RecognizedTable`, `ReductionLevel`, `ResolvedStyle`, `ServerConfig`, `StreamReader`, `StringBufferPool`, `StructuredDataResult`, `StructuredExtractionResponse`, `StyleDefinition`, `SupportedFormat`, `TableCell`, `TableProperties`, `TessdataManager`, `TextExtractionResult`, `TokenReductionConfig`, `TracingLayer`, `WarmResponse`, `XlsxAppProperties`, `XmlExtractionResult`, `ZipBombValidator`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `as_sync_extractor`, `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -215,16 +215,6 @@ Future<List<String>> listDocumentExtractors() =>
 Future<List<String>> listOcrBackends() =>
     RustLib.instance.api.crateListOcrBackends();
 
-/// Clear all OCR backends from the global registry.
-///
-/// Removes all OCR backends and calls their `shutdown()` methods.
-///
-/// **Returns:**
-///
-/// - `Ok(())` if all backends were cleared successfully
-/// - `Err(...)` if any shutdown method failed
-Future<void> clearOcrBackends() => RustLib.instance.api.crateClearOcrBackends();
-
 /// List all registered post-processor names.
 ///
 /// Returns a vector of all post-processor names currently registered in the
@@ -237,20 +227,17 @@ Future<void> clearOcrBackends() => RustLib.instance.api.crateClearOcrBackends();
 Future<List<String>> listPostProcessors() =>
     RustLib.instance.api.crateListPostProcessors();
 
-/// Remove all registered post-processors.
-Future<void> clearPostProcessors() =>
-    RustLib.instance.api.crateClearPostProcessors();
-
 /// List names of all registered renderers.
+///
+/// **Errors:**
+///
+/// Returns an error if the registry lock is poisoned.
 Future<List<String>> listRenderers() =>
     RustLib.instance.api.crateListRenderers();
 
 /// List names of all registered validators.
 Future<List<String>> listValidators() =>
     RustLib.instance.api.crateListValidators();
-
-/// Remove all registered validators.
-Future<void> clearValidators() => RustLib.instance.api.crateClearValidators();
 
 /// Generate embeddings asynchronously for a list of text strings.
 ///
@@ -349,6 +336,15 @@ Future<OcrBackendDartImpl> createOcrBackendDartImpl(
 Future<void> registerOcrBackend({required OcrBackendDartImpl impl}) =>
     RustLib.instance.api.crateRegisterOcrBackend(impl: impl);
 
+/// Unregister a previously-registered `OcrBackend` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_ocr_backend_registry()` and stringifies any host error.
+Future<void> unregisterOcrBackend({required String name}) =>
+    RustLib.instance.api.crateUnregisterOcrBackend(name: name);
+
+/// Clear all registered `OcrBackend` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_ocr_backend_registry()` and stringifies any host error.
+Future<void> clearOcrBackends() => RustLib.instance.api.crateClearOcrBackends();
+
 /// Create a `PostProcessorDartImpl` from Dart callback closures.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 Future<PostProcessorDartImpl> createPostProcessorDartImpl(
@@ -376,6 +372,16 @@ Future<PostProcessorDartImpl> createPostProcessorDartImpl(
 Future<void> registerPostProcessor({required PostProcessorDartImpl impl}) =>
     RustLib.instance.api.crateRegisterPostProcessor(impl: impl);
 
+/// Unregister a previously-registered `PostProcessor` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_post_processor_registry()` and stringifies any host error.
+Future<void> unregisterPostProcessor({required String name}) =>
+    RustLib.instance.api.crateUnregisterPostProcessor(name: name);
+
+/// Clear all registered `PostProcessor` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_post_processor_registry()` and stringifies any host error.
+Future<void> clearPostProcessors() =>
+    RustLib.instance.api.crateClearPostProcessors();
+
 /// Create a `ValidatorDartImpl` from Dart callback closures.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 Future<ValidatorDartImpl> createValidatorDartImpl(
@@ -399,6 +405,15 @@ Future<ValidatorDartImpl> createValidatorDartImpl(
 Future<void> registerValidator({required ValidatorDartImpl impl}) =>
     RustLib.instance.api.crateRegisterValidator(impl: impl);
 
+/// Unregister a previously-registered `Validator` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_validator_registry()` and stringifies any host error.
+Future<void> unregisterValidator({required String name}) =>
+    RustLib.instance.api.crateUnregisterValidator(name: name);
+
+/// Clear all registered `Validator` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_validator_registry()` and stringifies any host error.
+Future<void> clearValidators() => RustLib.instance.api.crateClearValidators();
+
 /// Create a `EmbeddingBackendDartImpl` from Dart callback closures.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 Future<EmbeddingBackendDartImpl> createEmbeddingBackendDartImpl(
@@ -420,8 +435,88 @@ Future<void> registerEmbeddingBackend(
         {required EmbeddingBackendDartImpl impl}) =>
     RustLib.instance.api.crateRegisterEmbeddingBackend(impl: impl);
 
+/// Unregister a previously-registered `EmbeddingBackend` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_embedding_backend_registry()` and stringifies any host error.
+Future<void> unregisterEmbeddingBackend({required String name}) =>
+    RustLib.instance.api.crateUnregisterEmbeddingBackend(name: name);
+
+/// Clear all registered `EmbeddingBackend` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_embedding_backend_registry()` and stringifies any host error.
+Future<void> clearEmbeddingBackends() =>
+    RustLib.instance.api.crateClearEmbeddingBackends();
+
+/// Create a `DocumentExtractorDartImpl` from Dart callback closures.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl(
+        {required String pluginName,
+        required String pluginVersion,
+        required BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
+            extractBytes,
+        required BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
+            extractFile,
+        required BoxFnDartFnFutureVecString supportedMimeTypes,
+        required BoxFnDartFnFutureI64 priority,
+        required BoxFnStringStringDartFnFutureBool canHandle,
+        required BoxFnDartFnFutureOptionSyncExtractor asSyncExtractor}) =>
+    RustLib.instance.api.crateCreateDocumentExtractorDartImpl(
+        pluginName: pluginName,
+        pluginVersion: pluginVersion,
+        extractBytes: extractBytes,
+        extractFile: extractFile,
+        supportedMimeTypes: supportedMimeTypes,
+        priority: priority,
+        canHandle: canHandle,
+        asSyncExtractor: asSyncExtractor);
+
+/// Register a Dart implementation as a `DocumentExtractor` plugin.
+///
+/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_document_extractor_registry()`.
+/// Errors from the host registry are stringified for FRB transport.
+Future<void> registerDocumentExtractor(
+        {required DocumentExtractorDartImpl impl}) =>
+    RustLib.instance.api.crateRegisterDocumentExtractor(impl: impl);
+
+/// Unregister a previously-registered `DocumentExtractor` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_document_extractor_registry()` and stringifies any host error.
+Future<void> unregisterDocumentExtractor({required String name}) =>
+    RustLib.instance.api.crateUnregisterDocumentExtractor(name: name);
+
+/// Clear all registered `DocumentExtractor` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_document_extractor_registry()` and stringifies any host error.
+Future<void> clearDocumentExtractors() =>
+    RustLib.instance.api.crateClearDocumentExtractors();
+
+/// Create a `RendererDartImpl` from Dart callback closures.
+/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
+Future<RendererDartImpl> createRendererDartImpl(
+        {required String pluginName,
+        required String pluginVersion,
+        required BoxFnInternalDocumentDartFnFutureString render}) =>
+    RustLib.instance.api.crateCreateRendererDartImpl(
+        pluginName: pluginName, pluginVersion: pluginVersion, render: render);
+
+/// Register a Dart implementation as a `Renderer` plugin.
+///
+/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_renderer_registry()`.
+/// Errors from the host registry are stringified for FRB transport.
+Future<void> registerRenderer({required RendererDartImpl impl}) =>
+    RustLib.instance.api.crateRegisterRenderer(impl: impl);
+
+/// Unregister a previously-registered `Renderer` plugin by name.
+/// Removes the plugin from `kreuzberg::plugins::registry::get_renderer_registry()` and stringifies any host error.
+Future<void> unregisterRenderer({required String name}) =>
+    RustLib.instance.api.crateUnregisterRenderer(name: name);
+
+/// Clear all registered `Renderer` plugins.
+/// Removes every plugin from `kreuzberg::plugins::registry::get_renderer_registry()` and stringifies any host error.
+Future<void> clearRenderers() => RustLib.instance.api.crateClearRenderers();
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < OcrBackendType > + Send + Sync >>>
 abstract class BoxFnDartFnFutureOcrBackendType implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < Option < SyncExtractor > > + Send + Sync >>>
+abstract class BoxFnDartFnFutureOptionSyncExtractor
+    implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < ProcessingStage > + Send + Sync >>>
 abstract class BoxFnDartFnFutureProcessingStage
@@ -448,11 +543,23 @@ abstract class BoxFnExtractionResultExtractionConfigDartFnFuture
 abstract class BoxFnExtractionResultExtractionConfigDartFnFutureBool
     implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (InternalDocument) -> DartFnFuture < String > + Send + Sync >>>
+abstract class BoxFnInternalDocumentDartFnFutureString
+    implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String) -> DartFnFuture < bool > + Send + Sync >>>
 abstract class BoxFnStringDartFnFutureBool implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , OcrConfig) -> DartFnFuture < ExtractionResult > + Send + Sync >>>
 abstract class BoxFnStringOcrConfigDartFnFutureExtractionResult
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String) -> DartFnFuture < bool > + Send + Sync >>>
+abstract class BoxFnStringStringDartFnFutureBool
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String , ExtractionConfig) -> DartFnFuture < InternalDocument > + Send + Sync >>>
+abstract class BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
     implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < String >) -> DartFnFuture < Vec < Vec < f64 > > > + Send + Sync >>>
@@ -463,6 +570,13 @@ abstract class BoxFnVecStringDartFnFutureVecVecF64
 abstract class BoxFnVecU8OcrConfigDartFnFutureExtractionResult
     implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < u8 > , String , ExtractionConfig) -> DartFnFuture < InternalDocument > + Send + Sync >>>
+abstract class BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>>
+abstract class DocumentExtractorDartImpl implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>
 abstract class EmbeddingBackendDartImpl implements RustOpaqueInterface {}
 
@@ -471,6 +585,9 @@ abstract class OcrBackendDartImpl implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>>
 abstract class PostProcessorDartImpl implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>
+abstract class RendererDartImpl implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>
 abstract class ValidatorDartImpl implements RustOpaqueInterface {}
@@ -3523,6 +3640,7 @@ class OcrConfig {
   final LlmConfig? vlmConfig;
   final String? vlmPrompt;
   final AccelerationConfig? acceleration;
+  final Map<String, Uint8List>? tessdataBytes;
 
   const OcrConfig({
     required this.enabled,
@@ -3538,6 +3656,7 @@ class OcrConfig {
     this.vlmConfig,
     this.vlmPrompt,
     this.acceleration,
+    this.tessdataBytes,
   });
 
   @override
@@ -3554,7 +3673,8 @@ class OcrConfig {
       autoRotate.hashCode ^
       vlmConfig.hashCode ^
       vlmPrompt.hashCode ^
-      acceleration.hashCode;
+      acceleration.hashCode ^
+      tessdataBytes.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3573,7 +3693,8 @@ class OcrConfig {
           autoRotate == other.autoRotate &&
           vlmConfig == other.vlmConfig &&
           vlmPrompt == other.vlmPrompt &&
-          acceleration == other.acceleration;
+          acceleration == other.acceleration &&
+          tessdataBytes == other.tessdataBytes;
 }
 
 class OcrElement {

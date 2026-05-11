@@ -76,7 +76,7 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 Add to your `Package.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.2"),
+.package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.1"),
 ```
 
 Then add the product to the relevant target:

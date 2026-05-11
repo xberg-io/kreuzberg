@@ -76,13 +76,13 @@ Extract text, tables, images, and metadata from 91+ file formats and 248 program
 Kotlin DSL (`build.gradle.kts`):
 
 ```kotlin
-implementation("dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.2")
+implementation("dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.1")
 ```
 
 Groovy DSL (`build.gradle`):
 
 ```groovy
-implementation 'dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.2'
+implementation 'dev.kreuzberg:kreuzberg-kotlin:5.0.0-rc.1'
 ```
 
 
@@ -92,7 +92,7 @@ Add to your `pom.xml`:
 <dependency>
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg-kotlin</artifactId>
-    <version>5.0.0-rc.2</version>
+    <version>5.0.0-rc.1</version>
 </dependency>
 ```
 

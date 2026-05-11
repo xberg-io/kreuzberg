@@ -3125,62 +3125,7 @@ pub fn list_embedding_presets() -> List(String)
 
 /// Trait bridge shims for `OcrBackend`.
 ///
-/// Trait for OCR backend plugins.
-///
-/// Implement this trait to add custom OCR capabilities. OCR backends can be:
-/// - Native Rust implementations (like Tesseract)
-/// - FFI bridges to Python libraries (like EasyOCR, PaddleOCR)
-/// - Cloud-based OCR services (Google Vision, AWS Textract, etc.)
-///
-/// # Thread Safety
-///
-/// OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::{Plugin, OcrBackend, OcrBackendType};
-/// use kreuzberg::{Result, OcrConfig};
-/// use async_trait::async_trait;
-/// use std::borrow::Cow;
-/// use std::path::Path;
-/// use kreuzberg::types::{ExtractionResult, Metadata};
-///
-/// struct CustomOcrBackend;
-///
-/// impl Plugin for CustomOcrBackend {
-///     fn name(&self) -> &str { "custom-ocr" }
-///     fn version(&self) -> String { "1.0.0".to_string() }
-///     fn initialize(&self) -> Result<()> { Ok(()) }
-///     fn shutdown(&self) -> Result<()> { Ok(()) }
-/// }
-///
-/// #[async_trait]
-/// impl OcrBackend for CustomOcrBackend {
-///     async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
-///         // Implement OCR logic here
-///         Ok(ExtractionResult {
-///             content: "Extracted text".to_string(),
-///             mime_type: Cow::Borrowed("text/plain"),
-///             ..Default::default()
-///         })
-///     }
-///
-///     async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
-///         let bytes = std::fs::read(path)?;
-///         self.process_image(&bytes, config).await
-///     }
-///
-///     fn supports_language(&self, lang: &str) -> bool {
-///         matches!(lang, "eng" | "deu" | "fra")
-///     }
-///
-///     fn backend_type(&self) -> OcrBackendType {
-///         OcrBackendType::Custom
-///     }
-/// }
-/// ```
-///
+/// Trait for OCR backend plugins./// /// Implement this trait to add custom OCR capabilities. OCR backends can be:/// - Native Rust implementations (like Tesseract)/// - FFI bridges to Python libraries (like EasyOCR, PaddleOCR)/// - Cloud-based OCR services (Google Vision, AWS Textract, etc.)/// /// # Thread Safety/// /// OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing./// /// # Example/// /// ```rust/// use kreuzberg::plugins::{Plugin, OcrBackend, OcrBackendType};/// use kreuzberg::{Result, OcrConfig};/// use async_trait::async_trait;/// use std::borrow::Cow;/// use std::path::Path;/// use kreuzberg::types::{ExtractionResult, Metadata};/// /// struct CustomOcrBackend;/// /// impl Plugin for CustomOcrBackend {///     fn name(&self) -> &str { "custom-ocr" }///     fn version(&self) -> String { "1.0.0".to_string() }///     fn initialize(&self) -> Result<()> { Ok(()) }///     fn shutdown(&self) -> Result<()> { Ok(()) }/// }/// /// #[async_trait]/// impl OcrBackend for CustomOcrBackend {///     async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {///         // Implement OCR logic here///         Ok(ExtractionResult {///             content: "Extracted text".to_string(),///             mime_type: Cow::Borrowed("text/plain"),///             ..Default::default()///         })///     }/// ///     async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {///         let bytes = std::fs::read(path)?;///         self.process_image(&bytes, config).await///     }/// ///     fn supports_language(&self, lang: &str) -> bool {///         matches!(lang, "eng" | "deu" | "fra")///     }/// ///     fn backend_type(&self) -> OcrBackendType {///         OcrBackendType::Custom///     }/// }/// ```///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID
@@ -3394,70 +3339,7 @@ pub fn fail_trait_call(reply_id: Int, error_message: String) -> Nil
 
 /// Trait bridge shims for `PostProcessor`.
 ///
-/// Trait for post-processor plugins.
-///
-/// Post-processors transform or enrich extraction results after the initial
-/// extraction is complete. They can:
-/// - Clean and normalize text
-/// - Add metadata (language, keywords, entities)
-/// - Split content into chunks
-/// - Score quality
-/// - Apply custom transformations
-///
-/// # Processing Order
-///
-/// Post-processors are executed in stage order:
-/// 1. **Early** - Language detection, entity extraction
-/// 2. **Middle** - Keyword extraction, token reduction
-/// 3. **Late** - Custom hooks, final validation
-///
-/// Within each stage, processors are executed in registration order.
-///
-/// # Error Handling
-///
-/// Post-processor errors are non-fatal by default - they're captured in metadata
-/// and execution continues. To make errors fatal, return an error from `process()`.
-///
-/// # Thread Safety
-///
-/// Post-processors must be thread-safe (`Send + Sync`).
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-/// use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
-/// use async_trait::async_trait;
-///
-/// /// Add word count metadata to extraction results
-/// struct WordCountProcessor;
-///
-/// impl Plugin for WordCountProcessor {
-///     fn name(&self) -> &str { "word-count" }
-///     fn version(&self) -> String { "1.0.0".to_string() }
-///     fn initialize(&self) -> Result<()> { Ok(()) }
-///     fn shutdown(&self) -> Result<()> { Ok(()) }
-/// }
-///
-/// #[async_trait]
-/// impl PostProcessor for WordCountProcessor {
-///     async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
-///         -> Result<()> {
-///         // Count words
-///         let word_count = result.content.split_whitespace().count();
-///
-///         // Add to metadata
-///         result.metadata.additional.insert("word_count".to_string().into(), serde_json::json!(word_count));
-///
-///         Ok(())
-///     }
-///
-///     fn processing_stage(&self) -> ProcessingStage {
-///         ProcessingStage::Early
-///     }
-/// }
-/// ```
-///
+/// Trait for post-processor plugins./// /// Post-processors transform or enrich extraction results after the initial/// extraction is complete. They can:/// - Clean and normalize text/// - Add metadata (language, keywords, entities)/// - Split content into chunks/// - Score quality/// - Apply custom transformations/// /// # Processing Order/// /// Post-processors are executed in stage order:/// 1. **Early** - Language detection, entity extraction/// 2. **Middle** - Keyword extraction, token reduction/// 3. **Late** - Custom hooks, final validation/// /// Within each stage, processors are executed in registration order./// /// # Error Handling/// /// Post-processor errors are non-fatal by default - they're captured in metadata/// and execution continues. To make errors fatal, return an error from `process()`./// /// # Thread Safety/// /// Post-processors must be thread-safe (`Send + Sync`)./// /// # Example/// /// ```rust/// use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};/// use kreuzberg::{Result, ExtractionResult, ExtractionConfig};/// use async_trait::async_trait;/// /// /// Add word count metadata to extraction results/// struct WordCountProcessor;/// /// impl Plugin for WordCountProcessor {///     fn name(&self) -> &str { "word-count" }///     fn version(&self) -> String { "1.0.0".to_string() }///     fn initialize(&self) -> Result<()> { Ok(()) }///     fn shutdown(&self) -> Result<()> { Ok(()) }/// }/// /// #[async_trait]/// impl PostProcessor for WordCountProcessor {///     async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)///         -> Result<()> {///         // Count words///         let word_count = result.content.split_whitespace().count();/// ///         // Add to metadata///         result.metadata.additional.insert("word_count".to_string().into(), serde_json::json!(word_count));/// ///         Ok(())///     }/// ///     fn processing_stage(&self) -> ProcessingStage {///         ProcessingStage::Early///     }/// }/// ```///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID
@@ -3592,66 +3474,7 @@ pub fn post_processor_priority_response(
 
 /// Trait bridge shims for `Validator`.
 ///
-/// Trait for validator plugins.
-///
-/// Validators check extraction results for quality, completeness, or correctness.
-/// Unlike post-processors, validator errors **fail fast** - if a validator returns
-/// an error, the extraction fails immediately.
-///
-/// # Use Cases
-///
-/// - **Quality Gates**: Ensure extracted content meets minimum quality standards
-/// - **Compliance**: Verify content meets regulatory requirements
-/// - **Content Filtering**: Reject documents containing unwanted content
-/// - **Format Validation**: Verify extracted content structure
-/// - **Security Checks**: Scan for malicious content
-///
-/// # Error Handling
-///
-/// Validator errors are **fatal** - they cause the extraction to fail and bubble up
-/// to the caller. Use validators for hard requirements that must be met.
-///
-/// For non-fatal checks, use post-processors instead.
-///
-/// # Thread Safety
-///
-/// Validators must be thread-safe (`Send + Sync`).
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::{Plugin, Validator};
-/// use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
-/// use async_trait::async_trait;
-///
-/// /// Validate that extracted content has minimum length
-/// struct MinimumLengthValidator {
-///     min_length: usize,
-/// }
-///
-/// impl Plugin for MinimumLengthValidator {
-///     fn name(&self) -> &str { "min-length-validator" }
-///     fn version(&self) -> String { "1.0.0".to_string() }
-///     fn initialize(&self) -> Result<()> { Ok(()) }
-///     fn shutdown(&self) -> Result<()> { Ok(()) }
-/// }
-///
-/// #[async_trait]
-/// impl Validator for MinimumLengthValidator {
-///     async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-///         -> Result<()> {
-///         if result.content.len() < self.min_length {
-///             return Err(KreuzbergError::validation(format!(
-///                 "Content too short: {} < {} characters",
-///                 result.content.len(),
-///                 self.min_length
-///             )));
-///         }
-///         Ok(())
-///     }
-/// }
-/// ```
-///
+/// Trait for validator plugins./// /// Validators check extraction results for quality, completeness, or correctness./// Unlike post-processors, validator errors **fail fast** - if a validator returns/// an error, the extraction fails immediately./// /// # Use Cases/// /// - **Quality Gates**: Ensure extracted content meets minimum quality standards/// - **Compliance**: Verify content meets regulatory requirements/// - **Content Filtering**: Reject documents containing unwanted content/// - **Format Validation**: Verify extracted content structure/// - **Security Checks**: Scan for malicious content/// /// # Error Handling/// /// Validator errors are **fatal** - they cause the extraction to fail and bubble up/// to the caller. Use validators for hard requirements that must be met./// /// For non-fatal checks, use post-processors instead./// /// # Thread Safety/// /// Validators must be thread-safe (`Send + Sync`)./// /// # Example/// /// ```rust/// use kreuzberg::plugins::{Plugin, Validator};/// use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};/// use async_trait::async_trait;/// /// /// Validate that extracted content has minimum length/// struct MinimumLengthValidator {///     min_length: usize,/// }/// /// impl Plugin for MinimumLengthValidator {///     fn name(&self) -> &str { "min-length-validator" }///     fn version(&self) -> String { "1.0.0".to_string() }///     fn initialize(&self) -> Result<()> { Ok(()) }///     fn shutdown(&self) -> Result<()> { Ok(()) }/// }/// /// #[async_trait]/// impl Validator for MinimumLengthValidator {///     async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)///         -> Result<()> {///         if result.content.len() < self.min_length {///             return Err(KreuzbergError::validation(format!(///                 "Content too short: {} < {} characters",///                 result.content.len(),///                 self.min_length///             )));///         }///         Ok(())///     }/// }/// ```///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID
@@ -3740,52 +3563,7 @@ pub fn validator_priority_response(
 
 /// Trait bridge shims for `EmbeddingBackend`.
 ///
-/// Trait for in-process embedding backend plugins.
-///
-/// Async to match the convention used by `OcrBackend`,
-/// `DocumentExtractor`, and `PostProcessor`.
-/// Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
-/// C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
-/// equivalent to satisfy the async signature.
-///
-/// # Thread safety
-///
-/// Backends must be `Send + Sync + 'static`. They are stored in
-/// `Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
-/// pipeline. If the backend's underlying model isn't thread-safe, the backend
-/// itself must serialize access internally (e.g. via `Mutex<Inner>`).
-///
-/// # Contract
-///
-/// - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
-///   `self.dimensions()`. The dispatcher in `embed_texts`
-///   validates this before returning to downstream consumers; a non-conforming
-///   backend surfaces as a `KreuzbergError::Validation`, not a panic.
-/// - `embed` may be called from any thread. Its future must be `Send`
-///   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
-/// - `dimensions()` is called exactly once at registration, immediately after
-///   `initialize()` succeeds. The returned value is cached by the registry and
-///   used for all subsequent shape validation. Lazy-loading implementations can
-///   defer model loading into `initialize()` and report the real dimension
-///   afterwards. Later mutations of the backend's reported dimension are not
-///   observed by kreuzberg — implementations that need to change dimension
-///   must unregister and re-register.
-/// - `shutdown()` (inherited from `Plugin`) may be invoked
-///   concurrently with an in-flight `embed()` call. Implementations must
-///   tolerate this — e.g. by letting in-flight calls finish using resources
-///   held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
-///   shared state that isn't needed by `embed`.
-///
-/// # Runtime
-///
-/// The synchronous `embed_texts` entry uses
-/// [`tokio::task::block_in_place`] to await the trait's async `embed`, which
-/// requires a multi-thread tokio runtime. Callers running inside a
-/// `current_thread` runtime (e.g. `#[tokio::test]` without `flavor = "multi_thread"`,
-/// or `tokio::runtime::Builder::new_current_thread()`) must use
-/// `embed_texts_async` instead, which awaits directly without
-/// `block_in_place`.
-///
+/// Trait for in-process embedding backend plugins./// /// Async to match the convention used by `OcrBackend`,/// `DocumentExtractor`, and `PostProcessor`./// Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,/// C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the/// equivalent to satisfy the async signature./// /// # Thread safety/// /// Backends must be `Send + Sync + 'static`. They are stored in/// `Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking/// pipeline. If the backend's underlying model isn't thread-safe, the backend/// itself must serialize access internally (e.g. via `Mutex<Inner>`)./// /// # Contract/// /// - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length///   `self.dimensions()`. The dispatcher in `embed_texts`///   validates this before returning to downstream consumers; a non-conforming///   backend surfaces as a `KreuzbergError::Validation`, not a panic./// - `embed` may be called from any thread. Its future must be `Send`///   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets)./// - `dimensions()` is called exactly once at registration, immediately after///   `initialize()` succeeds. The returned value is cached by the registry and///   used for all subsequent shape validation. Lazy-loading implementations can///   defer model loading into `initialize()` and report the real dimension///   afterwards. Later mutations of the backend's reported dimension are not///   observed by kreuzberg — implementations that need to change dimension///   must unregister and re-register./// - `shutdown()` (inherited from `Plugin`) may be invoked///   concurrently with an in-flight `embed()` call. Implementations must///   tolerate this — e.g. by letting in-flight calls finish using resources///   held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing///   shared state that isn't needed by `embed`./// /// # Runtime/// /// The synchronous `embed_texts` entry uses/// [`tokio::task::block_in_place`] to await the trait's async `embed`, which/// requires a multi-thread tokio runtime. Callers running inside a/// `current_thread` runtime (e.g. `#[tokio::test]` without `flavor = "multi_thread"`,/// or `tokio::runtime::Builder::new_current_thread()`) must use/// `embed_texts_async` instead, which awaits directly without/// `block_in_place`.///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID
@@ -3851,70 +3629,7 @@ pub fn embedding_backend_embed_response(
 
 /// Trait bridge shims for `DocumentExtractor`.
 ///
-/// Trait for document extractor plugins.
-///
-/// Implement this trait to add support for new document formats or to override
-/// built-in extraction behavior with custom logic.
-///
-/// # Return Type
-///
-/// Extractors return `InternalDocument`, a flat intermediate representation.
-/// The pipeline converts this into the public `ExtractionResult` via the
-/// derivation step.
-///
-/// # Priority System
-///
-/// When multiple extractors support the same MIME type, the registry selects
-/// the extractor with the highest priority value. Use this to:
-/// - Override built-in extractors (priority > 50)
-/// - Provide fallback extractors (priority < 50)
-/// - Implement specialized extractors for specific use cases
-///
-/// Default priority is 50.
-///
-/// # Thread Safety
-///
-/// Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::{Plugin, DocumentExtractor};
-/// use kreuzberg::{Result, ExtractionConfig};
-/// use kreuzberg::types::internal::InternalDocument;
-/// use async_trait::async_trait;
-/// use std::path::Path;
-///
-/// /// Custom PDF extractor with premium features
-/// struct PremiumPdfExtractor;
-///
-/// impl Plugin for PremiumPdfExtractor {
-///     fn name(&self) -> &str { "premium-pdf" }
-///     fn version(&self) -> String { "2.0.0".to_string() }
-///     fn initialize(&self) -> Result<()> { Ok(()) }
-///     fn shutdown(&self) -> Result<()> { Ok(()) }
-/// }
-///
-/// #[async_trait]
-/// impl DocumentExtractor for PremiumPdfExtractor {
-///     async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
-///         -> Result<InternalDocument> {
-///         // Premium extraction logic with better accuracy
-///         let mut doc = InternalDocument::new("pdf");
-///         // ... populate doc.elements, doc.metadata, etc.
-///         Ok(doc)
-///     }
-///
-///     fn supported_mime_types(&self) -> &[&str] {
-///         &["application/pdf"]
-///     }
-///
-///     fn priority(&self) -> i32 {
-///         100  // Higher than default (50) - will be preferred
-///     }
-/// }
-/// ```
-///
+/// Trait for document extractor plugins./// /// Implement this trait to add support for new document formats or to override/// built-in extraction behavior with custom logic./// /// # Return Type/// /// Extractors return `InternalDocument`, a flat intermediate representation./// The pipeline converts this into the public `ExtractionResult` via the/// derivation step./// /// # Priority System/// /// When multiple extractors support the same MIME type, the registry selects/// the extractor with the highest priority value. Use this to:/// - Override built-in extractors (priority > 50)/// - Provide fallback extractors (priority < 50)/// - Implement specialized extractors for specific use cases/// /// Default priority is 50./// /// # Thread Safety/// /// Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction./// /// # Example/// /// ```rust/// use kreuzberg::plugins::{Plugin, DocumentExtractor};/// use kreuzberg::{Result, ExtractionConfig};/// use kreuzberg::types::internal::InternalDocument;/// use async_trait::async_trait;/// use std::path::Path;/// /// /// Custom PDF extractor with premium features/// struct PremiumPdfExtractor;/// /// impl Plugin for PremiumPdfExtractor {///     fn name(&self) -> &str { "premium-pdf" }///     fn version(&self) -> String { "2.0.0".to_string() }///     fn initialize(&self) -> Result<()> { Ok(()) }///     fn shutdown(&self) -> Result<()> { Ok(()) }/// }/// /// #[async_trait]/// impl DocumentExtractor for PremiumPdfExtractor {///     async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)///         -> Result<InternalDocument> {///         // Premium extraction logic with better accuracy///         let mut doc = InternalDocument::new("pdf");///         // ... populate doc.elements, doc.metadata, etc.///         Ok(doc)///     }/// ///     fn supported_mime_types(&self) -> &[&str] {///         &["application/pdf"]///     }/// ///     fn priority(&self) -> i32 {///         100  // Higher than default (50) - will be preferred///     }/// }/// ```///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID
@@ -4072,42 +3787,7 @@ pub fn document_extractor_as_sync_extractor_response(
 
 /// Trait bridge shims for `Renderer`.
 ///
-/// Trait for document renderers that convert [`InternalDocument`] to output strings.
-///
-/// Renderers are typically stateless converters that transform the internal
-/// document representation into a specific output format (Markdown, HTML,
-/// Djot, plain text, etc.). They participate in the standard [`Plugin`]
-/// lifecycle so custom renderers can be registered from any supported binding
-/// language.
-///
-/// The format name is exposed via [`Plugin::name`]. For stateless renderers
-/// the [`Plugin`] lifecycle methods (`version`, `initialize`, `shutdown`) all
-/// take no-op defaults and need not be overridden.
-///
-/// # Thread Safety
-///
-/// Renderers must be `Send + Sync` (inherited from [`Plugin`]).
-///
-/// # Example
-///
-/// ```rust
-/// use kreuzberg::plugins::{Plugin, Renderer};
-/// use kreuzberg::types::internal::InternalDocument;
-/// use kreuzberg::Result;
-///
-/// struct CustomRenderer;
-///
-/// impl Plugin for CustomRenderer {
-///     fn name(&self) -> &str { "custom" }
-/// }
-///
-/// impl Renderer for CustomRenderer {
-///     fn render(&self, doc: &InternalDocument) -> Result<String> {
-///         Ok(format!("Custom output with {} elements", doc.elements.len()))
-///     }
-/// }
-/// ```
-///
+/// Trait for document renderers that convert [`InternalDocument`] to output strings./// /// Renderers are typically stateless converters that transform the internal/// document representation into a specific output format (Markdown, HTML,/// Djot, plain text, etc.). They participate in the standard [`Plugin`]/// lifecycle so custom renderers can be registered from any supported binding/// language./// /// The format name is exposed via [`Plugin::name`]. For stateless renderers/// the [`Plugin`] lifecycle methods (`version`, `initialize`, `shutdown`) all/// take no-op defaults and need not be overridden./// /// # Thread Safety/// /// Renderers must be `Send + Sync` (inherited from [`Plugin`])./// /// # Example/// /// ```rust/// use kreuzberg::plugins::{Plugin, Renderer};/// use kreuzberg::types::internal::InternalDocument;/// use kreuzberg::Result;/// /// struct CustomRenderer;/// /// impl Plugin for CustomRenderer {///     fn name(&self) -> &str { "custom" }/// }/// /// impl Renderer for CustomRenderer {///     fn render(&self, doc: &InternalDocument) -> Result<String> {///         Ok(format!("Custom output with {} elements", doc.elements.len()))///     }/// }/// ```///
 /// # Scope cap
 ///
 /// Real callback round-trips require the caller to register a GenServer PID

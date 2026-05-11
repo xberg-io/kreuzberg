@@ -228,6 +228,38 @@ mod ffi {
     }
 
     extern "Rust" {
+        type HtmlOutputConfig;
+        #[swift_bridge(init)]
+        fn new(
+            css: Option<String>,
+            css_file: Option<String>,
+            theme: HtmlTheme,
+            class_prefix: String,
+            embed_css: bool,
+        ) -> HtmlOutputConfig;
+        fn css(&self) -> Option<String>;
+        fn css_file(&self) -> Option<String>;
+        fn theme(&self) -> HtmlTheme;
+        fn class_prefix(&self) -> String;
+        fn embed_css(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type LayoutDetectionConfig;
+        #[swift_bridge(init)]
+        fn new(
+            confidence_threshold: Option<f32>,
+            apply_heuristics: bool,
+            table_model: TableModel,
+            acceleration: Option<AccelerationConfig>,
+        ) -> LayoutDetectionConfig;
+        fn confidence_threshold(&self) -> Option<f32>;
+        fn apply_heuristics(&self) -> bool;
+        fn table_model(&self) -> TableModel;
+        fn acceleration(&self) -> Option<AccelerationConfig>;
+    }
+
+    extern "Rust" {
         type LlmConfig;
         #[swift_bridge(init)]
         fn new(
@@ -358,6 +390,44 @@ mod ffi {
     }
 
     extern "Rust" {
+        type PdfConfig;
+        #[swift_bridge(init)]
+        fn new(
+            extract_images: bool,
+            passwords: Option<Vec<String>>,
+            extract_metadata: bool,
+            hierarchy: Option<HierarchyConfig>,
+            extract_annotations: bool,
+            top_margin_fraction: Option<f32>,
+            bottom_margin_fraction: Option<f32>,
+            allow_single_column_tables: bool,
+        ) -> PdfConfig;
+        fn extract_images(&self) -> bool;
+        fn passwords(&self) -> Option<Vec<String>>;
+        fn extract_metadata(&self) -> bool;
+        fn hierarchy(&self) -> Option<HierarchyConfig>;
+        fn extract_annotations(&self) -> bool;
+        fn top_margin_fraction(&self) -> Option<f32>;
+        fn bottom_margin_fraction(&self) -> Option<f32>;
+        fn allow_single_column_tables(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type HierarchyConfig;
+        #[swift_bridge(init)]
+        fn new(
+            enabled: bool,
+            k_clusters: usize,
+            include_bbox: bool,
+            ocr_coverage_threshold: Option<f32>,
+        ) -> HierarchyConfig;
+        fn enabled(&self) -> bool;
+        fn k_clusters(&self) -> usize;
+        fn include_bbox(&self) -> bool;
+        fn ocr_coverage_threshold(&self) -> Option<f32>;
+    }
+
+    extern "Rust" {
         type PostProcessorConfig;
         #[swift_bridge(init)]
         fn new(
@@ -421,9 +491,68 @@ mod ffi {
     }
 
     extern "Rust" {
+        type TreeSitterConfig;
+        #[swift_bridge(init)]
+        fn new(
+            enabled: bool,
+            cache_dir: Option<String>,
+            languages: Option<Vec<String>>,
+            groups: Option<Vec<String>>,
+            process: TreeSitterProcessConfig,
+        ) -> TreeSitterConfig;
+        fn enabled(&self) -> bool;
+        fn cache_dir(&self) -> Option<String>;
+        fn languages(&self) -> Option<Vec<String>>;
+        fn groups(&self) -> Option<Vec<String>>;
+        fn process(&self) -> TreeSitterProcessConfig;
+    }
+
+    extern "Rust" {
+        type TreeSitterProcessConfig;
+        #[swift_bridge(init)]
+        fn new(
+            structure: bool,
+            imports: bool,
+            exports: bool,
+            comments: bool,
+            docstrings: bool,
+            symbols: bool,
+            diagnostics: bool,
+            chunk_max_size: Option<usize>,
+            content_mode: CodeContentMode,
+        ) -> TreeSitterProcessConfig;
+        fn structure(&self) -> bool;
+        fn imports(&self) -> bool;
+        fn exports(&self) -> bool;
+        fn comments(&self) -> bool;
+        fn docstrings(&self) -> bool;
+        fn symbols(&self) -> bool;
+        fn diagnostics(&self) -> bool;
+        fn chunk_max_size(&self) -> Option<usize>;
+        fn content_mode(&self) -> CodeContentMode;
+    }
+
+    extern "Rust" {
         type SupportedFormat;
         fn extension_(&self) -> String;
         fn mime_type(&self) -> String;
+    }
+
+    extern "Rust" {
+        type ServerConfig;
+        #[swift_bridge(init)]
+        fn new(
+            host: String,
+            port: u16,
+            cors_origins: Vec<String>,
+            max_request_body_bytes: usize,
+            max_multipart_field_bytes: usize,
+        ) -> ServerConfig;
+        fn host(&self) -> String;
+        fn port(&self) -> u16;
+        fn cors_origins(&self) -> Vec<String>;
+        fn max_request_body_bytes(&self) -> usize;
+        fn max_multipart_field_bytes(&self) -> usize;
     }
 
     extern "Rust" {
@@ -453,6 +582,11 @@ mod ffi {
 
     extern "Rust" {
         type StreamReader;
+    }
+
+    extern "Rust" {
+        type ImageOcrResult;
+        fn content(&self) -> String;
     }
 
     extern "Rust" {
@@ -783,7 +917,40 @@ mod ffi {
     }
 
     extern "Rust" {
+        type ZipBombValidator;
+    }
+
+    extern "Rust" {
         type HwpxExtractor;
+    }
+
+    extern "Rust" {
+        type TokenReductionConfig;
+        #[swift_bridge(init)]
+        fn new(
+            level: ReductionLevel,
+            language_hint: Option<String>,
+            preserve_markdown: bool,
+            preserve_code: bool,
+            semantic_threshold: f32,
+            enable_parallel: bool,
+            use_simd: bool,
+            custom_stopwords: String,
+            preserve_patterns: Vec<String>,
+            target_reduction: Option<f32>,
+            enable_semantic_clustering: bool,
+        ) -> TokenReductionConfig;
+        fn level(&self) -> ReductionLevel;
+        fn language_hint(&self) -> Option<String>;
+        fn preserve_markdown(&self) -> bool;
+        fn preserve_code(&self) -> bool;
+        fn semantic_threshold(&self) -> f32;
+        fn enable_parallel(&self) -> bool;
+        fn use_simd(&self) -> bool;
+        fn custom_stopwords(&self) -> String;
+        fn preserve_patterns(&self) -> Vec<String>;
+        fn target_reduction(&self) -> Option<f32>;
+        fn enable_semantic_clustering(&self) -> bool;
     }
 
     extern "Rust" {
@@ -1499,6 +1666,19 @@ mod ffi {
     }
 
     extern "Rust" {
+        type DocxMetadata;
+        #[swift_bridge(init)]
+        fn new(
+            core_properties: Option<CoreProperties>,
+            app_properties: Option<DocxAppProperties>,
+            custom_properties: String,
+        ) -> DocxMetadata;
+        fn core_properties(&self) -> Option<CoreProperties>;
+        fn app_properties(&self) -> Option<DocxAppProperties>;
+        fn custom_properties(&self) -> String;
+    }
+
+    extern "Rust" {
         type CsvMetadata;
         #[swift_bridge(init)]
         fn new(
@@ -1780,10 +1960,328 @@ mod ffi {
     }
 
     extern "Rust" {
+        type TracingLayer;
+    }
+
+    extern "Rust" {
+        type ApiDoc;
+    }
+
+    extern "Rust" {
+        type InfoResponse;
+        fn version(&self) -> String;
+        fn rust_backend(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type ExtractResponse;
+    }
+
+    extern "Rust" {
+        type EmbedRequest;
+        fn texts(&self) -> Vec<String>;
+        fn config(&self) -> Option<EmbeddingConfig>;
+    }
+
+    extern "Rust" {
+        type EmbedResponse;
+        fn embeddings(&self) -> String;
+        fn model(&self) -> String;
+        fn dimensions(&self) -> usize;
+        fn count(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type ChunkRequest;
+        fn text(&self) -> String;
+        fn config(&self) -> Option<String>;
+        fn chunker_type(&self) -> String;
+    }
+
+    extern "Rust" {
+        type ChunkResponse;
+        fn chunks(&self) -> Vec<String>;
+        fn chunk_count(&self) -> usize;
+        fn config(&self) -> String;
+        fn input_size_bytes(&self) -> usize;
+        fn chunker_type(&self) -> String;
+    }
+
+    extern "Rust" {
+        type DetectResponse;
+        fn mime_type(&self) -> String;
+        fn filename(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
+        type ManifestEntryResponse;
+        fn relative_path(&self) -> String;
+        fn sha256(&self) -> String;
+        fn size_bytes(&self) -> u64;
+        fn source_url(&self) -> String;
+    }
+
+    extern "Rust" {
+        type ManifestResponse;
+        fn kreuzberg_version(&self) -> String;
+        fn total_size_bytes(&self) -> u64;
+        fn model_count(&self) -> usize;
+        fn models(&self) -> Vec<ManifestEntryResponse>;
+    }
+
+    extern "Rust" {
+        type WarmResponse;
+        fn cache_dir(&self) -> String;
+        fn downloaded(&self) -> Vec<String>;
+        fn already_cached(&self) -> Vec<String>;
+    }
+
+    extern "Rust" {
+        type StructuredExtractionResponse;
+        fn structured_output(&self) -> String;
+        fn content(&self) -> String;
+        fn mime_type(&self) -> String;
+    }
+
+    extern "Rust" {
+        type OpenWebDocumentResponse;
+        fn page_content(&self) -> String;
+        fn metadata(&self) -> String;
+    }
+
+    extern "Rust" {
+        type DoclingCompatResponse;
+        fn document(&self) -> String;
+        fn status(&self) -> String;
+    }
+
+    extern "Rust" {
+        type DetectMimeTypeParams;
+        fn path(&self) -> String;
+        fn use_content(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type CacheWarmParams;
+        fn all_embeddings(&self) -> bool;
+        fn embedding_model(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
+        type EmbedTextParams;
+        fn texts(&self) -> Vec<String>;
+        fn preset(&self) -> Option<String>;
+        fn model(&self) -> Option<String>;
+        fn api_key(&self) -> Option<String>;
+        fn embedding_plugin(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
+        type ExtractStructuredParams;
+        fn path(&self) -> String;
+        fn schema(&self) -> String;
+        fn model(&self) -> String;
+        fn schema_name(&self) -> String;
+        fn schema_description(&self) -> Option<String>;
+        fn prompt(&self) -> Option<String>;
+        fn api_key(&self) -> Option<String>;
+        fn strict(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type ChunkTextParams;
+        fn text(&self) -> String;
+        fn max_characters(&self) -> Option<usize>;
+        fn overlap(&self) -> Option<usize>;
+        fn chunker_type(&self) -> Option<String>;
+        fn topic_threshold(&self) -> Option<f32>;
+    }
+
+    extern "Rust" {
+        type DetectedBoundary;
+        fn byte_offset(&self) -> usize;
+        fn is_header(&self) -> bool;
+    }
+
+    extern "Rust" {
+        type ChunkingResult;
+        fn chunks(&self) -> Vec<Chunk>;
+        fn chunk_count(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type MergedChunk;
+        fn text(&self) -> String;
+        fn byte_start(&self) -> usize;
+        fn byte_end(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type EmbeddingPreset;
+        fn name(&self) -> String;
+        fn chunk_size(&self) -> usize;
+        fn overlap(&self) -> usize;
+        fn model_repo(&self) -> String;
+        fn pooling(&self) -> String;
+        fn model_file(&self) -> String;
+        fn dimensions(&self) -> usize;
+        fn description(&self) -> String;
+    }
+
+    extern "Rust" {
+        type YakeParams;
+        #[swift_bridge(init)]
+        fn new(window_size: usize) -> YakeParams;
+        fn window_size(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type RakeParams;
+        #[swift_bridge(init)]
+        fn new(min_word_length: usize, max_words_per_phrase: usize) -> RakeParams;
+        fn min_word_length(&self) -> usize;
+        fn max_words_per_phrase(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type KeywordConfig;
+        #[swift_bridge(init)]
+        fn new(
+            algorithm: KeywordAlgorithm,
+            max_keywords: usize,
+            min_score: f32,
+            ngram_range: Vec<usize>,
+            language: Option<String>,
+            yake_params: Option<YakeParams>,
+            rake_params: Option<RakeParams>,
+        ) -> KeywordConfig;
+        fn algorithm(&self) -> KeywordAlgorithm;
+        fn max_keywords(&self) -> usize;
+        fn min_score(&self) -> f32;
+        fn ngram_range(&self) -> Vec<usize>;
+        fn language(&self) -> Option<String>;
+        fn yake_params(&self) -> Option<YakeParams>;
+        fn rake_params(&self) -> Option<RakeParams>;
+    }
+
+    extern "Rust" {
+        type Keyword;
+        fn text(&self) -> String;
+        fn score(&self) -> f32;
+        fn algorithm(&self) -> KeywordAlgorithm;
+        fn positions(&self) -> Option<Vec<usize>>;
+    }
+
+    extern "Rust" {
+        type OcrCacheStats;
+        #[swift_bridge(init)]
+        fn new(total_files: usize, total_size_mb: f64) -> OcrCacheStats;
+        fn total_files(&self) -> usize;
+        fn total_size_mb(&self) -> f64;
+    }
+
+    extern "Rust" {
         type RecognizedTable;
         fn detection_bbox(&self) -> BBox;
         fn cells(&self) -> String;
         fn markdown(&self) -> String;
+    }
+
+    extern "Rust" {
+        type TessdataManager;
+    }
+
+    extern "Rust" {
+        type PaddleOcrConfig;
+        #[swift_bridge(init)]
+        fn new(
+            language: String,
+            cache_dir: Option<String>,
+            use_angle_cls: bool,
+            enable_table_detection: bool,
+            det_db_thresh: f32,
+            det_db_box_thresh: f32,
+            det_db_unclip_ratio: f32,
+            det_limit_side_len: u32,
+            rec_batch_num: u32,
+            padding: u32,
+            drop_score: f32,
+            model_tier: String,
+        ) -> PaddleOcrConfig;
+        fn language(&self) -> String;
+        fn cache_dir(&self) -> Option<String>;
+        fn use_angle_cls(&self) -> bool;
+        fn enable_table_detection(&self) -> bool;
+        fn det_db_thresh(&self) -> f32;
+        fn det_db_box_thresh(&self) -> f32;
+        fn det_db_unclip_ratio(&self) -> f32;
+        fn det_limit_side_len(&self) -> u32;
+        fn rec_batch_num(&self) -> u32;
+        fn padding(&self) -> u32;
+        fn drop_score(&self) -> f32;
+        fn model_tier(&self) -> String;
+    }
+
+    extern "Rust" {
+        type ModelPaths;
+        fn det_model(&self) -> String;
+        fn cls_model(&self) -> String;
+        fn rec_model(&self) -> String;
+        fn dict_file(&self) -> String;
+    }
+
+    extern "Rust" {
+        type OrientationResult;
+        fn degrees(&self) -> u32;
+        fn confidence(&self) -> f32;
+    }
+
+    extern "Rust" {
+        type BBox;
+        fn x1(&self) -> f32;
+        fn y1(&self) -> f32;
+        fn x2(&self) -> f32;
+        fn y2(&self) -> f32;
+    }
+
+    extern "Rust" {
+        type LayoutDetection;
+        fn class_name(&self) -> LayoutClass;
+        fn confidence(&self) -> f32;
+        fn bbox(&self) -> BBox;
+    }
+
+    extern "Rust" {
+        type DetectionResult;
+        fn page_width(&self) -> u32;
+        fn page_height(&self) -> u32;
+        fn detections(&self) -> Vec<LayoutDetection>;
+    }
+
+    extern "Rust" {
+        type EmbeddedFile;
+        fn name(&self) -> String;
+        fn data(&self) -> Vec<u8>;
+        fn mime_type(&self) -> Option<String>;
+    }
+
+    extern "Rust" {
+        type PdfMetadata;
+        #[swift_bridge(init)]
+        fn new(
+            pdf_version: Option<String>,
+            producer: Option<String>,
+            is_encrypted: Option<bool>,
+            width: Option<i64>,
+            height: Option<i64>,
+            page_count: Option<usize>,
+        ) -> PdfMetadata;
+        fn pdf_version(&self) -> Option<String>;
+        fn producer(&self) -> Option<String>;
+        fn is_encrypted(&self) -> Option<bool>;
+        fn width(&self) -> Option<i64>;
+        fn height(&self) -> Option<i64>;
+        fn page_count(&self) -> Option<usize>;
     }
 
     extern "Rust" {
@@ -1792,6 +2290,14 @@ mod ffi {
 
     extern "Rust" {
         type OutputFormat;
+    }
+
+    extern "Rust" {
+        type HtmlTheme;
+    }
+
+    extern "Rust" {
+        type TableModel;
     }
 
     extern "Rust" {
@@ -1807,6 +2313,10 @@ mod ffi {
     }
 
     extern "Rust" {
+        type CodeContentMode;
+    }
+
+    extern "Rust" {
         type FracType;
     }
 
@@ -1816,6 +2326,10 @@ mod ffi {
 
     extern "Rust" {
         type ProcessingStage;
+    }
+
+    extern "Rust" {
+        type ReductionLevel;
     }
 
     extern "Rust" {
@@ -1904,6 +2418,22 @@ mod ffi {
 
     extern "Rust" {
         type PoolError;
+    }
+
+    extern "Rust" {
+        type KeywordAlgorithm;
+    }
+
+    extern "Rust" {
+        type PSMMode;
+    }
+
+    extern "Rust" {
+        type PaddleLanguage;
+    }
+
+    extern "Rust" {
+        type LayoutClass;
     }
 
     extern "Rust" {
@@ -2838,6 +3368,97 @@ impl LanguageDetectionConfig {
     }
 }
 
+pub struct HtmlOutputConfig(pub kreuzberg::HtmlOutputConfig);
+impl HtmlOutputConfig {
+    pub fn new(
+        css: Option<String>,
+        css_file: Option<String>,
+        theme: HtmlTheme,
+        class_prefix: String,
+        embed_css: bool,
+    ) -> HtmlOutputConfig {
+        let mut __target: kreuzberg::HtmlOutputConfig = ::std::default::Default::default();
+        if let Some(s) = css {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.css = Some(t);
+                }
+            }
+        }
+        if let Some(s) = css_file {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.css_file = Some(t);
+                }
+            }
+        }
+        // alef: theme (HtmlTheme) is an enum; reverse From not generated — left at default
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&class_prefix) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.class_prefix = t;
+            }
+        }
+        __target.embed_css = embed_css;
+        HtmlOutputConfig(__target)
+    }
+    pub fn css(&self) -> Option<String> {
+        self.0.css.clone()
+    }
+    pub fn css_file(&self) -> Option<String> {
+        self.0.css_file.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn theme(&self) -> HtmlTheme {
+        HtmlTheme::from(self.0.theme.clone())
+    }
+    pub fn class_prefix(&self) -> String {
+        self.0.class_prefix.clone()
+    }
+    pub fn embed_css(&self) -> bool {
+        ::serde_json::to_value(&self.0.embed_css)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct LayoutDetectionConfig(pub kreuzberg::LayoutDetectionConfig);
+impl LayoutDetectionConfig {
+    pub fn new(
+        confidence_threshold: Option<f32>,
+        apply_heuristics: bool,
+        table_model: TableModel,
+        acceleration: Option<AccelerationConfig>,
+    ) -> LayoutDetectionConfig {
+        let mut __target: kreuzberg::LayoutDetectionConfig = ::std::default::Default::default();
+        __target.confidence_threshold = confidence_threshold;
+        __target.apply_heuristics = apply_heuristics;
+        // alef: table_model (TableModel) is an enum; reverse From not generated — left at default
+        if let Some(w) = acceleration {
+            __target.acceleration = Some(w.0);
+        }
+        LayoutDetectionConfig(__target)
+    }
+    pub fn confidence_threshold(&self) -> Option<f32> {
+        self.0.confidence_threshold.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn apply_heuristics(&self) -> bool {
+        ::serde_json::to_value(&self.0.apply_heuristics)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn table_model(&self) -> TableModel {
+        TableModel::from(self.0.table_model.clone())
+    }
+    pub fn acceleration(&self) -> Option<AccelerationConfig> {
+        self.0.acceleration.clone().map(AccelerationConfig)
+    }
+}
+
 pub struct LlmConfig(pub kreuzberg::LlmConfig);
 impl LlmConfig {
     pub fn new(
@@ -3272,6 +3893,127 @@ impl PageConfig {
     }
 }
 
+pub struct PdfConfig(pub kreuzberg::PdfConfig);
+impl PdfConfig {
+    pub fn new(
+        extract_images: bool,
+        passwords: Option<Vec<String>>,
+        extract_metadata: bool,
+        hierarchy: Option<HierarchyConfig>,
+        extract_annotations: bool,
+        top_margin_fraction: Option<f32>,
+        bottom_margin_fraction: Option<f32>,
+        allow_single_column_tables: bool,
+    ) -> PdfConfig {
+        let mut __target: kreuzberg::PdfConfig = ::std::default::Default::default();
+        __target.extract_images = extract_images;
+        if let Ok(__v) = ::serde_json::to_value(passwords) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.passwords = t;
+            }
+        }
+        __target.extract_metadata = extract_metadata;
+        if let Some(w) = hierarchy {
+            __target.hierarchy = Some(w.0);
+        }
+        __target.extract_annotations = extract_annotations;
+        __target.top_margin_fraction = top_margin_fraction;
+        __target.bottom_margin_fraction = bottom_margin_fraction;
+        __target.allow_single_column_tables = allow_single_column_tables;
+        PdfConfig(__target)
+    }
+    pub fn extract_images(&self) -> bool {
+        ::serde_json::to_value(&self.0.extract_images)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn passwords(&self) -> Option<Vec<String>> {
+        self.0.passwords.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn extract_metadata(&self) -> bool {
+        ::serde_json::to_value(&self.0.extract_metadata)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn hierarchy(&self) -> Option<HierarchyConfig> {
+        self.0.hierarchy.clone().map(HierarchyConfig)
+    }
+    pub fn extract_annotations(&self) -> bool {
+        ::serde_json::to_value(&self.0.extract_annotations)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn top_margin_fraction(&self) -> Option<f32> {
+        self.0.top_margin_fraction.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn bottom_margin_fraction(&self) -> Option<f32> {
+        self.0.bottom_margin_fraction.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn allow_single_column_tables(&self) -> bool {
+        ::serde_json::to_value(&self.0.allow_single_column_tables)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct HierarchyConfig(pub kreuzberg::HierarchyConfig);
+impl HierarchyConfig {
+    pub fn new(
+        enabled: bool,
+        k_clusters: usize,
+        include_bbox: bool,
+        ocr_coverage_threshold: Option<f32>,
+    ) -> HierarchyConfig {
+        let mut __target: kreuzberg::HierarchyConfig = ::std::default::Default::default();
+        __target.enabled = enabled;
+        __target.k_clusters = k_clusters;
+        __target.include_bbox = include_bbox;
+        __target.ocr_coverage_threshold = ocr_coverage_threshold;
+        HierarchyConfig(__target)
+    }
+    pub fn enabled(&self) -> bool {
+        ::serde_json::to_value(&self.0.enabled)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn k_clusters(&self) -> usize {
+        ::serde_json::to_value(&self.0.k_clusters)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn include_bbox(&self) -> bool {
+        ::serde_json::to_value(&self.0.include_bbox)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn ocr_coverage_threshold(&self) -> Option<f32> {
+        self.0.ocr_coverage_threshold.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+}
+
 pub struct PostProcessorConfig(pub kreuzberg::PostProcessorConfig);
 impl PostProcessorConfig {
     pub fn new(
@@ -3480,6 +4222,144 @@ impl EmbeddingConfig {
     }
 }
 
+pub struct TreeSitterConfig(pub kreuzberg::TreeSitterConfig);
+impl TreeSitterConfig {
+    pub fn new(
+        enabled: bool,
+        cache_dir: Option<String>,
+        languages: Option<Vec<String>>,
+        groups: Option<Vec<String>>,
+        process: TreeSitterProcessConfig,
+    ) -> TreeSitterConfig {
+        let mut __target: kreuzberg::TreeSitterConfig = ::std::default::Default::default();
+        __target.enabled = enabled;
+        if let Some(s) = cache_dir {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.cache_dir = Some(t);
+                }
+            }
+        }
+        if let Ok(__v) = ::serde_json::to_value(languages) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.languages = t;
+            }
+        }
+        if let Ok(__v) = ::serde_json::to_value(groups) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.groups = t;
+            }
+        }
+        __target.process = process.0;
+        TreeSitterConfig(__target)
+    }
+    pub fn enabled(&self) -> bool {
+        ::serde_json::to_value(&self.0.enabled)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn cache_dir(&self) -> Option<String> {
+        self.0.cache_dir.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn languages(&self) -> Option<Vec<String>> {
+        self.0.languages.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn groups(&self) -> Option<Vec<String>> {
+        self.0.groups.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn process(&self) -> TreeSitterProcessConfig {
+        TreeSitterProcessConfig(self.0.process.clone())
+    }
+}
+
+pub struct TreeSitterProcessConfig(pub kreuzberg::TreeSitterProcessConfig);
+impl TreeSitterProcessConfig {
+    pub fn new(
+        structure: bool,
+        imports: bool,
+        exports: bool,
+        comments: bool,
+        docstrings: bool,
+        symbols: bool,
+        diagnostics: bool,
+        chunk_max_size: Option<usize>,
+        content_mode: CodeContentMode,
+    ) -> TreeSitterProcessConfig {
+        let mut __target: kreuzberg::TreeSitterProcessConfig = ::std::default::Default::default();
+        __target.structure = structure;
+        __target.imports = imports;
+        __target.exports = exports;
+        __target.comments = comments;
+        __target.docstrings = docstrings;
+        __target.symbols = symbols;
+        __target.diagnostics = diagnostics;
+        __target.chunk_max_size = chunk_max_size;
+        // alef: content_mode (CodeContentMode) is an enum; reverse From not generated — left at default
+        TreeSitterProcessConfig(__target)
+    }
+    pub fn structure(&self) -> bool {
+        ::serde_json::to_value(&self.0.structure)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn imports(&self) -> bool {
+        ::serde_json::to_value(&self.0.imports)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn exports(&self) -> bool {
+        ::serde_json::to_value(&self.0.exports)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn comments(&self) -> bool {
+        ::serde_json::to_value(&self.0.comments)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn docstrings(&self) -> bool {
+        ::serde_json::to_value(&self.0.docstrings)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn symbols(&self) -> bool {
+        ::serde_json::to_value(&self.0.symbols)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn diagnostics(&self) -> bool {
+        ::serde_json::to_value(&self.0.diagnostics)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn chunk_max_size(&self) -> Option<usize> {
+        self.0.chunk_max_size.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn content_mode(&self) -> CodeContentMode {
+        CodeContentMode::from(self.0.content_mode.clone())
+    }
+}
+
 pub struct SupportedFormat(pub kreuzberg::SupportedFormat);
 impl SupportedFormat {
     pub fn extension_(&self) -> String {
@@ -3487,6 +4367,60 @@ impl SupportedFormat {
     }
     pub fn mime_type(&self) -> String {
         self.0.mime_type.clone()
+    }
+}
+
+pub struct ServerConfig(pub kreuzberg::ServerConfig);
+impl ServerConfig {
+    pub fn new(
+        host: String,
+        port: u16,
+        cors_origins: Vec<String>,
+        max_request_body_bytes: usize,
+        max_multipart_field_bytes: usize,
+    ) -> ServerConfig {
+        let mut __target: kreuzberg::ServerConfig = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&host) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.host = t;
+            }
+        }
+        __target.port = port;
+        if let Ok(__v) = ::serde_json::to_value(cors_origins) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.cors_origins = t;
+            }
+        }
+        __target.max_request_body_bytes = max_request_body_bytes;
+        __target.max_multipart_field_bytes = max_multipart_field_bytes;
+        ServerConfig(__target)
+    }
+    pub fn host(&self) -> String {
+        self.0.host.clone()
+    }
+    pub fn port(&self) -> u16 {
+        ::serde_json::to_value(&self.0.port)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn cors_origins(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.cors_origins)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_request_body_bytes(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_request_body_bytes)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_multipart_field_bytes(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_multipart_field_bytes)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -3546,6 +4480,15 @@ impl HwpImage {
 }
 
 pub struct StreamReader(pub kreuzberg::extraction::hwp::reader::StreamReader);
+
+pub struct ImageOcrResult(pub kreuzberg::extraction::image::ImageOcrResult);
+impl ImageOcrResult {
+    pub fn content(&self) -> String {
+        format!("{:?}", &self.0.content)
+    }
+    // alef: skipped getter `boundaries` — type cannot be bridged through swift-bridge
+    // alef: skipped getter `page_contents` — type cannot be bridged through swift-bridge
+}
 
 pub struct HtmlExtractionResult(pub kreuzberg::extraction::html::HtmlExtractionResult);
 impl HtmlExtractionResult {
@@ -4685,7 +5628,112 @@ impl SecurityLimits {
     }
 }
 
+pub struct ZipBombValidator(pub kreuzberg::extractors::security::ZipBombValidator);
+
 pub struct HwpxExtractor(pub kreuzberg::extractors::HwpxExtractor);
+
+pub struct TokenReductionConfig(pub kreuzberg::TokenReductionConfig);
+impl TokenReductionConfig {
+    pub fn new(
+        level: ReductionLevel,
+        language_hint: Option<String>,
+        preserve_markdown: bool,
+        preserve_code: bool,
+        semantic_threshold: f32,
+        enable_parallel: bool,
+        use_simd: bool,
+        custom_stopwords: String,
+        preserve_patterns: Vec<String>,
+        target_reduction: Option<f32>,
+        enable_semantic_clustering: bool,
+    ) -> TokenReductionConfig {
+        let mut __target: kreuzberg::TokenReductionConfig = ::std::default::Default::default();
+        // alef: level (ReductionLevel) is an enum; reverse From not generated — left at default
+        if let Some(s) = language_hint {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.language_hint = Some(t);
+                }
+            }
+        }
+        __target.preserve_markdown = preserve_markdown;
+        __target.preserve_code = preserve_code;
+        __target.semantic_threshold = semantic_threshold;
+        __target.enable_parallel = enable_parallel;
+        __target.use_simd = use_simd;
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&custom_stopwords) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.custom_stopwords = t;
+            }
+        }
+        if let Ok(__v) = ::serde_json::to_value(preserve_patterns) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.preserve_patterns = t;
+            }
+        }
+        __target.target_reduction = target_reduction;
+        __target.enable_semantic_clustering = enable_semantic_clustering;
+        TokenReductionConfig(__target)
+    }
+    pub fn level(&self) -> ReductionLevel {
+        ReductionLevel::from(self.0.level.clone())
+    }
+    pub fn language_hint(&self) -> Option<String> {
+        self.0.language_hint.clone()
+    }
+    pub fn preserve_markdown(&self) -> bool {
+        ::serde_json::to_value(&self.0.preserve_markdown)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn preserve_code(&self) -> bool {
+        ::serde_json::to_value(&self.0.preserve_code)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn semantic_threshold(&self) -> f32 {
+        ::serde_json::to_value(&self.0.semantic_threshold)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn enable_parallel(&self) -> bool {
+        ::serde_json::to_value(&self.0.enable_parallel)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn use_simd(&self) -> bool {
+        ::serde_json::to_value(&self.0.use_simd)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn custom_stopwords(&self) -> String {
+        serde_json::to_string(&self.0.custom_stopwords).expect("serializable custom_stopwords")
+    }
+    pub fn preserve_patterns(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.preserve_patterns)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn target_reduction(&self) -> Option<f32> {
+        self.0.target_reduction.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn enable_semantic_clustering(&self) -> bool {
+        ::serde_json::to_value(&self.0.enable_semantic_clustering)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
 
 pub struct PdfAnnotation(pub kreuzberg::PdfAnnotation);
 impl PdfAnnotation {
@@ -7109,6 +8157,38 @@ impl PptxMetadata {
     }
 }
 
+pub struct DocxMetadata(pub kreuzberg::DocxMetadata);
+impl DocxMetadata {
+    pub fn new(
+        core_properties: Option<CoreProperties>,
+        app_properties: Option<DocxAppProperties>,
+        custom_properties: String,
+    ) -> DocxMetadata {
+        let mut __target: kreuzberg::DocxMetadata = ::std::default::Default::default();
+        if let Some(w) = core_properties {
+            __target.core_properties = Some(w.0);
+        }
+        if let Some(w) = app_properties {
+            __target.app_properties = Some(w.0);
+        }
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&custom_properties) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.custom_properties = t;
+            }
+        }
+        DocxMetadata(__target)
+    }
+    pub fn core_properties(&self) -> Option<CoreProperties> {
+        self.0.core_properties.clone().map(CoreProperties)
+    }
+    pub fn app_properties(&self) -> Option<DocxAppProperties> {
+        self.0.app_properties.clone().map(DocxAppProperties)
+    }
+    pub fn custom_properties(&self) -> String {
+        serde_json::to_string(&self.0.custom_properties).expect("serializable custom_properties")
+    }
+}
+
 pub struct CsvMetadata(pub kreuzberg::CsvMetadata);
 impl CsvMetadata {
     pub fn new(
@@ -8009,6 +9089,540 @@ pub struct StringBufferPool(pub kreuzberg::utils::pool::StringBufferPool);
 
 pub struct ByteBufferPool(pub kreuzberg::utils::pool::ByteBufferPool);
 
+pub struct TracingLayer(pub kreuzberg::service::layers::tracing::TracingLayer);
+
+pub struct ApiDoc(pub kreuzberg::api::openapi::ApiDoc);
+
+pub struct InfoResponse(pub kreuzberg::api::InfoResponse);
+impl InfoResponse {
+    pub fn version(&self) -> String {
+        self.0.version.clone()
+    }
+    pub fn rust_backend(&self) -> bool {
+        ::serde_json::to_value(&self.0.rust_backend)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct ExtractResponse(pub kreuzberg::api::ExtractResponse);
+
+pub struct EmbedRequest(pub kreuzberg::api::EmbedRequest);
+impl EmbedRequest {
+    pub fn texts(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.texts)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn config(&self) -> Option<EmbeddingConfig> {
+        self.0.config.clone().map(EmbeddingConfig)
+    }
+}
+
+pub struct EmbedResponse(pub kreuzberg::api::EmbedResponse);
+impl EmbedResponse {
+    pub fn embeddings(&self) -> String {
+        serde_json::to_string(&self.0.embeddings).expect("serializable embeddings")
+    }
+    pub fn model(&self) -> String {
+        self.0.model.clone()
+    }
+    pub fn dimensions(&self) -> usize {
+        ::serde_json::to_value(&self.0.dimensions)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn count(&self) -> usize {
+        ::serde_json::to_value(&self.0.count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct ChunkRequest(pub kreuzberg::api::ChunkRequest);
+impl ChunkRequest {
+    pub fn text(&self) -> String {
+        self.0.text.clone()
+    }
+    pub fn config(&self) -> Option<String> {
+        self.0.config.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn chunker_type(&self) -> String {
+        self.0.chunker_type.clone()
+    }
+}
+
+pub struct ChunkResponse(pub kreuzberg::api::ChunkResponse);
+impl ChunkResponse {
+    pub fn chunks(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.chunks)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn chunk_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.chunk_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn config(&self) -> String {
+        serde_json::to_string(&self.0.config).unwrap_or_default()
+    }
+    pub fn input_size_bytes(&self) -> usize {
+        ::serde_json::to_value(&self.0.input_size_bytes)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn chunker_type(&self) -> String {
+        self.0.chunker_type.clone()
+    }
+}
+
+pub struct DetectResponse(pub kreuzberg::api::DetectResponse);
+impl DetectResponse {
+    pub fn mime_type(&self) -> String {
+        self.0.mime_type.clone()
+    }
+    pub fn filename(&self) -> Option<String> {
+        self.0.filename.clone()
+    }
+}
+
+pub struct ManifestEntryResponse(pub kreuzberg::api::ManifestEntryResponse);
+impl ManifestEntryResponse {
+    pub fn relative_path(&self) -> String {
+        self.0.relative_path.clone()
+    }
+    pub fn sha256(&self) -> String {
+        self.0.sha256.clone()
+    }
+    pub fn size_bytes(&self) -> u64 {
+        ::serde_json::to_value(&self.0.size_bytes)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn source_url(&self) -> String {
+        self.0.source_url.clone()
+    }
+}
+
+pub struct ManifestResponse(pub kreuzberg::api::ManifestResponse);
+impl ManifestResponse {
+    pub fn kreuzberg_version(&self) -> String {
+        self.0.kreuzberg_version.clone()
+    }
+    pub fn total_size_bytes(&self) -> u64 {
+        ::serde_json::to_value(&self.0.total_size_bytes)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn model_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.model_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn models(&self) -> Vec<ManifestEntryResponse> {
+        self.0
+            .models
+            .iter()
+            .map(|elem| ManifestEntryResponse(elem.clone()))
+            .collect()
+    }
+}
+
+pub struct WarmResponse(pub kreuzberg::api::WarmResponse);
+impl WarmResponse {
+    pub fn cache_dir(&self) -> String {
+        self.0.cache_dir.clone()
+    }
+    pub fn downloaded(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.downloaded)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn already_cached(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.already_cached)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct StructuredExtractionResponse(pub kreuzberg::api::StructuredExtractionResponse);
+impl StructuredExtractionResponse {
+    pub fn structured_output(&self) -> String {
+        serde_json::to_string(&self.0.structured_output).unwrap_or_default()
+    }
+    pub fn content(&self) -> String {
+        self.0.content.clone()
+    }
+    pub fn mime_type(&self) -> String {
+        self.0.mime_type.clone()
+    }
+}
+
+pub struct OpenWebDocumentResponse(pub kreuzberg::api::OpenWebDocumentResponse);
+impl OpenWebDocumentResponse {
+    pub fn page_content(&self) -> String {
+        self.0.page_content.clone()
+    }
+    pub fn metadata(&self) -> String {
+        serde_json::to_string(&self.0.metadata).unwrap_or_default()
+    }
+}
+
+pub struct DoclingCompatResponse(pub kreuzberg::api::DoclingCompatResponse);
+impl DoclingCompatResponse {
+    pub fn document(&self) -> String {
+        serde_json::to_string(&self.0.document).unwrap_or_default()
+    }
+    pub fn status(&self) -> String {
+        self.0.status.clone()
+    }
+}
+
+pub struct DetectMimeTypeParams(pub kreuzberg::mcp::DetectMimeTypeParams);
+impl DetectMimeTypeParams {
+    pub fn path(&self) -> String {
+        self.0.path.clone()
+    }
+    pub fn use_content(&self) -> bool {
+        ::serde_json::to_value(&self.0.use_content)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct CacheWarmParams(pub kreuzberg::mcp::CacheWarmParams);
+impl CacheWarmParams {
+    pub fn all_embeddings(&self) -> bool {
+        ::serde_json::to_value(&self.0.all_embeddings)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn embedding_model(&self) -> Option<String> {
+        self.0.embedding_model.clone()
+    }
+}
+
+pub struct EmbedTextParams(pub kreuzberg::mcp::EmbedTextParams);
+impl EmbedTextParams {
+    pub fn texts(&self) -> Vec<String> {
+        ::serde_json::to_value(&self.0.texts)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn preset(&self) -> Option<String> {
+        self.0.preset.clone()
+    }
+    pub fn model(&self) -> Option<String> {
+        self.0.model.clone()
+    }
+    pub fn api_key(&self) -> Option<String> {
+        self.0.api_key.clone()
+    }
+    pub fn embedding_plugin(&self) -> Option<String> {
+        self.0.embedding_plugin.clone()
+    }
+}
+
+pub struct ExtractStructuredParams(pub kreuzberg::mcp::ExtractStructuredParams);
+impl ExtractStructuredParams {
+    pub fn path(&self) -> String {
+        self.0.path.clone()
+    }
+    pub fn schema(&self) -> String {
+        serde_json::to_string(&self.0.schema).unwrap_or_default()
+    }
+    pub fn model(&self) -> String {
+        self.0.model.clone()
+    }
+    pub fn schema_name(&self) -> String {
+        self.0.schema_name.clone()
+    }
+    pub fn schema_description(&self) -> Option<String> {
+        self.0.schema_description.clone()
+    }
+    pub fn prompt(&self) -> Option<String> {
+        self.0.prompt.clone()
+    }
+    pub fn api_key(&self) -> Option<String> {
+        self.0.api_key.clone()
+    }
+    pub fn strict(&self) -> bool {
+        ::serde_json::to_value(&self.0.strict)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct ChunkTextParams(pub kreuzberg::mcp::ChunkTextParams);
+impl ChunkTextParams {
+    pub fn text(&self) -> String {
+        self.0.text.clone()
+    }
+    pub fn max_characters(&self) -> Option<usize> {
+        self.0.max_characters.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn overlap(&self) -> Option<usize> {
+        self.0.overlap.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn chunker_type(&self) -> Option<String> {
+        self.0.chunker_type.clone()
+    }
+    pub fn topic_threshold(&self) -> Option<f32> {
+        self.0.topic_threshold.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+}
+
+pub struct DetectedBoundary(pub kreuzberg::chunking::boundary_detection::DetectedBoundary);
+impl DetectedBoundary {
+    pub fn byte_offset(&self) -> usize {
+        ::serde_json::to_value(&self.0.byte_offset)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn is_header(&self) -> bool {
+        ::serde_json::to_value(&self.0.is_header)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct ChunkingResult(pub kreuzberg::chunking::ChunkingResult);
+impl ChunkingResult {
+    pub fn chunks(&self) -> Vec<Chunk> {
+        self.0.chunks.iter().map(|elem| Chunk(elem.clone())).collect()
+    }
+    pub fn chunk_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.chunk_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct MergedChunk(pub kreuzberg::chunking::semantic::merge::MergedChunk);
+impl MergedChunk {
+    pub fn text(&self) -> String {
+        format!("{:?}", &self.0.text)
+    }
+    pub fn byte_start(&self) -> usize {
+        self.0.byte_start.clone()
+    }
+    pub fn byte_end(&self) -> usize {
+        self.0.byte_end.clone()
+    }
+}
+
+pub struct EmbeddingPreset(pub kreuzberg::EmbeddingPreset);
+impl EmbeddingPreset {
+    pub fn name(&self) -> String {
+        self.0.name.clone()
+    }
+    pub fn chunk_size(&self) -> usize {
+        ::serde_json::to_value(&self.0.chunk_size)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn overlap(&self) -> usize {
+        ::serde_json::to_value(&self.0.overlap)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn model_repo(&self) -> String {
+        self.0.model_repo.clone()
+    }
+    pub fn pooling(&self) -> String {
+        self.0.pooling.clone()
+    }
+    pub fn model_file(&self) -> String {
+        self.0.model_file.clone()
+    }
+    pub fn dimensions(&self) -> usize {
+        ::serde_json::to_value(&self.0.dimensions)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn description(&self) -> String {
+        self.0.description.clone()
+    }
+}
+
+pub struct YakeParams(pub kreuzberg::YakeParams);
+impl YakeParams {
+    pub fn new(window_size: usize) -> YakeParams {
+        let mut __target: kreuzberg::YakeParams = ::std::default::Default::default();
+        __target.window_size = window_size;
+        YakeParams(__target)
+    }
+    pub fn window_size(&self) -> usize {
+        ::serde_json::to_value(&self.0.window_size)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct RakeParams(pub kreuzberg::RakeParams);
+impl RakeParams {
+    pub fn new(min_word_length: usize, max_words_per_phrase: usize) -> RakeParams {
+        let mut __target: kreuzberg::RakeParams = ::std::default::Default::default();
+        __target.min_word_length = min_word_length;
+        __target.max_words_per_phrase = max_words_per_phrase;
+        RakeParams(__target)
+    }
+    pub fn min_word_length(&self) -> usize {
+        ::serde_json::to_value(&self.0.min_word_length)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn max_words_per_phrase(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_words_per_phrase)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct KeywordConfig(pub kreuzberg::KeywordConfig);
+impl KeywordConfig {
+    pub fn new(
+        algorithm: KeywordAlgorithm,
+        max_keywords: usize,
+        min_score: f32,
+        ngram_range: Vec<usize>,
+        language: Option<String>,
+        yake_params: Option<YakeParams>,
+        rake_params: Option<RakeParams>,
+    ) -> KeywordConfig {
+        let mut __target: kreuzberg::KeywordConfig = ::std::default::Default::default();
+        // alef: algorithm (KeywordAlgorithm) is an enum; reverse From not generated — left at default
+        __target.max_keywords = max_keywords;
+        __target.min_score = min_score;
+        if let Ok(__v) = ::serde_json::to_value(ngram_range) {
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.ngram_range = t;
+            }
+        }
+        if let Some(s) = language {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.language = Some(t);
+                }
+            }
+        }
+        if let Some(w) = yake_params {
+            __target.yake_params = Some(w.0);
+        }
+        if let Some(w) = rake_params {
+            __target.rake_params = Some(w.0);
+        }
+        KeywordConfig(__target)
+    }
+    pub fn algorithm(&self) -> KeywordAlgorithm {
+        KeywordAlgorithm::from(self.0.algorithm.clone())
+    }
+    pub fn max_keywords(&self) -> usize {
+        ::serde_json::to_value(&self.0.max_keywords)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn min_score(&self) -> f32 {
+        ::serde_json::to_value(&self.0.min_score)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn ngram_range(&self) -> Vec<usize> {
+        ::serde_json::to_value(&self.0.ngram_range)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn language(&self) -> Option<String> {
+        self.0.language.clone()
+    }
+    pub fn yake_params(&self) -> Option<YakeParams> {
+        self.0.yake_params.clone().map(YakeParams)
+    }
+    pub fn rake_params(&self) -> Option<RakeParams> {
+        self.0.rake_params.clone().map(RakeParams)
+    }
+}
+
+pub struct Keyword(pub kreuzberg::Keyword);
+impl Keyword {
+    pub fn text(&self) -> String {
+        self.0.text.clone()
+    }
+    pub fn score(&self) -> f32 {
+        ::serde_json::to_value(&self.0.score)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn algorithm(&self) -> KeywordAlgorithm {
+        KeywordAlgorithm::from(self.0.algorithm.clone())
+    }
+    pub fn positions(&self) -> Option<Vec<usize>> {
+        self.0.positions.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+}
+
+pub struct OcrCacheStats(pub kreuzberg::ocr::OcrCacheStats);
+impl OcrCacheStats {
+    pub fn new(total_files: usize, total_size_mb: f64) -> OcrCacheStats {
+        OcrCacheStats(kreuzberg::ocr::OcrCacheStats {
+            total_files,
+            total_size_mb,
+        })
+    }
+    pub fn total_files(&self) -> usize {
+        self.0.total_files.clone()
+    }
+    pub fn total_size_mb(&self) -> f64 {
+        self.0.total_size_mb.clone()
+    }
+}
+
 pub struct RecognizedTable(pub kreuzberg::RecognizedTable);
 impl RecognizedTable {
     pub fn detection_bbox(&self) -> BBox {
@@ -8019,6 +9633,297 @@ impl RecognizedTable {
     }
     pub fn markdown(&self) -> String {
         self.0.markdown.clone()
+    }
+}
+
+pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
+
+pub struct PaddleOcrConfig(pub kreuzberg::PaddleOcrConfig);
+impl PaddleOcrConfig {
+    pub fn new(
+        language: String,
+        cache_dir: Option<String>,
+        use_angle_cls: bool,
+        enable_table_detection: bool,
+        det_db_thresh: f32,
+        det_db_box_thresh: f32,
+        det_db_unclip_ratio: f32,
+        det_limit_side_len: u32,
+        rec_batch_num: u32,
+        padding: u32,
+        drop_score: f32,
+        model_tier: String,
+    ) -> PaddleOcrConfig {
+        let mut __target: kreuzberg::PaddleOcrConfig = ::std::default::Default::default();
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&language) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.language = t;
+            }
+        }
+        if let Some(s) = cache_dir {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.cache_dir = Some(t);
+                }
+            }
+        }
+        __target.use_angle_cls = use_angle_cls;
+        __target.enable_table_detection = enable_table_detection;
+        __target.det_db_thresh = det_db_thresh;
+        __target.det_db_box_thresh = det_db_box_thresh;
+        __target.det_db_unclip_ratio = det_db_unclip_ratio;
+        __target.det_limit_side_len = det_limit_side_len;
+        __target.rec_batch_num = rec_batch_num;
+        __target.padding = padding;
+        __target.drop_score = drop_score;
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&model_tier) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.model_tier = t;
+            }
+        }
+        PaddleOcrConfig(__target)
+    }
+    pub fn language(&self) -> String {
+        self.0.language.clone()
+    }
+    pub fn cache_dir(&self) -> Option<String> {
+        self.0.cache_dir.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn use_angle_cls(&self) -> bool {
+        ::serde_json::to_value(&self.0.use_angle_cls)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn enable_table_detection(&self) -> bool {
+        ::serde_json::to_value(&self.0.enable_table_detection)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn det_db_thresh(&self) -> f32 {
+        ::serde_json::to_value(&self.0.det_db_thresh)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn det_db_box_thresh(&self) -> f32 {
+        ::serde_json::to_value(&self.0.det_db_box_thresh)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn det_db_unclip_ratio(&self) -> f32 {
+        ::serde_json::to_value(&self.0.det_db_unclip_ratio)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn det_limit_side_len(&self) -> u32 {
+        ::serde_json::to_value(&self.0.det_limit_side_len)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn rec_batch_num(&self) -> u32 {
+        ::serde_json::to_value(&self.0.rec_batch_num)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn padding(&self) -> u32 {
+        ::serde_json::to_value(&self.0.padding)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn drop_score(&self) -> f32 {
+        ::serde_json::to_value(&self.0.drop_score)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn model_tier(&self) -> String {
+        self.0.model_tier.clone()
+    }
+}
+
+pub struct ModelPaths(pub kreuzberg::ModelPaths);
+impl ModelPaths {
+    pub fn det_model(&self) -> String {
+        serde_json::to_string(&self.0.det_model).unwrap_or_default()
+    }
+    pub fn cls_model(&self) -> String {
+        serde_json::to_string(&self.0.cls_model).unwrap_or_default()
+    }
+    pub fn rec_model(&self) -> String {
+        serde_json::to_string(&self.0.rec_model).unwrap_or_default()
+    }
+    pub fn dict_file(&self) -> String {
+        serde_json::to_string(&self.0.dict_file).unwrap_or_default()
+    }
+}
+
+pub struct OrientationResult(pub kreuzberg::OrientationResult);
+impl OrientationResult {
+    pub fn degrees(&self) -> u32 {
+        ::serde_json::to_value(&self.0.degrees)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn confidence(&self) -> f32 {
+        ::serde_json::to_value(&self.0.confidence)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct BBox(pub kreuzberg::BBox);
+impl BBox {
+    pub fn x1(&self) -> f32 {
+        ::serde_json::to_value(&self.0.x1)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn y1(&self) -> f32 {
+        ::serde_json::to_value(&self.0.y1)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn x2(&self) -> f32 {
+        ::serde_json::to_value(&self.0.x2)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn y2(&self) -> f32 {
+        ::serde_json::to_value(&self.0.y2)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct LayoutDetection(pub kreuzberg::LayoutDetection);
+impl LayoutDetection {
+    pub fn class_name(&self) -> LayoutClass {
+        LayoutClass::from(self.0.class_name.clone())
+    }
+    pub fn confidence(&self) -> f32 {
+        ::serde_json::to_value(&self.0.confidence)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn bbox(&self) -> BBox {
+        BBox(self.0.bbox.clone())
+    }
+}
+
+pub struct DetectionResult(pub kreuzberg::DetectionResult);
+impl DetectionResult {
+    pub fn page_width(&self) -> u32 {
+        ::serde_json::to_value(&self.0.page_width)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn page_height(&self) -> u32 {
+        ::serde_json::to_value(&self.0.page_height)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn detections(&self) -> Vec<LayoutDetection> {
+        self.0
+            .detections
+            .iter()
+            .map(|elem| LayoutDetection(elem.clone()))
+            .collect()
+    }
+}
+
+pub struct EmbeddedFile(pub kreuzberg::pdf::embedded_files::EmbeddedFile);
+impl EmbeddedFile {
+    pub fn name(&self) -> String {
+        format!("{:?}", &self.0.name)
+    }
+    pub fn data(&self) -> Vec<u8> {
+        self.0.data.to_vec()
+    }
+    pub fn mime_type(&self) -> Option<String> {
+        self.0.mime_type.as_ref().map(|v| format!("{v:?}"))
+    }
+}
+
+pub struct PdfMetadata(pub kreuzberg::pdf::metadata::PdfMetadata);
+impl PdfMetadata {
+    pub fn new(
+        pdf_version: Option<String>,
+        producer: Option<String>,
+        is_encrypted: Option<bool>,
+        width: Option<i64>,
+        height: Option<i64>,
+        page_count: Option<usize>,
+    ) -> PdfMetadata {
+        let mut __target: kreuzberg::pdf::metadata::PdfMetadata = ::std::default::Default::default();
+        if let Some(s) = pdf_version {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.pdf_version = Some(t);
+                }
+            }
+        }
+        if let Some(s) = producer {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.producer = Some(t);
+                }
+            }
+        }
+        __target.is_encrypted = is_encrypted;
+        __target.width = width;
+        __target.height = height;
+        __target.page_count = page_count;
+        PdfMetadata(__target)
+    }
+    pub fn pdf_version(&self) -> Option<String> {
+        self.0.pdf_version.clone()
+    }
+    pub fn producer(&self) -> Option<String> {
+        self.0.producer.clone()
+    }
+    pub fn is_encrypted(&self) -> Option<bool> {
+        self.0.is_encrypted.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn width(&self) -> Option<i64> {
+        self.0.width.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn height(&self) -> Option<i64> {
+        self.0.height.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
+    }
+    pub fn page_count(&self) -> Option<usize> {
+        self.0.page_count.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
 }
 
@@ -8067,6 +9972,48 @@ impl From<kreuzberg::OutputFormat> for OutputFormat {
     }
 }
 
+pub enum HtmlTheme {
+    Default,
+    GitHub,
+    Dark,
+    Light,
+    Unstyled,
+}
+
+impl From<kreuzberg::HtmlTheme> for HtmlTheme {
+    fn from(val: kreuzberg::HtmlTheme) -> Self {
+        match val {
+            kreuzberg::HtmlTheme::Default => Self::Default,
+            kreuzberg::HtmlTheme::GitHub => Self::GitHub,
+            kreuzberg::HtmlTheme::Dark => Self::Dark,
+            kreuzberg::HtmlTheme::Light => Self::Light,
+            kreuzberg::HtmlTheme::Unstyled => Self::Unstyled,
+        }
+    }
+}
+
+pub enum TableModel {
+    Tatr,
+    SlanetWired,
+    SlanetWireless,
+    SlanetPlus,
+    SlanetAuto,
+    Disabled,
+}
+
+impl From<kreuzberg::TableModel> for TableModel {
+    fn from(val: kreuzberg::TableModel) -> Self {
+        match val {
+            kreuzberg::TableModel::Tatr => Self::Tatr,
+            kreuzberg::TableModel::SlanetWired => Self::SlanetWired,
+            kreuzberg::TableModel::SlanetWireless => Self::SlanetWireless,
+            kreuzberg::TableModel::SlanetPlus => Self::SlanetPlus,
+            kreuzberg::TableModel::SlanetAuto => Self::SlanetAuto,
+            kreuzberg::TableModel::Disabled => Self::Disabled,
+        }
+    }
+}
+
 pub enum ChunkerType {
     Text,
     Markdown,
@@ -8109,6 +10056,22 @@ impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
     fn from(val: kreuzberg::EmbeddingModelType) -> Self {
         match val {
             _ => Self::Unknown,
+        }
+    }
+}
+
+pub enum CodeContentMode {
+    Chunks,
+    Raw,
+    Structure,
+}
+
+impl From<kreuzberg::CodeContentMode> for CodeContentMode {
+    fn from(val: kreuzberg::CodeContentMode) -> Self {
+        match val {
+            kreuzberg::CodeContentMode::Chunks => Self::Chunks,
+            kreuzberg::CodeContentMode::Raw => Self::Raw,
+            kreuzberg::CodeContentMode::Structure => Self::Structure,
         }
     }
 }
@@ -8161,6 +10124,26 @@ impl From<kreuzberg::plugins::ProcessingStage> for ProcessingStage {
             kreuzberg::plugins::ProcessingStage::Early => Self::Early,
             kreuzberg::plugins::ProcessingStage::Middle => Self::Middle,
             kreuzberg::plugins::ProcessingStage::Late => Self::Late,
+        }
+    }
+}
+
+pub enum ReductionLevel {
+    Off,
+    Light,
+    Moderate,
+    Aggressive,
+    Maximum,
+}
+
+impl From<kreuzberg::ReductionLevel> for ReductionLevel {
+    fn from(val: kreuzberg::ReductionLevel) -> Self {
+        match val {
+            kreuzberg::ReductionLevel::Off => Self::Off,
+            kreuzberg::ReductionLevel::Light => Self::Light,
+            kreuzberg::ReductionLevel::Moderate => Self::Moderate,
+            kreuzberg::ReductionLevel::Aggressive => Self::Aggressive,
+            kreuzberg::ReductionLevel::Maximum => Self::Maximum,
         }
     }
 }
@@ -8655,6 +10638,138 @@ impl From<kreuzberg::utils::pool::PoolError> for PoolError {
     fn from(val: kreuzberg::utils::pool::PoolError) -> Self {
         match val {
             kreuzberg::utils::pool::PoolError::LockPoisoned => Self::LockPoisoned,
+        }
+    }
+}
+
+pub enum KeywordAlgorithm {
+    Yake,
+    Rake,
+}
+
+impl From<kreuzberg::KeywordAlgorithm> for KeywordAlgorithm {
+    fn from(val: kreuzberg::KeywordAlgorithm) -> Self {
+        match val {
+            kreuzberg::KeywordAlgorithm::Yake => Self::Yake,
+            kreuzberg::KeywordAlgorithm::Rake => Self::Rake,
+        }
+    }
+}
+
+pub enum PSMMode {
+    OsdOnly,
+    AutoOsd,
+    AutoOnly,
+    Auto,
+    SingleColumn,
+    SingleBlockVertical,
+    SingleBlock,
+    SingleLine,
+    SingleWord,
+    CircleWord,
+    SingleChar,
+}
+
+impl From<kreuzberg::PSMMode> for PSMMode {
+    fn from(val: kreuzberg::PSMMode) -> Self {
+        match val {
+            kreuzberg::PSMMode::OsdOnly => Self::OsdOnly,
+            kreuzberg::PSMMode::AutoOsd => Self::AutoOsd,
+            kreuzberg::PSMMode::AutoOnly => Self::AutoOnly,
+            kreuzberg::PSMMode::Auto => Self::Auto,
+            kreuzberg::PSMMode::SingleColumn => Self::SingleColumn,
+            kreuzberg::PSMMode::SingleBlockVertical => Self::SingleBlockVertical,
+            kreuzberg::PSMMode::SingleBlock => Self::SingleBlock,
+            kreuzberg::PSMMode::SingleLine => Self::SingleLine,
+            kreuzberg::PSMMode::SingleWord => Self::SingleWord,
+            kreuzberg::PSMMode::CircleWord => Self::CircleWord,
+            kreuzberg::PSMMode::SingleChar => Self::SingleChar,
+        }
+    }
+}
+
+pub enum PaddleLanguage {
+    English,
+    Chinese,
+    Japanese,
+    Korean,
+    German,
+    French,
+    Latin,
+    Cyrillic,
+    TraditionalChinese,
+    Thai,
+    Greek,
+    EastSlavic,
+    Arabic,
+    Devanagari,
+    Tamil,
+    Telugu,
+}
+
+impl From<kreuzberg::PaddleLanguage> for PaddleLanguage {
+    fn from(val: kreuzberg::PaddleLanguage) -> Self {
+        match val {
+            kreuzberg::PaddleLanguage::English => Self::English,
+            kreuzberg::PaddleLanguage::Chinese => Self::Chinese,
+            kreuzberg::PaddleLanguage::Japanese => Self::Japanese,
+            kreuzberg::PaddleLanguage::Korean => Self::Korean,
+            kreuzberg::PaddleLanguage::German => Self::German,
+            kreuzberg::PaddleLanguage::French => Self::French,
+            kreuzberg::PaddleLanguage::Latin => Self::Latin,
+            kreuzberg::PaddleLanguage::Cyrillic => Self::Cyrillic,
+            kreuzberg::PaddleLanguage::TraditionalChinese => Self::TraditionalChinese,
+            kreuzberg::PaddleLanguage::Thai => Self::Thai,
+            kreuzberg::PaddleLanguage::Greek => Self::Greek,
+            kreuzberg::PaddleLanguage::EastSlavic => Self::EastSlavic,
+            kreuzberg::PaddleLanguage::Arabic => Self::Arabic,
+            kreuzberg::PaddleLanguage::Devanagari => Self::Devanagari,
+            kreuzberg::PaddleLanguage::Tamil => Self::Tamil,
+            kreuzberg::PaddleLanguage::Telugu => Self::Telugu,
+        }
+    }
+}
+
+pub enum LayoutClass {
+    Caption,
+    Footnote,
+    Formula,
+    ListItem,
+    PageFooter,
+    PageHeader,
+    Picture,
+    SectionHeader,
+    Table,
+    Text,
+    Title,
+    DocumentIndex,
+    Code,
+    CheckboxSelected,
+    CheckboxUnselected,
+    Form,
+    KeyValueRegion,
+}
+
+impl From<kreuzberg::LayoutClass> for LayoutClass {
+    fn from(val: kreuzberg::LayoutClass) -> Self {
+        match val {
+            kreuzberg::LayoutClass::Caption => Self::Caption,
+            kreuzberg::LayoutClass::Footnote => Self::Footnote,
+            kreuzberg::LayoutClass::Formula => Self::Formula,
+            kreuzberg::LayoutClass::ListItem => Self::ListItem,
+            kreuzberg::LayoutClass::PageFooter => Self::PageFooter,
+            kreuzberg::LayoutClass::PageHeader => Self::PageHeader,
+            kreuzberg::LayoutClass::Picture => Self::Picture,
+            kreuzberg::LayoutClass::SectionHeader => Self::SectionHeader,
+            kreuzberg::LayoutClass::Table => Self::Table,
+            kreuzberg::LayoutClass::Text => Self::Text,
+            kreuzberg::LayoutClass::Title => Self::Title,
+            kreuzberg::LayoutClass::DocumentIndex => Self::DocumentIndex,
+            kreuzberg::LayoutClass::Code => Self::Code,
+            kreuzberg::LayoutClass::CheckboxSelected => Self::CheckboxSelected,
+            kreuzberg::LayoutClass::CheckboxUnselected => Self::CheckboxUnselected,
+            kreuzberg::LayoutClass::Form => Self::Form,
+            kreuzberg::LayoutClass::KeyValueRegion => Self::KeyValueRegion,
         }
     }
 }

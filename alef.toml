@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.15.34"
+alef_version = "0.15.37"
 languages = [
   "python",
   "node",
@@ -437,7 +437,7 @@ ffi_style = "panama"
 pubspec_name = "kreuzberg"
 lib_name = "kreuzberg"
 style = "frb"
-features = ["mobile"]
+features = ["full"]
 
 [crates.kotlin]
 package = "dev.kreuzberg"
@@ -446,7 +446,7 @@ target = "jvm"
 [crates.swift]
 module_name = "Kreuzberg"
 package_name = "Kreuzberg"
-features = ["mobile"]
+features = ["full"]
 exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
 exclude_functions = [
   # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge

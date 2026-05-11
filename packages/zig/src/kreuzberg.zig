@@ -491,26 +491,6 @@ pub const StructuredDataResult = struct {
     text_fields: []const [:0]const u8,
 };
 
-pub const CharShape = struct {
-    bold: bool,
-    italic: bool,
-    underline: bool,
-};
-
-pub const HwpImage = struct {
-    name: [:0]const u8,
-    data: []const u8,
-};
-
-pub const StreamReader = struct {};
-
-/// Result of OCR extraction from an image with optional page tracking.
-pub const ImageOcrResult = struct {
-    content: [:0]const u8,
-    boundaries: ?[]const PageBoundary,
-    page_contents: ?[]const PageContent,
-};
-
 /// Result of HTML extraction with optional images and warnings.
 pub const HtmlExtractionResult = struct {
     markdown: [:0]const u8,
@@ -544,35 +524,6 @@ pub const AnchorProperties = struct {
     position_h: ?[:0]const u8,
     position_v: ?[:0]const u8,
     wrap_type: [:0]const u8,
-};
-
-/// Page margins converted to points (1/72 inch).
-pub const PageMarginsPoints = struct {
-    top: ?f64,
-    right: ?f64,
-    bottom: ?f64,
-    left: ?f64,
-    header: ?f64,
-    footer: ?f64,
-    gutter: ?f64,
-};
-
-/// A single style definition parsed from `<w:style>` in `word/styles.xml`.
-pub const StyleDefinition = struct {
-    id: [:0]const u8,
-    name: ?[:0]const u8,
-    style_type: [:0]const u8,
-    based_on: ?[:0]const u8,
-    next_style: ?[:0]const u8,
-    is_default: bool,
-    paragraph_properties: [:0]const u8,
-    run_properties: [:0]const u8,
-};
-
-/// Fully resolved (flattened) style after walking the inheritance chain.
-pub const ResolvedStyle = struct {
-    paragraph_properties: [:0]const u8,
-    run_properties: [:0]const u8,
 };
 
 /// Table-level properties from `<w:tblPr>`.
@@ -668,53 +619,6 @@ pub const CoreProperties = struct {
     last_printed: ?[:0]const u8,
 };
 
-/// Custom properties from docProps/custom.xml
-///
-/// Maps property names to their values. Values are converted to JSON types
-/// based on the VT (Variant Type) specified in the XML.
-pub const CustomProperties = struct {};
-
-/// OpenDocument metadata from meta.xml
-///
-/// Contains metadata fields defined by the OASIS OpenDocument Format standard.
-/// Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-pub const OdtProperties = struct {
-    title: ?[:0]const u8,
-    subject: ?[:0]const u8,
-    creator: ?[:0]const u8,
-    initial_creator: ?[:0]const u8,
-    keywords: ?[:0]const u8,
-    description: ?[:0]const u8,
-    date: ?[:0]const u8,
-    creation_date: ?[:0]const u8,
-    language: ?[:0]const u8,
-    generator: ?[:0]const u8,
-    editing_duration: ?[:0]const u8,
-    editing_cycles: ?[:0]const u8,
-    page_count: ?i32,
-    word_count: ?i32,
-    character_count: ?i32,
-    paragraph_count: ?i32,
-    table_count: ?i32,
-    image_count: ?i32,
-};
-
-/// Trait for extractors that can work synchronously (WASM-compatible).
-///
-/// This trait defines the synchronous extraction interface for WASM targets and other
-/// environments where async/tokio runtimes are not available or desirable.
-///
-/// # Implementation
-///
-/// Extractors that need to support WASM should implement this trait in addition to
-/// the async `DocumentExtractor` trait. This allows the same extractor to work in both
-/// environments by delegating to the sync implementation.
-///
-/// # MIME Type Validation
-///
-/// The `mime_type` parameter is guaranteed to be already validated.
-pub const SyncExtractor = struct {};
-
 /// Configuration for security limits across extractors.
 ///
 /// All limits are intentionally conservative to prevent DoS attacks
@@ -730,181 +634,6 @@ pub const SecurityLimits = struct {
     max_xml_depth: u64,
     max_table_cells: u64,
 };
-
-/// Helper struct for validating ZIP archives for security issues.
-pub const ZipBombValidator = struct {};
-
-/// Extractor for Hangul Word Processor XML (.hwpx) files.
-///
-/// Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-pub const HwpxExtractor = struct {};
-
-/// Trait for in-process embedding backend plugins.
-///
-/// Async to match the convention used by `OcrBackend`,
-/// `DocumentExtractor`, and `PostProcessor`.
-/// Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
-/// C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
-/// equivalent to satisfy the async signature.
-///
-/// # Thread safety
-///
-/// Backends must be `Send + Sync + 'static`. They are stored in
-/// `Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
-/// pipeline. If the backend's underlying model isn't thread-safe, the backend
-/// itself must serialize access internally (e.g. via `Mutex<Inner>`).
-///
-/// # Contract
-///
-/// - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
-///   `self.dimensions()`. The dispatcher in `embed_texts`
-///   validates this before returning to downstream consumers; a non-conforming
-///   backend surfaces as a `KreuzbergError.Validation`, not a panic.
-/// - `embed` may be called from any thread. Its future must be `Send`
-///   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
-/// - `dimensions()` is called exactly once at registration, immediately after
-///   `initialize()` succeeds. The returned value is cached by the registry and
-///   used for all subsequent shape validation. Lazy-loading implementations can
-///   defer model loading into `initialize()` and report the real dimension
-///   afterwards. Later mutations of the backend's reported dimension are not
-///   observed by kreuzberg — implementations that need to change dimension
-///   must unregister and re-register.
-/// - `shutdown()` (inherited from `Plugin`) may be invoked
-///   concurrently with an in-flight `embed()` call. Implementations must
-///   tolerate this — e.g. by letting in-flight calls finish using resources
-///   held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
-///   shared state that isn't needed by `embed`.
-///
-/// # Runtime
-///
-/// The synchronous `embed_texts` entry uses
-/// `tokio.task.block_in_place` to await the trait's async `embed`, which
-/// requires a multi-thread tokio runtime. Callers running inside a
-/// `current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
-/// or `tokio.runtime.Builder.new_current_thread()`) must use
-/// `embed_texts_async` instead, which awaits directly without
-/// `block_in_place`.
-pub const EmbeddingBackend = struct {};
-
-/// Trait for document extractor plugins.
-///
-/// Implement this trait to add support for new document formats or to override
-/// built-in extraction behavior with custom logic.
-///
-/// # Return Type
-///
-/// Extractors return `InternalDocument`, a flat intermediate representation.
-/// The pipeline converts this into the public `ExtractionResult` via the
-/// derivation step.
-///
-/// # Priority System
-///
-/// When multiple extractors support the same MIME type, the registry selects
-/// the extractor with the highest priority value. Use this to:
-/// - Override built-in extractors (priority > 50)
-/// - Provide fallback extractors (priority < 50)
-/// - Implement specialized extractors for specific use cases
-///
-/// Default priority is 50.
-///
-/// # Thread Safety
-///
-/// Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
-pub const DocumentExtractor = struct {};
-
-/// Trait for OCR backend plugins.
-///
-/// Implement this trait to add custom OCR capabilities. OCR backends can be:
-/// - Native Rust implementations (like Tesseract)
-/// - FFI bridges to Python libraries (like EasyOCR, PaddleOCR)
-/// - Cloud-based OCR services (Google Vision, AWS Textract, etc.)
-///
-/// # Thread Safety
-///
-/// OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
-pub const OcrBackend = struct {};
-
-/// Trait for post-processor plugins.
-///
-/// Post-processors transform or enrich extraction results after the initial
-/// extraction is complete. They can:
-/// - Clean and normalize text
-/// - Add metadata (language, keywords, entities)
-/// - Split content into chunks
-/// - Score quality
-/// - Apply custom transformations
-///
-/// # Processing Order
-///
-/// Post-processors are executed in stage order:
-/// 1. **Early** - Language detection, entity extraction
-/// 2. **Middle** - Keyword extraction, token reduction
-/// 3. **Late** - Custom hooks, final validation
-///
-/// Within each stage, processors are executed in registration order.
-///
-/// # Error Handling
-///
-/// Post-processor errors are non-fatal by default - they're captured in metadata
-/// and execution continues. To make errors fatal, return an error from `process()`.
-///
-/// # Thread Safety
-///
-/// Post-processors must be thread-safe (`Send + Sync`).
-pub const PostProcessor = struct {};
-
-/// Trait for document renderers that convert `InternalDocument` to output strings.
-///
-/// Renderers are typically stateless converters that transform the internal
-/// document representation into a specific output format (Markdown, HTML,
-/// Djot, plain text, etc.). They participate in the standard `Plugin`
-/// lifecycle so custom renderers can be registered from any supported binding
-/// language.
-///
-/// The format name is exposed via `Plugin.name`. For stateless renderers
-/// the `Plugin` lifecycle methods (`version`, `initialize`, `shutdown`) all
-/// take no-op defaults and need not be overridden.
-///
-/// # Thread Safety
-///
-/// Renderers must be `Send + Sync` (inherited from `Plugin`).
-pub const Renderer = struct {};
-
-/// Base trait that all plugins must implement.
-///
-/// This trait provides common functionality for plugin lifecycle management,
-/// identification, and metadata.
-///
-/// # Thread Safety
-///
-/// All plugins must be `Send + Sync` to support concurrent usage across threads.
-pub const Plugin = struct {};
-
-/// Trait for validator plugins.
-///
-/// Validators check extraction results for quality, completeness, or correctness.
-/// Unlike post-processors, validator errors **fail fast** - if a validator returns
-/// an error, the extraction fails immediately.
-///
-/// # Use Cases
-///
-/// - **Quality Gates**: Ensure extracted content meets minimum quality standards
-/// - **Compliance**: Verify content meets regulatory requirements
-/// - **Content Filtering**: Reject documents containing unwanted content
-/// - **Format Validation**: Verify extracted content structure
-/// - **Security Checks**: Scan for malicious content
-///
-/// # Error Handling
-///
-/// Validator errors are **fatal** - they cause the extraction to fail and bubble up
-/// to the caller. Use validators for hard requirements that must be met.
-///
-/// For non-fatal checks, use post-processors instead.
-///
-/// # Thread Safety
-///
-/// Validators must be thread-safe (`Send + Sync`).
-pub const Validator = struct {};
 
 pub const TokenReductionConfig = struct {
     level: ReductionLevel,
@@ -1838,35 +1567,11 @@ pub const Uri = struct {
     kind: UriKind,
 };
 
-/// Trait for types that can be pooled and reused.
-///
-/// Implementing this trait allows a type to be used with `Pool<T>`.
-/// The `reset()` method should clear the object's state for reuse.
-pub const Recyclable = struct {};
-
-/// Convenience type alias for a pooled String.
-pub const StringBufferPool = struct {};
-
-/// Convenience type alias for a pooled Vec<u8>.
-pub const ByteBufferPool = struct {};
-
-/// A `tower.Layer` that wraps each extraction in a semantic tracing span.
-pub const TracingLayer = struct {};
-
-/// OpenAPI documentation structure.
-///
-/// Defines all endpoints, request/response schemas, and examples
-/// for the Kreuzberg document extraction API.
-pub const ApiDoc = struct {};
-
 /// Server information response.
 pub const InfoResponse = struct {
     version: [:0]const u8,
     rust_backend: bool,
 };
-
-/// Extraction response (list of results).
-pub const ExtractResponse = struct {};
 
 /// Embedding request for generating embeddings from text.
 pub const EmbedRequest = struct {
@@ -2006,13 +1711,6 @@ pub const ChunkingResult = struct {
     chunk_count: u64,
 };
 
-/// A merged chunk produced by `merge_segments`.
-pub const MergedChunk = struct {
-    text: [:0]const u8,
-    byte_start: u64,
-    byte_end: u64,
-};
-
 /// Preset configurations for common RAG use cases.
 ///
 /// Each preset combines chunk size, overlap, and embedding model
@@ -2061,20 +1759,12 @@ pub const Keyword = struct {
     positions: ?[]const u64,
 };
 
-pub const OcrCacheStats = struct {
-    total_files: u64,
-    total_size_mb: f64,
-};
-
 /// Pre-computed table markdown for a table detection region.
 pub const RecognizedTable = struct {
     detection_bbox: BBox,
     cells: []const []const [:0]const u8,
     markdown: [:0]const u8,
 };
-
-/// Manages tessdata file downloading, caching, and manifest generation.
-pub const TessdataManager = struct {};
 
 /// Configuration for PaddleOCR backend.
 ///
@@ -2129,13 +1819,6 @@ pub const DetectionResult = struct {
     page_width: u32,
     page_height: u32,
     detections: []const LayoutDetection,
-};
-
-/// Embedded file descriptor extracted from the PDF name tree.
-pub const EmbeddedFile = struct {
-    name: [:0]const u8,
-    data: []const u8,
-    mime_type: ?[:0]const u8,
 };
 
 /// PDF-specific metadata.
@@ -2694,6 +2377,85 @@ pub const LayoutClass = enum {
     key_value_region,
 };
 
+/// Extract content from a byte array.
+///
+/// This is the main entry point for in-memory extraction. It performs the following steps:
+/// 1. Validate MIME type
+/// 2. Handle legacy format conversion if needed
+/// 3. Select appropriate extractor from registry
+/// 4. Extract content
+/// 5. Run post-processing pipeline
+///
+/// **Returns:**
+///
+/// An `ExtractionResult` containing the extracted content and metadata.
+///
+/// **Errors:**
+///
+/// Returns `KreuzbergError.Validation` if MIME type is invalid.
+/// Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const u8) (KreuzbergError || error{OutOfMemory})![]u8 {
+    const mime_type_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{mime_type}, 0);
+    const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_extract_bytes(content.ptr, content.len, mime_type_z, config_handle);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(mime_type_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
+    return blk: {
+        const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
+        defer _free_string(_json_ptr);
+        c.kreuzberg_extraction_result_free(_result.?);
+        const slice = std.mem.sliceTo(_json_ptr, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        break :blk owned;
+    };
+}
+
+/// Extract content from a file.
+///
+/// This is the main entry point for file-based extraction. It performs the following steps:
+/// 1. Check cache for existing result (if caching enabled)
+/// 2. Detect or validate MIME type
+/// 3. Select appropriate extractor from registry
+/// 4. Extract content
+/// 5. Run post-processing pipeline
+/// 6. Store result in cache (if caching enabled)
+///
+/// **Returns:**
+///
+/// An `ExtractionResult` containing the extracted content and metadata.
+///
+/// **Errors:**
+///
+/// Returns `KreuzbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+/// Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8) (KreuzbergError || error{OutOfMemory})![]u8 {
+    const path_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{path}, 0);
+    const mime_type_z: ?[:0]u8 = if (mime_type) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+    const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_extract_file(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(path_z);
+    if (mime_type_z) |z| std.heap.c_allocator.free(z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
+    return blk: {
+        const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
+        defer _free_string(_json_ptr);
+        c.kreuzberg_extraction_result_free(_result.?);
+        const slice = std.mem.sliceTo(_json_ptr, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        break :blk owned;
+    };
+}
+
 /// Synchronous wrapper for `extract_file`.
 ///
 /// This is a convenience function that blocks the current thread until extraction completes.
@@ -2791,6 +2553,96 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) (Kreuzber
     const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(items_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
+    return blk: {
+        const slice = std.mem.sliceTo(_result, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        _free_string(_result);
+        break :blk owned;
+    };
+}
+
+/// Extract content from multiple files concurrently.
+///
+/// This function processes multiple files in parallel, automatically managing
+/// concurrency to prevent resource exhaustion. The concurrency limit can be
+/// configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+/// to `(num_cpus * 1.5).ceil()`.
+///
+/// Each file can optionally specify a `FileExtractionConfig` that overrides specific
+/// fields from the batch-level `config`. Pass `null` for a file to use the batch defaults.
+/// Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
+/// taken from the batch-level `config`.
+///
+///   per-file configuration overrides.
+/// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
+///
+/// **Returns:**
+///
+/// A vector of `ExtractionResult` in the same order as the input items.
+///
+/// **Errors:**
+///
+/// Individual file errors are captured in the result metadata. System errors
+/// (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
+///
+/// Simple usage with no per-file overrides:
+///
+///
+/// Per-file configuration overrides:
+pub fn batch_extract_files(items: []const u8, config: []const u8) (KreuzbergError || error{OutOfMemory})![]u8 {
+    // Vec/Map parameters are passed as JSON strings across the FFI boundary.
+    const items_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{items}, 0);
+    const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_batch_extract_files(items_z, config_handle);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(items_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
+    return blk: {
+        const slice = std.mem.sliceTo(_result, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        _free_string(_result);
+        break :blk owned;
+    };
+}
+
+/// Extract content from multiple byte arrays concurrently.
+///
+/// This function processes multiple byte arrays in parallel, automatically managing
+/// concurrency to prevent resource exhaustion. The concurrency limit can be
+/// configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+/// to `(num_cpus * 1.5).ceil()`.
+///
+/// Each item can optionally specify a `FileExtractionConfig` that overrides specific
+/// fields from the batch-level `config`. Pass `null` as the config to use
+/// the batch-level defaults for that item.
+///
+///   MIME type, and optional per-item configuration overrides.
+/// * `config` - Batch-level extraction configuration
+///
+/// **Returns:**
+///
+/// A vector of `ExtractionResult` in the same order as the input items.
+///
+/// Simple usage with no per-item overrides:
+///
+///
+/// Per-item configuration overrides:
+pub fn batch_extract_bytes(items: []const u8, config: []const u8) (KreuzbergError || error{OutOfMemory})![]u8 {
+    // Vec/Map parameters are passed as JSON strings across the FFI boundary.
+    const items_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{items}, 0);
+    const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    const _result = c.kreuzberg_batch_extract_bytes(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
@@ -2935,6 +2787,39 @@ pub fn list_validators() (KreuzbergError || error{OutOfMemory})![]u8 {
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
+    return blk: {
+        const slice = std.mem.sliceTo(_result, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        _free_string(_result);
+        break :blk owned;
+    };
+}
+
+/// Generate embeddings asynchronously for a list of text strings.
+///
+/// This is the async counterpart to `embed_texts`. It offloads the blocking
+/// ONNX inference work to a dedicated blocking thread pool via Tokio's
+/// `spawn_blocking`, keeping the async executor free.
+///
+/// Returns one embedding vector per input text in the same order.
+///
+/// **Errors:**
+///
+/// - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
+/// - `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
+///   or the blocking inference task panics
+pub fn embed_texts_async(texts: []const u8, config: []const u8) (KreuzbergError || error{OutOfMemory})![]u8 {
+    // Vec/Map parameters are passed as JSON strings across the FFI boundary.
+    const texts_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{texts}, 0);
+    const config_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{config}, 0);
+    const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
+    const _result = c.kreuzberg_embed_texts_async(texts_z, config_handle);
+    if (c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
+    std.heap.c_allocator.free(texts_z);
+    std.heap.c_allocator.free(config_z);
+    if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         const slice = std.mem.sliceTo(_result, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
