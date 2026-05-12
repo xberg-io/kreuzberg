@@ -1624,6 +1624,10 @@ pub struct PdfMetadata {
 use kreuzberg::plugins::DocumentExtractor;
 #[allow(unused_imports)]
 use kreuzberg::plugins::Plugin;
+#[allow(unused_imports)]
+use kreuzberg::internal::InternalDocument;
+#[allow(unused_imports)]
+use kreuzberg::extractors::SyncExtractor;
 impl HwpxExtractor {
     #[frb]
     pub fn default(&self) -> HwpxExtractor {

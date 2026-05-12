@@ -12,6 +12,7 @@ use lopdf::{Document, Object};
 use std::borrow::Cow;
 
 /// Embedded file descriptor extracted from the PDF name tree.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct EmbeddedFile {
     /// The filename as stored in the PDF name tree.
     pub name: String,
