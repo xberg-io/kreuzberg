@@ -9,7 +9,10 @@
       "Test"
     ],
     "config": {
-      "model": "multilingual"
+      "model": {
+        "type": "preset",
+        "name": "multilingual"
+      }
     }
   },
   "assertions": [
