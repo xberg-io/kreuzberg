@@ -127,7 +127,6 @@ features = [
   "navigation.tabs.sticky",
   "navigation.tracking",
   "navigation.top",
-  "navigation.footer",
   "search.highlight",
   "search.share",
   "search.suggest",
@@ -144,8 +143,8 @@ code = "JetBrains Mono"
 repo = "github"
 search = "search"
 
+# First palette is the default (dark). Second is light; users can toggle via header.
 [[project.theme.palette]]
-media = "(prefers-color-scheme: dark)"
 scheme = "slate"
 primary = "custom"
 accent = "custom"
@@ -155,7 +154,6 @@ icon = "sun"
 name = "Switch to light mode"
 
 [[project.theme.palette]]
-media = "(prefers-color-scheme: light)"
 scheme = "default"
 primary = "custom"
 accent = "custom"
