@@ -2156,4 +2156,38 @@ mod tests {
         let result = strip_rtf_to_plain_text(rtf);
         assert!(result.is_empty());
     }
+
+    #[test]
+    fn test_maybe_transcode_utf16_robustness() {
+        // 1. Tiny ambiguous ASCII sample (4 bytes with nulls)
+        // Should NOT be transcoded because it's too short (< 16 bytes)
+        let tiny_ambiguous = b"t\0e\0";
+        assert!(maybe_transcode_utf16(tiny_ambiguous).is_none());
+
+        // 2. Real UTF-16LE with BOM
+        // Should ALWAYS be transcoded
+        let mut with_bom_le = vec![0xFF, 0xFE];
+        with_bom_le.extend_from_slice(&"Test".encode_utf16().flat_map(|u| u.to_le_bytes()).collect::<Vec<u8>>());
+        let result = maybe_transcode_utf16(&with_bom_le).expect("Should transcode LE with BOM");
+        assert_eq!(String::from_utf8(result).unwrap(), "Test");
+
+        // 3. Real UTF-16BE with BOM
+        // Should ALWAYS be transcoded
+        let mut with_bom_be = vec![0xFE, 0xFF];
+        with_bom_be.extend_from_slice(&"Test".encode_utf16().flat_map(|u| u.to_be_bytes()).collect::<Vec<u8>>());
+        let result = maybe_transcode_utf16(&with_bom_be).expect("Should transcode BE with BOM");
+        assert_eq!(String::from_utf8(result).unwrap(), "Test");
+
+        // 4. Long UTF-16LE without BOM (e.g. "Subject: ...")
+        // Should be transcoded because it's long enough (>= 16 bytes) and matches the null pattern
+        let long_text = "Subject: This is a long enough string to trigger the heuristic.";
+        let long_utf16_le: Vec<u8> = long_text.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+        let result = maybe_transcode_utf16(&long_utf16_le).expect("Should transcode long non-BOM LE");
+        assert_eq!(String::from_utf8(result).unwrap(), long_text);
+
+        // 5. Long UTF-8 without nulls
+        // Should NOT be transcoded
+        let long_utf8 = b"Subject: This is a normal UTF-8 string without any null bytes.";
+        assert!(maybe_transcode_utf16(long_utf8).is_none());
+    }
 }
