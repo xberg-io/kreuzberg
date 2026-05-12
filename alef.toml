@@ -1604,6 +1604,11 @@ options_type = "EmbeddingConfig"
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
+# Zig returns `[]u8` (JSON) for Vec<Vec<f32>>; assertions are rendered against
+# the parsed JSON value rather than struct fields.
+[crates.e2e.calls.embed_texts.overrides.zig]
+result_is_json_struct = true
+
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"
 module = "kreuzberg"
