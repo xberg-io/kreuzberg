@@ -65,6 +65,12 @@ impl EmbeddingEngine {
             return Ok(Vec::new());
         }
 
+        // Defensive: callers from polyglot bindings may pass batch_size=0 when the
+        // host-side `EmbeddingConfig` mirror omits the serde default. `chunks(0)`
+        // would panic — fall back to the documented default rather than aborting
+        // the entire interpreter.
+        let batch_size = if batch_size == 0 { 32 } else { batch_size };
+
         let mut all_embeddings = Vec::with_capacity(texts.len());
 
         for batch in texts.chunks(batch_size) {
