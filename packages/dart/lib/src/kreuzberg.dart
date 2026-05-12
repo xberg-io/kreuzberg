@@ -6,8 +6,6 @@ export 'kreuzberg_bridge_generated/lib.dart';
 import 'kreuzberg_bridge_generated/lib.dart' as rust_bridge;
 // ignore: duplicate_import
 import 'kreuzberg_bridge_generated/lib.dart';
-// ignore: unused_import
-import 'traits.dart';
 
 class KreuzbergBridge {
   /// Extract content from a byte array.
@@ -372,6 +370,15 @@ class KreuzbergBridge {
   /// throws anyhow::Error on failure
   static Future<List<String>> getExtensionsForMime(String mimeType) async {
     return await rust_bridge.getExtensionsForMime(mimeType: mimeType);
+  }
+
+  /// List the names of all registered embedding backends.
+  ///
+  /// Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
+  /// language bindings via `alef.toml [exclude].functions`.
+  /// throws anyhow::Error on failure
+  static Future<List<String>> listEmbeddingBackends() async {
+    return await rust_bridge.listEmbeddingBackends();
   }
 
   /// List names of all registered document extractors.

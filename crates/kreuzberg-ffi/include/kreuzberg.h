@@ -938,13 +938,6 @@ typedef struct KREUZBERGKreuzbergDocumentExtractorVTable {
                         const char *_path,
                         const char *_mime_type);
   /**
-   * Attempt to get a reference to this extractor as a SyncExtractor.
-   *
-   * Returns None if the extractor doesn't support synchronous extraction.
-   * This is used for WASM and other sync-only environments.
-   */
-  int32_t (*as_sync_extractor)(const void *user_data);
-  /**
    * Optional destructor: called once with `user_data` when the bridge is dropped.
    */
   void (*free_user_data)(void*);
@@ -11145,6 +11138,22 @@ uint32_t kreuzberg_detection_result_page_height(const KREUZBERGDetectionResult *
 char *kreuzberg_detection_result_detections(const KREUZBERGDetectionResult *ptr);
 
 /**
+ * Create a `EmbeddedFile` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_embedded_file_free`.
+ */
+KREUZBERGEmbeddedFile *kreuzberg_embedded_file_from_json(const char *json);
+
+/**
+ * Serialize a `EmbeddedFile` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_embedded_file_to_json(const KREUZBERGEmbeddedFile *ptr);
+
+/**
  * Free a `EmbeddedFile` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -13006,6 +13015,17 @@ char *kreuzberg_detect_mime_type_from_bytes(const uint8_t *content,
  * Returned pointers must be freed with the appropriate free function.
  */
 char *kreuzberg_get_extensions_for_mime(const char *mime_type);
+
+/**
+ * List the names of all registered embedding backends.
+ *
+ * Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
+ * language bindings via `alef.toml [exclude].functions`.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+char *kreuzberg_list_embedding_backends(void);
 
 /**
  * List names of all registered document extractors.

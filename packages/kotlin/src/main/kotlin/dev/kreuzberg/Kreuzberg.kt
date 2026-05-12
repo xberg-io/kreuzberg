@@ -449,6 +449,18 @@ object Kreuzberg {
     }
 
     /**
+     * List the names of all registered embedding backends.
+     *
+     * Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
+     * language bindings via `alef.toml [exclude].functions`.
+     */
+    fun listEmbeddingBackends(): List<String> {
+
+        return Bridge.listEmbeddingBackends()
+
+    }
+
+    /**
      * List names of all registered document extractors.
      */
     fun listDocumentExtractors(): List<String> {

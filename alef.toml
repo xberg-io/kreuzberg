@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.15.44"
+alef_version = "0.15.47"
 languages = [
   "python",
   "node",
@@ -244,6 +244,10 @@ exclude_types = [
 
 [crates.wasm]
 exclude_types = [
+  # `hwpx` feature is not enabled for the WASM target (see [crates.wasm] features below),
+  # so `kreuzberg::extractors::HwpxExtractor` is gated out of the core crate. Skip emitting
+  # a WASM wrapper for it.
+  "HwpxExtractor",
   # paddle-ocr / layout-detection / embeddings (ort-dependent)
   "PaddleOcrConfig",
   "PaddleLanguage",
@@ -879,9 +883,6 @@ functions = [
   # warm_model — used by kreuzberg-cli `kreuzberg cache warm` and by the api/mcp
   # `cache.warm` endpoints. Not part of the public binding surface.
   "warm_model",
-  # list_embedding_backends — used by kreuzberg-cli for backend discovery; not
-  # part of the public binding surface (see also the trait_bridge variants).
-  "list_embedding_backends",
 ]
 methods = [
   "OcrElement.with_rotation_opt",
@@ -1575,7 +1576,7 @@ function = "embed_texts"
 module = "kreuzberg"
 async = false
 returns_result = true
-skip_languages = ["wasm", "php"]
+skip_languages = ["wasm"]
 args = [
   { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1592,6 +1593,10 @@ options_type = "EmbeddingConfig"
 [crates.e2e.calls.embed_texts.overrides.go]
 result_is_simple = true
 result_is_array = true
+options_type = "EmbeddingConfig"
+
+[crates.e2e.calls.embed_texts.overrides.php]
+result_is_simple = true
 options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.batch_extract_bytes]
@@ -1687,6 +1692,28 @@ args = []
 result_is_simple = true
 returns_result = true
 
+[crates.e2e.calls.list_embedding_backends]
+result_is_simple = true
+function = "list_embedding_backends"
+module = "kreuzberg"
+async = false
+args = []
+
+[crates.e2e.calls.list_embedding_backends.overrides.go]
+result_is_simple = true
+returns_result = true
+
+[crates.e2e.calls.list_renderers]
+result_is_simple = true
+function = "list_renderers"
+module = "kreuzberg"
+async = false
+args = []
+
+[crates.e2e.calls.list_renderers.overrides.go]
+result_is_simple = true
+returns_result = true
+
 [crates.e2e.calls.clear_ocr_backends]
 result_is_simple = true
 function = "clear_ocr_backends"
@@ -1773,7 +1800,7 @@ function = "embed_texts_async"
 module = "kreuzberg"
 async = true
 returns_result = true
-skip_languages = ["wasm", "php"]
+skip_languages = ["wasm"]
 args = [
   { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
@@ -1790,6 +1817,10 @@ options_type = "EmbeddingConfig"
 [crates.e2e.calls.embed_texts_async.overrides.go]
 result_is_simple = true
 result_is_array = true
+options_type = "EmbeddingConfig"
+
+[crates.e2e.calls.embed_texts_async.overrides.php]
+result_is_simple = true
 options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.get_embedding_preset]
@@ -2279,6 +2310,10 @@ register_fn = "register_document_extractor"
 unregister_fn = "unregister_document_extractor"
 clear_fn = "clear_document_extractors"
 exclude_languages = ["r"]
+# `as_sync_extractor` returns `Option<&dyn SyncExtractor>` — a trait-object reference that
+# cannot traverse the C FFI boundary. Skip it in the FFI vtable and let the default impl
+# (returns None) take over.
+ffi_skip_methods = ["as_sync_extractor"]
 
 [[crates.trait_bridges]]
 trait_name = "Renderer"

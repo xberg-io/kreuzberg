@@ -927,13 +927,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        #[swift_bridge(swift_name = "createHwpxExtractor")]
-        fn create_hwpx_extractor(api_key: String, base_url: Option<String>) -> Result<HwpxExtractor, String>;
-    }
-
-    extern "Rust" {
-        #[swift_bridge(swift_name = "hwpxExtractorDefault")]
-        fn hwpx_extractor_default(client: &HwpxExtractor) -> HwpxExtractor;
         #[swift_bridge(swift_name = "hwpxExtractorName")]
         fn hwpx_extractor_name(client: &HwpxExtractor) -> String;
         #[swift_bridge(swift_name = "hwpxExtractorVersion")]
@@ -2220,11 +2213,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        #[swift_bridge(swift_name = "createTessdataManager")]
-        fn create_tessdata_manager(api_key: String, base_url: Option<String>) -> Result<TessdataManager, String>;
-    }
-
-    extern "Rust" {
         #[swift_bridge(swift_name = "tessdataManagerCacheDir")]
         fn tessdata_manager_cache_dir(client: &TessdataManager) -> String;
         #[swift_bridge(swift_name = "tessdataManagerIsLanguageCached")]
@@ -2565,6 +2553,8 @@ mod ffi {
         fn detect_mime_type_from_bytes(content: Vec<u8>) -> Result<String, String>;
         #[swift_bridge(swift_name = "getExtensionsForMime")]
         fn get_extensions_for_mime(mime_type: String) -> Result<Vec<String>, String>;
+        #[swift_bridge(swift_name = "listEmbeddingBackends")]
+        fn list_embedding_backends() -> Result<Vec<String>, String>;
         #[swift_bridge(swift_name = "listDocumentExtractors")]
         fn list_document_extractors() -> Result<Vec<String>, String>;
         #[swift_bridge(swift_name = "listOcrBackends")]
@@ -5731,20 +5721,11 @@ pub struct ZipBombValidator(pub kreuzberg::extractors::security::ZipBombValidato
 
 pub struct HwpxExtractor(pub kreuzberg::extractors::HwpxExtractor);
 
-pub fn create_hwpx_extractor(api_key: String, base_url: Option<String>) -> Result<HwpxExtractor, String> {
-    kreuzberg::extractors::HwpxExtractor::new(api_key, base_url)
-        .map_err(|e| e.to_string())
-        .map(HwpxExtractor)
-}
-
 #[allow(unused_imports)]
 use kreuzberg::plugins::DocumentExtractor;
 #[allow(unused_imports)]
 use kreuzberg::plugins::Plugin;
 
-pub fn hwpx_extractor_default(client: &HwpxExtractor) -> HwpxExtractor {
-    HwpxExtractor(client.0.default())
-}
 pub fn hwpx_extractor_name(client: &HwpxExtractor) -> String {
     client.0.name().to_string()
 }
@@ -5764,7 +5745,7 @@ pub fn hwpx_extractor_author(client: &HwpxExtractor) -> String {
     client.0.author().to_string()
 }
 pub fn hwpx_extractor_supported_mime_types(client: &HwpxExtractor) -> Vec<String> {
-    client.0.supported_mime_types()
+    client.0.supported_mime_types().iter().map(|s| s.to_string()).collect()
 }
 pub fn hwpx_extractor_priority(client: &HwpxExtractor) -> i32 {
     client.0.priority()
@@ -9776,14 +9757,8 @@ impl RecognizedTable {
 
 pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
 
-pub fn create_tessdata_manager(api_key: String, base_url: Option<String>) -> Result<TessdataManager, String> {
-    kreuzberg::ocr::TessdataManager::new(api_key, base_url)
-        .map_err(|e| e.to_string())
-        .map(TessdataManager)
-}
-
 pub fn tessdata_manager_cache_dir(client: &TessdataManager) -> String {
-    client.0.cache_dir().to_string()
+    client.0.cache_dir().to_string_lossy().into_owned()
 }
 pub fn tessdata_manager_is_language_cached(client: &TessdataManager, lang: String) -> bool {
     client.0.is_language_cached(&lang)
@@ -10004,13 +9979,13 @@ impl DetectionResult {
 pub struct EmbeddedFile(pub kreuzberg::pdf::embedded_files::EmbeddedFile);
 impl EmbeddedFile {
     pub fn name(&self) -> String {
-        format!("{:?}", &self.0.name)
+        self.0.name.clone()
     }
     pub fn data(&self) -> Vec<u8> {
         self.0.data.to_vec()
     }
     pub fn mime_type(&self) -> Option<String> {
-        self.0.mime_type.as_ref().map(|v| format!("{v:?}"))
+        self.0.mime_type.clone()
     }
 }
 
@@ -11536,6 +11511,12 @@ pub fn detect_mime_type_from_bytes(content: Vec<u8>) -> Result<String, String> {
 
 pub fn get_extensions_for_mime(mime_type: String) -> Result<Vec<String>, String> {
     kreuzberg::get_extensions_for_mime(&mime_type)
+        .map_err(|e| e.to_string())
+        .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
+}
+
+pub fn list_embedding_backends() -> Result<Vec<String>, String> {
+    kreuzberg::list_embedding_backends()
         .map_err(|e| e.to_string())
         .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
 }

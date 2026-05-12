@@ -68,6 +68,19 @@ pub fn build(b: *std.Build) void {
     detection_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&detection_run.step);
 
+    const embeddings_module = b.createModule(.{
+        .root_source_file = b.path("src/embeddings_test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    embeddings_module.addImport("kreuzberg", kreuzberg_module);
+    const embeddings_tests = b.addTest(.{
+        .root_module = embeddings_module,
+    });
+    const embeddings_run = b.addRunArtifact(embeddings_tests);
+    embeddings_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&embeddings_run.step);
+
     const error_module = b.createModule(.{
         .root_source_file = b.path("src/error_test.zig"),
         .target = target,

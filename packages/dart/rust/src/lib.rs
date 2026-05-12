@@ -12,6 +12,8 @@
 mod frb_generated;
 pub use flutter_rust_bridge::DartFnFuture;
 use flutter_rust_bridge::frb;
+#[allow(unused_imports)]
+pub use kreuzberg::internal::InternalDocument;
 
 #[frb(mirror(AccelerationConfig))]
 pub struct AccelerationConfig {
@@ -348,7 +350,7 @@ pub struct HwpImage {
 
 #[frb(opaque)]
 pub struct StreamReader {
-    pub(crate) inner: kreuzberg::StreamReader,
+    pub(crate) inner: kreuzberg::extraction::hwp::reader::StreamReader,
 }
 
 #[frb(mirror(ImageOcrResult))]
@@ -508,7 +510,7 @@ pub struct CoreProperties {
 
 #[frb(opaque)]
 pub struct CustomProperties {
-    pub(crate) inner: kreuzberg::CustomProperties,
+    pub(crate) inner: kreuzberg::extraction::office_metadata::CustomProperties,
 }
 
 #[frb(mirror(OdtProperties))]
@@ -548,12 +550,12 @@ pub struct SecurityLimits {
 
 #[frb(opaque)]
 pub struct ZipBombValidator {
-    pub(crate) inner: kreuzberg::ZipBombValidator,
+    pub(crate) inner: kreuzberg::extractors::security::ZipBombValidator,
 }
 
 #[frb(opaque)]
 pub struct HwpxExtractor {
-    pub(crate) inner: kreuzberg::HwpxExtractor,
+    pub(crate) inner: kreuzberg::extractors::HwpxExtractor,
 }
 
 #[frb(mirror(TokenReductionConfig))]
@@ -1323,22 +1325,22 @@ pub struct Uri {
 
 #[frb(opaque)]
 pub struct StringBufferPool {
-    pub(crate) inner: kreuzberg::StringBufferPool,
+    pub(crate) inner: kreuzberg::utils::pool::StringBufferPool,
 }
 
 #[frb(opaque)]
 pub struct ByteBufferPool {
-    pub(crate) inner: kreuzberg::ByteBufferPool,
+    pub(crate) inner: kreuzberg::utils::pool::ByteBufferPool,
 }
 
 #[frb(opaque)]
 pub struct TracingLayer {
-    pub(crate) inner: kreuzberg::TracingLayer,
+    pub(crate) inner: kreuzberg::service::layers::tracing::TracingLayer,
 }
 
 #[frb(opaque)]
 pub struct ApiDoc {
-    pub(crate) inner: kreuzberg::ApiDoc,
+    pub(crate) inner: kreuzberg::api::openapi::ApiDoc,
 }
 
 #[frb(mirror(InfoResponse))]
@@ -1349,7 +1351,7 @@ pub struct InfoResponse {
 
 #[frb(opaque)]
 pub struct ExtractResponse {
-    pub(crate) inner: kreuzberg::ExtractResponse,
+    pub(crate) inner: kreuzberg::api::ExtractResponse,
 }
 
 #[frb(mirror(EmbedRequest))]
@@ -1548,7 +1550,7 @@ pub struct RecognizedTable {
 
 #[frb(opaque)]
 pub struct TessdataManager {
-    pub(crate) inner: kreuzberg::TessdataManager,
+    pub(crate) inner: kreuzberg::ocr::TessdataManager,
 }
 
 #[frb(mirror(PaddleOcrConfig))]
@@ -1624,18 +1626,11 @@ pub struct PdfMetadata {
 use kreuzberg::plugins::DocumentExtractor;
 #[allow(unused_imports)]
 use kreuzberg::plugins::Plugin;
-#[allow(unused_imports)]
-use kreuzberg::internal::InternalDocument;
-#[allow(unused_imports)]
-use kreuzberg::extractors::SyncExtractor;
 impl HwpxExtractor {
-    #[frb]
-    pub fn default(&self) -> HwpxExtractor {
-        (|v| HwpxExtractor::from(v))(self.inner.default())
-    }
+    // Method `default` is a static/associated function and is not yet bridged through FRB — skipped.
     #[frb]
     pub fn name(&self) -> String {
-        self.inner.name()
+        (|v: &str| v.to_string())(self.inner.name())
     }
     #[frb]
     pub fn version(&self) -> String {
@@ -1651,27 +1646,27 @@ impl HwpxExtractor {
     }
     #[frb]
     pub fn description(&self) -> String {
-        self.inner.description()
+        (|v: &str| v.to_string())(self.inner.description())
     }
     #[frb]
     pub fn author(&self) -> String {
-        self.inner.author()
+        (|v: &str| v.to_string())(self.inner.author())
     }
     // Method `extract_bytes` has a sanitized return type that cannot be bridged through FRB — skipped.
     #[frb]
     pub fn supported_mime_types(&self) -> Vec<String> {
-        self.inner.supported_mime_types()
+        (|v: &[&str]| v.iter().map(|s| s.to_string()).collect())(self.inner.supported_mime_types())
     }
     #[frb]
     pub fn priority(&self) -> i64 {
-        self.inner.priority()
+        (|v| v as i64)(self.inner.priority())
     }
 }
 
 impl TessdataManager {
     #[frb]
     pub fn cache_dir(&self) -> String {
-        self.inner.cache_dir()
+        (|v: &::std::path::Path| v.to_string_lossy().to_string())(self.inner.cache_dir())
     }
     #[frb]
     pub fn is_language_cached(&self, lang: String) -> bool {
@@ -1679,7 +1674,10 @@ impl TessdataManager {
     }
     #[frb]
     pub fn ensure_all_languages(&self) -> Result<i64, String> {
-        self.inner.ensure_all_languages().map_err(|e| e.to_string())
+        self.inner
+            .ensure_all_languages()
+            .map(|v| v as i64)
+            .map_err(|e| e.to_string())
     }
 }
 
@@ -2201,26 +2199,20 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             chunking: v.chunking.map(ChunkingConfig::from),
             content_filter: v.content_filter.map(ContentFilterConfig::from),
             images: v.images.map(ImageExtractionConfig::from),
-            #[cfg(feature = "pdf")]
             pdf_options: v.pdf_options.map(PdfConfig::from),
             token_reduction: v.token_reduction.map(TokenReductionOptions::from),
             language_detection: v.language_detection.map(LanguageDetectionConfig::from),
             pages: v.pages.map(PageConfig::from),
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
             keywords: v.keywords.map(KeywordConfig::from),
             postprocessor: v.postprocessor.map(PostProcessorConfig::from),
-            #[cfg(feature = "html")]
             html_options: Default::default(),
-            #[cfg(feature = "html")]
             html_output: v.html_output.map(HtmlOutputConfig::from),
             extraction_timeout_secs: v.extraction_timeout_secs.map(|x| x as _),
             max_concurrent_extractions: v.max_concurrent_extractions.map(|x| x as _),
             result_format: ResultFormat::from(v.result_format),
             security_limits: v.security_limits.map(SecurityLimits::from),
             output_format: OutputFormat::from(v.output_format),
-            #[cfg(feature = "layout-detection")]
             layout: v.layout.map(LayoutDetectionConfig::from),
-            #[cfg(feature = "layout-detection")]
             use_layout_for_markdown: v.use_layout_for_markdown as _,
             include_document_structure: v.include_document_structure as _,
             acceleration: v.acceleration.map(AccelerationConfig::from),
@@ -2229,7 +2221,6 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             email: v.email.map(EmailConfig::from),
             concurrency: Default::default(),
             max_archive_depth: v.max_archive_depth as _,
-            #[cfg(feature = "tree-sitter")]
             tree_sitter: v.tree_sitter.map(TreeSitterConfig::from),
             structured_extraction: v.structured_extraction.map(StructuredExtractionConfig::from),
             cancel_token: Default::default(),
@@ -2248,23 +2239,18 @@ impl From<kreuzberg::FileExtractionConfig> for FileExtractionConfig {
             chunking: v.chunking.map(ChunkingConfig::from),
             content_filter: v.content_filter.map(ContentFilterConfig::from),
             images: v.images.map(ImageExtractionConfig::from),
-            #[cfg(feature = "pdf")]
             pdf_options: v.pdf_options.map(PdfConfig::from),
             token_reduction: v.token_reduction.map(TokenReductionOptions::from),
             language_detection: v.language_detection.map(LanguageDetectionConfig::from),
             pages: v.pages.map(PageConfig::from),
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
             keywords: v.keywords.map(KeywordConfig::from),
             postprocessor: v.postprocessor.map(PostProcessorConfig::from),
-            #[cfg(feature = "html")]
             html_options: Default::default(),
             result_format: v.result_format.map(ResultFormat::from),
             output_format: v.output_format.map(OutputFormat::from),
             include_document_structure: v.include_document_structure.map(|x| x as _),
-            #[cfg(feature = "layout-detection")]
             layout: v.layout.map(LayoutDetectionConfig::from),
             timeout_secs: v.timeout_secs.map(|x| x as _),
-            #[cfg(feature = "tree-sitter")]
             tree_sitter: v.tree_sitter.map(TreeSitterConfig::from),
             structured_extraction: v.structured_extraction.map(StructuredExtractionConfig::from),
         }
@@ -3046,7 +3032,6 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
                 .ocr_elements
                 .map(|vec| vec.into_iter().map(OcrElement::from).collect()),
             document: v.document.map(DocumentStructure::from),
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
             extracted_keywords: v
                 .extracted_keywords
                 .map(|vec| vec.into_iter().map(Keyword::from).collect()),
@@ -3060,7 +3045,6 @@ impl From<kreuzberg::ExtractionResult> for ExtractionResult {
             structured_output: v
                 .structured_output
                 .map(|j| serde_json::to_string(&j).unwrap_or_default()),
-            #[cfg(feature = "tree-sitter")]
             code_intelligence: Default::default(),
             llm_usage: v.llm_usage.map(|vec| vec.into_iter().map(LlmUsage::from).collect()),
             formatted_content: v.formatted_content.map(|s| s.into()),
@@ -4151,9 +4135,7 @@ impl From<kreuzberg::KeywordConfig> for KeywordConfig {
             min_score: v.min_score as _,
             ngram_range: Default::default(),
             language: v.language.map(|s| s.into()),
-            #[cfg(feature = "keywords-yake")]
             yake_params: v.yake_params.map(YakeParams::from),
-            #[cfg(feature = "keywords-rake")]
             rake_params: v.rake_params.map(RakeParams::from),
         }
     }
@@ -4974,26 +4956,20 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             chunking: v.chunking.map(Into::into),
             content_filter: v.content_filter.map(Into::into),
             images: v.images.map(Into::into),
-            #[cfg(feature = "pdf")]
             pdf_options: v.pdf_options.map(Into::into),
             token_reduction: v.token_reduction.map(Into::into),
             language_detection: v.language_detection.map(Into::into),
             pages: v.pages.map(Into::into),
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
             keywords: v.keywords.map(Into::into),
             postprocessor: v.postprocessor.map(Into::into),
-            #[cfg(feature = "html")]
             html_options: Default::default(),
-            #[cfg(feature = "html")]
             html_output: v.html_output.map(Into::into),
             extraction_timeout_secs: v.extraction_timeout_secs.map(|x| x as _),
             max_concurrent_extractions: v.max_concurrent_extractions.map(|x| x as _),
             result_format: v.result_format.into(),
             security_limits: v.security_limits.map(Into::into),
             output_format: v.output_format.into(),
-            #[cfg(feature = "layout-detection")]
             layout: v.layout.map(Into::into),
-            #[cfg(feature = "layout-detection")]
             use_layout_for_markdown: v.use_layout_for_markdown as _,
             include_document_structure: v.include_document_structure as _,
             acceleration: v.acceleration.map(Into::into),
@@ -5002,7 +4978,6 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             email: v.email.map(Into::into),
             concurrency: Default::default(),
             max_archive_depth: v.max_archive_depth as _,
-            #[cfg(feature = "tree-sitter")]
             tree_sitter: v.tree_sitter.map(Into::into),
             structured_extraction: v.structured_extraction.map(Into::into),
             cancel_token: Default::default(),
@@ -5022,23 +4997,18 @@ impl From<FileExtractionConfig> for kreuzberg::FileExtractionConfig {
             chunking: v.chunking.map(Into::into),
             content_filter: v.content_filter.map(Into::into),
             images: v.images.map(Into::into),
-            #[cfg(feature = "pdf")]
             pdf_options: v.pdf_options.map(Into::into),
             token_reduction: v.token_reduction.map(Into::into),
             language_detection: v.language_detection.map(Into::into),
             pages: v.pages.map(Into::into),
-            #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
             keywords: v.keywords.map(Into::into),
             postprocessor: v.postprocessor.map(Into::into),
-            #[cfg(feature = "html")]
             html_options: Default::default(),
             result_format: v.result_format.map(Into::into),
             output_format: v.output_format.map(Into::into),
             include_document_structure: v.include_document_structure.map(|x| x as _),
-            #[cfg(feature = "layout-detection")]
             layout: v.layout.map(Into::into),
             timeout_secs: v.timeout_secs.map(|x| x as _),
-            #[cfg(feature = "tree-sitter")]
             tree_sitter: v.tree_sitter.map(Into::into),
             structured_extraction: v.structured_extraction.map(Into::into),
             ..Default::default()
@@ -5429,9 +5399,7 @@ impl From<KeywordConfig> for kreuzberg::KeywordConfig {
             min_score: v.min_score as _,
             ngram_range: Default::default(),
             language: v.language.map(Into::into),
-            #[cfg(feature = "keywords-yake")]
             yake_params: v.yake_params.map(Into::into),
-            #[cfg(feature = "keywords-rake")]
             rake_params: v.rake_params.map(Into::into),
             ..Default::default()
         }
@@ -5810,6 +5778,16 @@ pub fn get_extensions_for_mime(mime_type: String) -> Result<Vec<String>, String>
         .map_err(|e| e.to_string())
 }
 
+/// List the names of all registered embedding backends.
+///
+/// Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
+/// language bindings via `alef.toml [exclude].functions`.
+pub fn list_embedding_backends() -> Result<Vec<String>, String> {
+    kreuzberg::list_embedding_backends()
+        .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
+        .map_err(|e| e.to_string())
+}
+
 /// List names of all registered document extractors.
 pub fn list_document_extractors() -> Result<Vec<String>, String> {
     kreuzberg::list_document_extractors()
@@ -6159,27 +6137,6 @@ pub fn create_structured_data_result_from_json(json: String) -> Result<Structure
 }
 
 #[frb]
-pub fn create_char_shape_from_json(json: String) -> Result<CharShape, String> {
-    serde_json::from_str::<kreuzberg::extraction::hwp::model::CharShape>(&json)
-        .map(CharShape::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_hwp_image_from_json(json: String) -> Result<HwpImage, String> {
-    serde_json::from_str::<kreuzberg::extraction::hwp::model::HwpImage>(&json)
-        .map(HwpImage::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_image_ocr_result_from_json(json: String) -> Result<ImageOcrResult, String> {
-    serde_json::from_str::<kreuzberg::extraction::image::ImageOcrResult>(&json)
-        .map(ImageOcrResult::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
 pub fn create_html_extraction_result_from_json(json: String) -> Result<HtmlExtractionResult, String> {
     serde_json::from_str::<kreuzberg::extraction::html::HtmlExtractionResult>(&json)
         .map(HtmlExtractionResult::from)
@@ -6204,27 +6161,6 @@ pub fn create_drawing_from_json(json: String) -> Result<Drawing, String> {
 pub fn create_anchor_properties_from_json(json: String) -> Result<AnchorProperties, String> {
     serde_json::from_str::<kreuzberg::extraction::docx::drawing::AnchorProperties>(&json)
         .map(AnchorProperties::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_page_margins_points_from_json(json: String) -> Result<PageMarginsPoints, String> {
-    serde_json::from_str::<kreuzberg::extraction::docx::section::PageMarginsPoints>(&json)
-        .map(PageMarginsPoints::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_style_definition_from_json(json: String) -> Result<StyleDefinition, String> {
-    serde_json::from_str::<kreuzberg::extraction::docx::styles::StyleDefinition>(&json)
-        .map(StyleDefinition::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_resolved_style_from_json(json: String) -> Result<ResolvedStyle, String> {
-    serde_json::from_str::<kreuzberg::extraction::docx::styles::ResolvedStyle>(&json)
-        .map(ResolvedStyle::from)
         .map_err(|e| e.to_string())
 }
 
@@ -6260,13 +6196,6 @@ pub fn create_pptx_app_properties_from_json(json: String) -> Result<PptxAppPrope
 pub fn create_core_properties_from_json(json: String) -> Result<CoreProperties, String> {
     serde_json::from_str::<kreuzberg::extraction::office_metadata::CoreProperties>(&json)
         .map(CoreProperties::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_odt_properties_from_json(json: String) -> Result<OdtProperties, String> {
-    serde_json::from_str::<kreuzberg::extraction::office_metadata::OdtProperties>(&json)
-        .map(OdtProperties::from)
         .map_err(|e| e.to_string())
 }
 
@@ -6964,13 +6893,6 @@ pub fn create_chunking_result_from_json(json: String) -> Result<ChunkingResult, 
 }
 
 #[frb]
-pub fn create_merged_chunk_from_json(json: String) -> Result<MergedChunk, String> {
-    serde_json::from_str::<kreuzberg::chunking::semantic::merge::MergedChunk>(&json)
-        .map(MergedChunk::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
 pub fn create_embedding_preset_from_json(json: String) -> Result<EmbeddingPreset, String> {
     serde_json::from_str::<kreuzberg::EmbeddingPreset>(&json)
         .map(EmbeddingPreset::from)
@@ -7002,13 +6924,6 @@ pub fn create_keyword_config_from_json(json: String) -> Result<KeywordConfig, St
 pub fn create_keyword_from_json(json: String) -> Result<Keyword, String> {
     serde_json::from_str::<kreuzberg::Keyword>(&json)
         .map(Keyword::from)
-        .map_err(|e| e.to_string())
-}
-
-#[frb]
-pub fn create_ocr_cache_stats_from_json(json: String) -> Result<OcrCacheStats, String> {
-    serde_json::from_str::<kreuzberg::ocr::OcrCacheStats>(&json)
-        .map(OcrCacheStats::from)
         .map_err(|e| e.to_string())
 }
 
@@ -7494,9 +7409,13 @@ impl kreuzberg::plugins::DocumentExtractor for DocumentExtractorDartImpl {
         Ok(Default::default())
     }
 
-    fn supported_mime_types(&self) -> Vec<String> {
+    fn supported_mime_types(&self) -> &[&str] {
         let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_mime_types)().await });
-        __result
+        let __strs: Vec<&'static str> = __result
+            .into_iter()
+            .map(|s| -> &'static str { Box::leak(s.into_boxed_str()) })
+            .collect();
+        Box::leak(__strs.into_boxed_slice())
     }
 }
 

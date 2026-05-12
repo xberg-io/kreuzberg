@@ -29,6 +29,8 @@ detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_f
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
 #' @export
+list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PACKAGE = "kreuzberg")
+#' @export
 list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "kreuzberg")
 #' @export
 list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")

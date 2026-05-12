@@ -12,6 +12,8 @@
     }
   ],
   "skip": {
-    "skip_languages": ["wasm"]
+    "languages": [
+      "wasm"
+    ]
   }
 }
