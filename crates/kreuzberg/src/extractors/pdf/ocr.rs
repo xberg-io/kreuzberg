@@ -483,12 +483,12 @@ pub(crate) async fn extract_with_ocr(
     path: Option<&std::path::Path>,
 ) -> crate::Result<(
     String,
-    Vec<String>,
     Option<f64>,
     Vec<crate::types::Table>,
     Vec<crate::types::OcrElement>,
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
+    Vec<String>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
     use image::ImageEncoder;
@@ -566,12 +566,12 @@ pub(crate) async fn extract_with_ocr(
         };
         return Ok((
             result.content,
-            page_texts,
             mean_conf,
             Vec::new(),
             ocr_elements,
             None,
             llm_usage,
+            page_texts,
         ));
     }
     let mut lazy_pdf_page_count = 0;
@@ -934,12 +934,12 @@ pub(crate) async fn extract_with_ocr(
 
     Ok((
         result,
-        page_texts,
         mean_text_conf,
         collected_tables,
         all_ocr_elements,
         ocr_doc,
         accumulated_llm_usage,
+        page_texts,
     ))
 }
 
@@ -1043,11 +1043,11 @@ pub(crate) async fn run_ocr_pipeline(
     path: Option<&std::path::Path>,
 ) -> crate::Result<(
     String,
-    Vec<String>,
     Vec<crate::types::Table>,
     Vec<crate::types::OcrElement>,
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
+    Vec<String>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
@@ -1082,11 +1082,11 @@ pub(crate) async fn run_ocr_pipeline(
     #[allow(clippy::type_complexity)]
     let mut best_result: Option<(
         String,
-        Vec<String>,
         f64,
         Vec<crate::types::Table>,
         Vec<crate::types::OcrElement>,
         Option<crate::types::internal::InternalDocument>,
+        Vec<String>,
     )> = None;
 
     // Accumulate LLM usage from ALL attempted stages for accurate billing.
@@ -1129,7 +1129,7 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, page_texts, mean_conf, stage_tables, stage_ocr_elements, stage_doc, stage_llm_usage)) => {
+            Ok((text, mean_conf, stage_tables, stage_ocr_elements, stage_doc, stage_llm_usage, stage_page_texts)) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 let score = match mean_conf {
@@ -1152,21 +1152,21 @@ pub(crate) async fn run_ocr_pipeline(
                 if score >= pipeline.quality_thresholds.pipeline_min_quality {
                     return Ok((
                         text,
-                        page_texts,
                         stage_tables,
                         stage_ocr_elements,
                         stage_doc,
                         accumulated_usage,
+                        stage_page_texts,
                     ));
                 }
 
                 // Track best-so-far (without usage, which is in accumulated_usage)
                 match best_result {
-                    Some((_, _, best_score, _, _, _)) if score > best_score => {
-                        best_result = Some((text, page_texts, score, stage_tables, stage_ocr_elements, stage_doc));
+                    Some((_, best_score, _, _, _, _)) if score > best_score => {
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements, stage_doc, stage_page_texts));
                     }
                     None => {
-                        best_result = Some((text, page_texts, score, stage_tables, stage_ocr_elements, stage_doc));
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements, stage_doc, stage_page_texts));
                     }
                     _ => {}
                 }
@@ -1183,13 +1183,13 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Return best result (with warning) or error if all backends failed entirely
     match best_result {
-        Some((text, page_texts, score, tables, elements, doc)) => {
+        Some((text, score, tables, elements, doc, page_texts)) => {
             tracing::warn!(
                 score,
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, page_texts, tables, elements, doc, accumulated_usage))
+            Ok((text, tables, elements, doc, accumulated_usage, page_texts))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),
@@ -1949,7 +1949,7 @@ mod tests {
 
         assert!(result.is_ok());
         assert!(called.load(Ordering::SeqCst), "process_document was not called");
-        let (_, _, _, _, _, _, llm_usage) = result.unwrap();
+        let (_, _, _, _, _, llm_usage, _) = result.unwrap();
         assert!(llm_usage.is_empty(), "No LLM usage expected for mock backend");
 
         // Clean up
@@ -2050,7 +2050,7 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("vlm-mock").unwrap();
 
-        let (_, _, _, _, _, _, llm_usage) = result.expect("extract_with_ocr should succeed");
+        let (_, _, _, _, _, llm_usage, _) = result.expect("extract_with_ocr should succeed");
         assert_eq!(
             llm_usage.len(),
             2,

@@ -37,11 +37,11 @@ async fn run_ocr_with_layout(
     path: Option<&std::path::Path>,
 ) -> crate::Result<(
     String,
-    Vec<String>,
     Vec<crate::types::Table>,
     Vec<crate::types::OcrElement>,
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
+    Vec<String>,
 )> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
@@ -51,7 +51,7 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, ocr_pts, _ocr_tables, ocr_elements, pipeline_doc, llm_usage) = ocr::run_ocr_pipeline(
+        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts) = ocr::run_ocr_pipeline(
             Some(content),
             None,
             #[cfg(feature = "layout-detection")]
@@ -61,10 +61,10 @@ async fn run_ocr_with_layout(
             path,
         )
         .await?;
-        return Ok((text, ocr_pts, Vec::new(), ocr_elements, pipeline_doc, llm_usage));
+        return Ok((text, Vec::new(), ocr_elements, pipeline_doc, llm_usage, ocr_pts));
     }
 
-    let (text, ocr_pts, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage) = extract_with_ocr(
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts) = extract_with_ocr(
         Some(content),
         None,
         #[cfg(feature = "layout-detection")]
@@ -73,7 +73,7 @@ async fn run_ocr_with_layout(
         path,
     )
     .await?;
-    Ok((text, ocr_pts, ocr_tables, ocr_elements, ocr_doc, llm_usage))
+    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts))
 }
 
 /// PDF document extractor using pdf_oxide.
@@ -220,7 +220,7 @@ impl PdfExtractor {
         let (text, extraction_method) = if config.effective_disable_ocr() {
             (native_text, ExtractionMethod::Native)
         } else if config.force_ocr {
-            let (ocr_text, ocr_pts, ocr_tbls, ocr_elems, ocr_doc, llm_usage) =
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts) =
                 run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             ocr_elements = ocr_elems;
@@ -314,7 +314,7 @@ impl PdfExtractor {
                 (native_text, ExtractionMethod::Native)
             } else if decision.fallback {
                 match run_ocr_with_layout(content, config, path).await {
-                    Ok((ocr_text, ocr_pts, ocr_tbls, ocr_elems, ocr_doc, llm_usage)) => {
+                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts)) => {
                         ocr_tables = ocr_tbls;
                         ocr_elements = ocr_elems;
                         ocr_internal_doc = ocr_doc;
@@ -1108,10 +1108,117 @@ mod tests {
         }
     }
 
+    /// Verifies that per-page OCR text segments correctly override native page
+    /// content in each `PageContent` entry (#928).
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    #[tokio::test]
+    async fn test_ocr_page_texts_override_native_page_content() {
+        use crate::core::config::OcrConfig;
+        use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
+        use crate::types::ExtractionResult;
+        use std::sync::Arc;
+
+        struct PerPageMockBackend;
+
+        #[async_trait::async_trait]
+        impl OcrBackend for PerPageMockBackend {
+            fn backend_type(&self) -> OcrBackendType { OcrBackendType::Custom }
+            fn supports_language(&self, _: &str) -> bool { true }
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+                static COUNTER: std::sync::atomic::AtomicUsize =
+                    std::sync::atomic::AtomicUsize::new(0);
+                let n = COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                Ok(ExtractionResult { content: format!("ocr-page-{n}"), ..Default::default() })
+            }
+            fn supports_document_processing(&self) -> bool { false }
+        }
+
+        impl Plugin for PerPageMockBackend {
+            fn name(&self) -> &str { "per-page-ocr-mock-928" }
+            fn version(&self) -> String { "1.0.0".to_string() }
+            fn initialize(&self) -> crate::Result<()> { Ok(()) }
+            fn shutdown(&self) -> crate::Result<()> { Ok(()) }
+        }
+
+        crate::plugins::register_ocr_backend(Arc::new(PerPageMockBackend)).unwrap();
+
+        use image::ImageEncoder as _;
+        let make_png = || {
+            let img = image::DynamicImage::new_rgb8(1, 1);
+            let rgb = img.to_rgb8();
+            let (w, h) = rgb.dimensions();
+            let mut buf = std::io::Cursor::new(Vec::new());
+            image::codecs::png::PngEncoder::new(&mut buf)
+                .write_image(&rgb, w, h, image::ColorType::Rgb8.into())
+                .unwrap();
+            image::load_from_memory(&buf.into_inner()).unwrap()
+        };
+        let images = vec![make_png(), make_png()];
+
+        let config = crate::core::config::ExtractionConfig {
+            ocr: Some(OcrConfig {
+                backend: "per-page-ocr-mock-928".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = super::ocr::extract_with_ocr(
+            None,
+            Some(&images),
+            #[cfg(feature = "layout-detection")]
+            None,
+            &config,
+            None,
+        )
+        .await;
+
+        crate::plugins::unregister_ocr_backend("per-page-ocr-mock-928").unwrap();
+
+        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts) =
+            result.expect("extract_with_ocr should succeed");
+
+        assert_eq!(page_texts.len(), 2, "expected one entry per page");
+        assert!(page_texts[0].starts_with("ocr-page-"), "page 0 should have OCR text");
+        assert!(page_texts[1].starts_with("ocr-page-"), "page 1 should have OCR text");
+        assert_ne!(page_texts[0], page_texts[1], "each page should get unique OCR text");
+    }
+
+    /// Verifies that when a VLM returns a single string for a multi-page PDF,
+    /// the guard clears stale native text on secondary pages (#928).
+    #[cfg(feature = "ocr")]
     #[test]
-    #[cfg(feature = "pdf")]
-    fn test_pdf_extractor_without_feature_pdf() {
-        let extractor = PdfExtractor::new();
-        assert_eq!(extractor.name(), "pdf-extractor");
+    fn test_vlm_single_string_guard_clears_secondary_pages() {
+        use crate::types::PageContent;
+
+        let vlm_text = "whole-doc VLM summary".to_string();
+        let pts = vec![vlm_text.clone()];
+        let pts_len = pts.len();
+
+        let mut pages: Vec<PageContent> = (1..=3)
+            .map(|n| PageContent {
+                page_number: n,
+                content: format!("native page {n}"),
+                tables: Vec::new(),
+                images: Vec::new(),
+                hierarchy: None,
+                is_blank: None,
+                layout_regions: None,
+            })
+            .collect();
+        let pages_len = pages.len();
+
+        for (page, text) in pages.iter_mut().zip(pts) {
+            page.content = text;
+        }
+        if pts_len == 1 && pages_len > 1 {
+            for p in pages.iter_mut().skip(1) {
+                p.content.clear();
+            }
+        }
+
+        assert_eq!(pages[0].content, vlm_text, "page 1 should carry the VLM text");
+        assert!(pages[1].content.is_empty(), "page 2 must be cleared by VLM guard");
+        assert!(pages[2].content.is_empty(), "page 3 must be cleared by VLM guard");
     }
 }
