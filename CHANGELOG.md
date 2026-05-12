@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.9.8] - 2026-05-17
 
-LTS patch release. Three targeted bug fixes plus dependency pinning so the
+LTS patch release. Four targeted bug fixes plus dependency pinning so the
 branch builds against current crates.io releases.
 
 ### Fixed
 
+- **#934**: RTF hex byte escapes now honor `\ansicpgNNNN`, so CP1251 Cyrillic byte runs decode as readable text instead of Windows-1252 mojibake.
 - **#937**: `ExtractionConfig(cancel_token=…)` raised `TypeError: unexpected keyword argument 'cancel_token'` from Python despite the type stub declaring the kwarg. The `#[pyo3(signature = …)]` on `ExtractionConfig::__new__` did not list `cancel_token` and the constructor body hard-coded it to `None`. The kwarg is now accepted and threaded through to the underlying `kreuzberg::CancellationToken`. Post-construct attribute assignment (`cfg.cancel_token = CancellationToken()`) continues to work as before.
 - **#965**: C# `OcrConfig` was missing the `VlmConfig` property and the `LlmConfig` type was undefined anywhere in the assembly, despite both being documented and present in the Rust core. Added `LlmConfig` (`Model`, `ApiKey`, `BaseUrl`, `TimeoutSecs`, `MaxRetries`, `Temperature`, `MaxTokens`) and `OcrConfig.VlmConfig`; registered `LlmConfig` in `KreuzbergJsonContext` so source-generated serialization works.
 - **#991**: The musl CLI tarball (`kreuzberg-cli-*-unknown-linux-musl.tar.gz`) bundled `libonnxruntime.so.1.24.4` but not its transitive deps (`libprotobuf-lite.so.31`, `libre2.so.11`, `libabsl_log_internal_check_op.so.2508.0.0`). The launcher invokes the musl loader with `--library-path lib/`, which *replaces* (not extends) the loader's search path, so the binary failed at startup on any host. `docker/Dockerfile.musl-build` now recursively `ldd`-walks every bundled `.so`, copies missing deps into `lib/`, and smoke-tests the loader against each — the build now fails if any unresolved dep remains.
