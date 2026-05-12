@@ -264,7 +264,7 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
 ///
 /// Falls back to width-based scaling when there aren't enough same-row word
 /// pairs to compute meaningful statistics.
-fn compute_adaptive_column_gap(words: &[crate::pdf::table_reconstruct::HocrWord], table_width: f32) -> u32 {
+pub(crate) fn compute_adaptive_column_gap(words: &[crate::pdf::table_reconstruct::HocrWord], table_width: f32) -> u32 {
     // Collect inter-word gaps on approximate rows
     let mut gaps: Vec<u32> = Vec::new();
 

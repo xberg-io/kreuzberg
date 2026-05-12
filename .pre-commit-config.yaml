@@ -51,7 +51,7 @@ repos:
 
   # Node/TS/WASM: oxlint
   - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: cargo-sort
         # `-w` (workspace) iterates ALL workspace members regardless of which Cargo.toml
@@ -191,7 +191,7 @@ repos:
       - id: cpd
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.15.38
+    rev: v0.15.44
     hooks:
       - id: alef-verify
       - id: alef-sync-versions

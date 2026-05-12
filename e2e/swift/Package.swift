@@ -5,6 +5,7 @@ let package = Package(
     name: "E2eSwift",
     platforms: [
         .macOS(.v13),
+        .iOS(.v14),
     ],
     dependencies: [
         .package(path: "../../packages/swift"),

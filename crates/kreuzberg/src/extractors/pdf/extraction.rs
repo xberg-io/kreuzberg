@@ -56,9 +56,31 @@ pub(crate) fn extract_all_from_oxide_document(
             }
         })?;
 
-    // --- Tables (native pdf_oxide detection) ---
-    // Use unwrap_or_default so table detection failures don't block extraction.
-    let tables = crate::pdf::oxide::table::extract_tables_native(&mut doc).unwrap_or_default();
+    // --- Tables ---
+    // Run pdf_oxide's native grid detector first; on pages where it found
+    // nothing, fall back to the heuristic spatial reconstruction so tables
+    // without explicit ruling lines (invoice line items, financial tables,
+    // etc.) are still recovered. Native and heuristic results are merged at
+    // the per-page level so a document with a ruled table on page 1 and an
+    // unruled table on page 4 produces both. Use `unwrap_or_default` so
+    // detection failures don't block extraction. Skipped entirely when
+    // `pdf_options.extract_tables` is `false`.
+    let extract_tables_flag = config.pdf_options.as_ref().is_none_or(|opts| opts.extract_tables);
+    let allow_single_column = config
+        .pdf_options
+        .as_ref()
+        .is_some_and(|o| o.allow_single_column_tables);
+    let tables = if extract_tables_flag {
+        let mut combined = crate::pdf::oxide::table::extract_tables_native(&mut doc).unwrap_or_default();
+        let native_pages: std::collections::HashSet<usize> = combined.iter().map(|t| t.page_number).collect();
+        let heuristic =
+            crate::pdf::oxide::table::extract_tables_heuristic(&mut doc, allow_single_column, &native_pages)
+                .unwrap_or_default();
+        combined.extend(heuristic);
+        combined
+    } else {
+        Vec::new()
+    };
 
     // --- Annotations ---
     let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
@@ -87,11 +109,6 @@ pub(crate) fn extract_all_from_oxide_document(
             config.output_format,
             OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
         );
-
-    let allow_single_column = config
-        .pdf_options
-        .as_ref()
-        .is_some_and(|o| o.allow_single_column_tables);
 
     let pre_rendered_doc =
         if needs_structured && !config.force_ocr {

@@ -6,7 +6,7 @@
 mod heading;
 pub(super) mod layout_validation;
 pub(super) mod table_recognition;
-mod tables;
+pub(crate) mod tables;
 
 // Re-exports for use by pipeline.rs and other siblings
 pub(super) use heading::looks_like_figure_label;

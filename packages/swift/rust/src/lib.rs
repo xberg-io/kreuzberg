@@ -394,6 +394,7 @@ mod ffi {
         #[swift_bridge(init)]
         fn new(
             extract_images: bool,
+            extract_tables: bool,
             passwords: Option<Vec<String>>,
             extract_metadata: bool,
             hierarchy: Option<HierarchyConfig>,
@@ -403,6 +404,7 @@ mod ffi {
             allow_single_column_tables: bool,
         ) -> PdfConfig;
         fn extract_images(&self) -> bool;
+        fn extract_tables(&self) -> bool;
         fn passwords(&self) -> Option<Vec<String>>;
         fn extract_metadata(&self) -> bool;
         fn hierarchy(&self) -> Option<HierarchyConfig>;
@@ -922,6 +924,32 @@ mod ffi {
 
     extern "Rust" {
         type HwpxExtractor;
+    }
+
+    extern "Rust" {
+        #[swift_bridge(swift_name = "createHwpxExtractor")]
+        fn create_hwpx_extractor(api_key: String, base_url: Option<String>) -> Result<HwpxExtractor, String>;
+    }
+
+    extern "Rust" {
+        #[swift_bridge(swift_name = "hwpxExtractorDefault")]
+        fn hwpx_extractor_default(client: &HwpxExtractor) -> HwpxExtractor;
+        #[swift_bridge(swift_name = "hwpxExtractorName")]
+        fn hwpx_extractor_name(client: &HwpxExtractor) -> String;
+        #[swift_bridge(swift_name = "hwpxExtractorVersion")]
+        fn hwpx_extractor_version(client: &HwpxExtractor) -> String;
+        #[swift_bridge(swift_name = "hwpxExtractorInitialize")]
+        fn hwpx_extractor_initialize(client: &HwpxExtractor) -> Result<(), String>;
+        #[swift_bridge(swift_name = "hwpxExtractorShutdown")]
+        fn hwpx_extractor_shutdown(client: &HwpxExtractor) -> Result<(), String>;
+        #[swift_bridge(swift_name = "hwpxExtractorDescription")]
+        fn hwpx_extractor_description(client: &HwpxExtractor) -> String;
+        #[swift_bridge(swift_name = "hwpxExtractorAuthor")]
+        fn hwpx_extractor_author(client: &HwpxExtractor) -> String;
+        #[swift_bridge(swift_name = "hwpxExtractorSupportedMimeTypes")]
+        fn hwpx_extractor_supported_mime_types(client: &HwpxExtractor) -> Vec<String>;
+        #[swift_bridge(swift_name = "hwpxExtractorPriority")]
+        fn hwpx_extractor_priority(client: &HwpxExtractor) -> i32;
     }
 
     extern "Rust" {
@@ -2192,6 +2220,20 @@ mod ffi {
     }
 
     extern "Rust" {
+        #[swift_bridge(swift_name = "createTessdataManager")]
+        fn create_tessdata_manager(api_key: String, base_url: Option<String>) -> Result<TessdataManager, String>;
+    }
+
+    extern "Rust" {
+        #[swift_bridge(swift_name = "tessdataManagerCacheDir")]
+        fn tessdata_manager_cache_dir(client: &TessdataManager) -> String;
+        #[swift_bridge(swift_name = "tessdataManagerIsLanguageCached")]
+        fn tessdata_manager_is_language_cached(client: &TessdataManager, lang: String) -> bool;
+        #[swift_bridge(swift_name = "tessdataManagerEnsureAllLanguages")]
+        fn tessdata_manager_ensure_all_languages(client: &TessdataManager) -> Result<usize, String>;
+    }
+
+    extern "Rust" {
         type PaddleOcrConfig;
         #[swift_bridge(init)]
         fn new(
@@ -2675,6 +2717,11 @@ mod ffi {
         fn batch_bytes_item_from_json(json: String) -> Result<BatchBytesItem, String>;
         #[swift_bridge(swift_name = "batchFileItemFromJson")]
         fn batch_file_item_from_json(json: String) -> Result<BatchFileItem, String>;
+    }
+    extern "Rust" {
+
+        #[swift_bridge(swift_name = "embeddingConfigFromJson")]
+        fn embedding_config_from_json(json: String) -> Result<EmbeddingConfig, String>;
     }
 }
 
@@ -3897,6 +3944,7 @@ pub struct PdfConfig(pub kreuzberg::PdfConfig);
 impl PdfConfig {
     pub fn new(
         extract_images: bool,
+        extract_tables: bool,
         passwords: Option<Vec<String>>,
         extract_metadata: bool,
         hierarchy: Option<HierarchyConfig>,
@@ -3907,6 +3955,7 @@ impl PdfConfig {
     ) -> PdfConfig {
         let mut __target: kreuzberg::PdfConfig = ::std::default::Default::default();
         __target.extract_images = extract_images;
+        __target.extract_tables = extract_tables;
         if let Ok(__v) = ::serde_json::to_value(passwords) {
             if let Ok(t) = ::serde_json::from_value(__v) {
                 __target.passwords = t;
@@ -3924,6 +3973,12 @@ impl PdfConfig {
     }
     pub fn extract_images(&self) -> bool {
         ::serde_json::to_value(&self.0.extract_images)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn extract_tables(&self) -> bool {
+        ::serde_json::to_value(&self.0.extract_tables)
             .ok()
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
@@ -5631,6 +5686,45 @@ impl SecurityLimits {
 pub struct ZipBombValidator(pub kreuzberg::extractors::security::ZipBombValidator);
 
 pub struct HwpxExtractor(pub kreuzberg::extractors::HwpxExtractor);
+
+pub fn create_hwpx_extractor(api_key: String, base_url: Option<String>) -> Result<HwpxExtractor, String> {
+    kreuzberg::extractors::HwpxExtractor::new(api_key, base_url)
+        .map_err(|e| e.to_string())
+        .map(HwpxExtractor)
+}
+
+#[allow(unused_imports)]
+use kreuzberg::plugins::DocumentExtractor;
+#[allow(unused_imports)]
+use kreuzberg::plugins::Plugin;
+
+pub fn hwpx_extractor_default(client: &HwpxExtractor) -> HwpxExtractor {
+    HwpxExtractor(client.0.default())
+}
+pub fn hwpx_extractor_name(client: &HwpxExtractor) -> String {
+    client.0.name().to_string()
+}
+pub fn hwpx_extractor_version(client: &HwpxExtractor) -> String {
+    client.0.version().to_string()
+}
+pub fn hwpx_extractor_initialize(client: &HwpxExtractor) -> Result<(), String> {
+    client.0.initialize().map_err(|e| e.to_string())
+}
+pub fn hwpx_extractor_shutdown(client: &HwpxExtractor) -> Result<(), String> {
+    client.0.shutdown().map_err(|e| e.to_string())
+}
+pub fn hwpx_extractor_description(client: &HwpxExtractor) -> String {
+    client.0.description().to_string()
+}
+pub fn hwpx_extractor_author(client: &HwpxExtractor) -> String {
+    client.0.author().to_string()
+}
+pub fn hwpx_extractor_supported_mime_types(client: &HwpxExtractor) -> Vec<String> {
+    client.0.supported_mime_types()
+}
+pub fn hwpx_extractor_priority(client: &HwpxExtractor) -> i32 {
+    client.0.priority()
+}
 
 pub struct TokenReductionConfig(pub kreuzberg::TokenReductionConfig);
 impl TokenReductionConfig {
@@ -9638,6 +9732,22 @@ impl RecognizedTable {
 
 pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
 
+pub fn create_tessdata_manager(api_key: String, base_url: Option<String>) -> Result<TessdataManager, String> {
+    kreuzberg::ocr::TessdataManager::new(api_key, base_url)
+        .map_err(|e| e.to_string())
+        .map(TessdataManager)
+}
+
+pub fn tessdata_manager_cache_dir(client: &TessdataManager) -> String {
+    client.0.cache_dir().to_string()
+}
+pub fn tessdata_manager_is_language_cached(client: &TessdataManager, lang: String) -> bool {
+    client.0.is_language_cached(&lang)
+}
+pub fn tessdata_manager_ensure_all_languages(client: &TessdataManager) -> Result<usize, String> {
+    client.0.ensure_all_languages().map_err(|e| e.to_string())
+}
+
 pub struct PaddleOcrConfig(pub kreuzberg::PaddleOcrConfig);
 impl PaddleOcrConfig {
     pub fn new(
@@ -11582,4 +11692,9 @@ pub fn batch_file_item_from_json(json: String) -> Result<BatchFileItem, String> 
     serde_json::from_str::<kreuzberg::BatchFileItem>(&json)
         .map_err(|e| e.to_string())
         .map(BatchFileItem)
+}
+pub fn embedding_config_from_json(json: String) -> Result<EmbeddingConfig, String> {
+    serde_json::from_str::<kreuzberg::EmbeddingConfig>(&json)
+        .map(EmbeddingConfig)
+        .map_err(|e| e.to_string())
 }

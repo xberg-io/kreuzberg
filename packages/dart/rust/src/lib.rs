@@ -237,6 +237,7 @@ pub struct PageConfig {
 #[frb(mirror(PdfConfig))]
 pub struct PdfConfig {
     pub extract_images: bool,
+    pub extract_tables: bool,
     pub passwords: Option<Vec<String>>,
     pub extract_metadata: bool,
     pub hierarchy: Option<HierarchyConfig>,
@@ -1619,6 +1620,65 @@ pub struct PdfMetadata {
     pub page_count: Option<i64>,
 }
 
+#[allow(unused_imports)]
+use kreuzberg::plugins::DocumentExtractor;
+#[allow(unused_imports)]
+use kreuzberg::plugins::Plugin;
+impl HwpxExtractor {
+    #[frb]
+    pub fn default(&self) -> HwpxExtractor {
+        (|v| HwpxExtractor::from(v))(self.inner.default())
+    }
+    #[frb]
+    pub fn name(&self) -> String {
+        self.inner.name()
+    }
+    #[frb]
+    pub fn version(&self) -> String {
+        self.inner.version()
+    }
+    #[frb]
+    pub fn initialize(&self) -> Result<(), String> {
+        self.inner.initialize().map_err(|e| e.to_string())
+    }
+    #[frb]
+    pub fn shutdown(&self) -> Result<(), String> {
+        self.inner.shutdown().map_err(|e| e.to_string())
+    }
+    #[frb]
+    pub fn description(&self) -> String {
+        self.inner.description()
+    }
+    #[frb]
+    pub fn author(&self) -> String {
+        self.inner.author()
+    }
+    // Method `extract_bytes` has a sanitized return type that cannot be bridged through FRB — skipped.
+    #[frb]
+    pub fn supported_mime_types(&self) -> Vec<String> {
+        self.inner.supported_mime_types()
+    }
+    #[frb]
+    pub fn priority(&self) -> i64 {
+        self.inner.priority()
+    }
+}
+
+impl TessdataManager {
+    #[frb]
+    pub fn cache_dir(&self) -> String {
+        self.inner.cache_dir()
+    }
+    #[frb]
+    pub fn is_language_cached(&self, lang: String) -> bool {
+        self.inner.is_language_cached(&lang)
+    }
+    #[frb]
+    pub fn ensure_all_languages(&self) -> Result<i64, String> {
+        self.inner.ensure_all_languages().map_err(|e| e.to_string())
+    }
+}
+
 #[frb(mirror(ExecutionProviderType))]
 pub enum ExecutionProviderType {
     Auto,
@@ -2397,6 +2457,7 @@ impl From<kreuzberg::PdfConfig> for PdfConfig {
     fn from(v: kreuzberg::PdfConfig) -> Self {
         PdfConfig {
             extract_images: v.extract_images as _,
+            extract_tables: v.extract_tables as _,
             passwords: v.passwords.map(|vec| vec.into_iter().map(|s| s.into()).collect()),
             extract_metadata: v.extract_metadata as _,
             hierarchy: v.hierarchy.map(HierarchyConfig::from),
@@ -5173,6 +5234,7 @@ impl From<PdfConfig> for kreuzberg::PdfConfig {
     fn from(v: PdfConfig) -> Self {
         kreuzberg::PdfConfig {
             extract_images: v.extract_images as _,
+            extract_tables: v.extract_tables as _,
             passwords: v.passwords.map(|vec| vec.into_iter().map(Into::into).collect()),
             extract_metadata: v.extract_metadata as _,
             hierarchy: v.hierarchy.map(Into::into),
@@ -5634,15 +5696,7 @@ pub fn batch_extract_bytes_sync(
     items: Vec<BatchBytesItem>,
     config: ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>, String> {
-    kreuzberg::batch_extract_bytes_sync(
-        items
-            .into_iter()
-            .map(kreuzberg::BatchBytesItem::from)
-            .collect::<Vec<_>>(),
-        &kreuzberg::ExtractionConfig::from(config),
-    )
-    .map(|v| v.into_iter().map(ExtractionResult::from).collect())
-    .map_err(|e| e.to_string())
+    ::std::unimplemented!("this method is listed in dart.stub_methods and cannot be bridged through FRB")
 }
 
 /// Extract content from multiple files concurrently.
@@ -5715,16 +5769,7 @@ pub async fn batch_extract_bytes(
     items: Vec<BatchBytesItem>,
     config: ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>, String> {
-    kreuzberg::batch_extract_bytes(
-        items
-            .into_iter()
-            .map(kreuzberg::BatchBytesItem::from)
-            .collect::<Vec<_>>(),
-        &kreuzberg::ExtractionConfig::from(config),
-    )
-    .await
-    .map(|v| v.into_iter().map(ExtractionResult::from).collect())
-    .map_err(|e| e.to_string())
+    ::std::unimplemented!("this method is listed in dart.stub_methods and cannot be bridged through FRB")
 }
 
 /// Detect MIME type from raw file bytes.
@@ -5904,6 +5949,1128 @@ pub fn list_embedding_presets() -> Vec<String> {
         .collect::<Vec<_>>()
 }
 
+// `create_<Type>_from_json` helpers — deserialize a JSON string into a mirror type.
+
+#[frb]
+pub fn create_acceleration_config_from_json(json: String) -> Result<AccelerationConfig, String> {
+    serde_json::from_str::<kreuzberg::AccelerationConfig>(&json)
+        .map(AccelerationConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_content_filter_config_from_json(json: String) -> Result<ContentFilterConfig, String> {
+    serde_json::from_str::<kreuzberg::ContentFilterConfig>(&json)
+        .map(ContentFilterConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_email_config_from_json(json: String) -> Result<EmailConfig, String> {
+    serde_json::from_str::<kreuzberg::EmailConfig>(&json)
+        .map(EmailConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_extraction_config_from_json(json: String) -> Result<ExtractionConfig, String> {
+    serde_json::from_str::<kreuzberg::ExtractionConfig>(&json)
+        .map(ExtractionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_file_extraction_config_from_json(json: String) -> Result<FileExtractionConfig, String> {
+    serde_json::from_str::<kreuzberg::FileExtractionConfig>(&json)
+        .map(FileExtractionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_batch_bytes_item_from_json(json: String) -> Result<BatchBytesItem, String> {
+    serde_json::from_str::<kreuzberg::BatchBytesItem>(&json)
+        .map(BatchBytesItem::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_batch_file_item_from_json(json: String) -> Result<BatchFileItem, String> {
+    serde_json::from_str::<kreuzberg::BatchFileItem>(&json)
+        .map(BatchFileItem::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_extraction_config_from_json(json: String) -> Result<ImageExtractionConfig, String> {
+    serde_json::from_str::<kreuzberg::ImageExtractionConfig>(&json)
+        .map(ImageExtractionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_token_reduction_options_from_json(json: String) -> Result<TokenReductionOptions, String> {
+    serde_json::from_str::<kreuzberg::TokenReductionOptions>(&json)
+        .map(TokenReductionOptions::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_language_detection_config_from_json(json: String) -> Result<LanguageDetectionConfig, String> {
+    serde_json::from_str::<kreuzberg::LanguageDetectionConfig>(&json)
+        .map(LanguageDetectionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_html_output_config_from_json(json: String) -> Result<HtmlOutputConfig, String> {
+    serde_json::from_str::<kreuzberg::HtmlOutputConfig>(&json)
+        .map(HtmlOutputConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_layout_detection_config_from_json(json: String) -> Result<LayoutDetectionConfig, String> {
+    serde_json::from_str::<kreuzberg::LayoutDetectionConfig>(&json)
+        .map(LayoutDetectionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_llm_config_from_json(json: String) -> Result<LlmConfig, String> {
+    serde_json::from_str::<kreuzberg::LlmConfig>(&json)
+        .map(LlmConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_structured_extraction_config_from_json(json: String) -> Result<StructuredExtractionConfig, String> {
+    serde_json::from_str::<kreuzberg::StructuredExtractionConfig>(&json)
+        .map(StructuredExtractionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_quality_thresholds_from_json(json: String) -> Result<OcrQualityThresholds, String> {
+    serde_json::from_str::<kreuzberg::OcrQualityThresholds>(&json)
+        .map(OcrQualityThresholds::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_pipeline_stage_from_json(json: String) -> Result<OcrPipelineStage, String> {
+    serde_json::from_str::<kreuzberg::OcrPipelineStage>(&json)
+        .map(OcrPipelineStage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_pipeline_config_from_json(json: String) -> Result<OcrPipelineConfig, String> {
+    serde_json::from_str::<kreuzberg::OcrPipelineConfig>(&json)
+        .map(OcrPipelineConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_config_from_json(json: String) -> Result<OcrConfig, String> {
+    serde_json::from_str::<kreuzberg::OcrConfig>(&json)
+        .map(OcrConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_config_from_json(json: String) -> Result<PageConfig, String> {
+    serde_json::from_str::<kreuzberg::PageConfig>(&json)
+        .map(PageConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pdf_config_from_json(json: String) -> Result<PdfConfig, String> {
+    serde_json::from_str::<kreuzberg::PdfConfig>(&json)
+        .map(PdfConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_hierarchy_config_from_json(json: String) -> Result<HierarchyConfig, String> {
+    serde_json::from_str::<kreuzberg::HierarchyConfig>(&json)
+        .map(HierarchyConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_post_processor_config_from_json(json: String) -> Result<PostProcessorConfig, String> {
+    serde_json::from_str::<kreuzberg::PostProcessorConfig>(&json)
+        .map(PostProcessorConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunking_config_from_json(json: String) -> Result<ChunkingConfig, String> {
+    serde_json::from_str::<kreuzberg::ChunkingConfig>(&json)
+        .map(ChunkingConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embedding_config_from_json(json: String) -> Result<EmbeddingConfig, String> {
+    serde_json::from_str::<kreuzberg::EmbeddingConfig>(&json)
+        .map(EmbeddingConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_tree_sitter_config_from_json(json: String) -> Result<TreeSitterConfig, String> {
+    serde_json::from_str::<kreuzberg::TreeSitterConfig>(&json)
+        .map(TreeSitterConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_tree_sitter_process_config_from_json(json: String) -> Result<TreeSitterProcessConfig, String> {
+    serde_json::from_str::<kreuzberg::TreeSitterProcessConfig>(&json)
+        .map(TreeSitterProcessConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_supported_format_from_json(json: String) -> Result<SupportedFormat, String> {
+    serde_json::from_str::<kreuzberg::SupportedFormat>(&json)
+        .map(SupportedFormat::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_server_config_from_json(json: String) -> Result<ServerConfig, String> {
+    serde_json::from_str::<kreuzberg::ServerConfig>(&json)
+        .map(ServerConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_structured_data_result_from_json(json: String) -> Result<StructuredDataResult, String> {
+    serde_json::from_str::<kreuzberg::extraction::structured::StructuredDataResult>(&json)
+        .map(StructuredDataResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_char_shape_from_json(json: String) -> Result<CharShape, String> {
+    serde_json::from_str::<kreuzberg::extraction::hwp::model::CharShape>(&json)
+        .map(CharShape::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_hwp_image_from_json(json: String) -> Result<HwpImage, String> {
+    serde_json::from_str::<kreuzberg::extraction::hwp::model::HwpImage>(&json)
+        .map(HwpImage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_ocr_result_from_json(json: String) -> Result<ImageOcrResult, String> {
+    serde_json::from_str::<kreuzberg::extraction::image::ImageOcrResult>(&json)
+        .map(ImageOcrResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_html_extraction_result_from_json(json: String) -> Result<HtmlExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::extraction::html::HtmlExtractionResult>(&json)
+        .map(HtmlExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_extracted_inline_image_from_json(json: String) -> Result<ExtractedInlineImage, String> {
+    serde_json::from_str::<kreuzberg::extraction::html::ExtractedInlineImage>(&json)
+        .map(ExtractedInlineImage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_drawing_from_json(json: String) -> Result<Drawing, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::drawing::Drawing>(&json)
+        .map(Drawing::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_anchor_properties_from_json(json: String) -> Result<AnchorProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::drawing::AnchorProperties>(&json)
+        .map(AnchorProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_margins_points_from_json(json: String) -> Result<PageMarginsPoints, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::section::PageMarginsPoints>(&json)
+        .map(PageMarginsPoints::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_style_definition_from_json(json: String) -> Result<StyleDefinition, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::styles::StyleDefinition>(&json)
+        .map(StyleDefinition::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_resolved_style_from_json(json: String) -> Result<ResolvedStyle, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::styles::ResolvedStyle>(&json)
+        .map(ResolvedStyle::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_table_properties_from_json(json: String) -> Result<TableProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::docx::table::TableProperties>(&json)
+        .map(TableProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_docx_app_properties_from_json(json: String) -> Result<DocxAppProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::office_metadata::DocxAppProperties>(&json)
+        .map(DocxAppProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_xlsx_app_properties_from_json(json: String) -> Result<XlsxAppProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::office_metadata::app_properties::XlsxAppProperties>(&json)
+        .map(XlsxAppProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pptx_app_properties_from_json(json: String) -> Result<PptxAppProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::office_metadata::app_properties::PptxAppProperties>(&json)
+        .map(PptxAppProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_core_properties_from_json(json: String) -> Result<CoreProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::office_metadata::CoreProperties>(&json)
+        .map(CoreProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_odt_properties_from_json(json: String) -> Result<OdtProperties, String> {
+    serde_json::from_str::<kreuzberg::extraction::office_metadata::OdtProperties>(&json)
+        .map(OdtProperties::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_security_limits_from_json(json: String) -> Result<SecurityLimits, String> {
+    serde_json::from_str::<kreuzberg::SecurityLimits>(&json)
+        .map(SecurityLimits::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_token_reduction_config_from_json(json: String) -> Result<TokenReductionConfig, String> {
+    serde_json::from_str::<kreuzberg::TokenReductionConfig>(&json)
+        .map(TokenReductionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pdf_annotation_from_json(json: String) -> Result<PdfAnnotation, String> {
+    serde_json::from_str::<kreuzberg::PdfAnnotation>(&json)
+        .map(PdfAnnotation::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_djot_content_from_json(json: String) -> Result<DjotContent, String> {
+    serde_json::from_str::<kreuzberg::DjotContent>(&json)
+        .map(DjotContent::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_formatted_block_from_json(json: String) -> Result<FormattedBlock, String> {
+    serde_json::from_str::<kreuzberg::FormattedBlock>(&json)
+        .map(FormattedBlock::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_inline_element_from_json(json: String) -> Result<InlineElement, String> {
+    serde_json::from_str::<kreuzberg::InlineElement>(&json)
+        .map(InlineElement::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_djot_image_from_json(json: String) -> Result<DjotImage, String> {
+    serde_json::from_str::<kreuzberg::DjotImage>(&json)
+        .map(DjotImage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_djot_link_from_json(json: String) -> Result<DjotLink, String> {
+    serde_json::from_str::<kreuzberg::DjotLink>(&json)
+        .map(DjotLink::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_footnote_from_json(json: String) -> Result<Footnote, String> {
+    serde_json::from_str::<kreuzberg::Footnote>(&json)
+        .map(Footnote::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_document_structure_from_json(json: String) -> Result<DocumentStructure, String> {
+    serde_json::from_str::<kreuzberg::DocumentStructure>(&json)
+        .map(DocumentStructure::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_document_relationship_from_json(json: String) -> Result<DocumentRelationship, String> {
+    serde_json::from_str::<kreuzberg::DocumentRelationship>(&json)
+        .map(DocumentRelationship::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_document_node_from_json(json: String) -> Result<DocumentNode, String> {
+    serde_json::from_str::<kreuzberg::DocumentNode>(&json)
+        .map(DocumentNode::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_table_grid_from_json(json: String) -> Result<TableGrid, String> {
+    serde_json::from_str::<kreuzberg::TableGrid>(&json)
+        .map(TableGrid::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_grid_cell_from_json(json: String) -> Result<GridCell, String> {
+    serde_json::from_str::<kreuzberg::GridCell>(&json)
+        .map(GridCell::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_text_annotation_from_json(json: String) -> Result<TextAnnotation, String> {
+    serde_json::from_str::<kreuzberg::TextAnnotation>(&json)
+        .map(TextAnnotation::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_extraction_result_from_json(json: String) -> Result<ExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::ExtractionResult>(&json)
+        .map(ExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_archive_entry_from_json(json: String) -> Result<ArchiveEntry, String> {
+    serde_json::from_str::<kreuzberg::ArchiveEntry>(&json)
+        .map(ArchiveEntry::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_processing_warning_from_json(json: String) -> Result<ProcessingWarning, String> {
+    serde_json::from_str::<kreuzberg::ProcessingWarning>(&json)
+        .map(ProcessingWarning::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_llm_usage_from_json(json: String) -> Result<LlmUsage, String> {
+    serde_json::from_str::<kreuzberg::LlmUsage>(&json)
+        .map(LlmUsage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunk_from_json(json: String) -> Result<Chunk, String> {
+    serde_json::from_str::<kreuzberg::Chunk>(&json)
+        .map(Chunk::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_heading_context_from_json(json: String) -> Result<HeadingContext, String> {
+    serde_json::from_str::<kreuzberg::HeadingContext>(&json)
+        .map(HeadingContext::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_heading_level_from_json(json: String) -> Result<HeadingLevel, String> {
+    serde_json::from_str::<kreuzberg::HeadingLevel>(&json)
+        .map(HeadingLevel::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunk_metadata_from_json(json: String) -> Result<ChunkMetadata, String> {
+    serde_json::from_str::<kreuzberg::ChunkMetadata>(&json)
+        .map(ChunkMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_extracted_image_from_json(json: String) -> Result<ExtractedImage, String> {
+    serde_json::from_str::<kreuzberg::ExtractedImage>(&json)
+        .map(ExtractedImage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_element_metadata_from_json(json: String) -> Result<ElementMetadata, String> {
+    serde_json::from_str::<kreuzberg::ElementMetadata>(&json)
+        .map(ElementMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_element_from_json(json: String) -> Result<Element, String> {
+    serde_json::from_str::<kreuzberg::Element>(&json)
+        .map(Element::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_excel_workbook_from_json(json: String) -> Result<ExcelWorkbook, String> {
+    serde_json::from_str::<kreuzberg::ExcelWorkbook>(&json)
+        .map(ExcelWorkbook::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_excel_sheet_from_json(json: String) -> Result<ExcelSheet, String> {
+    serde_json::from_str::<kreuzberg::ExcelSheet>(&json)
+        .map(ExcelSheet::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_xml_extraction_result_from_json(json: String) -> Result<XmlExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::XmlExtractionResult>(&json)
+        .map(XmlExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_text_extraction_result_from_json(json: String) -> Result<TextExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::TextExtractionResult>(&json)
+        .map(TextExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pptx_extraction_result_from_json(json: String) -> Result<PptxExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::PptxExtractionResult>(&json)
+        .map(PptxExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_email_extraction_result_from_json(json: String) -> Result<EmailExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::EmailExtractionResult>(&json)
+        .map(EmailExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_email_attachment_from_json(json: String) -> Result<EmailAttachment, String> {
+    serde_json::from_str::<kreuzberg::EmailAttachment>(&json)
+        .map(EmailAttachment::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_extraction_result_from_json(json: String) -> Result<OcrExtractionResult, String> {
+    serde_json::from_str::<kreuzberg::OcrExtractionResult>(&json)
+        .map(OcrExtractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_table_from_json(json: String) -> Result<OcrTable, String> {
+    serde_json::from_str::<kreuzberg::OcrTable>(&json)
+        .map(OcrTable::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_table_bounding_box_from_json(json: String) -> Result<OcrTableBoundingBox, String> {
+    serde_json::from_str::<kreuzberg::OcrTableBoundingBox>(&json)
+        .map(OcrTableBoundingBox::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_preprocessing_config_from_json(json: String) -> Result<ImagePreprocessingConfig, String> {
+    serde_json::from_str::<kreuzberg::ImagePreprocessingConfig>(&json)
+        .map(ImagePreprocessingConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_tesseract_config_from_json(json: String) -> Result<TesseractConfig, String> {
+    serde_json::from_str::<kreuzberg::TesseractConfig>(&json)
+        .map(TesseractConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_preprocessing_metadata_from_json(json: String) -> Result<ImagePreprocessingMetadata, String> {
+    serde_json::from_str::<kreuzberg::ImagePreprocessingMetadata>(&json)
+        .map(ImagePreprocessingMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_metadata_from_json(json: String) -> Result<Metadata, String> {
+    serde_json::from_str::<kreuzberg::Metadata>(&json)
+        .map(Metadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_excel_metadata_from_json(json: String) -> Result<ExcelMetadata, String> {
+    serde_json::from_str::<kreuzberg::ExcelMetadata>(&json)
+        .map(ExcelMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_email_metadata_from_json(json: String) -> Result<EmailMetadata, String> {
+    serde_json::from_str::<kreuzberg::EmailMetadata>(&json)
+        .map(EmailMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_archive_metadata_from_json(json: String) -> Result<ArchiveMetadata, String> {
+    serde_json::from_str::<kreuzberg::ArchiveMetadata>(&json)
+        .map(ArchiveMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_metadata_from_json(json: String) -> Result<ImageMetadata, String> {
+    serde_json::from_str::<kreuzberg::ImageMetadata>(&json)
+        .map(ImageMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_xml_metadata_from_json(json: String) -> Result<XmlMetadata, String> {
+    serde_json::from_str::<kreuzberg::XmlMetadata>(&json)
+        .map(XmlMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_text_metadata_from_json(json: String) -> Result<TextMetadata, String> {
+    serde_json::from_str::<kreuzberg::TextMetadata>(&json)
+        .map(TextMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_header_metadata_from_json(json: String) -> Result<HeaderMetadata, String> {
+    serde_json::from_str::<kreuzberg::HeaderMetadata>(&json)
+        .map(HeaderMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_link_metadata_from_json(json: String) -> Result<LinkMetadata, String> {
+    serde_json::from_str::<kreuzberg::LinkMetadata>(&json)
+        .map(LinkMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_image_metadata_type_from_json(json: String) -> Result<ImageMetadataType, String> {
+    serde_json::from_str::<kreuzberg::ImageMetadataType>(&json)
+        .map(ImageMetadataType::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_structured_data_from_json(json: String) -> Result<StructuredData, String> {
+    serde_json::from_str::<kreuzberg::StructuredData>(&json)
+        .map(StructuredData::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_html_metadata_from_json(json: String) -> Result<HtmlMetadata, String> {
+    serde_json::from_str::<kreuzberg::HtmlMetadata>(&json)
+        .map(HtmlMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_metadata_from_json(json: String) -> Result<OcrMetadata, String> {
+    serde_json::from_str::<kreuzberg::OcrMetadata>(&json)
+        .map(OcrMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_error_metadata_from_json(json: String) -> Result<ErrorMetadata, String> {
+    serde_json::from_str::<kreuzberg::ErrorMetadata>(&json)
+        .map(ErrorMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pptx_metadata_from_json(json: String) -> Result<PptxMetadata, String> {
+    serde_json::from_str::<kreuzberg::PptxMetadata>(&json)
+        .map(PptxMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_docx_metadata_from_json(json: String) -> Result<DocxMetadata, String> {
+    serde_json::from_str::<kreuzberg::DocxMetadata>(&json)
+        .map(DocxMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_csv_metadata_from_json(json: String) -> Result<CsvMetadata, String> {
+    serde_json::from_str::<kreuzberg::CsvMetadata>(&json)
+        .map(CsvMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_bibtex_metadata_from_json(json: String) -> Result<BibtexMetadata, String> {
+    serde_json::from_str::<kreuzberg::BibtexMetadata>(&json)
+        .map(BibtexMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_citation_metadata_from_json(json: String) -> Result<CitationMetadata, String> {
+    serde_json::from_str::<kreuzberg::CitationMetadata>(&json)
+        .map(CitationMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_year_range_from_json(json: String) -> Result<YearRange, String> {
+    serde_json::from_str::<kreuzberg::YearRange>(&json)
+        .map(YearRange::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_fiction_book_metadata_from_json(json: String) -> Result<FictionBookMetadata, String> {
+    serde_json::from_str::<kreuzberg::FictionBookMetadata>(&json)
+        .map(FictionBookMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_dbf_metadata_from_json(json: String) -> Result<DbfMetadata, String> {
+    serde_json::from_str::<kreuzberg::DbfMetadata>(&json)
+        .map(DbfMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_dbf_field_info_from_json(json: String) -> Result<DbfFieldInfo, String> {
+    serde_json::from_str::<kreuzberg::DbfFieldInfo>(&json)
+        .map(DbfFieldInfo::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_jats_metadata_from_json(json: String) -> Result<JatsMetadata, String> {
+    serde_json::from_str::<kreuzberg::JatsMetadata>(&json)
+        .map(JatsMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_contributor_role_from_json(json: String) -> Result<ContributorRole, String> {
+    serde_json::from_str::<kreuzberg::ContributorRole>(&json)
+        .map(ContributorRole::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_epub_metadata_from_json(json: String) -> Result<EpubMetadata, String> {
+    serde_json::from_str::<kreuzberg::EpubMetadata>(&json)
+        .map(EpubMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pst_metadata_from_json(json: String) -> Result<PstMetadata, String> {
+    serde_json::from_str::<kreuzberg::PstMetadata>(&json)
+        .map(PstMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_confidence_from_json(json: String) -> Result<OcrConfidence, String> {
+    serde_json::from_str::<kreuzberg::OcrConfidence>(&json)
+        .map(OcrConfidence::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_rotation_from_json(json: String) -> Result<OcrRotation, String> {
+    serde_json::from_str::<kreuzberg::OcrRotation>(&json)
+        .map(OcrRotation::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_element_from_json(json: String) -> Result<OcrElement, String> {
+    serde_json::from_str::<kreuzberg::OcrElement>(&json)
+        .map(OcrElement::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_element_config_from_json(json: String) -> Result<OcrElementConfig, String> {
+    serde_json::from_str::<kreuzberg::OcrElementConfig>(&json)
+        .map(OcrElementConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_structure_from_json(json: String) -> Result<PageStructure, String> {
+    serde_json::from_str::<kreuzberg::PageStructure>(&json)
+        .map(PageStructure::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_boundary_from_json(json: String) -> Result<PageBoundary, String> {
+    serde_json::from_str::<kreuzberg::PageBoundary>(&json)
+        .map(PageBoundary::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_info_from_json(json: String) -> Result<PageInfo, String> {
+    serde_json::from_str::<kreuzberg::PageInfo>(&json)
+        .map(PageInfo::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_content_from_json(json: String) -> Result<PageContent, String> {
+    serde_json::from_str::<kreuzberg::PageContent>(&json)
+        .map(PageContent::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_layout_region_from_json(json: String) -> Result<LayoutRegion, String> {
+    serde_json::from_str::<kreuzberg::LayoutRegion>(&json)
+        .map(LayoutRegion::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_page_hierarchy_from_json(json: String) -> Result<PageHierarchy, String> {
+    serde_json::from_str::<kreuzberg::PageHierarchy>(&json)
+        .map(PageHierarchy::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_hierarchical_block_from_json(json: String) -> Result<HierarchicalBlock, String> {
+    serde_json::from_str::<kreuzberg::HierarchicalBlock>(&json)
+        .map(HierarchicalBlock::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_table_from_json(json: String) -> Result<Table, String> {
+    serde_json::from_str::<kreuzberg::Table>(&json)
+        .map(Table::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_table_cell_from_json(json: String) -> Result<TableCell, String> {
+    serde_json::from_str::<kreuzberg::TableCell>(&json)
+        .map(TableCell::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_uri_from_json(json: String) -> Result<Uri, String> {
+    serde_json::from_str::<kreuzberg::Uri>(&json)
+        .map(Uri::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_info_response_from_json(json: String) -> Result<InfoResponse, String> {
+    serde_json::from_str::<kreuzberg::api::InfoResponse>(&json)
+        .map(InfoResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embed_request_from_json(json: String) -> Result<EmbedRequest, String> {
+    serde_json::from_str::<kreuzberg::api::EmbedRequest>(&json)
+        .map(EmbedRequest::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embed_response_from_json(json: String) -> Result<EmbedResponse, String> {
+    serde_json::from_str::<kreuzberg::api::EmbedResponse>(&json)
+        .map(EmbedResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunk_request_from_json(json: String) -> Result<ChunkRequest, String> {
+    serde_json::from_str::<kreuzberg::api::ChunkRequest>(&json)
+        .map(ChunkRequest::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunk_response_from_json(json: String) -> Result<ChunkResponse, String> {
+    serde_json::from_str::<kreuzberg::api::ChunkResponse>(&json)
+        .map(ChunkResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_detect_response_from_json(json: String) -> Result<DetectResponse, String> {
+    serde_json::from_str::<kreuzberg::api::DetectResponse>(&json)
+        .map(DetectResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_manifest_entry_response_from_json(json: String) -> Result<ManifestEntryResponse, String> {
+    serde_json::from_str::<kreuzberg::api::ManifestEntryResponse>(&json)
+        .map(ManifestEntryResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_manifest_response_from_json(json: String) -> Result<ManifestResponse, String> {
+    serde_json::from_str::<kreuzberg::api::ManifestResponse>(&json)
+        .map(ManifestResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_warm_response_from_json(json: String) -> Result<WarmResponse, String> {
+    serde_json::from_str::<kreuzberg::api::WarmResponse>(&json)
+        .map(WarmResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_structured_extraction_response_from_json(json: String) -> Result<StructuredExtractionResponse, String> {
+    serde_json::from_str::<kreuzberg::api::StructuredExtractionResponse>(&json)
+        .map(StructuredExtractionResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_open_web_document_response_from_json(json: String) -> Result<OpenWebDocumentResponse, String> {
+    serde_json::from_str::<kreuzberg::api::OpenWebDocumentResponse>(&json)
+        .map(OpenWebDocumentResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_docling_compat_response_from_json(json: String) -> Result<DoclingCompatResponse, String> {
+    serde_json::from_str::<kreuzberg::api::DoclingCompatResponse>(&json)
+        .map(DoclingCompatResponse::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_detect_mime_type_params_from_json(json: String) -> Result<DetectMimeTypeParams, String> {
+    serde_json::from_str::<kreuzberg::mcp::DetectMimeTypeParams>(&json)
+        .map(DetectMimeTypeParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_cache_warm_params_from_json(json: String) -> Result<CacheWarmParams, String> {
+    serde_json::from_str::<kreuzberg::mcp::CacheWarmParams>(&json)
+        .map(CacheWarmParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embed_text_params_from_json(json: String) -> Result<EmbedTextParams, String> {
+    serde_json::from_str::<kreuzberg::mcp::EmbedTextParams>(&json)
+        .map(EmbedTextParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_extract_structured_params_from_json(json: String) -> Result<ExtractStructuredParams, String> {
+    serde_json::from_str::<kreuzberg::mcp::ExtractStructuredParams>(&json)
+        .map(ExtractStructuredParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunk_text_params_from_json(json: String) -> Result<ChunkTextParams, String> {
+    serde_json::from_str::<kreuzberg::mcp::ChunkTextParams>(&json)
+        .map(ChunkTextParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_detected_boundary_from_json(json: String) -> Result<DetectedBoundary, String> {
+    serde_json::from_str::<kreuzberg::chunking::boundary_detection::DetectedBoundary>(&json)
+        .map(DetectedBoundary::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_chunking_result_from_json(json: String) -> Result<ChunkingResult, String> {
+    serde_json::from_str::<kreuzberg::chunking::ChunkingResult>(&json)
+        .map(ChunkingResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_merged_chunk_from_json(json: String) -> Result<MergedChunk, String> {
+    serde_json::from_str::<kreuzberg::chunking::semantic::merge::MergedChunk>(&json)
+        .map(MergedChunk::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embedding_preset_from_json(json: String) -> Result<EmbeddingPreset, String> {
+    serde_json::from_str::<kreuzberg::EmbeddingPreset>(&json)
+        .map(EmbeddingPreset::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_yake_params_from_json(json: String) -> Result<YakeParams, String> {
+    serde_json::from_str::<kreuzberg::YakeParams>(&json)
+        .map(YakeParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_rake_params_from_json(json: String) -> Result<RakeParams, String> {
+    serde_json::from_str::<kreuzberg::RakeParams>(&json)
+        .map(RakeParams::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_keyword_config_from_json(json: String) -> Result<KeywordConfig, String> {
+    serde_json::from_str::<kreuzberg::KeywordConfig>(&json)
+        .map(KeywordConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_keyword_from_json(json: String) -> Result<Keyword, String> {
+    serde_json::from_str::<kreuzberg::Keyword>(&json)
+        .map(Keyword::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_ocr_cache_stats_from_json(json: String) -> Result<OcrCacheStats, String> {
+    serde_json::from_str::<kreuzberg::ocr::OcrCacheStats>(&json)
+        .map(OcrCacheStats::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_recognized_table_from_json(json: String) -> Result<RecognizedTable, String> {
+    serde_json::from_str::<kreuzberg::RecognizedTable>(&json)
+        .map(RecognizedTable::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_paddle_ocr_config_from_json(json: String) -> Result<PaddleOcrConfig, String> {
+    serde_json::from_str::<kreuzberg::PaddleOcrConfig>(&json)
+        .map(PaddleOcrConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_model_paths_from_json(json: String) -> Result<ModelPaths, String> {
+    serde_json::from_str::<kreuzberg::ModelPaths>(&json)
+        .map(ModelPaths::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_orientation_result_from_json(json: String) -> Result<OrientationResult, String> {
+    serde_json::from_str::<kreuzberg::OrientationResult>(&json)
+        .map(OrientationResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_b_box_from_json(json: String) -> Result<BBox, String> {
+    serde_json::from_str::<kreuzberg::BBox>(&json)
+        .map(BBox::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_layout_detection_from_json(json: String) -> Result<LayoutDetection, String> {
+    serde_json::from_str::<kreuzberg::LayoutDetection>(&json)
+        .map(LayoutDetection::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_detection_result_from_json(json: String) -> Result<DetectionResult, String> {
+    serde_json::from_str::<kreuzberg::DetectionResult>(&json)
+        .map(DetectionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_embedded_file_from_json(json: String) -> Result<EmbeddedFile, String> {
+    serde_json::from_str::<kreuzberg::pdf::embedded_files::EmbeddedFile>(&json)
+        .map(EmbeddedFile::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pdf_metadata_from_json(json: String) -> Result<PdfMetadata, String> {
+    serde_json::from_str::<kreuzberg::pdf::metadata::PdfMetadata>(&json)
+        .map(PdfMetadata::from)
+        .map_err(|e| e.to_string())
+}
+
 /// FRB opaque handle holding Dart callbacks for each trait method.
 /// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
 #[frb(opaque)]
@@ -5913,15 +7080,8 @@ pub struct OcrBackendDartImpl {
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     process_image: Box<dyn Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
-    process_image_file:
-        Box<dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
     supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
     backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync>,
-    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    process_document:
-        Box<dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
 }
 
 impl kreuzberg::plugins::Plugin for OcrBackendDartImpl {
@@ -5955,17 +7115,6 @@ impl kreuzberg::plugins::OcrBackend for OcrBackendDartImpl {
         Ok(Default::default())
     }
 
-    async fn process_image_file(
-        &self,
-        path: &std::path::Path,
-        config: &kreuzberg::OcrConfig,
-    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
-        let path = path.to_string_lossy().into_owned();
-        let config = OcrConfig::from(config.clone());
-        let _ = (self.process_image_file)(path, config).await;
-        Ok(Default::default())
-    }
-
     fn supports_language(&self, lang: &str) -> bool {
         let lang = lang.to_string();
         let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_language)(lang).await });
@@ -5977,33 +7126,6 @@ impl kreuzberg::plugins::OcrBackend for OcrBackendDartImpl {
         let _ = __result;
         Default::default()
     }
-
-    fn supported_languages(&self) -> Vec<String> {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_languages)().await });
-        __result
-    }
-
-    fn supports_table_detection(&self) -> bool {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_table_detection)().await });
-        __result
-    }
-
-    fn supports_document_processing(&self) -> bool {
-        let __result =
-            tokio::runtime::Handle::current().block_on(async { (self.supports_document_processing)().await });
-        __result
-    }
-
-    async fn process_document(
-        &self,
-        _path: &std::path::Path,
-        _config: &kreuzberg::OcrConfig,
-    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
-        let _path = _path.to_string_lossy().into_owned();
-        let _config = OcrConfig::from(_config.clone());
-        let _ = (self.process_document)(_path, _config).await;
-        Ok(Default::default())
-    }
 }
 
 /// Create a `OcrBackendDartImpl` from Dart callback closures.
@@ -6012,29 +7134,15 @@ pub fn create_ocr_backend_dart_impl(
     plugin_name: String,
     plugin_version: String,
     process_image: Box<dyn Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
-    process_image_file: Box<
-        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
-    >,
     supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
     backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync>,
-    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    process_document: Box<
-        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
-    >,
 ) -> OcrBackendDartImpl {
     OcrBackendDartImpl {
         plugin_name,
         plugin_version,
         process_image,
-        process_image_file,
         supports_language,
         backend_type,
-        supported_languages,
-        supports_table_detection,
-        supports_document_processing,
-        process_document,
     }
 }
 
@@ -6075,10 +7183,6 @@ pub struct PostProcessorDartImpl {
     plugin_version: String,
     process: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
     processing_stage: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync>,
-    should_process:
-        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 }
 
 impl kreuzberg::plugins::Plugin for PostProcessorDartImpl {
@@ -6116,26 +7220,6 @@ impl kreuzberg::plugins::PostProcessor for PostProcessorDartImpl {
         let _ = __result;
         Default::default()
     }
-
-    fn should_process(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
-        let _result = ExtractionResult::from(_result.clone());
-        let _config = ExtractionConfig::from(_config.clone());
-        let __result =
-            tokio::runtime::Handle::current().block_on(async { (self.should_process)(_result, _config).await });
-        __result
-    }
-
-    fn estimated_duration_ms(&self, _result: &kreuzberg::ExtractionResult) -> u64 {
-        let _result = ExtractionResult::from(_result.clone());
-        let __result =
-            tokio::runtime::Handle::current().block_on(async { (self.estimated_duration_ms)(_result).await });
-        __result as u64
-    }
-
-    fn priority(&self) -> i32 {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
-        __result as i32
-    }
 }
 
 /// Create a `PostProcessorDartImpl` from Dart callback closures.
@@ -6145,20 +7229,12 @@ pub fn create_post_processor_dart_impl(
     plugin_version: String,
     process: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
     processing_stage: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync>,
-    should_process: Box<
-        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
-    >,
-    estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 ) -> PostProcessorDartImpl {
     PostProcessorDartImpl {
         plugin_name,
         plugin_version,
         process,
         processing_stage,
-        should_process,
-        estimated_duration_ms,
-        priority,
     }
 }
 
@@ -6198,9 +7274,6 @@ pub struct ValidatorDartImpl {
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     validate: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
-    should_validate:
-        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 }
 
 impl kreuzberg::plugins::Plugin for ValidatorDartImpl {
@@ -6232,19 +7305,6 @@ impl kreuzberg::plugins::Validator for ValidatorDartImpl {
         let config = ExtractionConfig::from(config.clone());
         Ok((self.validate)(result, config).await)
     }
-
-    fn should_validate(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
-        let _result = ExtractionResult::from(_result.clone());
-        let _config = ExtractionConfig::from(_config.clone());
-        let __result =
-            tokio::runtime::Handle::current().block_on(async { (self.should_validate)(_result, _config).await });
-        __result
-    }
-
-    fn priority(&self) -> i32 {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
-        __result as i32
-    }
 }
 
 /// Create a `ValidatorDartImpl` from Dart callback closures.
@@ -6253,17 +7313,11 @@ pub fn create_validator_dart_impl(
     plugin_name: String,
     plugin_version: String,
     validate: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
-    should_validate: Box<
-        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
-    >,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 ) -> ValidatorDartImpl {
     ValidatorDartImpl {
         plugin_name,
         plugin_version,
         validate,
-        should_validate,
-        priority,
     }
 }
 
@@ -6392,15 +7446,15 @@ pub struct DocumentExtractorDartImpl {
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     extract_bytes: Box<
-        dyn Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocument> + Send + Sync,
-    >,
-    extract_file: Box<
-        dyn Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocument> + Send + Sync,
+        dyn Fn(
+                Vec<u8>,
+                String,
+                ExtractionConfig,
+            ) -> flutter_rust_bridge::DartFnFuture<kreuzberg::internal::InternalDocument>
+            + Send
+            + Sync,
     >,
     supported_mime_types: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    as_sync_extractor: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
 }
 
 impl kreuzberg::plugins::Plugin for DocumentExtractorDartImpl {
@@ -6436,38 +7490,8 @@ impl kreuzberg::plugins::DocumentExtractor for DocumentExtractorDartImpl {
         Ok(Default::default())
     }
 
-    async fn extract_file(
-        &self,
-        path: &std::path::Path,
-        mime_type: &str,
-        config: &kreuzberg::ExtractionConfig,
-    ) -> kreuzberg::Result<kreuzberg::internal::InternalDocument> {
-        let path = path.to_string_lossy().into_owned();
-        let mime_type = mime_type.to_string();
-        let config = ExtractionConfig::from(config.clone());
-        let _ = (self.extract_file)(path, mime_type, config).await;
-        Ok(Default::default())
-    }
-
     fn supported_mime_types(&self) -> Vec<String> {
         let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_mime_types)().await });
-        __result
-    }
-
-    fn priority(&self) -> i32 {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
-        __result as i32
-    }
-
-    fn can_handle(&self, _path: &std::path::Path, _mime_type: &str) -> bool {
-        let _path = _path.to_string_lossy().into_owned();
-        let _mime_type = _mime_type.to_string();
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.can_handle)(_path, _mime_type).await });
-        __result
-    }
-
-    fn as_sync_extractor(&self) -> Option<kreuzberg::extractors::SyncExtractor> {
-        let __result = tokio::runtime::Handle::current().block_on(async { (self.as_sync_extractor)().await });
         __result
     }
 }
@@ -6478,25 +7502,21 @@ pub fn create_document_extractor_dart_impl(
     plugin_name: String,
     plugin_version: String,
     extract_bytes: Box<
-        dyn Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocument> + Send + Sync,
-    >,
-    extract_file: Box<
-        dyn Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocument> + Send + Sync,
+        dyn Fn(
+                Vec<u8>,
+                String,
+                ExtractionConfig,
+            ) -> flutter_rust_bridge::DartFnFuture<kreuzberg::internal::InternalDocument>
+            + Send
+            + Sync,
     >,
     supported_mime_types: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    as_sync_extractor: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
 ) -> DocumentExtractorDartImpl {
     DocumentExtractorDartImpl {
         plugin_name,
         plugin_version,
         extract_bytes,
-        extract_file,
         supported_mime_types,
-        priority,
-        can_handle,
-        as_sync_extractor,
     }
 }
 
@@ -6535,7 +7555,8 @@ pub struct RendererDartImpl {
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
-    render: Box<dyn Fn(InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
+    render:
+        Box<dyn Fn(kreuzberg::internal::InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
 }
 
 impl kreuzberg::plugins::Plugin for RendererDartImpl {
@@ -6558,7 +7579,7 @@ impl kreuzberg::plugins::Plugin for RendererDartImpl {
 
 impl kreuzberg::plugins::Renderer for RendererDartImpl {
     fn render(&self, doc: &kreuzberg::internal::InternalDocument) -> kreuzberg::Result<String> {
-        let doc = InternalDocument::from(doc.clone());
+        let doc = doc.clone();
         let __result = tokio::runtime::Handle::current().block_on(async { (self.render)(doc).await });
         Ok(__result)
     }
@@ -6569,7 +7590,9 @@ impl kreuzberg::plugins::Renderer for RendererDartImpl {
 pub fn create_renderer_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    render: Box<dyn Fn(InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
+    render: Box<
+        dyn Fn(kreuzberg::internal::InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync,
+    >,
 ) -> RendererDartImpl {
     RendererDartImpl {
         plugin_name,

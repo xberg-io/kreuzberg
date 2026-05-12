@@ -2592,6 +2592,13 @@ void kreuzberg_pdf_config_free(KREUZBERGPdfConfig *ptr);
 int32_t kreuzberg_pdf_config_extract_images(const KREUZBERGPdfConfig *ptr);
 
 /**
+ * Get the `extract_tables` field from a `PdfConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_pdf_config_extract_tables(const KREUZBERGPdfConfig *ptr);
+
+/**
  * Get the `passwords` field from a `PdfConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.

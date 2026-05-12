@@ -7,6 +7,10 @@
 start_app() ->
     %% Elixir runtime must be started before kreuzberg NIF init
     %% because Rustler uses Elixir.Application.app_dir/2 to locate the .so.
-    {ok, _} = application:ensure_all_started(elixir),
+    %% Gracefully fall back when Elixir is not a runtime dependency.
+    case application:ensure_all_started(elixir) of
+        {ok, _} -> ok;
+        {error, _} -> ok
+    end,
     {ok, _} = application:ensure_all_started(kreuzberg),
     nil.

@@ -227,6 +227,11 @@ pub struct ExtractionOverrides {
     #[arg(long)]
     pub pdf_extract_images: Option<bool>,
 
+    /// Extract tables from PDF (pdf_oxide native grid + heuristic text-layer fallback).
+    /// Default: true.
+    #[arg(long)]
+    pub pdf_extract_tables: Option<bool>,
+
     /// Extract PDF metadata (title, author, etc.).
     #[arg(long)]
     pub pdf_extract_metadata: Option<bool>,
@@ -685,12 +690,17 @@ impl ExtractionOverrides {
     }
 
     fn apply_pdf(&self, config: &mut ExtractionConfig) {
-        let has_pdf_flag =
-            self.pdf_extract_images.is_some() || self.pdf_extract_metadata.is_some() || !self.pdf_password.is_empty();
+        let has_pdf_flag = self.pdf_extract_images.is_some()
+            || self.pdf_extract_tables.is_some()
+            || self.pdf_extract_metadata.is_some()
+            || !self.pdf_password.is_empty();
         if has_pdf_flag {
             let pdf_opts = config.pdf_options.get_or_insert_with(Default::default);
             if let Some(extract_img) = self.pdf_extract_images {
                 pdf_opts.extract_images = extract_img;
+            }
+            if let Some(extract_tables) = self.pdf_extract_tables {
+                pdf_opts.extract_tables = extract_tables;
             }
             if let Some(extract_meta) = self.pdf_extract_metadata {
                 pdf_opts.extract_metadata = extract_meta;

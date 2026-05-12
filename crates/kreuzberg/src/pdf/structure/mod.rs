@@ -12,7 +12,7 @@ pub(crate) mod layout_classify;
 mod lines;
 mod paragraphs;
 mod pipeline;
-mod regions;
+pub(crate) mod regions;
 mod text_repair;
 pub(crate) mod types;
 

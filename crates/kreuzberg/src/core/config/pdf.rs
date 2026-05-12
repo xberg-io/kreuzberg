@@ -13,6 +13,15 @@ pub struct PdfConfig {
     #[serde(default)]
     pub extract_images: bool,
 
+    /// Extract tables from PDF.
+    ///
+    /// When `true` (default), runs pdf_oxide's native grid detector and, if it
+    /// finds nothing, falls back to the heuristic text-layer reconstruction in
+    /// `pdf::oxide::table::extract_tables_heuristic`. Set to `false` to skip
+    /// both passes — `tables` will then be empty in the result.
+    #[serde(default = "default_true")]
+    pub extract_tables: bool,
+
     /// List of passwords to try when opening encrypted PDFs
     #[serde(default)]
     pub passwords: Option<Vec<String>>,
@@ -87,6 +96,7 @@ impl Default for PdfConfig {
     fn default() -> Self {
         Self {
             extract_images: false,
+            extract_tables: true,
             passwords: None,
             extract_metadata: true,
             hierarchy: None,
@@ -156,6 +166,7 @@ mod tests {
         use super::*;
         let config = PdfConfig {
             extract_images: false,
+            extract_tables: true,
             passwords: None,
             extract_metadata: true,
             hierarchy: None,

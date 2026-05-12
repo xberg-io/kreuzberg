@@ -15,6 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Heuristic PDF table extraction on the default path (#897)**: the default
+  text-layer PDF extraction now falls back from pdf_oxide's native grid
+  detector to a heuristic reconstruction when the native detector returns
+  empty. The fallback clusters words into vertically-contiguous regions by
+  abnormally-large row gaps, runs the existing
+  `reconstruct_table → post_process_table → is_well_formed_table` chain
+  (the same one used by the OCR pipeline and the layout-detection path),
+  and emits the surviving grids as `Table` entries with bounding boxes.
+  This recovers tables on text-layer PDFs (invoices, financial statements,
+  scientific tables) that lack the explicit ruling lines pdf_oxide's grid
+  detector requires — without needing the 12 GB ONNX layout-detection
+  models. New config: `PdfConfig.extract_tables: bool` (default `true`)
+  and CLI flag `--pdf-extract-tables`. Set to `false` to skip table
+  extraction entirely.
+
 - **InternalDocument is serde-bridgeable**: `InternalDocument` and its four
   previously-non-serde sub-types (`InternalElement`, `ElementKind`,
   `Relationship`, `RelationshipTarget`) gained `Serialize` + `Deserialize`
