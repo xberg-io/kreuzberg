@@ -92,8 +92,8 @@ public func detectMimeType<GenericIntoRustString: IntoRustString>(_ path: Generi
 public func embedTexts<GenericIntoRustString: IntoRustString>(_ texts: RustVec<GenericIntoRustString>, _ config: EmbeddingConfig) throws -> RustString {
     try { let val = __swift_bridge__$embed_texts({ let val = texts; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func getEmbeddingPreset<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) -> RustString {
-    RustString(ptr: __swift_bridge__$get_embedding_preset({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+public func getEmbeddingPreset<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) -> Optional<EmbeddingPreset> {
+    { let val = __swift_bridge__$get_embedding_preset({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { return EmbeddingPreset(ptr: val!) } else { return nil } }()
 }
 public func listEmbeddingPresets() -> RustVec<RustString> {
     RustVec(ptr: __swift_bridge__$list_embedding_presets())
@@ -465,6 +465,9 @@ public func embeddingConfigFromJson<GenericIntoRustString: IntoRustString>(_ jso
 }
 public func extractionResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ExtractionResult {
     try { let val = __swift_bridge__$extraction_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func ocrExtractionResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> OcrExtractionResult {
+    try { let val = __swift_bridge__$ocr_extraction_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return OcrExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func htmlMetadataFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> HtmlMetadata {
     try { let val = __swift_bridge__$html_metadata_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return HtmlMetadata(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -2578,8 +2581,8 @@ public class PdfConfig: PdfConfigRefMut {
     }
 }
 extension PdfConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ extract_images: Bool, _ extract_tables: Bool, _ passwords: Optional<RustVec<GenericIntoRustString>>, _ extract_metadata: Bool, _ hierarchy: Optional<HierarchyConfig>, _ extract_annotations: Bool, _ top_margin_fraction: Optional<Float>, _ bottom_margin_fraction: Optional<Float>, _ allow_single_column_tables: Bool) {
-        self.init(ptr: __swift_bridge__$PdfConfig$new(extract_images, extract_tables, { if let val = passwords { val.isOwned = false; return val.ptr } else { return nil } }(), extract_metadata, { if let val = hierarchy { val.isOwned = false; return val.ptr } else { return nil } }(), extract_annotations, top_margin_fraction.intoFfiRepr(), bottom_margin_fraction.intoFfiRepr(), allow_single_column_tables))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ extract_images: Bool, _ extract_tables: Bool, _ passwords: Optional<RustVec<GenericIntoRustString>>, _ extract_metadata: Bool, _ hierarchy: Optional<HierarchyConfig>, _ extract_annotations: Bool, _ top_margin_fraction: Optional<Float>, _ bottom_margin_fraction: Optional<Float>, _ allow_single_column_tables: Bool, _ ocr_inline_images: Bool) {
+        self.init(ptr: __swift_bridge__$PdfConfig$new(extract_images, extract_tables, { if let val = passwords { val.isOwned = false; return val.ptr } else { return nil } }(), extract_metadata, { if let val = hierarchy { val.isOwned = false; return val.ptr } else { return nil } }(), extract_annotations, top_margin_fraction.intoFfiRepr(), bottom_margin_fraction.intoFfiRepr(), allow_single_column_tables, ocr_inline_images))
     }
 }
 public class PdfConfigRefMut: PdfConfigRef {
@@ -2629,6 +2632,10 @@ extension PdfConfigRef {
 
     public func allow_single_column_tables() -> Bool {
         __swift_bridge__$PdfConfig$allow_single_column_tables(ptr)
+    }
+
+    public func ocr_inline_images() -> Bool {
+        __swift_bridge__$PdfConfig$ocr_inline_images(ptr)
     }
 }
 extension PdfConfig: Vectorizable {

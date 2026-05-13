@@ -2934,7 +2934,7 @@ dependencies = [
  "pastey 0.2.2",
  "pdf_oxide",
  "pulldown-cmark 0.13.3",
- "quick-xml 0.39.4",
+ "quick-xml 0.40.0",
  "rake",
  "rayon",
  "regex",
@@ -3880,9 +3880,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.46"
+version = "0.3.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ba152347f68db3aa3fbecc2b0104724d74aad532b186d3d9f4d5541681ddd91"
+checksum = "04717572366df7c9fa002f3c376e58c4d4071d47cf9339b95c0054adb8a0bbb7"
 dependencies = [
  "aes 0.9.0",
  "base64 0.22.1",
@@ -4178,6 +4178,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdcc8dd4e2f670d309a5f0e83fe36dfdc05af317008fea29144da1a2ac858e5e"
 dependencies = [
  "encoding_rs",
+ "memchr",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.40.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b7315c86b26aaef0321fba33c9dcc160da659c6a9d278f0f6a5656d6561c03b"
+dependencies = [
  "memchr",
  "serde",
 ]
@@ -5934,9 +5943,9 @@ checksum = "40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de"
 
 [[package]]
 name = "unhwp"
-version = "0.2.4"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7e7d0d14b2b326473082e9c3c8ea8c291b0b998b49ba395de374db9dcaa1b8a"
+checksum = "e40d84ffa1071cccf93564ea804955376a4b740368de580644087ee9c449c8a6"
 dependencies = [
  "cfb 0.10.0",
  "flate2",

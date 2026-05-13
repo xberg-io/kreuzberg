@@ -2892,7 +2892,7 @@ void* __swift_bridge__$PageConfig$new(bool extract_pages, bool insert_page_marke
 bool __swift_bridge__$PageConfig$extract_pages(void* self);
 bool __swift_bridge__$PageConfig$insert_page_markers(void* self);
 void* __swift_bridge__$PageConfig$marker_format(void* self);
-void* __swift_bridge__$PdfConfig$new(bool extract_images, bool extract_tables, void* passwords, bool extract_metadata, void* hierarchy, bool extract_annotations, struct __private__OptionF32 top_margin_fraction, struct __private__OptionF32 bottom_margin_fraction, bool allow_single_column_tables);
+void* __swift_bridge__$PdfConfig$new(bool extract_images, bool extract_tables, void* passwords, bool extract_metadata, void* hierarchy, bool extract_annotations, struct __private__OptionF32 top_margin_fraction, struct __private__OptionF32 bottom_margin_fraction, bool allow_single_column_tables, bool ocr_inline_images);
 bool __swift_bridge__$PdfConfig$extract_images(void* self);
 bool __swift_bridge__$PdfConfig$extract_tables(void* self);
 void* __swift_bridge__$PdfConfig$passwords(void* self);
@@ -2902,6 +2902,7 @@ bool __swift_bridge__$PdfConfig$extract_annotations(void* self);
 struct __private__OptionF32 __swift_bridge__$PdfConfig$top_margin_fraction(void* self);
 struct __private__OptionF32 __swift_bridge__$PdfConfig$bottom_margin_fraction(void* self);
 bool __swift_bridge__$PdfConfig$allow_single_column_tables(void* self);
+bool __swift_bridge__$PdfConfig$ocr_inline_images(void* self);
 void* __swift_bridge__$HierarchyConfig$new(bool enabled, uintptr_t k_clusters, bool include_bbox, struct __private__OptionF32 ocr_coverage_threshold);
 bool __swift_bridge__$HierarchyConfig$enabled(void* self);
 uintptr_t __swift_bridge__$HierarchyConfig$k_clusters(void* self);
@@ -3831,6 +3832,7 @@ struct __private__ResultPtrAndPtr __swift_bridge__$batch_file_item_from_json(voi
 struct __private__ResultPtrAndPtr __swift_bridge__$ocr_config_from_json(void* json);
 struct __private__ResultPtrAndPtr __swift_bridge__$embedding_config_from_json(void* json);
 struct __private__ResultPtrAndPtr __swift_bridge__$extraction_result_from_json(void* json);
+struct __private__ResultPtrAndPtr __swift_bridge__$ocr_extraction_result_from_json(void* json);
 struct __private__ResultPtrAndPtr __swift_bridge__$html_metadata_from_json(void* json);
 typedef enum __swift_bridge__$ResultUIntAndString$Tag {__swift_bridge__$ResultUIntAndString$ResultOk, __swift_bridge__$ResultUIntAndString$ResultErr} __swift_bridge__$ResultUIntAndString$Tag;
 union __swift_bridge__$ResultUIntAndString$Fields {uintptr_t ok; void* err;};

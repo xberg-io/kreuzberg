@@ -2581,7 +2581,7 @@ mod ffi {
         #[swift_bridge(swift_name = "embedTexts")]
         fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String>;
         #[swift_bridge(swift_name = "getEmbeddingPreset")]
-        fn get_embedding_preset(name: String) -> String;
+        fn get_embedding_preset(name: String) -> Option<EmbeddingPreset>;
         #[swift_bridge(swift_name = "listEmbeddingPresets")]
         fn list_embedding_presets() -> Vec<String>;
     }
@@ -11621,8 +11621,8 @@ pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<String
         .map(|v| serde_json::to_string(&v).expect("serializable return"))
 }
 
-pub fn get_embedding_preset(name: String) -> String {
-    serde_json::to_string(&(kreuzberg::get_embedding_preset(&name))).expect("serializable return")
+pub fn get_embedding_preset(name: String) -> Option<EmbeddingPreset> {
+    (kreuzberg::get_embedding_preset(&name)).map(EmbeddingPreset)
 }
 
 pub fn list_embedding_presets() -> Vec<String> {
