@@ -19,13 +19,13 @@ tokio = { version = "1", features = ["rt"] }
 async-trait = "0.1"
 
 # Android lacks ORT prebuilts (ort-sys has no x86_64-linux-android binary),
-# so disable the ORT-requiring sub-features (paddle-ocr, layout-detection,
-# embeddings, auto-rotate) on that platform.
+# so on android we mirror `full` minus the ORT-requiring sub-features
+# (paddle-ocr, layout-detection, embeddings, auto-rotate).
 [target.'cfg(not(target_os = "android"))'.dependencies]
 kreuzberg = { path = "../../../crates/kreuzberg", features = ["full"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-kreuzberg = { path = "../../../crates/kreuzberg", default-features = false, features = ["formats", "ocr", "chunking", "tree-sitter", "liter-llm", "stopwords", "keywords"] }
+kreuzberg = { path = "../../../crates/kreuzberg", default-features = false, features = ["formats", "analysis", "services", "ocr", "chunking-tokenizers", "tree-sitter", "liter-llm", "tokio-runtime"] }
 
 [lints.rust]
 # flutter_rust_bridge uses #[cfg(frb_expand)] internally during macro expansion.
