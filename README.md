@@ -161,6 +161,23 @@ Complete architecture coverage across all language bindings:
 
 **Note**: ✅ = Precompiled binaries available with instant installation. WASM runs in any environment with WebAssembly support (browsers, Deno, Bun, Cloudflare Workers). All platforms are tested in CI. MacOS support is Apple Silicon only.
 
+### Mobile (iOS, Android)
+
+| Target                                            | ORT-dependent features* |
+| ------------------------------------------------- | :---------------------: |
+| iOS (`aarch64-apple-ios`, `aarch64-apple-ios-sim`) |           ✅            |
+| Android arm64 (`aarch64-linux-android`)            |           ✅            |
+| Android x86_64 emulator (`x86_64-linux-android`)   |           ❌            |
+
+*ORT-dependent features: PaddleOCR, layout detection, embeddings, auto-rotate.
+All non-ORT capabilities (Tesseract OCR, every document format, chunking, language detection, keywords, tree-sitter code intelligence, API/MCP, LLM) are available on all four mobile targets.
+
+The `x86_64-linux-android` emulator triple lacks an ORT prebuilt upstream; kreuzberg's `kreuzberg` crate exposes an `android-target` aggregate feature that selects the same no-ORT feature set as WASM. The `kreuzberg-ffi` and `kreuzberg-dart` crates auto-select that aggregate for the emulator via target-conditional dependencies — host and arm64 phones get full features automatically.
+
+### Browsers / Edge (WebAssembly)
+
+WASM excludes the same ORT-dependent feature set as the Android x86_64 emulator. The shared no-ORT base lives behind the `no-ort-target` feature in the core crate; both `wasm-target` and `android-target` compose it.
+
 ### Embeddings Support (Optional)
 
 To use embeddings functionality:
