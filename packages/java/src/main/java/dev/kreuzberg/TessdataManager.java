@@ -28,9 +28,7 @@ public class TessdataManager implements AutoCloseable {
             // TODO unsupported return shape for cacheDir
             throw new KreuzbergRsException("cacheDir: unsupported return shape", (Throwable) null);
         } catch (Throwable e) {
-            if (e instanceof KreuzbergRsException ex) {
-                throw ex;
-            }
+            if (e instanceof KreuzbergRsException ex) { throw ex; }
             throw new KreuzbergRsException("cacheDir: failed", e);
         }
     }
@@ -41,9 +39,7 @@ public class TessdataManager implements AutoCloseable {
             // TODO unsupported return shape for isLanguageCached
             throw new KreuzbergRsException("isLanguageCached: unsupported return shape", (Throwable) null);
         } catch (Throwable e) {
-            if (e instanceof KreuzbergRsException ex) {
-                throw ex;
-            }
+            if (e instanceof KreuzbergRsException ex) { throw ex; }
             throw new KreuzbergRsException("isLanguageCached: failed", e);
         }
     }
@@ -52,9 +48,7 @@ public class TessdataManager implements AutoCloseable {
             // TODO unsupported return shape for ensureAllLanguages
             throw new KreuzbergRsException("ensureAllLanguages: unsupported return shape", (Throwable) null);
         } catch (Throwable e) {
-            if (e instanceof KreuzbergRsException ex) {
-                throw ex;
-            }
+            if (e instanceof KreuzbergRsException ex) { throw ex; }
             throw new KreuzbergRsException("ensureAllLanguages: failed", e);
         }
     }
@@ -72,22 +66,19 @@ public class TessdataManager implements AutoCloseable {
     private void checkLastFfiError() throws KreuzbergRsException {
         try {
             int code = (int) NativeLib.KREUZBERG_LAST_ERROR_CODE.invoke();
-            if (code == 0) {
-                return;
-            }
+            if (code == 0) { return; }
             MemorySegment ctxPtr = (MemorySegment) NativeLib.KREUZBERG_LAST_ERROR_CONTEXT.invoke();
             String msg = ctxPtr.equals(MemorySegment.NULL) ? "unknown" : ctxPtr.reinterpret(Long.MAX_VALUE).getString(0);
             throw new KreuzbergRsException(code, msg);
         } catch (Throwable e) {
-            if (e instanceof KreuzbergRsException ex) {
-                throw ex;
-            }
+            if (e instanceof KreuzbergRsException ex) { throw ex; }
             throw new KreuzbergRsException("failed to read last error", e);
         }
     }
     private static final ObjectMapper STREAM_MAPPER = new ObjectMapper()
-            .registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module()).findAndRegisterModules()
-            .setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE)
-            .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-            .configure(com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
+        .registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module())
+        .findAndRegisterModules()
+        .setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE)
+        .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+        .configure(com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
 }

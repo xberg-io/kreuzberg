@@ -16,18 +16,18 @@ public record HeadingLevel(byte level, String text) {
     /**
      * Parse a {@code HeadingLevel} from a JSON string.
      *
-     * @param json
-     *            JSON serialisation matching the Rust-side field names (snake_case).
-     * @throws KreuzbergRsException
-     *             if the JSON cannot be deserialised.
+     * @param json JSON serialisation matching the Rust-side field names (snake_case).
+     * @throws KreuzbergRsException if the JSON cannot be deserialised.
      */
     public static HeadingLevel fromJson(String json) throws KreuzbergRsException {
         try {
-            return new com.fasterxml.jackson.databind.ObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module())
-                    .findAndRegisterModules().setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE)
-                    .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-                    .configure(com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
-                    .readValue(json, HeadingLevel.class);
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                .registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module())
+                .findAndRegisterModules()
+                .setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE)
+                .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+                .configure(com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+                .readValue(json, HeadingLevel.class);
         } catch (Exception e) {
             throw new KreuzbergRsException("Failed to parse HeadingLevel from JSON: " + e.getMessage(), e);
         }

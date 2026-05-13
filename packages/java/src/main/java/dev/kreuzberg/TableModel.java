@@ -11,8 +11,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Which table structure recognition model to use.
  *
- * Controls the model used for table cell detection within layout-detected table regions. Wire format is snake_case in all serializers
- * (JSON, TOML, YAML).
+ * Controls the model used for table cell detection within layout-detected
+ * table regions. Wire format is snake_case in all serializers (JSON, TOML,
+ * YAML).
  */
 public enum TableModel {
     /**

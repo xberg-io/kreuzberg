@@ -11,16 +11,30 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * The 17 canonical document layout classes.
  *
- * All model backends (RT-DETR, YOLO, etc.) map their native class IDs to this shared set. Models with fewer classes (DocLayNet: 11,
- * PubLayNet: 5) map to the closest equivalent.
+ * All model backends (RT-DETR, YOLO, etc.) map their native class IDs
+ * to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
+ * map to the closest equivalent.
  *
  * Wire format is snake_case in all serializers (JSON, TOML, YAML).
  */
 public enum LayoutClass {
-    Caption("caption"), Footnote("footnote"), Formula("formula"), ListItem("list_item"), PageFooter("page_footer"), PageHeader(
-            "page_header"), Picture("picture"), SectionHeader("section_header"), Table("table"), Text("text"), Title(
-                    "title"), DocumentIndex("document_index"), Code("code"), CheckboxSelected("checkbox_selected"), CheckboxUnselected(
-                            "checkbox_unselected"), Form("form"), KeyValueRegion("key_value_region");
+    Caption("caption"),
+    Footnote("footnote"),
+    Formula("formula"),
+    ListItem("list_item"),
+    PageFooter("page_footer"),
+    PageHeader("page_header"),
+    Picture("picture"),
+    SectionHeader("section_header"),
+    Table("table"),
+    Text("text"),
+    Title("title"),
+    DocumentIndex("document_index"),
+    Code("code"),
+    CheckboxSelected("checkbox_selected"),
+    CheckboxUnselected("checkbox_unselected"),
+    Form("form"),
+    KeyValueRegion("key_value_region");
 
     /** The string value. */
     private final String value;
