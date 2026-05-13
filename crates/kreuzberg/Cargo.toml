@@ -337,7 +337,7 @@ parking_lot = { workspace = true }
 pastey = "0.2"
 pdf_oxide = { workspace = true, features = ["rendering"], optional = true }
 pulldown-cmark = { version = "0.13" }
-quick-xml = { version = "0.39.4", features = ["serialize"], optional = true }
+quick-xml = { version = "0.40.0", features = ["serialize"], optional = true }
 rake = { version = "0.3.6", optional = true }
 rayon = { workspace = true }
 regex = "1.12.3"
@@ -383,7 +383,7 @@ tower-http = { version = "0.6", features = [
 ], optional = true }
 tracing = { workspace = true }
 tracing-opentelemetry = { version = "0.32", optional = true }
-unhwp = { version = "0.2.4", default-features = false, features = ["hwpx"], optional = true }
+unhwp = { version = "0.3.2", default-features = false, features = ["hwpx"], optional = true }
 unicode-normalization = { version = "0.1.25", optional = true }
 urlencoding = "2"
 utoipa = { version = "5.5", features = ["axum_extras"], optional = true }
