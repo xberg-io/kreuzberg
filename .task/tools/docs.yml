@@ -11,10 +11,25 @@ tasks:
     cmds:
       - uv run --no-sync --group docs zensical build --clean
 
+  build:strict:
+    desc: Build documentation in strict mode (CI-equivalent)
+    cmds:
+      - uv run --no-sync --group docs zensical build --strict --clean
+
   serve:
-    desc: Serve documentation locally
+    desc: Serve documentation locally with live reload
     cmds:
       - uv run --no-sync --group docs zensical serve
+
+  lint:links:
+    desc: Check links with lychee
+    cmds:
+      - lychee --offline docs/ README.md
+
+  lint:prose:
+    desc: Lint prose with textlint
+    cmds:
+      - npx textlint 'docs/**/*.md'
 
   snippets:validate:
     desc: Validate all docs/snippets via snippet-runner (syntax level)

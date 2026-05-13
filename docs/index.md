@@ -43,7 +43,7 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
 - :material-code-tags:{ .lg .middle } **Code Intelligence**
 
-    Extract functions, classes, imports, symbols, and docstrings from 248 programming languages. Results in the **code_intelligence** field with semantic chunking.
+    Extract functions, classes, imports, symbols, and docstrings from 306 programming languages. Results in the **code_intelligence** field with semantic chunking.
 
 - :material-puzzle:{ .lg .middle } **Plugin System**
 

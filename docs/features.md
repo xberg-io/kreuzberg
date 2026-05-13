@@ -200,7 +200,7 @@ Optional post-extraction steps, each configured independently through `Extractio
 
 !!! Info "Added in v4.8.0"
 
-Kreuzberg integrates with 146 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
+Kreuzberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
 
 <details>
 <summary><strong>VLM OCR</strong> -- Vision language models as an OCR backend</summary>
@@ -262,7 +262,7 @@ Customize the prompts sent to LLMs with Minijinja templates. Available variables
 
 ### For Code
 
-**Code Intelligence** -- Extract functions, classes, imports, exports, symbols, docstrings, and diagnostics from 248 programming languages via tree-sitter. Results are available in `ExtractionResult.code_intelligence` as a `ProcessResult`. Code files produce semantic chunks (function/class-aware) that bypass the text-splitter entirely. Configure content mode with `CodeContentMode`: `chunks` (default, semantic TSLP chunks), `raw` (source as-is), or `structure` (headings + docstrings only).
+**Code Intelligence** -- Extract functions, classes, imports, exports, symbols, docstrings, and diagnostics from 306 programming languages via tree-sitter. Results are available in `ExtractionResult.code_intelligence` as a `ProcessResult`. Code files produce semantic chunks (function/class-aware) that bypass the text-splitter entirely. Configure content mode with `CodeContentMode`: `chunks` (default, semantic TSLP chunks), `raw` (source as-is), or `structure` (headings + docstrings only).
 
 ### For Data Quality
 
