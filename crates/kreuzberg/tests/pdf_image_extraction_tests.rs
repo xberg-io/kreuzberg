@@ -287,3 +287,92 @@ fn test_regression_796_plain_no_images_when_disabled() {
         result.images.as_ref().map(|v| v.len()).unwrap_or(0)
     );
 }
+
+// ─── Regression tests for issue #914 ────────────────────────────────────────
+//
+// Issue #914: the existing #796 tests only assert `result.images.is_empty()`.
+// That field is gated separately (extraction.rs:112) and is always empty when
+// `extract_images=false`, even if the `inject_placeholders` guard at line 216 is
+// removed. The guard controls whether `ElementKind::Image` elements are injected
+// into the InternalDocument — which in turn controls whether image placeholder
+// references (`![]()` / `![](image_N.fmt)`) appear in `result.content`.
+//
+// Critically, the Djot renderer (`djot.rs`) lacked the `doc.images.get()` None
+// check that comrak_bridge, html_styled, and plain all have. Removing the guard
+// would cause `![]()` to leak into Djot content with no test catching it.
+//
+// Fix: (A) add content-level assertions for all rich output formats, and
+//      (B) align the Djot renderer with the other renderers' None guard.
+//
+// JSON renderer gap (out of scope): json.rs emits `{"type":"image","alt":null,"src":null}`
+// for orphaned elements — null fields are valid structured JSON and produce no broken
+// markup, so it is intentionally not addressed here.
+
+/// Regression #914: Djot content must not contain image references when
+/// `extract_images=false`.
+///
+/// End-to-end contract test: asserts the full pipeline produces no image markup when
+/// `extract_images=false`. Requires both the `inject_placeholders` guard in `extraction.rs`
+/// AND the Djot renderer's `None` guard to be absent before it fails — the renderer-level
+/// unit test `test_djot_renderer_skips_orphaned_image_element` in `djot.rs` is the minimal
+/// proof that the renderer fix works independently.
+#[test]
+fn test_914_djot_no_image_refs_in_content_when_extraction_disabled() {
+    let result = extract_no_images("pdf/embedded_images_tables.pdf", OutputFormat::Djot);
+    assert!(
+        !result.content.contains("![]()"),
+        "Djot output must not contain empty ![]() refs when extract_images=false.\n\
+         Got content:\n{}",
+        &result.content[..result.content.len().min(400)]
+    );
+    assert!(
+        !result.content.contains("![](image_"),
+        "Djot output must not contain image placeholder refs when extract_images=false.\n\
+         Got content:\n{}",
+        &result.content[..result.content.len().min(400)]
+    );
+    // Text content must still be present — no regression on extraction.
+    assert!(
+        !result.content.is_empty(),
+        "Djot content must not be empty when images are disabled"
+    );
+}
+
+/// Regression #914: Markdown content must not contain image references when
+/// `extract_images=false`.
+///
+/// The comrak_bridge already has a None guard so this would pass even without
+/// the extraction-level guard, but it pins the end-to-end contract explicitly.
+#[test]
+fn test_914_markdown_no_image_refs_in_content_when_extraction_disabled() {
+    let result = extract_no_images("pdf/embedded_images_tables.pdf", OutputFormat::Markdown);
+    assert!(
+        !result.content.contains("![]()"),
+        "Markdown output must not contain empty ![]() refs when extract_images=false.\n\
+         Got content:\n{}",
+        &result.content[..result.content.len().min(400)]
+    );
+    assert!(
+        !result.content.contains("![](image_"),
+        "Markdown output must not contain image placeholder refs when extract_images=false.\n\
+         Got content:\n{}",
+        &result.content[..result.content.len().min(400)]
+    );
+}
+
+/// Regression #914: same guarantee via `pdf_options.extract_images = false`.
+///
+/// Verifies both config paths are covered for Djot content — mirrors the
+/// existing #796 `result.images` test for the pdf_options path.
+#[test]
+fn test_914_djot_no_image_refs_via_pdf_options() {
+    let result = extract_no_images_via_pdf_options("pdf/embedded_images_tables.pdf", OutputFormat::Djot);
+    assert!(
+        !result.content.contains("![]()"),
+        "Djot output (pdf_options path) must not contain ![]() when extract_images=false"
+    );
+    assert!(
+        !result.content.contains("![](image_"),
+        "Djot output (pdf_options path) must not contain image refs when extract_images=false"
+    );
+}
