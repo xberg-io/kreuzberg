@@ -2282,11 +2282,6 @@ registry_getter = "kreuzberg::plugins::registry::get_ocr_backend_registry"
 register_fn = "register_ocr_backend"
 unregister_fn = "unregister_ocr_backend"
 clear_fn = "clear_ocr_backends"
-# extendr trait_bridge codegen produces String error literals where extendr_api::Error
-# is expected (E0308) and calls .map_err() on parking_lot RwLockWriteGuard (which is
-# infallible) — 85 build errors as of alef 0.15.0. Rustler now uses LocalPid which is
-# Copy + Send + Sync; the issue is resolved. R backend still has trait method signature issues.
-exclude_languages = ["r"]
 
 [[crates.trait_bridges]]
 trait_name = "PostProcessor"
@@ -2295,7 +2290,6 @@ registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
 register_fn = "register_post_processor"
 unregister_fn = "unregister_post_processor"
 clear_fn = "clear_post_processors"
-exclude_languages = ["r"]
 
 [[crates.trait_bridges]]
 trait_name = "Validator"
@@ -2304,7 +2298,6 @@ registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
 register_fn = "register_validator"
 unregister_fn = "unregister_validator"
 clear_fn = "clear_validators"
-exclude_languages = ["r"]
 
 [[crates.trait_bridges]]
 trait_name = "EmbeddingBackend"
@@ -2313,7 +2306,6 @@ registry_getter = "kreuzberg::plugins::registry::get_embedding_backend_registry"
 register_fn = "register_embedding_backend"
 unregister_fn = "unregister_embedding_backend"
 clear_fn = "clear_embedding_backends"
-exclude_languages = ["r"]
 
 [[crates.trait_bridges]]
 trait_name = "DocumentExtractor"
@@ -2322,7 +2314,6 @@ registry_getter = "kreuzberg::plugins::registry::get_document_extractor_registry
 register_fn = "register_document_extractor"
 unregister_fn = "unregister_document_extractor"
 clear_fn = "clear_document_extractors"
-exclude_languages = ["r"]
 # `as_sync_extractor` returns `Option<&dyn SyncExtractor>` — a trait-object reference that
 # cannot traverse the C FFI boundary. Skip it in the FFI vtable and let the default impl
 # (returns None) take over.
@@ -2335,4 +2326,3 @@ registry_getter = "kreuzberg::plugins::registry::get_renderer_registry"
 register_fn = "register_renderer"
 unregister_fn = "unregister_renderer"
 clear_fn = "clear_renderers"
-exclude_languages = ["r"]
