@@ -1,0 +1,3 @@
+[submodule "test_documents"]
+	path = test_documents
+	url = ssh://git@github.com/kreuzberg-dev/test_documents.git

@@ -14,6 +14,8 @@ jobs:
         working-directory: packages/dart
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:

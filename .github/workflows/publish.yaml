@@ -444,6 +444,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - name: Build wheels
         uses: kreuzberg-dev/actions/build-python-wheels@v1
         with:
@@ -486,6 +487,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
       - uses: actions/setup-python@v6
         with:
@@ -525,6 +527,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -556,6 +559,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: wasm32-unknown-unknown
@@ -603,6 +607,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - uses: ruby/setup-ruby@v1
@@ -647,6 +652,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-php@v1
         with:
           php-version: ${{ matrix.php }}
@@ -699,6 +705,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -758,6 +765,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - name: Build CLI via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-build \
@@ -802,6 +810,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -841,6 +850,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -894,6 +904,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -930,6 +941,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - name: Build kreuzberg-ffi via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-ffi \
@@ -965,6 +977,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
       - uses: kreuzberg-dev/actions/build-android-natives@v1
         with:
@@ -996,6 +1009,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -1032,6 +1046,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - name: Build kreuzberg-ffi via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-ffi \
@@ -1072,6 +1087,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: "1.17"
@@ -1119,6 +1135,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - name: Build kreuzberg_nif via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-rustler \
@@ -1161,6 +1178,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
       - uses: kreuzberg-dev/actions/build-android-natives@v1
         with:
@@ -1183,6 +1201,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
       - uses: kreuzberg-dev/actions/build-ios-xcframework@v1
         with:
@@ -1212,6 +1231,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
@@ -1244,6 +1264,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - uses: kreuzberg-dev/actions/build-dart-package@v1
@@ -1268,6 +1289,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
       - uses: kreuzberg-dev/actions/build-swift-artifactbundle@v1
         id: bundle
@@ -1292,6 +1314,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - uses: kreuzberg-dev/actions/build-swift-package@v1
@@ -1316,6 +1339,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
           fetch-depth: 0
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - uses: kreuzberg-dev/actions/build-zig-package@v1
@@ -1487,6 +1511,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - uses: kreuzberg-dev/actions/publish-crates@v1
@@ -1560,6 +1585,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           pattern: node-bindings-*
@@ -1611,6 +1637,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           name: wasm-bundle
@@ -1655,6 +1682,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           pattern: java-natives-*
@@ -1708,6 +1736,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           pattern: java-natives-*
@@ -1746,6 +1775,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           pattern: kotlin-android-*
@@ -1788,6 +1818,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: actions/download-artifact@v8
         with:
           pattern: csharp-natives-*
@@ -1836,6 +1867,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: "1.17"
@@ -1950,6 +1982,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/publish-swift@v1
         with:
           working-directory: packages/swift
@@ -1967,6 +2000,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.ref }}
 
+          submodules: recursive
       - uses: kreuzberg-dev/actions/publish-zig@v1
         with:
           working-directory: packages/zig
@@ -2051,6 +2085,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
 
+          submodules: recursive
       - name: Install Homebrew (Linux)
         if: ${{ matrix.install_brew }}
         uses: kreuzberg-dev/actions/install-homebrew-linux@v1
@@ -2086,6 +2121,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
 
+          submodules: recursive
       - name: Checkout homebrew-tap
         uses: actions/checkout@v6
         with:

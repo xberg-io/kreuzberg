@@ -14,6 +14,8 @@ jobs:
         working-directory: packages/kotlin
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:

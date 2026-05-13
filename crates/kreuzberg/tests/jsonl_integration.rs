@@ -10,7 +10,7 @@ use kreuzberg::core::extractor::{extract_bytes, extract_file};
 #[tokio::test]
 async fn test_extract_jsonl_file() {
     let config = ExtractionConfig::default();
-    let path = std::path::Path::new("test_documents/jsonl/simple.jsonl");
+    let path = std::path::Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../test_documents/jsonl/simple.jsonl"));
 
     let result = extract_file(path, None, &config)
         .await
@@ -55,7 +55,7 @@ async fn test_extract_jsonl_metadata() {
 #[tokio::test]
 async fn test_extract_jsonl_empty_lines() {
     let config = ExtractionConfig::default();
-    let path = std::path::Path::new("test_documents/jsonl/with_blanks.jsonl");
+    let path = std::path::Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../test_documents/jsonl/with_blanks.jsonl"));
 
     let result = extract_file(path, None, &config)
         .await

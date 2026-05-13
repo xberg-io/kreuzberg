@@ -35,6 +35,8 @@ jobs:
           - os: macos-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Free disk space
         if: runner.os == 'Linux'

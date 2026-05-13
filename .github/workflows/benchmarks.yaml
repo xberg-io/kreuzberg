@@ -55,6 +55,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -138,6 +139,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -212,6 +214,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -281,6 +284,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -343,6 +347,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -411,6 +416,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -480,6 +486,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -549,6 +556,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -618,6 +626,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -680,6 +689,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -748,6 +758,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -811,6 +822,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -874,6 +886,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -942,6 +955,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
+          submodules: recursive
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
@@ -1009,6 +1023,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Rust
         uses: kreuzberg-dev/actions/setup-rust@v1

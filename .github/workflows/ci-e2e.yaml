@@ -41,6 +41,8 @@ jobs:
             target: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Rust
         uses: kreuzberg-dev/actions/setup-rust@v1
@@ -138,6 +140,8 @@ jobs:
             test-cmd: "cd e2e/zig && zig build test"
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Rust
         uses: kreuzberg-dev/actions/setup-rust@v1
