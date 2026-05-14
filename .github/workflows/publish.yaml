@@ -668,6 +668,8 @@ jobs:
           php-version: ${{ matrix.php }}
           php-ts: nts
 
+      - uses: kreuzberg-dev/actions/install-alef@v1
+
       - uses: kreuzberg-dev/actions/package-php-pie@v1
         with:
           php-version: ${{ matrix.php }}
