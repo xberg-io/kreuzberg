@@ -58,6 +58,7 @@ pub struct ExtractionConfig {
     pub result_format: ResultFormat,
     pub security_limits: Option<SecurityLimits>,
     pub output_format: OutputFormat,
+    pub layout: Option<LayoutDetectionConfig>,
     pub use_layout_for_markdown: bool,
     pub include_document_structure: bool,
     pub acceleration: Option<AccelerationConfig>,
@@ -91,6 +92,7 @@ pub struct FileExtractionConfig {
     pub result_format: Option<ResultFormat>,
     pub output_format: Option<OutputFormat>,
     pub include_document_structure: Option<bool>,
+    pub layout: Option<LayoutDetectionConfig>,
     pub timeout_secs: Option<i64>,
     pub tree_sitter: Option<TreeSitterConfig>,
     pub structured_extraction: Option<StructuredExtractionConfig>,
@@ -2211,6 +2213,7 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             result_format: ResultFormat::from(v.result_format),
             security_limits: v.security_limits.map(SecurityLimits::from),
             output_format: OutputFormat::from(v.output_format),
+            layout: v.layout.map(LayoutDetectionConfig::from),
             use_layout_for_markdown: v.use_layout_for_markdown as _,
             include_document_structure: v.include_document_structure as _,
             acceleration: v.acceleration.map(AccelerationConfig::from),
@@ -2247,6 +2250,7 @@ impl From<kreuzberg::FileExtractionConfig> for FileExtractionConfig {
             result_format: v.result_format.map(ResultFormat::from),
             output_format: v.output_format.map(OutputFormat::from),
             include_document_structure: v.include_document_structure.map(|x| x as _),
+            layout: v.layout.map(LayoutDetectionConfig::from),
             timeout_secs: v.timeout_secs.map(|x| x as _),
             tree_sitter: v.tree_sitter.map(TreeSitterConfig::from),
             structured_extraction: v.structured_extraction.map(StructuredExtractionConfig::from),
@@ -4967,6 +4971,7 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             result_format: v.result_format.into(),
             security_limits: v.security_limits.map(Into::into),
             output_format: v.output_format.into(),
+            layout: v.layout.map(Into::into),
             use_layout_for_markdown: v.use_layout_for_markdown as _,
             include_document_structure: v.include_document_structure as _,
             acceleration: v.acceleration.map(Into::into),
@@ -5004,6 +5009,7 @@ impl From<FileExtractionConfig> for kreuzberg::FileExtractionConfig {
             result_format: v.result_format.map(Into::into),
             output_format: v.output_format.map(Into::into),
             include_document_structure: v.include_document_structure.map(|x| x as _),
+            layout: v.layout.map(Into::into),
             timeout_secs: v.timeout_secs.map(|x| x as _),
             tree_sitter: v.tree_sitter.map(Into::into),
             structured_extraction: v.structured_extraction.map(Into::into),
@@ -5074,6 +5080,17 @@ impl From<HtmlOutputConfig> for kreuzberg::HtmlOutputConfig {
             theme: v.theme.into(),
             class_prefix: v.class_prefix.into(),
             embed_css: v.embed_css as _,
+        }
+    }
+}
+
+impl From<LayoutDetectionConfig> for kreuzberg::LayoutDetectionConfig {
+    fn from(v: LayoutDetectionConfig) -> Self {
+        kreuzberg::LayoutDetectionConfig {
+            confidence_threshold: v.confidence_threshold.map(|x| x as _),
+            apply_heuristics: v.apply_heuristics as _,
+            table_model: v.table_model.into(),
+            acceleration: v.acceleration.map(Into::into),
         }
     }
 }
@@ -5426,6 +5443,19 @@ impl From<HtmlTheme> for kreuzberg::HtmlTheme {
             HtmlTheme::Dark => kreuzberg::HtmlTheme::Dark,
             HtmlTheme::Light => kreuzberg::HtmlTheme::Light,
             HtmlTheme::Unstyled => kreuzberg::HtmlTheme::Unstyled,
+        }
+    }
+}
+
+impl From<TableModel> for kreuzberg::TableModel {
+    fn from(v: TableModel) -> Self {
+        match v {
+            TableModel::Tatr => kreuzberg::TableModel::Tatr,
+            TableModel::SlanetWired => kreuzberg::TableModel::SlanetWired,
+            TableModel::SlanetWireless => kreuzberg::TableModel::SlanetWireless,
+            TableModel::SlanetPlus => kreuzberg::TableModel::SlanetPlus,
+            TableModel::SlanetAuto => kreuzberg::TableModel::SlanetAuto,
+            TableModel::Disabled => kreuzberg::TableModel::Disabled,
         }
     }
 }

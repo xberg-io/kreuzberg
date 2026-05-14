@@ -225,23 +225,11 @@ no-ort-target = [
     "paddle-ocr-types",
 ]
 # wasm-target: no-ort-target plus WASM-specific overrides (excel-wasm, tree-sitter-wasm, ocr-wasm).
-wasm-target = [
-    "no-ort-target",
-    "excel-wasm",
-    "tree-sitter-wasm",
-    "ocr-wasm",
-]
+wasm-target = ["no-ort-target", "excel-wasm", "tree-sitter-wasm", "ocr-wasm"]
 # android-target: no-ort-target plus native-Linux variants that work on Android ABI
 # (excel with tokio, native tree-sitter, Tesseract OCR, and API/MCP transport).
 # Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate).
-android-target = [
-    "no-ort-target",
-    "excel",
-    "tree-sitter",
-    "ocr",
-    "api",
-    "mcp",
-]
+android-target = ["no-ort-target", "excel", "tree-sitter", "ocr", "api", "mcp"]
 # Mobile deployment preset — formats + analysis + Tesseract OCR + code intelligence + API types.
 # Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate)
 # and server transport infrastructure (mcp, otel, liter-llm).

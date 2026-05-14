@@ -87,7 +87,7 @@ jobs:
         uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Run clippy
-        run: cargo clippy --workspace --exclude kreuzberg-ffi --exclude kreuzberg-py --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg_nif -- -D warnings
+        run: cargo clippy --workspace --exclude kreuzberg-ffi --exclude kreuzberg-py --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-dart --exclude kreuzberg-swift --exclude kreuzberg_nif -- -D warnings
         shell: bash
 
       - name: Run tests

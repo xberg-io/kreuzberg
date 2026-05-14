@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.15.60"
+alef_version = "0.15.61"
 languages = [
   "python",
   "node",
@@ -163,8 +163,11 @@ features = [
   "pdf",
   "ocr",
   "paddle-ocr",
+  "paddle-ocr-types",
   "layout-detection",
+  "layout-types",
   "embeddings",
+  "embedding-presets",
   "chunking",
   "keywords-yake",
   "keywords-rake",
@@ -176,6 +179,7 @@ features = [
   "archives",
   "stopwords",
   "auto-rotate",
+  "auto-rotate-types",
   "tokio-runtime",
   "api",
   "mcp",

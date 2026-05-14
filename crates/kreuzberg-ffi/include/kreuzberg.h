@@ -1337,6 +1337,13 @@ KREUZBERGSecurityLimits *kreuzberg_extraction_config_security_limits(const KREUZ
 KREUZBERGOutputFormat *kreuzberg_extraction_config_output_format(const KREUZBERGExtractionConfig *ptr);
 
 /**
+ * Get the `layout` field from a `ExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGLayoutDetectionConfig *kreuzberg_extraction_config_layout(const KREUZBERGExtractionConfig *ptr);
+
+/**
  * Get the `use_layout_for_markdown` field from a `ExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -1565,6 +1572,13 @@ KREUZBERGOutputFormat *kreuzberg_file_extraction_config_output_format(const KREU
  * Pointer must be a valid handle returned by this library.
  */
 int32_t kreuzberg_file_extraction_config_include_document_structure(const KREUZBERGFileExtractionConfig *ptr);
+
+/**
+ * Get the `layout` field from a `FileExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGLayoutDetectionConfig *kreuzberg_file_extraction_config_layout(const KREUZBERGFileExtractionConfig *ptr);
 
 /**
  * Get the `timeout_secs` field from a `FileExtractionConfig`.
