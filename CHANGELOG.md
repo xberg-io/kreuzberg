@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **MCID-tagged PDF content dropped in markdown/html output**: two
+  independent failure chains in the structured-PDF path caused content loss.
+  (1) `mark_cross_page_repeating_text` and `mark_cross_page_repeating_short_text`
+  had no first-occurrence exemption — a title block whose text also appeared as
+  a running header on later pages was furniture-marked on every page including
+  the first, silently dropping it from output. Fixed by preserving the first
+  occurrence of any repeating span, matching the exemption already present in
+  pdf_oxide's own `mark_running_artifact_spans`. (2) The OCR skip gate
+  incorrectly suppressed OCR when `fallback=true` (a per-page quality check
+  detected a scanned page): the gate now runs OCR whenever `fallback=true`,
+  regardless of aggregate character count. OCR is still skipped when the
+  pre-rendered doc is substantive and no per-page fallback is needed, or when
+  the content is non-textual.
+
 - **Email encoding data corruption (#910)**: replaced brittle 4-byte heuristic
   for UTF-16 detection in `EmailExtractor` with a robust statistical approach
   using `chardetng`. Tiny 4-byte ASCII files (e.g., binary sequences with
