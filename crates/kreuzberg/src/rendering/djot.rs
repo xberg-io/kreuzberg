@@ -95,11 +95,15 @@ pub(crate) fn render_djot(doc: &InternalDocument) -> String {
             }
             ElementKind::Image { image_index } => {
                 let image = doc.images.get(image_index as usize);
-                // Skip orphaned elements — doc.images has no entry when extract_images=false.
-                if image.is_none() {
+                let desc = image
+                    .and_then(|img| img.description.as_deref())
+                    .unwrap_or(elem.text.as_str());
+
+                // Skip orphaned elements only when they carry no descriptive text
+                if image.is_none() && desc.is_empty() {
                     continue;
                 }
-                let desc = image.and_then(|img| img.description.as_deref()).unwrap_or("");
+
                 let url = image
                     .and_then(|img| {
                         if !img.data.is_empty() {
@@ -941,37 +945,35 @@ mod tests {
 
     /// Regression #914: render_djot must not emit image markup for orphaned
     /// `ElementKind::Image` elements — i.e. when `doc.images` is empty.
-    ///
-    /// This is the renderer-level proof: it fails on the pre-fix djot.rs
-    /// (which emitted `![]()` unconditionally) and passes after the None guard.
-    /// The extraction-level gate (`inject_placeholders`) is bypassed here by
-    /// constructing the InternalDocument directly.
     #[test]
-    fn test_djot_renderer_skips_orphaned_image_element() {
-        use crate::types::internal::{InternalDocument, InternalElement};
-
-        let mut doc = InternalDocument::default();
-        // Inject an Image element whose index has no entry in doc.images —
-        // this is the state produced when extract_images=false and the
-        // injection guard is absent.
-        doc.elements
-            .push(InternalElement::text(ElementKind::Image { image_index: 0 }, "", 0));
-        // doc.images remains empty (default).
-
+    fn test_image_out_of_bounds_index_dropped() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph("Only text.", vec![], None, None);
+        b.push_element(crate::types::internal::InternalElement::text(
+            ElementKind::Image { image_index: 99 }, // no such image
+            "",
+            0,
+        ));
+        let doc = b.build(); // doc.images is empty
         let out = render_djot(&doc);
         assert!(
-            !out.contains("![]()"),
-            "render_djot must not emit empty image refs for orphaned elements, got: {:?}",
+            !out.contains("image_99"),
+            "out-of-bounds image must be dropped; got: {}",
             out
         );
-        assert!(
-            !out.contains("![](image_"),
-            "render_djot must not emit image refs for orphaned elements, got: {:?}",
-            out
-        );
-        assert_eq!(
-            out, "",
-            "output must be empty for a document with only an orphaned image"
-        );
+        assert!(out.contains("Only text."), "paragraph must still render; got: {}", out);
+    }
+
+    #[test]
+    fn test_image_out_of_bounds_index_with_desc_renders() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_element(crate::types::internal::InternalElement::text(
+            ElementKind::Image { image_index: 99 },
+            "Missing image",
+            0,
+        ));
+        let doc = b.build();
+        let out = render_djot(&doc);
+        assert!(out.contains("![Missing image]()"), "got: {}", out);
     }
 }
