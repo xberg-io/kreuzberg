@@ -160,7 +160,7 @@ jobs:
             swift-version: "6.0"
             test-cmd: "cd e2e/swift && swift test"
           - lang: zig
-            zig-version: "0.12.0"
+            zig-version: "0.14.0"
             test-cmd: "cd e2e/zig && zig build test"
     steps:
       - uses: actions/checkout@v6
@@ -268,7 +268,7 @@ jobs:
 
       - name: Setup Swift
         if: matrix.swift-version
-        uses: swift-actions/setup-swift@v1
+        uses: SwiftyLab/setup-swift@latest
         with:
           swift-version: ${{ matrix.swift-version }}
 
