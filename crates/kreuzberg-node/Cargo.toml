@@ -9,7 +9,7 @@ keywords = ["document", "extraction", "pdf", "ocr", "text"]
 categories = ["text-processing"]
 
 [package.metadata.cargo-machete]
-ignored = ["serde"]
+ignored = ["serde", "futures-util"]
 
 [lib]
 crate-type = ["cdylib"]

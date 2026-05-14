@@ -12,7 +12,7 @@ repository = "https://github.com/kreuzberg-dev/kreuzberg"
 [package.metadata.cargo-machete]
 # tokio is pulled in for its runtime/macros at link time but the generated
 # FFI source never `use`s it directly — cargo-machete would otherwise flag it.
-ignored = ["tokio"]
+ignored = ["tokio", "futures-util"]
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
