@@ -2158,7 +2158,7 @@ pub enum LayoutClass {
     KeyValueRegion,
 }
 
-// From<kreuzberg::T> conversions for bridge return types.
+// From<SourceT> conversions for bridge return types.
 
 impl From<kreuzberg::AccelerationConfig> for AccelerationConfig {
     fn from(v: kreuzberg::AccelerationConfig) -> Self {
@@ -4914,7 +4914,7 @@ impl From<kreuzberg::LayoutClass> for LayoutClass {
     }
 }
 
-// From<T> for kreuzberg::T conversions (mirror-to-core direction).
+// From<T> for SourceT conversions (mirror-to-core direction).
 // Used in bridge functions for types with sanitized fields, and by
 // nested conversions within those types.
 
@@ -7002,8 +7002,20 @@ pub struct OcrBackendDartImpl {
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     process_image: Box<dyn Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
+    process_image_file:
+        Box<dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
     supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
     backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync>,
+    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    process_document:
+        Box<dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
+}
+impl ::std::fmt::Debug for OcrBackendDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("OcrBackendDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for OcrBackendDartImpl {
@@ -7037,6 +7049,17 @@ impl kreuzberg::plugins::OcrBackend for OcrBackendDartImpl {
         Ok(Default::default())
     }
 
+    async fn process_image_file(
+        &self,
+        path: &std::path::Path,
+        config: &kreuzberg::OcrConfig,
+    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+        let path = path.to_string_lossy().into_owned();
+        let config = OcrConfig::from(config.clone());
+        let _ = (self.process_image_file)(path, config).await;
+        Ok(Default::default())
+    }
+
     fn supports_language(&self, lang: &str) -> bool {
         let lang = lang.to_string();
         let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_language)(lang).await });
@@ -7048,6 +7071,33 @@ impl kreuzberg::plugins::OcrBackend for OcrBackendDartImpl {
         let _ = __result;
         Default::default()
     }
+
+    fn supported_languages(&self) -> Vec<String> {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_languages)().await });
+        __result
+    }
+
+    fn supports_table_detection(&self) -> bool {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.supports_table_detection)().await });
+        __result
+    }
+
+    fn supports_document_processing(&self) -> bool {
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.supports_document_processing)().await });
+        __result
+    }
+
+    async fn process_document(
+        &self,
+        _path: &std::path::Path,
+        _config: &kreuzberg::OcrConfig,
+    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+        let _path = _path.to_string_lossy().into_owned();
+        let _config = OcrConfig::from(_config.clone());
+        let _ = (self.process_document)(_path, _config).await;
+        Ok(Default::default())
+    }
 }
 
 /// Create a `OcrBackendDartImpl` from Dart callback closures.
@@ -7056,15 +7106,29 @@ pub fn create_ocr_backend_dart_impl(
     plugin_name: String,
     plugin_version: String,
     process_image: Box<dyn Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
+    process_image_file: Box<
+        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
+    >,
     supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
     backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync>,
+    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    process_document: Box<
+        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
+    >,
 ) -> OcrBackendDartImpl {
     OcrBackendDartImpl {
         plugin_name,
         plugin_version,
         process_image,
+        process_image_file,
         supports_language,
         backend_type,
+        supported_languages,
+        supports_table_detection,
+        supports_document_processing,
+        process_document,
     }
 }
 
@@ -7105,6 +7169,15 @@ pub struct PostProcessorDartImpl {
     plugin_version: String,
     process: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
     processing_stage: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync>,
+    should_process:
+        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+}
+impl ::std::fmt::Debug for PostProcessorDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("PostProcessorDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for PostProcessorDartImpl {
@@ -7142,6 +7215,26 @@ impl kreuzberg::plugins::PostProcessor for PostProcessorDartImpl {
         let _ = __result;
         Default::default()
     }
+
+    fn should_process(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
+        let _result = ExtractionResult::from(_result.clone());
+        let _config = ExtractionConfig::from(_config.clone());
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.should_process)(_result, _config).await });
+        __result
+    }
+
+    fn estimated_duration_ms(&self, _result: &kreuzberg::ExtractionResult) -> u64 {
+        let _result = ExtractionResult::from(_result.clone());
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.estimated_duration_ms)(_result).await });
+        __result as u64
+    }
+
+    fn priority(&self) -> i32 {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
+        __result as i32
+    }
 }
 
 /// Create a `PostProcessorDartImpl` from Dart callback closures.
@@ -7151,12 +7244,20 @@ pub fn create_post_processor_dart_impl(
     plugin_version: String,
     process: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
     processing_stage: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync>,
+    should_process: Box<
+        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
+    >,
+    estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 ) -> PostProcessorDartImpl {
     PostProcessorDartImpl {
         plugin_name,
         plugin_version,
         process,
         processing_stage,
+        should_process,
+        estimated_duration_ms,
+        priority,
     }
 }
 
@@ -7196,6 +7297,14 @@ pub struct ValidatorDartImpl {
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     validate: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
+    should_validate:
+        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+}
+impl ::std::fmt::Debug for ValidatorDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("ValidatorDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for ValidatorDartImpl {
@@ -7227,6 +7336,19 @@ impl kreuzberg::plugins::Validator for ValidatorDartImpl {
         let config = ExtractionConfig::from(config.clone());
         Ok((self.validate)(result, config).await)
     }
+
+    fn should_validate(&self, _result: &kreuzberg::ExtractionResult, _config: &kreuzberg::ExtractionConfig) -> bool {
+        let _result = ExtractionResult::from(_result.clone());
+        let _config = ExtractionConfig::from(_config.clone());
+        let __result =
+            tokio::runtime::Handle::current().block_on(async { (self.should_validate)(_result, _config).await });
+        __result
+    }
+
+    fn priority(&self) -> i32 {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
+        __result as i32
+    }
 }
 
 /// Create a `ValidatorDartImpl` from Dart callback closures.
@@ -7235,11 +7357,17 @@ pub fn create_validator_dart_impl(
     plugin_name: String,
     plugin_version: String,
     validate: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
+    should_validate: Box<
+        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
+    >,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 ) -> ValidatorDartImpl {
     ValidatorDartImpl {
         plugin_name,
         plugin_version,
         validate,
+        should_validate,
+        priority,
     }
 }
 
@@ -7280,6 +7408,11 @@ pub struct EmbeddingBackendDartImpl {
     plugin_version: String,
     dimensions: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
     embed: Box<dyn Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
+}
+impl ::std::fmt::Debug for EmbeddingBackendDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("EmbeddingBackendDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for EmbeddingBackendDartImpl {
@@ -7376,7 +7509,24 @@ pub struct DocumentExtractorDartImpl {
             + Send
             + Sync,
     >,
+    extract_file: Box<
+        dyn Fn(
+                String,
+                String,
+                ExtractionConfig,
+            ) -> flutter_rust_bridge::DartFnFuture<kreuzberg::internal::InternalDocument>
+            + Send
+            + Sync,
+    >,
     supported_mime_types: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    as_sync_extractor: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
+}
+impl ::std::fmt::Debug for DocumentExtractorDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("DocumentExtractorDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for DocumentExtractorDartImpl {
@@ -7412,6 +7562,19 @@ impl kreuzberg::plugins::DocumentExtractor for DocumentExtractorDartImpl {
         Ok(Default::default())
     }
 
+    async fn extract_file(
+        &self,
+        path: &std::path::Path,
+        mime_type: &str,
+        config: &kreuzberg::ExtractionConfig,
+    ) -> kreuzberg::Result<kreuzberg::internal::InternalDocument> {
+        let path = path.to_string_lossy().into_owned();
+        let mime_type = mime_type.to_string();
+        let config = ExtractionConfig::from(config.clone());
+        let _ = (self.extract_file)(path, mime_type, config).await;
+        Ok(Default::default())
+    }
+
     fn supported_mime_types(&self) -> &[&str] {
         let __result = tokio::runtime::Handle::current().block_on(async { (self.supported_mime_types)().await });
         let __strs: Vec<&'static str> = __result
@@ -7419,6 +7582,23 @@ impl kreuzberg::plugins::DocumentExtractor for DocumentExtractorDartImpl {
             .map(|s| -> &'static str { Box::leak(s.into_boxed_str()) })
             .collect();
         Box::leak(__strs.into_boxed_slice())
+    }
+
+    fn priority(&self) -> i32 {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.priority)().await });
+        __result as i32
+    }
+
+    fn can_handle(&self, _path: &std::path::Path, _mime_type: &str) -> bool {
+        let _path = _path.to_string_lossy().into_owned();
+        let _mime_type = _mime_type.to_string();
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.can_handle)(_path, _mime_type).await });
+        __result
+    }
+
+    fn as_sync_extractor(&self) -> Option<kreuzberg::extractors::SyncExtractor> {
+        let __result = tokio::runtime::Handle::current().block_on(async { (self.as_sync_extractor)().await });
+        __result
     }
 }
 
@@ -7436,13 +7616,29 @@ pub fn create_document_extractor_dart_impl(
             + Send
             + Sync,
     >,
+    extract_file: Box<
+        dyn Fn(
+                String,
+                String,
+                ExtractionConfig,
+            ) -> flutter_rust_bridge::DartFnFuture<kreuzberg::internal::InternalDocument>
+            + Send
+            + Sync,
+    >,
     supported_mime_types: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
+    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    as_sync_extractor: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
 ) -> DocumentExtractorDartImpl {
     DocumentExtractorDartImpl {
         plugin_name,
         plugin_version,
         extract_bytes,
+        extract_file,
         supported_mime_types,
+        priority,
+        can_handle,
+        as_sync_extractor,
     }
 }
 
@@ -7483,6 +7679,11 @@ pub struct RendererDartImpl {
     plugin_version: String,
     render:
         Box<dyn Fn(kreuzberg::internal::InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
+}
+impl ::std::fmt::Debug for RendererDartImpl {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        f.debug_struct("RendererDartImpl").finish_non_exhaustive()
+    }
 }
 
 impl kreuzberg::plugins::Plugin for RendererDartImpl {

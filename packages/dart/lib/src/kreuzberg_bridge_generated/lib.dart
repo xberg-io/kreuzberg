@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ApiDoc`, `ByteBufferPool`, `CharShape`, `CustomProperties`, `ExtractResponse`, `FracType`, `HwpImage`, `ImageOcrResult`, `MergedChunk`, `OcrBackendType`, `OcrCacheStats`, `OdtProperties`, `PSMMode`, `PaddleLanguage`, `PageMarginsPoints`, `PoolError`, `ProcessingStage`, `ResolvedStyle`, `StreamReader`, `StringBufferPool`, `StyleDefinition`, `TracingLayer`, `ZipBombValidator`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `dimensions`, `embed`, `extract_bytes`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `process_image`, `process`, `processing_stage`, `render`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_mime_types`, `supports_language`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `as_sync_extractor`, `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -788,9 +788,6 @@ Future<KeywordConfig> createKeywordConfigFromJson({required String json}) =>
 Future<Keyword> createKeywordFromJson({required String json}) =>
     RustLib.instance.api.crateCreateKeywordFromJson(json: json);
 
-Future<RecognizedTable> createRecognizedTableFromJson({required String json}) =>
-    RustLib.instance.api.crateCreateRecognizedTableFromJson(json: json);
-
 Future<PaddleOcrConfig> createPaddleOcrConfigFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePaddleOcrConfigFromJson(json: json);
 
@@ -807,6 +804,9 @@ Future<BBox> createBBoxFromJson({required String json}) =>
 Future<LayoutDetection> createLayoutDetectionFromJson({required String json}) =>
     RustLib.instance.api.crateCreateLayoutDetectionFromJson(json: json);
 
+Future<RecognizedTable> createRecognizedTableFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateRecognizedTableFromJson(json: json);
+
 Future<DetectionResult> createDetectionResultFromJson({required String json}) =>
     RustLib.instance.api.crateCreateDetectionResultFromJson(json: json);
 
@@ -822,14 +822,26 @@ Future<OcrBackendDartImpl> createOcrBackendDartImpl(
         {required String pluginName,
         required String pluginVersion,
         required BoxFnVecU8OcrConfigDartFnFutureExtractionResult processImage,
+        required BoxFnStringOcrConfigDartFnFutureExtractionResult
+            processImageFile,
         required BoxFnStringDartFnFutureBool supportsLanguage,
-        required BoxFnDartFnFutureOcrBackendType backendType}) =>
+        required BoxFnDartFnFutureOcrBackendType backendType,
+        required BoxFnDartFnFutureVecString supportedLanguages,
+        required BoxFnDartFnFutureBool supportsTableDetection,
+        required BoxFnDartFnFutureBool supportsDocumentProcessing,
+        required BoxFnStringOcrConfigDartFnFutureExtractionResult
+            processDocument}) =>
     RustLib.instance.api.crateCreateOcrBackendDartImpl(
         pluginName: pluginName,
         pluginVersion: pluginVersion,
         processImage: processImage,
+        processImageFile: processImageFile,
         supportsLanguage: supportsLanguage,
-        backendType: backendType);
+        backendType: backendType,
+        supportedLanguages: supportedLanguages,
+        supportsTableDetection: supportsTableDetection,
+        supportsDocumentProcessing: supportsDocumentProcessing,
+        processDocument: processDocument);
 
 /// Register a Dart implementation as a `OcrBackend` plugin.
 ///
@@ -853,12 +865,19 @@ Future<PostProcessorDartImpl> createPostProcessorDartImpl(
         {required String pluginName,
         required String pluginVersion,
         required BoxFnExtractionResultExtractionConfigDartFnFuture process,
-        required BoxFnDartFnFutureProcessingStage processingStage}) =>
+        required BoxFnDartFnFutureProcessingStage processingStage,
+        required BoxFnExtractionResultExtractionConfigDartFnFutureBool
+            shouldProcess,
+        required BoxFnExtractionResultDartFnFutureI64 estimatedDurationMs,
+        required BoxFnDartFnFutureI64 priority}) =>
     RustLib.instance.api.crateCreatePostProcessorDartImpl(
         pluginName: pluginName,
         pluginVersion: pluginVersion,
         process: process,
-        processingStage: processingStage);
+        processingStage: processingStage,
+        shouldProcess: shouldProcess,
+        estimatedDurationMs: estimatedDurationMs,
+        priority: priority);
 
 /// Register a Dart implementation as a `PostProcessor` plugin.
 ///
@@ -882,11 +901,16 @@ Future<void> clearPostProcessors() =>
 Future<ValidatorDartImpl> createValidatorDartImpl(
         {required String pluginName,
         required String pluginVersion,
-        required BoxFnExtractionResultExtractionConfigDartFnFuture validate}) =>
+        required BoxFnExtractionResultExtractionConfigDartFnFuture validate,
+        required BoxFnExtractionResultExtractionConfigDartFnFutureBool
+            shouldValidate,
+        required BoxFnDartFnFutureI64 priority}) =>
     RustLib.instance.api.crateCreateValidatorDartImpl(
         pluginName: pluginName,
         pluginVersion: pluginVersion,
-        validate: validate);
+        validate: validate,
+        shouldValidate: shouldValidate,
+        priority: priority);
 
 /// Register a Dart implementation as a `Validator` plugin.
 ///
@@ -942,12 +966,21 @@ Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl(
         required String pluginVersion,
         required BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
             extractBytes,
-        required BoxFnDartFnFutureVecString supportedMimeTypes}) =>
+        required BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
+            extractFile,
+        required BoxFnDartFnFutureVecString supportedMimeTypes,
+        required BoxFnDartFnFutureI64 priority,
+        required BoxFnStringStringDartFnFutureBool canHandle,
+        required BoxFnDartFnFutureOptionSyncExtractor asSyncExtractor}) =>
     RustLib.instance.api.crateCreateDocumentExtractorDartImpl(
         pluginName: pluginName,
         pluginVersion: pluginVersion,
         extractBytes: extractBytes,
-        supportedMimeTypes: supportedMimeTypes);
+        extractFile: extractFile,
+        supportedMimeTypes: supportedMimeTypes,
+        priority: priority,
+        canHandle: canHandle,
+        asSyncExtractor: asSyncExtractor);
 
 /// Register a Dart implementation as a `DocumentExtractor` plugin.
 ///
@@ -995,6 +1028,10 @@ Future<void> clearRenderers() => RustLib.instance.api.crateClearRenderers();
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < OcrBackendType > + Send + Sync >>>
 abstract class BoxFnDartFnFutureOcrBackendType implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < Option < SyncExtractor > > + Send + Sync >>>
+abstract class BoxFnDartFnFutureOptionSyncExtractor
+    implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < ProcessingStage > + Send + Sync >>>
 abstract class BoxFnDartFnFutureProcessingStage
     implements RustOpaqueInterface {}
@@ -1002,11 +1039,22 @@ abstract class BoxFnDartFnFutureProcessingStage
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < Vec < String > > + Send + Sync >>>
 abstract class BoxFnDartFnFutureVecString implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < bool > + Send + Sync >>>
+abstract class BoxFnDartFnFutureBool implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < i64 > + Send + Sync >>>
 abstract class BoxFnDartFnFutureI64 implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult) -> DartFnFuture < i64 > + Send + Sync >>>
+abstract class BoxFnExtractionResultDartFnFutureI64
+    implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult , ExtractionConfig) -> DartFnFuture < () > + Send + Sync >>>
 abstract class BoxFnExtractionResultExtractionConfigDartFnFuture
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult , ExtractionConfig) -> DartFnFuture < bool > + Send + Sync >>>
+abstract class BoxFnExtractionResultExtractionConfigDartFnFutureBool
     implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (InternalDocument) -> DartFnFuture < String > + Send + Sync >>>
@@ -1016,6 +1064,18 @@ abstract class BoxFnInternalDocumentDartFnFutureString
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String) -> DartFnFuture < bool > + Send + Sync >>>
 abstract class BoxFnStringDartFnFutureBool implements RustOpaqueInterface {}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , OcrConfig) -> DartFnFuture < ExtractionResult > + Send + Sync >>>
+abstract class BoxFnStringOcrConfigDartFnFutureExtractionResult
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String) -> DartFnFuture < bool > + Send + Sync >>>
+abstract class BoxFnStringStringDartFnFutureBool
+    implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String , ExtractionConfig ,) -> DartFnFuture < InternalDocument > + Send + Sync >>>
+abstract class BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
+    implements RustOpaqueInterface {}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < String >) -> DartFnFuture < Vec < Vec < f64 > > > + Send + Sync >>>
 abstract class BoxFnVecStringDartFnFutureVecVecF64
     implements RustOpaqueInterface {}
@@ -1024,7 +1084,7 @@ abstract class BoxFnVecStringDartFnFutureVecVecF64
 abstract class BoxFnVecU8OcrConfigDartFnFutureExtractionResult
     implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < u8 > , String , ExtractionConfig) -> DartFnFuture < InternalDocument > + Send + Sync >>>
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < u8 > , String , ExtractionConfig ,) -> DartFnFuture < InternalDocument > + Send + Sync >>>
 abstract class BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
     implements RustOpaqueInterface {}
 

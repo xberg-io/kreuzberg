@@ -4222,7 +4222,7 @@ pub fn make_renderer_vtable(comptime T: type, instance: *T) IRenderer {
 pub const HwpxExtractor = struct {
     _handle: *anyopaque,
 
-    pub fn name(self: *HwpxExtractor) []u8 {
+    pub fn name(self: *HwpxExtractor) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_hwpx_extractor_name(@as(*c.KREUZBERGHwpxExtractor, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4232,7 +4232,7 @@ pub const HwpxExtractor = struct {
         };
     }
 
-    pub fn version(self: *HwpxExtractor) []u8 {
+    pub fn version(self: *HwpxExtractor) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_hwpx_extractor_version(@as(*c.KREUZBERGHwpxExtractor, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4256,7 +4256,7 @@ pub const HwpxExtractor = struct {
         }
     }
 
-    pub fn description(self: *HwpxExtractor) []u8 {
+    pub fn description(self: *HwpxExtractor) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_hwpx_extractor_description(@as(*c.KREUZBERGHwpxExtractor, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4266,7 +4266,7 @@ pub const HwpxExtractor = struct {
         };
     }
 
-    pub fn author(self: *HwpxExtractor) []u8 {
+    pub fn author(self: *HwpxExtractor) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_hwpx_extractor_author(@as(*c.KREUZBERGHwpxExtractor, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4295,7 +4295,7 @@ pub const HwpxExtractor = struct {
         };
     }
 
-    pub fn supported_mime_types(self: *HwpxExtractor) []u8 {
+    pub fn supported_mime_types(self: *HwpxExtractor) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_hwpx_extractor_supported_mime_types(@as(*c.KREUZBERGHwpxExtractor, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4321,7 +4321,7 @@ pub const TessdataManager = struct {
     _handle: *anyopaque,
 
     /// Get the cache directory path.
-    pub fn cache_dir(self: *TessdataManager) []u8 {
+    pub fn cache_dir(self: *TessdataManager) error{OutOfMemory}![]u8 {
         const _result = c.kreuzberg_tessdata_manager_cache_dir(@as(*c.KREUZBERGTessdataManager, @ptrCast(self._handle)));
         return blk: {
             const slice = std.mem.span(_result);
@@ -4332,7 +4332,7 @@ pub const TessdataManager = struct {
     }
 
     /// Check if a specific language traineddata file is cached.
-    pub fn is_language_cached(self: *TessdataManager, lang: []const u8) bool {
+    pub fn is_language_cached(self: *TessdataManager, lang: []const u8) error{OutOfMemory}!bool {
         const lang_z = try std.heap.c_allocator.dupeZ(u8, lang);
         std.heap.c_allocator.free(lang_z);
         const _result = c.kreuzberg_tessdata_manager_is_language_cached(@as(*c.KREUZBERGTessdataManager, @ptrCast(self._handle)), lang_z);

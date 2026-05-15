@@ -609,7 +609,6 @@ mod ffi {
         fn filename(&self) -> Option<String>;
         fn description(&self) -> Option<String>;
         fn dimensions(&self) -> Option<Vec<u32>>;
-        fn attributes(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -995,7 +994,6 @@ mod ffi {
         fn images(&self) -> Vec<DjotImage>;
         fn links(&self) -> Vec<DjotLink>;
         fn footnotes(&self) -> Vec<Footnote>;
-        fn attributes(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -1287,8 +1285,6 @@ mod ffi {
         fn word_count(&self) -> usize;
         fn character_count(&self) -> usize;
         fn headers(&self) -> Option<Vec<String>>;
-        fn links(&self) -> Option<Vec<String>>;
-        fn code_blocks(&self) -> Option<Vec<String>>;
     }
 
     extern "Rust" {
@@ -1302,7 +1298,6 @@ mod ffi {
         fn page_structure(&self) -> Option<PageStructure>;
         fn page_contents(&self) -> Option<Vec<PageContent>>;
         fn document(&self) -> Option<DocumentStructure>;
-        fn hyperlinks(&self) -> Vec<String>;
         fn office_metadata(&self) -> String;
     }
 
@@ -1573,8 +1568,6 @@ mod ffi {
         fn word_count(&self) -> usize;
         fn character_count(&self) -> usize;
         fn headers(&self) -> Option<Vec<String>>;
-        fn links(&self) -> Option<Vec<String>>;
-        fn code_blocks(&self) -> Option<Vec<String>>;
     }
 
     extern "Rust" {
@@ -1593,7 +1586,6 @@ mod ffi {
         fn title(&self) -> Option<String>;
         fn link_type(&self) -> String;
         fn rel(&self) -> Vec<String>;
-        fn attributes(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -1603,7 +1595,6 @@ mod ffi {
         fn title(&self) -> Option<String>;
         fn dimensions(&self) -> Option<Vec<u32>>;
         fn image_type(&self) -> String;
-        fn attributes(&self) -> Vec<String>;
     }
 
     extern "Rust" {
@@ -2025,7 +2016,6 @@ mod ffi {
 
     extern "Rust" {
         type ChunkResponse;
-        fn chunks(&self) -> Vec<String>;
         fn chunk_count(&self) -> usize;
         fn config(&self) -> String;
         fn input_size_bytes(&self) -> usize;
@@ -4658,12 +4648,7 @@ impl ExtractedInlineImage {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn attributes(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.attributes)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct Drawing(pub kreuzberg::extraction::docx::drawing::Drawing);
@@ -5934,12 +5919,7 @@ impl DjotContent {
     pub fn footnotes(&self) -> Vec<Footnote> {
         self.0.footnotes.iter().map(|elem| Footnote(elem.clone())).collect()
     }
-    pub fn attributes(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.attributes)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct FormattedBlock(pub kreuzberg::FormattedBlock);
@@ -6875,20 +6855,8 @@ impl TextExtractionResult {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn links(&self) -> Option<Vec<String>> {
-        self.0.links.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
-    pub fn code_blocks(&self) -> Option<Vec<String>> {
-        self.0.code_blocks.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
+    // alef: skipped getter `links` — type cannot be bridged through swift-bridge
+    // alef: skipped getter `code_blocks` — type cannot be bridged through swift-bridge
 }
 
 pub struct PptxExtractionResult(pub kreuzberg::PptxExtractionResult);
@@ -6932,12 +6900,7 @@ impl PptxExtractionResult {
     pub fn document(&self) -> Option<DocumentStructure> {
         self.0.document.clone().map(DocumentStructure)
     }
-    pub fn hyperlinks(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.hyperlinks)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `hyperlinks` — type cannot be bridged through swift-bridge
     pub fn office_metadata(&self) -> String {
         serde_json::to_string(&self.0.office_metadata).expect("serializable office_metadata")
     }
@@ -7901,16 +7864,8 @@ impl TextMetadata {
                 __target.headers = t;
             }
         }
-        if let Ok(__v) = ::serde_json::to_value(links) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.links = t;
-            }
-        }
-        if let Ok(__v) = ::serde_json::to_value(code_blocks) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.code_blocks = t;
-            }
-        }
+        // alef: links — Vec field type may differ from IR in non-serde struct, left at default
+        // alef: code_blocks — Vec field type may differ from IR in non-serde struct, left at default
         TextMetadata(__target)
     }
     pub fn line_count(&self) -> usize {
@@ -7938,20 +7893,8 @@ impl TextMetadata {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn links(&self) -> Option<Vec<String>> {
-        self.0.links.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
-    pub fn code_blocks(&self) -> Option<Vec<String>> {
-        self.0.code_blocks.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
+    // alef: skipped getter `links` — type cannot be bridged through swift-bridge
+    // alef: skipped getter `code_blocks` — type cannot be bridged through swift-bridge
 }
 
 pub struct HeaderMetadata(pub kreuzberg::HeaderMetadata);
@@ -8002,12 +7945,7 @@ impl LinkMetadata {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn attributes(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.attributes)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct ImageMetadataType(pub kreuzberg::ImageMetadataType);
@@ -8031,12 +7969,7 @@ impl ImageMetadataType {
     pub fn image_type(&self) -> String {
         ImageType::from(self.0.image_type.clone()).to_string()
     }
-    pub fn attributes(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.attributes)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct StructuredData(pub kreuzberg::StructuredData);
@@ -9321,12 +9254,7 @@ impl ChunkRequest {
 
 pub struct ChunkResponse(pub kreuzberg::api::ChunkResponse);
 impl ChunkResponse {
-    pub fn chunks(&self) -> Vec<String> {
-        ::serde_json::to_value(&self.0.chunks)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
+    // alef: skipped getter `chunks` — type cannot be bridged through swift-bridge
     pub fn chunk_count(&self) -> usize {
         ::serde_json::to_value(&self.0.chunk_count)
             .ok()
@@ -9695,11 +9623,7 @@ impl KeywordConfig {
         // alef: algorithm (KeywordAlgorithm) is an enum; reverse From not generated — left at default
         __target.max_keywords = max_keywords;
         __target.min_score = min_score;
-        if let Ok(__v) = ::serde_json::to_value(ngram_range) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.ngram_range = t;
-            }
-        }
+        __target.ngram_range = ngram_range;
         if let Some(s) = language {
             if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
                 if let Ok(t) = ::serde_json::from_value(v) {
@@ -11799,13 +11723,10 @@ pub fn renderer_call_render(this: &RendererBox, doc: String) -> String {
     }
 }
 
-/// Convert a stringified Swift error into the source crate's `KreuzbergError::Plugin`.
+/// Convert a stringified Swift error into the configured source-crate error type.
 #[allow(dead_code)]
 fn plugin_error_from_string(message: String) -> kreuzberg::KreuzbergError {
-    kreuzberg::KreuzbergError::Plugin {
-        message,
-        plugin_name: "swift".to_string(),
-    }
+    kreuzberg::KreuzbergError::Other(message)
 }
 
 /// JSON envelope returned by every fallible Swift trait method. Carries `Ok(T)`
@@ -11821,7 +11742,7 @@ enum InboundEnvelope<T> {
 
 /// Deserialise a JSON envelope returned from a Swift FFI shim into a typed Result.
 #[allow(dead_code)]
-fn decode_inbound_envelope<T>(json: &str) -> kreuzberg::Result<T>
+fn decode_inbound_envelope<T>(json: &str) -> std::result::Result<T, kreuzberg::KreuzbergError>
 where
     T: ::serde::de::DeserializeOwned,
 {
@@ -11837,7 +11758,7 @@ where
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftOcrBackendWrapper {
     inner: ffi::SwiftOcrBackendBox,
@@ -11866,11 +11787,11 @@ impl kreuzberg::plugins::Plugin for SwiftOcrBackendWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
@@ -11880,7 +11801,7 @@ impl kreuzberg::plugins::OcrBackend for SwiftOcrBackendWrapper {
         &self,
         image_bytes: &[u8],
         config: &kreuzberg::OcrConfig,
-    ) -> kreuzberg::Result<kreuzberg::ExtractionResult> {
+    ) -> std::result::Result<kreuzberg::ExtractionResult, kreuzberg::KreuzbergError> {
         let image_bytes = image_bytes.to_vec();
         let config = ::serde_json::to_string(&config).expect("serializable param config");
         let envelope = self.inner.alef_process_image(image_bytes, config);
@@ -11928,7 +11849,7 @@ pub fn clear_ocr_backends() -> Result<(), String> {
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftPostProcessorWrapper {
     inner: ffi::SwiftPostProcessorBox,
@@ -11957,11 +11878,11 @@ impl kreuzberg::plugins::Plugin for SwiftPostProcessorWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
@@ -11971,7 +11892,7 @@ impl kreuzberg::plugins::PostProcessor for SwiftPostProcessorWrapper {
         &self,
         result: &mut kreuzberg::ExtractionResult,
         config: &kreuzberg::ExtractionConfig,
-    ) -> kreuzberg::Result<()> {
+    ) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         let result = ::serde_json::to_string(&result).expect("serializable param result");
         let config = ::serde_json::to_string(&config).expect("serializable param config");
         let envelope = self.inner.alef_process(result, config);
@@ -12014,7 +11935,7 @@ pub fn clear_post_processors() -> Result<(), String> {
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftValidatorWrapper {
     inner: ffi::SwiftValidatorBox,
@@ -12043,11 +11964,11 @@ impl kreuzberg::plugins::Plugin for SwiftValidatorWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
@@ -12057,7 +11978,7 @@ impl kreuzberg::plugins::Validator for SwiftValidatorWrapper {
         &self,
         result: &kreuzberg::ExtractionResult,
         config: &kreuzberg::ExtractionConfig,
-    ) -> kreuzberg::Result<()> {
+    ) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         let result = ::serde_json::to_string(&result).expect("serializable param result");
         let config = ::serde_json::to_string(&config).expect("serializable param config");
         let envelope = self.inner.alef_validate(result, config);
@@ -12094,7 +12015,7 @@ pub fn clear_validators() -> Result<(), String> {
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftEmbeddingBackendWrapper {
     inner: ffi::SwiftEmbeddingBackendBox,
@@ -12123,11 +12044,11 @@ impl kreuzberg::plugins::Plugin for SwiftEmbeddingBackendWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
@@ -12137,7 +12058,7 @@ impl kreuzberg::plugins::EmbeddingBackend for SwiftEmbeddingBackendWrapper {
         self.inner.alef_dimensions()
     }
 
-    async fn embed(&self, texts: Vec<String>) -> kreuzberg::Result<Vec<Vec<f32>>> {
+    async fn embed(&self, texts: Vec<String>) -> std::result::Result<Vec<Vec<f32>>, kreuzberg::KreuzbergError> {
         let envelope = self.inner.alef_embed(texts);
         decode_inbound_envelope::<Vec<Vec<f32>>>(&envelope)
     }
@@ -12172,7 +12093,7 @@ pub fn clear_embedding_backends() -> Result<(), String> {
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftDocumentExtractorWrapper {
     inner: ffi::SwiftDocumentExtractorBox,
@@ -12201,11 +12122,11 @@ impl kreuzberg::plugins::Plugin for SwiftDocumentExtractorWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
@@ -12216,7 +12137,7 @@ impl kreuzberg::plugins::DocumentExtractor for SwiftDocumentExtractorWrapper {
         content: &[u8],
         mime_type: &str,
         config: &kreuzberg::ExtractionConfig,
-    ) -> kreuzberg::Result<kreuzberg::internal::InternalDocument> {
+    ) -> std::result::Result<kreuzberg::internal::InternalDocument, kreuzberg::KreuzbergError> {
         let content = content.to_vec();
         let mime_type = mime_type.to_string();
         let config = ::serde_json::to_string(&config).expect("serializable param config");
@@ -12263,7 +12184,7 @@ pub fn clear_document_extractors() -> Result<(), String> {
 ///
 /// The Swift instance is held via a `swift-bridge` opaque handle that retains
 /// the underlying ARC reference for the lifetime of this struct. Send + Sync are
-/// asserted unsafely: Swift classes used as kreuzberg plugins must be thread-safe
+/// asserted unsafely: Swift classes used as generated plugins must be thread-safe
 /// (the `Plugin` super-trait requires it), and ARC handles themselves are safe to share.
 pub struct SwiftRendererWrapper {
     inner: ffi::SwiftRendererBox,
@@ -12292,16 +12213,19 @@ impl kreuzberg::plugins::Plugin for SwiftRendererWrapper {
         self.inner.alef_version()
     }
 
-    fn initialize(&self) -> kreuzberg::Result<()> {
+    fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_initialize()).map(|_| ())
     }
 
-    fn shutdown(&self) -> kreuzberg::Result<()> {
+    fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
         decode_inbound_envelope::<()>(&self.inner.alef_shutdown()).map(|_| ())
     }
 }
 impl kreuzberg::plugins::Renderer for SwiftRendererWrapper {
-    fn render(&self, doc: &kreuzberg::internal::InternalDocument) -> kreuzberg::Result<String> {
+    fn render(
+        &self,
+        doc: &kreuzberg::internal::InternalDocument,
+    ) -> std::result::Result<String, kreuzberg::KreuzbergError> {
         let doc = ::serde_json::to_string(&doc).expect("serializable param doc");
         let envelope = self.inner.alef_render(doc);
         decode_inbound_envelope::<String>(&envelope)

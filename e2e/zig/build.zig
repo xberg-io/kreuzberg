@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("../../packages/zig/src/kreuzberg.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     kreuzberg_module.addLibraryPath(.{ .cwd_relative = ffi_path });
     kreuzberg_module.addIncludePath(.{ .cwd_relative = ffi_include });
@@ -20,6 +21,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/async_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     async_module.addImport("kreuzberg", kreuzberg_module);
     const async_tests = b.addTest(.{
@@ -33,6 +35,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/batch_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     batch_module.addImport("kreuzberg", kreuzberg_module);
     const batch_tests = b.addTest(.{
@@ -46,6 +49,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/contract_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     contract_module.addImport("kreuzberg", kreuzberg_module);
     const contract_tests = b.addTest(.{
@@ -59,6 +63,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/detection_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     detection_module.addImport("kreuzberg", kreuzberg_module);
     const detection_tests = b.addTest(.{
@@ -72,6 +77,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/embeddings_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     embeddings_module.addImport("kreuzberg", kreuzberg_module);
     const embeddings_tests = b.addTest(.{
@@ -85,6 +91,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/error_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     error_module.addImport("kreuzberg", kreuzberg_module);
     const error_tests = b.addTest(.{
@@ -98,6 +105,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/format_specific_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     format_specific_module.addImport("kreuzberg", kreuzberg_module);
     const format_specific_tests = b.addTest(.{
@@ -111,6 +119,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/registry_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     registry_module.addImport("kreuzberg", kreuzberg_module);
     const registry_tests = b.addTest(.{
@@ -124,6 +133,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/registry_operations_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     registry_operations_module.addImport("kreuzberg", kreuzberg_module);
     const registry_operations_tests = b.addTest(.{
@@ -137,6 +147,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/smoke_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
     smoke_module.addImport("kreuzberg", kreuzberg_module);
     const smoke_tests = b.addTest(.{
