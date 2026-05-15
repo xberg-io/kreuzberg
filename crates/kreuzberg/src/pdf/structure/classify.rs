@@ -1087,6 +1087,9 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
     // Count how many pages each margin text appears on (fuzzy: alphanum-only).
     let mut text_page_count: ahash::AHashMap<String, usize> = ahash::AHashMap::new();
     let mut alphanum_to_exact: ahash::AHashMap<String, ahash::AHashSet<String>> = ahash::AHashMap::new();
+    // Track the page index where each alphanum key is first seen so it can be
+    // exempted from furniture-marking (mirrors pdf_oxide's first-occurrence rule).
+    let mut first_seen_page: ahash::AHashMap<String, usize> = ahash::AHashMap::new();
 
     for (page_idx, page) in all_pages.iter().enumerate() {
         let page_h = page_heights.get(page_idx).copied().unwrap_or(792.0);
@@ -1124,7 +1127,14 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
                 .insert(normalized.clone());
 
             if seen.insert(alphanum_key.clone()) {
-                *text_page_count.entry(alphanum_key).or_insert(0) += 1;
+                let count = text_page_count.entry(alphanum_key.clone()).or_insert(0);
+                if *count == 0 {
+                    // Collision risk: two distinct normalized texts with the same alphanum
+                    // key share one first_seen entry. This mirrors the pre-existing collision
+                    // in text_page_count and does not introduce new inaccuracy.
+                    first_seen_page.insert(alphanum_key, page_idx);
+                }
+                *count += 1;
             }
         }
     }
@@ -1154,7 +1164,8 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
         "cross-page margin repeating text detected"
     );
 
-    // Mark matching paragraphs as furniture — only in margins.
+    // Mark matching paragraphs as furniture — only in margins, but never on the
+    // first page where the text appears (mirrors pdf_oxide's first-occurrence rule).
     for (page_idx, page) in all_pages.iter_mut().enumerate() {
         let page_h = page_heights.get(page_idx).copied().unwrap_or(792.0);
         let top_margin_y = page_h * (1.0 - margin_frac);
@@ -1173,6 +1184,10 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
             let text = paragraph_plain_text(para);
             let normalized = text.trim().to_lowercase();
             if repeating.contains(&normalized) {
+                let alphanum_key: String = normalized.chars().filter(|c| c.is_alphanumeric()).collect();
+                if first_seen_page.get(&alphanum_key).copied() == Some(page_idx) {
+                    continue; // preserve the first occurrence
+                }
                 tracing::trace!(
                     text = %normalized.chars().take(60).collect::<String>(),
                     was_heading = ?para.heading_level,
@@ -1322,7 +1337,9 @@ pub(super) fn mark_cross_page_repeating_short_text(all_pages: &mut [Vec<PdfParag
 
     // Count how many pages each short text appears on.
     let mut text_page_count: ahash::AHashMap<String, usize> = ahash::AHashMap::new();
-    for page in all_pages.iter() {
+    // Track the page where each key first appears to exempt it from furniture-marking.
+    let mut first_seen_page: ahash::AHashMap<String, usize> = ahash::AHashMap::new();
+    for (page_idx, page) in all_pages.iter().enumerate() {
         let mut seen: ahash::AHashSet<String> = ahash::AHashSet::new();
         for para in page {
             if para.is_page_furniture {
@@ -1342,7 +1359,14 @@ pub(super) fn mark_cross_page_repeating_short_text(all_pages: &mut [Vec<PdfParag
                 continue;
             }
             if seen.insert(alphanum_key.clone()) {
-                *text_page_count.entry(alphanum_key).or_insert(0) += 1;
+                let count = text_page_count.entry(alphanum_key.clone()).or_insert(0);
+                if *count == 0 {
+                    // Collision risk: two distinct normalized texts with the same alphanum
+                    // key share one first_seen entry. This mirrors the pre-existing collision
+                    // in text_page_count and does not introduce new inaccuracy.
+                    first_seen_page.insert(alphanum_key, page_idx);
+                }
+                *count += 1;
             }
         }
     }
@@ -1365,8 +1389,9 @@ pub(super) fn mark_cross_page_repeating_short_text(all_pages: &mut [Vec<PdfParag
         "cross-page short-text repeating detection (tier 2)"
     );
 
-    // Mark matching paragraphs as furniture.
-    for page in all_pages.iter_mut() {
+    // Mark matching paragraphs as furniture, but never on the first page where
+    // the text appears (mirrors pdf_oxide's first-occurrence rule).
+    for (page_idx, page) in all_pages.iter_mut().enumerate() {
         for para in page.iter_mut() {
             if para.is_page_furniture {
                 continue;
@@ -1379,6 +1404,9 @@ pub(super) fn mark_cross_page_repeating_short_text(all_pages: &mut [Vec<PdfParag
             }
             let alphanum_key: String = normalized.chars().filter(|c| c.is_alphanumeric()).collect();
             if repeating.contains(&alphanum_key) {
+                if first_seen_page.get(&alphanum_key).copied() == Some(page_idx) {
+                    continue; // preserve the first occurrence
+                }
                 tracing::trace!(
                     text = %normalized.chars().take(60).collect::<String>(),
                     "marking repeating short text as furniture (tier 2)"
@@ -1626,8 +1654,14 @@ mod tests {
             vec![make_margin_body("Page 1 of 10"), make_body_center("Unique content D")],
         ];
         mark_cross_page_repeating_text(&mut pages, &page_heights);
-        // "Page 1 of 10" appears in the margin on all 4 pages (>50%) → furniture
-        assert!(pages[0][0].is_page_furniture);
+        // "Page 1 of 10" appears in the margin on all 4 pages (>50%) → furniture on pages 1-3.
+        // Page 0 is the first occurrence and must be preserved (first-occurrence rule, issue #917).
+        // Previously this assertion was `true` — that was the bug: the first appearance was
+        // incorrectly stripped, dropping real content from the output.
+        assert!(!pages[0][0].is_page_furniture, "first occurrence must not be furniture");
+        assert!(pages[1][0].is_page_furniture);
+        assert!(pages[2][0].is_page_furniture);
+        assert!(pages[3][0].is_page_furniture);
         assert!(!pages[0][1].is_page_furniture);
     }
 
@@ -1645,9 +1679,13 @@ mod tests {
             pages.push(vec![h, body]);
         }
         mark_cross_page_repeating_text(&mut pages, &page_heights);
-        // Headings repeating in margins on >50% of pages → furniture.
-        assert!(pages[0][0].is_page_furniture);
-        assert!(pages[0][0].heading_level.is_none());
+        // Headings repeating in margins on >50% of pages → furniture on pages 1-5.
+        // Page 0 is the first occurrence and must be preserved (issue #917).
+        // Previously this assertion was `true` — that was the bug.
+        assert!(!pages[0][0].is_page_furniture, "first occurrence must not be furniture");
+        assert!(pages[1][0].is_page_furniture);
+        assert!(pages[1][0].heading_level.is_none());
+        assert!(pages[5][0].is_page_furniture);
     }
 
     #[test]
@@ -1680,9 +1718,17 @@ mod tests {
             ],
         ];
         mark_cross_page_repeating_text(&mut pages, &page_heights);
+        // Both variants share the same alphanum key; first_seen is page 0.
+        // Page 0 is exempt (first-occurrence rule, issue #917); pages 1-5 are furniture.
+        // Previously both `pages[0][0]` and `pages[3][0]` were asserted `true` — that was
+        // the bug: the first copyright occurrence was stripped from the output.
         assert!(
-            pages[0][0].is_page_furniture,
-            "even-page copyright variant should be furniture"
+            !pages[0][0].is_page_furniture,
+            "first occurrence of copyright notice must be preserved"
+        );
+        assert!(
+            pages[1][0].is_page_furniture,
+            "subsequent even-page copyright variant should be furniture"
         );
         assert!(
             pages[3][0].is_page_furniture,
@@ -2313,5 +2359,63 @@ mod tests {
             paragraphs[0].heading_level, None,
             "bold mixed-case with colon should not be promoted"
         );
+    }
+
+    // ── Issue #917: first-occurrence exemption for repeating text ──
+
+    /// A title block that also appears as a running header on subsequent pages must
+    /// NOT be marked as furniture on the first page where it occurs.
+    /// Regression test for #917: MCID-tagged title dropped in markdown/html output.
+    #[test]
+    fn test_cross_page_repeating_text_preserves_first_occurrence() {
+        // 6 pages: the title text appears in the top margin of every page.
+        // Pages 1-5: running header (furniture). Page 0: actual title (must be kept).
+        let page_heights = vec![792.0_f32; 6];
+        let title = "Analysis of Thermodynamic Properties";
+        let mut pages: Vec<Vec<PdfParagraph>> = (0..6)
+            .map(|_| vec![make_margin_body(title), make_body_center("body text here")])
+            .collect();
+        mark_cross_page_repeating_text(&mut pages, &page_heights);
+
+        assert!(
+            !pages[0][0].is_page_furniture,
+            "first occurrence of title on page 0 must be preserved (issue #917)"
+        );
+        for i in 1..6 {
+            assert!(
+                pages[i][0].is_page_furniture,
+                "page {i} running header should be furniture"
+            );
+        }
+        // Body text on every page must never be touched
+        for i in 0..6 {
+            assert!(
+                !pages[i][1].is_page_furniture,
+                "body text on page {i} must not be furniture"
+            );
+        }
+    }
+
+    /// Short-text tier-2 detection must also exempt the first occurrence of repeating text.
+    /// Regression test for #917: short title paragraphs dropped in markdown/html output.
+    #[test]
+    fn test_cross_page_repeating_short_text_preserves_first_occurrence() {
+        // 5 pages (minimum for tier-2 to run): short title repeats on all pages.
+        let title = "Kreuzberg Conference Proceedings 2024";
+        let mut pages: Vec<Vec<PdfParagraph>> = (0..5)
+            .map(|_| vec![make_margin_body(title), make_body_center("section body")])
+            .collect();
+        mark_cross_page_repeating_short_text(&mut pages);
+
+        assert!(
+            !pages[0][0].is_page_furniture,
+            "first occurrence of short repeating title must be preserved (issue #917)"
+        );
+        for i in 1..5 {
+            assert!(
+                pages[i][0].is_page_furniture,
+                "page {i} short repeating text should be furniture"
+            );
+        }
     }
 }

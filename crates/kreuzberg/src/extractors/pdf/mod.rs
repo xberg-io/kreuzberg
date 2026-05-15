@@ -289,32 +289,32 @@ impl PdfExtractor {
                 1.0
             };
 
-            let has_substantive_doc = pre_rendered_doc.is_some()
-                && total_chars >= thresholds.substantive_min_chars
-                && alnum_ws_ratio >= thresholds.alnum_ws_ratio_threshold;
-
-            let skip_ocr_for_non_text = pre_rendered_doc.is_some()
-                && total_chars >= thresholds.non_text_min_chars
-                && alnum_ws_ratio < thresholds.alnum_ws_ratio_threshold;
-
-            if skip_ocr_for_non_text {
-                tracing::debug!(
-                    alnum_ws_ratio,
-                    total_chars,
-                    alnum_ws_chars,
-                    "Skipping OCR: content is non-textual and pre-rendered structured doc available"
-                );
-                (native_text, ExtractionMethod::Native)
-            } else if has_substantive_doc {
-                tracing::debug!(
-                    total_chars,
-                    alnum_ws_ratio,
-                    ocr_fallback = decision.fallback,
-                    "Skipping OCR: pre-rendered structured doc available with substantive native text"
-                );
-                (native_text, ExtractionMethod::Native)
-            } else if decision.fallback {
-                match run_ocr_with_layout(content, config, path).await {
+            match ocr::evaluate_ocr_skip_gate(
+                pre_rendered_doc.is_some(),
+                total_chars,
+                alnum_ws_ratio,
+                decision.fallback,
+                &thresholds,
+            ) {
+                ocr::OcrGateOutcome::SkipNonText => {
+                    tracing::debug!(
+                        alnum_ws_ratio,
+                        total_chars,
+                        alnum_ws_chars,
+                        "Skipping OCR: content is non-textual and pre-rendered structured doc available"
+                    );
+                    (native_text, ExtractionMethod::Native)
+                }
+                ocr::OcrGateOutcome::SkipSubstantive => {
+                    tracing::debug!(
+                        total_chars,
+                        alnum_ws_ratio,
+                        ocr_fallback = decision.fallback,
+                        "Skipping OCR: pre-rendered structured doc available with substantive native text"
+                    );
+                    (native_text, ExtractionMethod::Native)
+                }
+                ocr::OcrGateOutcome::RunFallback => match run_ocr_with_layout(content, config, path).await {
                     Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts)) => {
                         ocr_tables = ocr_tbls;
                         ocr_elements = ocr_elems;
@@ -330,9 +330,8 @@ impl PdfExtractor {
                         );
                         (native_text, ExtractionMethod::Native)
                     }
-                }
-            } else {
-                (native_text, ExtractionMethod::Native)
+                },
+                ocr::OcrGateOutcome::UseNative => (native_text, ExtractionMethod::Native),
             }
         } else {
             (native_text, ExtractionMethod::Native)
@@ -1355,5 +1354,78 @@ mod tests {
             .extract_bytes(&content, "application/pdf", &config)
             .await
             .expect("Extraction with ocr=None and ocr_inline_images=true must not panic");
+    }
+
+    /// Regression for issue #917: a mixed document with good aggregate text but a
+    /// scanned page must still reach OCR. Before the fix, `has_substantive_doc=true`
+    /// alone suppressed OCR even when `decision.fallback=true`.
+    ///
+    /// Tests `evaluate_ocr_skip_gate` directly — the function that the production
+    /// path delegates to — so that reverting `&& !decision_fallback` breaks this test.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_runs_ocr_when_substantive_doc_but_fallback_needed() {
+        let thresholds = OcrQualityThresholds::default();
+
+        // Inputs that reproduce the bug: pre_rendered_doc present, total_chars well
+        // above substantive_min_chars (100), good alnum_ws_ratio, but fallback=true
+        // because a scanned page was detected.
+        let outcome = ocr::evaluate_ocr_skip_gate(
+            true, // pre_rendered_doc present
+            500,  // total_chars > substantive_min_chars
+            0.9,  // alnum_ws_ratio > threshold (0.4)
+            true, // decision.fallback — scanned page detected
+            &thresholds,
+        );
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::RunFallback,
+            "substantive doc must not suppress OCR when per-page fallback is needed (issue #917)"
+        );
+    }
+
+    /// Counterpart: when no per-page fallback is needed, a substantive doc correctly
+    /// skips OCR. Ensures the fix doesn't over-correct and always run OCR.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_skips_when_substantive_doc_and_no_fallback() {
+        let thresholds = OcrQualityThresholds::default();
+
+        let outcome = ocr::evaluate_ocr_skip_gate(
+            true,  // pre_rendered_doc present
+            500,   // total_chars > substantive_min_chars
+            0.9,   // alnum_ws_ratio > threshold
+            false, // decision.fallback — all pages look fine
+            &thresholds,
+        );
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::SkipSubstantive,
+            "OCR should be skipped when doc is substantive and no per-page fallback is needed"
+        );
+    }
+
+    /// Non-textual content (charts, diagrams) with a pre-rendered structured doc
+    /// present should skip OCR regardless of the per-page fallback flag — OCR
+    /// won't improve extraction quality for non-textual pages.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_skips_non_textual_content_even_when_fallback_requested() {
+        let thresholds = OcrQualityThresholds::default();
+
+        // Non-textual: high char count but alnum_ws_ratio below threshold (lots of symbols).
+        // Simulate a chart-heavy page that also triggered a per-page quality check.
+        let outcome = ocr::evaluate_ocr_skip_gate(
+            true, // pre_rendered_doc present
+            500,  // total_chars > non_text_min_chars
+            0.1,  // alnum_ws_ratio < threshold — non-textual content
+            true, // decision.fallback — per-page quality check fired
+            &thresholds,
+        );
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::SkipNonText,
+            "non-textual content with a structured doc must skip OCR even if fallback was requested"
+        );
     }
 }

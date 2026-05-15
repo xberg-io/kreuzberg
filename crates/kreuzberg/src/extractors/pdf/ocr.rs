@@ -39,6 +39,54 @@ pub struct OcrFallbackDecision {
     pub fallback: bool,
 }
 
+/// Which branch the OCR skip gate selects, given pre-rendered doc presence,
+/// text statistics, and the per-page fallback decision.
+#[cfg(feature = "ocr")]
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum OcrGateOutcome {
+    /// Content is non-textual and a pre-rendered doc is available — skip OCR.
+    SkipNonText,
+    /// Pre-rendered doc is substantive and no per-page fallback is needed — skip OCR.
+    SkipSubstantive,
+    /// A per-page quality check flagged a scanned page — run OCR fallback.
+    RunFallback,
+    /// Insufficient native text or no structured doc available — use native text.
+    UseNative,
+}
+
+/// Decide whether to skip OCR, run OCR fallback, or use native text.
+///
+/// Extracted from the async PDF pipeline so the gate logic can be unit-tested
+/// independently. Fixes #917: `has_substantive_doc` alone must not suppress
+/// OCR when `decision_fallback` is true (a scanned page was detected despite
+/// good aggregate text).
+#[cfg(feature = "ocr")]
+pub(crate) fn evaluate_ocr_skip_gate(
+    pre_rendered_doc_present: bool,
+    total_chars: usize,
+    alnum_ws_ratio: f64,
+    decision_fallback: bool,
+    thresholds: &crate::core::config::OcrQualityThresholds,
+) -> OcrGateOutcome {
+    let skip_for_non_text = pre_rendered_doc_present
+        && total_chars >= thresholds.non_text_min_chars
+        && alnum_ws_ratio < thresholds.alnum_ws_ratio_threshold;
+
+    let has_substantive_doc = pre_rendered_doc_present
+        && total_chars >= thresholds.substantive_min_chars
+        && alnum_ws_ratio >= thresholds.alnum_ws_ratio_threshold;
+
+    if skip_for_non_text {
+        OcrGateOutcome::SkipNonText
+    } else if has_substantive_doc && !decision_fallback {
+        OcrGateOutcome::SkipSubstantive
+    } else if decision_fallback {
+        OcrGateOutcome::RunFallback
+    } else {
+        OcrGateOutcome::UseNative
+    }
+}
+
 #[cfg(feature = "ocr")]
 impl NativeTextStats {
     pub(crate) fn compute(text: &str, thresholds: &OcrQualityThresholds) -> Self {
