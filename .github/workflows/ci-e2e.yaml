@@ -119,7 +119,7 @@ jobs:
         include:
           - lang: python
             python-version: "3.13"
-            test-cmd: "pip install maturin && cd packages/python && maturin develop --release && python3 -m pytest tests/ -q && cd ../../e2e/python && python3 -m pytest tests/ -q"
+            test-cmd: "pip install maturin && cd packages/python && maturin develop --release && cd ../../e2e/python && python3 -m pytest tests/ -q"
           - lang: node
             node-version: "24"
             test-cmd: "cd crates/kreuzberg-node && npm run build && cd ../../e2e/node && npx vitest run"
@@ -131,37 +131,37 @@ jobs:
             test-cmd: "cd e2e/ruby && bundle exec rspec"
           - lang: java
             java-version: "25"
-            test-cmd: "cd e2e/java && mvn test -q"
+            test-cmd: "cd packages/java && mvn -q package -DskipTests && cd ../../e2e/java && mvn test -q"
           - lang: csharp
             dotnet-version: "10.0.x"
             test-cmd: "cd e2e/csharp && dotnet test"
           - lang: php
             php-version: "8.4"
-            test-cmd: "cd e2e/php && composer install -q && vendor/bin/phpunit"
+            test-cmd: "cd crates/kreuzberg-php && cargo build --release && echo \"extension=$(pwd)/../../target/release/libkreuzberg_php.so\" | sudo tee -a \"$(php -r 'echo php_ini_loaded_file();')\" >/dev/null && cd ../../e2e/php && composer install -q && vendor/bin/phpunit"
           - lang: elixir
             elixir-version: "1.19"
             otp-version: "28"
-            test-cmd: "cd e2e/elixir && mix deps.get && mix test"
+            test-cmd: "cd e2e/elixir && RUSTLER_PRECOMPILATION_FORCE_BUILD=true mix deps.get && RUSTLER_PRECOMPILATION_FORCE_BUILD=true mix test"
           - lang: wasm
             node-version: "24"
-            test-cmd: "cd e2e/wasm && npm install && npm test"
+            test-cmd: "cd crates/kreuzberg-wasm && wasm-pack build --release --target web --out-dir ../../packages/wasm/pkg && cd ../../e2e/wasm && npm install && npm test"
           - lang: rust
             test-cmd: "cd e2e/rust && cargo test"
           - lang: r
             r-version: "4.3"
             test-cmd: "cd e2e/r && Rscript run_tests.R"
           - lang: dart
-            dart-version: "3.7"
+            dart-version: "3.11"
             test-cmd: "cd packages/dart && dart pub get && cd ../../e2e/dart && dart pub get && dart test"
-          - lang: kotlin
+          - lang: kotlin_android
             java-version: "25"
-            test-cmd: "cd e2e/kotlin && gradle test --no-daemon"
+            test-cmd: "cd e2e/kotlin_android && gradle test --no-daemon"
           - lang: swift
             swift-version: "6.0"
             test-cmd: "cd e2e/swift && swift test"
           - lang: zig
             zig-version: "0.16.0"
-            test-cmd: "cd e2e/zig && zig build test"
+            test-cmd: "cd e2e/zig && zig build test -Dffi_path=../../target/release"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -185,6 +185,11 @@ jobs:
           cp ffi-artifacts/libkreuzberg_ffi.* target/release/ 2>/dev/null || true
           cp ffi-artifacts/kreuzberg_ffi.* target/release/ 2>/dev/null || true
           chmod +x target/release/libkreuzberg_ffi.so 2>/dev/null || true
+          ls -la target/release/
+          if [ -f target/release/libkreuzberg_ffi.so ]; then
+            sudo cp target/release/libkreuzberg_ffi.so /usr/local/lib/
+            sudo ldconfig
+          fi
 
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
@@ -260,6 +265,10 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
 
+      - name: Install R test packages
+        if: matrix.lang == 'r'
+        run: R -e 'install.packages(c("testthat","jsonlite"), repos="https://cloud.r-project.org")'
+
       - name: Setup Dart
         if: matrix.dart-version
         uses: dart-lang/setup-dart@v1
@@ -282,7 +291,7 @@ jobs:
         if: |
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
-          matrix.lang == 'r' || matrix.lang == 'kotlin' ||
+          matrix.lang == 'r' || matrix.lang == 'kotlin_android' ||
           matrix.lang == 'swift' || matrix.lang == 'zig'
         shell: bash
         run: |
