@@ -268,7 +268,7 @@ jobs:
 
       - name: Setup Swift
         if: matrix.swift-version
-        uses: SwiftyLab/setup-swift@latest
+        uses: kreuzberg-dev/actions/setup-swift@v1
         with:
           swift-version: ${{ matrix.swift-version }}
 
