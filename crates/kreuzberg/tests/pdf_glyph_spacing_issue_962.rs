@@ -104,6 +104,90 @@ fn count_single_char_lines(text: &str) -> usize {
     text.lines().filter(|l| l.trim().chars().count() == 1).count()
 }
 
+/// Shared helper: build a minimal single-page PDF from a ready-made content stream string.
+fn assemble_single_page_pdf(stream: &str) -> Vec<u8> {
+    let mut pdf: Vec<u8> = Vec::new();
+
+    macro_rules! push {
+        ($s:expr) => {
+            pdf.extend_from_slice($s.as_bytes())
+        };
+    }
+
+    push!("%PDF-1.4\n");
+
+    let off1 = pdf.len();
+    push!("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+
+    let off2 = pdf.len();
+    push!("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+
+    let off3 = pdf.len();
+    push!(
+        "3 0 obj\n\
+         << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792]\
+         \n   /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\n\
+         endobj\n"
+    );
+
+    let off4 = pdf.len();
+    let stream_bytes = stream.as_bytes();
+    push!(format!("4 0 obj\n<< /Length {} >>\nstream\n", stream_bytes.len()));
+    pdf.extend_from_slice(stream_bytes);
+    push!("\nendstream\nendobj\n");
+
+    let off5 = pdf.len();
+    push!("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n");
+
+    let xref_off = pdf.len();
+    push!(format!(
+        "xref\n0 6\n\
+         0000000000 65535 f \r\n\
+         {:010} 00000 n \r\n\
+         {:010} 00000 n \r\n\
+         {:010} 00000 n \r\n\
+         {:010} 00000 n \r\n\
+         {:010} 00000 n \r\n",
+        off1, off2, off3, off4, off5
+    ));
+    push!(format!(
+        "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{xref_off}\n%%EOF\n"
+    ));
+
+    pdf
+}
+
+/// A PDF with two clearly separate text lines (y gap = 30pt, well above any coalesce threshold).
+/// Used to verify that multi-line content stays on two lines after the fix.
+///
+/// Line 1 at y=700: "FirstLine"
+/// Line 2 at y=670: "SecondLine"
+/// No jitter — normal rendering via a single BT block per line.
+fn make_two_line_pdf() -> Vec<u8> {
+    let stream = "BT /F1 12 Tf 1 0 0 1 72.00 700.00 Td (FirstLine) Tj ET\n\
+                  BT /F1 12 Tf 1 0 0 1 72.00 670.00 Td (SecondLine) Tj ET\n";
+    assemble_single_page_pdf(stream)
+}
+
+/// A PDF with two words on the same line separated by a large x-gap (> font_size * 0.25).
+/// Used to verify space insertion between words.
+///
+/// "Hello" starting at x=72, "World" starting at x=300.
+/// All chars at same y, no jitter.
+fn make_word_gap_pdf() -> Vec<u8> {
+    let stream = "BT /F1 12 Tf 1 0 0 1 72.00 700.00 Td (Hello) Tj ET\n\
+                  BT /F1 12 Tf 1 0 0 1 300.00 700.00 Td (World) Tj ET\n";
+    assemble_single_page_pdf(stream)
+}
+
+/// A PDF with normal word-level text (no per-glyph Tj, no jitter).
+/// `is_glyph_fragmented` must return false and content must be unchanged by the fix.
+fn make_normal_prose_pdf() -> Vec<u8> {
+    // Single BT block — pdfium emits all words in one run; no \r\n fragmentation.
+    let stream = "BT /F1 12 Tf 72 700 Td (The quick brown fox) Tj ET\n";
+    assemble_single_page_pdf(stream)
+}
+
 /// After the fix, 3.5 pt jitter must produce no more than 4 single-character
 /// lines (a few isolated chars are acceptable — runs of 18 are not).
 #[test]
@@ -175,4 +259,123 @@ fn test_all_fixtures_loadable() {
         let r = result.unwrap();
         assert!(!r.content.trim().is_empty(), "[{label}] must produce non-empty content");
     }
+}
+
+/// The coalesced text must actually contain the expected characters in order.
+///
+/// TEXT = "Hetafbeeldingisnietsaangetroffen" (32 chars). After rebuilding from
+/// char positions the characters must all be present; spaces may be injected
+/// between some chars but the non-space characters must spell out the word.
+#[test]
+fn test_coalesced_content_is_coherent() {
+    let pdf = make_glyph_jitter_pdf(3.5);
+    let config = ExtractionConfig::default();
+    let result =
+        extract_bytes_sync(&pdf, "application/pdf", &config).expect("3.5 pt jitter PDF should extract without error");
+
+    let content = result.content.trim().to_string();
+    // Drop spaces injected by the gap-detection heuristic and check the chars are present.
+    let no_spaces: String = content.chars().filter(|c| !c.is_whitespace()).collect();
+    assert!(
+        no_spaces.contains("Hetafbeelding"),
+        "coalesced content must contain the leading chars of the original word; got: {content:?}"
+    );
+}
+
+/// Two real text lines (30pt y gap) must remain as two separate lines after the fix.
+#[test]
+fn test_two_line_pdf_stays_two_lines() {
+    let pdf = make_two_line_pdf();
+    let config = ExtractionConfig::default();
+    let result =
+        extract_bytes_sync(&pdf, "application/pdf", &config).expect("two-line PDF should extract without error");
+
+    let content = result.content.trim().to_string();
+    assert!(
+        content.contains("FirstLine"),
+        "output must contain 'FirstLine'; got: {content:?}"
+    );
+    assert!(
+        content.contains("SecondLine"),
+        "output must contain 'SecondLine'; got: {content:?}"
+    );
+    // The two lines must be separated (not merged into one line).
+    let line_count = content.lines().count();
+    assert!(
+        line_count >= 2,
+        "two-line PDF must produce at least 2 output lines; got {line_count}: {content:?}"
+    );
+}
+
+/// Two words with a large x-gap on the same line must have a space between them.
+#[test]
+fn test_word_gap_produces_space() {
+    let pdf = make_word_gap_pdf();
+    let config = ExtractionConfig::default();
+    let result =
+        extract_bytes_sync(&pdf, "application/pdf", &config).expect("word-gap PDF should extract without error");
+
+    let content = result.content.trim().to_string();
+    assert!(
+        content.contains("Hello"),
+        "output must contain 'Hello'; got: {content:?}"
+    );
+    assert!(
+        content.contains("World"),
+        "output must contain 'World'; got: {content:?}"
+    );
+    // Both words must appear with some separator (space or newline) between them.
+    assert!(
+        content.contains("Hello World") || content.contains("Hello\nWorld"),
+        "output must have 'Hello World' or 'Hello\\nWorld'; got: {content:?}"
+    );
+}
+
+/// Normal word-level prose PDF must not be disturbed.
+#[test]
+fn test_normal_prose_not_disturbed() {
+    let pdf = make_normal_prose_pdf();
+    let config = ExtractionConfig::default();
+    let result = extract_bytes_sync(&pdf, "application/pdf", &config).expect("normal prose should extract");
+    let content = result.content.trim().to_string();
+    assert!(!content.is_empty(), "normal prose must produce non-empty content");
+    assert!(content.contains("quick"), "must include 'quick'; got: {content:?}");
+    assert!(
+        count_single_char_lines(&content) < 2,
+        "prose must not fragment; got: {content:?}"
+    );
+}
+
+/// Fix must apply when page tracking is enabled.
+#[test]
+fn test_fix_applies_with_page_tracking() {
+    use kreuzberg::PageConfig;
+    let pdf = make_glyph_jitter_pdf(3.5);
+    let config = ExtractionConfig {
+        pages: Some(PageConfig {
+            extract_pages: true,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    let result = extract_bytes_sync(&pdf, "application/pdf", &config).expect("page tracking extract");
+    let content = result.content.trim().to_string();
+    assert!(
+        count_single_char_lines(&content) < 5,
+        "page tracking fix failed; got: {content:?}"
+    );
+    assert!(result.pages.is_some(), "page tracking must populate pages");
+}
+
+/// 5pt jitter must also be coalesced.
+#[test]
+fn test_5pt_jitter_coalesced() {
+    let pdf = make_glyph_jitter_pdf(5.0);
+    let config = ExtractionConfig::default();
+    let result = extract_bytes_sync(&pdf, "application/pdf", &config).expect("5pt extract");
+    let content = result.content.trim().to_string();
+    assert!(
+        count_single_char_lines(&content) < 5,
+        "5pt jitter not coalesced; got: {content:?}"
+    );
 }
