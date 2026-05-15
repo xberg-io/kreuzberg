@@ -277,11 +277,22 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    * - `KreuzbergError::Validation` - Invalid image format or configuration
    * - `KreuzbergError::Io` - I/O errors (these always bubble up)
    *
-   * # Example
+   * # Reading `backend_options`
+   *
+   * Backends that support runtime tuning can read `config.backend_options` and
+   * deserialize only the keys they care about. Unknown keys are silently ignored,
+   * so multiple backends can coexist in a pipeline without key conflicts.
    *
    * ```rust
    * async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
-   * // Validate image format
+   * // Read backend-specific options; unknown keys are silently ignored.
+   * let fast_mode = config.backend_options
+   * .as_ref()
+   * .and_then(|v| v.get("mode"))
+   * .and_then(|v| v.as_str())
+   * .map(|s| s == "fast")
+   * .unwrap_or(false);
+   *
    * if image_bytes.is_empty() {
    * return Err(kreuzberg::KreuzbergError::Validation {
    * message: "Empty image data".to_string(),
@@ -289,8 +300,11 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    * });
    * }
    *
-   * // Perform OCR processing
-   * let text = format!("Extracted text in language: {}", config.language);
+   * let text = if fast_mode {
+   * "Fast OCR result".to_string()
+   * } else {
+   * format!("Extracted text in language: {}", config.language)
+   * };
    *
    * Ok(ExtractionResult {
    * content: text,
@@ -2339,6 +2353,13 @@ char *kreuzberg_ocr_pipeline_stage_paddle_ocr_config(const KREUZBERGOcrPipelineS
 KREUZBERGLlmConfig *kreuzberg_ocr_pipeline_stage_vlm_config(const KREUZBERGOcrPipelineStage *ptr);
 
 /**
+ * Get the `backend_options` field from a `OcrPipelineStage`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_ocr_pipeline_stage_backend_options(const KREUZBERGOcrPipelineStage *ptr);
+
+/**
  * Create a `OcrPipelineConfig` from a JSON string. Returns null on failure.
  * # Safety
  * JSON string must be valid UTF-8 and null-terminated.
@@ -2439,6 +2460,13 @@ KREUZBERGOutputFormat *kreuzberg_ocr_config_output_format(const KREUZBERGOcrConf
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_ocr_config_paddle_ocr_config(const KREUZBERGOcrConfig *ptr);
+
+/**
+ * Get the `backend_options` field from a `OcrConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_ocr_config_backend_options(const KREUZBERGOcrConfig *ptr);
 
 /**
  * Get the `element_config` field from a `OcrConfig`.

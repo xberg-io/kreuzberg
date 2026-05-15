@@ -487,7 +487,7 @@ mod tests {
                 boundaries.push(PageBoundary {
                     byte_start: boundary_start,
                     byte_end: boundary_end,
-                    page_number: i + 1,
+                    page_number: (i + 1) as u32,
                 });
             }
         }
@@ -596,7 +596,7 @@ mod tests {
                 boundaries.push(PageBoundary {
                     byte_start: boundary_start,
                     byte_end: boundary_end,
-                    page_number: i + 1,
+                    page_number: (i + 1) as u32,
                 });
             }
         }
@@ -637,7 +637,7 @@ mod tests {
                 boundaries.push(PageBoundary {
                     byte_start: boundary_start,
                     byte_end: boundary_end,
-                    page_number: i + 1,
+                    page_number: (i + 1) as u32,
                 });
             }
         }

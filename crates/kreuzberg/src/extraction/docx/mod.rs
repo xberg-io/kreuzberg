@@ -244,7 +244,7 @@ fn map_page_breaks_to_boundaries(text: &str, page_breaks: Vec<usize>) -> Result<
         boundaries.push(PageBoundary {
             byte_start: start_byte,
             byte_end: end_byte,
-            page_number: page_num,
+            page_number: page_num as u32,
         });
 
         current_byte = end_byte;

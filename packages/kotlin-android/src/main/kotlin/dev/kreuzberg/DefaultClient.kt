@@ -14,11 +14,11 @@ class HwpxExtractor internal constructor(internal val inner: dev.kreuzberg.HwpxE
         return inner.version()
     }
 
-    fun initialize(): Unit {
+    fun initialize() {
         inner.initialize()
     }
 
-    fun shutdown(): Unit {
+    fun shutdown() {
         inner.shutdown()
     }
 
@@ -38,8 +38,11 @@ class HwpxExtractor internal constructor(internal val inner: dev.kreuzberg.HwpxE
         return inner.priority()
     }
 
-    override fun close() { inner.close() }
+    override fun close() {
+        inner.close()
+    }
 }
+
 /** Coroutine-friendly wrapper around the Java `dev.kreuzberg.TessdataManager` facade. */
 class TessdataManager internal constructor(internal val inner: dev.kreuzberg.TessdataManager) : AutoCloseable {
     // Get the cache directory path.
@@ -62,5 +65,7 @@ class TessdataManager internal constructor(internal val inner: dev.kreuzberg.Tes
         return inner.ensureAllLanguages()
     }
 
-    override fun close() { inner.close() }
+    override fun close() {
+        inner.close()
+    }
 }

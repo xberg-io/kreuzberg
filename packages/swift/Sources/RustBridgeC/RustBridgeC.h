@@ -3,6 +3,6 @@
 
 // Placeholder header for the RustBridgeC SwiftPM target.
 // Run `cargo build -p kreuzberg-swift` and copy the generated headers here.
-// See BUILDING.md for the copy command.
+// See README.md for the copy command.
 
 #endif /* RUST_BRIDGE_C_H */

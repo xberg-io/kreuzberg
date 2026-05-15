@@ -2833,6 +2833,12 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
+# Reading `backend_options`
+
+Backends that support runtime tuning can read `config.backend_options` and
+deserialize only the keys they care about. Unknown keys are silently ignored,
+so multiple backends can coexist in a pipeline without key conflicts.
+
 **Signature:**
 
 ```r
@@ -2964,6 +2970,7 @@ OCR configuration.
 | `tesseract_config` | `TesseractConfig or NULL` | `NULL` | Tesseract-specific configuration (optional) |
 | `output_format` | `OutputFormat or NULL` | `NULL` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `list or NULL` | `NULL` | PaddleOCR-specific configuration (optional, JSON passthrough) |
+| `backend_options` | `list or NULL` | `NULL` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `NULL`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `OcrElementConfig or NULL` | `NULL` | OCR element extraction configuration |
 | `quality_thresholds` | `OcrQualityThresholds or NULL` | `NULL` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `OcrPipelineConfig or NULL` | `NULL` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -3087,6 +3094,7 @@ A single backend stage in the OCR pipeline.
 | `tesseract_config` | `TesseractConfig or NULL` | `NULL` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `list or NULL` | `NULL` | PaddleOCR-specific config for this stage. |
 | `vlm_config` | `LlmConfig or NULL` | `NULL` | VLM config override for this pipeline stage. |
+| `backend_options` | `list or NULL` | `NULL` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 
 ---

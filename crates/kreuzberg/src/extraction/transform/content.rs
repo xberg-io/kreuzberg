@@ -406,7 +406,7 @@ mod tests_issue_782 {
             block("h6", "Deepest"),
         ];
         let hierarchy = PageHierarchy {
-            block_count: blocks.len(),
+            block_count: blocks.len() as u32,
             blocks,
         };
         process_hierarchy(&mut elements, &hierarchy, 1, &None);

@@ -863,7 +863,7 @@ mod tests {
     fn test_image_elements_injected_with_positions() {
         let pages = vec![vec![make_paragraph("Page with image", None)]];
         // Image at page 1 (1-indexed), image_index = 0
-        let image_positions = vec![(1usize, 0usize)];
+        let image_positions = vec![(1u32, 0u32)];
         let doc = assemble_internal_document(pages, &[], None, &image_positions);
 
         let image_elems: Vec<_> = doc
@@ -885,7 +885,7 @@ mod tests {
         use std::borrow::Cow;
 
         let pages = vec![vec![make_paragraph("Page with OCR image", None)]];
-        let image_positions = vec![(1usize, 0usize)];
+        let image_positions = vec![(1u32, 0u32)];
         let ocr_result = Box::new(crate::types::ExtractionResult {
             content: "OCR extracted text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),

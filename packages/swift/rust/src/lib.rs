@@ -339,6 +339,7 @@ mod ffi {
         fn tesseract_config(&self) -> Option<TesseractConfig>;
         fn paddle_ocr_config(&self) -> Option<String>;
         fn vlm_config(&self) -> Option<LlmConfig>;
+        fn backend_options(&self) -> Option<String>;
     }
 
     extern "Rust" {
@@ -357,6 +358,7 @@ mod ffi {
             tesseract_config: Option<TesseractConfig>,
             output_format: Option<OutputFormat>,
             paddle_ocr_config: Option<String>,
+            backend_options: Option<String>,
             element_config: Option<OcrElementConfig>,
             quality_thresholds: Option<OcrQualityThresholds>,
             pipeline: Option<OcrPipelineConfig>,
@@ -372,6 +374,7 @@ mod ffi {
         fn tesseract_config(&self) -> Option<TesseractConfig>;
         fn output_format(&self) -> Option<String>;
         fn paddle_ocr_config(&self) -> Option<String>;
+        fn backend_options(&self) -> Option<String>;
         fn element_config(&self) -> Option<OcrElementConfig>;
         fn quality_thresholds(&self) -> Option<OcrQualityThresholds>;
         fn pipeline(&self) -> Option<OcrPipelineConfig>;
@@ -3825,6 +3828,12 @@ impl OcrPipelineStage {
     pub fn vlm_config(&self) -> Option<LlmConfig> {
         self.0.vlm_config.clone().map(LlmConfig)
     }
+    pub fn backend_options(&self) -> Option<String> {
+        self.0
+            .backend_options
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
+    }
 }
 
 pub struct OcrPipelineConfig(pub kreuzberg::OcrPipelineConfig);
@@ -3850,6 +3859,7 @@ impl OcrConfig {
         tesseract_config: Option<TesseractConfig>,
         output_format: Option<OutputFormat>,
         paddle_ocr_config: Option<String>,
+        backend_options: Option<String>,
         element_config: Option<OcrElementConfig>,
         quality_thresholds: Option<OcrQualityThresholds>,
         pipeline: Option<OcrPipelineConfig>,
@@ -3879,6 +3889,13 @@ impl OcrConfig {
             if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
                 if let Ok(t) = ::serde_json::from_value(v) {
                     __target.paddle_ocr_config = Some(t);
+                }
+            }
+        }
+        if let Some(s) = backend_options {
+            if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&s) {
+                if let Ok(t) = ::serde_json::from_value(v) {
+                    __target.backend_options = Some(t);
                 }
             }
         }
@@ -3933,6 +3950,12 @@ impl OcrConfig {
     pub fn paddle_ocr_config(&self) -> Option<String> {
         self.0
             .paddle_ocr_config
+            .as_ref()
+            .and_then(|v| serde_json::to_string(v).ok())
+    }
+    pub fn backend_options(&self) -> Option<String> {
+        self.0
+            .backend_options
             .as_ref()
             .and_then(|v| serde_json::to_string(v).ok())
     }

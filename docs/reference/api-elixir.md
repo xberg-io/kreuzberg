@@ -76,7 +76,7 @@ def extract_file(path, mime_type, config)
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `String.t()` | Yes | Path to the file to extract |
-| `mime_type` | `String.t() | nil` | No | Optional MIME type override. If None, will be auto-detected |
+| `mime_type` | `String.t() \| nil` | No | Optional MIME type override. If None, will be auto-detected |
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
@@ -108,7 +108,7 @@ def extract_file_sync(path, mime_type, config)
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `String.t()` | Yes | Path to the file |
-| `mime_type` | `String.t() | nil` | No | The mime type |
+| `mime_type` | `String.t() \| nil` | No | The mime type |
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
@@ -520,8 +520,8 @@ def render_pdf_page_to_png(pdf_bytes, page_index, dpi, password)
 |------|------|----------|-------------|
 | `pdf_bytes` | `binary()` | Yes | Raw PDF file bytes |
 | `page_index` | `integer()` | Yes | Zero-based page index |
-| `dpi` | `integer() | nil` | No | Resolution in dots per inch (default: 150) |
-| `password` | `String.t() | nil` | No | Optional password for encrypted PDFs |
+| `dpi` | `integer() \| nil` | No | Resolution in dots per inch (default: 150) |
+| `password` | `String.t() \| nil` | No | Optional password for encrypted PDFs |
 
 **Returns:** `binary()`
 **Errors:** Returns `{:error, reason}`
@@ -641,9 +641,9 @@ Properties for anchored drawings.
 |-------|------|---------|-------------|
 | `behind_doc` | `boolean()` | — | Behind doc |
 | `layout_in_cell` | `boolean()` | — | Layout in cell |
-| `relative_height` | `integer() | nil` | `nil` | Relative height |
-| `position_h` | `String.t() | nil` | `nil` | Position h |
-| `position_v` | `String.t() | nil` | `nil` | Position v |
+| `relative_height` | `integer() \| nil` | `nil` | Relative height |
+| `position_h` | `String.t() \| nil` | `nil` | Position h |
+| `position_v` | `String.t() \| nil` | `nil` | Position v |
 | `wrap_type` | `String.t()` | — | Wrap type |
 
 
@@ -687,7 +687,7 @@ Extracted from compressed archive files containing file lists and size informati
 | `file_count` | `integer()` | — | Total number of files in the archive |
 | `file_list` | `list(String.t())` | `[]` | List of file paths within the archive |
 | `total_size` | `integer()` | — | Total uncompressed size in bytes |
-| `compressed_size` | `integer() | nil` | `nil` | Compressed size in bytes (if available) |
+| `compressed_size` | `integer() \| nil` | `nil` | Compressed size in bytes (if available) |
 
 
 ---
@@ -717,7 +717,7 @@ to represent a single item in a batch extraction job.
 |-------|------|---------|-------------|
 | `content` | `binary()` | — | The content bytes to extract from |
 | `mime_type` | `String.t()` | — | MIME type of the content (e.g., "application/pdf", "text/html") |
-| `config` | `FileExtractionConfig | nil` | `nil` | Per-item configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| nil` | `nil` | Per-item configuration overrides (None uses batch-level defaults) |
 
 
 ---
@@ -732,7 +732,7 @@ to represent a single file in a batch extraction job.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `String.t()` | — | Path to the file to extract from |
-| `config` | `FileExtractionConfig | nil` | `nil` | Per-file configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| nil` | `nil` | Per-file configuration overrides (None uses batch-level defaults) |
 
 
 ---
@@ -746,8 +746,8 @@ BibTeX bibliography metadata.
 | `entry_count` | `integer()` | — | Number of entries in the bibliography. |
 | `citation_keys` | `list(String.t())` | `[]` | Citation keys |
 | `authors` | `list(String.t())` | `[]` | Authors |
-| `year_range` | `YearRange | nil` | `nil` | Year range (year range) |
-| `entry_types` | `map() | nil` | `%{}` | Entry types |
+| `year_range` | `YearRange \| nil` | `nil` | Year range (year range) |
+| `entry_types` | `map() \| nil` | `%{}` | Entry types |
 
 
 ---
@@ -766,7 +766,7 @@ Request parameters for cache warm (model download).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `all_embeddings` | `boolean()` | — | Download all embedding model presets |
-| `embedding_model` | `String.t() | nil` | `nil` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
+| `embedding_model` | `String.t() \| nil` | `nil` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
 
 
 ---
@@ -794,7 +794,7 @@ is configured), and metadata about its position in the document.
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | The text content of this chunk. |
 | `chunk_type` | `ChunkType` | — | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
-| `embedding` | `list(float()) | nil` | `nil` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
+| `embedding` | `list(float()) \| nil` | `nil` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
 
@@ -808,12 +808,12 @@ Metadata about a chunk's position in the original document.
 |-------|------|---------|-------------|
 | `byte_start` | `integer()` | — | Byte offset where this chunk starts in the original text (UTF-8 valid boundary). |
 | `byte_end` | `integer()` | — | Byte offset where this chunk ends in the original text (UTF-8 valid boundary). |
-| `token_count` | `integer() | nil` | `nil` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
+| `token_count` | `integer() \| nil` | `nil` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
 | `chunk_index` | `integer()` | — | Zero-based index of this chunk in the document. |
 | `total_chunks` | `integer()` | — | Total number of chunks in the document. |
-| `first_page` | `integer() | nil` | `nil` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
-| `last_page` | `integer() | nil` | `nil` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `HeadingContext | nil` | `nil` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `first_page` | `integer() \| nil` | `nil` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
+| `last_page` | `integer() \| nil` | `nil` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
+| `heading_context` | `HeadingContext \| nil` | `nil` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
 | `image_indices` | `list(integer())` | — | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 
@@ -826,7 +826,7 @@ Chunk request with text and configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `String.t()` | — | Text to chunk (must not be empty) |
-| `config` | `String.t() | nil` | `nil` | Optional chunking configuration |
+| `config` | `String.t() \| nil` | `nil` | Optional chunking configuration |
 | `chunker_type` | `String.t()` | — | Chunker type (text, markdown, yaml, or semantic) |
 
 
@@ -854,10 +854,10 @@ Request parameters for text chunking.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `String.t()` | — | Text content to split into chunks |
-| `max_characters` | `integer() | nil` | `nil` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `integer() | nil` | `nil` | Number of overlapping characters between chunks (default: 100) |
-| `chunker_type` | `String.t() | nil` | `nil` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topic_threshold` | `float() | nil` | `nil` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
+| `max_characters` | `integer() \| nil` | `nil` | Maximum characters per chunk (default: 2000) |
+| `overlap` | `integer() \| nil` | `nil` | Number of overlapping characters between chunks (default: 100) |
+| `chunker_type` | `String.t() \| nil` | `nil` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
+| `topic_threshold` | `float() \| nil` | `nil` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
 
 
 ---
@@ -877,11 +877,11 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `overlap` | `integer()` | `200` | Overlap between chunks (in units determined by `sizing`). Default: 200 |
 | `trim` | `boolean()` | `true` | Whether to trim whitespace from chunk boundaries. Default: true |
 | `chunker_type` | `ChunkerType` | `:text` | Type of chunker to use (Text or Markdown). Default: Text |
-| `embedding` | `EmbeddingConfig | nil` | `nil` | Optional embedding configuration for chunk embeddings. |
-| `preset` | `String.t() | nil` | `nil` | Use a preset configuration (overrides individual settings if provided). |
+| `embedding` | `EmbeddingConfig \| nil` | `nil` | Optional embedding configuration for chunk embeddings. |
+| `preset` | `String.t() \| nil` | `nil` | Use a preset configuration (overrides individual settings if provided). |
 | `sizing` | `ChunkSizing` | `:characters` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
 | `prepend_heading_context` | `boolean()` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
-| `topic_threshold` | `float() | nil` | `nil` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
+| `topic_threshold` | `float() \| nil` | `nil` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
 ##### Functions
 
@@ -916,9 +916,9 @@ Citation file metadata (RIS, PubMed, EndNote).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `citation_count` | `integer()` | — | Number of citations |
-| `format` | `String.t() | nil` | `nil` | Format |
+| `format` | `String.t() \| nil` | `nil` | Format |
 | `authors` | `list(String.t())` | `[]` | Authors |
-| `year_range` | `YearRange | nil` | `nil` | Year range (year range) |
+| `year_range` | `YearRange \| nil` | `nil` | Year range (year range) |
 | `dois` | `list(String.t())` | `[]` | Dois |
 | `keywords` | `list(String.t())` | `[]` | Keywords |
 
@@ -963,7 +963,7 @@ JATS contributor with role.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String.t()` | — | The name |
-| `role` | `String.t() | nil` | `nil` | Role |
+| `role` | `String.t() \| nil` | `nil` | Role |
 
 
 ---
@@ -977,21 +977,21 @@ and Office-specific extensions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `String.t() | nil` | `nil` | Document title |
-| `subject` | `String.t() | nil` | `nil` | Document subject/topic |
-| `creator` | `String.t() | nil` | `nil` | Document creator/author |
-| `keywords` | `String.t() | nil` | `nil` | Keywords or tags |
-| `description` | `String.t() | nil` | `nil` | Document description/abstract |
-| `last_modified_by` | `String.t() | nil` | `nil` | User who last modified the document |
-| `revision` | `String.t() | nil` | `nil` | Revision number |
-| `created` | `String.t() | nil` | `nil` | Creation timestamp (ISO 8601) |
-| `modified` | `String.t() | nil` | `nil` | Last modification timestamp (ISO 8601) |
-| `category` | `String.t() | nil` | `nil` | Document category |
-| `content_status` | `String.t() | nil` | `nil` | Content status (Draft, Final, etc.) |
-| `language` | `String.t() | nil` | `nil` | Document language |
-| `identifier` | `String.t() | nil` | `nil` | Unique identifier |
-| `version` | `String.t() | nil` | `nil` | Document version |
-| `last_printed` | `String.t() | nil` | `nil` | Last print timestamp (ISO 8601) |
+| `title` | `String.t() \| nil` | `nil` | Document title |
+| `subject` | `String.t() \| nil` | `nil` | Document subject/topic |
+| `creator` | `String.t() \| nil` | `nil` | Document creator/author |
+| `keywords` | `String.t() \| nil` | `nil` | Keywords or tags |
+| `description` | `String.t() \| nil` | `nil` | Document description/abstract |
+| `last_modified_by` | `String.t() \| nil` | `nil` | User who last modified the document |
+| `revision` | `String.t() \| nil` | `nil` | Revision number |
+| `created` | `String.t() \| nil` | `nil` | Creation timestamp (ISO 8601) |
+| `modified` | `String.t() \| nil` | `nil` | Last modification timestamp (ISO 8601) |
+| `category` | `String.t() \| nil` | `nil` | Document category |
+| `content_status` | `String.t() \| nil` | `nil` | Content status (Draft, Final, etc.) |
+| `language` | `String.t() \| nil` | `nil` | Document language |
+| `identifier` | `String.t() \| nil` | `nil` | Unique identifier |
+| `version` | `String.t() \| nil` | `nil` | Document version |
+| `last_printed` | `String.t() \| nil` | `nil` | Last print timestamp (ISO 8601) |
 
 
 ---
@@ -1004,9 +1004,9 @@ CSV/TSV file metadata.
 |-------|------|---------|-------------|
 | `row_count` | `integer()` | — | Number of rows |
 | `column_count` | `integer()` | — | Number of columns |
-| `delimiter` | `String.t() | nil` | `nil` | Delimiter |
+| `delimiter` | `String.t() \| nil` | `nil` | Delimiter |
 | `has_header` | `boolean()` | — | Whether header |
-| `column_types` | `list(String.t()) | nil` | `[]` | Column types |
+| `column_types` | `list(String.t()) \| nil` | `[]` | Column types |
 
 
 ---
@@ -1065,7 +1065,7 @@ MIME type detection response.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mime_type` | `String.t()` | — | Detected MIME type |
-| `filename` | `String.t() | nil` | `nil` | Original filename (if provided) |
+| `filename` | `String.t() \| nil` | `nil` | Original filename (if provided) |
 
 
 ---
@@ -1131,8 +1131,8 @@ Image element in Djot.
 |-------|------|---------|-------------|
 | `src` | `String.t()` | — | Image source URL or path |
 | `alt` | `String.t()` | — | Alternative text |
-| `title` | `String.t() | nil` | `nil` | Optional title |
-| `attributes` | `String.t() | nil` | `nil` | Element attributes |
+| `title` | `String.t() \| nil` | `nil` | Optional title |
+| `attributes` | `String.t() \| nil` | `nil` | Element attributes |
 
 
 ---
@@ -1145,8 +1145,8 @@ Link element in Djot.
 |-------|------|---------|-------------|
 | `url` | `String.t()` | — | Link URL |
 | `text` | `String.t()` | — | Link text content |
-| `title` | `String.t() | nil` | `nil` | Optional title |
-| `attributes` | `String.t() | nil` | `nil` | Element attributes |
+| `title` | `String.t() \| nil` | `nil` | Optional title |
+| `attributes` | `String.t() \| nil` | `nil` | Element attributes |
 
 
 ---
@@ -1320,14 +1320,14 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `id` | `String.t()` | — | Deterministic identifier (hash of content + position). |
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
-| `parent` | `integer() | nil` | `nil` | Parent node index (`nil` = root-level node). |
+| `parent` | `integer() \| nil` | `nil` | Parent node index (`nil` = root-level node). |
 | `children` | `list(integer())` | — | Child node indices in reading order. |
 | `content_layer` | `ContentLayer` | — | Content layer classification. |
-| `page` | `integer() | nil` | `nil` | Page number where this node starts (1-indexed). |
-| `page_end` | `integer() | nil` | `nil` | Page number where this node ends (for multi-page tables/sections). |
-| `bbox` | `String.t() | nil` | `nil` | Bounding box in document coordinates. |
+| `page` | `integer() \| nil` | `nil` | Page number where this node starts (1-indexed). |
+| `page_end` | `integer() \| nil` | `nil` | Page number where this node ends (for multi-page tables/sections). |
+| `bbox` | `String.t() \| nil` | `nil` | Bounding box in document coordinates. |
 | `annotations` | `list(TextAnnotation)` | — | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
-| `attributes` | `map() | nil` | `nil` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
+| `attributes` | `map() \| nil` | `nil` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 
 ---
@@ -1361,7 +1361,7 @@ and parent-child relationships are bidirectionally consistent.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `nodes` | `list(DocumentNode)` | `[]` | All nodes in document/reading order. |
-| `source_format` | `String.t() | nil` | `nil` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
+| `source_format` | `String.t() \| nil` | `nil` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
 | `relationships` | `list(DocumentRelationship)` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `list(String.t())` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
@@ -1406,22 +1406,22 @@ Contains Word-specific document statistics and metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `String.t() | nil` | `nil` | Application name (e.g., "Microsoft Office Word") |
-| `app_version` | `String.t() | nil` | `nil` | Application version |
-| `template` | `String.t() | nil` | `nil` | Template filename |
-| `total_time` | `integer() | nil` | `nil` | Total editing time in minutes |
-| `pages` | `integer() | nil` | `nil` | Number of pages |
-| `words` | `integer() | nil` | `nil` | Number of words |
-| `characters` | `integer() | nil` | `nil` | Number of characters (excluding spaces) |
-| `characters_with_spaces` | `integer() | nil` | `nil` | Number of characters (including spaces) |
-| `lines` | `integer() | nil` | `nil` | Number of lines |
-| `paragraphs` | `integer() | nil` | `nil` | Number of paragraphs |
-| `company` | `String.t() | nil` | `nil` | Company name |
-| `doc_security` | `integer() | nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() | nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() | nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() | nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() | nil` | `nil` | Hyperlinks changed flag |
+| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Office Word") |
+| `app_version` | `String.t() \| nil` | `nil` | Application version |
+| `template` | `String.t() \| nil` | `nil` | Template filename |
+| `total_time` | `integer() \| nil` | `nil` | Total editing time in minutes |
+| `pages` | `integer() \| nil` | `nil` | Number of pages |
+| `words` | `integer() \| nil` | `nil` | Number of words |
+| `characters` | `integer() \| nil` | `nil` | Number of characters (excluding spaces) |
+| `characters_with_spaces` | `integer() \| nil` | `nil` | Number of characters (including spaces) |
+| `lines` | `integer() \| nil` | `nil` | Number of lines |
+| `paragraphs` | `integer() \| nil` | `nil` | Number of paragraphs |
+| `company` | `String.t() \| nil` | `nil` | Company name |
+| `doc_security` | `integer() \| nil` | `nil` | Document security level |
+| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
+| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
+| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
+| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
 
 
 ---
@@ -1435,9 +1435,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `CoreProperties | nil` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `DocxAppProperties | nil` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
-| `custom_properties` | `map() | nil` | `%{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
+| `core_properties` | `CoreProperties \| nil` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `DocxAppProperties \| nil` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `custom_properties` | `map() \| nil` | `%{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
 
 
 ---
@@ -1449,9 +1449,9 @@ A drawing object extracted from `<w:drawing>`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `drawing_type` | `String.t()` | — | Drawing type |
-| `extent` | `String.t() | nil` | `nil` | Extent |
-| `doc_properties` | `String.t() | nil` | `nil` | Doc properties |
-| `image_ref` | `String.t() | nil` | `nil` | Image ref |
+| `extent` | `String.t() \| nil` | `nil` | Extent |
+| `doc_properties` | `String.t() \| nil` | `nil` | Doc properties |
+| `image_ref` | `String.t() \| nil` | `nil` | Image ref |
 
 
 ---
@@ -1479,10 +1479,10 @@ Metadata for a semantic element.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `page_number` | `integer() | nil` | `nil` | Page number (1-indexed) |
-| `filename` | `String.t() | nil` | `nil` | Source filename or document name |
-| `coordinates` | `String.t() | nil` | `nil` | Bounding box coordinates if available |
-| `element_index` | `integer() | nil` | `nil` | Position index in the element sequence |
+| `page_number` | `integer() \| nil` | `nil` | Page number (1-indexed) |
+| `filename` | `String.t() \| nil` | `nil` | Source filename or document name |
+| `coordinates` | `String.t() \| nil` | `nil` | Bounding box coordinates if available |
+| `element_index` | `integer() \| nil` | `nil` | Position index in the element sequence |
 | `additional` | `map()` | — | Additional custom metadata |
 
 
@@ -1496,12 +1496,12 @@ Contains metadata and optionally the content of an email attachment.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `String.t() | nil` | `nil` | Attachment name (from Content-Disposition header) |
-| `filename` | `String.t() | nil` | `nil` | Filename of the attachment |
-| `mime_type` | `String.t() | nil` | `nil` | MIME type of the attachment |
-| `size` | `integer() | nil` | `nil` | Size in bytes |
+| `name` | `String.t() \| nil` | `nil` | Attachment name (from Content-Disposition header) |
+| `filename` | `String.t() \| nil` | `nil` | Filename of the attachment |
+| `mime_type` | `String.t() \| nil` | `nil` | MIME type of the attachment |
+| `size` | `integer() \| nil` | `nil` | Size in bytes |
 | `is_image` | `boolean()` | — | Whether this attachment is an image |
-| `data` | `binary() | nil` | `nil` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
+| `data` | `binary() \| nil` | `nil` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 
 
 ---
@@ -1512,7 +1512,7 @@ Configuration for email extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `msg_fallback_codepage` | `integer() | nil` | `nil` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `nil`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
+| `msg_fallback_codepage` | `integer() \| nil` | `nil` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `nil`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
 
 
 ---
@@ -1526,15 +1526,15 @@ including headers, body content, and attachments.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `subject` | `String.t() | nil` | `nil` | Email subject line |
-| `from_email` | `String.t() | nil` | `nil` | Sender email address |
+| `subject` | `String.t() \| nil` | `nil` | Email subject line |
+| `from_email` | `String.t() \| nil` | `nil` | Sender email address |
 | `to_emails` | `list(String.t())` | — | Primary recipient email addresses |
 | `cc_emails` | `list(String.t())` | — | CC recipient email addresses |
 | `bcc_emails` | `list(String.t())` | — | BCC recipient email addresses |
-| `date` | `String.t() | nil` | `nil` | Email date/timestamp |
-| `message_id` | `String.t() | nil` | `nil` | Message-ID header value |
-| `plain_text` | `String.t() | nil` | `nil` | Plain text version of the email body |
-| `html_content` | `String.t() | nil` | `nil` | HTML version of the email body |
+| `date` | `String.t() \| nil` | `nil` | Email date/timestamp |
+| `message_id` | `String.t() \| nil` | `nil` | Message-ID header value |
+| `plain_text` | `String.t() \| nil` | `nil` | Plain text version of the email body |
+| `html_content` | `String.t() \| nil` | `nil` | HTML version of the email body |
 | `content` | `String.t()` | — | Cleaned/processed text content. Aliased as `cleaned_text` for back-compat. |
 | `attachments` | `list(EmailAttachment)` | — | List of email attachments |
 | `metadata` | `map()` | — | Additional email headers and metadata |
@@ -1550,12 +1550,12 @@ Includes sender/recipient information, message ID, and attachment list.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `from_email` | `String.t() | nil` | `nil` | Sender's email address |
-| `from_name` | `String.t() | nil` | `nil` | Sender's display name |
+| `from_email` | `String.t() \| nil` | `nil` | Sender's email address |
+| `from_name` | `String.t() \| nil` | `nil` | Sender's display name |
 | `to_emails` | `list(String.t())` | `[]` | Primary recipients |
 | `cc_emails` | `list(String.t())` | `[]` | CC recipients |
 | `bcc_emails` | `list(String.t())` | `[]` | BCC recipients |
-| `message_id` | `String.t() | nil` | `nil` | Message-ID header value |
+| `message_id` | `String.t() \| nil` | `nil` | Message-ID header value |
 | `attachments` | `list(String.t())` | `[]` | List of attachment filenames |
 
 
@@ -1568,7 +1568,7 @@ Embedding request for generating embeddings from text.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `list(String.t())` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig | nil` | `nil` | Optional embedding configuration (model, batch size, etc.) |
+| `config` | `EmbeddingConfig \| nil` | `nil` | Optional embedding configuration (model, batch size, etc.) |
 
 
 ---
@@ -1594,10 +1594,10 @@ Request parameters for embedding generation.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `list(String.t())` | — | List of text strings to generate embeddings for |
-| `preset` | `String.t() | nil` | `nil` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `String.t() | nil` | `nil` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `api_key` | `String.t() | nil` | `nil` | API key for the LLM provider (optional, falls back to env). |
-| `embedding_plugin` | `String.t() | nil` | `nil` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
+| `preset` | `String.t() \| nil` | `nil` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
+| `model` | `String.t() \| nil` | `nil` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
+| `api_key` | `String.t() \| nil` | `nil` | API key for the LLM provider (optional, falls back to env). |
+| `embedding_plugin` | `String.t() \| nil` | `nil` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1610,7 +1610,7 @@ Embedded file descriptor extracted from the PDF name tree.
 |-------|------|---------|-------------|
 | `name` | `String.t()` | — | The filename as stored in the PDF name tree. |
 | `data` | `binary()` | — | Raw file bytes from the embedded stream. |
-| `mime_type` | `String.t() | nil` | `nil` | MIME type if specified in the filespec, otherwise `nil`. |
+| `mime_type` | `String.t() \| nil` | `nil` | MIME type if specified in the filespec, otherwise `nil`. |
 
 
 ---
@@ -1706,9 +1706,9 @@ Requires the `embeddings` feature to be enabled.
 | `normalize` | `boolean()` | `true` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `batch_size` | `integer()` | `32` | Batch size for embedding generation |
 | `show_download_progress` | `boolean()` | `false` | Show model download progress |
-| `cache_dir` | `String.t() | nil` | `nil` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
-| `acceleration` | `AccelerationConfig | nil` | `nil` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
-| `max_embed_duration_secs` | `integer() | nil` | `nil` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
+| `cache_dir` | `String.t() \| nil` | `nil` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
+| `max_embed_duration_secs` | `integer() \| nil` | `nil` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Functions
 
@@ -1752,12 +1752,12 @@ EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `String.t() | nil` | `nil` | Coverage |
-| `dc_format` | `String.t() | nil` | `nil` | Dc format |
-| `relation` | `String.t() | nil` | `nil` | Relation |
-| `source` | `String.t() | nil` | `nil` | Source |
-| `dc_type` | `String.t() | nil` | `nil` | Dc type |
-| `cover_image` | `String.t() | nil` | `nil` | Cover image |
+| `coverage` | `String.t() \| nil` | `nil` | Coverage |
+| `dc_format` | `String.t() \| nil` | `nil` | Dc format |
+| `relation` | `String.t() \| nil` | `nil` | Relation |
+| `source` | `String.t() \| nil` | `nil` | Source |
+| `dc_type` | `String.t() \| nil` | `nil` | Dc type |
+| `cover_image` | `String.t() \| nil` | `nil` | Cover image |
 
 
 ---
@@ -1783,8 +1783,8 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `sheet_count` | `integer() | nil` | `nil` | Number of sheets in the workbook. |
-| `sheet_names` | `list(String.t()) | nil` | `[]` | Names of all sheets in the workbook. |
+| `sheet_count` | `integer() \| nil` | `nil` | Number of sheets in the workbook. |
+| `sheet_names` | `list(String.t()) \| nil` | `[]` | Names of all sheets in the workbook. |
 
 
 ---
@@ -1803,7 +1803,7 @@ converted to Markdown format and dimensional statistics.
 | `row_count` | `integer()` | — | Number of rows |
 | `col_count` | `integer()` | — | Number of columns |
 | `cell_count` | `integer()` | — | Total number of non-empty cells |
-| `table_cells` | `list(list(String.t())) | nil` | `nil` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
+| `table_cells` | `list(list(String.t())) \| nil` | `nil` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
 
 
 ---
@@ -1840,9 +1840,9 @@ Request parameters for LLM-based structured extraction.
 | `schema` | `term()` | — | JSON schema for structured output |
 | `model` | `String.t()` | — | LLM model (e.g., "openai/gpt-4o") |
 | `schema_name` | `String.t()` | — | Schema name (default: "extraction") |
-| `schema_description` | `String.t() | nil` | `nil` | Schema description for the LLM |
-| `prompt` | `String.t() | nil` | `nil` | Custom Jinja2 prompt template |
-| `api_key` | `String.t() | nil` | `nil` | API key (optional, falls back to env) |
+| `schema_description` | `String.t() \| nil` | `nil` | Schema description for the LLM |
+| `prompt` | `String.t() \| nil` | `nil` | Custom Jinja2 prompt template |
+| `api_key` | `String.t() \| nil` | `nil` | API key (optional, falls back to env) |
 | `strict` | `boolean()` | — | Enable strict mode |
 
 
@@ -1861,19 +1861,19 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `data` | `binary()` | — | Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `String.t()` | — | Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static literals. |
 | `image_index` | `integer()` | — | Zero-indexed position of this image in the document/page |
-| `page_number` | `integer() | nil` | `nil` | Page/slide number where image was found (1-indexed) |
-| `width` | `integer() | nil` | `nil` | Image width in pixels |
-| `height` | `integer() | nil` | `nil` | Image height in pixels |
-| `colorspace` | `String.t() | nil` | `nil` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
-| `bits_per_component` | `integer() | nil` | `nil` | Bits per color component (e.g., 8, 16) |
+| `page_number` | `integer() \| nil` | `nil` | Page/slide number where image was found (1-indexed) |
+| `width` | `integer() \| nil` | `nil` | Image width in pixels |
+| `height` | `integer() \| nil` | `nil` | Image height in pixels |
+| `colorspace` | `String.t() \| nil` | `nil` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
+| `bits_per_component` | `integer() \| nil` | `nil` | Bits per color component (e.g., 8, 16) |
 | `is_mask` | `boolean()` | — | Whether this image is a mask image |
-| `description` | `String.t() | nil` | `nil` | Optional description of the image |
-| `ocr_result` | `ExtractionResult | nil` | `nil` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `bounding_box` | `String.t() | nil` | `nil` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
-| `source_path` | `String.t() | nil` | `nil` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `image_kind` | `ImageKind | nil` | `nil` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
-| `kind_confidence` | `float() | nil` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
-| `cluster_id` | `integer() | nil` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
+| `description` | `String.t() \| nil` | `nil` | Optional description of the image |
+| `ocr_result` | `ExtractionResult \| nil` | `nil` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
+| `bounding_box` | `String.t() \| nil` | `nil` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `source_path` | `String.t() \| nil` | `nil` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
+| `image_kind` | `ImageKind \| nil` | `nil` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
+| `kind_confidence` | `float() \| nil` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
+| `cluster_id` | `integer() \| nil` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
 
 
 ---
@@ -1886,9 +1886,9 @@ Extracted inline image with metadata.
 |-------|------|---------|-------------|
 | `data` | `binary()` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `String.t()` | — | Format |
-| `filename` | `String.t() | nil` | `nil` | Filename |
-| `description` | `String.t() | nil` | `nil` | Human-readable description |
-| `dimensions` | `list(integer()) | nil` | `nil` | Dimensions |
+| `filename` | `String.t() \| nil` | `nil` | Filename |
+| `description` | `String.t() \| nil` | `nil` | Human-readable description |
+| `dimensions` | `list(integer()) \| nil` | `nil` | Dimensions |
 | `attributes` | `list(String.t())` | — | Attributes |
 
 
@@ -1905,38 +1905,38 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 |-------|------|---------|-------------|
 | `use_cache` | `boolean()` | `true` | Enable caching of extraction results |
 | `enable_quality_processing` | `boolean()` | `true` | Enable quality post-processing |
-| `ocr` | `OcrConfig | nil` | `nil` | OCR configuration (None = OCR disabled) |
+| `ocr` | `OcrConfig \| nil` | `nil` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `boolean()` | `false` | Force OCR even for searchable PDFs |
-| `force_ocr_pages` | `list(integer()) | nil` | `nil` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
+| `force_ocr_pages` | `list(integer()) \| nil` | `nil` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
 | `disable_ocr` | `boolean()` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
-| `chunking` | `ChunkingConfig | nil` | `nil` | Text chunking configuration (None = chunking disabled) |
-| `content_filter` | `ContentFilterConfig | nil` | `nil` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
-| `images` | `ImageExtractionConfig | nil` | `nil` | Image extraction configuration (None = no image extraction) |
-| `pdf_options` | `PdfConfig | nil` | `nil` | PDF-specific options (None = use defaults) |
-| `token_reduction` | `TokenReductionOptions | nil` | `nil` | Token reduction configuration (None = no token reduction) |
-| `language_detection` | `LanguageDetectionConfig | nil` | `nil` | Language detection configuration (None = no language detection) |
-| `pages` | `PageConfig | nil` | `nil` | Page extraction configuration (None = no page tracking) |
-| `keywords` | `KeywordConfig | nil` | `nil` | Keyword extraction configuration (None = no keyword extraction) |
-| `postprocessor` | `PostProcessorConfig | nil` | `nil` | Post-processor configuration (None = use defaults) |
-| `html_options` | `String.t() | nil` | `nil` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
-| `html_output` | `HtmlOutputConfig | nil` | `nil` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `nil`, the existing plain comrak-based HTML renderer is used. |
-| `extraction_timeout_secs` | `integer() | nil` | `nil` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `nil` means no timeout (unbounded extraction time). |
-| `max_concurrent_extractions` | `integer() | nil` | `nil` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
+| `chunking` | `ChunkingConfig \| nil` | `nil` | Text chunking configuration (None = chunking disabled) |
+| `content_filter` | `ContentFilterConfig \| nil` | `nil` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
+| `images` | `ImageExtractionConfig \| nil` | `nil` | Image extraction configuration (None = no image extraction) |
+| `pdf_options` | `PdfConfig \| nil` | `nil` | PDF-specific options (None = use defaults) |
+| `token_reduction` | `TokenReductionOptions \| nil` | `nil` | Token reduction configuration (None = no token reduction) |
+| `language_detection` | `LanguageDetectionConfig \| nil` | `nil` | Language detection configuration (None = no language detection) |
+| `pages` | `PageConfig \| nil` | `nil` | Page extraction configuration (None = no page tracking) |
+| `keywords` | `KeywordConfig \| nil` | `nil` | Keyword extraction configuration (None = no keyword extraction) |
+| `postprocessor` | `PostProcessorConfig \| nil` | `nil` | Post-processor configuration (None = use defaults) |
+| `html_options` | `String.t() \| nil` | `nil` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
+| `html_output` | `HtmlOutputConfig \| nil` | `nil` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `nil`, the existing plain comrak-based HTML renderer is used. |
+| `extraction_timeout_secs` | `integer() \| nil` | `nil` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `nil` means no timeout (unbounded extraction time). |
+| `max_concurrent_extractions` | `integer() \| nil` | `nil` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `ResultFormat` | `:unified` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `SecurityLimits | nil` | `nil` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `nil`, default limits are used. |
+| `security_limits` | `SecurityLimits \| nil` | `nil` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `nil`, default limits are used. |
 | `output_format` | `OutputFormat` | `:plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
-| `layout` | `LayoutDetectionConfig | nil` | `nil` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `layout` | `LayoutDetectionConfig \| nil` | `nil` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
 | `use_layout_for_markdown` | `boolean()` | `false` | Run layout detection on the non-OCR PDF markdown path. When `true` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Substantially improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `boolean()` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `acceleration` | `AccelerationConfig | nil` | `nil` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `nil`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
-| `cache_namespace` | `String.t() | nil` | `nil` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
-| `cache_ttl_secs` | `integer() | nil` | `nil` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `nil`, the global TTL applies. |
-| `email` | `EmailConfig | nil` | `nil` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
-| `concurrency` | `String.t() | nil` | `nil` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
+| `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `nil`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
+| `cache_namespace` | `String.t() \| nil` | `nil` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
+| `cache_ttl_secs` | `integer() \| nil` | `nil` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `nil`, the global TTL applies. |
+| `email` | `EmailConfig \| nil` | `nil` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `concurrency` | `String.t() \| nil` | `nil` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `max_archive_depth` | `integer()` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
-| `tree_sitter` | `TreeSitterConfig | nil` | `nil` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
-| `structured_extraction` | `StructuredExtractionConfig | nil` | `nil` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
-| `cancel_token` | `String.t() | nil` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `tree_sitter` | `TreeSitterConfig \| nil` | `nil` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
+| `structured_extraction` | `StructuredExtractionConfig \| nil` | `nil` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `cancel_token` | `String.t() \| nil` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ##### Functions
 
@@ -1980,27 +1980,27 @@ This is the main result type returned by all extraction functions.
 | `content` | `String.t()` | — | The extracted text content |
 | `mime_type` | `String.t()` | — | The detected MIME type |
 | `metadata` | `Metadata` | — | Document metadata |
-| `extraction_method` | `ExtractionMethod | nil` | `nil` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
+| `extraction_method` | `ExtractionMethod \| nil` | `nil` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
 | `tables` | `list(Table)` | `[]` | Tables extracted from the document |
-| `detected_languages` | `list(String.t()) | nil` | `[]` | Detected languages |
-| `chunks` | `list(Chunk) | nil` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
-| `images` | `list(ExtractedImage) | nil` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
-| `pages` | `list(PageContent) | nil` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
-| `elements` | `list(Element) | nil` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
-| `djot_content` | `DjotContent | nil` | `nil` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `nil` for non-Djot documents. |
-| `ocr_elements` | `list(OcrElement) | nil` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
-| `document` | `DocumentStructure | nil` | `nil` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `extracted_keywords` | `list(Keyword) | nil` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
-| `quality_score` | `float() | nil` | `nil` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
+| `detected_languages` | `list(String.t()) \| nil` | `[]` | Detected languages |
+| `chunks` | `list(Chunk) \| nil` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
+| `images` | `list(ExtractedImage) \| nil` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
+| `pages` | `list(PageContent) \| nil` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
+| `elements` | `list(Element) \| nil` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
+| `djot_content` | `DjotContent \| nil` | `nil` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `nil` for non-Djot documents. |
+| `ocr_elements` | `list(OcrElement) \| nil` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
+| `document` | `DocumentStructure \| nil` | `nil` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `extracted_keywords` | `list(Keyword) \| nil` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
+| `quality_score` | `float() \| nil` | `nil` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
 | `processing_warnings` | `list(ProcessingWarning)` | `[]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
-| `annotations` | `list(PdfAnnotation) | nil` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
-| `children` | `list(ArchiveEntry) | nil` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `nil` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
-| `uris` | `list(Uri) | nil` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
-| `structured_output` | `term() | nil` | `nil` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
-| `code_intelligence` | `String.t() | nil` | `nil` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
-| `llm_usage` | `list(LlmUsage) | nil` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `nil` when no LLM was used. |
-| `formatted_content` | `String.t() | nil` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
-| `ocr_internal_document` | `String.t() | nil` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
+| `annotations` | `list(PdfAnnotation) \| nil` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `children` | `list(ArchiveEntry) \| nil` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `nil` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
+| `uris` | `list(Uri) \| nil` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `structured_output` | `term() \| nil` | `nil` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
+| `code_intelligence` | `String.t() \| nil` | `nil` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
+| `llm_usage` | `list(LlmUsage) \| nil` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `nil` when no LLM was used. |
+| `formatted_content` | `String.t() \| nil` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
+| `ocr_internal_document` | `String.t() \| nil` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
 ##### Functions
 
@@ -2024,7 +2024,7 @@ FictionBook (FB2) metadata.
 |-------|------|---------|-------------|
 | `genres` | `list(String.t())` | `[]` | Genres |
 | `sequences` | `list(String.t())` | `[]` | Sequences |
-| `annotation` | `String.t() | nil` | `nil` | Annotation |
+| `annotation` | `String.t() \| nil` | `nil` | Annotation |
 
 
 ---
@@ -2049,28 +2049,28 @@ cannot be overridden per file:
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `enable_quality_processing` | `boolean() | nil` | `nil` | Override quality post-processing for this file. |
-| `ocr` | `OcrConfig | nil` | `nil` | Override OCR configuration for this file (None in the Option = use batch default). |
-| `force_ocr` | `boolean() | nil` | `nil` | Override force OCR for this file. |
-| `force_ocr_pages` | `list(integer()) | nil` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
-| `disable_ocr` | `boolean() | nil` | `nil` | Override disable OCR for this file. |
-| `chunking` | `ChunkingConfig | nil` | `nil` | Override chunking configuration for this file. |
-| `content_filter` | `ContentFilterConfig | nil` | `nil` | Override content filtering configuration for this file. |
-| `images` | `ImageExtractionConfig | nil` | `nil` | Override image extraction configuration for this file. |
-| `pdf_options` | `PdfConfig | nil` | `nil` | Override PDF options for this file. |
-| `token_reduction` | `TokenReductionOptions | nil` | `nil` | Override token reduction for this file. |
-| `language_detection` | `LanguageDetectionConfig | nil` | `nil` | Override language detection for this file. |
-| `pages` | `PageConfig | nil` | `nil` | Override page extraction for this file. |
-| `keywords` | `KeywordConfig | nil` | `nil` | Override keyword extraction for this file. |
-| `postprocessor` | `PostProcessorConfig | nil` | `nil` | Override post-processor for this file. |
-| `html_options` | `String.t() | nil` | `nil` | Override HTML conversion options for this file. |
-| `result_format` | `ResultFormat | nil` | `nil` | Override result format for this file. |
-| `output_format` | `OutputFormat | nil` | `nil` | Override output content format for this file. |
-| `include_document_structure` | `boolean() | nil` | `nil` | Override document structure output for this file. |
-| `layout` | `LayoutDetectionConfig | nil` | `nil` | Override layout detection for this file. |
-| `timeout_secs` | `integer() | nil` | `nil` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
-| `tree_sitter` | `TreeSitterConfig | nil` | `nil` | Override tree-sitter configuration for this file. |
-| `structured_extraction` | `StructuredExtractionConfig | nil` | `nil` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
+| `enable_quality_processing` | `boolean() \| nil` | `nil` | Override quality post-processing for this file. |
+| `ocr` | `OcrConfig \| nil` | `nil` | Override OCR configuration for this file (None in the Option = use batch default). |
+| `force_ocr` | `boolean() \| nil` | `nil` | Override force OCR for this file. |
+| `force_ocr_pages` | `list(integer()) \| nil` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
+| `disable_ocr` | `boolean() \| nil` | `nil` | Override disable OCR for this file. |
+| `chunking` | `ChunkingConfig \| nil` | `nil` | Override chunking configuration for this file. |
+| `content_filter` | `ContentFilterConfig \| nil` | `nil` | Override content filtering configuration for this file. |
+| `images` | `ImageExtractionConfig \| nil` | `nil` | Override image extraction configuration for this file. |
+| `pdf_options` | `PdfConfig \| nil` | `nil` | Override PDF options for this file. |
+| `token_reduction` | `TokenReductionOptions \| nil` | `nil` | Override token reduction for this file. |
+| `language_detection` | `LanguageDetectionConfig \| nil` | `nil` | Override language detection for this file. |
+| `pages` | `PageConfig \| nil` | `nil` | Override page extraction for this file. |
+| `keywords` | `KeywordConfig \| nil` | `nil` | Override keyword extraction for this file. |
+| `postprocessor` | `PostProcessorConfig \| nil` | `nil` | Override post-processor for this file. |
+| `html_options` | `String.t() \| nil` | `nil` | Override HTML conversion options for this file. |
+| `result_format` | `ResultFormat \| nil` | `nil` | Override result format for this file. |
+| `output_format` | `OutputFormat \| nil` | `nil` | Override output content format for this file. |
+| `include_document_structure` | `boolean() \| nil` | `nil` | Override document structure output for this file. |
+| `layout` | `LayoutDetectionConfig \| nil` | `nil` | Override layout detection for this file. |
+| `timeout_secs` | `integer() \| nil` | `nil` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
+| `tree_sitter` | `TreeSitterConfig \| nil` | `nil` | Override tree-sitter configuration for this file. |
+| `structured_extraction` | `StructuredExtractionConfig \| nil` | `nil` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
 
 
 ---
@@ -2096,11 +2096,11 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_type` | `BlockType` | — | Type of block element |
-| `level` | `integer() | nil` | `nil` | Heading level (1-6) for headings, or nesting level for lists |
+| `level` | `integer() \| nil` | `nil` | Heading level (1-6) for headings, or nesting level for lists |
 | `inline_content` | `list(InlineElement)` | — | Inline content within the block |
-| `attributes` | `String.t() | nil` | `nil` | Element attributes (classes, IDs, key-value pairs) |
-| `language` | `String.t() | nil` | `nil` | Language identifier for code blocks |
-| `code` | `String.t() | nil` | `nil` | Raw code content for code blocks |
+| `attributes` | `String.t() \| nil` | `nil` | Element attributes (classes, IDs, key-value pairs) |
+| `language` | `String.t() \| nil` | `nil` | Language identifier for code blocks |
+| `code` | `String.t() \| nil` | `nil` | Raw code content for code blocks |
 | `children` | `list(FormattedBlock)` | — | Nested blocks for containers (blockquotes, list items, divs) |
 
 
@@ -2118,7 +2118,7 @@ Individual grid cell with position and span metadata.
 | `row_span` | `integer()` | — | Number of rows this cell spans. |
 | `col_span` | `integer()` | — | Number of columns this cell spans. |
 | `is_header` | `boolean()` | — | Whether this is a header cell. |
-| `bbox` | `String.t() | nil` | `nil` | Bounding box for this cell (if available). |
+| `bbox` | `String.t() \| nil` | `nil` | Bounding box for this cell (if available). |
 
 
 ---
@@ -2131,7 +2131,7 @@ Header/heading element metadata.
 |-------|------|---------|-------------|
 | `level` | `integer()` | — | Header level: 1 (h1) through 6 (h6) |
 | `text` | `String.t()` | — | Normalized text content of the header |
-| `id` | `String.t() | nil` | `nil` | HTML id attribute if present |
+| `id` | `String.t() \| nil` | `nil` | HTML id attribute if present |
 | `depth` | `integer()` | — | Document tree depth at the header element |
 | `html_offset` | `integer()` | — | Byte offset in original HTML document |
 
@@ -2175,7 +2175,7 @@ font size clustering and hierarchical analysis.
 | `text` | `String.t()` | — | The text content of this block |
 | `font_size` | `float()` | — | The font size of the text in this block |
 | `level` | `String.t()` | — | The hierarchy level of this block (H1-H6 or Body) Levels correspond to HTML heading tags: - "h1": Top-level heading - "h2": Secondary heading - "h3": Tertiary heading - "h4": Quaternary heading - "h5": Quinary heading - "h6": Senary heading - "body": Body text (no heading level) |
-| `bbox` | `list(float()) | nil` | `nil` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
+| `bbox` | `list(float()) \| nil` | `nil` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
 
 
 ---
@@ -2193,7 +2193,7 @@ included in page content.
 | `enabled` | `boolean()` | `true` | Enable hierarchy extraction |
 | `k_clusters` | `integer()` | `3` | Number of font size clusters to use for hierarchy levels (1-7) Default: 6, which provides H1-H6 heading levels with body text. Larger values create more fine-grained hierarchy levels. |
 | `include_bbox` | `boolean()` | `true` | Include bounding box information in hierarchy blocks |
-| `ocr_coverage_threshold` | `float() | nil` | `nil` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
+| `ocr_coverage_threshold` | `float() \| nil` | `nil` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
 ##### Functions
 
@@ -2229,14 +2229,14 @@ and extracted structural elements (headers, links, images, structured data).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `String.t() | nil` | `nil` | Document title from `<title>` tag |
-| `description` | `String.t() | nil` | `nil` | Document description from `<meta name="description">` tag |
+| `title` | `String.t() \| nil` | `nil` | Document title from `<title>` tag |
+| `description` | `String.t() \| nil` | `nil` | Document description from `<meta name="description">` tag |
 | `keywords` | `list(String.t())` | `[]` | Document keywords from `<meta name="keywords">` tag, split on commas |
-| `author` | `String.t() | nil` | `nil` | Document author from `<meta name="author">` tag |
-| `canonical_url` | `String.t() | nil` | `nil` | Canonical URL from `<link rel="canonical">` tag |
-| `base_href` | `String.t() | nil` | `nil` | Base URL from `<base href="">` tag for resolving relative URLs |
-| `language` | `String.t() | nil` | `nil` | Document language from `lang` attribute |
-| `text_direction` | `TextDirection | nil` | `nil` | Document text direction from `dir` attribute |
+| `author` | `String.t() \| nil` | `nil` | Document author from `<meta name="author">` tag |
+| `canonical_url` | `String.t() \| nil` | `nil` | Canonical URL from `<link rel="canonical">` tag |
+| `base_href` | `String.t() \| nil` | `nil` | Base URL from `<base href="">` tag for resolving relative URLs |
+| `language` | `String.t() \| nil` | `nil` | Document language from `lang` attribute |
+| `text_direction` | `TextDirection \| nil` | `nil` | Document text direction from `dir` attribute |
 | `open_graph` | `map()` | `%{}` | Open Graph metadata (og:* properties) for social media Keys like "title", "description", "image", "url", etc. |
 | `twitter_card` | `map()` | `%{}` | Twitter Card metadata (twitter:* properties) Keys like "card", "site", "creator", "title", "description", "image", etc. |
 | `meta_tags` | `map()` | `%{}` | Additional meta tags not covered by specific fields Keys are meta name/property attributes, values are content |
@@ -2268,8 +2268,8 @@ the plain comrak-based renderer.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `css` | `String.t() | nil` | `nil` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
-| `css_file` | `String.t() | nil` | `nil` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
+| `css` | `String.t() \| nil` | `nil` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
+| `css_file` | `String.t() \| nil` | `nil` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
 | `theme` | `HtmlTheme` | `:unstyled` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
 | `class_prefix` | `String.t()` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `boolean()` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
@@ -2390,7 +2390,7 @@ Image extraction configuration.
 | `auto_adjust_dpi` | `boolean()` | `true` | Automatically adjust DPI based on image content |
 | `min_dpi` | `integer()` | `72` | Minimum DPI threshold |
 | `max_dpi` | `integer()` | `600` | Maximum DPI threshold |
-| `max_images_per_page` | `integer() | nil` | `nil` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `nil` (default) means no limit — all images are extracted. |
+| `max_images_per_page` | `integer() \| nil` | `nil` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `nil` (default) means no limit — all images are extracted. |
 | `classify` | `boolean()` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ##### Functions
@@ -2428,9 +2428,9 @@ Image element metadata.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `src` | `String.t()` | — | Image source (URL, data URI, or SVG content) |
-| `alt` | `String.t() | nil` | `nil` | Alternative text from alt attribute |
-| `title` | `String.t() | nil` | `nil` | Title attribute |
-| `dimensions` | `list(integer()) | nil` | `nil` | Image dimensions as (width, height) if available |
+| `alt` | `String.t() \| nil` | `nil` | Alternative text from alt attribute |
+| `title` | `String.t() \| nil` | `nil` | Title attribute |
+| `dimensions` | `list(integer()) \| nil` | `nil` | Image dimensions as (width, height) if available |
 | `image_type` | `ImageType` | — | Image type classification |
 | `attributes` | `list(String.t())` | — | Additional attributes as key-value pairs |
 
@@ -2444,8 +2444,8 @@ Result of OCR extraction from an image with optional page tracking.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | Extracted text content |
-| `boundaries` | `list(PageBoundary) | nil` | `nil` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `page_contents` | `list(PageContent) | nil` | `nil` | Per-frame content information |
+| `boundaries` | `list(PageBoundary) \| nil` | `nil` | Character byte boundaries per frame (for multi-frame TIFFs) |
+| `page_contents` | `list(PageContent) \| nil` | `nil` | Per-frame content information |
 
 
 ---
@@ -2495,12 +2495,12 @@ including DPI normalization, resizing, and resampling.
 | `scale_factor` | `float()` | — | Scaling factor applied to the image |
 | `auto_adjusted` | `boolean()` | — | Whether DPI was auto-adjusted based on content |
 | `final_dpi` | `integer()` | — | Final DPI after processing |
-| `new_dimensions` | `list(integer()) | nil` | `nil` | New dimensions after resizing (if resized) |
+| `new_dimensions` | `list(integer()) \| nil` | `nil` | New dimensions after resizing (if resized) |
 | `resample_method` | `String.t()` | — | Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) |
 | `dimension_clamped` | `boolean()` | — | Whether dimensions were clamped to max_image_dimension |
-| `calculated_dpi` | `integer() | nil` | `nil` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
+| `calculated_dpi` | `integer() \| nil` | `nil` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skipped_resize` | `boolean()` | — | Whether resize was skipped (dimensions already optimal) |
-| `resize_error` | `String.t() | nil` | `nil` | Error message if resize failed |
+| `resize_error` | `String.t() \| nil` | `nil` | Error message if resize failed |
 
 
 ---
@@ -2527,8 +2527,8 @@ Represents text with formatting, links, images, etc.
 |-------|------|---------|-------------|
 | `element_type` | `InlineType` | — | Type of inline element |
 | `content` | `String.t()` | — | Text content |
-| `attributes` | `String.t() | nil` | `nil` | Element attributes |
-| `metadata` | `map() | nil` | `nil` | Additional metadata (e.g., href for links, src/alt for images) |
+| `attributes` | `String.t() \| nil` | `nil` | Element attributes |
+| `metadata` | `map() \| nil` | `nil` | Additional metadata (e.g., href for links, src/alt for images) |
 
 
 ---
@@ -2539,8 +2539,8 @@ JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `String.t() | nil` | `nil` | Copyright |
-| `license` | `String.t() | nil` | `nil` | License |
+| `copyright` | `String.t() \| nil` | `nil` | Copyright |
+| `license` | `String.t() \| nil` | `nil` | License |
 | `history_dates` | `map()` | `%{}` | History dates |
 | `contributor_roles` | `list(ContributorRole)` | `[]` | Contributor roles |
 
@@ -2556,7 +2556,7 @@ Extracted keyword with metadata.
 | `text` | `String.t()` | — | The keyword text. |
 | `score` | `float()` | — | Relevance score (higher is better, algorithm-specific range). |
 | `algorithm` | `KeywordAlgorithm` | — | Algorithm that extracted this keyword. |
-| `positions` | `list(integer()) | nil` | `nil` | Optional positions where keyword appears in text (character offsets). |
+| `positions` | `list(integer()) \| nil` | `nil` | Optional positions where keyword appears in text (character offsets). |
 
 
 ---
@@ -2571,9 +2571,9 @@ Keyword extraction configuration.
 | `max_keywords` | `integer()` | `10` | Maximum number of keywords to extract (default: 10). |
 | `min_score` | `float()` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
 | `ngram_range` | `list(integer())` | `[]` | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
-| `language` | `String.t() | nil` | `nil` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
-| `yake_params` | `YakeParams | nil` | `nil` | YAKE-specific tuning parameters. |
-| `rake_params` | `RakeParams | nil` | `nil` | RAKE-specific tuning parameters. |
+| `language` | `String.t() \| nil` | `nil` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
+| `yake_params` | `YakeParams \| nil` | `nil` | YAKE-specific tuning parameters. |
+| `rake_params` | `RakeParams \| nil` | `nil` | RAKE-specific tuning parameters. |
 
 ##### Functions
 
@@ -2632,10 +2632,10 @@ is enabled for PDF extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `confidence_threshold` | `float() | nil` | `nil` | Confidence threshold override (None = use model default). |
+| `confidence_threshold` | `float() \| nil` | `nil` | Confidence threshold override (None = use model default). |
 | `apply_heuristics` | `boolean()` | `true` | Whether to apply postprocessing heuristics (default: true). |
 | `table_model` | `TableModel` | `:tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
-| `acceleration` | `AccelerationConfig | nil` | `nil` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
+| `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
 
 ##### Functions
 
@@ -2675,7 +2675,7 @@ Link element metadata.
 |-------|------|---------|-------------|
 | `href` | `String.t()` | — | The href URL value |
 | `text` | `String.t()` | — | Link text content (normalized) |
-| `title` | `String.t() | nil` | `nil` | Optional title attribute |
+| `title` | `String.t() \| nil` | `nil` | Optional title attribute |
 | `link_type` | `LinkType` | — | Link type classification |
 | `rel` | `list(String.t())` | — | Rel attribute values |
 | `attributes` | `list(String.t())` | — | Additional attributes as key-value pairs |
@@ -2693,12 +2693,12 @@ its own `LlmConfig`, allowing different providers per feature.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `model` | `String.t()` | — | Provider/model string using liter-llm routing format. Examples: `"openai/gpt-4o"`, `"anthropic/claude-sonnet-4-20250514"`, `"groq/llama-3.1-70b-versatile"`. |
-| `api_key` | `String.t() | nil` | `nil` | API key for the provider. When `nil`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
-| `base_url` | `String.t() | nil` | `nil` | Custom base URL override for the provider endpoint. |
-| `timeout_secs` | `integer() | nil` | `nil` | Request timeout in seconds (default: 60). |
-| `max_retries` | `integer() | nil` | `nil` | Maximum retry attempts (default: 3). |
-| `temperature` | `float() | nil` | `nil` | Sampling temperature for generation tasks. |
-| `max_tokens` | `integer() | nil` | `nil` | Maximum tokens to generate. |
+| `api_key` | `String.t() \| nil` | `nil` | API key for the provider. When `nil`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
+| `base_url` | `String.t() \| nil` | `nil` | Custom base URL override for the provider endpoint. |
+| `timeout_secs` | `integer() \| nil` | `nil` | Request timeout in seconds (default: 60). |
+| `max_retries` | `integer() \| nil` | `nil` | Maximum retry attempts (default: 3). |
+| `temperature` | `float() \| nil` | `nil` | Sampling temperature for generation tasks. |
+| `max_tokens` | `integer() \| nil` | `nil` | Maximum tokens to generate. |
 
 
 ---
@@ -2715,11 +2715,11 @@ within one extraction (e.g. VLM OCR + structured extraction).
 |-------|------|---------|-------------|
 | `model` | `String.t()` | — | The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). |
 | `source` | `String.t()` | — | The pipeline stage that triggered this LLM call (e.g. "vlm_ocr", "structured_extraction", "embeddings"). |
-| `input_tokens` | `integer() | nil` | `nil` | Number of input/prompt tokens consumed. |
-| `output_tokens` | `integer() | nil` | `nil` | Number of output/completion tokens generated. |
-| `total_tokens` | `integer() | nil` | `nil` | Total tokens (input + output). |
-| `estimated_cost` | `float() | nil` | `nil` | Estimated cost in USD based on the provider's published pricing. |
-| `finish_reason` | `String.t() | nil` | `nil` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
+| `input_tokens` | `integer() \| nil` | `nil` | Number of input/prompt tokens consumed. |
+| `output_tokens` | `integer() \| nil` | `nil` | Number of output/completion tokens generated. |
+| `total_tokens` | `integer() \| nil` | `nil` | Total tokens (input + output). |
+| `estimated_cost` | `float() \| nil` | `nil` | Estimated cost in USD based on the provider's published pricing. |
+| `finish_reason` | `String.t() \| nil` | `nil` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
 
 
 ---
@@ -2774,26 +2774,26 @@ via a discriminated union, and additional custom fields from postprocessors.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `String.t() | nil` | `nil` | Document title |
-| `subject` | `String.t() | nil` | `nil` | Document subject or description |
-| `authors` | `list(String.t()) | nil` | `[]` | Primary author(s) - always Vec for consistency |
-| `keywords` | `list(String.t()) | nil` | `[]` | Keywords/tags - always Vec for consistency |
-| `language` | `String.t() | nil` | `nil` | Primary language (ISO 639 code) |
-| `created_at` | `String.t() | nil` | `nil` | Creation timestamp (ISO 8601 format) |
-| `modified_at` | `String.t() | nil` | `nil` | Last modification timestamp (ISO 8601 format) |
-| `created_by` | `String.t() | nil` | `nil` | User who created the document |
-| `modified_by` | `String.t() | nil` | `nil` | User who last modified the document |
-| `pages` | `PageStructure | nil` | `nil` | Page/slide/sheet structure with boundaries |
-| `format` | `FormatMetadata | nil` | `nil` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
-| `image_preprocessing` | `ImagePreprocessingMetadata | nil` | `nil` | Image preprocessing metadata (when OCR preprocessing was applied) |
-| `json_schema` | `term() | nil` | `nil` | JSON schema (for structured data extraction) |
-| `error` | `ErrorMetadata | nil` | `nil` | Error metadata (for batch operations) |
-| `extraction_duration_ms` | `integer() | nil` | `nil` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `nil` for single-file extraction (which uses external timing). |
-| `category` | `String.t() | nil` | `nil` | Document category (from frontmatter or classification). |
-| `tags` | `list(String.t()) | nil` | `[]` | Document tags (from frontmatter). |
-| `document_version` | `String.t() | nil` | `nil` | Document version string (from frontmatter). |
-| `abstract_text` | `String.t() | nil` | `nil` | Abstract or summary text (from frontmatter). |
-| `output_format` | `String.t() | nil` | `nil` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `title` | `String.t() \| nil` | `nil` | Document title |
+| `subject` | `String.t() \| nil` | `nil` | Document subject or description |
+| `authors` | `list(String.t()) \| nil` | `[]` | Primary author(s) - always Vec for consistency |
+| `keywords` | `list(String.t()) \| nil` | `[]` | Keywords/tags - always Vec for consistency |
+| `language` | `String.t() \| nil` | `nil` | Primary language (ISO 639 code) |
+| `created_at` | `String.t() \| nil` | `nil` | Creation timestamp (ISO 8601 format) |
+| `modified_at` | `String.t() \| nil` | `nil` | Last modification timestamp (ISO 8601 format) |
+| `created_by` | `String.t() \| nil` | `nil` | User who created the document |
+| `modified_by` | `String.t() \| nil` | `nil` | User who last modified the document |
+| `pages` | `PageStructure \| nil` | `nil` | Page/slide/sheet structure with boundaries |
+| `format` | `FormatMetadata \| nil` | `nil` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
+| `image_preprocessing` | `ImagePreprocessingMetadata \| nil` | `nil` | Image preprocessing metadata (when OCR preprocessing was applied) |
+| `json_schema` | `term() \| nil` | `nil` | JSON schema (for structured data extraction) |
+| `error` | `ErrorMetadata \| nil` | `nil` | Error metadata (for batch operations) |
+| `extraction_duration_ms` | `integer() \| nil` | `nil` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `nil` for single-file extraction (which uses external timing). |
+| `category` | `String.t() \| nil` | `nil` | Document category (from frontmatter or classification). |
+| `tags` | `list(String.t()) \| nil` | `[]` | Document tags (from frontmatter). |
+| `document_version` | `String.t() \| nil` | `nil` | Document version string (from frontmatter). |
+| `abstract_text` | `String.t() \| nil` | `nil` | Abstract or summary text (from frontmatter). |
+| `output_format` | `String.t() \| nil` | `nil` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
 | `ocr_used` | `boolean()` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `map()` | `%{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
@@ -2854,6 +2854,12 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Ocr` - OCR processing failed
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
+
+# Reading `backend_options`
+
+Backends that support runtime tuning can read `config.backend_options` and
+deserialize only the keys they care about. Unknown keys are silently ignored,
+so multiple backends can coexist in a pipeline without key conflicts.
 
 **Signature:**
 
@@ -2968,7 +2974,7 @@ from recognition confidence (how confident about the actual text content).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `detection` | `float() | nil` | `nil` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
+| `detection` | `float() \| nil` | `nil` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
 | `recognition` | `float()` | — | Recognition confidence: how confident about the text content. Range: 0.0 to 1.0. |
 
 
@@ -2983,17 +2989,18 @@ OCR configuration.
 | `enabled` | `boolean()` | `true` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `true`. When `false`, all other OCR settings are ignored. |
 | `backend` | `String.t()` | — | OCR backend: tesseract, easyocr, paddleocr |
 | `language` | `String.t()` | — | Language code (e.g., "eng", "deu") |
-| `tesseract_config` | `TesseractConfig | nil` | `nil` | Tesseract-specific configuration (optional) |
-| `output_format` | `OutputFormat | nil` | `nil` | Output format for OCR results (optional, for format conversion) |
-| `paddle_ocr_config` | `term() | nil` | `nil` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `element_config` | `OcrElementConfig | nil` | `nil` | OCR element extraction configuration |
-| `quality_thresholds` | `OcrQualityThresholds | nil` | `nil` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
-| `pipeline` | `OcrPipelineConfig | nil` | `nil` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
+| `tesseract_config` | `TesseractConfig \| nil` | `nil` | Tesseract-specific configuration (optional) |
+| `output_format` | `OutputFormat \| nil` | `nil` | Output format for OCR results (optional, for format conversion) |
+| `paddle_ocr_config` | `term() \| nil` | `nil` | PaddleOCR-specific configuration (optional, JSON passthrough) |
+| `backend_options` | `term() \| nil` | `nil` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `nil`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
+| `element_config` | `OcrElementConfig \| nil` | `nil` | OCR element extraction configuration |
+| `quality_thresholds` | `OcrQualityThresholds \| nil` | `nil` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
+| `pipeline` | `OcrPipelineConfig \| nil` | `nil` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `auto_rotate` | `boolean()` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlm_config` | `LlmConfig | nil` | `nil` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
-| `vlm_prompt` | `String.t() | nil` | `nil` | Custom Jinja2 prompt template for VLM OCR. When `nil`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
-| `acceleration` | `AccelerationConfig | nil` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
-| `tessdata_bytes` | `map() | nil` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
+| `vlm_config` | `LlmConfig \| nil` | `nil` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_prompt` | `String.t() \| nil` | `nil` | Custom Jinja2 prompt template for VLM OCR. When `nil`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
+| `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
+| `tessdata_bytes` | `map() \| nil` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
 ##### Functions
 
@@ -3020,9 +3027,9 @@ from both Tesseract and PaddleOCR backends.
 | `geometry` | `OcrBoundingGeometry` | `:rectangle` | Bounding geometry (rectangle or quadrilateral). |
 | `confidence` | `OcrConfidence` | — | Confidence scores for detection and recognition. |
 | `level` | `OcrElementLevel` | `:line` | Hierarchical level (word, line, block, page). |
-| `rotation` | `OcrRotation | nil` | `nil` | Rotation information (if detected). |
+| `rotation` | `OcrRotation \| nil` | `nil` | Rotation information (if detected). |
 | `page_number` | `integer()` | — | Page number (1-indexed). |
-| `parent_id` | `String.t() | nil` | `nil` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
+| `parent_id` | `String.t() \| nil` | `nil` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
 | `backend_metadata` | `map()` | `%{}` | Backend-specific metadata that doesn't fit the unified schema. |
 
 
@@ -3057,8 +3064,8 @@ including recognized text and detected tables.
 | `mime_type` | `String.t()` | — | Original MIME type of the processed image |
 | `metadata` | `map()` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `list(OcrTable)` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `list(OcrElement) | nil` | `nil` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
-| `internal_document` | `String.t() | nil` | `nil` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
+| `ocr_elements` | `list(OcrElement) \| nil` | `nil` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `internal_document` | `String.t() \| nil` | `nil` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
 
 
 ---
@@ -3075,8 +3082,8 @@ Captures information about OCR processing configuration and results.
 | `psm` | `integer()` | — | Tesseract Page Segmentation Mode (PSM) |
 | `output_format` | `String.t()` | — | Output format (e.g., "text", "hocr") |
 | `table_count` | `integer()` | — | Number of tables detected |
-| `table_rows` | `integer() | nil` | `nil` | Table rows |
-| `table_cols` | `integer() | nil` | `nil` | Table cols |
+| `table_rows` | `integer() \| nil` | `nil` | Table rows |
+| `table_cols` | `integer() \| nil` | `nil` | Table cols |
 
 
 ---
@@ -3105,10 +3112,11 @@ A single backend stage in the OCR pipeline.
 |-------|------|---------|-------------|
 | `backend` | `String.t()` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `integer()` | — | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `String.t() | nil` | `nil` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `TesseractConfig | nil` | `nil` | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `term() | nil` | `nil` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `LlmConfig | nil` | `nil` | VLM config override for this pipeline stage. |
+| `language` | `String.t() \| nil` | `nil` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `TesseractConfig \| nil` | `nil` | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `term() \| nil` | `nil` | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `LlmConfig \| nil` | `nil` | VLM config override for this pipeline stage. |
+| `backend_options` | `term() \| nil` | `nil` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 
 ---
@@ -3158,7 +3166,7 @@ Rotation information for an OCR element.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `angle_degrees` | `float()` | — | Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). |
-| `confidence` | `float() | nil` | `nil` | Confidence score for the rotation detection. |
+| `confidence` | `float() \| nil` | `nil` | Confidence score for the rotation detection. |
 
 
 ---
@@ -3174,7 +3182,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `list(list(String.t()))` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `String.t()` | — | Markdown representation of the table |
 | `page_number` | `integer()` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `OcrTableBoundingBox | nil` | `nil` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `OcrTableBoundingBox \| nil` | `nil` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 
 ---
@@ -3202,24 +3210,24 @@ Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `String.t() | nil` | `nil` | Document title (dc:title) |
-| `subject` | `String.t() | nil` | `nil` | Document subject/topic (dc:subject) |
-| `creator` | `String.t() | nil` | `nil` | Current document creator/author (dc:creator) |
-| `initial_creator` | `String.t() | nil` | `nil` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `String.t() | nil` | `nil` | Keywords or tags (meta:keyword) |
-| `description` | `String.t() | nil` | `nil` | Document description (dc:description) |
-| `date` | `String.t() | nil` | `nil` | Current modification date (dc:date) |
-| `creation_date` | `String.t() | nil` | `nil` | Initial creation date (meta:creation-date) |
-| `language` | `String.t() | nil` | `nil` | Document language (dc:language) |
-| `generator` | `String.t() | nil` | `nil` | Generator/application that created the document (meta:generator) |
-| `editing_duration` | `String.t() | nil` | `nil` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editing_cycles` | `String.t() | nil` | `nil` | Number of edits/revisions (meta:editing-cycles) |
-| `page_count` | `integer() | nil` | `nil` | Document statistics - page count (meta:page-count) |
-| `word_count` | `integer() | nil` | `nil` | Document statistics - word count (meta:word-count) |
-| `character_count` | `integer() | nil` | `nil` | Document statistics - character count (meta:character-count) |
-| `paragraph_count` | `integer() | nil` | `nil` | Document statistics - paragraph count (meta:paragraph-count) |
-| `table_count` | `integer() | nil` | `nil` | Document statistics - table count (meta:table-count) |
-| `image_count` | `integer() | nil` | `nil` | Document statistics - image count (meta:image-count) |
+| `title` | `String.t() \| nil` | `nil` | Document title (dc:title) |
+| `subject` | `String.t() \| nil` | `nil` | Document subject/topic (dc:subject) |
+| `creator` | `String.t() \| nil` | `nil` | Current document creator/author (dc:creator) |
+| `initial_creator` | `String.t() \| nil` | `nil` | Initial creator of the document (meta:initial-creator) |
+| `keywords` | `String.t() \| nil` | `nil` | Keywords or tags (meta:keyword) |
+| `description` | `String.t() \| nil` | `nil` | Document description (dc:description) |
+| `date` | `String.t() \| nil` | `nil` | Current modification date (dc:date) |
+| `creation_date` | `String.t() \| nil` | `nil` | Initial creation date (meta:creation-date) |
+| `language` | `String.t() \| nil` | `nil` | Document language (dc:language) |
+| `generator` | `String.t() \| nil` | `nil` | Generator/application that created the document (meta:generator) |
+| `editing_duration` | `String.t() \| nil` | `nil` | Editing duration in ISO 8601 format (meta:editing-duration) |
+| `editing_cycles` | `String.t() \| nil` | `nil` | Number of edits/revisions (meta:editing-cycles) |
+| `page_count` | `integer() \| nil` | `nil` | Document statistics - page count (meta:page-count) |
+| `word_count` | `integer() \| nil` | `nil` | Document statistics - word count (meta:word-count) |
+| `character_count` | `integer() \| nil` | `nil` | Document statistics - character count (meta:character-count) |
+| `paragraph_count` | `integer() \| nil` | `nil` | Document statistics - paragraph count (meta:paragraph-count) |
+| `table_count` | `integer() \| nil` | `nil` | Document statistics - table count (meta:table-count) |
+| `image_count` | `integer() \| nil` | `nil` | Document statistics - image count (meta:image-count) |
 
 
 ---
@@ -3260,7 +3268,7 @@ Uses a builder pattern for convenient configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `language` | `String.t()` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
-| `cache_dir` | `String.t() | nil` | `nil` | Optional custom cache directory for model files |
+| `cache_dir` | `String.t() \| nil` | `nil` | Optional custom cache directory for model files |
 | `use_angle_cls` | `boolean()` | — | Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition. |
 | `enable_table_detection` | `boolean()` | — | Enable table structure detection (default: false) |
 | `det_db_thresh` | `float()` | — | Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections |
@@ -3457,9 +3465,9 @@ by avoiding redundant copies during serialization.
 | `content` | `String.t()` | — | Text content for this page |
 | `tables` | `list(Table)` | — | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
 | `image_indices` | `list(integer())` | — | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
-| `hierarchy` | `PageHierarchy | nil` | `nil` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
-| `is_blank` | `boolean() | nil` | `nil` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
-| `layout_regions` | `list(LayoutRegion) | nil` | `nil` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
+| `hierarchy` | `PageHierarchy \| nil` | `nil` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
+| `is_blank` | `boolean() \| nil` | `nil` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
+| `layout_regions` | `list(LayoutRegion) \| nil` | `nil` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
 
 
 ---
@@ -3489,12 +3497,12 @@ and visibility state (for presentations).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `number` | `integer()` | — | Page number (1-indexed) |
-| `title` | `String.t() | nil` | `nil` | Page title (usually for presentations) |
-| `dimensions` | `list(float()) | nil` | `nil` | Dimensions in points (PDF) or pixels (images): (width, height) |
-| `image_count` | `integer() | nil` | `nil` | Number of images on this page |
-| `table_count` | `integer() | nil` | `nil` | Number of tables on this page |
-| `hidden` | `boolean() | nil` | `nil` | Whether this page is hidden (e.g., in presentations) |
-| `is_blank` | `boolean() | nil` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
+| `title` | `String.t() \| nil` | `nil` | Page title (usually for presentations) |
+| `dimensions` | `list(float()) \| nil` | `nil` | Dimensions in points (PDF) or pixels (images): (width, height) |
+| `image_count` | `integer() \| nil` | `nil` | Number of images on this page |
+| `table_count` | `integer() \| nil` | `nil` | Number of tables on this page |
+| `hidden` | `boolean() \| nil` | `nil` | Whether this page is hidden (e.g., in presentations) |
+| `is_blank` | `boolean() \| nil` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `has_vector_graphics` | `boolean()` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
 
 
@@ -3506,13 +3514,13 @@ Page margins converted to points (1/72 inch).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `top` | `float() | nil` | `nil` | Top |
-| `right` | `float() | nil` | `nil` | Right |
-| `bottom` | `float() | nil` | `nil` | Bottom |
-| `left` | `float() | nil` | `nil` | Left |
-| `header` | `float() | nil` | `nil` | Header |
-| `footer` | `float() | nil` | `nil` | Footer |
-| `gutter` | `float() | nil` | `nil` | Gutter |
+| `top` | `float() \| nil` | `nil` | Top |
+| `right` | `float() \| nil` | `nil` | Right |
+| `bottom` | `float() \| nil` | `nil` | Bottom |
+| `left` | `float() \| nil` | `nil` | Left |
+| `header` | `float() \| nil` | `nil` | Header |
+| `footer` | `float() \| nil` | `nil` | Footer |
+| `gutter` | `float() \| nil` | `nil` | Gutter |
 
 
 ---
@@ -3528,8 +3536,8 @@ with character offset boundaries for chunk-to-page mapping.
 |-------|------|---------|-------------|
 | `total_count` | `integer()` | — | Total number of pages/slides/sheets |
 | `unit_type` | `PageUnitType` | — | Type of paginated unit |
-| `boundaries` | `list(PageBoundary) | nil` | `nil` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
-| `pages` | `list(PageInfo) | nil` | `nil` | Detailed per-page metadata (optional, only when needed) |
+| `boundaries` | `list(PageBoundary) \| nil` | `nil` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
+| `pages` | `list(PageInfo) \| nil` | `nil` | Detailed per-page metadata (optional, only when needed) |
 
 
 ---
@@ -3541,9 +3549,9 @@ A PDF annotation extracted from a document page.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `annotation_type` | `PdfAnnotationType` | — | The type of annotation. |
-| `content` | `String.t() | nil` | `nil` | Text content of the annotation (e.g., comment text, link URL). |
+| `content` | `String.t() \| nil` | `nil` | Text content of the annotation (e.g., comment text, link URL). |
 | `page_number` | `integer()` | — | Page number where the annotation appears (1-indexed). |
-| `bounding_box` | `String.t() | nil` | `nil` | Bounding box of the annotation on the page. |
+| `bounding_box` | `String.t() \| nil` | `nil` | Bounding box of the annotation on the page. |
 
 
 ---
@@ -3556,12 +3564,12 @@ PDF-specific configuration.
 |-------|------|---------|-------------|
 | `extract_images` | `boolean()` | `false` | Extract images from PDF |
 | `extract_tables` | `boolean()` | `true` | Extract tables from PDF. When `true` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf.oxide.table.extract_tables_heuristic`. Set to `false` to skip both passes — `tables` will then be empty in the result. |
-| `passwords` | `list(String.t()) | nil` | `nil` | List of passwords to try when opening encrypted PDFs |
+| `passwords` | `list(String.t()) \| nil` | `nil` | List of passwords to try when opening encrypted PDFs |
 | `extract_metadata` | `boolean()` | `true` | Extract PDF metadata |
-| `hierarchy` | `HierarchyConfig | nil` | `nil` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
+| `hierarchy` | `HierarchyConfig \| nil` | `nil` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `extract_annotations` | `boolean()` | `false` | Extract PDF annotations (text notes, highlights, links, stamps). Default: false |
-| `top_margin_fraction` | `float() | nil` | `nil` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
-| `bottom_margin_fraction` | `float() | nil` | `nil` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
+| `top_margin_fraction` | `float() \| nil` | `nil` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
+| `bottom_margin_fraction` | `float() \| nil` | `nil` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `boolean()` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `boolean()` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `nil` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
@@ -3587,12 +3595,12 @@ are at the `Metadata` level.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `pdf_version` | `String.t() | nil` | `nil` | PDF version (e.g., "1.7", "2.0") |
-| `producer` | `String.t() | nil` | `nil` | PDF producer (application that created the PDF) |
-| `is_encrypted` | `boolean() | nil` | `nil` | Whether the PDF is encrypted/password-protected |
-| `width` | `integer() | nil` | `nil` | First page width in points (1/72 inch) |
-| `height` | `integer() | nil` | `nil` | First page height in points (1/72 inch) |
-| `page_count` | `integer() | nil` | `nil` | Total number of pages in the PDF document |
+| `pdf_version` | `String.t() \| nil` | `nil` | PDF version (e.g., "1.7", "2.0") |
+| `producer` | `String.t() \| nil` | `nil` | PDF producer (application that created the PDF) |
+| `is_encrypted` | `boolean() \| nil` | `nil` | Whether the PDF is encrypted/password-protected |
+| `width` | `integer() \| nil` | `nil` | First page width in points (1/72 inch) |
+| `height` | `integer() \| nil` | `nil` | First page height in points (1/72 inch) |
+| `page_count` | `integer() \| nil` | `nil` | Total number of pages in the PDF document |
 
 
 ---
@@ -3865,10 +3873,10 @@ Post-processor configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable post-processors |
-| `enabled_processors` | `list(String.t()) | nil` | `nil` | Whitelist of processor names to run (None = all enabled) |
-| `disabled_processors` | `list(String.t()) | nil` | `nil` | Blacklist of processor names to skip (None = none disabled) |
-| `enabled_set` | `String.t() | nil` | `nil` | Pre-computed AHashSet for O(1) enabled processor lookup |
-| `disabled_set` | `String.t() | nil` | `nil` | Pre-computed AHashSet for O(1) disabled processor lookup |
+| `enabled_processors` | `list(String.t()) \| nil` | `nil` | Whitelist of processor names to run (None = all enabled) |
+| `disabled_processors` | `list(String.t()) \| nil` | `nil` | Blacklist of processor names to skip (None = none disabled) |
+| `enabled_set` | `String.t() \| nil` | `nil` | Pre-computed AHashSet for O(1) enabled processor lookup |
+| `disabled_set` | `String.t() \| nil` | `nil` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
 ##### Functions
 
@@ -3890,20 +3898,20 @@ Contains PowerPoint-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `String.t() | nil` | `nil` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `app_version` | `String.t() | nil` | `nil` | Application version |
-| `total_time` | `integer() | nil` | `nil` | Total editing time in minutes |
-| `company` | `String.t() | nil` | `nil` | Company name |
-| `doc_security` | `integer() | nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() | nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() | nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() | nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() | nil` | `nil` | Hyperlinks changed flag |
-| `slides` | `integer() | nil` | `nil` | Number of slides |
-| `notes` | `integer() | nil` | `nil` | Number of notes |
-| `hidden_slides` | `integer() | nil` | `nil` | Number of hidden slides |
-| `multimedia_clips` | `integer() | nil` | `nil` | Number of multimedia clips |
-| `presentation_format` | `String.t() | nil` | `nil` | Presentation format (e.g., "Widescreen", "Standard") |
+| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Office PowerPoint") |
+| `app_version` | `String.t() \| nil` | `nil` | Application version |
+| `total_time` | `integer() \| nil` | `nil` | Total editing time in minutes |
+| `company` | `String.t() \| nil` | `nil` | Company name |
+| `doc_security` | `integer() \| nil` | `nil` | Document security level |
+| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
+| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
+| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
+| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
+| `slides` | `integer() \| nil` | `nil` | Number of slides |
+| `notes` | `integer() \| nil` | `nil` | Number of notes |
+| `hidden_slides` | `integer() \| nil` | `nil` | Number of hidden slides |
+| `multimedia_clips` | `integer() \| nil` | `nil` | Number of multimedia clips |
+| `presentation_format` | `String.t() \| nil` | `nil` | Presentation format (e.g., "Widescreen", "Standard") |
 | `slide_titles` | `list(String.t())` | `[]` | Slide titles |
 
 
@@ -3923,9 +3931,9 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `image_count` | `integer()` | — | Total number of embedded images |
 | `table_count` | `integer()` | — | Total number of tables |
 | `images` | `list(ExtractedImage)` | — | Extracted images from the presentation |
-| `page_structure` | `PageStructure | nil` | `nil` | Slide structure with boundaries (when page tracking is enabled) |
-| `page_contents` | `list(PageContent) | nil` | `nil` | Per-slide content (when page tracking is enabled) |
-| `document` | `DocumentStructure | nil` | `nil` | Structured document representation |
+| `page_structure` | `PageStructure \| nil` | `nil` | Slide structure with boundaries (when page tracking is enabled) |
+| `page_contents` | `list(PageContent) \| nil` | `nil` | Per-slide content (when page tracking is enabled) |
+| `document` | `DocumentStructure \| nil` | `nil` | Structured document representation |
 | `hyperlinks` | `list(String.t())` | — | Hyperlinks discovered in slides as (url, optional_label) pairs. |
 | `office_metadata` | `map()` | — | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
 
@@ -3942,8 +3950,8 @@ Extracted from PPTX files containing slide counts and presentation details.
 |-------|------|---------|-------------|
 | `slide_count` | `integer()` | — | Total number of slides in the presentation |
 | `slide_names` | `list(String.t())` | `[]` | Names of slides (if available) |
-| `image_count` | `integer() | nil` | `nil` | Number of embedded images |
-| `table_count` | `integer() | nil` | `nil` | Number of tables |
+| `image_count` | `integer() \| nil` | `nil` | Number of embedded images |
+| `table_count` | `integer() \| nil` | `nil` | Number of tables |
 
 
 ---
@@ -4227,7 +4235,7 @@ Structured data (Schema.org, microdata, RDFa) block.
 |-------|------|---------|-------------|
 | `data_type` | `StructuredDataType` | — | Type of structured data |
 | `raw_json` | `String.t()` | — | Raw JSON string representation |
-| `schema_type` | `String.t() | nil` | `nil` | Schema type if detectable (e.g., "Article", "Event", "Product") |
+| `schema_type` | `String.t() \| nil` | `nil` | Schema type if detectable (e.g., "Article", "Event", "Product") |
 
 
 ---
@@ -4255,9 +4263,9 @@ returning structured data that conforms to the schema.
 |-------|------|---------|-------------|
 | `schema` | `term()` | — | JSON Schema defining the desired output structure. |
 | `schema_name` | `String.t()` | — | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `String.t() | nil` | `nil` | Optional schema description for the LLM. |
+| `schema_description` | `String.t() \| nil` | `nil` | Optional schema description for the LLM. |
 | `strict` | `boolean()` | — | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `String.t() | nil` | `nil` | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `prompt` | `String.t() \| nil` | `nil` | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 
@@ -4283,10 +4291,10 @@ A single style definition parsed from `<w:style>` in `word/styles.xml`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `String.t()` | — | The style ID (`w:styleId` attribute). |
-| `name` | `String.t() | nil` | `nil` | Human-readable name (`<w:name w:val="..."/>`). |
+| `name` | `String.t() \| nil` | `nil` | Human-readable name (`<w:name w:val="..."/>`). |
 | `style_type` | `String.t()` | — | Style type: paragraph, character, table, or numbering. |
-| `based_on` | `String.t() | nil` | `nil` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `next_style` | `String.t() | nil` | `nil` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
+| `based_on` | `String.t() \| nil` | `nil` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
+| `next_style` | `String.t() \| nil` | `nil` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
 | `is_default` | `boolean()` | — | Whether this is the default style for its type. |
 | `paragraph_properties` | `String.t()` | — | Paragraph properties defined directly on this style. |
 | `run_properties` | `String.t()` | — | Run properties defined directly on this style. |
@@ -4358,7 +4366,7 @@ Tables are converted to both structured cell data and Markdown format.
 | `cells` | `list(list(String.t()))` | `[]` | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `String.t()` | — | Markdown representation of the table |
 | `page_number` | `integer()` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `String.t() | nil` | `nil` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
+| `bounding_box` | `String.t() \| nil` | `nil` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
 
 
 ---
@@ -4400,15 +4408,15 @@ Table-level properties from `<w:tblPr>`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `style_id` | `String.t() | nil` | `nil` | Style id |
-| `width` | `String.t() | nil` | `nil` | Width |
-| `alignment` | `String.t() | nil` | `nil` | Alignment |
-| `layout` | `String.t() | nil` | `nil` | Layout |
-| `look` | `String.t() | nil` | `nil` | Look |
-| `borders` | `String.t() | nil` | `nil` | Borders |
-| `cell_margins` | `String.t() | nil` | `nil` | Cell margins |
-| `indent` | `String.t() | nil` | `nil` | Indent |
-| `caption` | `String.t() | nil` | `nil` | Caption |
+| `style_id` | `String.t() \| nil` | `nil` | Style id |
+| `width` | `String.t() \| nil` | `nil` | Width |
+| `alignment` | `String.t() \| nil` | `nil` | Alignment |
+| `layout` | `String.t() \| nil` | `nil` | Layout |
+| `look` | `String.t() \| nil` | `nil` | Look |
+| `borders` | `String.t() \| nil` | `nil` | Borders |
+| `cell_margins` | `String.t() \| nil` | `nil` | Cell margins |
+| `indent` | `String.t() \| nil` | `nil` | Indent |
+| `caption` | `String.t() \| nil` | `nil` | Caption |
 
 
 ---
@@ -4469,7 +4477,7 @@ for specific document types (invoices, handwriting, etc.).
 | `output_format` | `String.t()` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `integer()` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
 | `min_confidence` | `float()` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
-| `preprocessing` | `ImagePreprocessingConfig | nil` | `nil` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `preprocessing` | `ImagePreprocessingConfig \| nil` | `nil` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
 | `enable_table_detection` | `boolean()` | `true` | Enable automatic table detection and reconstruction |
 | `table_min_confidence` | `float()` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
 | `table_column_threshold` | `integer()` | `50` | Column threshold for table detection (pixels) |
@@ -4527,9 +4535,9 @@ for Markdown files, structural elements like headers and links.
 | `line_count` | `integer()` | — | Number of lines |
 | `word_count` | `integer()` | — | Number of words |
 | `character_count` | `integer()` | — | Number of characters |
-| `headers` | `list(String.t()) | nil` | `nil` | Markdown headers (text only, Markdown files only) |
-| `links` | `list(String.t()) | nil` | `nil` | Markdown links as (text, URL) tuples (Markdown files only) |
-| `code_blocks` | `list(String.t()) | nil` | `nil` | Code blocks as (language, code) tuples (Markdown files only) |
+| `headers` | `list(String.t()) \| nil` | `nil` | Markdown headers (text only, Markdown files only) |
+| `links` | `list(String.t()) \| nil` | `nil` | Markdown links as (text, URL) tuples (Markdown files only) |
+| `code_blocks` | `list(String.t()) \| nil` | `nil` | Code blocks as (language, code) tuples (Markdown files only) |
 
 
 ---
@@ -4546,9 +4554,9 @@ for Markdown, structural elements like headers and links.
 | `line_count` | `integer()` | — | Number of lines in the document |
 | `word_count` | `integer()` | — | Number of words |
 | `character_count` | `integer()` | — | Number of characters |
-| `headers` | `list(String.t()) | nil` | `[]` | Markdown headers (headings text only, for Markdown files) |
-| `links` | `list(String.t()) | nil` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
-| `code_blocks` | `list(String.t()) | nil` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
+| `headers` | `list(String.t()) \| nil` | `[]` | Markdown headers (headings text only, for Markdown files) |
+| `links` | `list(String.t()) \| nil` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
+| `code_blocks` | `list(String.t()) \| nil` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
 
 
 ---
@@ -4558,15 +4566,15 @@ for Markdown, structural elements like headers and links.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `level` | `ReductionLevel` | `:moderate` | Level (reduction level) |
-| `language_hint` | `String.t() | nil` | `nil` | Language hint |
+| `language_hint` | `String.t() \| nil` | `nil` | Language hint |
 | `preserve_markdown` | `boolean()` | `false` | Preserve markdown |
 | `preserve_code` | `boolean()` | `true` | Preserve code |
 | `semantic_threshold` | `float()` | `0.3` | Semantic threshold |
 | `enable_parallel` | `boolean()` | `true` | Enable parallel |
 | `use_simd` | `boolean()` | `true` | Use simd |
-| `custom_stopwords` | `map() | nil` | `nil` | Custom stopwords |
+| `custom_stopwords` | `map() \| nil` | `nil` | Custom stopwords |
 | `preserve_patterns` | `list(String.t())` | `[]` | Preserve patterns |
-| `target_reduction` | `float() | nil` | `nil` | Target reduction |
+| `target_reduction` | `float() \| nil` | `nil` | Target reduction |
 | `enable_semantic_clustering` | `boolean()` | `false` | Enable semantic clustering |
 
 ##### Functions
@@ -4631,9 +4639,9 @@ docstrings = true
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable code intelligence processing (default: true). When `false`, tree-sitter analysis is completely skipped even if the config section is present. |
-| `cache_dir` | `String.t() | nil` | `nil` | Custom cache directory for downloaded grammars. When `nil`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
-| `languages` | `list(String.t()) | nil` | `nil` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
-| `groups` | `list(String.t()) | nil` | `nil` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
+| `cache_dir` | `String.t() \| nil` | `nil` | Custom cache directory for downloaded grammars. When `nil`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
+| `languages` | `list(String.t()) \| nil` | `nil` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
+| `groups` | `list(String.t()) \| nil` | `nil` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
 ##### Functions
@@ -4663,7 +4671,7 @@ Controls which analysis features are enabled when extracting code files.
 | `docstrings` | `boolean()` | `false` | Extract docstrings. Default: false. |
 | `symbols` | `boolean()` | `false` | Extract symbol definitions. Default: false. |
 | `diagnostics` | `boolean()` | `false` | Include parse diagnostics. Default: false. |
-| `chunk_max_size` | `integer() | nil` | `nil` | Maximum chunk size in bytes. `nil` disables chunking. |
+| `chunk_max_size` | `integer() \| nil` | `nil` | Maximum chunk size in bytes. `nil` disables chunking. |
 | `content_mode` | `CodeContentMode` | `:chunks` | Content rendering mode for code extraction. |
 
 ##### Functions
@@ -4689,8 +4697,8 @@ optional human-readable display text.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `url` | `String.t()` | — | The URL or path string. |
-| `label` | `String.t() | nil` | `nil` | Optional display text / label for the link. |
-| `page` | `integer() | nil` | `nil` | Optional page number where the URI was found (1-indexed). |
+| `label` | `String.t() \| nil` | `nil` | Optional display text / label for the link. |
+| `page` | `integer() \| nil` | `nil` | Optional page number where the URI was found (1-indexed). |
 | `kind` | `UriKind` | — | Semantic classification of the URI. |
 
 
@@ -4872,14 +4880,14 @@ Contains Excel-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `String.t() | nil` | `nil` | Application name (e.g., "Microsoft Excel") |
-| `app_version` | `String.t() | nil` | `nil` | Application version |
-| `doc_security` | `integer() | nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() | nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() | nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() | nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() | nil` | `nil` | Hyperlinks changed flag |
-| `company` | `String.t() | nil` | `nil` | Company name |
+| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Excel") |
+| `app_version` | `String.t() \| nil` | `nil` | Application version |
+| `doc_security` | `integer() \| nil` | `nil` | Document security level |
+| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
+| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
+| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
+| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
+| `company` | `String.t() \| nil` | `nil` | Company name |
 | `worksheet_names` | `list(String.t())` | `[]` | Worksheet names |
 
 
@@ -4941,8 +4949,8 @@ Year range for bibliographic metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `min` | `integer() | nil` | `nil` | Min |
-| `max` | `integer() | nil` | `nil` | Max |
+| `min` | `integer() \| nil` | `nil` | Min |
+| `max` | `integer() \| nil` | `nil` | Max |
 | `years` | `list(integer())` | — | Years |
 
 

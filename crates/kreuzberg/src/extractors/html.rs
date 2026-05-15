@@ -629,7 +629,7 @@ mod tests {
                 Table {
                     cells,
                     markdown: t.markdown,
-                    page_number: i + 1,
+                    page_number: (i + 1) as u32,
                     bounding_box: None,
                 }
             })

@@ -1252,12 +1252,12 @@ mod tests {
         let pts = vec![vlm_text.clone()];
         let pts_len = pts.len();
 
-        let mut pages: Vec<PageContent> = (1..=3)
+        let mut pages: Vec<PageContent> = (1u32..=3u32)
             .map(|n| PageContent {
                 page_number: n,
                 content: format!("native page {n}"),
                 tables: Vec::new(),
-                images: Vec::new(),
+                image_indices: Vec::new(),
                 hierarchy: None,
                 is_blank: None,
                 layout_regions: None,

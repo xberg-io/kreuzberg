@@ -74,7 +74,7 @@ function extractFile(path: string, mimeType?: string, config: ExtractionConfig):
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `string` | Yes | Path to the file to extract |
-| `mimeType` | `string | null` | No | Optional MIME type override. If None, will be auto-detected |
+| `mimeType` | `string \| null` | No | Optional MIME type override. If None, will be auto-detected |
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
@@ -105,7 +105,7 @@ function extractFileSync(path: string, mimeType?: string, config: ExtractionConf
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `string` | Yes | Path to the file |
-| `mimeType` | `string | null` | No | The mime type |
+| `mimeType` | `string \| null` | No | The mime type |
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
@@ -502,8 +502,8 @@ function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, dpi?: number, p
 |------|------|----------|-------------|
 | `pdfBytes` | `Buffer` | Yes | Raw PDF file bytes |
 | `pageIndex` | `number` | Yes | Zero-based page index |
-| `dpi` | `number | null` | No | Resolution in dots per inch (default: 150) |
-| `password` | `string | null` | No | Optional password for encrypted PDFs |
+| `dpi` | `number \| null` | No | Resolution in dots per inch (default: 150) |
+| `password` | `string \| null` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Buffer`
 **Errors:** Throws `Error` with a descriptive message.
@@ -619,9 +619,9 @@ Properties for anchored drawings.
 |-------|------|---------|-------------|
 | `behindDoc` | `boolean` | — | Behind doc |
 | `layoutInCell` | `boolean` | — | Layout in cell |
-| `relativeHeight` | `number | null` | `null` | Relative height |
-| `positionH` | `string | null` | `null` | Position h |
-| `positionV` | `string | null` | `null` | Position v |
+| `relativeHeight` | `number \| null` | `null` | Relative height |
+| `positionH` | `string \| null` | `null` | Position h |
+| `positionV` | `string \| null` | `null` | Position v |
 | `wrapType` | `string` | — | Wrap type |
 
 
@@ -665,7 +665,7 @@ Extracted from compressed archive files containing file lists and size informati
 | `fileCount` | `number` | — | Total number of files in the archive |
 | `fileList` | `Array<string>` | `[]` | List of file paths within the archive |
 | `totalSize` | `number` | — | Total uncompressed size in bytes |
-| `compressedSize` | `number | null` | `null` | Compressed size in bytes (if available) |
+| `compressedSize` | `number \| null` | `null` | Compressed size in bytes (if available) |
 
 
 ---
@@ -695,7 +695,7 @@ to represent a single item in a batch extraction job.
 |-------|------|---------|-------------|
 | `content` | `Buffer` | — | The content bytes to extract from |
 | `mimeType` | `string` | — | MIME type of the content (e.g., "application/pdf", "text/html") |
-| `config` | `FileExtractionConfig | null` | `null` | Per-item configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| null` | `null` | Per-item configuration overrides (None uses batch-level defaults) |
 
 
 ---
@@ -710,7 +710,7 @@ to represent a single file in a batch extraction job.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `string` | — | Path to the file to extract from |
-| `config` | `FileExtractionConfig | null` | `null` | Per-file configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| null` | `null` | Per-file configuration overrides (None uses batch-level defaults) |
 
 
 ---
@@ -724,8 +724,8 @@ BibTeX bibliography metadata.
 | `entryCount` | `number` | — | Number of entries in the bibliography. |
 | `citationKeys` | `Array<string>` | `[]` | Citation keys |
 | `authors` | `Array<string>` | `[]` | Authors |
-| `yearRange` | `YearRange | null` | `null` | Year range (year range) |
-| `entryTypes` | `Record<string, number> | null` | `{}` | Entry types |
+| `yearRange` | `YearRange \| null` | `null` | Year range (year range) |
+| `entryTypes` | `Record<string, number> \| null` | `{}` | Entry types |
 
 
 ---
@@ -744,7 +744,7 @@ Request parameters for cache warm (model download).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `allEmbeddings` | `boolean` | — | Download all embedding model presets |
-| `embeddingModel` | `string | null` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
+| `embeddingModel` | `string \| null` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
 
 
 ---
@@ -772,7 +772,7 @@ is configured), and metadata about its position in the document.
 |-------|------|---------|-------------|
 | `content` | `string` | — | The text content of this chunk. |
 | `chunkType` | `ChunkType` | — | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
-| `embedding` | `Array<number> | null` | `null` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
+| `embedding` | `Array<number> \| null` | `null` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
 
@@ -786,12 +786,12 @@ Metadata about a chunk's position in the original document.
 |-------|------|---------|-------------|
 | `byteStart` | `number` | — | Byte offset where this chunk starts in the original text (UTF-8 valid boundary). |
 | `byteEnd` | `number` | — | Byte offset where this chunk ends in the original text (UTF-8 valid boundary). |
-| `tokenCount` | `number | null` | `null` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
+| `tokenCount` | `number \| null` | `null` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
 | `chunkIndex` | `number` | — | Zero-based index of this chunk in the document. |
 | `totalChunks` | `number` | — | Total number of chunks in the document. |
-| `firstPage` | `number | null` | `null` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
-| `lastPage` | `number | null` | `null` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `headingContext` | `HeadingContext | null` | `null` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `firstPage` | `number \| null` | `null` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
+| `lastPage` | `number \| null` | `null` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
+| `headingContext` | `HeadingContext \| null` | `null` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
 | `imageIndices` | `Array<number>` | — | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 
@@ -804,7 +804,7 @@ Chunk request with text and configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `string` | — | Text to chunk (must not be empty) |
-| `config` | `string | null` | `null` | Optional chunking configuration |
+| `config` | `string \| null` | `null` | Optional chunking configuration |
 | `chunkerType` | `string` | — | Chunker type (text, markdown, yaml, or semantic) |
 
 
@@ -832,10 +832,10 @@ Request parameters for text chunking.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `string` | — | Text content to split into chunks |
-| `maxCharacters` | `number | null` | `null` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `number | null` | `null` | Number of overlapping characters between chunks (default: 100) |
-| `chunkerType` | `string | null` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topicThreshold` | `number | null` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
+| `maxCharacters` | `number \| null` | `null` | Maximum characters per chunk (default: 2000) |
+| `overlap` | `number \| null` | `null` | Number of overlapping characters between chunks (default: 100) |
+| `chunkerType` | `string \| null` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
+| `topicThreshold` | `number \| null` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
 
 
 ---
@@ -855,11 +855,11 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `overlap` | `number` | `200` | Overlap between chunks (in units determined by `sizing`). Default: 200 |
 | `trim` | `boolean` | `true` | Whether to trim whitespace from chunk boundaries. Default: true |
 | `chunkerType` | `ChunkerType` | `ChunkerType.Text` | Type of chunker to use (Text or Markdown). Default: Text |
-| `embedding` | `EmbeddingConfig | null` | `null` | Optional embedding configuration for chunk embeddings. |
-| `preset` | `string | null` | `null` | Use a preset configuration (overrides individual settings if provided). |
+| `embedding` | `EmbeddingConfig \| null` | `null` | Optional embedding configuration for chunk embeddings. |
+| `preset` | `string \| null` | `null` | Use a preset configuration (overrides individual settings if provided). |
 | `sizing` | `ChunkSizing` | `ChunkSizing.Characters` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
 | `prependHeadingContext` | `boolean` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
-| `topicThreshold` | `number | null` | `null` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
+| `topicThreshold` | `number \| null` | `null` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
 ##### Methods
 
@@ -894,9 +894,9 @@ Citation file metadata (RIS, PubMed, EndNote).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `citationCount` | `number` | — | Number of citations |
-| `format` | `string | null` | `null` | Format |
+| `format` | `string \| null` | `null` | Format |
 | `authors` | `Array<string>` | `[]` | Authors |
-| `yearRange` | `YearRange | null` | `null` | Year range (year range) |
+| `yearRange` | `YearRange \| null` | `null` | Year range (year range) |
 | `dois` | `Array<string>` | `[]` | Dois |
 | `keywords` | `Array<string>` | `[]` | Keywords |
 
@@ -941,7 +941,7 @@ JATS contributor with role.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `string` | — | The name |
-| `role` | `string | null` | `null` | Role |
+| `role` | `string \| null` | `null` | Role |
 
 
 ---
@@ -955,21 +955,21 @@ and Office-specific extensions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `string | null` | `null` | Document title |
-| `subject` | `string | null` | `null` | Document subject/topic |
-| `creator` | `string | null` | `null` | Document creator/author |
-| `keywords` | `string | null` | `null` | Keywords or tags |
-| `description` | `string | null` | `null` | Document description/abstract |
-| `lastModifiedBy` | `string | null` | `null` | User who last modified the document |
-| `revision` | `string | null` | `null` | Revision number |
-| `created` | `string | null` | `null` | Creation timestamp (ISO 8601) |
-| `modified` | `string | null` | `null` | Last modification timestamp (ISO 8601) |
-| `category` | `string | null` | `null` | Document category |
-| `contentStatus` | `string | null` | `null` | Content status (Draft, Final, etc.) |
-| `language` | `string | null` | `null` | Document language |
-| `identifier` | `string | null` | `null` | Unique identifier |
-| `version` | `string | null` | `null` | Document version |
-| `lastPrinted` | `string | null` | `null` | Last print timestamp (ISO 8601) |
+| `title` | `string \| null` | `null` | Document title |
+| `subject` | `string \| null` | `null` | Document subject/topic |
+| `creator` | `string \| null` | `null` | Document creator/author |
+| `keywords` | `string \| null` | `null` | Keywords or tags |
+| `description` | `string \| null` | `null` | Document description/abstract |
+| `lastModifiedBy` | `string \| null` | `null` | User who last modified the document |
+| `revision` | `string \| null` | `null` | Revision number |
+| `created` | `string \| null` | `null` | Creation timestamp (ISO 8601) |
+| `modified` | `string \| null` | `null` | Last modification timestamp (ISO 8601) |
+| `category` | `string \| null` | `null` | Document category |
+| `contentStatus` | `string \| null` | `null` | Content status (Draft, Final, etc.) |
+| `language` | `string \| null` | `null` | Document language |
+| `identifier` | `string \| null` | `null` | Unique identifier |
+| `version` | `string \| null` | `null` | Document version |
+| `lastPrinted` | `string \| null` | `null` | Last print timestamp (ISO 8601) |
 
 
 ---
@@ -982,9 +982,9 @@ CSV/TSV file metadata.
 |-------|------|---------|-------------|
 | `rowCount` | `number` | — | Number of rows |
 | `columnCount` | `number` | — | Number of columns |
-| `delimiter` | `string | null` | `null` | Delimiter |
+| `delimiter` | `string \| null` | `null` | Delimiter |
 | `hasHeader` | `boolean` | — | Whether header |
-| `columnTypes` | `Array<string> | null` | `[]` | Column types |
+| `columnTypes` | `Array<string> \| null` | `[]` | Column types |
 
 
 ---
@@ -1043,7 +1043,7 @@ MIME type detection response.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mimeType` | `string` | — | Detected MIME type |
-| `filename` | `string | null` | `null` | Original filename (if provided) |
+| `filename` | `string \| null` | `null` | Original filename (if provided) |
 
 
 ---
@@ -1109,8 +1109,8 @@ Image element in Djot.
 |-------|------|---------|-------------|
 | `src` | `string` | — | Image source URL or path |
 | `alt` | `string` | — | Alternative text |
-| `title` | `string | null` | `null` | Optional title |
-| `attributes` | `string | null` | `null` | Element attributes |
+| `title` | `string \| null` | `null` | Optional title |
+| `attributes` | `string \| null` | `null` | Element attributes |
 
 
 ---
@@ -1123,8 +1123,8 @@ Link element in Djot.
 |-------|------|---------|-------------|
 | `url` | `string` | — | Link URL |
 | `text` | `string` | — | Link text content |
-| `title` | `string | null` | `null` | Optional title |
-| `attributes` | `string | null` | `null` | Element attributes |
+| `title` | `string \| null` | `null` | Optional title |
+| `attributes` | `string \| null` | `null` | Element attributes |
 
 
 ---
@@ -1298,14 +1298,14 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `id` | `string` | — | Deterministic identifier (hash of content + position). |
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
-| `parent` | `number | null` | `null` | Parent node index (`null` = root-level node). |
+| `parent` | `number \| null` | `null` | Parent node index (`null` = root-level node). |
 | `children` | `Array<number>` | — | Child node indices in reading order. |
 | `contentLayer` | `ContentLayer` | — | Content layer classification. |
-| `page` | `number | null` | `null` | Page number where this node starts (1-indexed). |
-| `pageEnd` | `number | null` | `null` | Page number where this node ends (for multi-page tables/sections). |
-| `bbox` | `string | null` | `null` | Bounding box in document coordinates. |
+| `page` | `number \| null` | `null` | Page number where this node starts (1-indexed). |
+| `pageEnd` | `number \| null` | `null` | Page number where this node ends (for multi-page tables/sections). |
+| `bbox` | `string \| null` | `null` | Bounding box in document coordinates. |
 | `annotations` | `Array<TextAnnotation>` | — | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
-| `attributes` | `Record<string, string> | null` | `null` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
+| `attributes` | `Record<string, string> \| null` | `null` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 
 ---
@@ -1339,7 +1339,7 @@ and parent-child relationships are bidirectionally consistent.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `nodes` | `Array<DocumentNode>` | `[]` | All nodes in document/reading order. |
-| `sourceFormat` | `string | null` | `null` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
+| `sourceFormat` | `string \| null` | `null` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
 | `relationships` | `Array<DocumentRelationship>` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `nodeTypes` | `Array<string>` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
@@ -1384,22 +1384,22 @@ Contains Word-specific document statistics and metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `string | null` | `null` | Application name (e.g., "Microsoft Office Word") |
-| `appVersion` | `string | null` | `null` | Application version |
-| `template` | `string | null` | `null` | Template filename |
-| `totalTime` | `number | null` | `null` | Total editing time in minutes |
-| `pages` | `number | null` | `null` | Number of pages |
-| `words` | `number | null` | `null` | Number of words |
-| `characters` | `number | null` | `null` | Number of characters (excluding spaces) |
-| `charactersWithSpaces` | `number | null` | `null` | Number of characters (including spaces) |
-| `lines` | `number | null` | `null` | Number of lines |
-| `paragraphs` | `number | null` | `null` | Number of paragraphs |
-| `company` | `string | null` | `null` | Company name |
-| `docSecurity` | `number | null` | `null` | Document security level |
-| `scaleCrop` | `boolean | null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean | null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean | null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean | null` | `null` | Hyperlinks changed flag |
+| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Office Word") |
+| `appVersion` | `string \| null` | `null` | Application version |
+| `template` | `string \| null` | `null` | Template filename |
+| `totalTime` | `number \| null` | `null` | Total editing time in minutes |
+| `pages` | `number \| null` | `null` | Number of pages |
+| `words` | `number \| null` | `null` | Number of words |
+| `characters` | `number \| null` | `null` | Number of characters (excluding spaces) |
+| `charactersWithSpaces` | `number \| null` | `null` | Number of characters (including spaces) |
+| `lines` | `number \| null` | `null` | Number of lines |
+| `paragraphs` | `number \| null` | `null` | Number of paragraphs |
+| `company` | `string \| null` | `null` | Company name |
+| `docSecurity` | `number \| null` | `null` | Document security level |
+| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
+| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
+| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
+| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
 
 
 ---
@@ -1413,9 +1413,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coreProperties` | `CoreProperties | null` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `appProperties` | `DocxAppProperties | null` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
-| `customProperties` | `Record<string, unknown> | null` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
+| `coreProperties` | `CoreProperties \| null` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `appProperties` | `DocxAppProperties \| null` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `customProperties` | `Record<string, unknown> \| null` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
 
 
 ---
@@ -1427,9 +1427,9 @@ A drawing object extracted from `<w:drawing>`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `drawingType` | `string` | — | Drawing type |
-| `extent` | `string | null` | `null` | Extent |
-| `docProperties` | `string | null` | `null` | Doc properties |
-| `imageRef` | `string | null` | `null` | Image ref |
+| `extent` | `string \| null` | `null` | Extent |
+| `docProperties` | `string \| null` | `null` | Doc properties |
+| `imageRef` | `string \| null` | `null` | Image ref |
 
 
 ---
@@ -1457,10 +1457,10 @@ Metadata for a semantic element.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `pageNumber` | `number | null` | `null` | Page number (1-indexed) |
-| `filename` | `string | null` | `null` | Source filename or document name |
-| `coordinates` | `string | null` | `null` | Bounding box coordinates if available |
-| `elementIndex` | `number | null` | `null` | Position index in the element sequence |
+| `pageNumber` | `number \| null` | `null` | Page number (1-indexed) |
+| `filename` | `string \| null` | `null` | Source filename or document name |
+| `coordinates` | `string \| null` | `null` | Bounding box coordinates if available |
+| `elementIndex` | `number \| null` | `null` | Position index in the element sequence |
 | `additional` | `Record<string, string>` | — | Additional custom metadata |
 
 
@@ -1474,12 +1474,12 @@ Contains metadata and optionally the content of an email attachment.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `string | null` | `null` | Attachment name (from Content-Disposition header) |
-| `filename` | `string | null` | `null` | Filename of the attachment |
-| `mimeType` | `string | null` | `null` | MIME type of the attachment |
-| `size` | `number | null` | `null` | Size in bytes |
+| `name` | `string \| null` | `null` | Attachment name (from Content-Disposition header) |
+| `filename` | `string \| null` | `null` | Filename of the attachment |
+| `mimeType` | `string \| null` | `null` | MIME type of the attachment |
+| `size` | `number \| null` | `null` | Size in bytes |
 | `isImage` | `boolean` | — | Whether this attachment is an image |
-| `data` | `Buffer | null` | `null` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
+| `data` | `Buffer \| null` | `null` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 
 
 ---
@@ -1490,7 +1490,7 @@ Configuration for email extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `msgFallbackCodepage` | `number | null` | `null` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `null`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
+| `msgFallbackCodepage` | `number \| null` | `null` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `null`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
 
 
 ---
@@ -1504,15 +1504,15 @@ including headers, body content, and attachments.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `subject` | `string | null` | `null` | Email subject line |
-| `fromEmail` | `string | null` | `null` | Sender email address |
+| `subject` | `string \| null` | `null` | Email subject line |
+| `fromEmail` | `string \| null` | `null` | Sender email address |
 | `toEmails` | `Array<string>` | — | Primary recipient email addresses |
 | `ccEmails` | `Array<string>` | — | CC recipient email addresses |
 | `bccEmails` | `Array<string>` | — | BCC recipient email addresses |
-| `date` | `string | null` | `null` | Email date/timestamp |
-| `messageId` | `string | null` | `null` | Message-ID header value |
-| `plainText` | `string | null` | `null` | Plain text version of the email body |
-| `htmlContent` | `string | null` | `null` | HTML version of the email body |
+| `date` | `string \| null` | `null` | Email date/timestamp |
+| `messageId` | `string \| null` | `null` | Message-ID header value |
+| `plainText` | `string \| null` | `null` | Plain text version of the email body |
+| `htmlContent` | `string \| null` | `null` | HTML version of the email body |
 | `content` | `string` | — | Cleaned/processed text content. Aliased as `cleaned_text` for back-compat. |
 | `attachments` | `Array<EmailAttachment>` | — | List of email attachments |
 | `metadata` | `Record<string, string>` | — | Additional email headers and metadata |
@@ -1528,12 +1528,12 @@ Includes sender/recipient information, message ID, and attachment list.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `fromEmail` | `string | null` | `null` | Sender's email address |
-| `fromName` | `string | null` | `null` | Sender's display name |
+| `fromEmail` | `string \| null` | `null` | Sender's email address |
+| `fromName` | `string \| null` | `null` | Sender's display name |
 | `toEmails` | `Array<string>` | `[]` | Primary recipients |
 | `ccEmails` | `Array<string>` | `[]` | CC recipients |
 | `bccEmails` | `Array<string>` | `[]` | BCC recipients |
-| `messageId` | `string | null` | `null` | Message-ID header value |
+| `messageId` | `string \| null` | `null` | Message-ID header value |
 | `attachments` | `Array<string>` | `[]` | List of attachment filenames |
 
 
@@ -1546,7 +1546,7 @@ Embedding request for generating embeddings from text.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `Array<string>` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig | null` | `null` | Optional embedding configuration (model, batch size, etc.) |
+| `config` | `EmbeddingConfig \| null` | `null` | Optional embedding configuration (model, batch size, etc.) |
 
 
 ---
@@ -1572,10 +1572,10 @@ Request parameters for embedding generation.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `Array<string>` | — | List of text strings to generate embeddings for |
-| `preset` | `string | null` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `string | null` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `apiKey` | `string | null` | `null` | API key for the LLM provider (optional, falls back to env). |
-| `embeddingPlugin` | `string | null` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
+| `preset` | `string \| null` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
+| `model` | `string \| null` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
+| `apiKey` | `string \| null` | `null` | API key for the LLM provider (optional, falls back to env). |
+| `embeddingPlugin` | `string \| null` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1588,7 +1588,7 @@ Embedded file descriptor extracted from the PDF name tree.
 |-------|------|---------|-------------|
 | `name` | `string` | — | The filename as stored in the PDF name tree. |
 | `data` | `Buffer` | — | Raw file bytes from the embedded stream. |
-| `mimeType` | `string | null` | `null` | MIME type if specified in the filespec, otherwise `null`. |
+| `mimeType` | `string \| null` | `null` | MIME type if specified in the filespec, otherwise `null`. |
 
 
 ---
@@ -1684,9 +1684,9 @@ Requires the `embeddings` feature to be enabled.
 | `normalize` | `boolean` | `true` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `batchSize` | `number` | `32` | Batch size for embedding generation |
 | `showDownloadProgress` | `boolean` | `false` | Show model download progress |
-| `cacheDir` | `string | null` | `null` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
-| `acceleration` | `AccelerationConfig | null` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
-| `maxEmbedDurationSecs` | `number | null` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
+| `cacheDir` | `string \| null` | `null` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
+| `maxEmbedDurationSecs` | `number \| null` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Methods
 
@@ -1730,12 +1730,12 @@ EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `string | null` | `null` | Coverage |
-| `dcFormat` | `string | null` | `null` | Dc format |
-| `relation` | `string | null` | `null` | Relation |
-| `source` | `string | null` | `null` | Source |
-| `dcType` | `string | null` | `null` | Dc type |
-| `coverImage` | `string | null` | `null` | Cover image |
+| `coverage` | `string \| null` | `null` | Coverage |
+| `dcFormat` | `string \| null` | `null` | Dc format |
+| `relation` | `string \| null` | `null` | Relation |
+| `source` | `string \| null` | `null` | Source |
+| `dcType` | `string \| null` | `null` | Dc type |
+| `coverImage` | `string \| null` | `null` | Cover image |
 
 
 ---
@@ -1761,8 +1761,8 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `sheetCount` | `number | null` | `null` | Number of sheets in the workbook. |
-| `sheetNames` | `Array<string> | null` | `[]` | Names of all sheets in the workbook. |
+| `sheetCount` | `number \| null` | `null` | Number of sheets in the workbook. |
+| `sheetNames` | `Array<string> \| null` | `[]` | Names of all sheets in the workbook. |
 
 
 ---
@@ -1781,7 +1781,7 @@ converted to Markdown format and dimensional statistics.
 | `rowCount` | `number` | — | Number of rows |
 | `colCount` | `number` | — | Number of columns |
 | `cellCount` | `number` | — | Total number of non-empty cells |
-| `tableCells` | `Array<Array<string>> | null` | `null` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
+| `tableCells` | `Array<Array<string>> \| null` | `null` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
 
 
 ---
@@ -1818,9 +1818,9 @@ Request parameters for LLM-based structured extraction.
 | `schema` | `unknown` | — | JSON schema for structured output |
 | `model` | `string` | — | LLM model (e.g., "openai/gpt-4o") |
 | `schemaName` | `string` | — | Schema name (default: "extraction") |
-| `schemaDescription` | `string | null` | `null` | Schema description for the LLM |
-| `prompt` | `string | null` | `null` | Custom Jinja2 prompt template |
-| `apiKey` | `string | null` | `null` | API key (optional, falls back to env) |
+| `schemaDescription` | `string \| null` | `null` | Schema description for the LLM |
+| `prompt` | `string \| null` | `null` | Custom Jinja2 prompt template |
+| `apiKey` | `string \| null` | `null` | API key (optional, falls back to env) |
 | `strict` | `boolean` | — | Enable strict mode |
 
 
@@ -1839,19 +1839,19 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `data` | `Buffer` | — | Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `string` | — | Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static literals. |
 | `imageIndex` | `number` | — | Zero-indexed position of this image in the document/page |
-| `pageNumber` | `number | null` | `null` | Page/slide number where image was found (1-indexed) |
-| `width` | `number | null` | `null` | Image width in pixels |
-| `height` | `number | null` | `null` | Image height in pixels |
-| `colorspace` | `string | null` | `null` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
-| `bitsPerComponent` | `number | null` | `null` | Bits per color component (e.g., 8, 16) |
+| `pageNumber` | `number \| null` | `null` | Page/slide number where image was found (1-indexed) |
+| `width` | `number \| null` | `null` | Image width in pixels |
+| `height` | `number \| null` | `null` | Image height in pixels |
+| `colorspace` | `string \| null` | `null` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
+| `bitsPerComponent` | `number \| null` | `null` | Bits per color component (e.g., 8, 16) |
 | `isMask` | `boolean` | — | Whether this image is a mask image |
-| `description` | `string | null` | `null` | Optional description of the image |
-| `ocrResult` | `ExtractionResult | null` | `null` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `boundingBox` | `string | null` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
-| `sourcePath` | `string | null` | `null` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `imageKind` | `ImageKind | null` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
-| `kindConfidence` | `number | null` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
-| `clusterId` | `number | null` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
+| `description` | `string \| null` | `null` | Optional description of the image |
+| `ocrResult` | `ExtractionResult \| null` | `null` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
+| `boundingBox` | `string \| null` | `null` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `sourcePath` | `string \| null` | `null` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
+| `imageKind` | `ImageKind \| null` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
+| `kindConfidence` | `number \| null` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
+| `clusterId` | `number \| null` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
 
 
 ---
@@ -1864,9 +1864,9 @@ Extracted inline image with metadata.
 |-------|------|---------|-------------|
 | `data` | `Buffer` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `string` | — | Format |
-| `filename` | `string | null` | `null` | Filename |
-| `description` | `string | null` | `null` | Human-readable description |
-| `dimensions` | `Array<number> | null` | `null` | Dimensions |
+| `filename` | `string \| null` | `null` | Filename |
+| `description` | `string \| null` | `null` | Human-readable description |
+| `dimensions` | `Array<number> \| null` | `null` | Dimensions |
 | `attributes` | `Array<string>` | — | Attributes |
 
 
@@ -1883,38 +1883,38 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 |-------|------|---------|-------------|
 | `useCache` | `boolean` | `true` | Enable caching of extraction results |
 | `enableQualityProcessing` | `boolean` | `true` | Enable quality post-processing |
-| `ocr` | `OcrConfig | null` | `null` | OCR configuration (None = OCR disabled) |
+| `ocr` | `OcrConfig \| null` | `null` | OCR configuration (None = OCR disabled) |
 | `forceOcr` | `boolean` | `false` | Force OCR even for searchable PDFs |
-| `forceOcrPages` | `Array<number> | null` | `null` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
+| `forceOcrPages` | `Array<number> \| null` | `null` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
 | `disableOcr` | `boolean` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
-| `chunking` | `ChunkingConfig | null` | `null` | Text chunking configuration (None = chunking disabled) |
-| `contentFilter` | `ContentFilterConfig | null` | `null` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
-| `images` | `ImageExtractionConfig | null` | `null` | Image extraction configuration (None = no image extraction) |
-| `pdfOptions` | `PdfConfig | null` | `null` | PDF-specific options (None = use defaults) |
-| `tokenReduction` | `TokenReductionOptions | null` | `null` | Token reduction configuration (None = no token reduction) |
-| `languageDetection` | `LanguageDetectionConfig | null` | `null` | Language detection configuration (None = no language detection) |
-| `pages` | `PageConfig | null` | `null` | Page extraction configuration (None = no page tracking) |
-| `keywords` | `KeywordConfig | null` | `null` | Keyword extraction configuration (None = no keyword extraction) |
-| `postprocessor` | `PostProcessorConfig | null` | `null` | Post-processor configuration (None = use defaults) |
-| `htmlOptions` | `string | null` | `null` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
-| `htmlOutput` | `HtmlOutputConfig | null` | `null` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `null`, the existing plain comrak-based HTML renderer is used. |
-| `extractionTimeoutSecs` | `number | null` | `null` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `null` means no timeout (unbounded extraction time). |
-| `maxConcurrentExtractions` | `number | null` | `null` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
+| `chunking` | `ChunkingConfig \| null` | `null` | Text chunking configuration (None = chunking disabled) |
+| `contentFilter` | `ContentFilterConfig \| null` | `null` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
+| `images` | `ImageExtractionConfig \| null` | `null` | Image extraction configuration (None = no image extraction) |
+| `pdfOptions` | `PdfConfig \| null` | `null` | PDF-specific options (None = use defaults) |
+| `tokenReduction` | `TokenReductionOptions \| null` | `null` | Token reduction configuration (None = no token reduction) |
+| `languageDetection` | `LanguageDetectionConfig \| null` | `null` | Language detection configuration (None = no language detection) |
+| `pages` | `PageConfig \| null` | `null` | Page extraction configuration (None = no page tracking) |
+| `keywords` | `KeywordConfig \| null` | `null` | Keyword extraction configuration (None = no keyword extraction) |
+| `postprocessor` | `PostProcessorConfig \| null` | `null` | Post-processor configuration (None = use defaults) |
+| `htmlOptions` | `string \| null` | `null` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
+| `htmlOutput` | `HtmlOutputConfig \| null` | `null` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `null`, the existing plain comrak-based HTML renderer is used. |
+| `extractionTimeoutSecs` | `number \| null` | `null` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `null` means no timeout (unbounded extraction time). |
+| `maxConcurrentExtractions` | `number \| null` | `null` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `resultFormat` | `ResultFormat` | `ResultFormat.Unified` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `securityLimits` | `SecurityLimits | null` | `null` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `null`, default limits are used. |
+| `securityLimits` | `SecurityLimits \| null` | `null` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `null`, default limits are used. |
 | `outputFormat` | `OutputFormat` | `OutputFormat.Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
-| `layout` | `LayoutDetectionConfig | null` | `null` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `layout` | `LayoutDetectionConfig \| null` | `null` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
 | `useLayoutForMarkdown` | `boolean` | `false` | Run layout detection on the non-OCR PDF markdown path. When `true` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Substantially improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`. Requires the `layout-detection` feature. |
 | `includeDocumentStructure` | `boolean` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `acceleration` | `AccelerationConfig | null` | `null` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `null`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
-| `cacheNamespace` | `string | null` | `null` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
-| `cacheTtlSecs` | `number | null` | `null` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `null`, the global TTL applies. |
-| `email` | `EmailConfig | null` | `null` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
-| `concurrency` | `string | null` | `null` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `null`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
+| `cacheNamespace` | `string \| null` | `null` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
+| `cacheTtlSecs` | `number \| null` | `null` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `null`, the global TTL applies. |
+| `email` | `EmailConfig \| null` | `null` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `concurrency` | `string \| null` | `null` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `maxArchiveDepth` | `number` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
-| `treeSitter` | `TreeSitterConfig | null` | `null` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
-| `structuredExtraction` | `StructuredExtractionConfig | null` | `null` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
-| `cancelToken` | `string | null` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `treeSitter` | `TreeSitterConfig \| null` | `null` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
+| `structuredExtraction` | `StructuredExtractionConfig \| null` | `null` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `cancelToken` | `string \| null` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ##### Methods
 
@@ -1958,27 +1958,27 @@ This is the main result type returned by all extraction functions.
 | `content` | `string` | — | The extracted text content |
 | `mimeType` | `string` | — | The detected MIME type |
 | `metadata` | `Metadata` | — | Document metadata |
-| `extractionMethod` | `ExtractionMethod | null` | `null` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
+| `extractionMethod` | `ExtractionMethod \| null` | `null` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
 | `tables` | `Array<Table>` | `[]` | Tables extracted from the document |
-| `detectedLanguages` | `Array<string> | null` | `[]` | Detected languages |
-| `chunks` | `Array<Chunk> | null` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
-| `images` | `Array<ExtractedImage> | null` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
-| `pages` | `Array<PageContent> | null` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
-| `elements` | `Array<Element> | null` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
-| `djotContent` | `DjotContent | null` | `null` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `null` for non-Djot documents. |
-| `ocrElements` | `Array<OcrElement> | null` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
-| `document` | `DocumentStructure | null` | `null` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `extractedKeywords` | `Array<Keyword> | null` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
-| `qualityScore` | `number | null` | `null` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
+| `detectedLanguages` | `Array<string> \| null` | `[]` | Detected languages |
+| `chunks` | `Array<Chunk> \| null` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
+| `images` | `Array<ExtractedImage> \| null` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
+| `pages` | `Array<PageContent> \| null` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
+| `elements` | `Array<Element> \| null` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
+| `djotContent` | `DjotContent \| null` | `null` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `null` for non-Djot documents. |
+| `ocrElements` | `Array<OcrElement> \| null` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
+| `document` | `DocumentStructure \| null` | `null` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `extractedKeywords` | `Array<Keyword> \| null` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
+| `qualityScore` | `number \| null` | `null` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
 | `processingWarnings` | `Array<ProcessingWarning>` | `[]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
-| `annotations` | `Array<PdfAnnotation> | null` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
-| `children` | `Array<ArchiveEntry> | null` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `null` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
-| `uris` | `Array<Uri> | null` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
-| `structuredOutput` | `unknown | null` | `null` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
-| `codeIntelligence` | `string | null` | `null` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
-| `llmUsage` | `Array<LlmUsage> | null` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `null` when no LLM was used. |
-| `formattedContent` | `string | null` | `null` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
-| `ocrInternalDocument` | `string | null` | `null` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
+| `annotations` | `Array<PdfAnnotation> \| null` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `children` | `Array<ArchiveEntry> \| null` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `null` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
+| `uris` | `Array<Uri> \| null` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `structuredOutput` | `unknown \| null` | `null` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
+| `codeIntelligence` | `string \| null` | `null` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
+| `llmUsage` | `Array<LlmUsage> \| null` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `null` when no LLM was used. |
+| `formattedContent` | `string \| null` | `null` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
+| `ocrInternalDocument` | `string \| null` | `null` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
 ##### Methods
 
@@ -2002,7 +2002,7 @@ FictionBook (FB2) metadata.
 |-------|------|---------|-------------|
 | `genres` | `Array<string>` | `[]` | Genres |
 | `sequences` | `Array<string>` | `[]` | Sequences |
-| `annotation` | `string | null` | `null` | Annotation |
+| `annotation` | `string \| null` | `null` | Annotation |
 
 
 ---
@@ -2027,28 +2027,28 @@ cannot be overridden per file:
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `enableQualityProcessing` | `boolean | null` | `null` | Override quality post-processing for this file. |
-| `ocr` | `OcrConfig | null` | `null` | Override OCR configuration for this file (None in the Option = use batch default). |
-| `forceOcr` | `boolean | null` | `null` | Override force OCR for this file. |
-| `forceOcrPages` | `Array<number> | null` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
-| `disableOcr` | `boolean | null` | `null` | Override disable OCR for this file. |
-| `chunking` | `ChunkingConfig | null` | `null` | Override chunking configuration for this file. |
-| `contentFilter` | `ContentFilterConfig | null` | `null` | Override content filtering configuration for this file. |
-| `images` | `ImageExtractionConfig | null` | `null` | Override image extraction configuration for this file. |
-| `pdfOptions` | `PdfConfig | null` | `null` | Override PDF options for this file. |
-| `tokenReduction` | `TokenReductionOptions | null` | `null` | Override token reduction for this file. |
-| `languageDetection` | `LanguageDetectionConfig | null` | `null` | Override language detection for this file. |
-| `pages` | `PageConfig | null` | `null` | Override page extraction for this file. |
-| `keywords` | `KeywordConfig | null` | `null` | Override keyword extraction for this file. |
-| `postprocessor` | `PostProcessorConfig | null` | `null` | Override post-processor for this file. |
-| `htmlOptions` | `string | null` | `null` | Override HTML conversion options for this file. |
-| `resultFormat` | `ResultFormat | null` | `null` | Override result format for this file. |
-| `outputFormat` | `OutputFormat | null` | `null` | Override output content format for this file. |
-| `includeDocumentStructure` | `boolean | null` | `null` | Override document structure output for this file. |
-| `layout` | `LayoutDetectionConfig | null` | `null` | Override layout detection for this file. |
-| `timeoutSecs` | `number | null` | `null` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
-| `treeSitter` | `TreeSitterConfig | null` | `null` | Override tree-sitter configuration for this file. |
-| `structuredExtraction` | `StructuredExtractionConfig | null` | `null` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
+| `enableQualityProcessing` | `boolean \| null` | `null` | Override quality post-processing for this file. |
+| `ocr` | `OcrConfig \| null` | `null` | Override OCR configuration for this file (None in the Option = use batch default). |
+| `forceOcr` | `boolean \| null` | `null` | Override force OCR for this file. |
+| `forceOcrPages` | `Array<number> \| null` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
+| `disableOcr` | `boolean \| null` | `null` | Override disable OCR for this file. |
+| `chunking` | `ChunkingConfig \| null` | `null` | Override chunking configuration for this file. |
+| `contentFilter` | `ContentFilterConfig \| null` | `null` | Override content filtering configuration for this file. |
+| `images` | `ImageExtractionConfig \| null` | `null` | Override image extraction configuration for this file. |
+| `pdfOptions` | `PdfConfig \| null` | `null` | Override PDF options for this file. |
+| `tokenReduction` | `TokenReductionOptions \| null` | `null` | Override token reduction for this file. |
+| `languageDetection` | `LanguageDetectionConfig \| null` | `null` | Override language detection for this file. |
+| `pages` | `PageConfig \| null` | `null` | Override page extraction for this file. |
+| `keywords` | `KeywordConfig \| null` | `null` | Override keyword extraction for this file. |
+| `postprocessor` | `PostProcessorConfig \| null` | `null` | Override post-processor for this file. |
+| `htmlOptions` | `string \| null` | `null` | Override HTML conversion options for this file. |
+| `resultFormat` | `ResultFormat \| null` | `null` | Override result format for this file. |
+| `outputFormat` | `OutputFormat \| null` | `null` | Override output content format for this file. |
+| `includeDocumentStructure` | `boolean \| null` | `null` | Override document structure output for this file. |
+| `layout` | `LayoutDetectionConfig \| null` | `null` | Override layout detection for this file. |
+| `timeoutSecs` | `number \| null` | `null` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
+| `treeSitter` | `TreeSitterConfig \| null` | `null` | Override tree-sitter configuration for this file. |
+| `structuredExtraction` | `StructuredExtractionConfig \| null` | `null` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
 
 
 ---
@@ -2074,11 +2074,11 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `blockType` | `BlockType` | — | Type of block element |
-| `level` | `number | null` | `null` | Heading level (1-6) for headings, or nesting level for lists |
+| `level` | `number \| null` | `null` | Heading level (1-6) for headings, or nesting level for lists |
 | `inlineContent` | `Array<InlineElement>` | — | Inline content within the block |
-| `attributes` | `string | null` | `null` | Element attributes (classes, IDs, key-value pairs) |
-| `language` | `string | null` | `null` | Language identifier for code blocks |
-| `code` | `string | null` | `null` | Raw code content for code blocks |
+| `attributes` | `string \| null` | `null` | Element attributes (classes, IDs, key-value pairs) |
+| `language` | `string \| null` | `null` | Language identifier for code blocks |
+| `code` | `string \| null` | `null` | Raw code content for code blocks |
 | `children` | `Array<FormattedBlock>` | — | Nested blocks for containers (blockquotes, list items, divs) |
 
 
@@ -2096,7 +2096,7 @@ Individual grid cell with position and span metadata.
 | `rowSpan` | `number` | — | Number of rows this cell spans. |
 | `colSpan` | `number` | — | Number of columns this cell spans. |
 | `isHeader` | `boolean` | — | Whether this is a header cell. |
-| `bbox` | `string | null` | `null` | Bounding box for this cell (if available). |
+| `bbox` | `string \| null` | `null` | Bounding box for this cell (if available). |
 
 
 ---
@@ -2109,7 +2109,7 @@ Header/heading element metadata.
 |-------|------|---------|-------------|
 | `level` | `number` | — | Header level: 1 (h1) through 6 (h6) |
 | `text` | `string` | — | Normalized text content of the header |
-| `id` | `string | null` | `null` | HTML id attribute if present |
+| `id` | `string \| null` | `null` | HTML id attribute if present |
 | `depth` | `number` | — | Document tree depth at the header element |
 | `htmlOffset` | `number` | — | Byte offset in original HTML document |
 
@@ -2153,7 +2153,7 @@ font size clustering and hierarchical analysis.
 | `text` | `string` | — | The text content of this block |
 | `fontSize` | `number` | — | The font size of the text in this block |
 | `level` | `string` | — | The hierarchy level of this block (H1-H6 or Body) Levels correspond to HTML heading tags: - "h1": Top-level heading - "h2": Secondary heading - "h3": Tertiary heading - "h4": Quaternary heading - "h5": Quinary heading - "h6": Senary heading - "body": Body text (no heading level) |
-| `bbox` | `Array<number> | null` | `null` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
+| `bbox` | `Array<number> \| null` | `null` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
 
 
 ---
@@ -2171,7 +2171,7 @@ included in page content.
 | `enabled` | `boolean` | `true` | Enable hierarchy extraction |
 | `kClusters` | `number` | `3` | Number of font size clusters to use for hierarchy levels (1-7) Default: 6, which provides H1-H6 heading levels with body text. Larger values create more fine-grained hierarchy levels. |
 | `includeBbox` | `boolean` | `true` | Include bounding box information in hierarchy blocks |
-| `ocrCoverageThreshold` | `number | null` | `null` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
+| `ocrCoverageThreshold` | `number \| null` | `null` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
 ##### Methods
 
@@ -2207,14 +2207,14 @@ and extracted structural elements (headers, links, images, structured data).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `string | null` | `null` | Document title from `<title>` tag |
-| `description` | `string | null` | `null` | Document description from `<meta name="description">` tag |
+| `title` | `string \| null` | `null` | Document title from `<title>` tag |
+| `description` | `string \| null` | `null` | Document description from `<meta name="description">` tag |
 | `keywords` | `Array<string>` | `[]` | Document keywords from `<meta name="keywords">` tag, split on commas |
-| `author` | `string | null` | `null` | Document author from `<meta name="author">` tag |
-| `canonicalUrl` | `string | null` | `null` | Canonical URL from `<link rel="canonical">` tag |
-| `baseHref` | `string | null` | `null` | Base URL from `<base href="">` tag for resolving relative URLs |
-| `language` | `string | null` | `null` | Document language from `lang` attribute |
-| `textDirection` | `TextDirection | null` | `null` | Document text direction from `dir` attribute |
+| `author` | `string \| null` | `null` | Document author from `<meta name="author">` tag |
+| `canonicalUrl` | `string \| null` | `null` | Canonical URL from `<link rel="canonical">` tag |
+| `baseHref` | `string \| null` | `null` | Base URL from `<base href="">` tag for resolving relative URLs |
+| `language` | `string \| null` | `null` | Document language from `lang` attribute |
+| `textDirection` | `TextDirection \| null` | `null` | Document text direction from `dir` attribute |
 | `openGraph` | `Record<string, string>` | `{}` | Open Graph metadata (og:* properties) for social media Keys like "title", "description", "image", "url", etc. |
 | `twitterCard` | `Record<string, string>` | `{}` | Twitter Card metadata (twitter:* properties) Keys like "card", "site", "creator", "title", "description", "image", etc. |
 | `metaTags` | `Record<string, string>` | `{}` | Additional meta tags not covered by specific fields Keys are meta name/property attributes, values are content |
@@ -2246,8 +2246,8 @@ the plain comrak-based renderer.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `css` | `string | null` | `null` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
-| `cssFile` | `string | null` | `null` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
+| `css` | `string \| null` | `null` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
+| `cssFile` | `string \| null` | `null` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
 | `theme` | `HtmlTheme` | `HtmlTheme.Unstyled` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
 | `classPrefix` | `string` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embedCss` | `boolean` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
@@ -2368,7 +2368,7 @@ Image extraction configuration.
 | `autoAdjustDpi` | `boolean` | `true` | Automatically adjust DPI based on image content |
 | `minDpi` | `number` | `72` | Minimum DPI threshold |
 | `maxDpi` | `number` | `600` | Maximum DPI threshold |
-| `maxImagesPerPage` | `number | null` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
+| `maxImagesPerPage` | `number \| null` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
 | `classify` | `boolean` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ##### Methods
@@ -2406,9 +2406,9 @@ Image element metadata.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `src` | `string` | — | Image source (URL, data URI, or SVG content) |
-| `alt` | `string | null` | `null` | Alternative text from alt attribute |
-| `title` | `string | null` | `null` | Title attribute |
-| `dimensions` | `Array<number> | null` | `null` | Image dimensions as (width, height) if available |
+| `alt` | `string \| null` | `null` | Alternative text from alt attribute |
+| `title` | `string \| null` | `null` | Title attribute |
+| `dimensions` | `Array<number> \| null` | `null` | Image dimensions as (width, height) if available |
 | `imageType` | `ImageType` | — | Image type classification |
 | `attributes` | `Array<string>` | — | Additional attributes as key-value pairs |
 
@@ -2422,8 +2422,8 @@ Result of OCR extraction from an image with optional page tracking.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `string` | — | Extracted text content |
-| `boundaries` | `Array<PageBoundary> | null` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `pageContents` | `Array<PageContent> | null` | `null` | Per-frame content information |
+| `boundaries` | `Array<PageBoundary> \| null` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
+| `pageContents` | `Array<PageContent> \| null` | `null` | Per-frame content information |
 
 
 ---
@@ -2473,12 +2473,12 @@ including DPI normalization, resizing, and resampling.
 | `scaleFactor` | `number` | — | Scaling factor applied to the image |
 | `autoAdjusted` | `boolean` | — | Whether DPI was auto-adjusted based on content |
 | `finalDpi` | `number` | — | Final DPI after processing |
-| `newDimensions` | `Array<number> | null` | `null` | New dimensions after resizing (if resized) |
+| `newDimensions` | `Array<number> \| null` | `null` | New dimensions after resizing (if resized) |
 | `resampleMethod` | `string` | — | Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) |
 | `dimensionClamped` | `boolean` | — | Whether dimensions were clamped to max_image_dimension |
-| `calculatedDpi` | `number | null` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
+| `calculatedDpi` | `number \| null` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skippedResize` | `boolean` | — | Whether resize was skipped (dimensions already optimal) |
-| `resizeError` | `string | null` | `null` | Error message if resize failed |
+| `resizeError` | `string \| null` | `null` | Error message if resize failed |
 
 
 ---
@@ -2505,8 +2505,8 @@ Represents text with formatting, links, images, etc.
 |-------|------|---------|-------------|
 | `elementType` | `InlineType` | — | Type of inline element |
 | `content` | `string` | — | Text content |
-| `attributes` | `string | null` | `null` | Element attributes |
-| `metadata` | `Record<string, string> | null` | `null` | Additional metadata (e.g., href for links, src/alt for images) |
+| `attributes` | `string \| null` | `null` | Element attributes |
+| `metadata` | `Record<string, string> \| null` | `null` | Additional metadata (e.g., href for links, src/alt for images) |
 
 
 ---
@@ -2517,8 +2517,8 @@ JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `string | null` | `null` | Copyright |
-| `license` | `string | null` | `null` | License |
+| `copyright` | `string \| null` | `null` | Copyright |
+| `license` | `string \| null` | `null` | License |
 | `historyDates` | `Record<string, string>` | `{}` | History dates |
 | `contributorRoles` | `Array<ContributorRole>` | `[]` | Contributor roles |
 
@@ -2534,7 +2534,7 @@ Extracted keyword with metadata.
 | `text` | `string` | — | The keyword text. |
 | `score` | `number` | — | Relevance score (higher is better, algorithm-specific range). |
 | `algorithm` | `KeywordAlgorithm` | — | Algorithm that extracted this keyword. |
-| `positions` | `Array<number> | null` | `null` | Optional positions where keyword appears in text (character offsets). |
+| `positions` | `Array<number> \| null` | `null` | Optional positions where keyword appears in text (character offsets). |
 
 
 ---
@@ -2549,9 +2549,9 @@ Keyword extraction configuration.
 | `maxKeywords` | `number` | `10` | Maximum number of keywords to extract (default: 10). |
 | `minScore` | `number` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
 | `ngramRange` | `Array<number>` | `[]` | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
-| `language` | `string | null` | `null` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
-| `yakeParams` | `YakeParams | null` | `null` | YAKE-specific tuning parameters. |
-| `rakeParams` | `RakeParams | null` | `null` | RAKE-specific tuning parameters. |
+| `language` | `string \| null` | `null` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
+| `yakeParams` | `YakeParams \| null` | `null` | YAKE-specific tuning parameters. |
+| `rakeParams` | `RakeParams \| null` | `null` | RAKE-specific tuning parameters. |
 
 ##### Methods
 
@@ -2610,10 +2610,10 @@ is enabled for PDF extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `confidenceThreshold` | `number | null` | `null` | Confidence threshold override (None = use model default). |
+| `confidenceThreshold` | `number \| null` | `null` | Confidence threshold override (None = use model default). |
 | `applyHeuristics` | `boolean` | `true` | Whether to apply postprocessing heuristics (default: true). |
 | `tableModel` | `TableModel` | `TableModel.Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
-| `acceleration` | `AccelerationConfig | null` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 
 ##### Methods
 
@@ -2653,7 +2653,7 @@ Link element metadata.
 |-------|------|---------|-------------|
 | `href` | `string` | — | The href URL value |
 | `text` | `string` | — | Link text content (normalized) |
-| `title` | `string | null` | `null` | Optional title attribute |
+| `title` | `string \| null` | `null` | Optional title attribute |
 | `linkType` | `LinkType` | — | Link type classification |
 | `rel` | `Array<string>` | — | Rel attribute values |
 | `attributes` | `Array<string>` | — | Additional attributes as key-value pairs |
@@ -2671,12 +2671,12 @@ its own `LlmConfig`, allowing different providers per feature.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `model` | `string` | — | Provider/model string using liter-llm routing format. Examples: `"openai/gpt-4o"`, `"anthropic/claude-sonnet-4-20250514"`, `"groq/llama-3.1-70b-versatile"`. |
-| `apiKey` | `string | null` | `null` | API key for the provider. When `null`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
-| `baseUrl` | `string | null` | `null` | Custom base URL override for the provider endpoint. |
-| `timeoutSecs` | `number | null` | `null` | Request timeout in seconds (default: 60). |
-| `maxRetries` | `number | null` | `null` | Maximum retry attempts (default: 3). |
-| `temperature` | `number | null` | `null` | Sampling temperature for generation tasks. |
-| `maxTokens` | `number | null` | `null` | Maximum tokens to generate. |
+| `apiKey` | `string \| null` | `null` | API key for the provider. When `null`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
+| `baseUrl` | `string \| null` | `null` | Custom base URL override for the provider endpoint. |
+| `timeoutSecs` | `number \| null` | `null` | Request timeout in seconds (default: 60). |
+| `maxRetries` | `number \| null` | `null` | Maximum retry attempts (default: 3). |
+| `temperature` | `number \| null` | `null` | Sampling temperature for generation tasks. |
+| `maxTokens` | `number \| null` | `null` | Maximum tokens to generate. |
 
 
 ---
@@ -2693,11 +2693,11 @@ within one extraction (e.g. VLM OCR + structured extraction).
 |-------|------|---------|-------------|
 | `model` | `string` | — | The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). |
 | `source` | `string` | — | The pipeline stage that triggered this LLM call (e.g. "vlm_ocr", "structured_extraction", "embeddings"). |
-| `inputTokens` | `number | null` | `null` | Number of input/prompt tokens consumed. |
-| `outputTokens` | `number | null` | `null` | Number of output/completion tokens generated. |
-| `totalTokens` | `number | null` | `null` | Total tokens (input + output). |
-| `estimatedCost` | `number | null` | `null` | Estimated cost in USD based on the provider's published pricing. |
-| `finishReason` | `string | null` | `null` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
+| `inputTokens` | `number \| null` | `null` | Number of input/prompt tokens consumed. |
+| `outputTokens` | `number \| null` | `null` | Number of output/completion tokens generated. |
+| `totalTokens` | `number \| null` | `null` | Total tokens (input + output). |
+| `estimatedCost` | `number \| null` | `null` | Estimated cost in USD based on the provider's published pricing. |
+| `finishReason` | `string \| null` | `null` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
 
 
 ---
@@ -2752,26 +2752,26 @@ via a discriminated union, and additional custom fields from postprocessors.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `string | null` | `null` | Document title |
-| `subject` | `string | null` | `null` | Document subject or description |
-| `authors` | `Array<string> | null` | `[]` | Primary author(s) - always Vec for consistency |
-| `keywords` | `Array<string> | null` | `[]` | Keywords/tags - always Vec for consistency |
-| `language` | `string | null` | `null` | Primary language (ISO 639 code) |
-| `createdAt` | `string | null` | `null` | Creation timestamp (ISO 8601 format) |
-| `modifiedAt` | `string | null` | `null` | Last modification timestamp (ISO 8601 format) |
-| `createdBy` | `string | null` | `null` | User who created the document |
-| `modifiedBy` | `string | null` | `null` | User who last modified the document |
-| `pages` | `PageStructure | null` | `null` | Page/slide/sheet structure with boundaries |
-| `format` | `FormatMetadata | null` | `null` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
-| `imagePreprocessing` | `ImagePreprocessingMetadata | null` | `null` | Image preprocessing metadata (when OCR preprocessing was applied) |
-| `jsonSchema` | `unknown | null` | `null` | JSON schema (for structured data extraction) |
-| `error` | `ErrorMetadata | null` | `null` | Error metadata (for batch operations) |
-| `extractionDurationMs` | `number | null` | `null` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `null` for single-file extraction (which uses external timing). |
-| `category` | `string | null` | `null` | Document category (from frontmatter or classification). |
-| `tags` | `Array<string> | null` | `[]` | Document tags (from frontmatter). |
-| `documentVersion` | `string | null` | `null` | Document version string (from frontmatter). |
-| `abstractText` | `string | null` | `null` | Abstract or summary text (from frontmatter). |
-| `outputFormat` | `string | null` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `title` | `string \| null` | `null` | Document title |
+| `subject` | `string \| null` | `null` | Document subject or description |
+| `authors` | `Array<string> \| null` | `[]` | Primary author(s) - always Vec for consistency |
+| `keywords` | `Array<string> \| null` | `[]` | Keywords/tags - always Vec for consistency |
+| `language` | `string \| null` | `null` | Primary language (ISO 639 code) |
+| `createdAt` | `string \| null` | `null` | Creation timestamp (ISO 8601 format) |
+| `modifiedAt` | `string \| null` | `null` | Last modification timestamp (ISO 8601 format) |
+| `createdBy` | `string \| null` | `null` | User who created the document |
+| `modifiedBy` | `string \| null` | `null` | User who last modified the document |
+| `pages` | `PageStructure \| null` | `null` | Page/slide/sheet structure with boundaries |
+| `format` | `FormatMetadata \| null` | `null` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
+| `imagePreprocessing` | `ImagePreprocessingMetadata \| null` | `null` | Image preprocessing metadata (when OCR preprocessing was applied) |
+| `jsonSchema` | `unknown \| null` | `null` | JSON schema (for structured data extraction) |
+| `error` | `ErrorMetadata \| null` | `null` | Error metadata (for batch operations) |
+| `extractionDurationMs` | `number \| null` | `null` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `null` for single-file extraction (which uses external timing). |
+| `category` | `string \| null` | `null` | Document category (from frontmatter or classification). |
+| `tags` | `Array<string> \| null` | `[]` | Document tags (from frontmatter). |
+| `documentVersion` | `string \| null` | `null` | Document version string (from frontmatter). |
+| `abstractText` | `string \| null` | `null` | Abstract or summary text (from frontmatter). |
+| `outputFormat` | `string \| null` | `null` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
 | `ocrUsed` | `boolean` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `Record<string, unknown>` | `{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
@@ -2832,6 +2832,12 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Ocr` - OCR processing failed
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
+
+# Reading `backend_options`
+
+Backends that support runtime tuning can read `config.backend_options` and
+deserialize only the keys they care about. Unknown keys are silently ignored,
+so multiple backends can coexist in a pipeline without key conflicts.
 
 **Signature:**
 
@@ -2946,7 +2952,7 @@ from recognition confidence (how confident about the actual text content).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `detection` | `number | null` | `null` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
+| `detection` | `number \| null` | `null` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
 | `recognition` | `number` | — | Recognition confidence: how confident about the text content. Range: 0.0 to 1.0. |
 
 
@@ -2961,17 +2967,18 @@ OCR configuration.
 | `enabled` | `boolean` | `true` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `true`. When `false`, all other OCR settings are ignored. |
 | `backend` | `string` | — | OCR backend: tesseract, easyocr, paddleocr |
 | `language` | `string` | — | Language code (e.g., "eng", "deu") |
-| `tesseractConfig` | `TesseractConfig | null` | `null` | Tesseract-specific configuration (optional) |
-| `outputFormat` | `OutputFormat | null` | `null` | Output format for OCR results (optional, for format conversion) |
-| `paddleOcrConfig` | `unknown | null` | `null` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `elementConfig` | `OcrElementConfig | null` | `null` | OCR element extraction configuration |
-| `qualityThresholds` | `OcrQualityThresholds | null` | `null` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
-| `pipeline` | `OcrPipelineConfig | null` | `null` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
+| `tesseractConfig` | `TesseractConfig \| null` | `null` | Tesseract-specific configuration (optional) |
+| `outputFormat` | `OutputFormat \| null` | `null` | Output format for OCR results (optional, for format conversion) |
+| `paddleOcrConfig` | `unknown \| null` | `null` | PaddleOCR-specific configuration (optional, JSON passthrough) |
+| `backendOptions` | `unknown \| null` | `null` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `null`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
+| `elementConfig` | `OcrElementConfig \| null` | `null` | OCR element extraction configuration |
+| `qualityThresholds` | `OcrQualityThresholds \| null` | `null` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
+| `pipeline` | `OcrPipelineConfig \| null` | `null` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `autoRotate` | `boolean` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlmConfig` | `LlmConfig | null` | `null` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
-| `vlmPrompt` | `string | null` | `null` | Custom Jinja2 prompt template for VLM OCR. When `null`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
-| `acceleration` | `AccelerationConfig | null` | `null` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
-| `tessdataBytes` | `Record<string, Buffer> | null` | `null` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
+| `vlmConfig` | `LlmConfig \| null` | `null` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlmPrompt` | `string \| null` | `null` | Custom Jinja2 prompt template for VLM OCR. When `null`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
+| `tessdataBytes` | `Record<string, Buffer> \| null` | `null` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
 ##### Methods
 
@@ -2998,9 +3005,9 @@ from both Tesseract and PaddleOCR backends.
 | `geometry` | `OcrBoundingGeometry` | `OcrBoundingGeometry.Rectangle` | Bounding geometry (rectangle or quadrilateral). |
 | `confidence` | `OcrConfidence` | — | Confidence scores for detection and recognition. |
 | `level` | `OcrElementLevel` | `OcrElementLevel.Line` | Hierarchical level (word, line, block, page). |
-| `rotation` | `OcrRotation | null` | `null` | Rotation information (if detected). |
+| `rotation` | `OcrRotation \| null` | `null` | Rotation information (if detected). |
 | `pageNumber` | `number` | — | Page number (1-indexed). |
-| `parentId` | `string | null` | `null` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
+| `parentId` | `string \| null` | `null` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
 | `backendMetadata` | `Record<string, unknown>` | `{}` | Backend-specific metadata that doesn't fit the unified schema. |
 
 
@@ -3035,8 +3042,8 @@ including recognized text and detected tables.
 | `mimeType` | `string` | — | Original MIME type of the processed image |
 | `metadata` | `Record<string, unknown>` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `Array<OcrTable>` | — | Tables detected and extracted via OCR |
-| `ocrElements` | `Array<OcrElement> | null` | `null` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
-| `internalDocument` | `string | null` | `null` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
+| `ocrElements` | `Array<OcrElement> \| null` | `null` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `internalDocument` | `string \| null` | `null` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
 
 
 ---
@@ -3053,8 +3060,8 @@ Captures information about OCR processing configuration and results.
 | `psm` | `number` | — | Tesseract Page Segmentation Mode (PSM) |
 | `outputFormat` | `string` | — | Output format (e.g., "text", "hocr") |
 | `tableCount` | `number` | — | Number of tables detected |
-| `tableRows` | `number | null` | `null` | Table rows |
-| `tableCols` | `number | null` | `null` | Table cols |
+| `tableRows` | `number \| null` | `null` | Table rows |
+| `tableCols` | `number \| null` | `null` | Table cols |
 
 
 ---
@@ -3083,10 +3090,11 @@ A single backend stage in the OCR pipeline.
 |-------|------|---------|-------------|
 | `backend` | `string` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `number` | — | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `string | null` | `null` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseractConfig` | `TesseractConfig | null` | `null` | Tesseract-specific config override for this stage. |
-| `paddleOcrConfig` | `unknown | null` | `null` | PaddleOCR-specific config for this stage. |
-| `vlmConfig` | `LlmConfig | null` | `null` | VLM config override for this pipeline stage. |
+| `language` | `string \| null` | `null` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseractConfig` | `TesseractConfig \| null` | `null` | Tesseract-specific config override for this stage. |
+| `paddleOcrConfig` | `unknown \| null` | `null` | PaddleOCR-specific config for this stage. |
+| `vlmConfig` | `LlmConfig \| null` | `null` | VLM config override for this pipeline stage. |
+| `backendOptions` | `unknown \| null` | `null` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 
 ---
@@ -3136,7 +3144,7 @@ Rotation information for an OCR element.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `angleDegrees` | `number` | — | Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). |
-| `confidence` | `number | null` | `null` | Confidence score for the rotation detection. |
+| `confidence` | `number \| null` | `null` | Confidence score for the rotation detection. |
 
 
 ---
@@ -3152,7 +3160,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `Array<Array<string>>` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `string` | — | Markdown representation of the table |
 | `pageNumber` | `number` | — | Page number where the table was found (1-indexed) |
-| `boundingBox` | `OcrTableBoundingBox | null` | `null` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `boundingBox` | `OcrTableBoundingBox \| null` | `null` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 
 ---
@@ -3180,24 +3188,24 @@ Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `string | null` | `null` | Document title (dc:title) |
-| `subject` | `string | null` | `null` | Document subject/topic (dc:subject) |
-| `creator` | `string | null` | `null` | Current document creator/author (dc:creator) |
-| `initialCreator` | `string | null` | `null` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `string | null` | `null` | Keywords or tags (meta:keyword) |
-| `description` | `string | null` | `null` | Document description (dc:description) |
-| `date` | `string | null` | `null` | Current modification date (dc:date) |
-| `creationDate` | `string | null` | `null` | Initial creation date (meta:creation-date) |
-| `language` | `string | null` | `null` | Document language (dc:language) |
-| `generator` | `string | null` | `null` | Generator/application that created the document (meta:generator) |
-| `editingDuration` | `string | null` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editingCycles` | `string | null` | `null` | Number of edits/revisions (meta:editing-cycles) |
-| `pageCount` | `number | null` | `null` | Document statistics - page count (meta:page-count) |
-| `wordCount` | `number | null` | `null` | Document statistics - word count (meta:word-count) |
-| `characterCount` | `number | null` | `null` | Document statistics - character count (meta:character-count) |
-| `paragraphCount` | `number | null` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
-| `tableCount` | `number | null` | `null` | Document statistics - table count (meta:table-count) |
-| `imageCount` | `number | null` | `null` | Document statistics - image count (meta:image-count) |
+| `title` | `string \| null` | `null` | Document title (dc:title) |
+| `subject` | `string \| null` | `null` | Document subject/topic (dc:subject) |
+| `creator` | `string \| null` | `null` | Current document creator/author (dc:creator) |
+| `initialCreator` | `string \| null` | `null` | Initial creator of the document (meta:initial-creator) |
+| `keywords` | `string \| null` | `null` | Keywords or tags (meta:keyword) |
+| `description` | `string \| null` | `null` | Document description (dc:description) |
+| `date` | `string \| null` | `null` | Current modification date (dc:date) |
+| `creationDate` | `string \| null` | `null` | Initial creation date (meta:creation-date) |
+| `language` | `string \| null` | `null` | Document language (dc:language) |
+| `generator` | `string \| null` | `null` | Generator/application that created the document (meta:generator) |
+| `editingDuration` | `string \| null` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
+| `editingCycles` | `string \| null` | `null` | Number of edits/revisions (meta:editing-cycles) |
+| `pageCount` | `number \| null` | `null` | Document statistics - page count (meta:page-count) |
+| `wordCount` | `number \| null` | `null` | Document statistics - word count (meta:word-count) |
+| `characterCount` | `number \| null` | `null` | Document statistics - character count (meta:character-count) |
+| `paragraphCount` | `number \| null` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
+| `tableCount` | `number \| null` | `null` | Document statistics - table count (meta:table-count) |
+| `imageCount` | `number \| null` | `null` | Document statistics - image count (meta:image-count) |
 
 
 ---
@@ -3238,7 +3246,7 @@ Uses a builder pattern for convenient configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `language` | `string` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
-| `cacheDir` | `string | null` | `null` | Optional custom cache directory for model files |
+| `cacheDir` | `string \| null` | `null` | Optional custom cache directory for model files |
 | `useAngleCls` | `boolean` | — | Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition. |
 | `enableTableDetection` | `boolean` | — | Enable table structure detection (default: false) |
 | `detDbThresh` | `number` | — | Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections |
@@ -3435,9 +3443,9 @@ by avoiding redundant copies during serialization.
 | `content` | `string` | — | Text content for this page |
 | `tables` | `Array<Table>` | — | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
 | `imageIndices` | `Array<number>` | — | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
-| `hierarchy` | `PageHierarchy | null` | `null` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
-| `isBlank` | `boolean | null` | `null` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
-| `layoutRegions` | `Array<LayoutRegion> | null` | `null` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
+| `hierarchy` | `PageHierarchy \| null` | `null` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
+| `isBlank` | `boolean \| null` | `null` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
+| `layoutRegions` | `Array<LayoutRegion> \| null` | `null` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
 
 
 ---
@@ -3467,12 +3475,12 @@ and visibility state (for presentations).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `number` | `number` | — | Page number (1-indexed) |
-| `title` | `string | null` | `null` | Page title (usually for presentations) |
-| `dimensions` | `Array<number> | null` | `null` | Dimensions in points (PDF) or pixels (images): (width, height) |
-| `imageCount` | `number | null` | `null` | Number of images on this page |
-| `tableCount` | `number | null` | `null` | Number of tables on this page |
-| `hidden` | `boolean | null` | `null` | Whether this page is hidden (e.g., in presentations) |
-| `isBlank` | `boolean | null` | `null` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
+| `title` | `string \| null` | `null` | Page title (usually for presentations) |
+| `dimensions` | `Array<number> \| null` | `null` | Dimensions in points (PDF) or pixels (images): (width, height) |
+| `imageCount` | `number \| null` | `null` | Number of images on this page |
+| `tableCount` | `number \| null` | `null` | Number of tables on this page |
+| `hidden` | `boolean \| null` | `null` | Whether this page is hidden (e.g., in presentations) |
+| `isBlank` | `boolean \| null` | `null` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `hasVectorGraphics` | `boolean` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `null` for other document types. |
 
 
@@ -3484,13 +3492,13 @@ Page margins converted to points (1/72 inch).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `top` | `number | null` | `null` | Top |
-| `right` | `number | null` | `null` | Right |
-| `bottom` | `number | null` | `null` | Bottom |
-| `left` | `number | null` | `null` | Left |
-| `header` | `number | null` | `null` | Header |
-| `footer` | `number | null` | `null` | Footer |
-| `gutter` | `number | null` | `null` | Gutter |
+| `top` | `number \| null` | `null` | Top |
+| `right` | `number \| null` | `null` | Right |
+| `bottom` | `number \| null` | `null` | Bottom |
+| `left` | `number \| null` | `null` | Left |
+| `header` | `number \| null` | `null` | Header |
+| `footer` | `number \| null` | `null` | Footer |
+| `gutter` | `number \| null` | `null` | Gutter |
 
 
 ---
@@ -3506,8 +3514,8 @@ with character offset boundaries for chunk-to-page mapping.
 |-------|------|---------|-------------|
 | `totalCount` | `number` | — | Total number of pages/slides/sheets |
 | `unitType` | `PageUnitType` | — | Type of paginated unit |
-| `boundaries` | `Array<PageBoundary> | null` | `null` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
-| `pages` | `Array<PageInfo> | null` | `null` | Detailed per-page metadata (optional, only when needed) |
+| `boundaries` | `Array<PageBoundary> \| null` | `null` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
+| `pages` | `Array<PageInfo> \| null` | `null` | Detailed per-page metadata (optional, only when needed) |
 
 
 ---
@@ -3519,9 +3527,9 @@ A PDF annotation extracted from a document page.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `annotationType` | `PdfAnnotationType` | — | The type of annotation. |
-| `content` | `string | null` | `null` | Text content of the annotation (e.g., comment text, link URL). |
+| `content` | `string \| null` | `null` | Text content of the annotation (e.g., comment text, link URL). |
 | `pageNumber` | `number` | — | Page number where the annotation appears (1-indexed). |
-| `boundingBox` | `string | null` | `null` | Bounding box of the annotation on the page. |
+| `boundingBox` | `string \| null` | `null` | Bounding box of the annotation on the page. |
 
 
 ---
@@ -3534,12 +3542,12 @@ PDF-specific configuration.
 |-------|------|---------|-------------|
 | `extractImages` | `boolean` | `false` | Extract images from PDF |
 | `extractTables` | `boolean` | `true` | Extract tables from PDF. When `true` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf.oxide.table.extract_tables_heuristic`. Set to `false` to skip both passes — `tables` will then be empty in the result. |
-| `passwords` | `Array<string> | null` | `null` | List of passwords to try when opening encrypted PDFs |
+| `passwords` | `Array<string> \| null` | `null` | List of passwords to try when opening encrypted PDFs |
 | `extractMetadata` | `boolean` | `true` | Extract PDF metadata |
-| `hierarchy` | `HierarchyConfig | null` | `null` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
+| `hierarchy` | `HierarchyConfig \| null` | `null` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `extractAnnotations` | `boolean` | `false` | Extract PDF annotations (text notes, highlights, links, stamps). Default: false |
-| `topMarginFraction` | `number | null` | `null` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
-| `bottomMarginFraction` | `number | null` | `null` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
+| `topMarginFraction` | `number \| null` | `null` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
+| `bottomMarginFraction` | `number \| null` | `null` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allowSingleColumnTables` | `boolean` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocrInlineImages` | `boolean` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `null` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
@@ -3565,12 +3573,12 @@ are at the `Metadata` level.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `pdfVersion` | `string | null` | `null` | PDF version (e.g., "1.7", "2.0") |
-| `producer` | `string | null` | `null` | PDF producer (application that created the PDF) |
-| `isEncrypted` | `boolean | null` | `null` | Whether the PDF is encrypted/password-protected |
-| `width` | `number | null` | `null` | First page width in points (1/72 inch) |
-| `height` | `number | null` | `null` | First page height in points (1/72 inch) |
-| `pageCount` | `number | null` | `null` | Total number of pages in the PDF document |
+| `pdfVersion` | `string \| null` | `null` | PDF version (e.g., "1.7", "2.0") |
+| `producer` | `string \| null` | `null` | PDF producer (application that created the PDF) |
+| `isEncrypted` | `boolean \| null` | `null` | Whether the PDF is encrypted/password-protected |
+| `width` | `number \| null` | `null` | First page width in points (1/72 inch) |
+| `height` | `number \| null` | `null` | First page height in points (1/72 inch) |
+| `pageCount` | `number \| null` | `null` | Total number of pages in the PDF document |
 
 
 ---
@@ -3843,10 +3851,10 @@ Post-processor configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean` | `true` | Enable post-processors |
-| `enabledProcessors` | `Array<string> | null` | `null` | Whitelist of processor names to run (None = all enabled) |
-| `disabledProcessors` | `Array<string> | null` | `null` | Blacklist of processor names to skip (None = none disabled) |
-| `enabledSet` | `string | null` | `null` | Pre-computed AHashSet for O(1) enabled processor lookup |
-| `disabledSet` | `string | null` | `null` | Pre-computed AHashSet for O(1) disabled processor lookup |
+| `enabledProcessors` | `Array<string> \| null` | `null` | Whitelist of processor names to run (None = all enabled) |
+| `disabledProcessors` | `Array<string> \| null` | `null` | Blacklist of processor names to skip (None = none disabled) |
+| `enabledSet` | `string \| null` | `null` | Pre-computed AHashSet for O(1) enabled processor lookup |
+| `disabledSet` | `string \| null` | `null` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
 ##### Methods
 
@@ -3868,20 +3876,20 @@ Contains PowerPoint-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `string | null` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `appVersion` | `string | null` | `null` | Application version |
-| `totalTime` | `number | null` | `null` | Total editing time in minutes |
-| `company` | `string | null` | `null` | Company name |
-| `docSecurity` | `number | null` | `null` | Document security level |
-| `scaleCrop` | `boolean | null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean | null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean | null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean | null` | `null` | Hyperlinks changed flag |
-| `slides` | `number | null` | `null` | Number of slides |
-| `notes` | `number | null` | `null` | Number of notes |
-| `hiddenSlides` | `number | null` | `null` | Number of hidden slides |
-| `multimediaClips` | `number | null` | `null` | Number of multimedia clips |
-| `presentationFormat` | `string | null` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
+| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
+| `appVersion` | `string \| null` | `null` | Application version |
+| `totalTime` | `number \| null` | `null` | Total editing time in minutes |
+| `company` | `string \| null` | `null` | Company name |
+| `docSecurity` | `number \| null` | `null` | Document security level |
+| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
+| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
+| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
+| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
+| `slides` | `number \| null` | `null` | Number of slides |
+| `notes` | `number \| null` | `null` | Number of notes |
+| `hiddenSlides` | `number \| null` | `null` | Number of hidden slides |
+| `multimediaClips` | `number \| null` | `null` | Number of multimedia clips |
+| `presentationFormat` | `string \| null` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
 | `slideTitles` | `Array<string>` | `[]` | Slide titles |
 
 
@@ -3901,9 +3909,9 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `imageCount` | `number` | — | Total number of embedded images |
 | `tableCount` | `number` | — | Total number of tables |
 | `images` | `Array<ExtractedImage>` | — | Extracted images from the presentation |
-| `pageStructure` | `PageStructure | null` | `null` | Slide structure with boundaries (when page tracking is enabled) |
-| `pageContents` | `Array<PageContent> | null` | `null` | Per-slide content (when page tracking is enabled) |
-| `document` | `DocumentStructure | null` | `null` | Structured document representation |
+| `pageStructure` | `PageStructure \| null` | `null` | Slide structure with boundaries (when page tracking is enabled) |
+| `pageContents` | `Array<PageContent> \| null` | `null` | Per-slide content (when page tracking is enabled) |
+| `document` | `DocumentStructure \| null` | `null` | Structured document representation |
 | `hyperlinks` | `Array<string>` | — | Hyperlinks discovered in slides as (url, optional_label) pairs. |
 | `officeMetadata` | `Record<string, string>` | — | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
 
@@ -3920,8 +3928,8 @@ Extracted from PPTX files containing slide counts and presentation details.
 |-------|------|---------|-------------|
 | `slideCount` | `number` | — | Total number of slides in the presentation |
 | `slideNames` | `Array<string>` | `[]` | Names of slides (if available) |
-| `imageCount` | `number | null` | `null` | Number of embedded images |
-| `tableCount` | `number | null` | `null` | Number of tables |
+| `imageCount` | `number \| null` | `null` | Number of embedded images |
+| `tableCount` | `number \| null` | `null` | Number of tables |
 
 
 ---
@@ -4205,7 +4213,7 @@ Structured data (Schema.org, microdata, RDFa) block.
 |-------|------|---------|-------------|
 | `dataType` | `StructuredDataType` | — | Type of structured data |
 | `rawJson` | `string` | — | Raw JSON string representation |
-| `schemaType` | `string | null` | `null` | Schema type if detectable (e.g., "Article", "Event", "Product") |
+| `schemaType` | `string \| null` | `null` | Schema type if detectable (e.g., "Article", "Event", "Product") |
 
 
 ---
@@ -4233,9 +4241,9 @@ returning structured data that conforms to the schema.
 |-------|------|---------|-------------|
 | `schema` | `unknown` | — | JSON Schema defining the desired output structure. |
 | `schemaName` | `string` | — | Schema name passed to the LLM's structured output mode. |
-| `schemaDescription` | `string | null` | `null` | Optional schema description for the LLM. |
+| `schemaDescription` | `string \| null` | `null` | Optional schema description for the LLM. |
 | `strict` | `boolean` | — | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `string | null` | `null` | Custom Jinja2 extraction prompt template. When `null`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `prompt` | `string \| null` | `null` | Custom Jinja2 extraction prompt template. When `null`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 
@@ -4261,10 +4269,10 @@ A single style definition parsed from `<w:style>` in `word/styles.xml`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `string` | — | The style ID (`w:styleId` attribute). |
-| `name` | `string | null` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
+| `name` | `string \| null` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
 | `styleType` | `string` | — | Style type: paragraph, character, table, or numbering. |
-| `basedOn` | `string | null` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `nextStyle` | `string | null` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
+| `basedOn` | `string \| null` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
+| `nextStyle` | `string \| null` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
 | `isDefault` | `boolean` | — | Whether this is the default style for its type. |
 | `paragraphProperties` | `string` | — | Paragraph properties defined directly on this style. |
 | `runProperties` | `string` | — | Run properties defined directly on this style. |
@@ -4336,7 +4344,7 @@ Tables are converted to both structured cell data and Markdown format.
 | `cells` | `Array<Array<string>>` | `[]` | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `string` | — | Markdown representation of the table |
 | `pageNumber` | `number` | — | Page number where the table was found (1-indexed) |
-| `boundingBox` | `string | null` | `null` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
+| `boundingBox` | `string \| null` | `null` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
 
 
 ---
@@ -4378,15 +4386,15 @@ Table-level properties from `<w:tblPr>`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `styleId` | `string | null` | `null` | Style id |
-| `width` | `string | null` | `null` | Width |
-| `alignment` | `string | null` | `null` | Alignment |
-| `layout` | `string | null` | `null` | Layout |
-| `look` | `string | null` | `null` | Look |
-| `borders` | `string | null` | `null` | Borders |
-| `cellMargins` | `string | null` | `null` | Cell margins |
-| `indent` | `string | null` | `null` | Indent |
-| `caption` | `string | null` | `null` | Caption |
+| `styleId` | `string \| null` | `null` | Style id |
+| `width` | `string \| null` | `null` | Width |
+| `alignment` | `string \| null` | `null` | Alignment |
+| `layout` | `string \| null` | `null` | Layout |
+| `look` | `string \| null` | `null` | Look |
+| `borders` | `string \| null` | `null` | Borders |
+| `cellMargins` | `string \| null` | `null` | Cell margins |
+| `indent` | `string \| null` | `null` | Indent |
+| `caption` | `string \| null` | `null` | Caption |
 
 
 ---
@@ -4447,7 +4455,7 @@ for specific document types (invoices, handwriting, etc.).
 | `outputFormat` | `string` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `number` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
 | `minConfidence` | `number` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
-| `preprocessing` | `ImagePreprocessingConfig | null` | `null` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `preprocessing` | `ImagePreprocessingConfig \| null` | `null` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
 | `enableTableDetection` | `boolean` | `true` | Enable automatic table detection and reconstruction |
 | `tableMinConfidence` | `number` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
 | `tableColumnThreshold` | `number` | `50` | Column threshold for table detection (pixels) |
@@ -4505,9 +4513,9 @@ for Markdown files, structural elements like headers and links.
 | `lineCount` | `number` | — | Number of lines |
 | `wordCount` | `number` | — | Number of words |
 | `characterCount` | `number` | — | Number of characters |
-| `headers` | `Array<string> | null` | `null` | Markdown headers (text only, Markdown files only) |
-| `links` | `Array<string> | null` | `null` | Markdown links as (text, URL) tuples (Markdown files only) |
-| `codeBlocks` | `Array<string> | null` | `null` | Code blocks as (language, code) tuples (Markdown files only) |
+| `headers` | `Array<string> \| null` | `null` | Markdown headers (text only, Markdown files only) |
+| `links` | `Array<string> \| null` | `null` | Markdown links as (text, URL) tuples (Markdown files only) |
+| `codeBlocks` | `Array<string> \| null` | `null` | Code blocks as (language, code) tuples (Markdown files only) |
 
 
 ---
@@ -4524,9 +4532,9 @@ for Markdown, structural elements like headers and links.
 | `lineCount` | `number` | — | Number of lines in the document |
 | `wordCount` | `number` | — | Number of words |
 | `characterCount` | `number` | — | Number of characters |
-| `headers` | `Array<string> | null` | `[]` | Markdown headers (headings text only, for Markdown files) |
-| `links` | `Array<string> | null` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
-| `codeBlocks` | `Array<string> | null` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
+| `headers` | `Array<string> \| null` | `[]` | Markdown headers (headings text only, for Markdown files) |
+| `links` | `Array<string> \| null` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
+| `codeBlocks` | `Array<string> \| null` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
 
 
 ---
@@ -4536,15 +4544,15 @@ for Markdown, structural elements like headers and links.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `level` | `ReductionLevel` | `ReductionLevel.Moderate` | Level (reduction level) |
-| `languageHint` | `string | null` | `null` | Language hint |
+| `languageHint` | `string \| null` | `null` | Language hint |
 | `preserveMarkdown` | `boolean` | `false` | Preserve markdown |
 | `preserveCode` | `boolean` | `true` | Preserve code |
 | `semanticThreshold` | `number` | `0.3` | Semantic threshold |
 | `enableParallel` | `boolean` | `true` | Enable parallel |
 | `useSimd` | `boolean` | `true` | Use simd |
-| `customStopwords` | `Record<string, Array<string>> | null` | `null` | Custom stopwords |
+| `customStopwords` | `Record<string, Array<string>> \| null` | `null` | Custom stopwords |
 | `preservePatterns` | `Array<string>` | `[]` | Preserve patterns |
-| `targetReduction` | `number | null` | `null` | Target reduction |
+| `targetReduction` | `number \| null` | `null` | Target reduction |
 | `enableSemanticClustering` | `boolean` | `false` | Enable semantic clustering |
 
 ##### Methods
@@ -4609,9 +4617,9 @@ docstrings = true
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean` | `true` | Enable code intelligence processing (default: true). When `false`, tree-sitter analysis is completely skipped even if the config section is present. |
-| `cacheDir` | `string | null` | `null` | Custom cache directory for downloaded grammars. When `null`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
-| `languages` | `Array<string> | null` | `null` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
-| `groups` | `Array<string> | null` | `null` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
+| `cacheDir` | `string \| null` | `null` | Custom cache directory for downloaded grammars. When `null`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
+| `languages` | `Array<string> \| null` | `null` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
+| `groups` | `Array<string> \| null` | `null` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
 ##### Methods
@@ -4641,7 +4649,7 @@ Controls which analysis features are enabled when extracting code files.
 | `docstrings` | `boolean` | `false` | Extract docstrings. Default: false. |
 | `symbols` | `boolean` | `false` | Extract symbol definitions. Default: false. |
 | `diagnostics` | `boolean` | `false` | Include parse diagnostics. Default: false. |
-| `chunkMaxSize` | `number | null` | `null` | Maximum chunk size in bytes. `null` disables chunking. |
+| `chunkMaxSize` | `number \| null` | `null` | Maximum chunk size in bytes. `null` disables chunking. |
 | `contentMode` | `CodeContentMode` | `CodeContentMode.Chunks` | Content rendering mode for code extraction. |
 
 ##### Methods
@@ -4667,8 +4675,8 @@ optional human-readable display text.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `url` | `string` | — | The URL or path string. |
-| `label` | `string | null` | `null` | Optional display text / label for the link. |
-| `page` | `number | null` | `null` | Optional page number where the URI was found (1-indexed). |
+| `label` | `string \| null` | `null` | Optional display text / label for the link. |
+| `page` | `number \| null` | `null` | Optional page number where the URI was found (1-indexed). |
 | `kind` | `UriKind` | — | Semantic classification of the URI. |
 
 
@@ -4850,14 +4858,14 @@ Contains Excel-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `string | null` | `null` | Application name (e.g., "Microsoft Excel") |
-| `appVersion` | `string | null` | `null` | Application version |
-| `docSecurity` | `number | null` | `null` | Document security level |
-| `scaleCrop` | `boolean | null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean | null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean | null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean | null` | `null` | Hyperlinks changed flag |
-| `company` | `string | null` | `null` | Company name |
+| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Excel") |
+| `appVersion` | `string \| null` | `null` | Application version |
+| `docSecurity` | `number \| null` | `null` | Document security level |
+| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
+| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
+| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
+| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
+| `company` | `string \| null` | `null` | Company name |
 | `worksheetNames` | `Array<string>` | `[]` | Worksheet names |
 
 
@@ -4919,8 +4927,8 @@ Year range for bibliographic metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `min` | `number | null` | `null` | Min |
-| `max` | `number | null` | `null` | Max |
+| `min` | `number \| null` | `null` | Min |
+| `max` | `number \| null` | `null` | Max |
 | `years` | `Array<number>` | — | Years |
 
 

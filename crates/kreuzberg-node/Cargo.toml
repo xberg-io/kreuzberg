@@ -9,7 +9,7 @@ keywords = ["document", "extraction", "pdf", "ocr", "text"]
 categories = ["text-processing"]
 
 [package.metadata.cargo-machete]
-ignored = ["serde", "futures-util"]
+ignored = ["serde"]
 
 [lib]
 crate-type = ["cdylib"]
@@ -17,7 +17,34 @@ crate-type = ["cdylib"]
 [dependencies]
 async-trait = "0.1"
 futures-util = "0.3"
-kreuzberg = { path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { path = "../kreuzberg", features = [
+  "full",
+  "pdf",
+  "ocr",
+  "paddle-ocr",
+  "paddle-ocr-types",
+  "layout-detection",
+  "layout-types",
+  "embeddings",
+  "embedding-presets",
+  "chunking",
+  "keywords-yake",
+  "keywords-rake",
+  "language-detection",
+  "html",
+  "tree-sitter",
+  "office",
+  "email",
+  "archives",
+  "stopwords",
+  "auto-rotate",
+  "auto-rotate-types",
+  "tokio-runtime",
+  "api",
+  "mcp",
+  "liter-llm",
+  "quality",
+] }
 napi = { version = "3", features = ["async", "serde-json"] }
 napi-derive = "3"
 serde = { version = "1", features = ["derive"] }

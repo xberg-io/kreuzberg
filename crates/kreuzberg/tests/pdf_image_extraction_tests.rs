@@ -423,14 +423,14 @@ fn test_page_image_indices_are_valid_when_images_extracted() {
     for page in pages {
         for &idx in &page.image_indices {
             assert!(
-                idx < images.len(),
+                (idx as usize) < images.len(),
                 "page {} image_indices[{}] = {} is out of bounds (images.len() = {})",
                 page.page_number,
                 idx,
                 idx,
                 images.len()
             );
-            let img_page = images[idx].page_number;
+            let img_page = images[idx as usize].page_number;
             assert_eq!(
                 img_page,
                 Some(page.page_number),
@@ -526,7 +526,7 @@ fn test_chunk_image_indices_are_valid_when_images_extracted() {
         for &idx in &chunk.metadata.image_indices {
             // In-bounds check.
             assert!(
-                idx < images.len(),
+                (idx as usize) < images.len(),
                 "chunk image_indices[{}] = {} is out of bounds (images.len() = {})",
                 idx,
                 idx,
@@ -536,7 +536,7 @@ fn test_chunk_image_indices_are_valid_when_images_extracted() {
             // Cross-validation: referenced image must belong to a page within
             // the chunk's page range.
             if let (Some(first), Some(last)) = (chunk.metadata.first_page, chunk.metadata.last_page) {
-                let img_page = images[idx]
+                let img_page = images[idx as usize]
                     .page_number
                     .expect("image referenced by a chunk must have a page_number set");
                 assert!(

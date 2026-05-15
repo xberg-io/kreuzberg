@@ -784,7 +784,7 @@ mod tests {
                 &elem.text,
                 0,
             )
-            .with_page(elem.page_number as u32);
+            .with_page(elem.page_number);
             ie.bbox = Some(bbox);
             ie.ocr_confidence = Some(elem.confidence.clone());
             ie.ocr_geometry = Some(elem.geometry.clone());
