@@ -107,7 +107,7 @@ pub const ExtractionConfig = struct {
     enable_quality_processing: bool,
     ocr: ?OcrConfig,
     force_ocr: bool,
-    force_ocr_pages: ?[]const u64,
+    force_ocr_pages: ?[]const u32,
     disable_ocr: bool,
     chunking: ?ChunkingConfig,
     content_filter: ?ContentFilterConfig,
@@ -158,7 +158,7 @@ pub const FileExtractionConfig = struct {
     enable_quality_processing: ?bool,
     ocr: ?OcrConfig,
     force_ocr: ?bool,
-    force_ocr_pages: ?[]const u64,
+    force_ocr_pages: ?[]const u32,
     disable_ocr: ?bool,
     chunking: ?ChunkingConfig,
     content_filter: ?ContentFilterConfig,
@@ -308,6 +308,7 @@ pub const OcrPipelineStage = struct {
     tesseract_config: ?TesseractConfig,
     paddle_ocr_config: ?[:0]const u8,
     vlm_config: ?LlmConfig,
+    backend_options: ?[:0]const u8,
 };
 
 /// Multi-backend OCR pipeline with quality-based fallback.
@@ -328,6 +329,7 @@ pub const OcrConfig = struct {
     tesseract_config: ?TesseractConfig,
     output_format: ?OutputFormat,
     paddle_ocr_config: ?[:0]const u8,
+    backend_options: ?[:0]const u8,
     element_config: ?OcrElementConfig,
     quality_thresholds: ?OcrQualityThresholds,
     pipeline: ?OcrPipelineConfig,
@@ -654,7 +656,7 @@ pub const TokenReductionConfig = struct {
 pub const PdfAnnotation = struct {
     annotation_type: PdfAnnotationType,
     content: ?[:0]const u8,
-    page_number: u64,
+    page_number: u32,
     bounding_box: ?[:0]const u8,
 };
 
@@ -892,9 +894,10 @@ pub const ChunkMetadata = struct {
     token_count: ?u64,
     chunk_index: u64,
     total_chunks: u64,
-    first_page: ?u64,
-    last_page: ?u64,
+    first_page: ?u32,
+    last_page: ?u32,
     heading_context: ?HeadingContext,
+    image_indices: []const u32,
 };
 
 /// Extracted image from a document.
@@ -905,8 +908,8 @@ pub const ChunkMetadata = struct {
 pub const ExtractedImage = struct {
     data: []const u8,
     format: [:0]const u8,
-    image_index: u64,
-    page_number: ?u64,
+    image_index: u32,
+    page_number: ?u32,
     width: ?u32,
     height: ?u32,
     colorspace: ?[:0]const u8,
@@ -923,7 +926,7 @@ pub const ExtractedImage = struct {
 
 /// Metadata for a semantic element.
 pub const ElementMetadata = struct {
-    page_number: ?u64,
+    page_number: ?u32,
     filename: ?[:0]const u8,
     coordinates: ?[:0]const u8,
     element_index: ?u64,
@@ -1054,7 +1057,7 @@ pub const OcrExtractionResult = struct {
 pub const OcrTable = struct {
     cells: []const []const [:0]const u8,
     markdown: [:0]const u8,
-    page_number: u64,
+    page_number: u32,
     bounding_box: ?OcrTableBoundingBox,
 };
 
@@ -1163,7 +1166,7 @@ pub const Metadata = struct {
 /// Identifies the document as a spreadsheet source via the `FormatMetadata.Excel`
 /// discriminant. Sheet count and sheet names are stored inside this struct.
 pub const ExcelMetadata = struct {
-    sheet_count: ?u64,
+    sheet_count: ?u32,
     sheet_names: ?[]const [:0]const u8,
 };
 
@@ -1185,7 +1188,7 @@ pub const EmailMetadata = struct {
 /// Extracted from compressed archive files containing file lists and size information.
 pub const ArchiveMetadata = struct {
     format: [:0]const u8,
-    file_count: u64,
+    file_count: u32,
     file_list: []const [:0]const u8,
     total_size: u64,
     compressed_size: ?u64,
@@ -1205,7 +1208,7 @@ pub const ImageMetadata = struct {
 ///
 /// Provides statistics about XML document structure.
 pub const XmlMetadata = struct {
-    element_count: u64,
+    element_count: u32,
     unique_elements: []const [:0]const u8,
 };
 
@@ -1214,9 +1217,9 @@ pub const XmlMetadata = struct {
 /// Extracted from plain text and Markdown files. Includes word counts and,
 /// for Markdown, structural elements like headers and links.
 pub const TextMetadata = struct {
-    line_count: u64,
-    word_count: u64,
-    character_count: u64,
+    line_count: u32,
+    word_count: u32,
+    character_count: u32,
     headers: ?[]const [:0]const u8,
     links: ?[]const [:0]const u8,
     code_blocks: ?[]const [:0]const u8,
@@ -1227,8 +1230,8 @@ pub const HeaderMetadata = struct {
     level: u8,
     text: [:0]const u8,
     id: ?[:0]const u8,
-    depth: u64,
-    html_offset: u64,
+    depth: u32,
+    html_offset: u32,
 };
 
 /// Link element metadata.
@@ -1287,9 +1290,9 @@ pub const OcrMetadata = struct {
     language: [:0]const u8,
     psm: i32,
     output_format: [:0]const u8,
-    table_count: u64,
-    table_rows: ?u64,
-    table_cols: ?u64,
+    table_count: u32,
+    table_rows: ?u32,
+    table_cols: ?u32,
 };
 
 /// Error metadata (for batch operations).
@@ -1302,10 +1305,10 @@ pub const ErrorMetadata = struct {
 ///
 /// Extracted from PPTX files containing slide counts and presentation details.
 pub const PptxMetadata = struct {
-    slide_count: u64,
+    slide_count: u32,
     slide_names: []const [:0]const u8,
-    image_count: ?u64,
-    table_count: ?u64,
+    image_count: ?u32,
+    table_count: ?u32,
 };
 
 /// Word document metadata.
@@ -1320,8 +1323,8 @@ pub const DocxMetadata = struct {
 
 /// CSV/TSV file metadata.
 pub const CsvMetadata = struct {
-    row_count: u64,
-    column_count: u64,
+    row_count: u32,
+    column_count: u32,
     delimiter: ?[:0]const u8,
     has_header: bool,
     column_types: ?[]const [:0]const u8,
@@ -1427,7 +1430,7 @@ pub const OcrElement = struct {
     confidence: OcrConfidence,
     level: OcrElementLevel,
     rotation: ?OcrRotation,
-    page_number: u64,
+    page_number: u32,
     parent_id: ?[:0]const u8,
     backend_metadata: std.StringHashMap([:0]const u8),
 };
@@ -1447,7 +1450,7 @@ pub const OcrElementConfig = struct {
 /// Supports different page types (PDF pages, PPTX slides, Excel sheets)
 /// with character offset boundaries for chunk-to-page mapping.
 pub const PageStructure = struct {
-    total_count: u64,
+    total_count: u32,
     unit_type: PageUnitType,
     boundaries: ?[]const PageBoundary,
     pages: ?[]const PageInfo,
@@ -1461,7 +1464,7 @@ pub const PageStructure = struct {
 pub const PageBoundary = struct {
     byte_start: u64,
     byte_end: u64,
-    page_number: u64,
+    page_number: u32,
 };
 
 /// Metadata for individual page/slide/sheet.
@@ -1469,11 +1472,11 @@ pub const PageBoundary = struct {
 /// Captures per-page information including dimensions, content counts,
 /// and visibility state (for presentations).
 pub const PageInfo = struct {
-    number: u64,
+    number: u32,
     title: ?[:0]const u8,
     dimensions: ?[]const f64,
-    image_count: ?u64,
-    table_count: ?u64,
+    image_count: ?u32,
+    table_count: ?u32,
     hidden: ?bool,
     is_blank: ?bool,
     has_vector_graphics: bool,
@@ -1494,10 +1497,10 @@ pub const PageInfo = struct {
 /// This reduces memory overhead for documents with shared tables/images
 /// by avoiding redundant copies during serialization.
 pub const PageContent = struct {
-    page_number: u64,
+    page_number: u32,
     content: [:0]const u8,
     tables: []const Table,
-    images: []const ExtractedImage,
+    image_indices: []const u32,
     hierarchy: ?PageHierarchy,
     is_blank: ?bool,
     layout_regions: ?[]const LayoutRegion,
@@ -1520,7 +1523,7 @@ pub const LayoutRegion = struct {
 /// Used when PDF text hierarchy extraction is enabled. Contains hierarchical
 /// blocks with heading levels (H1-H6) for semantic document structure.
 pub const PageHierarchy = struct {
-    block_count: u64,
+    block_count: u32,
     blocks: []const HierarchicalBlock,
 };
 
@@ -1542,7 +1545,7 @@ pub const HierarchicalBlock = struct {
 pub const Table = struct {
     cells: []const []const [:0]const u8,
     markdown: [:0]const u8,
-    page_number: u64,
+    page_number: u32,
     bounding_box: ?[:0]const u8,
 };
 
@@ -1551,8 +1554,8 @@ pub const Table = struct {
 /// Future extension point for rich table support with cell-level metadata.
 pub const TableCell = struct {
     content: [:0]const u8,
-    row_span: u64,
-    col_span: u64,
+    row_span: u32,
+    col_span: u32,
     is_header: bool,
 };
 
@@ -1845,7 +1848,7 @@ pub const PdfMetadata = struct {
     is_encrypted: ?bool,
     width: ?i64,
     height: ?i64,
-    page_count: ?u64,
+    page_count: ?u32,
 };
 
 /// ONNX Runtime execution provider type.
@@ -2988,11 +2991,22 @@ pub const IOcrBackend = extern struct {
     /// - `KreuzbergError::Validation` - Invalid image format or configuration
     /// - `KreuzbergError::Io` - I/O errors (these always bubble up)
     ///
-    /// # Example
+    /// # Reading `backend_options`
+    ///
+    /// Backends that support runtime tuning can read `config.backend_options` and
+    /// deserialize only the keys they care about. Unknown keys are silently ignored,
+    /// so multiple backends can coexist in a pipeline without key conflicts.
     ///
     /// ```rust
     /// async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
-    ///     // Validate image format
+    ///     // Read backend-specific options; unknown keys are silently ignored.
+    ///     let fast_mode = config.backend_options
+    ///         .as_ref()
+    ///         .and_then(|v| v.get("mode"))
+    ///         .and_then(|v| v.as_str())
+    ///         .map(|s| s == "fast")
+    ///         .unwrap_or(false);
+    ///
     ///     if image_bytes.is_empty() {
     ///         return Err(kreuzberg::KreuzbergError::Validation {
     ///             message: "Empty image data".to_string(),
@@ -3000,8 +3014,11 @@ pub const IOcrBackend = extern struct {
     ///         });
     ///     }
     ///
-    ///     // Perform OCR processing
-    ///     let text = format!("Extracted text in language: {}", config.language);
+    ///     let text = if fast_mode {
+    ///         "Fast OCR result".to_string()
+    ///     } else {
+    ///         format!("Extracted text in language: {}", config.language)
+    ///     };
     ///
     ///     Ok(ExtractionResult {
     ///         content: text,

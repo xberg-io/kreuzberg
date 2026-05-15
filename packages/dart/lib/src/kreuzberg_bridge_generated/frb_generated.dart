@@ -222,8 +222,7 @@ abstract class RustLibApi extends BaseApi {
           extractFile,
       required BoxFnDartFnFutureVecString supportedMimeTypes,
       required BoxFnDartFnFutureI64 priority,
-      required BoxFnStringStringDartFnFutureBool canHandle,
-      required BoxFnDartFnFutureOptionSyncExtractor asSyncExtractor});
+      required BoxFnStringStringDartFnFutureBool canHandle});
 
   Future<DocumentNode> crateCreateDocumentNodeFromJson({required String json});
 
@@ -672,15 +671,6 @@ abstract class RustLibApi extends BaseApi {
 
   CrossPlatformFinalizerArg
       get rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendTypePtr;
-
-  RustArcIncrementStrongCountFnType
-      get rust_arc_increment_strong_count_BoxFnDartFnFutureOptionSyncExtractor;
-
-  RustArcDecrementStrongCountFnType
-      get rust_arc_decrement_strong_count_BoxFnDartFnFutureOptionSyncExtractor;
-
-  CrossPlatformFinalizerArg
-      get rust_arc_decrement_strong_count_BoxFnDartFnFutureOptionSyncExtractorPtr;
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_BoxFnDartFnFutureProcessingStage;
@@ -2232,8 +2222,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           extractFile,
       required BoxFnDartFnFutureVecString supportedMimeTypes,
       required BoxFnDartFnFutureI64 priority,
-      required BoxFnStringStringDartFnFutureBool canHandle,
-      required BoxFnDartFnFutureOptionSyncExtractor asSyncExtractor}) {
+      required BoxFnStringStringDartFnFutureBool canHandle}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -2249,8 +2238,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             priority, serializer);
         sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
             canHandle, serializer);
-        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-            asSyncExtractor, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 53, port: port_);
       },
@@ -2267,8 +2254,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         extractFile,
         supportedMimeTypes,
         priority,
-        canHandle,
-        asSyncExtractor
+        canHandle
       ],
       apiImpl: this,
     ));
@@ -2284,8 +2270,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           "extractFile",
           "supportedMimeTypes",
           "priority",
-          "canHandle",
-          "asSyncExtractor"
+          "canHandle"
         ],
       );
 
@@ -6385,14 +6370,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync;
 
   RustArcIncrementStrongCountFnType
-      get rust_arc_increment_strong_count_BoxFnDartFnFutureOptionSyncExtractor =>
-          wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync;
-
-  RustArcDecrementStrongCountFnType
-      get rust_arc_decrement_strong_count_BoxFnDartFnFutureOptionSyncExtractor =>
-          wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync;
-
-  RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_BoxFnDartFnFutureProcessingStage => wire
           .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync;
 
@@ -6582,15 +6559,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalDcoDecode(
-        raw as List<dynamic>);
-  }
-
-  @protected
-  BoxFnDartFnFutureOptionSyncExtractor
-      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalDcoDecode(
         raw as List<dynamic>);
   }
 
@@ -6846,15 +6814,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalDcoDecode(
-        raw as List<dynamic>);
-  }
-
-  @protected
-  BoxFnDartFnFutureOptionSyncExtractor
-      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalDcoDecode(
         raw as List<dynamic>);
   }
 
@@ -7703,8 +7662,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ChunkMetadata dco_decode_chunk_metadata(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return ChunkMetadata(
       byteStart: dco_decode_i_64(arr[0]),
       byteEnd: dco_decode_i_64(arr[1]),
@@ -7714,6 +7673,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       firstPage: dco_decode_opt_box_autoadd_i_64(arr[5]),
       lastPage: dco_decode_opt_box_autoadd_i_64(arr[6]),
       headingContext: dco_decode_opt_box_autoadd_heading_context(arr[7]),
+      imageIndices: dco_decode_list_prim_i_64_strict(arr[8]),
     );
   }
 
@@ -9749,8 +9709,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   OcrConfig dco_decode_ocr_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 15)
+      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
     return OcrConfig(
       enabled: dco_decode_bool(arr[0]),
       backend: dco_decode_String(arr[1]),
@@ -9758,16 +9718,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       tesseractConfig: dco_decode_opt_box_autoadd_tesseract_config(arr[3]),
       outputFormat: dco_decode_opt_box_autoadd_output_format(arr[4]),
       paddleOcrConfig: dco_decode_opt_String(arr[5]),
-      elementConfig: dco_decode_opt_box_autoadd_ocr_element_config(arr[6]),
+      backendOptions: dco_decode_opt_String(arr[6]),
+      elementConfig: dco_decode_opt_box_autoadd_ocr_element_config(arr[7]),
       qualityThresholds:
-          dco_decode_opt_box_autoadd_ocr_quality_thresholds(arr[7]),
-      pipeline: dco_decode_opt_box_autoadd_ocr_pipeline_config(arr[8]),
-      autoRotate: dco_decode_bool(arr[9]),
-      vlmConfig: dco_decode_opt_box_autoadd_llm_config(arr[10]),
-      vlmPrompt: dco_decode_opt_String(arr[11]),
-      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[12]),
+          dco_decode_opt_box_autoadd_ocr_quality_thresholds(arr[8]),
+      pipeline: dco_decode_opt_box_autoadd_ocr_pipeline_config(arr[9]),
+      autoRotate: dco_decode_bool(arr[10]),
+      vlmConfig: dco_decode_opt_box_autoadd_llm_config(arr[11]),
+      vlmPrompt: dco_decode_opt_String(arr[12]),
+      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[13]),
       tessdataBytes:
-          dco_decode_opt_Map_String_list_prim_u_8_strict_None(arr[13]),
+          dco_decode_opt_Map_String_list_prim_u_8_strict_None(arr[14]),
     );
   }
 
@@ -9857,8 +9818,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   OcrPipelineStage dco_decode_ocr_pipeline_stage(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return OcrPipelineStage(
       backend: dco_decode_String(arr[0]),
       priority: dco_decode_i_64(arr[1]),
@@ -9866,6 +9827,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       tesseractConfig: dco_decode_opt_box_autoadd_tesseract_config(arr[3]),
       paddleOcrConfig: dco_decode_opt_String(arr[4]),
       vlmConfig: dco_decode_opt_box_autoadd_llm_config(arr[5]),
+      backendOptions: dco_decode_opt_String(arr[6]),
     );
   }
 
@@ -10530,7 +10492,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       pageNumber: dco_decode_i_64(arr[0]),
       content: dco_decode_String(arr[1]),
       tables: dco_decode_list_table(arr[2]),
-      images: dco_decode_list_extracted_image(arr[3]),
+      imageIndices: dco_decode_list_prim_i_64_strict(arr[3]),
       hierarchy: dco_decode_opt_box_autoadd_page_hierarchy(arr[4]),
       isBlank: dco_decode_opt_box_autoadd_bool(arr[5]),
       layoutRegions: dco_decode_opt_list_layout_region(arr[6]),
@@ -11293,15 +11255,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BoxFnDartFnFutureOptionSyncExtractor
-      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalSseDecode(
-        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
-  }
-
-  @protected
   BoxFnDartFnFutureProcessingStage
       sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
           SseDeserializer deserializer) {
@@ -11571,15 +11524,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalSseDecode(
-        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
-  }
-
-  @protected
-  BoxFnDartFnFutureOptionSyncExtractor
-      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalSseDecode(
         sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
   }
 
@@ -12485,6 +12429,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_lastPage = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_headingContext =
         sse_decode_opt_box_autoadd_heading_context(deserializer);
+    var var_imageIndices = sse_decode_list_prim_i_64_strict(deserializer);
     return ChunkMetadata(
         byteStart: var_byteStart,
         byteEnd: var_byteEnd,
@@ -12493,7 +12438,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         totalChunks: var_totalChunks,
         firstPage: var_firstPage,
         lastPage: var_lastPage,
-        headingContext: var_headingContext);
+        headingContext: var_headingContext,
+        imageIndices: var_imageIndices);
   }
 
   @protected
@@ -15027,6 +14973,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_outputFormat =
         sse_decode_opt_box_autoadd_output_format(deserializer);
     var var_paddleOcrConfig = sse_decode_opt_String(deserializer);
+    var var_backendOptions = sse_decode_opt_String(deserializer);
     var var_elementConfig =
         sse_decode_opt_box_autoadd_ocr_element_config(deserializer);
     var var_qualityThresholds =
@@ -15047,6 +14994,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         tesseractConfig: var_tesseractConfig,
         outputFormat: var_outputFormat,
         paddleOcrConfig: var_paddleOcrConfig,
+        backendOptions: var_backendOptions,
         elementConfig: var_elementConfig,
         qualityThresholds: var_qualityThresholds,
         pipeline: var_pipeline,
@@ -15157,13 +15105,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_decode_opt_box_autoadd_tesseract_config(deserializer);
     var var_paddleOcrConfig = sse_decode_opt_String(deserializer);
     var var_vlmConfig = sse_decode_opt_box_autoadd_llm_config(deserializer);
+    var var_backendOptions = sse_decode_opt_String(deserializer);
     return OcrPipelineStage(
         backend: var_backend,
         priority: var_priority,
         language: var_language,
         tesseractConfig: var_tesseractConfig,
         paddleOcrConfig: var_paddleOcrConfig,
-        vlmConfig: var_vlmConfig);
+        vlmConfig: var_vlmConfig,
+        backendOptions: var_backendOptions);
   }
 
   @protected
@@ -16227,7 +16177,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_pageNumber = sse_decode_i_64(deserializer);
     var var_content = sse_decode_String(deserializer);
     var var_tables = sse_decode_list_table(deserializer);
-    var var_images = sse_decode_list_extracted_image(deserializer);
+    var var_imageIndices = sse_decode_list_prim_i_64_strict(deserializer);
     var var_hierarchy = sse_decode_opt_box_autoadd_page_hierarchy(deserializer);
     var var_isBlank = sse_decode_opt_box_autoadd_bool(deserializer);
     var var_layoutRegions = sse_decode_opt_list_layout_region(deserializer);
@@ -16235,7 +16185,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         pageNumber: var_pageNumber,
         content: var_content,
         tables: var_tables,
-        images: var_images,
+        imageIndices: var_imageIndices,
         hierarchy: var_hierarchy,
         isBlank: var_isBlank,
         layoutRegions: var_layoutRegions);
@@ -17044,17 +16994,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          BoxFnDartFnFutureOptionSyncExtractor self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-        (self as BoxFnDartFnFutureOptionSyncExtractorImpl)
-            .frbInternalSseEncode(move: true),
-        serializer);
-  }
-
-  @protected
-  void
       sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
           BoxFnDartFnFutureProcessingStage self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -17363,17 +17302,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
         (self as BoxFnDartFnFutureOcrBackendTypeImpl)
-            .frbInternalSseEncode(move: null),
-        serializer);
-  }
-
-  @protected
-  void
-      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-          BoxFnDartFnFutureOptionSyncExtractor self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-        (self as BoxFnDartFnFutureOptionSyncExtractorImpl)
             .frbInternalSseEncode(move: null),
         serializer);
   }
@@ -18291,6 +18219,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.firstPage, serializer);
     sse_encode_opt_box_autoadd_i_64(self.lastPage, serializer);
     sse_encode_opt_box_autoadd_heading_context(self.headingContext, serializer);
+    sse_encode_list_prim_i_64_strict(self.imageIndices, serializer);
   }
 
   @protected
@@ -20120,6 +20049,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         self.tesseractConfig, serializer);
     sse_encode_opt_box_autoadd_output_format(self.outputFormat, serializer);
     sse_encode_opt_String(self.paddleOcrConfig, serializer);
+    sse_encode_opt_String(self.backendOptions, serializer);
     sse_encode_opt_box_autoadd_ocr_element_config(
         self.elementConfig, serializer);
     sse_encode_opt_box_autoadd_ocr_quality_thresholds(
@@ -20206,6 +20136,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         self.tesseractConfig, serializer);
     sse_encode_opt_String(self.paddleOcrConfig, serializer);
     sse_encode_opt_box_autoadd_llm_config(self.vlmConfig, serializer);
+    sse_encode_opt_String(self.backendOptions, serializer);
   }
 
   @protected
@@ -21144,7 +21075,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_64(self.pageNumber, serializer);
     sse_encode_String(self.content, serializer);
     sse_encode_list_table(self.tables, serializer);
-    sse_encode_list_extracted_image(self.images, serializer);
+    sse_encode_list_prim_i_64_strict(self.imageIndices, serializer);
     sse_encode_opt_box_autoadd_page_hierarchy(self.hierarchy, serializer);
     sse_encode_opt_box_autoadd_bool(self.isBlank, serializer);
     sse_encode_opt_list_layout_region(self.layoutRegions, serializer);
@@ -21762,29 +21693,6 @@ class BoxFnDartFnFutureOcrBackendTypeImpl extends RustOpaque
         .rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendType,
     rustArcDecrementStrongCountPtr: RustLib.instance.api
         .rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendTypePtr,
-  );
-}
-
-@sealed
-class BoxFnDartFnFutureOptionSyncExtractorImpl extends RustOpaque
-    implements BoxFnDartFnFutureOptionSyncExtractor {
-  // Not to be used by end users
-  BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalDcoDecode(
-      List<dynamic> wire)
-      : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnDartFnFutureOptionSyncExtractorImpl.frbInternalSseDecode(
-      BigInt ptr, int externalSizeOnNative)
-      : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib.instance.api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureOptionSyncExtractor,
-    rustArcDecrementStrongCount: RustLib.instance.api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureOptionSyncExtractor,
-    rustArcDecrementStrongCountPtr: RustLib.instance.api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureOptionSyncExtractorPtr,
   );
 }
 

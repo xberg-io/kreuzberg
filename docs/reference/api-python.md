@@ -2,9 +2,11 @@
 title: "Python API Reference"
 ---
 ## Python API Reference <span class="version-badge">v5.0.0-rc.1</span>
+
 ### Functions
 
 #### extract_bytes()
+
 Extract content from a byte array.
 
 This is the main entry point for in-memory extraction. It performs the following steps:
@@ -42,6 +44,7 @@ def extract_bytes(content: bytes, mime_type: str, config: ExtractionConfig) -> E
 ---
 
 #### extract_file()
+
 Extract content from a file.
 
 This is the main entry point for file-based extraction. It performs the following steps:
@@ -71,7 +74,7 @@ def extract_file(path: str, mime_type: str = None, config: ExtractionConfig) -> 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `str` | Yes | Path to the file to extract |
-| `mime_type` | `str | None` | No | Optional MIME type override. If None, will be auto-detected |
+| `mime_type` | `str \| None` | No | Optional MIME type override. If None, will be auto-detected |
 | `config` | `ExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** `ExtractionResult`
@@ -80,6 +83,7 @@ def extract_file(path: str, mime_type: str = None, config: ExtractionConfig) -> 
 ---
 
 #### extract_file_sync()
+
 Synchronous wrapper for `extract_file`.
 
 This is a convenience function that blocks the current thread until extraction completes.
@@ -101,7 +105,7 @@ def extract_file_sync(path: str, mime_type: str = None, config: ExtractionConfig
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `str` | Yes | Path to the file |
-| `mime_type` | `str | None` | No | The mime type |
+| `mime_type` | `str \| None` | No | The mime type |
 | `config` | `ExtractionConfig` | Yes | The configuration options |
 
 **Returns:** `ExtractionResult`
@@ -110,6 +114,7 @@ def extract_file_sync(path: str, mime_type: str = None, config: ExtractionConfig
 ---
 
 #### extract_bytes_sync()
+
 Synchronous wrapper for `extract_bytes`.
 
 Uses the global Tokio runtime for 100x+ performance improvement over creating
@@ -137,6 +142,7 @@ def extract_bytes_sync(content: bytes, mime_type: str, config: ExtractionConfig)
 ---
 
 #### batch_extract_files_sync()
+
 Synchronous wrapper for `batch_extract_files`.
 
 Uses the global Tokio runtime for optimal performance.
@@ -160,6 +166,7 @@ def batch_extract_files_sync(items: list[BatchFileItem], config: ExtractionConfi
 ---
 
 #### batch_extract_bytes_sync()
+
 Synchronous wrapper for `batch_extract_bytes`.
 
 Uses the global Tokio runtime for optimal performance.
@@ -185,6 +192,7 @@ def batch_extract_bytes_sync(items: list[BatchBytesItem], config: ExtractionConf
 ---
 
 #### batch_extract_files()
+
 Extract content from multiple files concurrently.
 
 This function processes multiple files in parallel, automatically managing
@@ -232,6 +240,7 @@ def batch_extract_files(items: list[BatchFileItem], config: ExtractionConfig) ->
 ---
 
 #### batch_extract_bytes()
+
 Extract content from multiple byte arrays concurrently.
 
 This function processes multiple byte arrays in parallel, automatically managing
@@ -273,6 +282,7 @@ def batch_extract_bytes(items: list[BatchBytesItem], config: ExtractionConfig) -
 ---
 
 #### detect_mime_type_from_bytes()
+
 Detect MIME type from raw file bytes.
 
 Uses magic byte signatures to detect file type from content.
@@ -306,6 +316,7 @@ def detect_mime_type_from_bytes(content: bytes) -> str
 ---
 
 #### get_extensions_for_mime()
+
 Get file extensions for a given MIME type.
 
 Returns all known file extensions that map to the specified MIME type.
@@ -331,6 +342,7 @@ def get_extensions_for_mime(mime_type: str) -> list[str]
 ---
 
 #### list_embedding_backends()
+
 List the names of all registered embedding backends.
 
 Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
@@ -347,6 +359,7 @@ def list_embedding_backends() -> list[str]
 ---
 
 #### list_document_extractors()
+
 List names of all registered document extractors.
 
 **Signature:**
@@ -360,6 +373,7 @@ def list_document_extractors() -> list[str]
 ---
 
 #### list_ocr_backends()
+
 List all registered OCR backends.
 
 Returns the names of all OCR backends currently registered in the global registry.
@@ -379,6 +393,7 @@ def list_ocr_backends() -> list[str]
 ---
 
 #### list_post_processors()
+
 List all registered post-processor names.
 
 Returns a vector of all post-processor names currently registered in the
@@ -400,6 +415,7 @@ def list_post_processors() -> list[str]
 ---
 
 #### list_renderers()
+
 List names of all registered renderers.
 
 **Errors:**
@@ -417,6 +433,7 @@ def list_renderers() -> list[str]
 ---
 
 #### list_validators()
+
 List names of all registered validators.
 
 **Signature:**
@@ -430,6 +447,7 @@ def list_validators() -> list[str]
 ---
 
 #### embed_texts_async()
+
 Generate embeddings asynchronously for a list of text strings.
 
 This is the async counterpart to `embed_texts`. It offloads the blocking
@@ -462,6 +480,7 @@ def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[fl
 ---
 
 #### render_pdf_page_to_png()
+
 Render a single PDF page to PNG bytes.
 
 Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -483,8 +502,8 @@ def render_pdf_page_to_png(pdf_bytes: bytes, page_index: int, dpi: int = None, p
 |------|------|----------|-------------|
 | `pdf_bytes` | `bytes` | Yes | Raw PDF file bytes |
 | `page_index` | `int` | Yes | Zero-based page index |
-| `dpi` | `int | None` | No | Resolution in dots per inch (default: 150) |
-| `password` | `str | None` | No | Optional password for encrypted PDFs |
+| `dpi` | `int \| None` | No | Resolution in dots per inch (default: 150) |
+| `password` | `str \| None` | No | Optional password for encrypted PDFs |
 
 **Returns:** `bytes`
 **Errors:** Raises `Error`.
@@ -492,6 +511,7 @@ def render_pdf_page_to_png(pdf_bytes: bytes, page_index: int, dpi: int = None, p
 ---
 
 #### detect_mime_type()
+
 Detect the MIME type of a file at the given path.
 
 Uses the file extension and optionally the file content to determine the MIME type.
@@ -515,6 +535,7 @@ def detect_mime_type(path: str, check_exists: bool) -> str
 ---
 
 #### embed_texts()
+
 Embed a list of texts using the configured embedding model.
 
 Returns a 2D vector where each inner vector is the embedding for the corresponding text.
@@ -537,6 +558,7 @@ def embed_texts(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
 ---
 
 #### get_embedding_preset()
+
 Get an embedding preset by name.
 
 Returns `None` if no preset with the given name exists. Returns an owned
@@ -558,6 +580,7 @@ def get_embedding_preset(name: str) -> EmbeddingPreset | None
 ---
 
 #### list_embedding_presets()
+
 List the names of all available embedding presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
@@ -574,6 +597,7 @@ def list_embedding_presets() -> list[str]
 ### Types
 
 #### AccelerationConfig
+
 Hardware acceleration configuration for ONNX Runtime models.
 
 Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
@@ -588,21 +612,23 @@ for inference in layout detection and embedding generation.
 ---
 
 #### AnchorProperties
+
 Properties for anchored drawings.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `behind_doc` | `bool` | — | Behind doc |
 | `layout_in_cell` | `bool` | — | Layout in cell |
-| `relative_height` | `int | None` | `None` | Relative height |
-| `position_h` | `str | None` | `None` | Position h |
-| `position_v` | `str | None` | `None` | Position v |
+| `relative_height` | `int \| None` | `None` | Relative height |
+| `position_h` | `str \| None` | `None` | Position h |
+| `position_v` | `str \| None` | `None` | Position v |
 | `wrap_type` | `str` | — | Wrap type |
 
 
 ---
 
 #### ApiDoc
+
 OpenAPI documentation structure.
 
 Defines all endpoints, request/response schemas, and examples
@@ -612,6 +638,7 @@ for the Kreuzberg document extraction API.
 ---
 
 #### ArchiveEntry
+
 A single file extracted from an archive.
 
 When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
@@ -627,6 +654,7 @@ enabled, each processable file produces its own full `ExtractionResult`.
 ---
 
 #### ArchiveMetadata
+
 Archive (ZIP/TAR/7Z) metadata.
 
 Extracted from compressed archive files containing file lists and size information.
@@ -637,12 +665,13 @@ Extracted from compressed archive files containing file lists and size informati
 | `file_count` | `int` | — | Total number of files in the archive |
 | `file_list` | `list[str]` | `[]` | List of file paths within the archive |
 | `total_size` | `int` | — | Total uncompressed size in bytes |
-| `compressed_size` | `int | None` | `None` | Compressed size in bytes (if available) |
+| `compressed_size` | `int \| None` | `None` | Compressed size in bytes (if available) |
 
 
 ---
 
 #### BBox
+
 Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
 
 | Field | Type | Default | Description |
@@ -656,6 +685,7 @@ Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-ri
 ---
 
 #### BatchBytesItem
+
 Batch item for byte array extraction.
 
 Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
@@ -665,12 +695,13 @@ to represent a single item in a batch extraction job.
 |-------|------|---------|-------------|
 | `content` | `bytes` | — | The content bytes to extract from |
 | `mime_type` | `str` | — | MIME type of the content (e.g., "application/pdf", "text/html") |
-| `config` | `FileExtractionConfig | None` | `None` | Per-item configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| None` | `None` | Per-item configuration overrides (None uses batch-level defaults) |
 
 
 ---
 
 #### BatchFileItem
+
 Batch item for file extraction.
 
 Used with `batch_extract_files` and `batch_extract_files_sync`
@@ -679,12 +710,13 @@ to represent a single file in a batch extraction job.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `str` | — | Path to the file to extract from |
-| `config` | `FileExtractionConfig | None` | `None` | Per-file configuration overrides (None uses batch-level defaults) |
+| `config` | `FileExtractionConfig \| None` | `None` | Per-file configuration overrides (None uses batch-level defaults) |
 
 
 ---
 
 #### BibtexMetadata
+
 BibTeX bibliography metadata.
 
 | Field | Type | Default | Description |
@@ -692,30 +724,33 @@ BibTeX bibliography metadata.
 | `entry_count` | `int` | — | Number of entries in the bibliography. |
 | `citation_keys` | `list[str]` | `[]` | Citation keys |
 | `authors` | `list[str]` | `[]` | Authors |
-| `year_range` | `YearRange | None` | `None` | Year range (year range) |
-| `entry_types` | `dict[str, int] | None` | `{}` | Entry types |
+| `year_range` | `YearRange \| None` | `None` | Year range (year range) |
+| `entry_types` | `dict[str, int] \| None` | `{}` | Entry types |
 
 
 ---
 
 #### ByteBufferPool
+
 Convenience type alias for a pooled Vec<u8>.
 
 
 ---
 
 #### CacheWarmParams
+
 Request parameters for cache warm (model download).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `all_embeddings` | `bool` | — | Download all embedding model presets |
-| `embedding_model` | `str | None` | `None` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
+| `embedding_model` | `str \| None` | `None` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
 
 
 ---
 
 #### CharShape
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `bold` | `bool` | — | Bold |
@@ -726,6 +761,7 @@ Request parameters for cache warm (model download).
 ---
 
 #### Chunk
+
 A text chunk with optional embedding and metadata.
 
 Chunks are created when chunking is enabled in `ExtractionConfig`. Each chunk
@@ -736,42 +772,46 @@ is configured), and metadata about its position in the document.
 |-------|------|---------|-------------|
 | `content` | `str` | — | The text content of this chunk. |
 | `chunk_type` | `ChunkType` | — | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
-| `embedding` | `list[float] | None` | `None` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
+| `embedding` | `list[float] \| None` | `None` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
 
 ---
 
 #### ChunkMetadata
+
 Metadata about a chunk's position in the original document.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `byte_start` | `int` | — | Byte offset where this chunk starts in the original text (UTF-8 valid boundary). |
 | `byte_end` | `int` | — | Byte offset where this chunk ends in the original text (UTF-8 valid boundary). |
-| `token_count` | `int | None` | `None` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
+| `token_count` | `int \| None` | `None` | Number of tokens in this chunk (if available). This is calculated by the embedding model's tokenizer if embeddings are enabled. |
 | `chunk_index` | `int` | — | Zero-based index of this chunk in the document. |
 | `total_chunks` | `int` | — | Total number of chunks in the document. |
-| `first_page` | `int | None` | `None` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
-| `last_page` | `int | None` | `None` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `HeadingContext | None` | `None` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `first_page` | `int \| None` | `None` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
+| `last_page` | `int \| None` | `None` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
+| `heading_context` | `HeadingContext \| None` | `None` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `image_indices` | `list[int]` | — | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 
 ---
 
 #### ChunkRequest
+
 Chunk request with text and configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `str` | — | Text to chunk (must not be empty) |
-| `config` | `str | None` | `None` | Optional chunking configuration |
+| `config` | `str \| None` | `None` | Optional chunking configuration |
 | `chunker_type` | `str` | — | Chunker type (text, markdown, yaml, or semantic) |
 
 
 ---
 
 #### ChunkResponse
+
 Chunk response with chunks and metadata.
 
 | Field | Type | Default | Description |
@@ -786,20 +826,22 @@ Chunk response with chunks and metadata.
 ---
 
 #### ChunkTextParams
+
 Request parameters for text chunking.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `str` | — | Text content to split into chunks |
-| `max_characters` | `int | None` | `None` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `int | None` | `None` | Number of overlapping characters between chunks (default: 100) |
-| `chunker_type` | `str | None` | `None` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topic_threshold` | `float | None` | `None` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
+| `max_characters` | `int \| None` | `None` | Maximum characters per chunk (default: 2000) |
+| `overlap` | `int \| None` | `None` | Number of overlapping characters between chunks (default: 100) |
+| `chunker_type` | `str \| None` | `None` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
+| `topic_threshold` | `float \| None` | `None` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
 
 
 ---
 
 #### ChunkingConfig
+
 Chunking configuration.
 
 Configures text chunking for document content, including chunk size,
@@ -813,14 +855,16 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `overlap` | `int` | `200` | Overlap between chunks (in units determined by `sizing`). Default: 200 |
 | `trim` | `bool` | `True` | Whether to trim whitespace from chunk boundaries. Default: true |
 | `chunker_type` | `ChunkerType` | `ChunkerType.TEXT` | Type of chunker to use (Text or Markdown). Default: Text |
-| `embedding` | `EmbeddingConfig | None` | `None` | Optional embedding configuration for chunk embeddings. |
-| `preset` | `str | None` | `None` | Use a preset configuration (overrides individual settings if provided). |
+| `embedding` | `EmbeddingConfig \| None` | `None` | Optional embedding configuration for chunk embeddings. |
+| `preset` | `str \| None` | `None` | Use a preset configuration (overrides individual settings if provided). |
 | `sizing` | `ChunkSizing` | `ChunkSizing.CHARACTERS` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
 | `prepend_heading_context` | `bool` | `False` | When `True` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `False` |
-| `topic_threshold` | `float | None` | `None` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
+| `topic_threshold` | `float \| None` | `None` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -831,6 +875,7 @@ def default() -> ChunkingConfig
 ---
 
 #### ChunkingResult
+
 Result of a text chunking operation.
 
 Contains the generated chunks and metadata about the chunking.
@@ -844,14 +889,15 @@ Contains the generated chunks and metadata about the chunking.
 ---
 
 #### CitationMetadata
+
 Citation file metadata (RIS, PubMed, EndNote).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `citation_count` | `int` | — | Number of citations |
-| `format` | `str | None` | `None` | Format |
+| `format` | `str \| None` | `None` | Format |
 | `authors` | `list[str]` | `[]` | Authors |
-| `year_range` | `YearRange | None` | `None` | Year range (year range) |
+| `year_range` | `YearRange \| None` | `None` | Year range (year range) |
 | `dois` | `list[str]` | `[]` | Dois |
 | `keywords` | `list[str]` | `[]` | Keywords |
 
@@ -859,6 +905,7 @@ Citation file metadata (RIS, PubMed, EndNote).
 ---
 
 #### ContentFilterConfig
+
 Cross-extractor content filtering configuration.
 
 Controls whether "furniture" content (headers, footers, page numbers,
@@ -877,7 +924,9 @@ default behavior unchanged.
 | `include_watermarks` | `bool` | `False` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `False` (watermarks are stripped). |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -888,17 +937,19 @@ def default() -> ContentFilterConfig
 ---
 
 #### ContributorRole
+
 JATS contributor with role.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `str` | — | The name |
-| `role` | `str | None` | `None` | Role |
+| `role` | `str \| None` | `None` | Role |
 
 
 ---
 
 #### CoreProperties
+
 Dublin Core metadata from docProps/core.xml
 
 Contains standard metadata fields defined by the Dublin Core standard
@@ -906,40 +957,42 @@ and Office-specific extensions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `str | None` | `None` | Document title |
-| `subject` | `str | None` | `None` | Document subject/topic |
-| `creator` | `str | None` | `None` | Document creator/author |
-| `keywords` | `str | None` | `None` | Keywords or tags |
-| `description` | `str | None` | `None` | Document description/abstract |
-| `last_modified_by` | `str | None` | `None` | User who last modified the document |
-| `revision` | `str | None` | `None` | Revision number |
-| `created` | `str | None` | `None` | Creation timestamp (ISO 8601) |
-| `modified` | `str | None` | `None` | Last modification timestamp (ISO 8601) |
-| `category` | `str | None` | `None` | Document category |
-| `content_status` | `str | None` | `None` | Content status (Draft, Final, etc.) |
-| `language` | `str | None` | `None` | Document language |
-| `identifier` | `str | None` | `None` | Unique identifier |
-| `version` | `str | None` | `None` | Document version |
-| `last_printed` | `str | None` | `None` | Last print timestamp (ISO 8601) |
+| `title` | `str \| None` | `None` | Document title |
+| `subject` | `str \| None` | `None` | Document subject/topic |
+| `creator` | `str \| None` | `None` | Document creator/author |
+| `keywords` | `str \| None` | `None` | Keywords or tags |
+| `description` | `str \| None` | `None` | Document description/abstract |
+| `last_modified_by` | `str \| None` | `None` | User who last modified the document |
+| `revision` | `str \| None` | `None` | Revision number |
+| `created` | `str \| None` | `None` | Creation timestamp (ISO 8601) |
+| `modified` | `str \| None` | `None` | Last modification timestamp (ISO 8601) |
+| `category` | `str \| None` | `None` | Document category |
+| `content_status` | `str \| None` | `None` | Content status (Draft, Final, etc.) |
+| `language` | `str \| None` | `None` | Document language |
+| `identifier` | `str \| None` | `None` | Unique identifier |
+| `version` | `str \| None` | `None` | Document version |
+| `last_printed` | `str \| None` | `None` | Last print timestamp (ISO 8601) |
 
 
 ---
 
 #### CsvMetadata
+
 CSV/TSV file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `row_count` | `int` | — | Number of rows |
 | `column_count` | `int` | — | Number of columns |
-| `delimiter` | `str | None` | `None` | Delimiter |
+| `delimiter` | `str \| None` | `None` | Delimiter |
 | `has_header` | `bool` | — | Whether header |
-| `column_types` | `list[str] | None` | `[]` | Column types |
+| `column_types` | `list[str] \| None` | `[]` | Column types |
 
 
 ---
 
 #### CustomProperties
+
 Custom properties from docProps/custom.xml
 
 Maps property names to their values. Values are converted to JSON types
@@ -949,6 +1002,7 @@ based on the VT (Variant Type) specified in the XML.
 ---
 
 #### DbfFieldInfo
+
 dBASE field information.
 
 | Field | Type | Default | Description |
@@ -960,6 +1014,7 @@ dBASE field information.
 ---
 
 #### DbfMetadata
+
 dBASE (DBF) file metadata.
 
 | Field | Type | Default | Description |
@@ -972,6 +1027,7 @@ dBASE (DBF) file metadata.
 ---
 
 #### DetectMimeTypeParams
+
 Request parameters for MIME type detection.
 
 | Field | Type | Default | Description |
@@ -983,17 +1039,19 @@ Request parameters for MIME type detection.
 ---
 
 #### DetectResponse
+
 MIME type detection response.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mime_type` | `str` | — | Detected MIME type |
-| `filename` | `str | None` | `None` | Original filename (if provided) |
+| `filename` | `str \| None` | `None` | Original filename (if provided) |
 
 
 ---
 
 #### DetectedBoundary
+
 A detected structural boundary in the text.
 
 | Field | Type | Default | Description |
@@ -1005,6 +1063,7 @@ A detected structural boundary in the text.
 ---
 
 #### DetectionResult
+
 Page-level detection result containing all detections and page metadata.
 
 | Field | Type | Default | Description |
@@ -1017,6 +1076,7 @@ Page-level detection result containing all detections and page metadata.
 ---
 
 #### DjotContent
+
 Comprehensive Djot document structure with semantic preservation.
 
 This type captures the full richness of Djot markup, including:
@@ -1044,32 +1104,35 @@ Available when the `djot` feature is enabled.
 ---
 
 #### DjotImage
+
 Image element in Djot.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `src` | `str` | — | Image source URL or path |
 | `alt` | `str` | — | Alternative text |
-| `title` | `str | None` | `None` | Optional title |
-| `attributes` | `str | None` | `None` | Element attributes |
+| `title` | `str \| None` | `None` | Optional title |
+| `attributes` | `str \| None` | `None` | Element attributes |
 
 
 ---
 
 #### DjotLink
+
 Link element in Djot.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `url` | `str` | — | Link URL |
 | `text` | `str` | — | Link text content |
-| `title` | `str | None` | `None` | Optional title |
-| `attributes` | `str | None` | `None` | Element attributes |
+| `title` | `str \| None` | `None` | Optional title |
+| `attributes` | `str \| None` | `None` | Element attributes |
 
 
 ---
 
 #### DoclingCompatResponse
+
 OpenWebUI "Docling" engine response format.
 
 Returned by `POST /v1/convert/file` for docling-serve compatibility.
@@ -1083,6 +1146,7 @@ Returned by `POST /v1/convert/file` for docling-serve compatibility.
 ---
 
 #### DocumentExtractor
+
 Trait for document extractor plugins.
 
 Implement this trait to add support for new document formats or to override
@@ -1109,7 +1173,9 @@ Default priority is 50.
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
 ##### Methods
+
 ###### extract_bytes()
+
 Extract content from a byte array.
 
 This is the core extraction method that processes in-memory document data.
@@ -1132,6 +1198,7 @@ The pipeline will convert this into the public `ExtractionResult`.
 def extract_bytes(self, content: bytes, mime_type: str, config: ExtractionConfig) -> InternalDocument
 ```
 ###### extract_file()
+
 Extract content from a file.
 
 Default implementation reads the file and calls `extract_bytes`.
@@ -1151,6 +1218,7 @@ Same as `extract_bytes`, plus file I/O errors.
 def extract_file(self, path: str, mime_type: str, config: ExtractionConfig) -> InternalDocument
 ```
 ###### supported_mime_types()
+
 Get the list of MIME types supported by this extractor.
 
 Can include exact MIME types and prefix patterns:
@@ -1167,6 +1235,7 @@ A slice of MIME type strings.
 def supported_mime_types(self) -> list[str]
 ```
 ###### priority()
+
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
@@ -1190,6 +1259,7 @@ Priority value (default: 50)
 def priority(self) -> int
 ```
 ###### can_handle()
+
 Optional: Check if this extractor can handle a specific file.
 
 Allows for more sophisticated detection beyond MIME types.
@@ -1205,6 +1275,7 @@ Defaults to `True` (rely on MIME type matching).
 def can_handle(self, path: str, mime_type: str) -> bool
 ```
 ###### as_sync_extractor()
+
 Attempt to get a reference to this extractor as a SyncExtractor.
 
 Returns None if the extractor doesn't support synchronous extraction.
@@ -1219,6 +1290,7 @@ def as_sync_extractor(self) -> SyncExtractor | None
 ---
 
 #### DocumentNode
+
 A single node in the document tree.
 
 Each node has deterministic `id`, typed `content`, optional `parent`/`children`
@@ -1228,19 +1300,20 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `id` | `str` | — | Deterministic identifier (hash of content + position). |
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
-| `parent` | `int | None` | `None` | Parent node index (`None` = root-level node). |
+| `parent` | `int \| None` | `None` | Parent node index (`None` = root-level node). |
 | `children` | `list[int]` | — | Child node indices in reading order. |
 | `content_layer` | `ContentLayer` | — | Content layer classification. |
-| `page` | `int | None` | `None` | Page number where this node starts (1-indexed). |
-| `page_end` | `int | None` | `None` | Page number where this node ends (for multi-page tables/sections). |
-| `bbox` | `str | None` | `None` | Bounding box in document coordinates. |
+| `page` | `int \| None` | `None` | Page number where this node starts (1-indexed). |
+| `page_end` | `int \| None` | `None` | Page number where this node ends (for multi-page tables/sections). |
+| `bbox` | `str \| None` | `None` | Bounding box in document coordinates. |
 | `annotations` | `list[TextAnnotation]` | — | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
-| `attributes` | `dict[str, str] | None` | `None` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
+| `attributes` | `dict[str, str] \| None` | `None` | Format-specific key-value attributes. Extensible bag for data that doesn't warrant a typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 
 ---
 
 #### DocumentRelationship
+
 A resolved relationship between two nodes in the document tree.
 
 | Field | Type | Default | Description |
@@ -1253,6 +1326,7 @@ A resolved relationship between two nodes in the document tree.
 ---
 
 #### DocumentStructure
+
 Top-level structured document representation.
 
 A flat array of nodes with index-based parent/child references forming a tree.
@@ -1267,12 +1341,14 @@ and parent-child relationships are bidirectionally consistent.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `nodes` | `list[DocumentNode]` | `[]` | All nodes in document/reading order. |
-| `source_format` | `str | None` | `None` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
+| `source_format` | `str \| None` | `None` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
 | `relationships` | `list[DocumentRelationship]` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `list[str]` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
 ##### Methods
+
 ###### finalize_node_types()
+
 Compute and populate the `node_types` field from the current `nodes`.
 
 Call this after all nodes have been added to the structure. Internal
@@ -1284,6 +1360,7 @@ construction paths (builder, derivation) call this automatically.
 def finalize_node_types(self) -> None
 ```
 ###### is_empty()
+
 Check if the document structure is empty.
 
 **Signature:**
@@ -1292,6 +1369,7 @@ Check if the document structure is empty.
 def is_empty(self) -> bool
 ```
 ###### default()
+
 **Signature:**
 
 ```python
@@ -1302,33 +1380,35 @@ def default() -> DocumentStructure
 ---
 
 #### DocxAppProperties
+
 Application properties from docProps/app.xml for DOCX
 
 Contains Word-specific document statistics and metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `str | None` | `None` | Application name (e.g., "Microsoft Office Word") |
-| `app_version` | `str | None` | `None` | Application version |
-| `template` | `str | None` | `None` | Template filename |
-| `total_time` | `int | None` | `None` | Total editing time in minutes |
-| `pages` | `int | None` | `None` | Number of pages |
-| `words` | `int | None` | `None` | Number of words |
-| `characters` | `int | None` | `None` | Number of characters (excluding spaces) |
-| `characters_with_spaces` | `int | None` | `None` | Number of characters (including spaces) |
-| `lines` | `int | None` | `None` | Number of lines |
-| `paragraphs` | `int | None` | `None` | Number of paragraphs |
-| `company` | `str | None` | `None` | Company name |
-| `doc_security` | `int | None` | `None` | Document security level |
-| `scale_crop` | `bool | None` | `None` | Scale crop flag |
-| `links_up_to_date` | `bool | None` | `None` | Links up to date flag |
-| `shared_doc` | `bool | None` | `None` | Shared document flag |
-| `hyperlinks_changed` | `bool | None` | `None` | Hyperlinks changed flag |
+| `application` | `str \| None` | `None` | Application name (e.g., "Microsoft Office Word") |
+| `app_version` | `str \| None` | `None` | Application version |
+| `template` | `str \| None` | `None` | Template filename |
+| `total_time` | `int \| None` | `None` | Total editing time in minutes |
+| `pages` | `int \| None` | `None` | Number of pages |
+| `words` | `int \| None` | `None` | Number of words |
+| `characters` | `int \| None` | `None` | Number of characters (excluding spaces) |
+| `characters_with_spaces` | `int \| None` | `None` | Number of characters (including spaces) |
+| `lines` | `int \| None` | `None` | Number of lines |
+| `paragraphs` | `int \| None` | `None` | Number of paragraphs |
+| `company` | `str \| None` | `None` | Company name |
+| `doc_security` | `int \| None` | `None` | Document security level |
+| `scale_crop` | `bool \| None` | `None` | Scale crop flag |
+| `links_up_to_date` | `bool \| None` | `None` | Links up to date flag |
+| `shared_doc` | `bool \| None` | `None` | Shared document flag |
+| `hyperlinks_changed` | `bool \| None` | `None` | Hyperlinks changed flag |
 
 
 ---
 
 #### DocxMetadata
+
 Word document metadata.
 
 Extracted from DOCX files using shared Office Open XML metadata extraction.
@@ -1336,27 +1416,29 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `CoreProperties | None` | `None` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `DocxAppProperties | None` | `None` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
-| `custom_properties` | `dict[str, dict[str, Any]] | None` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
+| `core_properties` | `CoreProperties \| None` | `None` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `DocxAppProperties \| None` | `None` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `custom_properties` | `dict[str, dict[str, Any]] \| None` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
 
 
 ---
 
 #### Drawing
+
 A drawing object extracted from `<w:drawing>`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `drawing_type` | `str` | — | Drawing type |
-| `extent` | `str | None` | `None` | Extent |
-| `doc_properties` | `str | None` | `None` | Doc properties |
-| `image_ref` | `str | None` | `None` | Image ref |
+| `extent` | `str \| None` | `None` | Extent |
+| `doc_properties` | `str \| None` | `None` | Doc properties |
+| `image_ref` | `str \| None` | `None` | Image ref |
 
 
 ---
 
 #### Element
+
 Semantic element extracted from document.
 
 Represents a logical unit of content with semantic classification,
@@ -1373,47 +1455,51 @@ unique identifier, and metadata for tracking origin and position.
 ---
 
 #### ElementMetadata
+
 Metadata for a semantic element.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `page_number` | `int | None` | `None` | Page number (1-indexed) |
-| `filename` | `str | None` | `None` | Source filename or document name |
-| `coordinates` | `str | None` | `None` | Bounding box coordinates if available |
-| `element_index` | `int | None` | `None` | Position index in the element sequence |
+| `page_number` | `int \| None` | `None` | Page number (1-indexed) |
+| `filename` | `str \| None` | `None` | Source filename or document name |
+| `coordinates` | `str \| None` | `None` | Bounding box coordinates if available |
+| `element_index` | `int \| None` | `None` | Position index in the element sequence |
 | `additional` | `dict[str, str]` | — | Additional custom metadata |
 
 
 ---
 
 #### EmailAttachment
+
 Email attachment representation.
 
 Contains metadata and optionally the content of an email attachment.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `str | None` | `None` | Attachment name (from Content-Disposition header) |
-| `filename` | `str | None` | `None` | Filename of the attachment |
-| `mime_type` | `str | None` | `None` | MIME type of the attachment |
-| `size` | `int | None` | `None` | Size in bytes |
+| `name` | `str \| None` | `None` | Attachment name (from Content-Disposition header) |
+| `filename` | `str \| None` | `None` | Filename of the attachment |
+| `mime_type` | `str \| None` | `None` | MIME type of the attachment |
+| `size` | `int \| None` | `None` | Size in bytes |
 | `is_image` | `bool` | — | Whether this attachment is an image |
-| `data` | `bytes | None` | `None` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
+| `data` | `bytes \| None` | `None` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 
 
 ---
 
 #### EmailConfig
+
 Configuration for email extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `msg_fallback_codepage` | `int | None` | `None` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `None`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
+| `msg_fallback_codepage` | `int \| None` | `None` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `None`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
 
 
 ---
 
 #### EmailExtractionResult
+
 Email extraction result.
 
 Complete representation of an extracted email message (.eml or .msg)
@@ -1421,15 +1507,15 @@ including headers, body content, and attachments.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `subject` | `str | None` | `None` | Email subject line |
-| `from_email` | `str | None` | `None` | Sender email address |
+| `subject` | `str \| None` | `None` | Email subject line |
+| `from_email` | `str \| None` | `None` | Sender email address |
 | `to_emails` | `list[str]` | — | Primary recipient email addresses |
 | `cc_emails` | `list[str]` | — | CC recipient email addresses |
 | `bcc_emails` | `list[str]` | — | BCC recipient email addresses |
-| `date` | `str | None` | `None` | Email date/timestamp |
-| `message_id` | `str | None` | `None` | Message-ID header value |
-| `plain_text` | `str | None` | `None` | Plain text version of the email body |
-| `html_content` | `str | None` | `None` | HTML version of the email body |
+| `date` | `str \| None` | `None` | Email date/timestamp |
+| `message_id` | `str \| None` | `None` | Message-ID header value |
+| `plain_text` | `str \| None` | `None` | Plain text version of the email body |
+| `html_content` | `str \| None` | `None` | HTML version of the email body |
 | `content` | `str` | — | Cleaned/processed text content. Aliased as `cleaned_text` for back-compat. |
 | `attachments` | `list[EmailAttachment]` | — | List of email attachments |
 | `metadata` | `dict[str, str]` | — | Additional email headers and metadata |
@@ -1438,35 +1524,38 @@ including headers, body content, and attachments.
 ---
 
 #### EmailMetadata
+
 Email metadata extracted from .eml and .msg files.
 
 Includes sender/recipient information, message ID, and attachment list.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `from_email` | `str | None` | `None` | Sender's email address |
-| `from_name` | `str | None` | `None` | Sender's display name |
+| `from_email` | `str \| None` | `None` | Sender's email address |
+| `from_name` | `str \| None` | `None` | Sender's display name |
 | `to_emails` | `list[str]` | `[]` | Primary recipients |
 | `cc_emails` | `list[str]` | `[]` | CC recipients |
 | `bcc_emails` | `list[str]` | `[]` | BCC recipients |
-| `message_id` | `str | None` | `None` | Message-ID header value |
+| `message_id` | `str \| None` | `None` | Message-ID header value |
 | `attachments` | `list[str]` | `[]` | List of attachment filenames |
 
 
 ---
 
 #### EmbedRequest
+
 Embedding request for generating embeddings from text.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `list[str]` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig | None` | `None` | Optional embedding configuration (model, batch size, etc.) |
+| `config` | `EmbeddingConfig \| None` | `None` | Optional embedding configuration (model, batch size, etc.) |
 
 
 ---
 
 #### EmbedResponse
+
 Embedding response containing generated embeddings.
 
 | Field | Type | Default | Description |
@@ -1480,32 +1569,35 @@ Embedding response containing generated embeddings.
 ---
 
 #### EmbedTextParams
+
 Request parameters for embedding generation.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `texts` | `list[str]` | — | List of text strings to generate embeddings for |
-| `preset` | `str | None` | `None` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `str | None` | `None` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `api_key` | `str | None` | `None` | API key for the LLM provider (optional, falls back to env). |
-| `embedding_plugin` | `str | None` | `None` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
+| `preset` | `str \| None` | `None` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
+| `model` | `str \| None` | `None` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
+| `api_key` | `str \| None` | `None` | API key for the LLM provider (optional, falls back to env). |
+| `embedding_plugin` | `str \| None` | `None` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
 
 #### EmbeddedFile
+
 Embedded file descriptor extracted from the PDF name tree.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `str` | — | The filename as stored in the PDF name tree. |
 | `data` | `bytes` | — | Raw file bytes from the embedded stream. |
-| `mime_type` | `str | None` | `None` | MIME type if specified in the filespec, otherwise `None`. |
+| `mime_type` | `str \| None` | `None` | MIME type if specified in the filespec, otherwise `None`. |
 
 
 ---
 
 #### EmbeddingBackend
+
 Trait for in-process embedding backend plugins.
 
 Async to match the convention used by `OcrBackend`,
@@ -1553,7 +1645,9 @@ or `tokio.runtime.Builder.new_current_thread()`) must use
 `block_in_place`.
 
 ##### Methods
+
 ###### dimensions()
+
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
 
@@ -1563,6 +1657,7 @@ every vector returned by `embed`.
 def dimensions(self) -> int
 ```
 ###### embed()
+
 Embed a batch of texts, returning one vector per input in order.
 
 **Errors:**
@@ -1580,6 +1675,7 @@ def embed(self, texts: list[str]) -> list[list[float]]
 ---
 
 #### EmbeddingConfig
+
 Embedding configuration for text chunks.
 
 Configures embedding generation using ONNX models via the vendored embedding engine.
@@ -1591,12 +1687,14 @@ Requires the `embeddings` feature to be enabled.
 | `normalize` | `bool` | `True` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `batch_size` | `int` | `32` | Batch size for embedding generation |
 | `show_download_progress` | `bool` | `False` | Show model download progress |
-| `cache_dir` | `str | None` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
-| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
-| `max_embed_duration_secs` | `int | None` | `None` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
+| `cache_dir` | `str \| None` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `max_embed_duration_secs` | `int \| None` | `None` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -1607,6 +1705,7 @@ def default() -> EmbeddingConfig
 ---
 
 #### EmbeddingPreset
+
 Preset configurations for common RAG use cases.
 
 Each preset combines chunk size, overlap, and embedding model
@@ -1630,21 +1729,23 @@ are safe to clone and pass across language boundaries.
 ---
 
 #### EpubMetadata
+
 EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `str | None` | `None` | Coverage |
-| `dc_format` | `str | None` | `None` | Dc format |
-| `relation` | `str | None` | `None` | Relation |
-| `source` | `str | None` | `None` | Source |
-| `dc_type` | `str | None` | `None` | Dc type |
-| `cover_image` | `str | None` | `None` | Cover image |
+| `coverage` | `str \| None` | `None` | Coverage |
+| `dc_format` | `str \| None` | `None` | Dc format |
+| `relation` | `str \| None` | `None` | Relation |
+| `source` | `str \| None` | `None` | Source |
+| `dc_type` | `str \| None` | `None` | Dc type |
+| `cover_image` | `str \| None` | `None` | Cover image |
 
 
 ---
 
 #### ErrorMetadata
+
 Error metadata (for batch operations).
 
 | Field | Type | Default | Description |
@@ -1656,6 +1757,7 @@ Error metadata (for batch operations).
 ---
 
 #### ExcelMetadata
+
 Excel/spreadsheet format metadata.
 
 Identifies the document as a spreadsheet source via the `FormatMetadata.Excel`
@@ -1663,13 +1765,14 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `sheet_count` | `int | None` | `None` | Number of sheets in the workbook. |
-| `sheet_names` | `list[str] | None` | `[]` | Names of all sheets in the workbook. |
+| `sheet_count` | `int \| None` | `None` | Number of sheets in the workbook. |
+| `sheet_names` | `list[str] \| None` | `[]` | Names of all sheets in the workbook. |
 
 
 ---
 
 #### ExcelSheet
+
 Single Excel worksheet.
 
 Represents one sheet from an Excel workbook with its content
@@ -1682,12 +1785,13 @@ converted to Markdown format and dimensional statistics.
 | `row_count` | `int` | — | Number of rows |
 | `col_count` | `int` | — | Number of columns |
 | `cell_count` | `int` | — | Total number of non-empty cells |
-| `table_cells` | `list[list[str]] | None` | `None` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
+| `table_cells` | `list[list[str]] \| None` | `None` | Pre-extracted table cells (2D vector of cell values) Populated during markdown generation to avoid re-parsing markdown. None for empty sheets. |
 
 
 ---
 
 #### ExcelWorkbook
+
 Excel workbook representation.
 
 Contains all sheets from an Excel file (.xlsx, .xls, etc.) with
@@ -1702,12 +1806,14 @@ extracted content and metadata.
 ---
 
 #### ExtractResponse
+
 Extraction response (list of results).
 
 
 ---
 
 #### ExtractStructuredParams
+
 Request parameters for LLM-based structured extraction.
 
 | Field | Type | Default | Description |
@@ -1716,15 +1822,16 @@ Request parameters for LLM-based structured extraction.
 | `schema` | `dict[str, Any]` | — | JSON schema for structured output |
 | `model` | `str` | — | LLM model (e.g., "openai/gpt-4o") |
 | `schema_name` | `str` | — | Schema name (default: "extraction") |
-| `schema_description` | `str | None` | `None` | Schema description for the LLM |
-| `prompt` | `str | None` | `None` | Custom Jinja2 prompt template |
-| `api_key` | `str | None` | `None` | API key (optional, falls back to env) |
+| `schema_description` | `str \| None` | `None` | Schema description for the LLM |
+| `prompt` | `str \| None` | `None` | Custom Jinja2 prompt template |
+| `api_key` | `str \| None` | `None` | API key (optional, falls back to env) |
 | `strict` | `bool` | — | Enable strict mode |
 
 
 ---
 
 #### ExtractedImage
+
 Extracted image from a document.
 
 Contains raw image data, metadata, and optional nested OCR results.
@@ -1736,39 +1843,41 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `data` | `bytes` | — | Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `str` | — | Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static literals. |
 | `image_index` | `int` | — | Zero-indexed position of this image in the document/page |
-| `page_number` | `int | None` | `None` | Page/slide number where image was found (1-indexed) |
-| `width` | `int | None` | `None` | Image width in pixels |
-| `height` | `int | None` | `None` | Image height in pixels |
-| `colorspace` | `str | None` | `None` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
-| `bits_per_component` | `int | None` | `None` | Bits per color component (e.g., 8, 16) |
+| `page_number` | `int \| None` | `None` | Page/slide number where image was found (1-indexed) |
+| `width` | `int \| None` | `None` | Image width in pixels |
+| `height` | `int \| None` | `None` | Image height in pixels |
+| `colorspace` | `str \| None` | `None` | Colorspace information (e.g., "RGB", "CMYK", "Gray") |
+| `bits_per_component` | `int \| None` | `None` | Bits per color component (e.g., 8, 16) |
 | `is_mask` | `bool` | — | Whether this image is a mask image |
-| `description` | `str | None` | `None` | Optional description of the image |
-| `ocr_result` | `ExtractionResult | None` | `None` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `bounding_box` | `str | None` | `None` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
-| `source_path` | `str | None` | `None` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `image_kind` | `ImageKind | None` | `None` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
-| `kind_confidence` | `float | None` | `None` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
-| `cluster_id` | `int | None` | `None` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
+| `description` | `str \| None` | `None` | Optional description of the image |
+| `ocr_result` | `ExtractionResult \| None` | `None` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
+| `bounding_box` | `str \| None` | `None` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `source_path` | `str \| None` | `None` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
+| `image_kind` | `ImageKind \| None` | `None` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
+| `kind_confidence` | `float \| None` | `None` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
+| `cluster_id` | `int \| None` | `None` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
 
 
 ---
 
 #### ExtractedInlineImage
+
 Extracted inline image with metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `data` | `bytes` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
 | `format` | `str` | — | Format |
-| `filename` | `str | None` | `None` | Filename |
-| `description` | `str | None` | `None` | Human-readable description |
-| `dimensions` | `list[int] | None` | `None` | Dimensions |
+| `filename` | `str \| None` | `None` | Filename |
+| `description` | `str \| None` | `None` | Human-readable description |
+| `dimensions` | `list[int] \| None` | `None` | Dimensions |
 | `attributes` | `list[str]` | — | Attributes |
 
 
 ---
 
 #### ExtractionConfig
+
 Main extraction configuration.
 
 This struct contains all configuration options for the extraction process.
@@ -1778,41 +1887,43 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 |-------|------|---------|-------------|
 | `use_cache` | `bool` | `True` | Enable caching of extraction results |
 | `enable_quality_processing` | `bool` | `True` | Enable quality post-processing |
-| `ocr` | `OcrConfig | None` | `None` | OCR configuration (None = OCR disabled) |
+| `ocr` | `OcrConfig \| None` | `None` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `False` | Force OCR even for searchable PDFs |
-| `force_ocr_pages` | `list[int] | None` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `True`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
+| `force_ocr_pages` | `list[int] \| None` | `None` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `True`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
 | `disable_ocr` | `bool` | `False` | Disable OCR entirely, even for images. When `True`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `True` simultaneously with `force_ocr`. *Added in v4.7.0.* |
-| `chunking` | `ChunkingConfig | None` | `None` | Text chunking configuration (None = chunking disabled) |
-| `content_filter` | `ContentFilterConfig | None` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
-| `images` | `ImageExtractionConfig | None` | `None` | Image extraction configuration (None = no image extraction) |
-| `pdf_options` | `PdfConfig | None` | `None` | PDF-specific options (None = use defaults) |
-| `token_reduction` | `TokenReductionOptions | None` | `None` | Token reduction configuration (None = no token reduction) |
-| `language_detection` | `LanguageDetectionConfig | None` | `None` | Language detection configuration (None = no language detection) |
-| `pages` | `PageConfig | None` | `None` | Page extraction configuration (None = no page tracking) |
-| `keywords` | `KeywordConfig | None` | `None` | Keyword extraction configuration (None = no keyword extraction) |
-| `postprocessor` | `PostProcessorConfig | None` | `None` | Post-processor configuration (None = use defaults) |
-| `html_options` | `str | None` | `None` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
-| `html_output` | `HtmlOutputConfig | None` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
-| `extraction_timeout_secs` | `int | None` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `None` means no timeout (unbounded extraction time). |
-| `max_concurrent_extractions` | `int | None` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
+| `chunking` | `ChunkingConfig \| None` | `None` | Text chunking configuration (None = chunking disabled) |
+| `content_filter` | `ContentFilterConfig \| None` | `None` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
+| `images` | `ImageExtractionConfig \| None` | `None` | Image extraction configuration (None = no image extraction) |
+| `pdf_options` | `PdfConfig \| None` | `None` | PDF-specific options (None = use defaults) |
+| `token_reduction` | `TokenReductionOptions \| None` | `None` | Token reduction configuration (None = no token reduction) |
+| `language_detection` | `LanguageDetectionConfig \| None` | `None` | Language detection configuration (None = no language detection) |
+| `pages` | `PageConfig \| None` | `None` | Page extraction configuration (None = no page tracking) |
+| `keywords` | `KeywordConfig \| None` | `None` | Keyword extraction configuration (None = no keyword extraction) |
+| `postprocessor` | `PostProcessorConfig \| None` | `None` | Post-processor configuration (None = use defaults) |
+| `html_options` | `str \| None` | `None` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
+| `html_output` | `HtmlOutputConfig \| None` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
+| `extraction_timeout_secs` | `int \| None` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. `None` means no timeout (unbounded extraction time). |
+| `max_concurrent_extractions` | `int \| None` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `ResultFormat` | `ResultFormat.UNIFIED` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `SecurityLimits | None` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `None`, default limits are used. |
+| `security_limits` | `SecurityLimits \| None` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, cumulative content size, and table cell count for every extraction path that ingests user-controlled bytes. When `None`, default limits are used. |
 | `output_format` | `OutputFormat` | `OutputFormat.PLAIN` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
-| `layout` | `LayoutDetectionConfig | None` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature. |
+| `layout` | `LayoutDetectionConfig \| None` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
 | `use_layout_for_markdown` | `bool` | `False` | Run layout detection on the non-OCR PDF markdown path. When `True` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Substantially improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `False`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `False` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `None`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
-| `cache_namespace` | `str | None` | `None` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
-| `cache_ttl_secs` | `int | None` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
-| `email` | `EmailConfig | None` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
-| `concurrency` | `str | None` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
+| `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `None`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
+| `cache_namespace` | `str \| None` | `None` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
+| `cache_ttl_secs` | `int \| None` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
+| `email` | `EmailConfig \| None` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `concurrency` | `str \| None` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `max_archive_depth` | `int` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
-| `tree_sitter` | `TreeSitterConfig | None` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
-| `structured_extraction` | `StructuredExtractionConfig | None` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
-| `cancel_token` | `str | None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `tree_sitter` | `TreeSitterConfig \| None` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
+| `structured_extraction` | `StructuredExtractionConfig \| None` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `cancel_token` | `str \| None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -1820,6 +1931,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 def default() -> ExtractionConfig
 ```
 ###### needs_image_processing()
+
 Check if image processing is needed by examining OCR and image extraction settings.
 
 Returns `True` if either OCR is enabled or image extraction is configured,
@@ -1841,6 +1953,7 @@ def needs_image_processing(self) -> bool
 ---
 
 #### ExtractionResult
+
 General extraction result used by the core extraction API.
 
 This is the main result type returned by all extraction functions.
@@ -1850,44 +1963,58 @@ This is the main result type returned by all extraction functions.
 | `content` | `str` | — | The extracted text content |
 | `mime_type` | `str` | — | The detected MIME type |
 | `metadata` | `Metadata` | — | Document metadata |
-| `extraction_method` | `ExtractionMethod | None` | `None` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
+| `extraction_method` | `ExtractionMethod \| None` | `None` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
 | `tables` | `list[Table]` | `[]` | Tables extracted from the document |
-| `detected_languages` | `list[str] | None` | `[]` | Detected languages |
-| `chunks` | `list[Chunk] | None` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
-| `images` | `list[ExtractedImage] | None` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
-| `pages` | `list[PageContent] | None` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
-| `elements` | `list[Element] | None` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
-| `djot_content` | `DjotContent | None` | `None` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `None` for non-Djot documents. |
-| `ocr_elements` | `list[OcrElement] | None` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
-| `document` | `DocumentStructure | None` | `None` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `extracted_keywords` | `list[Keyword] | None` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
-| `quality_score` | `float | None` | `None` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
+| `detected_languages` | `list[str] \| None` | `[]` | Detected languages |
+| `chunks` | `list[Chunk] \| None` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
+| `images` | `list[ExtractedImage] \| None` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
+| `pages` | `list[PageContent] \| None` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
+| `elements` | `list[Element] \| None` | `[]` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
+| `djot_content` | `DjotContent \| None` | `None` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `None` for non-Djot documents. |
+| `ocr_elements` | `list[OcrElement] \| None` | `[]` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
+| `document` | `DocumentStructure \| None` | `None` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `extracted_keywords` | `list[Keyword] \| None` | `[]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
+| `quality_score` | `float \| None` | `None` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
 | `processing_warnings` | `list[ProcessingWarning]` | `[]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
-| `annotations` | `list[PdfAnnotation] | None` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
-| `children` | `list[ArchiveEntry] | None` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `None` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
-| `uris` | `list[Uri] | None` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
-| `structured_output` | `dict[str, Any] | None` | `None` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
-| `code_intelligence` | `str | None` | `None` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
-| `llm_usage` | `list[LlmUsage] | None` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `None` when no LLM was used. |
-| `formatted_content` | `str | None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
-| `ocr_internal_document` | `str | None` | `None` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
+| `annotations` | `list[PdfAnnotation] \| None` | `[]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `children` | `list[ArchiveEntry] \| None` | `[]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `None` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
+| `uris` | `list[Uri] \| None` | `[]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `structured_output` | `dict[str, Any] \| None` | `None` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
+| `code_intelligence` | `str \| None` | `None` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. |
+| `llm_usage` | `list[LlmUsage] \| None` | `[]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, and/or LLM embeddings all run during the same extraction. `None` when no LLM was used. |
+| `formatted_content` | `str \| None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
+| `ocr_internal_document` | `str \| None` | `None` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
+##### Methods
+
+###### from_ocr()
+
+Convert from an OCR result.
+
+**Signature:**
+
+```python
+@staticmethod
+def from_ocr(ocr: OcrExtractionResult) -> ExtractionResult
+```
 
 ---
 
 #### FictionBookMetadata
+
 FictionBook (FB2) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `genres` | `list[str]` | `[]` | Genres |
 | `sequences` | `list[str]` | `[]` | Sequences |
-| `annotation` | `str | None` | `None` | Annotation |
+| `annotation` | `str \| None` | `None` | Annotation |
 
 
 ---
 
 #### FileExtractionConfig
+
 Per-file extraction configuration overrides for batch processing.
 
 All fields are `Option<T>` — `None` means "use the batch-level default."
@@ -1906,33 +2033,34 @@ cannot be overridden per file:
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `enable_quality_processing` | `bool | None` | `None` | Override quality post-processing for this file. |
-| `ocr` | `OcrConfig | None` | `None` | Override OCR configuration for this file (None in the Option = use batch default). |
-| `force_ocr` | `bool | None` | `None` | Override force OCR for this file. |
-| `force_ocr_pages` | `list[int] | None` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
-| `disable_ocr` | `bool | None` | `None` | Override disable OCR for this file. |
-| `chunking` | `ChunkingConfig | None` | `None` | Override chunking configuration for this file. |
-| `content_filter` | `ContentFilterConfig | None` | `None` | Override content filtering configuration for this file. |
-| `images` | `ImageExtractionConfig | None` | `None` | Override image extraction configuration for this file. |
-| `pdf_options` | `PdfConfig | None` | `None` | Override PDF options for this file. |
-| `token_reduction` | `TokenReductionOptions | None` | `None` | Override token reduction for this file. |
-| `language_detection` | `LanguageDetectionConfig | None` | `None` | Override language detection for this file. |
-| `pages` | `PageConfig | None` | `None` | Override page extraction for this file. |
-| `keywords` | `KeywordConfig | None` | `None` | Override keyword extraction for this file. |
-| `postprocessor` | `PostProcessorConfig | None` | `None` | Override post-processor for this file. |
-| `html_options` | `str | None` | `None` | Override HTML conversion options for this file. |
-| `result_format` | `ResultFormat | None` | `None` | Override result format for this file. |
-| `output_format` | `OutputFormat | None` | `None` | Override output content format for this file. |
-| `include_document_structure` | `bool | None` | `None` | Override document structure output for this file. |
-| `layout` | `LayoutDetectionConfig | None` | `None` | Override layout detection for this file. |
-| `timeout_secs` | `int | None` | `None` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
-| `tree_sitter` | `TreeSitterConfig | None` | `None` | Override tree-sitter configuration for this file. |
-| `structured_extraction` | `StructuredExtractionConfig | None` | `None` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
+| `enable_quality_processing` | `bool \| None` | `None` | Override quality post-processing for this file. |
+| `ocr` | `OcrConfig \| None` | `None` | Override OCR configuration for this file (None in the Option = use batch default). |
+| `force_ocr` | `bool \| None` | `None` | Override force OCR for this file. |
+| `force_ocr_pages` | `list[int] \| None` | `[]` | Override force OCR pages for this file (1-indexed page numbers). |
+| `disable_ocr` | `bool \| None` | `None` | Override disable OCR for this file. |
+| `chunking` | `ChunkingConfig \| None` | `None` | Override chunking configuration for this file. |
+| `content_filter` | `ContentFilterConfig \| None` | `None` | Override content filtering configuration for this file. |
+| `images` | `ImageExtractionConfig \| None` | `None` | Override image extraction configuration for this file. |
+| `pdf_options` | `PdfConfig \| None` | `None` | Override PDF options for this file. |
+| `token_reduction` | `TokenReductionOptions \| None` | `None` | Override token reduction for this file. |
+| `language_detection` | `LanguageDetectionConfig \| None` | `None` | Override language detection for this file. |
+| `pages` | `PageConfig \| None` | `None` | Override page extraction for this file. |
+| `keywords` | `KeywordConfig \| None` | `None` | Override keyword extraction for this file. |
+| `postprocessor` | `PostProcessorConfig \| None` | `None` | Override post-processor for this file. |
+| `html_options` | `str \| None` | `None` | Override HTML conversion options for this file. |
+| `result_format` | `ResultFormat \| None` | `None` | Override result format for this file. |
+| `output_format` | `OutputFormat \| None` | `None` | Override output content format for this file. |
+| `include_document_structure` | `bool \| None` | `None` | Override document structure output for this file. |
+| `layout` | `LayoutDetectionConfig \| None` | `None` | Override layout detection for this file. |
+| `timeout_secs` | `int \| None` | `None` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
+| `tree_sitter` | `TreeSitterConfig \| None` | `None` | Override tree-sitter configuration for this file. |
+| `structured_extraction` | `StructuredExtractionConfig \| None` | `None` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
 
 
 ---
 
 #### Footnote
+
 Footnote in Djot.
 
 | Field | Type | Default | Description |
@@ -1944,6 +2072,7 @@ Footnote in Djot.
 ---
 
 #### FormattedBlock
+
 Block-level element in a Djot document.
 
 Represents structural elements like headings, paragraphs, lists, code blocks, etc.
@@ -1951,17 +2080,18 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_type` | `BlockType` | — | Type of block element |
-| `level` | `int | None` | `None` | Heading level (1-6) for headings, or nesting level for lists |
+| `level` | `int \| None` | `None` | Heading level (1-6) for headings, or nesting level for lists |
 | `inline_content` | `list[InlineElement]` | — | Inline content within the block |
-| `attributes` | `str | None` | `None` | Element attributes (classes, IDs, key-value pairs) |
-| `language` | `str | None` | `None` | Language identifier for code blocks |
-| `code` | `str | None` | `None` | Raw code content for code blocks |
+| `attributes` | `str \| None` | `None` | Element attributes (classes, IDs, key-value pairs) |
+| `language` | `str \| None` | `None` | Language identifier for code blocks |
+| `code` | `str \| None` | `None` | Raw code content for code blocks |
 | `children` | `list[FormattedBlock]` | — | Nested blocks for containers (blockquotes, list items, divs) |
 
 
 ---
 
 #### GridCell
+
 Individual grid cell with position and span metadata.
 
 | Field | Type | Default | Description |
@@ -1972,19 +2102,20 @@ Individual grid cell with position and span metadata.
 | `row_span` | `int` | — | Number of rows this cell spans. |
 | `col_span` | `int` | — | Number of columns this cell spans. |
 | `is_header` | `bool` | — | Whether this is a header cell. |
-| `bbox` | `str | None` | `None` | Bounding box for this cell (if available). |
+| `bbox` | `str \| None` | `None` | Bounding box for this cell (if available). |
 
 
 ---
 
 #### HeaderMetadata
+
 Header/heading element metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `level` | `int` | — | Header level: 1 (h1) through 6 (h6) |
 | `text` | `str` | — | Normalized text content of the header |
-| `id` | `str | None` | `None` | HTML id attribute if present |
+| `id` | `str \| None` | `None` | HTML id attribute if present |
 | `depth` | `int` | — | Document tree depth at the header element |
 | `html_offset` | `int` | — | Byte offset in original HTML document |
 
@@ -1992,6 +2123,7 @@ Header/heading element metadata.
 ---
 
 #### HeadingContext
+
 Heading context for a chunk within a Markdown document.
 
 Contains the heading hierarchy from document root to this chunk's section.
@@ -2004,6 +2136,7 @@ Contains the heading hierarchy from document root to this chunk's section.
 ---
 
 #### HeadingLevel
+
 A single heading in the hierarchy.
 
 | Field | Type | Default | Description |
@@ -2015,6 +2148,7 @@ A single heading in the hierarchy.
 ---
 
 #### HierarchicalBlock
+
 A text block with hierarchy level assignment.
 
 Represents a block of text with semantic heading information extracted from
@@ -2025,12 +2159,13 @@ font size clustering and hierarchical analysis.
 | `text` | `str` | — | The text content of this block |
 | `font_size` | `float` | — | The font size of the text in this block |
 | `level` | `str` | — | The hierarchy level of this block (H1-H6 or Body) Levels correspond to HTML heading tags: - "h1": Top-level heading - "h2": Secondary heading - "h3": Tertiary heading - "h4": Quaternary heading - "h5": Quinary heading - "h6": Senary heading - "body": Body text (no heading level) |
-| `bbox` | `list[float] | None` | `None` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
+| `bbox` | `list[float] \| None` | `None` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
 
 
 ---
 
 #### HierarchyConfig
+
 Hierarchy extraction configuration for PDF text structure analysis.
 
 Enables extraction of document hierarchy levels (H1-H6) based on font size
@@ -2042,10 +2177,12 @@ included in page content.
 | `enabled` | `bool` | `True` | Enable hierarchy extraction |
 | `k_clusters` | `int` | `3` | Number of font size clusters to use for hierarchy levels (1-7) Default: 6, which provides H1-H6 heading levels with body text. Larger values create more fine-grained hierarchy levels. |
 | `include_bbox` | `bool` | `True` | Include bounding box information in hierarchy blocks |
-| `ocr_coverage_threshold` | `float | None` | `None` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
+| `ocr_coverage_threshold` | `float \| None` | `None` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2056,6 +2193,7 @@ def default() -> HierarchyConfig
 ---
 
 #### HtmlExtractionResult
+
 Result of HTML extraction with optional images and warnings.
 
 | Field | Type | Default | Description |
@@ -2068,6 +2206,7 @@ Result of HTML extraction with optional images and warnings.
 ---
 
 #### HtmlMetadata
+
 HTML metadata extracted from HTML documents.
 
 Includes document-level metadata, Open Graph data, Twitter Card metadata,
@@ -2075,14 +2214,14 @@ and extracted structural elements (headers, links, images, structured data).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `str | None` | `None` | Document title from `<title>` tag |
-| `description` | `str | None` | `None` | Document description from `<meta name="description">` tag |
+| `title` | `str \| None` | `None` | Document title from `<title>` tag |
+| `description` | `str \| None` | `None` | Document description from `<meta name="description">` tag |
 | `keywords` | `list[str]` | `[]` | Document keywords from `<meta name="keywords">` tag, split on commas |
-| `author` | `str | None` | `None` | Document author from `<meta name="author">` tag |
-| `canonical_url` | `str | None` | `None` | Canonical URL from `<link rel="canonical">` tag |
-| `base_href` | `str | None` | `None` | Base URL from `<base href="">` tag for resolving relative URLs |
-| `language` | `str | None` | `None` | Document language from `lang` attribute |
-| `text_direction` | `TextDirection | None` | `None` | Document text direction from `dir` attribute |
+| `author` | `str \| None` | `None` | Document author from `<meta name="author">` tag |
+| `canonical_url` | `str \| None` | `None` | Canonical URL from `<link rel="canonical">` tag |
+| `base_href` | `str \| None` | `None` | Base URL from `<base href="">` tag for resolving relative URLs |
+| `language` | `str \| None` | `None` | Document language from `lang` attribute |
+| `text_direction` | `TextDirection \| None` | `None` | Document text direction from `dir` attribute |
 | `open_graph` | `dict[str, str]` | `{}` | Open Graph metadata (og:* properties) for social media Keys like "title", "description", "image", "url", etc. |
 | `twitter_card` | `dict[str, str]` | `{}` | Twitter Card metadata (twitter:* properties) Keys like "card", "site", "creator", "title", "description", "image", etc. |
 | `meta_tags` | `dict[str, str]` | `{}` | Additional meta tags not covered by specific fields Keys are meta name/property attributes, values are content |
@@ -2092,7 +2231,9 @@ and extracted structural elements (headers, links, images, structured data).
 | `structured_data` | `list[StructuredData]` | `[]` | Extracted structured data blocks |
 
 ##### Methods
+
 ###### from()
+
 **Signature:**
 
 ```python
@@ -2103,6 +2244,7 @@ def from(metadata: HtmlMetadata) -> HtmlMetadata
 ---
 
 #### HtmlOutputConfig
+
 Configuration for styled HTML output.
 
 When set on `ExtractionConfig.html_output` alongside
@@ -2112,14 +2254,16 @@ the plain comrak-based renderer.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `css` | `str | None` | `None` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
-| `css_file` | `str | None` | `None` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
+| `css` | `str \| None` | `None` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
+| `css_file` | `str \| None` | `None` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
 | `theme` | `HtmlTheme` | `HtmlTheme.UNSTYLED` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
 | `class_prefix` | `str` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `True` | When `True` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `False` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2130,6 +2274,7 @@ def default() -> HtmlOutputConfig
 ---
 
 #### HwpImage
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `str` | — | The name |
@@ -2139,12 +2284,15 @@ def default() -> HtmlOutputConfig
 ---
 
 #### HwpxExtractor
+
 Extractor for Hangul Word Processor XML (.hwpx) files.
 
 Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2152,54 +2300,63 @@ Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 fo
 def default() -> HwpxExtractor
 ```
 ###### name()
+
 **Signature:**
 
 ```python
 def name(self) -> str
 ```
 ###### version()
+
 **Signature:**
 
 ```python
 def version(self) -> str
 ```
 ###### initialize()
+
 **Signature:**
 
 ```python
 def initialize(self) -> None
 ```
 ###### shutdown()
+
 **Signature:**
 
 ```python
 def shutdown(self) -> None
 ```
 ###### description()
+
 **Signature:**
 
 ```python
 def description(self) -> str
 ```
 ###### author()
+
 **Signature:**
 
 ```python
 def author(self) -> str
 ```
 ###### extract_bytes()
+
 **Signature:**
 
 ```python
 def extract_bytes(self, content: bytes, mime_type: str, config: ExtractionConfig) -> str
 ```
 ###### supported_mime_types()
+
 **Signature:**
 
 ```python
 def supported_mime_types(self) -> list[str]
 ```
 ###### priority()
+
 **Signature:**
 
 ```python
@@ -2209,6 +2366,7 @@ def priority(self) -> int
 ---
 
 #### ImageExtractionConfig
+
 Image extraction configuration.
 
 | Field | Type | Default | Description |
@@ -2220,11 +2378,13 @@ Image extraction configuration.
 | `auto_adjust_dpi` | `bool` | `True` | Automatically adjust DPI based on image content |
 | `min_dpi` | `int` | `72` | Minimum DPI threshold |
 | `max_dpi` | `int` | `600` | Maximum DPI threshold |
-| `max_images_per_page` | `int | None` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
+| `max_images_per_page` | `int \| None` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `True` | When `True` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2235,6 +2395,7 @@ def default() -> ImageExtractionConfig
 ---
 
 #### ImageMetadata
+
 Image metadata extracted from image files.
 
 Includes dimensions, format, and EXIF data.
@@ -2250,14 +2411,15 @@ Includes dimensions, format, and EXIF data.
 ---
 
 #### ImageMetadataType
+
 Image element metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `src` | `str` | — | Image source (URL, data URI, or SVG content) |
-| `alt` | `str | None` | `None` | Alternative text from alt attribute |
-| `title` | `str | None` | `None` | Title attribute |
-| `dimensions` | `list[int] | None` | `None` | Image dimensions as (width, height) if available |
+| `alt` | `str \| None` | `None` | Alternative text from alt attribute |
+| `title` | `str \| None` | `None` | Title attribute |
+| `dimensions` | `list[int] \| None` | `None` | Image dimensions as (width, height) if available |
 | `image_type` | `ImageType` | — | Image type classification |
 | `attributes` | `list[str]` | — | Additional attributes as key-value pairs |
 
@@ -2265,18 +2427,20 @@ Image element metadata.
 ---
 
 #### ImageOcrResult
+
 Result of OCR extraction from an image with optional page tracking.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `str` | — | Extracted text content |
-| `boundaries` | `list[PageBoundary] | None` | `None` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `page_contents` | `list[PageContent] | None` | `None` | Per-frame content information |
+| `boundaries` | `list[PageBoundary] \| None` | `None` | Character byte boundaries per frame (for multi-frame TIFFs) |
+| `page_contents` | `list[PageContent] \| None` | `None` | Per-frame content information |
 
 
 ---
 
 #### ImagePreprocessingConfig
+
 Image preprocessing configuration for OCR.
 
 These settings control how images are preprocessed before OCR to improve
@@ -2294,7 +2458,9 @@ for different document types.
 | `invert_colors` | `bool` | `False` | Invert colors (white text on black → black on white). |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2305,6 +2471,7 @@ def default() -> ImagePreprocessingConfig
 ---
 
 #### ImagePreprocessingMetadata
+
 Image preprocessing metadata.
 
 Tracks the transformations applied to an image during OCR preprocessing,
@@ -2318,17 +2485,18 @@ including DPI normalization, resizing, and resampling.
 | `scale_factor` | `float` | — | Scaling factor applied to the image |
 | `auto_adjusted` | `bool` | — | Whether DPI was auto-adjusted based on content |
 | `final_dpi` | `int` | — | Final DPI after processing |
-| `new_dimensions` | `list[int] | None` | `None` | New dimensions after resizing (if resized) |
+| `new_dimensions` | `list[int] \| None` | `None` | New dimensions after resizing (if resized) |
 | `resample_method` | `str` | — | Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) |
 | `dimension_clamped` | `bool` | — | Whether dimensions were clamped to max_image_dimension |
-| `calculated_dpi` | `int | None` | `None` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
+| `calculated_dpi` | `int \| None` | `None` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skipped_resize` | `bool` | — | Whether resize was skipped (dimensions already optimal) |
-| `resize_error` | `str | None` | `None` | Error message if resize failed |
+| `resize_error` | `str \| None` | `None` | Error message if resize failed |
 
 
 ---
 
 #### InfoResponse
+
 Server information response.
 
 | Field | Type | Default | Description |
@@ -2340,6 +2508,7 @@ Server information response.
 ---
 
 #### InlineElement
+
 Inline element within a block.
 
 Represents text with formatting, links, images, etc.
@@ -2348,19 +2517,20 @@ Represents text with formatting, links, images, etc.
 |-------|------|---------|-------------|
 | `element_type` | `InlineType` | — | Type of inline element |
 | `content` | `str` | — | Text content |
-| `attributes` | `str | None` | `None` | Element attributes |
-| `metadata` | `dict[str, str] | None` | `None` | Additional metadata (e.g., href for links, src/alt for images) |
+| `attributes` | `str \| None` | `None` | Element attributes |
+| `metadata` | `dict[str, str] \| None` | `None` | Additional metadata (e.g., href for links, src/alt for images) |
 
 
 ---
 
 #### JatsMetadata
+
 JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `str | None` | `None` | Copyright |
-| `license` | `str | None` | `None` | License |
+| `copyright` | `str \| None` | `None` | Copyright |
+| `license` | `str \| None` | `None` | License |
 | `history_dates` | `dict[str, str]` | `{}` | History dates |
 | `contributor_roles` | `list[ContributorRole]` | `[]` | Contributor roles |
 
@@ -2368,6 +2538,7 @@ JATS (Journal Article Tag Suite) metadata.
 ---
 
 #### Keyword
+
 Extracted keyword with metadata.
 
 | Field | Type | Default | Description |
@@ -2375,12 +2546,13 @@ Extracted keyword with metadata.
 | `text` | `str` | — | The keyword text. |
 | `score` | `float` | — | Relevance score (higher is better, algorithm-specific range). |
 | `algorithm` | `KeywordAlgorithm` | — | Algorithm that extracted this keyword. |
-| `positions` | `list[int] | None` | `None` | Optional positions where keyword appears in text (character offsets). |
+| `positions` | `list[int] \| None` | `None` | Optional positions where keyword appears in text (character offsets). |
 
 
 ---
 
 #### KeywordConfig
+
 Keyword extraction configuration.
 
 | Field | Type | Default | Description |
@@ -2389,12 +2561,14 @@ Keyword extraction configuration.
 | `max_keywords` | `int` | `10` | Maximum number of keywords to extract (default: 10). |
 | `min_score` | `float` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
 | `ngram_range` | `list[int]` | `[]` | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
-| `language` | `str | None` | `None` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
-| `yake_params` | `YakeParams | None` | `None` | YAKE-specific tuning parameters. |
-| `rake_params` | `RakeParams | None` | `None` | RAKE-specific tuning parameters. |
+| `language` | `str \| None` | `None` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
+| `yake_params` | `YakeParams \| None` | `None` | YAKE-specific tuning parameters. |
+| `rake_params` | `RakeParams \| None` | `None` | RAKE-specific tuning parameters. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2405,6 +2579,7 @@ def default() -> KeywordConfig
 ---
 
 #### LanguageDetectionConfig
+
 Language detection configuration.
 
 | Field | Type | Default | Description |
@@ -2414,7 +2589,9 @@ Language detection configuration.
 | `detect_multiple` | `bool` | `False` | Detect multiple languages in the document |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2425,6 +2602,7 @@ def default() -> LanguageDetectionConfig
 ---
 
 #### LayoutDetection
+
 A single layout detection result.
 
 | Field | Type | Default | Description |
@@ -2437,6 +2615,7 @@ A single layout detection result.
 ---
 
 #### LayoutDetectionConfig
+
 Layout detection configuration.
 
 Controls layout detection behavior in the extraction pipeline.
@@ -2445,13 +2624,15 @@ is enabled for PDF extraction.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `confidence_threshold` | `float | None` | `None` | Confidence threshold override (None = use model default). |
+| `confidence_threshold` | `float \| None` | `None` | Confidence threshold override (None = use model default). |
 | `apply_heuristics` | `bool` | `True` | Whether to apply postprocessing heuristics (default: true). |
 | `table_model` | `TableModel` | `TableModel.TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
-| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2462,6 +2643,7 @@ def default() -> LayoutDetectionConfig
 ---
 
 #### LayoutRegion
+
 A detected layout region on a page.
 
 When layout detection is enabled, each page may have layout regions
@@ -2479,13 +2661,14 @@ with confidence scores and spatial positions.
 ---
 
 #### LinkMetadata
+
 Link element metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `href` | `str` | — | The href URL value |
 | `text` | `str` | — | Link text content (normalized) |
-| `title` | `str | None` | `None` | Optional title attribute |
+| `title` | `str \| None` | `None` | Optional title attribute |
 | `link_type` | `LinkType` | — | Link type classification |
 | `rel` | `list[str]` | — | Rel attribute values |
 | `attributes` | `list[str]` | — | Additional attributes as key-value pairs |
@@ -2494,6 +2677,7 @@ Link element metadata.
 ---
 
 #### LlmConfig
+
 Configuration for an LLM provider/model via liter-llm.
 
 Each feature (VLM OCR, VLM embeddings, structured extraction) carries
@@ -2502,17 +2686,18 @@ its own `LlmConfig`, allowing different providers per feature.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `model` | `str` | — | Provider/model string using liter-llm routing format. Examples: `"openai/gpt-4o"`, `"anthropic/claude-sonnet-4-20250514"`, `"groq/llama-3.1-70b-versatile"`. |
-| `api_key` | `str | None` | `None` | API key for the provider. When `None`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
-| `base_url` | `str | None` | `None` | Custom base URL override for the provider endpoint. |
-| `timeout_secs` | `int | None` | `None` | Request timeout in seconds (default: 60). |
-| `max_retries` | `int | None` | `None` | Maximum retry attempts (default: 3). |
-| `temperature` | `float | None` | `None` | Sampling temperature for generation tasks. |
-| `max_tokens` | `int | None` | `None` | Maximum tokens to generate. |
+| `api_key` | `str \| None` | `None` | API key for the provider. When `None`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`). |
+| `base_url` | `str \| None` | `None` | Custom base URL override for the provider endpoint. |
+| `timeout_secs` | `int \| None` | `None` | Request timeout in seconds (default: 60). |
+| `max_retries` | `int \| None` | `None` | Maximum retry attempts (default: 3). |
+| `temperature` | `float \| None` | `None` | Sampling temperature for generation tasks. |
+| `max_tokens` | `int \| None` | `None` | Maximum tokens to generate. |
 
 
 ---
 
 #### LlmUsage
+
 Token usage and cost data for a single LLM call made during extraction.
 
 Populated when VLM OCR, structured extraction, or LLM-based embeddings
@@ -2523,16 +2708,17 @@ within one extraction (e.g. VLM OCR + structured extraction).
 |-------|------|---------|-------------|
 | `model` | `str` | — | The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). |
 | `source` | `str` | — | The pipeline stage that triggered this LLM call (e.g. "vlm_ocr", "structured_extraction", "embeddings"). |
-| `input_tokens` | `int | None` | `None` | Number of input/prompt tokens consumed. |
-| `output_tokens` | `int | None` | `None` | Number of output/completion tokens generated. |
-| `total_tokens` | `int | None` | `None` | Total tokens (input + output). |
-| `estimated_cost` | `float | None` | `None` | Estimated cost in USD based on the provider's published pricing. |
-| `finish_reason` | `str | None` | `None` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
+| `input_tokens` | `int \| None` | `None` | Number of input/prompt tokens consumed. |
+| `output_tokens` | `int \| None` | `None` | Number of output/completion tokens generated. |
+| `total_tokens` | `int \| None` | `None` | Total tokens (input + output). |
+| `estimated_cost` | `float \| None` | `None` | Estimated cost in USD based on the provider's published pricing. |
+| `finish_reason` | `str \| None` | `None` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
 
 
 ---
 
 #### ManifestEntryResponse
+
 Model manifest entry for cache management.
 
 | Field | Type | Default | Description |
@@ -2546,6 +2732,7 @@ Model manifest entry for cache management.
 ---
 
 #### ManifestResponse
+
 Model manifest response.
 
 | Field | Type | Default | Description |
@@ -2559,6 +2746,7 @@ Model manifest response.
 ---
 
 #### MergedChunk
+
 A merged chunk produced by `merge_segments`.
 
 | Field | Type | Default | Description |
@@ -2571,6 +2759,7 @@ A merged chunk produced by `merge_segments`.
 ---
 
 #### Metadata
+
 Extraction result metadata.
 
 Contains common fields applicable to all formats, format-specific metadata
@@ -2578,31 +2767,33 @@ via a discriminated union, and additional custom fields from postprocessors.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `str | None` | `None` | Document title |
-| `subject` | `str | None` | `None` | Document subject or description |
-| `authors` | `list[str] | None` | `[]` | Primary author(s) - always Vec for consistency |
-| `keywords` | `list[str] | None` | `[]` | Keywords/tags - always Vec for consistency |
-| `language` | `str | None` | `None` | Primary language (ISO 639 code) |
-| `created_at` | `str | None` | `None` | Creation timestamp (ISO 8601 format) |
-| `modified_at` | `str | None` | `None` | Last modification timestamp (ISO 8601 format) |
-| `created_by` | `str | None` | `None` | User who created the document |
-| `modified_by` | `str | None` | `None` | User who last modified the document |
-| `pages` | `PageStructure | None` | `None` | Page/slide/sheet structure with boundaries |
-| `format` | `FormatMetadata | None` | `None` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
-| `image_preprocessing` | `ImagePreprocessingMetadata | None` | `None` | Image preprocessing metadata (when OCR preprocessing was applied) |
-| `json_schema` | `dict[str, Any] | None` | `None` | JSON schema (for structured data extraction) |
-| `error` | `ErrorMetadata | None` | `None` | Error metadata (for batch operations) |
-| `extraction_duration_ms` | `int | None` | `None` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `None` for single-file extraction (which uses external timing). |
-| `category` | `str | None` | `None` | Document category (from frontmatter or classification). |
-| `tags` | `list[str] | None` | `[]` | Document tags (from frontmatter). |
-| `document_version` | `str | None` | `None` | Document version string (from frontmatter). |
-| `abstract_text` | `str | None` | `None` | Abstract or summary text (from frontmatter). |
-| `output_format` | `str | None` | `None` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
+| `title` | `str \| None` | `None` | Document title |
+| `subject` | `str \| None` | `None` | Document subject or description |
+| `authors` | `list[str] \| None` | `[]` | Primary author(s) - always Vec for consistency |
+| `keywords` | `list[str] \| None` | `[]` | Keywords/tags - always Vec for consistency |
+| `language` | `str \| None` | `None` | Primary language (ISO 639 code) |
+| `created_at` | `str \| None` | `None` | Creation timestamp (ISO 8601 format) |
+| `modified_at` | `str \| None` | `None` | Last modification timestamp (ISO 8601 format) |
+| `created_by` | `str \| None` | `None` | User who created the document |
+| `modified_by` | `str \| None` | `None` | User who last modified the document |
+| `pages` | `PageStructure \| None` | `None` | Page/slide/sheet structure with boundaries |
+| `format` | `FormatMetadata \| None` | `None` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
+| `image_preprocessing` | `ImagePreprocessingMetadata \| None` | `None` | Image preprocessing metadata (when OCR preprocessing was applied) |
+| `json_schema` | `dict[str, Any] \| None` | `None` | JSON schema (for structured data extraction) |
+| `error` | `ErrorMetadata \| None` | `None` | Error metadata (for batch operations) |
+| `extraction_duration_ms` | `int \| None` | `None` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `None` for single-file extraction (which uses external timing). |
+| `category` | `str \| None` | `None` | Document category (from frontmatter or classification). |
+| `tags` | `list[str] \| None` | `[]` | Document tags (from frontmatter). |
+| `document_version` | `str \| None` | `None` | Document version string (from frontmatter). |
+| `abstract_text` | `str \| None` | `None` | Abstract or summary text (from frontmatter). |
+| `output_format` | `str \| None` | `None` | Output format identifier (e.g., "markdown", "html", "text"). Set by the output format pipeline stage when format conversion is applied. Previously stored in `metadata.additional["output_format"]`. |
 | `ocr_used` | `bool` | — | Whether OCR was used during extraction. Set to `True` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `False` means native text extraction was used exclusively. |
 | `additional` | `dict[str, dict[str, Any]]` | `{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
 ##### Methods
+
 ###### is_empty()
+
 Returns `True` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
 
@@ -2615,6 +2806,7 @@ def is_empty(self) -> bool
 ---
 
 #### ModelPaths
+
 Combined paths to all models needed for OCR (backward compatibility).
 
 | Field | Type | Default | Description |
@@ -2628,6 +2820,7 @@ Combined paths to all models needed for OCR (backward compatibility).
 ---
 
 #### OcrBackend
+
 Trait for OCR backend plugins.
 
 Implement this trait to add custom OCR capabilities. OCR backends can be:
@@ -2640,7 +2833,9 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
 ##### Methods
+
 ###### process_image()
+
 Process an image and extract text via OCR.
 
 **Returns:**
@@ -2653,12 +2848,19 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
+# Reading `backend_options`
+
+Backends that support runtime tuning can read `config.backend_options` and
+deserialize only the keys they care about. Unknown keys are silently ignored,
+so multiple backends can coexist in a pipeline without key conflicts.
+
 **Signature:**
 
 ```python
 def process_image(self, image_bytes: bytes, config: OcrConfig) -> ExtractionResult
 ```
 ###### process_image_file()
+
 Process a file and extract text via OCR.
 
 Default implementation reads the file and calls `process_image`.
@@ -2674,6 +2876,7 @@ Same as `process_image`, plus file I/O errors.
 def process_image_file(self, path: str, config: OcrConfig) -> ExtractionResult
 ```
 ###### supports_language()
+
 Check if this backend supports a given language code.
 
 **Returns:**
@@ -2686,6 +2889,7 @@ Check if this backend supports a given language code.
 def supports_language(self, lang: str) -> bool
 ```
 ###### backend_type()
+
 Get the backend type identifier.
 
 **Returns:**
@@ -2698,6 +2902,7 @@ The backend type enum value.
 def backend_type(self) -> OcrBackendType
 ```
 ###### supported_languages()
+
 Optional: Get a list of all supported languages.
 
 Defaults to empty list. Override to provide comprehensive language support info.
@@ -2708,6 +2913,7 @@ Defaults to empty list. Override to provide comprehensive language support info.
 def supported_languages(self) -> list[str]
 ```
 ###### supports_table_detection()
+
 Optional: Check if the backend supports table detection.
 
 Defaults to `False`. Override if your backend can detect and extract tables.
@@ -2718,6 +2924,7 @@ Defaults to `False`. Override if your backend can detect and extract tables.
 def supports_table_detection(self) -> bool
 ```
 ###### supports_document_processing()
+
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
 Defaults to `False`. Override if the backend has optimized document processing.
@@ -2728,6 +2935,7 @@ Defaults to `False`. Override if the backend has optimized document processing.
 def supports_document_processing(self) -> bool
 ```
 ###### process_document()
+
 Process a document file directly via OCR.
 
 Only called if `supports_document_processing` returns `True`.
@@ -2741,6 +2949,7 @@ def process_document(self, path: str, config: OcrConfig) -> ExtractionResult
 ---
 
 #### OcrCacheStats
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `total_files` | `int` | — | Total files |
@@ -2750,6 +2959,7 @@ def process_document(self, path: str, config: OcrConfig) -> ExtractionResult
 ---
 
 #### OcrConfidence
+
 Confidence scores for an OCR element.
 
 Separates detection confidence (how confident that text exists at this location)
@@ -2757,13 +2967,14 @@ from recognition confidence (how confident about the actual text content).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `detection` | `float | None` | `None` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
+| `detection` | `float \| None` | `None` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
 | `recognition` | `float` | — | Recognition confidence: how confident about the text content. Range: 0.0 to 1.0. |
 
 
 ---
 
 #### OcrConfig
+
 OCR configuration.
 
 | Field | Type | Default | Description |
@@ -2771,20 +2982,23 @@ OCR configuration.
 | `enabled` | `bool` | `True` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `True`. When `False`, all other OCR settings are ignored. |
 | `backend` | `str` | — | OCR backend: tesseract, easyocr, paddleocr |
 | `language` | `str` | — | Language code (e.g., "eng", "deu") |
-| `tesseract_config` | `TesseractConfig | None` | `None` | Tesseract-specific configuration (optional) |
-| `output_format` | `OutputFormat | None` | `None` | Output format for OCR results (optional, for format conversion) |
-| `paddle_ocr_config` | `dict[str, Any] | None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `element_config` | `OcrElementConfig | None` | `None` | OCR element extraction configuration |
-| `quality_thresholds` | `OcrQualityThresholds | None` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
-| `pipeline` | `OcrPipelineConfig | None` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
+| `tesseract_config` | `TesseractConfig \| None` | `None` | Tesseract-specific configuration (optional) |
+| `output_format` | `OutputFormat \| None` | `None` | Output format for OCR results (optional, for format conversion) |
+| `paddle_ocr_config` | `dict[str, Any] \| None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
+| `backend_options` | `dict[str, Any] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
+| `element_config` | `OcrElementConfig \| None` | `None` | OCR element extraction configuration |
+| `quality_thresholds` | `OcrQualityThresholds \| None` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
+| `pipeline` | `OcrPipelineConfig \| None` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `auto_rotate` | `bool` | `False` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlm_config` | `LlmConfig | None` | `None` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
-| `vlm_prompt` | `str | None` | `None` | Custom Jinja2 prompt template for VLM OCR. When `None`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
-| `acceleration` | `AccelerationConfig | None` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
-| `tessdata_bytes` | `dict[str, bytes] | None` | `None` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
+| `vlm_config` | `LlmConfig \| None` | `None` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_prompt` | `str \| None` | `None` | Custom Jinja2 prompt template for VLM OCR. When `None`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
+| `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
+| `tessdata_bytes` | `dict[str, bytes] \| None` | `None` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2795,6 +3009,7 @@ def default() -> OcrConfig
 ---
 
 #### OcrElement
+
 A unified OCR element representing detected text with full metadata.
 
 This is the primary type for structured OCR output, preserving all information
@@ -2806,15 +3021,16 @@ from both Tesseract and PaddleOCR backends.
 | `geometry` | `OcrBoundingGeometry` | `OcrBoundingGeometry.RECTANGLE` | Bounding geometry (rectangle or quadrilateral). |
 | `confidence` | `OcrConfidence` | — | Confidence scores for detection and recognition. |
 | `level` | `OcrElementLevel` | `OcrElementLevel.LINE` | Hierarchical level (word, line, block, page). |
-| `rotation` | `OcrRotation | None` | `None` | Rotation information (if detected). |
+| `rotation` | `OcrRotation \| None` | `None` | Rotation information (if detected). |
 | `page_number` | `int` | — | Page number (1-indexed). |
-| `parent_id` | `str | None` | `None` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
+| `parent_id` | `str \| None` | `None` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
 | `backend_metadata` | `dict[str, dict[str, Any]]` | `{}` | Backend-specific metadata that doesn't fit the unified schema. |
 
 
 ---
 
 #### OcrElementConfig
+
 Configuration for OCR element extraction.
 
 Controls how OCR elements are extracted and filtered.
@@ -2830,6 +3046,7 @@ Controls how OCR elements are extracted and filtered.
 ---
 
 #### OcrExtractionResult
+
 OCR extraction result.
 
 Result of performing OCR on an image or scanned document,
@@ -2841,13 +3058,14 @@ including recognized text and detected tables.
 | `mime_type` | `str` | — | Original MIME type of the processed image |
 | `metadata` | `dict[str, dict[str, Any]]` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `list[OcrTable]` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `list[OcrElement] | None` | `None` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
-| `internal_document` | `str | None` | `None` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
+| `ocr_elements` | `list[OcrElement] \| None` | `None` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `internal_document` | `str \| None` | `None` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
 
 
 ---
 
 #### OcrMetadata
+
 OCR processing metadata.
 
 Captures information about OCR processing configuration and results.
@@ -2858,13 +3076,14 @@ Captures information about OCR processing configuration and results.
 | `psm` | `int` | — | Tesseract Page Segmentation Mode (PSM) |
 | `output_format` | `str` | — | Output format (e.g., "text", "hocr") |
 | `table_count` | `int` | — | Number of tables detected |
-| `table_rows` | `int | None` | `None` | Table rows |
-| `table_cols` | `int | None` | `None` | Table cols |
+| `table_rows` | `int \| None` | `None` | Table rows |
+| `table_cols` | `int \| None` | `None` | Table cols |
 
 
 ---
 
 #### OcrPipelineConfig
+
 Multi-backend OCR pipeline with quality-based fallback.
 
 Backends are tried in priority order (highest first). After each backend
@@ -2880,21 +3099,24 @@ the result is accepted. Otherwise the next backend is tried.
 ---
 
 #### OcrPipelineStage
+
 A single backend stage in the OCR pipeline.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `backend` | `str` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `int` | — | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `str | None` | `None` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `TesseractConfig | None` | `None` | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `dict[str, Any] | None` | `None` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `LlmConfig | None` | `None` | VLM config override for this pipeline stage. |
+| `language` | `str \| None` | `None` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `TesseractConfig \| None` | `None` | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `dict[str, Any] \| None` | `None` | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `LlmConfig \| None` | `None` | VLM config override for this pipeline stage. |
+| `backend_options` | `dict[str, Any] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 
 ---
 
 #### OcrQualityThresholds
+
 Quality thresholds for OCR fallback decisions and pipeline quality gating.
 
 All fields default to the values that match the previous hardcoded behavior,
@@ -2920,7 +3142,9 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `pipeline_min_quality` | `float` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -2931,17 +3155,19 @@ def default() -> OcrQualityThresholds
 ---
 
 #### OcrRotation
+
 Rotation information for an OCR element.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `angle_degrees` | `float` | — | Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). |
-| `confidence` | `float | None` | `None` | Confidence score for the rotation detection. |
+| `confidence` | `float \| None` | `None` | Confidence score for the rotation detection. |
 
 
 ---
 
 #### OcrTable
+
 Table detected via OCR.
 
 Represents a table structure recognized during OCR processing.
@@ -2951,12 +3177,13 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `list[list[str]]` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `str` | — | Markdown representation of the table |
 | `page_number` | `int` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `OcrTableBoundingBox | None` | `None` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `OcrTableBoundingBox \| None` | `None` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 
 ---
 
 #### OcrTableBoundingBox
+
 Bounding box for an OCR-detected table in pixel coordinates.
 
 | Field | Type | Default | Description |
@@ -2970,6 +3197,7 @@ Bounding box for an OCR-detected table in pixel coordinates.
 ---
 
 #### OdtProperties
+
 OpenDocument metadata from meta.xml
 
 Contains metadata fields defined by the OASIS OpenDocument Format standard.
@@ -2977,29 +3205,30 @@ Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `title` | `str | None` | `None` | Document title (dc:title) |
-| `subject` | `str | None` | `None` | Document subject/topic (dc:subject) |
-| `creator` | `str | None` | `None` | Current document creator/author (dc:creator) |
-| `initial_creator` | `str | None` | `None` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `str | None` | `None` | Keywords or tags (meta:keyword) |
-| `description` | `str | None` | `None` | Document description (dc:description) |
-| `date` | `str | None` | `None` | Current modification date (dc:date) |
-| `creation_date` | `str | None` | `None` | Initial creation date (meta:creation-date) |
-| `language` | `str | None` | `None` | Document language (dc:language) |
-| `generator` | `str | None` | `None` | Generator/application that created the document (meta:generator) |
-| `editing_duration` | `str | None` | `None` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editing_cycles` | `str | None` | `None` | Number of edits/revisions (meta:editing-cycles) |
-| `page_count` | `int | None` | `None` | Document statistics - page count (meta:page-count) |
-| `word_count` | `int | None` | `None` | Document statistics - word count (meta:word-count) |
-| `character_count` | `int | None` | `None` | Document statistics - character count (meta:character-count) |
-| `paragraph_count` | `int | None` | `None` | Document statistics - paragraph count (meta:paragraph-count) |
-| `table_count` | `int | None` | `None` | Document statistics - table count (meta:table-count) |
-| `image_count` | `int | None` | `None` | Document statistics - image count (meta:image-count) |
+| `title` | `str \| None` | `None` | Document title (dc:title) |
+| `subject` | `str \| None` | `None` | Document subject/topic (dc:subject) |
+| `creator` | `str \| None` | `None` | Current document creator/author (dc:creator) |
+| `initial_creator` | `str \| None` | `None` | Initial creator of the document (meta:initial-creator) |
+| `keywords` | `str \| None` | `None` | Keywords or tags (meta:keyword) |
+| `description` | `str \| None` | `None` | Document description (dc:description) |
+| `date` | `str \| None` | `None` | Current modification date (dc:date) |
+| `creation_date` | `str \| None` | `None` | Initial creation date (meta:creation-date) |
+| `language` | `str \| None` | `None` | Document language (dc:language) |
+| `generator` | `str \| None` | `None` | Generator/application that created the document (meta:generator) |
+| `editing_duration` | `str \| None` | `None` | Editing duration in ISO 8601 format (meta:editing-duration) |
+| `editing_cycles` | `str \| None` | `None` | Number of edits/revisions (meta:editing-cycles) |
+| `page_count` | `int \| None` | `None` | Document statistics - page count (meta:page-count) |
+| `word_count` | `int \| None` | `None` | Document statistics - word count (meta:word-count) |
+| `character_count` | `int \| None` | `None` | Document statistics - character count (meta:character-count) |
+| `paragraph_count` | `int \| None` | `None` | Document statistics - paragraph count (meta:paragraph-count) |
+| `table_count` | `int \| None` | `None` | Document statistics - table count (meta:table-count) |
+| `image_count` | `int \| None` | `None` | Document statistics - image count (meta:image-count) |
 
 
 ---
 
 #### OpenWebDocumentResponse
+
 OpenWebUI "External" engine response format.
 
 Returned by `PUT /process` for the OpenWebUI external document loader.
@@ -3013,6 +3242,7 @@ Returned by `PUT /process` for the OpenWebUI external document loader.
 ---
 
 #### OrientationResult
+
 Document orientation detection result.
 
 | Field | Type | Default | Description |
@@ -3024,6 +3254,7 @@ Document orientation detection result.
 ---
 
 #### PaddleOcrConfig
+
 Configuration for PaddleOCR backend.
 
 Configures PaddleOCR text detection and recognition with multi-language support.
@@ -3032,7 +3263,7 @@ Uses a builder pattern for convenient configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `language` | `str` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
-| `cache_dir` | `str | None` | `None` | Optional custom cache directory for model files |
+| `cache_dir` | `str \| None` | `None` | Optional custom cache directory for model files |
 | `use_angle_cls` | `bool` | — | Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition. |
 | `enable_table_detection` | `bool` | — | Enable table structure detection (default: false) |
 | `det_db_thresh` | `float` | — | Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections |
@@ -3045,7 +3276,9 @@ Uses a builder pattern for convenient configuration.
 | `model_tier` | `str` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
 ##### Methods
+
 ###### with_cache_dir()
+
 Sets a custom cache directory for model files.
 
 **Signature:**
@@ -3054,6 +3287,7 @@ Sets a custom cache directory for model files.
 def with_cache_dir(self, path: str) -> PaddleOcrConfig
 ```
 ###### with_table_detection()
+
 Enables or disables table structure detection.
 
 **Signature:**
@@ -3062,6 +3296,7 @@ Enables or disables table structure detection.
 def with_table_detection(self, enable: bool) -> PaddleOcrConfig
 ```
 ###### with_angle_cls()
+
 Enables or disables angle classification for rotated text.
 
 **Signature:**
@@ -3070,6 +3305,7 @@ Enables or disables angle classification for rotated text.
 def with_angle_cls(self, enable: bool) -> PaddleOcrConfig
 ```
 ###### with_det_db_thresh()
+
 Sets the database threshold for text detection.
 
 **Signature:**
@@ -3078,6 +3314,7 @@ Sets the database threshold for text detection.
 def with_det_db_thresh(self, threshold: float) -> PaddleOcrConfig
 ```
 ###### with_det_db_box_thresh()
+
 Sets the box threshold for text bounding box refinement.
 
 **Signature:**
@@ -3086,6 +3323,7 @@ Sets the box threshold for text bounding box refinement.
 def with_det_db_box_thresh(self, threshold: float) -> PaddleOcrConfig
 ```
 ###### with_det_db_unclip_ratio()
+
 Sets the unclip ratio for expanding text bounding boxes.
 
 **Signature:**
@@ -3094,6 +3332,7 @@ Sets the unclip ratio for expanding text bounding boxes.
 def with_det_db_unclip_ratio(self, ratio: float) -> PaddleOcrConfig
 ```
 ###### with_det_limit_side_len()
+
 Sets the maximum side length for detection images.
 
 **Signature:**
@@ -3102,6 +3341,7 @@ Sets the maximum side length for detection images.
 def with_det_limit_side_len(self, length: int) -> PaddleOcrConfig
 ```
 ###### with_rec_batch_num()
+
 Sets the batch size for recognition inference.
 
 **Signature:**
@@ -3110,6 +3350,7 @@ Sets the batch size for recognition inference.
 def with_rec_batch_num(self, batch_size: int) -> PaddleOcrConfig
 ```
 ###### with_drop_score()
+
 Sets the minimum recognition confidence threshold.
 
 **Signature:**
@@ -3118,6 +3359,7 @@ Sets the minimum recognition confidence threshold.
 def with_drop_score(self, score: float) -> PaddleOcrConfig
 ```
 ###### with_padding()
+
 Sets padding in pixels added around images before detection.
 
 **Signature:**
@@ -3126,6 +3368,7 @@ Sets padding in pixels added around images before detection.
 def with_padding(self, padding: int) -> PaddleOcrConfig
 ```
 ###### with_model_tier()
+
 Sets the model tier controlling detection/recognition model size.
 
 **Signature:**
@@ -3134,6 +3377,7 @@ Sets the model tier controlling detection/recognition model size.
 def with_model_tier(self, tier: str) -> PaddleOcrConfig
 ```
 ###### default()
+
 Creates a default configuration with English language support.
 
 **Signature:**
@@ -3146,6 +3390,7 @@ def default() -> PaddleOcrConfig
 ---
 
 #### PageBoundary
+
 Byte offset boundary for a page.
 
 Tracks where a specific page's content starts and ends in the main content string,
@@ -3162,6 +3407,7 @@ at valid UTF-8 character boundaries when using standard String methods (push_str
 ---
 
 #### PageConfig
+
 Page extraction and tracking configuration.
 
 Controls how pages are extracted, tracked, and represented in the extraction results.
@@ -3181,7 +3427,9 @@ when page boundaries are available and chunking is configured.
 "` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3192,6 +3440,7 @@ def default() -> PageConfig
 ---
 
 #### PageContent
+
 Content for a single page/slide.
 
 When page extraction is enabled, documents are split into per-page content
@@ -3212,15 +3461,16 @@ by avoiding redundant copies during serialization.
 | `page_number` | `int` | — | Page number (1-indexed) |
 | `content` | `str` | — | Text content for this page |
 | `tables` | `list[Table]` | — | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
-| `images` | `list[ExtractedImage]` | — | Images found on this page (uses Arc for memory efficiency) Serializes as Vec<ExtractedImage> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
-| `hierarchy` | `PageHierarchy | None` | `None` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
-| `is_blank` | `bool | None` | `None` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
-| `layout_regions` | `list[LayoutRegion] | None` | `None` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
+| `image_indices` | `list[int]` | — | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `hierarchy` | `PageHierarchy \| None` | `None` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
+| `is_blank` | `bool \| None` | `None` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
+| `layout_regions` | `list[LayoutRegion] \| None` | `None` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
 
 
 ---
 
 #### PageHierarchy
+
 Page hierarchy structure containing heading levels and block information.
 
 Used when PDF text hierarchy extraction is enabled. Contains hierarchical
@@ -3235,6 +3485,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 ---
 
 #### PageInfo
+
 Metadata for individual page/slide/sheet.
 
 Captures per-page information including dimensions, content counts,
@@ -3243,34 +3494,36 @@ and visibility state (for presentations).
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `number` | `int` | — | Page number (1-indexed) |
-| `title` | `str | None` | `None` | Page title (usually for presentations) |
-| `dimensions` | `list[float] | None` | `None` | Dimensions in points (PDF) or pixels (images): (width, height) |
-| `image_count` | `int | None` | `None` | Number of images on this page |
-| `table_count` | `int | None` | `None` | Number of tables on this page |
-| `hidden` | `bool | None` | `None` | Whether this page is hidden (e.g., in presentations) |
-| `is_blank` | `bool | None` | `None` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
+| `title` | `str \| None` | `None` | Page title (usually for presentations) |
+| `dimensions` | `list[float] \| None` | `None` | Dimensions in points (PDF) or pixels (images): (width, height) |
+| `image_count` | `int \| None` | `None` | Number of images on this page |
+| `table_count` | `int \| None` | `None` | Number of tables on this page |
+| `hidden` | `bool \| None` | `None` | Whether this page is hidden (e.g., in presentations) |
+| `is_blank` | `bool \| None` | `None` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `has_vector_graphics` | `bool` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `True` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `None` for other document types. |
 
 
 ---
 
 #### PageMarginsPoints
+
 Page margins converted to points (1/72 inch).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `top` | `float | None` | `None` | Top |
-| `right` | `float | None` | `None` | Right |
-| `bottom` | `float | None` | `None` | Bottom |
-| `left` | `float | None` | `None` | Left |
-| `header` | `float | None` | `None` | Header |
-| `footer` | `float | None` | `None` | Footer |
-| `gutter` | `float | None` | `None` | Gutter |
+| `top` | `float \| None` | `None` | Top |
+| `right` | `float \| None` | `None` | Right |
+| `bottom` | `float \| None` | `None` | Bottom |
+| `left` | `float \| None` | `None` | Left |
+| `header` | `float \| None` | `None` | Header |
+| `footer` | `float \| None` | `None` | Footer |
+| `gutter` | `float \| None` | `None` | Gutter |
 
 
 ---
 
 #### PageStructure
+
 Unified page structure for documents.
 
 Supports different page types (PDF pages, PPTX slides, Excel sheets)
@@ -3280,42 +3533,47 @@ with character offset boundaries for chunk-to-page mapping.
 |-------|------|---------|-------------|
 | `total_count` | `int` | — | Total number of pages/slides/sheets |
 | `unit_type` | `PageUnitType` | — | Type of paginated unit |
-| `boundaries` | `list[PageBoundary] | None` | `None` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
-| `pages` | `list[PageInfo] | None` | `None` | Detailed per-page metadata (optional, only when needed) |
+| `boundaries` | `list[PageBoundary] \| None` | `None` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
+| `pages` | `list[PageInfo] \| None` | `None` | Detailed per-page metadata (optional, only when needed) |
 
 
 ---
 
 #### PdfAnnotation
+
 A PDF annotation extracted from a document page.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `annotation_type` | `PdfAnnotationType` | — | The type of annotation. |
-| `content` | `str | None` | `None` | Text content of the annotation (e.g., comment text, link URL). |
+| `content` | `str \| None` | `None` | Text content of the annotation (e.g., comment text, link URL). |
 | `page_number` | `int` | — | Page number where the annotation appears (1-indexed). |
-| `bounding_box` | `str | None` | `None` | Bounding box of the annotation on the page. |
+| `bounding_box` | `str \| None` | `None` | Bounding box of the annotation on the page. |
 
 
 ---
 
 #### PdfConfig
+
 PDF-specific configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extract_images` | `bool` | `False` | Extract images from PDF |
 | `extract_tables` | `bool` | `True` | Extract tables from PDF. When `True` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf.oxide.table.extract_tables_heuristic`. Set to `False` to skip both passes — `tables` will then be empty in the result. |
-| `passwords` | `list[str] | None` | `None` | List of passwords to try when opening encrypted PDFs |
+| `passwords` | `list[str] \| None` | `None` | List of passwords to try when opening encrypted PDFs |
 | `extract_metadata` | `bool` | `True` | Extract PDF metadata |
-| `hierarchy` | `HierarchyConfig | None` | `None` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
+| `hierarchy` | `HierarchyConfig \| None` | `None` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `extract_annotations` | `bool` | `False` | Extract PDF annotations (text notes, highlights, links, stamps). Default: false |
-| `top_margin_fraction` | `float | None` | `None` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
-| `bottom_margin_fraction` | `float | None` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
+| `top_margin_fraction` | `float \| None` | `None` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
+| `bottom_margin_fraction` | `float \| None` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `bool` | `False` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `True`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
+| `ocr_inline_images` | `bool` | `False` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `False`. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3326,6 +3584,7 @@ def default() -> PdfConfig
 ---
 
 #### PdfMetadata
+
 PDF-specific metadata.
 
 Contains metadata fields specific to PDF documents that are not in the common
@@ -3334,17 +3593,18 @@ are at the `Metadata` level.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `pdf_version` | `str | None` | `None` | PDF version (e.g., "1.7", "2.0") |
-| `producer` | `str | None` | `None` | PDF producer (application that created the PDF) |
-| `is_encrypted` | `bool | None` | `None` | Whether the PDF is encrypted/password-protected |
-| `width` | `int | None` | `None` | First page width in points (1/72 inch) |
-| `height` | `int | None` | `None` | First page height in points (1/72 inch) |
-| `page_count` | `int | None` | `None` | Total number of pages in the PDF document |
+| `pdf_version` | `str \| None` | `None` | PDF version (e.g., "1.7", "2.0") |
+| `producer` | `str \| None` | `None` | PDF producer (application that created the PDF) |
+| `is_encrypted` | `bool \| None` | `None` | Whether the PDF is encrypted/password-protected |
+| `width` | `int \| None` | `None` | First page width in points (1/72 inch) |
+| `height` | `int \| None` | `None` | First page height in points (1/72 inch) |
+| `page_count` | `int \| None` | `None` | Total number of pages in the PDF document |
 
 
 ---
 
 #### Plugin
+
 Base trait that all plugins must implement.
 
 This trait provides common functionality for plugin lifecycle management,
@@ -3355,7 +3615,9 @@ identification, and metadata.
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
 ##### Methods
+
 ###### name()
+
 Returns the unique name/identifier for this plugin.
 
 The name should be:
@@ -3369,6 +3631,7 @@ The name should be:
 def name(self) -> str
 ```
 ###### version()
+
 Returns the semantic version of this plugin.
 
 Should follow semver format: `MAJOR.MINOR.PATCH`
@@ -3381,6 +3644,7 @@ Defaults to the kreuzberg crate version.
 def version(self) -> str
 ```
 ###### initialize()
+
 Initialize the plugin.
 
 Called once when the plugin is registered. Use this to:
@@ -3407,6 +3671,7 @@ Defaults to a no-op for stateless plugins.
 def initialize(self) -> None
 ```
 ###### shutdown()
+
 Shutdown the plugin.
 
 Called when the plugin is being unregistered or the application is shutting down.
@@ -3433,6 +3698,7 @@ Defaults to a no-op for stateless plugins.
 def shutdown(self) -> None
 ```
 ###### description()
+
 Optional plugin description for debugging and logging.
 
 Defaults to empty string if not overridden.
@@ -3443,6 +3709,7 @@ Defaults to empty string if not overridden.
 def description(self) -> str
 ```
 ###### author()
+
 Optional plugin author information.
 
 Defaults to empty string if not overridden.
@@ -3456,6 +3723,7 @@ def author(self) -> str
 ---
 
 #### PostProcessor
+
 Trait for post-processor plugins.
 
 Post-processors transform or enrich extraction results after the initial
@@ -3485,7 +3753,9 @@ and execution continues. To make errors fatal, return an error from `process()`.
 Post-processors must be thread-safe (`Send + Sync`).
 
 ##### Methods
+
 ###### process()
+
 Process an extraction result.
 
 Transform or enrich the extraction result. Can modify:
@@ -3533,6 +3803,7 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 def process(self, result: ExtractionResult, config: ExtractionConfig) -> None
 ```
 ###### processing_stage()
+
 Get the processing stage for this post-processor.
 
 Determines when this processor runs in the pipeline.
@@ -3547,6 +3818,7 @@ The `ProcessingStage` (Early, Middle, or Late).
 def processing_stage(self) -> ProcessingStage
 ```
 ###### should_process()
+
 Optional: Check if this processor should run for a given result.
 
 Allows conditional processing based on MIME type, metadata, or content.
@@ -3562,6 +3834,7 @@ Defaults to `True` (always run).
 def should_process(self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 ###### estimated_duration_ms()
+
 Optional: Estimate processing time in milliseconds.
 
 Used for logging and debugging. Defaults to 0 (unknown).
@@ -3576,6 +3849,7 @@ Estimated processing time in milliseconds.
 def estimated_duration_ms(self, result: ExtractionResult) -> int
 ```
 ###### priority()
+
 Execution priority within the processing stage.
 
 Higher values run first within the same `ProcessingStage`. Defaults to 50.
@@ -3591,18 +3865,21 @@ def priority(self) -> int
 ---
 
 #### PostProcessorConfig
+
 Post-processor configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `True` | Enable post-processors |
-| `enabled_processors` | `list[str] | None` | `None` | Whitelist of processor names to run (None = all enabled) |
-| `disabled_processors` | `list[str] | None` | `None` | Blacklist of processor names to skip (None = none disabled) |
-| `enabled_set` | `str | None` | `None` | Pre-computed AHashSet for O(1) enabled processor lookup |
-| `disabled_set` | `str | None` | `None` | Pre-computed AHashSet for O(1) disabled processor lookup |
+| `enabled_processors` | `list[str] \| None` | `None` | Whitelist of processor names to run (None = all enabled) |
+| `disabled_processors` | `list[str] \| None` | `None` | Blacklist of processor names to skip (None = none disabled) |
+| `enabled_set` | `str \| None` | `None` | Pre-computed AHashSet for O(1) enabled processor lookup |
+| `disabled_set` | `str \| None` | `None` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3613,32 +3890,34 @@ def default() -> PostProcessorConfig
 ---
 
 #### PptxAppProperties
+
 Application properties from docProps/app.xml for PPTX
 
 Contains PowerPoint-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `str | None` | `None` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `app_version` | `str | None` | `None` | Application version |
-| `total_time` | `int | None` | `None` | Total editing time in minutes |
-| `company` | `str | None` | `None` | Company name |
-| `doc_security` | `int | None` | `None` | Document security level |
-| `scale_crop` | `bool | None` | `None` | Scale crop flag |
-| `links_up_to_date` | `bool | None` | `None` | Links up to date flag |
-| `shared_doc` | `bool | None` | `None` | Shared document flag |
-| `hyperlinks_changed` | `bool | None` | `None` | Hyperlinks changed flag |
-| `slides` | `int | None` | `None` | Number of slides |
-| `notes` | `int | None` | `None` | Number of notes |
-| `hidden_slides` | `int | None` | `None` | Number of hidden slides |
-| `multimedia_clips` | `int | None` | `None` | Number of multimedia clips |
-| `presentation_format` | `str | None` | `None` | Presentation format (e.g., "Widescreen", "Standard") |
+| `application` | `str \| None` | `None` | Application name (e.g., "Microsoft Office PowerPoint") |
+| `app_version` | `str \| None` | `None` | Application version |
+| `total_time` | `int \| None` | `None` | Total editing time in minutes |
+| `company` | `str \| None` | `None` | Company name |
+| `doc_security` | `int \| None` | `None` | Document security level |
+| `scale_crop` | `bool \| None` | `None` | Scale crop flag |
+| `links_up_to_date` | `bool \| None` | `None` | Links up to date flag |
+| `shared_doc` | `bool \| None` | `None` | Shared document flag |
+| `hyperlinks_changed` | `bool \| None` | `None` | Hyperlinks changed flag |
+| `slides` | `int \| None` | `None` | Number of slides |
+| `notes` | `int \| None` | `None` | Number of notes |
+| `hidden_slides` | `int \| None` | `None` | Number of hidden slides |
+| `multimedia_clips` | `int \| None` | `None` | Number of multimedia clips |
+| `presentation_format` | `str \| None` | `None` | Presentation format (e.g., "Widescreen", "Standard") |
 | `slide_titles` | `list[str]` | `[]` | Slide titles |
 
 
 ---
 
 #### PptxExtractionResult
+
 PowerPoint (PPTX) extraction result.
 
 Contains extracted slide content, metadata, and embedded images/tables.
@@ -3651,9 +3930,9 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `image_count` | `int` | — | Total number of embedded images |
 | `table_count` | `int` | — | Total number of tables |
 | `images` | `list[ExtractedImage]` | — | Extracted images from the presentation |
-| `page_structure` | `PageStructure | None` | `None` | Slide structure with boundaries (when page tracking is enabled) |
-| `page_contents` | `list[PageContent] | None` | `None` | Per-slide content (when page tracking is enabled) |
-| `document` | `DocumentStructure | None` | `None` | Structured document representation |
+| `page_structure` | `PageStructure \| None` | `None` | Slide structure with boundaries (when page tracking is enabled) |
+| `page_contents` | `list[PageContent] \| None` | `None` | Per-slide content (when page tracking is enabled) |
+| `document` | `DocumentStructure \| None` | `None` | Structured document representation |
 | `hyperlinks` | `list[str]` | — | Hyperlinks discovered in slides as (url, optional_label) pairs. |
 | `office_metadata` | `dict[str, str]` | — | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
 
@@ -3661,6 +3940,7 @@ Contains extracted slide content, metadata, and embedded images/tables.
 ---
 
 #### PptxMetadata
+
 PowerPoint presentation metadata.
 
 Extracted from PPTX files containing slide counts and presentation details.
@@ -3669,13 +3949,14 @@ Extracted from PPTX files containing slide counts and presentation details.
 |-------|------|---------|-------------|
 | `slide_count` | `int` | — | Total number of slides in the presentation |
 | `slide_names` | `list[str]` | `[]` | Names of slides (if available) |
-| `image_count` | `int | None` | `None` | Number of embedded images |
-| `table_count` | `int | None` | `None` | Number of tables |
+| `image_count` | `int \| None` | `None` | Number of embedded images |
+| `table_count` | `int \| None` | `None` | Number of tables |
 
 
 ---
 
 #### ProcessingWarning
+
 A non-fatal warning from a processing pipeline stage.
 
 Captures errors from optional features that don't prevent extraction
@@ -3690,6 +3971,7 @@ but may indicate degraded results.
 ---
 
 #### PstMetadata
+
 Outlook PST archive metadata.
 
 | Field | Type | Default | Description |
@@ -3700,6 +3982,7 @@ Outlook PST archive metadata.
 ---
 
 #### RakeParams
+
 RAKE-specific parameters.
 
 | Field | Type | Default | Description |
@@ -3708,7 +3991,9 @@ RAKE-specific parameters.
 | `max_words_per_phrase` | `int` | `3` | Maximum words in a keyword phrase (default: 3). |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3719,25 +4004,34 @@ def default() -> RakeParams
 ---
 
 #### RecognizedTable
+
 Pre-computed table markdown for a table detection region.
+
+Produced by the TATR-based table structure recognizer and surfaced as part of
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
+so that consumers who do not enable `layout-detection` (ORT) can still reference
+the type in their own code.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `detection_bbox` | `BBox` | — | Detection bbox that this table corresponds to (for matching). |
-| `cells` | `list[list[str]]` | — | Table cells as a 2D vector (rows x columns). |
+| `cells` | `list[list[str]]` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `str` | — | Rendered markdown table. |
 
 
 ---
 
 #### Recyclable
+
 Trait for types that can be pooled and reused.
 
 Implementing this trait allows a type to be used with `Pool<T>`.
 The `reset()` method should clear the object's state for reuse.
 
 ##### Methods
+
 ###### reset()
+
 Reset the object to a reusable state.
 
 This is called when returning an object to the pool.
@@ -3752,6 +4046,7 @@ def reset(self) -> None
 ---
 
 #### Renderer
+
 Trait for document renderers that convert `InternalDocument` to output strings.
 
 Renderers are typically stateless converters that transform the internal
@@ -3769,7 +4064,9 @@ take no-op defaults and need not be overridden.
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
 ##### Methods
+
 ###### render()
+
 Render an `InternalDocument` to the output format.
 
 **Returns:**
@@ -3789,6 +4086,7 @@ def render(self, doc: InternalDocument) -> str
 ---
 
 #### ResolvedStyle
+
 Fully resolved (flattened) style after walking the inheritance chain.
 
 | Field | Type | Default | Description |
@@ -3800,6 +4098,7 @@ Fully resolved (flattened) style after walking the inheritance chain.
 ---
 
 #### SecurityLimits
+
 Configuration for security limits across extractors.
 
 All limits are intentionally conservative to prevent DoS attacks
@@ -3818,7 +4117,9 @@ while still supporting legitimate documents.
 | `max_table_cells` | `int` | `100000` | Maximum cells per table (100,000) |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3829,6 +4130,7 @@ def default() -> SecurityLimits
 ---
 
 #### ServerConfig
+
 API server configuration.
 
 This struct holds all configuration options for the Kreuzberg API server,
@@ -3851,7 +4153,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `max_multipart_field_bytes` | `int` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -3859,6 +4163,7 @@ including host/port settings, CORS configuration, and upload limits.
 def default() -> ServerConfig
 ```
 ###### listen_addr()
+
 Get the server listen address (host:port).
 
 **Signature:**
@@ -3867,6 +4172,7 @@ Get the server listen address (host:port).
 def listen_addr(self) -> str
 ```
 ###### cors_allows_all()
+
 Check if CORS allows all origins.
 
 Returns `True` if the `cors_origins` vector is empty, meaning all origins
@@ -3878,6 +4184,7 @@ are allowed. Returns `False` if specific origins are configured.
 def cors_allows_all(self) -> bool
 ```
 ###### is_origin_allowed()
+
 Check if a given origin is allowed by CORS configuration.
 
 Returns `True` if:
@@ -3890,6 +4197,7 @@ Returns `True` if:
 def is_origin_allowed(self, origin: str) -> bool
 ```
 ###### max_request_body_mb()
+
 Get maximum request body size in megabytes (rounded up).
 
 **Signature:**
@@ -3898,6 +4206,7 @@ Get maximum request body size in megabytes (rounded up).
 def max_request_body_mb(self) -> int
 ```
 ###### max_multipart_field_mb()
+
 Get maximum multipart field size in megabytes (rounded up).
 
 **Signature:**
@@ -3910,27 +4219,31 @@ def max_multipart_field_mb(self) -> int
 
 #### StreamReader
 
+
 ---
 
 #### StringBufferPool
+
 Convenience type alias for a pooled String.
 
 
 ---
 
 #### StructuredData
+
 Structured data (Schema.org, microdata, RDFa) block.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `data_type` | `StructuredDataType` | — | Type of structured data |
 | `raw_json` | `str` | — | Raw JSON string representation |
-| `schema_type` | `str | None` | `None` | Schema type if detectable (e.g., "Article", "Event", "Product") |
+| `schema_type` | `str \| None` | `None` | Schema type if detectable (e.g., "Article", "Event", "Product") |
 
 
 ---
 
 #### StructuredDataResult
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `str` | — | The extracted text content |
@@ -3942,6 +4255,7 @@ Structured data (Schema.org, microdata, RDFa) block.
 ---
 
 #### StructuredExtractionConfig
+
 Configuration for LLM-based structured data extraction.
 
 Sends extracted document content to a VLM with a JSON schema,
@@ -3951,15 +4265,16 @@ returning structured data that conforms to the schema.
 |-------|------|---------|-------------|
 | `schema` | `dict[str, Any]` | — | JSON Schema defining the desired output structure. |
 | `schema_name` | `str` | — | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `str | None` | `None` | Optional schema description for the LLM. |
+| `schema_description` | `str \| None` | `None` | Optional schema description for the LLM. |
 | `strict` | `bool` | — | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `str | None` | `None` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `prompt` | `str \| None` | `None` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 
 ---
 
 #### StructuredExtractionResponse
+
 Response from structured extraction endpoint.
 
 | Field | Type | Default | Description |
@@ -3972,15 +4287,16 @@ Response from structured extraction endpoint.
 ---
 
 #### StyleDefinition
+
 A single style definition parsed from `<w:style>` in `word/styles.xml`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `str` | — | The style ID (`w:styleId` attribute). |
-| `name` | `str | None` | `None` | Human-readable name (`<w:name w:val="..."/>`). |
+| `name` | `str \| None` | `None` | Human-readable name (`<w:name w:val="..."/>`). |
 | `style_type` | `str` | — | Style type: paragraph, character, table, or numbering. |
-| `based_on` | `str | None` | `None` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `next_style` | `str | None` | `None` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
+| `based_on` | `str \| None` | `None` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
+| `next_style` | `str \| None` | `None` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
 | `is_default` | `bool` | — | Whether this is the default style for its type. |
 | `paragraph_properties` | `str` | — | Paragraph properties defined directly on this style. |
 | `run_properties` | `str` | — | Run properties defined directly on this style. |
@@ -3989,6 +4305,7 @@ A single style definition parsed from `<w:style>` in `word/styles.xml`.
 ---
 
 #### SupportedFormat
+
 A supported document format entry.
 
 Represents a file extension and its corresponding MIME type that Kreuzberg can process.
@@ -4002,6 +4319,7 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 ---
 
 #### SyncExtractor
+
 Trait for extractors that can work synchronously (WASM-compatible).
 
 This trait defines the synchronous extraction interface for WASM targets and other
@@ -4018,7 +4336,9 @@ environments by delegating to the sync implementation.
 The `mime_type` parameter is guaranteed to be already validated.
 
 ##### Methods
+
 ###### extract_sync()
+
 Extract content from a byte array synchronously.
 
 This method performs extraction without requiring an async runtime.
@@ -4037,6 +4357,7 @@ def extract_sync(self, content: bytes, mime_type: str, config: ExtractionConfig)
 ---
 
 #### Table
+
 Extracted table structure.
 
 Represents a table detected and extracted from a document (PDF, image, etc.).
@@ -4047,12 +4368,13 @@ Tables are converted to both structured cell data and Markdown format.
 | `cells` | `list[list[str]]` | `[]` | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `str` | — | Markdown representation of the table |
 | `page_number` | `int` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `str | None` | `None` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
+| `bounding_box` | `str \| None` | `None` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
 
 
 ---
 
 #### TableCell
+
 Individual table cell with content and optional styling.
 
 Future extension point for rich table support with cell-level metadata.
@@ -4068,6 +4390,7 @@ Future extension point for rich table support with cell-level metadata.
 ---
 
 #### TableGrid
+
 Structured table grid with cell-level metadata.
 
 Stores row/column dimensions and a flat list of cells with position info.
@@ -4082,28 +4405,32 @@ Stores row/column dimensions and a flat list of cells with position info.
 ---
 
 #### TableProperties
+
 Table-level properties from `<w:tblPr>`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `style_id` | `str | None` | `None` | Style id |
-| `width` | `str | None` | `None` | Width |
-| `alignment` | `str | None` | `None` | Alignment |
-| `layout` | `str | None` | `None` | Layout |
-| `look` | `str | None` | `None` | Look |
-| `borders` | `str | None` | `None` | Borders |
-| `cell_margins` | `str | None` | `None` | Cell margins |
-| `indent` | `str | None` | `None` | Indent |
-| `caption` | `str | None` | `None` | Caption |
+| `style_id` | `str \| None` | `None` | Style id |
+| `width` | `str \| None` | `None` | Width |
+| `alignment` | `str \| None` | `None` | Alignment |
+| `layout` | `str \| None` | `None` | Layout |
+| `look` | `str \| None` | `None` | Look |
+| `borders` | `str \| None` | `None` | Borders |
+| `cell_margins` | `str \| None` | `None` | Cell margins |
+| `indent` | `str \| None` | `None` | Indent |
+| `caption` | `str \| None` | `None` | Caption |
 
 
 ---
 
 #### TessdataManager
+
 Manages tessdata file downloading, caching, and manifest generation.
 
 ##### Methods
+
 ###### cache_dir()
+
 Get the cache directory path.
 
 **Signature:**
@@ -4112,6 +4439,7 @@ Get the cache directory path.
 def cache_dir(self) -> str
 ```
 ###### is_language_cached()
+
 Check if a specific language traineddata file is cached.
 
 **Signature:**
@@ -4120,11 +4448,13 @@ Check if a specific language traineddata file is cached.
 def is_language_cached(self, lang: str) -> bool
 ```
 ###### ensure_all_languages()
+
 Downloads all tessdata_fast traineddata files to the cache directory.
 
 Skips files that already exist. Returns the count of newly downloaded files.
 
-Requires the `paddle-ocr` feature for HTTP download support (ureq).
+When the `paddle-ocr` feature is not enabled, no download URLs are available
+and this method always returns `Ok(0)`.
 
 **Signature:**
 
@@ -4135,6 +4465,7 @@ def ensure_all_languages(self) -> int
 ---
 
 #### TesseractConfig
+
 Tesseract OCR configuration.
 
 Provides fine-grained control over Tesseract OCR engine parameters.
@@ -4148,7 +4479,7 @@ for specific document types (invoices, handwriting, etc.).
 | `output_format` | `str` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `int` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
 | `min_confidence` | `float` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
-| `preprocessing` | `ImagePreprocessingConfig | None` | `None` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `preprocessing` | `ImagePreprocessingConfig \| None` | `None` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
 | `enable_table_detection` | `bool` | `True` | Enable automatic table detection and reconstruction |
 | `table_min_confidence` | `float` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
 | `table_column_threshold` | `int` | `50` | Column threshold for table detection (pixels) |
@@ -4166,7 +4497,9 @@ for specific document types (invoices, handwriting, etc.).
 | `thresholding_method` | `bool` | `False` | Use adaptive thresholding method |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4177,6 +4510,7 @@ def default() -> TesseractConfig
 ---
 
 #### TextAnnotation
+
 Inline text annotation — byte-range based formatting and links.
 
 Annotations reference byte offsets into the node's text content,
@@ -4192,6 +4526,7 @@ enabling precise identification of formatted regions.
 ---
 
 #### TextExtractionResult
+
 Plain text and Markdown extraction result.
 
 Contains the extracted text along with statistics and,
@@ -4203,14 +4538,15 @@ for Markdown files, structural elements like headers and links.
 | `line_count` | `int` | — | Number of lines |
 | `word_count` | `int` | — | Number of words |
 | `character_count` | `int` | — | Number of characters |
-| `headers` | `list[str] | None` | `None` | Markdown headers (text only, Markdown files only) |
-| `links` | `list[str] | None` | `None` | Markdown links as (text, URL) tuples (Markdown files only) |
-| `code_blocks` | `list[str] | None` | `None` | Code blocks as (language, code) tuples (Markdown files only) |
+| `headers` | `list[str] \| None` | `None` | Markdown headers (text only, Markdown files only) |
+| `links` | `list[str] \| None` | `None` | Markdown links as (text, URL) tuples (Markdown files only) |
+| `code_blocks` | `list[str] \| None` | `None` | Code blocks as (language, code) tuples (Markdown files only) |
 
 
 ---
 
 #### TextMetadata
+
 Text/Markdown metadata.
 
 Extracted from plain text and Markdown files. Includes word counts and,
@@ -4221,30 +4557,33 @@ for Markdown, structural elements like headers and links.
 | `line_count` | `int` | — | Number of lines in the document |
 | `word_count` | `int` | — | Number of words |
 | `character_count` | `int` | — | Number of characters |
-| `headers` | `list[str] | None` | `[]` | Markdown headers (headings text only, for Markdown files) |
-| `links` | `list[str] | None` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
-| `code_blocks` | `list[str] | None` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
+| `headers` | `list[str] \| None` | `[]` | Markdown headers (headings text only, for Markdown files) |
+| `links` | `list[str] \| None` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
+| `code_blocks` | `list[str] \| None` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
 
 
 ---
 
 #### TokenReductionConfig
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Level (reduction level) |
-| `language_hint` | `str | None` | `None` | Language hint |
+| `language_hint` | `str \| None` | `None` | Language hint |
 | `preserve_markdown` | `bool` | `False` | Preserve markdown |
 | `preserve_code` | `bool` | `True` | Preserve code |
 | `semantic_threshold` | `float` | `0.3` | Semantic threshold |
 | `enable_parallel` | `bool` | `True` | Enable parallel |
 | `use_simd` | `bool` | `True` | Use simd |
-| `custom_stopwords` | `dict[str, list[str]] | None` | `None` | Custom stopwords |
+| `custom_stopwords` | `dict[str, list[str]] \| None` | `None` | Custom stopwords |
 | `preserve_patterns` | `list[str]` | `[]` | Preserve patterns |
-| `target_reduction` | `float | None` | `None` | Target reduction |
+| `target_reduction` | `float \| None` | `None` | Target reduction |
 | `enable_semantic_clustering` | `bool` | `False` | Enable semantic clustering |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4255,6 +4594,7 @@ def default() -> TokenReductionConfig
 ---
 
 #### TokenReductionOptions
+
 Token reduction configuration.
 
 | Field | Type | Default | Description |
@@ -4263,7 +4603,9 @@ Token reduction configuration.
 | `preserve_important_words` | `bool` | `True` | Preserve important words (capitalized, technical terms) |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4274,12 +4616,14 @@ def default() -> TokenReductionOptions
 ---
 
 #### TracingLayer
+
 A `tower.Layer` that wraps each extraction in a semantic tracing span.
 
 
 ---
 
 #### TreeSitterConfig
+
 Configuration for tree-sitter language pack integration.
 
 Controls grammar download behavior and code analysis options.
@@ -4300,13 +4644,15 @@ docstrings = true
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `True` | Enable code intelligence processing (default: true). When `False`, tree-sitter analysis is completely skipped even if the config section is present. |
-| `cache_dir` | `str | None` | `None` | Custom cache directory for downloaded grammars. When `None`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
-| `languages` | `list[str] | None` | `None` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
-| `groups` | `list[str] | None` | `None` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
+| `cache_dir` | `str \| None` | `None` | Custom cache directory for downloaded grammars. When `None`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
+| `languages` | `list[str] \| None` | `None` | Languages to pre-download on init (e.g., `["python", "rust"]`). |
+| `groups` | `list[str] \| None` | `None` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4317,6 +4663,7 @@ def default() -> TreeSitterConfig
 ---
 
 #### TreeSitterProcessConfig
+
 Processing options for tree-sitter code analysis.
 
 Controls which analysis features are enabled when extracting code files.
@@ -4330,11 +4677,13 @@ Controls which analysis features are enabled when extracting code files.
 | `docstrings` | `bool` | `False` | Extract docstrings. Default: false. |
 | `symbols` | `bool` | `False` | Extract symbol definitions. Default: false. |
 | `diagnostics` | `bool` | `False` | Include parse diagnostics. Default: false. |
-| `chunk_max_size` | `int | None` | `None` | Maximum chunk size in bytes. `None` disables chunking. |
+| `chunk_max_size` | `int \| None` | `None` | Maximum chunk size in bytes. `None` disables chunking. |
 | `content_mode` | `CodeContentMode` | `CodeContentMode.CHUNKS` | Content rendering mode for code extraction. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4345,6 +4694,7 @@ def default() -> TreeSitterProcessConfig
 ---
 
 #### Uri
+
 A URI extracted from a document.
 
 Represents any link, reference, or resource pointer found during extraction.
@@ -4354,14 +4704,15 @@ optional human-readable display text.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `url` | `str` | — | The URL or path string. |
-| `label` | `str | None` | `None` | Optional display text / label for the link. |
-| `page` | `int | None` | `None` | Optional page number where the URI was found (1-indexed). |
+| `label` | `str \| None` | `None` | Optional display text / label for the link. |
+| `page` | `int \| None` | `None` | Optional page number where the URI was found (1-indexed). |
 | `kind` | `UriKind` | — | Semantic classification of the URI. |
 
 
 ---
 
 #### Validator
+
 Trait for validator plugins.
 
 Validators check extraction results for quality, completeness, or correctness.
@@ -4388,7 +4739,9 @@ For non-fatal checks, use post-processors instead.
 Validators must be thread-safe (`Send + Sync`).
 
 ##### Methods
+
 ###### validate()
+
 Validate an extraction result.
 
 Check the extraction result and return `Ok(())` if valid, or an error
@@ -4477,6 +4830,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 def validate(self, result: ExtractionResult, config: ExtractionConfig) -> None
 ```
 ###### should_validate()
+
 Optional: Check if this validator should run for a given result.
 
 Allows conditional validation based on MIME type, metadata, or content.
@@ -4492,6 +4846,7 @@ Defaults to `True` (always run).
 def should_validate(self, result: ExtractionResult, config: ExtractionConfig) -> bool
 ```
 ###### priority()
+
 Optional: Get the validation priority.
 
 Higher priority validators run first. Useful for ordering validation checks
@@ -4512,6 +4867,7 @@ def priority(self) -> int
 ---
 
 #### WarmResponse
+
 Cache warm response.
 
 | Field | Type | Default | Description |
@@ -4524,26 +4880,28 @@ Cache warm response.
 ---
 
 #### XlsxAppProperties
+
 Application properties from docProps/app.xml for XLSX
 
 Contains Excel-specific document metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `application` | `str | None` | `None` | Application name (e.g., "Microsoft Excel") |
-| `app_version` | `str | None` | `None` | Application version |
-| `doc_security` | `int | None` | `None` | Document security level |
-| `scale_crop` | `bool | None` | `None` | Scale crop flag |
-| `links_up_to_date` | `bool | None` | `None` | Links up to date flag |
-| `shared_doc` | `bool | None` | `None` | Shared document flag |
-| `hyperlinks_changed` | `bool | None` | `None` | Hyperlinks changed flag |
-| `company` | `str | None` | `None` | Company name |
+| `application` | `str \| None` | `None` | Application name (e.g., "Microsoft Excel") |
+| `app_version` | `str \| None` | `None` | Application version |
+| `doc_security` | `int \| None` | `None` | Document security level |
+| `scale_crop` | `bool \| None` | `None` | Scale crop flag |
+| `links_up_to_date` | `bool \| None` | `None` | Links up to date flag |
+| `shared_doc` | `bool \| None` | `None` | Shared document flag |
+| `hyperlinks_changed` | `bool \| None` | `None` | Hyperlinks changed flag |
+| `company` | `str \| None` | `None` | Company name |
 | `worksheet_names` | `list[str]` | `[]` | Worksheet names |
 
 
 ---
 
 #### XmlExtractionResult
+
 XML extraction result.
 
 Contains extracted text content from XML files along with
@@ -4559,6 +4917,7 @@ structural statistics about the XML document.
 ---
 
 #### XmlMetadata
+
 XML metadata extracted during XML parsing.
 
 Provides statistics about XML document structure.
@@ -4572,6 +4931,7 @@ Provides statistics about XML document structure.
 ---
 
 #### YakeParams
+
 YAKE-specific parameters.
 
 | Field | Type | Default | Description |
@@ -4579,7 +4939,9 @@ YAKE-specific parameters.
 | `window_size` | `int` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```python
@@ -4590,18 +4952,20 @@ def default() -> YakeParams
 ---
 
 #### YearRange
+
 Year range for bibliographic metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `min` | `int | None` | `None` | Min |
-| `max` | `int | None` | `None` | Max |
+| `min` | `int \| None` | `None` | Min |
+| `max` | `int \| None` | `None` | Max |
 | `years` | `list[int]` | — | Years |
 
 
 ---
 
 #### ZipBombValidator
+
 Helper struct for validating ZIP archives for security issues.
 
 
@@ -4610,6 +4974,7 @@ Helper struct for validating ZIP archives for security issues.
 ### Enums
 
 #### ExecutionProviderType
+
 ONNX Runtime execution provider type.
 
 Determines which hardware backend is used for model inference.
@@ -4627,6 +4992,7 @@ Determines which hardware backend is used for model inference.
 ---
 
 #### OutputFormat
+
 Output format for extraction results.
 
 Controls the format of the `content` field in `ExtractionResult`.
@@ -4649,6 +5015,7 @@ boxes and confidence scores.
 ---
 
 #### HtmlTheme
+
 Built-in HTML theme selection.
 
 | Value | Description |
@@ -4663,6 +5030,7 @@ Built-in HTML theme selection.
 ---
 
 #### TableModel
+
 Which table structure recognition model to use.
 
 Controls the model used for table cell detection within layout-detected
@@ -4682,6 +5050,7 @@ YAML).
 ---
 
 #### ChunkerType
+
 Type of text chunker to use.
 
 # Variants
@@ -4708,6 +5077,7 @@ Type of text chunker to use.
 ---
 
 #### ChunkSizing
+
 How chunk size is measured.
 
 Defaults to `Characters` (Unicode character count). When using token-based sizing,
@@ -4726,6 +5096,7 @@ available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
 ---
 
 #### EmbeddingModelType
+
 Embedding model types supported by Kreuzberg.
 
 | Value | Description |
@@ -4739,6 +5110,7 @@ Embedding model types supported by Kreuzberg.
 ---
 
 #### CodeContentMode
+
 Content rendering mode for code extraction.
 
 Controls how extracted code content is represented in the `content` field
@@ -4754,6 +5126,7 @@ of `ExtractionResult`.
 ---
 
 #### FracType
+
 | Value | Description |
 |-------|-------------|
 | `BAR` | Bar |
@@ -4765,6 +5138,7 @@ of `ExtractionResult`.
 ---
 
 #### OcrBackendType
+
 OCR backend types.
 
 | Value | Description |
@@ -4778,6 +5152,7 @@ OCR backend types.
 ---
 
 #### ProcessingStage
+
 Processing stages for post-processors.
 
 Post-processors are executed in stage order (Early → Middle → Late).
@@ -4793,6 +5168,7 @@ Use stages to control the order of post-processing operations.
 ---
 
 #### ReductionLevel
+
 | Value | Description |
 |-------|-------------|
 | `OFF` | Off |
@@ -4805,6 +5181,7 @@ Use stages to control the order of post-processing operations.
 ---
 
 #### PdfAnnotationType
+
 Type of PDF annotation.
 
 | Value | Description |
@@ -4821,6 +5198,7 @@ Type of PDF annotation.
 ---
 
 #### BlockType
+
 Types of block-level elements in Djot.
 
 | Value | Description |
@@ -4846,6 +5224,7 @@ Types of block-level elements in Djot.
 ---
 
 #### InlineType
+
 Types of inline elements in Djot.
 
 | Value | Description |
@@ -4871,6 +5250,7 @@ Types of inline elements in Djot.
 ---
 
 #### RelationshipKind
+
 Semantic kind of a relationship between document elements.
 
 | Value | Description |
@@ -4887,6 +5267,7 @@ Semantic kind of a relationship between document elements.
 ---
 
 #### ContentLayer
+
 Content layer classification for document nodes.
 
 Replaces separate body/furniture arrays with per-node granularity.
@@ -4902,6 +5283,7 @@ Replaces separate body/furniture arrays with per-node granularity.
 ---
 
 #### NodeContent
+
 Tagged enum for node content. Each variant carries only type-specific data.
 
 Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
@@ -4934,6 +5316,7 @@ Go/Java/TypeScript bindings.
 ---
 
 #### AnnotationKind
+
 Types of inline text annotations.
 
 | Value | Description |
@@ -4955,6 +5338,7 @@ Types of inline text annotations.
 ---
 
 #### ExtractionMethod
+
 How the extracted text was produced.
 
 | Value | Description |
@@ -4967,6 +5351,7 @@ How the extracted text was produced.
 ---
 
 #### ChunkType
+
 Semantic structural classification of a text chunk.
 
 Assigned by the heuristic classifier in `chunking.classifier`.
@@ -4993,6 +5378,7 @@ Designed to be extended in future versions without breaking changes.
 ---
 
 #### ImageKind
+
 Heuristic classification of what an image likely depicts.
 
 | Value | Description |
@@ -5013,6 +5399,7 @@ Heuristic classification of what an image likely depicts.
 ---
 
 #### ResultFormat
+
 Result-shape selection for extraction results.
 
 Distinct from `OutputFormat` (which controls rendering — Plain, Markdown,
@@ -5028,6 +5415,7 @@ blob vs. an element-based decomposition.
 ---
 
 #### ElementType
+
 Semantic element type classification.
 
 Categorizes text content into semantic units for downstream processing.
@@ -5051,6 +5439,7 @@ Supports the element types commonly found in Unstructured documents.
 ---
 
 #### FormatMetadata
+
 Format-specific metadata (discriminated union).
 
 Only one format type can exist per extraction result. This provides
@@ -5083,6 +5472,7 @@ type-safe, clean metadata without nested optionals.
 ---
 
 #### TextDirection
+
 Text direction enumeration for HTML documents.
 
 | Value | Description |
@@ -5095,6 +5485,7 @@ Text direction enumeration for HTML documents.
 ---
 
 #### LinkType
+
 Link type classification.
 
 | Value | Description |
@@ -5110,6 +5501,7 @@ Link type classification.
 ---
 
 #### ImageType
+
 Image type classification.
 
 | Value | Description |
@@ -5123,6 +5515,7 @@ Image type classification.
 ---
 
 #### StructuredDataType
+
 Structured data type classification.
 
 | Value | Description |
@@ -5135,6 +5528,7 @@ Structured data type classification.
 ---
 
 #### OcrBoundingGeometry
+
 Bounding geometry for an OCR element.
 
 Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
@@ -5149,6 +5543,7 @@ Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilateral
 ---
 
 #### OcrElementLevel
+
 Hierarchical level of an OCR element.
 
 Maps to Tesseract's page segmentation hierarchy and provides
@@ -5165,6 +5560,7 @@ equivalent semantics for PaddleOCR.
 ---
 
 #### PageUnitType
+
 Type of paginated unit in a document.
 
 Distinguishes between different types of "pages" (PDF pages, presentation slides, spreadsheet sheets).
@@ -5179,6 +5575,7 @@ Distinguishes between different types of "pages" (PDF pages, presentation slides
 ---
 
 #### UriKind
+
 Semantic classification of an extracted URI.
 
 | Value | Description |
@@ -5194,6 +5591,7 @@ Semantic classification of an extracted URI.
 ---
 
 #### PoolError
+
 Error type for pool operations.
 
 | Value | Description |
@@ -5204,6 +5602,7 @@ Error type for pool operations.
 ---
 
 #### KeywordAlgorithm
+
 Keyword algorithm selection.
 
 | Value | Description |
@@ -5215,6 +5614,7 @@ Keyword algorithm selection.
 ---
 
 #### PsmMode
+
 Page Segmentation Mode for Tesseract OCR
 
 | Value | Description |
@@ -5235,6 +5635,7 @@ Page Segmentation Mode for Tesseract OCR
 ---
 
 #### PaddleLanguage
+
 Supported languages in PaddleOCR.
 
 Maps user-friendly language codes to paddle-ocr-rs language identifiers.
@@ -5262,6 +5663,7 @@ Maps user-friendly language codes to paddle-ocr-rs language identifiers.
 ---
 
 #### LayoutClass
+
 The 17 canonical document layout classes.
 
 All model backends (RT-DETR, YOLO, etc.) map their native class IDs
@@ -5296,6 +5698,7 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 ### Errors
 
 #### KreuzbergError
+
 Main error type for all Kreuzberg operations.
 
 All errors in Kreuzberg use this enum, which preserves error chains

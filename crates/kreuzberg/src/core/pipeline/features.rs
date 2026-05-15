@@ -129,6 +129,7 @@ fn try_code_chunks(result: &ExtractionResult) -> Option<Vec<crate::types::extrac
                     first_page: None,
                     last_page: None,
                     heading_context,
+                    image_indices: Vec::new(),
                 },
             }
         })
@@ -201,6 +202,25 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
         ) {
             Ok(chunking_result) => {
                 result.chunks = Some(chunking_result.chunks);
+
+                // Populate image_indices on each chunk: collect indices of images whose
+                // page_number falls within the chunk's [first_page, last_page] range.
+                if let Some(ref images) = result.images
+                    && let Some(ref mut chunks) = result.chunks
+                {
+                    for chunk in chunks.iter_mut() {
+                        if let (Some(first), Some(last)) = (chunk.metadata.first_page, chunk.metadata.last_page) {
+                            chunk.metadata.image_indices = images
+                                .iter()
+                                .enumerate()
+                                .filter_map(|(idx, img)| {
+                                    let pg = img.page_number?;
+                                    (pg >= first && pg <= last).then_some(idx as u32)
+                                })
+                                .collect();
+                        }
+                    }
+                }
 
                 #[cfg(feature = "embeddings")]
                 if let Some(ref embedding_config) = chunking_config.embedding

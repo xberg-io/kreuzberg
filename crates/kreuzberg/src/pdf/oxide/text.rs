@@ -174,16 +174,16 @@ fn extract_text_with_tracking(doc: &mut OxideDocument, config: &PageConfig) -> R
         boundaries.push(PageBoundary {
             byte_start,
             byte_end,
-            page_number,
+            page_number: page_number as u32,
         });
 
         if let Some(ref mut pages) = page_contents {
             let is_blank = Some(crate::extraction::blank_detection::is_page_text_blank(&page_text));
             pages.push(PageContent {
-                page_number,
+                page_number: page_number as u32,
                 content: page_text,
                 tables: Vec::new(),
-                images: Vec::new(),
+                image_indices: Vec::new(),
                 hierarchy: None,
                 is_blank,
                 layout_regions: None,

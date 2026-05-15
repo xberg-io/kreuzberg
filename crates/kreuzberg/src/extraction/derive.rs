@@ -711,16 +711,15 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
         return None;
     }
 
-    // Pre-wrap tables and images in Arc once; clone the Arc (cheap) per page reference.
+    // Pre-wrap tables in Arc once; clone the Arc (cheap) per page reference.
     let arc_tables: Vec<Arc<Table>> = doc.tables.iter().map(|t| Arc::new(t.clone())).collect();
-    let arc_images: Vec<Arc<crate::types::ExtractedImage>> = doc.images.iter().map(|i| Arc::new(i.clone())).collect();
 
     let pages: Vec<PageContent> = page_map
         .into_iter()
         .map(|(page_num, elems)| {
             let mut content = String::new();
             let mut tables = Vec::new();
-            let mut images = Vec::new();
+            let mut image_indices = Vec::new();
             for elem in &elems {
                 if elem.kind.is_container_start() || elem.kind.is_container_end() {
                     continue;
@@ -731,10 +730,8 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
                             tables.push(Arc::clone(arc_table));
                         }
                     }
-                    ElementKind::Image { image_index } => {
-                        if let Some(arc_image) = arc_images.get(image_index as usize) {
-                            images.push(Arc::clone(arc_image));
-                        }
+                    ElementKind::Image { image_index } if (image_index as usize) < doc.images.len() => {
+                        image_indices.push(image_index);
                     }
                     _ => {}
                 }
@@ -747,10 +744,10 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
             }
 
             PageContent {
-                page_number: page_num as usize,
+                page_number: page_num,
                 content,
                 tables,
-                images,
+                image_indices,
                 hierarchy: None,
                 is_blank: None,
                 layout_regions: None,
@@ -781,7 +778,7 @@ fn build_ocr_elements(doc: &InternalDocument) -> Option<Vec<OcrElement>> {
                     level,
                     rotation: elem.ocr_rotation.clone(),
                     // Default to page 1 when page info is absent (OCR always has at least one page).
-                    page_number: elem.page.unwrap_or(1) as usize,
+                    page_number: elem.page.unwrap_or(1),
                     parent_id: None,
                     backend_metadata: std::collections::HashMap::new(),
                 })

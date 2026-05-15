@@ -13,12 +13,11 @@ use crate::types::{HierarchicalBlock, PageContent, PageHierarchy};
 /// Only processes ElementKind::Heading elements and ignores other element types.
 pub(crate) fn assign_hierarchy_to_pages(pages: &mut [PageContent], doc: &InternalDocument) {
     // Group heading/block elements by page number
-    let mut page_hierarchies: std::collections::HashMap<usize, Vec<HierarchicalBlock>> =
-        std::collections::HashMap::new();
+    let mut page_hierarchies: std::collections::HashMap<u32, Vec<HierarchicalBlock>> = std::collections::HashMap::new();
 
     for element in &doc.elements {
         let page_num = match element.page {
-            Some(p) => p as usize,
+            Some(p) => p,
             None => continue,
         };
 
@@ -52,7 +51,7 @@ pub(crate) fn assign_hierarchy_to_pages(pages: &mut [PageContent], doc: &Interna
     // Assign hierarchy to each page
     for page in pages.iter_mut() {
         if let Some(blocks) = page_hierarchies.remove(&page.page_number) {
-            let block_count = blocks.len();
+            let block_count = blocks.len() as u32;
             page.hierarchy = Some(PageHierarchy { block_count, blocks });
         }
     }
@@ -93,17 +92,17 @@ pub(crate) fn assign_tables_and_images_to_pages(
         }
     }
 
-    for image in images {
+    for (idx, image) in images.iter().enumerate() {
         if let Some(page_num) = image.page_number
             && let Some(page) = updated_pages.iter_mut().find(|p| p.page_number == page_num)
         {
-            page.images.push(std::sync::Arc::new(image.clone()));
+            page.image_indices.push(idx as u32);
         }
     }
 
     // Refine is_blank: pages that gained tables or images are not blank
     for page in &mut updated_pages {
-        if !page.tables.is_empty() || !page.images.is_empty() {
+        if !page.tables.is_empty() || !page.image_indices.is_empty() {
             page.is_blank = Some(false);
         }
     }

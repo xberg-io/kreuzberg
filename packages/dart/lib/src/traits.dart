@@ -56,11 +56,22 @@ abstract class OcrBackend {
   /// - `KreuzbergError::Validation` - Invalid image format or configuration
   /// - `KreuzbergError::Io` - I/O errors (these always bubble up)
   ///
-  /// # Example
+  /// # Reading `backend_options`
+  ///
+  /// Backends that support runtime tuning can read `config.backend_options` and
+  /// deserialize only the keys they care about. Unknown keys are silently ignored,
+  /// so multiple backends can coexist in a pipeline without key conflicts.
   ///
   /// ```rust
   /// async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
-  ///     // Validate image format
+  ///     // Read backend-specific options; unknown keys are silently ignored.
+  ///     let fast_mode = config.backend_options
+  ///         .as_ref()
+  ///         .and_then(|v| v.get("mode"))
+  ///         .and_then(|v| v.as_str())
+  ///         .map(|s| s == "fast")
+  ///         .unwrap_or(false);
+  ///
   ///     if image_bytes.is_empty() {
   ///         return Err(kreuzberg::KreuzbergError::Validation {
   ///             message: "Empty image data".to_string(),
@@ -68,8 +79,11 @@ abstract class OcrBackend {
   ///         });
   ///     }
   ///
-  ///     // Perform OCR processing
-  ///     let text = format!("Extracted text in language: {}", config.language);
+  ///     let text = if fast_mode {
+  ///         "Fast OCR result".to_string()
+  ///     } else {
+  ///         format!("Extracted text in language: {}", config.language)
+  ///     };
   ///
   ///     Ok(ExtractionResult {
   ///         content: text,

@@ -277,11 +277,22 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    * - `KreuzbergError::Validation` - Invalid image format or configuration
    * - `KreuzbergError::Io` - I/O errors (these always bubble up)
    *
-   * # Example
+   * # Reading `backend_options`
+   *
+   * Backends that support runtime tuning can read `config.backend_options` and
+   * deserialize only the keys they care about. Unknown keys are silently ignored,
+   * so multiple backends can coexist in a pipeline without key conflicts.
    *
    * ```rust
    * async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
-   * // Validate image format
+   * // Read backend-specific options; unknown keys are silently ignored.
+   * let fast_mode = config.backend_options
+   * .as_ref()
+   * .and_then(|v| v.get("mode"))
+   * .and_then(|v| v.as_str())
+   * .map(|s| s == "fast")
+   * .unwrap_or(false);
+   *
    * if image_bytes.is_empty() {
    * return Err(kreuzberg::KreuzbergError::Validation {
    * message: "Empty image data".to_string(),
@@ -289,8 +300,11 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    * });
    * }
    *
-   * // Perform OCR processing
-   * let text = format!("Extracted text in language: {}", config.language);
+   * let text = if fast_mode {
+   * "Fast OCR result".to_string()
+   * } else {
+   * format!("Extracted text in language: {}", config.language)
+   * };
    *
    * Ok(ExtractionResult {
    * content: text,
@@ -2339,6 +2353,13 @@ char *kreuzberg_ocr_pipeline_stage_paddle_ocr_config(const KREUZBERGOcrPipelineS
 KREUZBERGLlmConfig *kreuzberg_ocr_pipeline_stage_vlm_config(const KREUZBERGOcrPipelineStage *ptr);
 
 /**
+ * Get the `backend_options` field from a `OcrPipelineStage`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_ocr_pipeline_stage_backend_options(const KREUZBERGOcrPipelineStage *ptr);
+
+/**
  * Create a `OcrPipelineConfig` from a JSON string. Returns null on failure.
  * # Safety
  * JSON string must be valid UTF-8 and null-terminated.
@@ -2439,6 +2460,13 @@ KREUZBERGOutputFormat *kreuzberg_ocr_config_output_format(const KREUZBERGOcrConf
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_ocr_config_paddle_ocr_config(const KREUZBERGOcrConfig *ptr);
+
+/**
+ * Get the `backend_options` field from a `OcrConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_ocr_config_backend_options(const KREUZBERGOcrConfig *ptr);
 
 /**
  * Get the `element_config` field from a `OcrConfig`.
@@ -4701,7 +4729,7 @@ char *kreuzberg_pdf_annotation_content(const KREUZBERGPdfAnnotation *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_pdf_annotation_page_number(const KREUZBERGPdfAnnotation *ptr);
+uint32_t kreuzberg_pdf_annotation_page_number(const KREUZBERGPdfAnnotation *ptr);
 
 /**
  * Create a `DjotContent` from a JSON string. Returns null on failure.
@@ -5886,14 +5914,14 @@ uintptr_t kreuzberg_chunk_metadata_total_chunks(const KREUZBERGChunkMetadata *pt
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_chunk_metadata_first_page(const KREUZBERGChunkMetadata *ptr);
+uint32_t kreuzberg_chunk_metadata_first_page(const KREUZBERGChunkMetadata *ptr);
 
 /**
  * Get the `last_page` field from a `ChunkMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_chunk_metadata_last_page(const KREUZBERGChunkMetadata *ptr);
+uint32_t kreuzberg_chunk_metadata_last_page(const KREUZBERGChunkMetadata *ptr);
 
 /**
  * Get the `heading_context` field from a `ChunkMetadata`.
@@ -5901,6 +5929,13 @@ uintptr_t kreuzberg_chunk_metadata_last_page(const KREUZBERGChunkMetadata *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGHeadingContext *kreuzberg_chunk_metadata_heading_context(const KREUZBERGChunkMetadata *ptr);
+
+/**
+ * Get the `image_indices` field from a `ChunkMetadata`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kreuzberg_chunk_metadata_image_indices(const KREUZBERGChunkMetadata *ptr);
 
 /**
  * Create a `ExtractedImage` from a JSON string. Returns null on failure.
@@ -5938,14 +5973,14 @@ uint8_t *kreuzberg_extracted_image_data(const KREUZBERGExtractedImage *ptr,
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_extracted_image_image_index(const KREUZBERGExtractedImage *ptr);
+uint32_t kreuzberg_extracted_image_image_index(const KREUZBERGExtractedImage *ptr);
 
 /**
  * Get the `page_number` field from a `ExtractedImage`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_extracted_image_page_number(const KREUZBERGExtractedImage *ptr);
+uint32_t kreuzberg_extracted_image_page_number(const KREUZBERGExtractedImage *ptr);
 
 /**
  * Get the `width` field from a `ExtractedImage`.
@@ -6052,7 +6087,7 @@ void kreuzberg_element_metadata_free(KREUZBERGElementMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_element_metadata_page_number(const KREUZBERGElementMetadata *ptr);
+uint32_t kreuzberg_element_metadata_page_number(const KREUZBERGElementMetadata *ptr);
 
 /**
  * Get the `filename` field from a `ElementMetadata`.
@@ -6688,7 +6723,7 @@ char *kreuzberg_ocr_table_markdown(const KREUZBERGOcrTable *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_ocr_table_page_number(const KREUZBERGOcrTable *ptr);
+uint32_t kreuzberg_ocr_table_page_number(const KREUZBERGOcrTable *ptr);
 
 /**
  * Get the `bounding_box` field from a `OcrTable`.
@@ -7304,7 +7339,7 @@ void kreuzberg_excel_metadata_free(KREUZBERGExcelMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_excel_metadata_sheet_count(const KREUZBERGExcelMetadata *ptr);
+uint32_t kreuzberg_excel_metadata_sheet_count(const KREUZBERGExcelMetadata *ptr);
 
 /**
  * Get the `sheet_names` field from a `ExcelMetadata`.
@@ -7413,7 +7448,7 @@ void kreuzberg_archive_metadata_free(KREUZBERGArchiveMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_archive_metadata_file_count(const KREUZBERGArchiveMetadata *ptr);
+uint32_t kreuzberg_archive_metadata_file_count(const KREUZBERGArchiveMetadata *ptr);
 
 /**
  * Get the `file_list` field from a `ArchiveMetadata`.
@@ -7427,14 +7462,14 @@ char *kreuzberg_archive_metadata_file_list(const KREUZBERGArchiveMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_archive_metadata_total_size(const KREUZBERGArchiveMetadata *ptr);
+uint64_t kreuzberg_archive_metadata_total_size(const KREUZBERGArchiveMetadata *ptr);
 
 /**
  * Get the `compressed_size` field from a `ArchiveMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_archive_metadata_compressed_size(const KREUZBERGArchiveMetadata *ptr);
+uint64_t kreuzberg_archive_metadata_compressed_size(const KREUZBERGArchiveMetadata *ptr);
 
 /**
  * Create a `ImageMetadata` from a JSON string. Returns null on failure.
@@ -7515,7 +7550,7 @@ void kreuzberg_xml_metadata_free(KREUZBERGXmlMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_xml_metadata_element_count(const KREUZBERGXmlMetadata *ptr);
+uint32_t kreuzberg_xml_metadata_element_count(const KREUZBERGXmlMetadata *ptr);
 
 /**
  * Get the `unique_elements` field from a `XmlMetadata`.
@@ -7552,21 +7587,21 @@ void kreuzberg_text_metadata_free(KREUZBERGTextMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_text_metadata_line_count(const KREUZBERGTextMetadata *ptr);
+uint32_t kreuzberg_text_metadata_line_count(const KREUZBERGTextMetadata *ptr);
 
 /**
  * Get the `word_count` field from a `TextMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_text_metadata_word_count(const KREUZBERGTextMetadata *ptr);
+uint32_t kreuzberg_text_metadata_word_count(const KREUZBERGTextMetadata *ptr);
 
 /**
  * Get the `character_count` field from a `TextMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_text_metadata_character_count(const KREUZBERGTextMetadata *ptr);
+uint32_t kreuzberg_text_metadata_character_count(const KREUZBERGTextMetadata *ptr);
 
 /**
  * Get the `headers` field from a `TextMetadata`.
@@ -7624,14 +7659,14 @@ char *kreuzberg_header_metadata_id(const KREUZBERGHeaderMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_header_metadata_depth(const KREUZBERGHeaderMetadata *ptr);
+uint32_t kreuzberg_header_metadata_depth(const KREUZBERGHeaderMetadata *ptr);
 
 /**
  * Get the `html_offset` field from a `HeaderMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_header_metadata_html_offset(const KREUZBERGHeaderMetadata *ptr);
+uint32_t kreuzberg_header_metadata_html_offset(const KREUZBERGHeaderMetadata *ptr);
 
 /**
  * Create a `LinkMetadata` from a JSON string. Returns null on failure.
@@ -7970,21 +8005,21 @@ char *kreuzberg_ocr_metadata_output_format(const KREUZBERGOcrMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_ocr_metadata_table_count(const KREUZBERGOcrMetadata *ptr);
+uint32_t kreuzberg_ocr_metadata_table_count(const KREUZBERGOcrMetadata *ptr);
 
 /**
  * Get the `table_rows` field from a `OcrMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_ocr_metadata_table_rows(const KREUZBERGOcrMetadata *ptr);
+uint32_t kreuzberg_ocr_metadata_table_rows(const KREUZBERGOcrMetadata *ptr);
 
 /**
  * Get the `table_cols` field from a `OcrMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_ocr_metadata_table_cols(const KREUZBERGOcrMetadata *ptr);
+uint32_t kreuzberg_ocr_metadata_table_cols(const KREUZBERGOcrMetadata *ptr);
 
 /**
  * Create a `ErrorMetadata` from a JSON string. Returns null on failure.
@@ -8051,7 +8086,7 @@ void kreuzberg_pptx_metadata_free(KREUZBERGPptxMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_pptx_metadata_slide_count(const KREUZBERGPptxMetadata *ptr);
+uint32_t kreuzberg_pptx_metadata_slide_count(const KREUZBERGPptxMetadata *ptr);
 
 /**
  * Get the `slide_names` field from a `PptxMetadata`.
@@ -8065,14 +8100,14 @@ char *kreuzberg_pptx_metadata_slide_names(const KREUZBERGPptxMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_pptx_metadata_image_count(const KREUZBERGPptxMetadata *ptr);
+uint32_t kreuzberg_pptx_metadata_image_count(const KREUZBERGPptxMetadata *ptr);
 
 /**
  * Get the `table_count` field from a `PptxMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_pptx_metadata_table_count(const KREUZBERGPptxMetadata *ptr);
+uint32_t kreuzberg_pptx_metadata_table_count(const KREUZBERGPptxMetadata *ptr);
 
 /**
  * Create a `DocxMetadata` from a JSON string. Returns null on failure.
@@ -8146,14 +8181,14 @@ void kreuzberg_csv_metadata_free(KREUZBERGCsvMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_csv_metadata_row_count(const KREUZBERGCsvMetadata *ptr);
+uint32_t kreuzberg_csv_metadata_row_count(const KREUZBERGCsvMetadata *ptr);
 
 /**
  * Get the `column_count` field from a `CsvMetadata`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_csv_metadata_column_count(const KREUZBERGCsvMetadata *ptr);
+uint32_t kreuzberg_csv_metadata_column_count(const KREUZBERGCsvMetadata *ptr);
 
 /**
  * Get the `delimiter` field from a `CsvMetadata`.
@@ -8788,7 +8823,7 @@ KREUZBERGOcrRotation *kreuzberg_ocr_element_rotation(const KREUZBERGOcrElement *
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_ocr_element_page_number(const KREUZBERGOcrElement *ptr);
+uint32_t kreuzberg_ocr_element_page_number(const KREUZBERGOcrElement *ptr);
 
 /**
  * Get the `parent_id` field from a `OcrElement`.
@@ -8883,7 +8918,7 @@ void kreuzberg_page_structure_free(KREUZBERGPageStructure *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_structure_total_count(const KREUZBERGPageStructure *ptr);
+uint32_t kreuzberg_page_structure_total_count(const KREUZBERGPageStructure *ptr);
 
 /**
  * Get the `unit_type` field from a `PageStructure`.
@@ -8948,7 +8983,7 @@ uintptr_t kreuzberg_page_boundary_byte_end(const KREUZBERGPageBoundary *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_boundary_page_number(const KREUZBERGPageBoundary *ptr);
+uint32_t kreuzberg_page_boundary_page_number(const KREUZBERGPageBoundary *ptr);
 
 /**
  * Create a `PageInfo` from a JSON string. Returns null on failure.
@@ -8978,7 +9013,7 @@ void kreuzberg_page_info_free(KREUZBERGPageInfo *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_info_number(const KREUZBERGPageInfo *ptr);
+uint32_t kreuzberg_page_info_number(const KREUZBERGPageInfo *ptr);
 
 /**
  * Get the `title` field from a `PageInfo`.
@@ -8992,14 +9027,14 @@ char *kreuzberg_page_info_title(const KREUZBERGPageInfo *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_info_image_count(const KREUZBERGPageInfo *ptr);
+uint32_t kreuzberg_page_info_image_count(const KREUZBERGPageInfo *ptr);
 
 /**
  * Get the `table_count` field from a `PageInfo`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_info_table_count(const KREUZBERGPageInfo *ptr);
+uint32_t kreuzberg_page_info_table_count(const KREUZBERGPageInfo *ptr);
 
 /**
  * Get the `hidden` field from a `PageInfo`.
@@ -9050,7 +9085,7 @@ void kreuzberg_page_content_free(KREUZBERGPageContent *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_content_page_number(const KREUZBERGPageContent *ptr);
+uint32_t kreuzberg_page_content_page_number(const KREUZBERGPageContent *ptr);
 
 /**
  * Get the `content` field from a `PageContent`.
@@ -9067,11 +9102,11 @@ char *kreuzberg_page_content_content(const KREUZBERGPageContent *ptr);
 char *kreuzberg_page_content_tables(const KREUZBERGPageContent *ptr);
 
 /**
- * Get the `images` field from a `PageContent`.
+ * Get the `image_indices` field from a `PageContent`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-char *kreuzberg_page_content_images(const KREUZBERGPageContent *ptr);
+char *kreuzberg_page_content_image_indices(const KREUZBERGPageContent *ptr);
 
 /**
  * Get the `hierarchy` field from a `PageContent`.
@@ -9166,7 +9201,7 @@ void kreuzberg_page_hierarchy_free(KREUZBERGPageHierarchy *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_page_hierarchy_block_count(const KREUZBERGPageHierarchy *ptr);
+uint32_t kreuzberg_page_hierarchy_block_count(const KREUZBERGPageHierarchy *ptr);
 
 /**
  * Get the `blocks` field from a `PageHierarchy`.
@@ -9261,7 +9296,7 @@ char *kreuzberg_table_markdown(const KREUZBERGTable *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_table_page_number(const KREUZBERGTable *ptr);
+uint32_t kreuzberg_table_page_number(const KREUZBERGTable *ptr);
 
 /**
  * Create a `TableCell` from a JSON string. Returns null on failure.
@@ -9298,14 +9333,14 @@ char *kreuzberg_table_cell_content(const KREUZBERGTableCell *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_table_cell_row_span(const KREUZBERGTableCell *ptr);
+uint32_t kreuzberg_table_cell_row_span(const KREUZBERGTableCell *ptr);
 
 /**
  * Get the `col_span` field from a `TableCell`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_table_cell_col_span(const KREUZBERGTableCell *ptr);
+uint32_t kreuzberg_table_cell_col_span(const KREUZBERGTableCell *ptr);
 
 /**
  * Get the `is_header` field from a `TableCell`.
@@ -11261,7 +11296,7 @@ int64_t kreuzberg_pdf_metadata_height(const KREUZBERGPdfMetadata *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uintptr_t kreuzberg_pdf_metadata_page_count(const KREUZBERGPdfMetadata *ptr);
+uint32_t kreuzberg_pdf_metadata_page_count(const KREUZBERGPdfMetadata *ptr);
 
 /**
  * Convert an integer to a `ExecutionProviderType` variant. Returns -1 on invalid input.

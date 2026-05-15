@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ApiDoc`, `ByteBufferPool`, `CharShape`, `CustomProperties`, `ExtractResponse`, `FracType`, `HwpImage`, `ImageOcrResult`, `MergedChunk`, `OcrBackendType`, `OcrCacheStats`, `OdtProperties`, `PSMMode`, `PaddleLanguage`, `PageMarginsPoints`, `PoolError`, `ProcessingStage`, `ResolvedStyle`, `StreamReader`, `StringBufferPool`, `StyleDefinition`, `TracingLayer`, `ZipBombValidator`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `as_sync_extractor`, `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -970,8 +970,7 @@ Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl(
             extractFile,
         required BoxFnDartFnFutureVecString supportedMimeTypes,
         required BoxFnDartFnFutureI64 priority,
-        required BoxFnStringStringDartFnFutureBool canHandle,
-        required BoxFnDartFnFutureOptionSyncExtractor asSyncExtractor}) =>
+        required BoxFnStringStringDartFnFutureBool canHandle}) =>
     RustLib.instance.api.crateCreateDocumentExtractorDartImpl(
         pluginName: pluginName,
         pluginVersion: pluginVersion,
@@ -979,8 +978,7 @@ Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl(
         extractFile: extractFile,
         supportedMimeTypes: supportedMimeTypes,
         priority: priority,
-        canHandle: canHandle,
-        asSyncExtractor: asSyncExtractor);
+        canHandle: canHandle);
 
 /// Register a Dart implementation as a `DocumentExtractor` plugin.
 ///
@@ -1027,10 +1025,6 @@ Future<void> clearRenderers() => RustLib.instance.api.crateClearRenderers();
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < OcrBackendType > + Send + Sync >>>
 abstract class BoxFnDartFnFutureOcrBackendType implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < Option < SyncExtractor > > + Send + Sync >>>
-abstract class BoxFnDartFnFutureOptionSyncExtractor
-    implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < ProcessingStage > + Send + Sync >>>
 abstract class BoxFnDartFnFutureProcessingStage
@@ -1469,6 +1463,7 @@ class ChunkMetadata {
   final PlatformInt64? firstPage;
   final PlatformInt64? lastPage;
   final HeadingContext? headingContext;
+  final Int64List imageIndices;
 
   const ChunkMetadata({
     required this.byteStart,
@@ -1479,6 +1474,7 @@ class ChunkMetadata {
     this.firstPage,
     this.lastPage,
     this.headingContext,
+    required this.imageIndices,
   });
 
   @override
@@ -1490,7 +1486,8 @@ class ChunkMetadata {
       totalChunks.hashCode ^
       firstPage.hashCode ^
       lastPage.hashCode ^
-      headingContext.hashCode;
+      headingContext.hashCode ^
+      imageIndices.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1504,7 +1501,8 @@ class ChunkMetadata {
           totalChunks == other.totalChunks &&
           firstPage == other.firstPage &&
           lastPage == other.lastPage &&
-          headingContext == other.headingContext;
+          headingContext == other.headingContext &&
+          imageIndices == other.imageIndices;
 }
 
 class ChunkRequest {
@@ -5059,6 +5057,7 @@ class OcrConfig {
   final TesseractConfig? tesseractConfig;
   final OutputFormat? outputFormat;
   final String? paddleOcrConfig;
+  final String? backendOptions;
   final OcrElementConfig? elementConfig;
   final OcrQualityThresholds? qualityThresholds;
   final OcrPipelineConfig? pipeline;
@@ -5075,6 +5074,7 @@ class OcrConfig {
     this.tesseractConfig,
     this.outputFormat,
     this.paddleOcrConfig,
+    this.backendOptions,
     this.elementConfig,
     this.qualityThresholds,
     this.pipeline,
@@ -5093,6 +5093,7 @@ class OcrConfig {
       tesseractConfig.hashCode ^
       outputFormat.hashCode ^
       paddleOcrConfig.hashCode ^
+      backendOptions.hashCode ^
       elementConfig.hashCode ^
       qualityThresholds.hashCode ^
       pipeline.hashCode ^
@@ -5113,6 +5114,7 @@ class OcrConfig {
           tesseractConfig == other.tesseractConfig &&
           outputFormat == other.outputFormat &&
           paddleOcrConfig == other.paddleOcrConfig &&
+          backendOptions == other.backendOptions &&
           elementConfig == other.elementConfig &&
           qualityThresholds == other.qualityThresholds &&
           pipeline == other.pipeline &&
@@ -5315,6 +5317,7 @@ class OcrPipelineStage {
   final TesseractConfig? tesseractConfig;
   final String? paddleOcrConfig;
   final LlmConfig? vlmConfig;
+  final String? backendOptions;
 
   const OcrPipelineStage({
     required this.backend,
@@ -5323,6 +5326,7 @@ class OcrPipelineStage {
     this.tesseractConfig,
     this.paddleOcrConfig,
     this.vlmConfig,
+    this.backendOptions,
   });
 
   @override
@@ -5332,7 +5336,8 @@ class OcrPipelineStage {
       language.hashCode ^
       tesseractConfig.hashCode ^
       paddleOcrConfig.hashCode ^
-      vlmConfig.hashCode;
+      vlmConfig.hashCode ^
+      backendOptions.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -5344,7 +5349,8 @@ class OcrPipelineStage {
           language == other.language &&
           tesseractConfig == other.tesseractConfig &&
           paddleOcrConfig == other.paddleOcrConfig &&
-          vlmConfig == other.vlmConfig;
+          vlmConfig == other.vlmConfig &&
+          backendOptions == other.backendOptions;
 }
 
 class OcrQualityThresholds {
@@ -5682,7 +5688,7 @@ class PageContent {
   final PlatformInt64 pageNumber;
   final String content;
   final List<Table> tables;
-  final List<ExtractedImage> images;
+  final Int64List imageIndices;
   final PageHierarchy? hierarchy;
   final bool? isBlank;
   final List<LayoutRegion>? layoutRegions;
@@ -5691,7 +5697,7 @@ class PageContent {
     required this.pageNumber,
     required this.content,
     required this.tables,
-    required this.images,
+    required this.imageIndices,
     this.hierarchy,
     this.isBlank,
     this.layoutRegions,
@@ -5702,7 +5708,7 @@ class PageContent {
       pageNumber.hashCode ^
       content.hashCode ^
       tables.hashCode ^
-      images.hashCode ^
+      imageIndices.hashCode ^
       hierarchy.hashCode ^
       isBlank.hashCode ^
       layoutRegions.hashCode;
@@ -5715,7 +5721,7 @@ class PageContent {
           pageNumber == other.pageNumber &&
           content == other.content &&
           tables == other.tables &&
-          images == other.images &&
+          imageIndices == other.imageIndices &&
           hierarchy == other.hierarchy &&
           isBlank == other.isBlank &&
           layoutRegions == other.layoutRegions;

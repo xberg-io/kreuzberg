@@ -28,7 +28,7 @@
 
 use crate::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
 
 // Section: boilerplate
@@ -1693,8 +1693,6 @@ fn wire__crate__create_document_extractor_dart_impl_impl(
             let api_priority = <Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
             let api_can_handle =
                 <Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_as_sync_extractor =
-                <Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, ()>((move || {
@@ -1706,7 +1704,6 @@ fn wire__crate__create_document_extractor_dart_impl_impl(
                         api_supported_mime_types,
                         api_priority,
                         api_can_handle,
-                        api_as_sync_extractor,
                     ))?;
                     Ok(output_ok)
                 })())
@@ -6262,6 +6259,7 @@ const _: fn() = || {
         let _: Option<i64> = ChunkMetadata.first_page;
         let _: Option<i64> = ChunkMetadata.last_page;
         let _: Option<crate::HeadingContext> = ChunkMetadata.heading_context;
+        let _: Vec<i64> = ChunkMetadata.image_indices;
     }
     {
         let ChunkRequest = None::<crate::ChunkRequest>.unwrap();
@@ -7202,6 +7200,7 @@ const _: fn() = || {
         let _: Option<crate::TesseractConfig> = OcrConfig.tesseract_config;
         let _: Option<crate::OutputFormat> = OcrConfig.output_format;
         let _: Option<String> = OcrConfig.paddle_ocr_config;
+        let _: Option<String> = OcrConfig.backend_options;
         let _: Option<crate::OcrElementConfig> = OcrConfig.element_config;
         let _: Option<crate::OcrQualityThresholds> = OcrConfig.quality_thresholds;
         let _: Option<crate::OcrPipelineConfig> = OcrConfig.pipeline;
@@ -7260,6 +7259,7 @@ const _: fn() = || {
         let _: Option<crate::TesseractConfig> = OcrPipelineStage.tesseract_config;
         let _: Option<String> = OcrPipelineStage.paddle_ocr_config;
         let _: Option<crate::LlmConfig> = OcrPipelineStage.vlm_config;
+        let _: Option<String> = OcrPipelineStage.backend_options;
     }
     {
         let OcrQualityThresholds = None::<crate::OcrQualityThresholds>.unwrap();
@@ -7352,7 +7352,7 @@ const _: fn() = || {
         let _: i64 = PageContent.page_number;
         let _: String = PageContent.content;
         let _: Vec<crate::Table> = PageContent.tables;
-        let _: Vec<crate::ExtractedImage> = PageContent.images;
+        let _: Vec<i64> = PageContent.image_indices;
         let _: Option<crate::PageHierarchy> = PageContent.hierarchy;
         let _: Option<bool> = PageContent.is_blank;
         let _: Option<Vec<crate::LayoutRegion>> = PageContent.layout_regions;
@@ -7706,11 +7706,6 @@ flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
         Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
     >
 );
@@ -7809,18 +7804,6 @@ impl SseDecode for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync> {
         let mut inner = <RustOpaqueMoi<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
                 Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
             >,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
@@ -8125,20 +8108,6 @@ impl SseDecode
     for RustOpaqueMoi<
         flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
             Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
         >,
     >
 {
@@ -8683,6 +8652,7 @@ impl SseDecode for crate::ChunkMetadata {
         let mut var_firstPage = <Option<i64>>::sse_decode(deserializer);
         let mut var_lastPage = <Option<i64>>::sse_decode(deserializer);
         let mut var_headingContext = <Option<crate::HeadingContext>>::sse_decode(deserializer);
+        let mut var_imageIndices = <Vec<i64>>::sse_decode(deserializer);
         return crate::ChunkMetadata {
             byte_start: var_byteStart,
             byte_end: var_byteEnd,
@@ -8692,6 +8662,7 @@ impl SseDecode for crate::ChunkMetadata {
             first_page: var_firstPage,
             last_page: var_lastPage,
             heading_context: var_headingContext,
+            image_indices: var_imageIndices,
         };
     }
 }
@@ -11574,6 +11545,7 @@ impl SseDecode for crate::OcrConfig {
         let mut var_tesseractConfig = <Option<crate::TesseractConfig>>::sse_decode(deserializer);
         let mut var_outputFormat = <Option<crate::OutputFormat>>::sse_decode(deserializer);
         let mut var_paddleOcrConfig = <Option<String>>::sse_decode(deserializer);
+        let mut var_backendOptions = <Option<String>>::sse_decode(deserializer);
         let mut var_elementConfig = <Option<crate::OcrElementConfig>>::sse_decode(deserializer);
         let mut var_qualityThresholds = <Option<crate::OcrQualityThresholds>>::sse_decode(deserializer);
         let mut var_pipeline = <Option<crate::OcrPipelineConfig>>::sse_decode(deserializer);
@@ -11589,6 +11561,7 @@ impl SseDecode for crate::OcrConfig {
             tesseract_config: var_tesseractConfig,
             output_format: var_outputFormat,
             paddle_ocr_config: var_paddleOcrConfig,
+            backend_options: var_backendOptions,
             element_config: var_elementConfig,
             quality_thresholds: var_qualityThresholds,
             pipeline: var_pipeline,
@@ -11716,6 +11689,7 @@ impl SseDecode for crate::OcrPipelineStage {
         let mut var_tesseractConfig = <Option<crate::TesseractConfig>>::sse_decode(deserializer);
         let mut var_paddleOcrConfig = <Option<String>>::sse_decode(deserializer);
         let mut var_vlmConfig = <Option<crate::LlmConfig>>::sse_decode(deserializer);
+        let mut var_backendOptions = <Option<String>>::sse_decode(deserializer);
         return crate::OcrPipelineStage {
             backend: var_backend,
             priority: var_priority,
@@ -11723,6 +11697,7 @@ impl SseDecode for crate::OcrPipelineStage {
             tesseract_config: var_tesseractConfig,
             paddle_ocr_config: var_paddleOcrConfig,
             vlm_config: var_vlmConfig,
+            backend_options: var_backendOptions,
         };
     }
 }
@@ -12751,7 +12726,7 @@ impl SseDecode for crate::PageContent {
         let mut var_pageNumber = <i64>::sse_decode(deserializer);
         let mut var_content = <String>::sse_decode(deserializer);
         let mut var_tables = <Vec<crate::Table>>::sse_decode(deserializer);
-        let mut var_images = <Vec<crate::ExtractedImage>>::sse_decode(deserializer);
+        let mut var_imageIndices = <Vec<i64>>::sse_decode(deserializer);
         let mut var_hierarchy = <Option<crate::PageHierarchy>>::sse_decode(deserializer);
         let mut var_isBlank = <Option<bool>>::sse_decode(deserializer);
         let mut var_layoutRegions = <Option<Vec<crate::LayoutRegion>>>::sse_decode(deserializer);
@@ -12759,7 +12734,7 @@ impl SseDecode for crate::PageContent {
             page_number: var_pageNumber,
             content: var_content,
             tables: var_tables,
-            images: var_images,
+            image_indices: var_imageIndices,
             hierarchy: var_hierarchy,
             is_blank: var_isBlank,
             layout_regions: var_layoutRegions,
@@ -13966,25 +13941,6 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<O
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>>
-{
-}
-
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>
-{
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
@@ -14679,6 +14635,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ChunkMetadata> {
             self.0.first_page.into_into_dart().into_dart(),
             self.0.last_page.into_into_dart().into_dart(),
             self.0.heading_context.into_into_dart().into_dart(),
+            self.0.image_indices.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -16887,6 +16844,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::OcrConfig> {
             self.0.tesseract_config.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
             self.0.paddle_ocr_config.into_into_dart().into_dart(),
+            self.0.backend_options.into_into_dart().into_dart(),
             self.0.element_config.into_into_dart().into_dart(),
             self.0.quality_thresholds.into_into_dart().into_dart(),
             self.0.pipeline.into_into_dart().into_dart(),
@@ -17029,6 +16987,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::OcrPipelineStage> {
             self.0.tesseract_config.into_into_dart().into_dart(),
             self.0.paddle_ocr_config.into_into_dart().into_dart(),
             self.0.vlm_config.into_into_dart().into_dart(),
+            self.0.backend_options.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -17243,7 +17202,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::PageContent> {
             self.0.page_number.into_into_dart().into_dart(),
             self.0.content.into_into_dart().into_dart(),
             self.0.tables.into_into_dart().into_dart(),
-            self.0.images.into_into_dart().into_dart(),
+            self.0.image_indices.into_into_dart().into_dart(),
             self.0.hierarchy.into_into_dart().into_dart(),
             self.0.is_blank.into_into_dart().into_dart(),
             self.0.layout_regions.into_into_dart().into_dart(),
@@ -18216,20 +18175,6 @@ impl SseEncode for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync> {
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
 impl SseEncode for Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -18548,21 +18493,6 @@ impl SseEncode
     for RustOpaqueMoi<
         flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
             Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
         >,
     >
 {
@@ -19071,6 +19001,7 @@ impl SseEncode for crate::ChunkMetadata {
         <Option<i64>>::sse_encode(self.first_page, serializer);
         <Option<i64>>::sse_encode(self.last_page, serializer);
         <Option<crate::HeadingContext>>::sse_encode(self.heading_context, serializer);
+        <Vec<i64>>::sse_encode(self.image_indices, serializer);
     }
 }
 
@@ -21201,6 +21132,7 @@ impl SseEncode for crate::OcrConfig {
         <Option<crate::TesseractConfig>>::sse_encode(self.tesseract_config, serializer);
         <Option<crate::OutputFormat>>::sse_encode(self.output_format, serializer);
         <Option<String>>::sse_encode(self.paddle_ocr_config, serializer);
+        <Option<String>>::sse_encode(self.backend_options, serializer);
         <Option<crate::OcrElementConfig>>::sse_encode(self.element_config, serializer);
         <Option<crate::OcrQualityThresholds>>::sse_encode(self.quality_thresholds, serializer);
         <Option<crate::OcrPipelineConfig>>::sse_encode(self.pipeline, serializer);
@@ -21295,6 +21227,7 @@ impl SseEncode for crate::OcrPipelineStage {
         <Option<crate::TesseractConfig>>::sse_encode(self.tesseract_config, serializer);
         <Option<String>>::sse_encode(self.paddle_ocr_config, serializer);
         <Option<crate::LlmConfig>>::sse_encode(self.vlm_config, serializer);
+        <Option<String>>::sse_encode(self.backend_options, serializer);
     }
 }
 
@@ -22179,7 +22112,7 @@ impl SseEncode for crate::PageContent {
         <i64>::sse_encode(self.page_number, serializer);
         <String>::sse_encode(self.content, serializer);
         <Vec<crate::Table>>::sse_encode(self.tables, serializer);
-        <Vec<crate::ExtractedImage>>::sse_encode(self.images, serializer);
+        <Vec<i64>>::sse_encode(self.image_indices, serializer);
         <Option<crate::PageHierarchy>>::sse_encode(self.hierarchy, serializer);
         <Option<bool>>::sse_encode(self.is_blank, serializer);
         <Option<Vec<crate::LayoutRegion>>>::sse_encode(self.layout_regions, serializer);
@@ -22873,7 +22806,7 @@ mod io {
     use super::*;
     use crate::*;
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
@@ -22898,28 +22831,6 @@ mod io {
         MoiArc::<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
                 Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
             >,
         >::decrement_strong_count(ptr as _);
     }
@@ -23394,7 +23305,7 @@ mod web {
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
     use flutter_rust_bridge::for_generated::wasm_bindgen;
     use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
@@ -23419,28 +23330,6 @@ mod web {
         MoiArc::<
             flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
                 Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOptionSyncExtractorSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Option<SyncExtractor>> + Send + Sync>,
             >,
         >::decrement_strong_count(ptr as _);
     }

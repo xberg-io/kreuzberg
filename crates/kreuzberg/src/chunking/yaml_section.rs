@@ -172,9 +172,13 @@ fn build_chunks_from_sections(sections: &[Section], config: &ChunkingConfig) -> 
                     token_count: None,
                     chunk_index: 0,
                     total_chunks: 0,
+                    // TODO(#963): populate image_indices for YAML chunks — YamlSectionChunker
+                    // lacks page provenance (first_page/last_page always None), so the
+                    // image-index population step in features.rs is skipped for these chunks.
                     first_page: None,
                     last_page: None,
                     heading_context: None,
+                    image_indices: Vec::new(),
                 },
             });
         } else {
@@ -200,6 +204,7 @@ fn build_chunks_from_sections(sections: &[Section], config: &ChunkingConfig) -> 
                         first_page: None,
                         last_page: None,
                         heading_context: None,
+                        image_indices: Vec::new(),
                     },
                 });
             }
