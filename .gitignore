@@ -184,6 +184,8 @@ test_documents/deps/
 # Gradle (Kotlin e2e)
 e2e/kotlin/.gradle/
 e2e/kotlin/build/
+e2e/kotlin_android/.gradle/
+e2e/kotlin_android/build/
 
 # Ruby native build artifacts
 packages/ruby/lib/*.bundle
