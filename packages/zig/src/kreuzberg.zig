@@ -66,6 +66,7 @@ pub const KreuzbergError = error {
     Cancelled,
     Security,
     Other,
+    OutOfMemory,
 };
 
 /// Hardware acceleration configuration for ONNX Runtime models.
@@ -1958,8 +1959,8 @@ pub const FracType = enum {
 /// OCR backend types.
 pub const OcrBackendType = enum {
     tesseract,
-    easy_o_c_r,
-    paddle_o_c_r,
+    easy_ocr,
+    paddle_ocr,
     custom,
 };
 
@@ -2231,8 +2232,8 @@ pub const FormatMetadata = union(enum) {
 
 /// Text direction enumeration for HTML documents.
 pub const TextDirection = enum {
-    left_to_right,
-    right_to_left,
+    ltr,
+    rtl,
     auto,
 };
 
@@ -2248,17 +2249,17 @@ pub const LinkType = enum {
 
 /// Image type classification.
 pub const ImageType = enum {
-    data_uri,
-    inline_svg,
+    data-uri,
+    inline-svg,
     external,
     relative,
 };
 
 /// Structured data type classification.
 pub const StructuredDataType = enum {
-    json_ld,
+    json-ld,
     microdata,
-    r_d_fa,
+    rdfa,
 };
 
 /// Bounding geometry for an OCR element.
@@ -2303,11 +2304,6 @@ pub const UriKind = enum {
     citation,
     reference,
     email,
-};
-
-/// Error type for pool operations.
-pub const PoolError = enum {
-    lock_poisoned,
 };
 
 /// Keyword algorithm selection.
@@ -2397,7 +2393,7 @@ pub const LayoutClass = enum {
 ///
 /// Returns `KreuzbergError.Validation` if MIME type is invalid.
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
-pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const u8) KreuzbergError![]u8 {
     const mime_type_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
@@ -2439,7 +2435,7 @@ pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const
 ///
 /// Returns `KreuzbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
-pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8) KreuzbergError![]u8 {
     const path_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
@@ -2476,7 +2472,7 @@ pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8
 ///
 /// This function is only available with the `tokio-runtime` feature. For WASM targets,
 /// use a truly synchronous extraction approach instead.
-pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []const u8) KreuzbergError![]u8 {
     const path_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
@@ -2510,7 +2506,7 @@ pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []con
 ///
 /// With the `tokio-runtime` feature, this blocks the current thread using the global
 /// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
-pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []const u8) KreuzbergError![]u8 {
     const mime_type_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
@@ -2538,7 +2534,7 @@ pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []
 ///
 /// Uses the global Tokio runtime for optimal performance.
 /// Only available with `tokio-runtime` (WASM has no filesystem).
-pub fn batch_extract_files_sync(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_files_sync(items: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
@@ -2566,7 +2562,7 @@ pub fn batch_extract_files_sync(items: []const u8, config: []const u8) (Kreuzber
 /// With the `tokio-runtime` feature, this blocks the current thread using the global
 /// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 /// that iterates through items and calls `extract_bytes_sync()`.
-pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
@@ -2616,7 +2612,7 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) (Kreuzber
 ///
 ///
 /// Per-file configuration overrides:
-pub fn batch_extract_files(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
@@ -2660,7 +2656,7 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) (KreuzbergErro
 ///
 ///
 /// Per-item configuration overrides:
-pub fn batch_extract_bytes(items: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const items_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{items}, 0);
@@ -2697,7 +2693,7 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) (KreuzbergErro
 /// **Errors:**
 ///
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
-pub fn detect_mime_type_from_bytes(content: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn detect_mime_type_from_bytes(content: []const u8) KreuzbergError![]u8 {
     const _result = c.kreuzberg_detect_mime_type_from_bytes(content.ptr, content.len);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2717,7 +2713,7 @@ pub fn detect_mime_type_from_bytes(content: []const u8) (KreuzbergError||error{O
 /// **Returns:**
 ///
 /// A vector of file extensions (without leading dot) for the MIME type.
-pub fn get_extensions_for_mime(mime_type: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
     const mime_type_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
@@ -2737,7 +2733,7 @@ pub fn get_extensions_for_mime(mime_type: []const u8) (KreuzbergError||error{Out
 ///
 /// Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
 /// language bindings via `alef.toml [exclude].functions`.
-pub fn list_embedding_backends() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_embedding_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_embedding_backends();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2751,7 +2747,7 @@ pub fn list_embedding_backends() (KreuzbergError||error{OutOfMemory})![]u8 {
 }
 
 /// List names of all registered document extractors.
-pub fn list_document_extractors() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_document_extractors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_document_extractors();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2771,7 +2767,7 @@ pub fn list_document_extractors() (KreuzbergError||error{OutOfMemory})![]u8 {
 /// **Returns:**
 ///
 /// A vector of OCR backend names.
-pub fn list_ocr_backends() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_ocr_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_ocr_backends();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2793,7 +2789,7 @@ pub fn list_ocr_backends() (KreuzbergError||error{OutOfMemory})![]u8 {
 ///
 /// - `Ok(Vec<String>)` - Vector of post-processor names
 /// - `Err(...)` if the registry lock is poisoned
-pub fn list_post_processors() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_post_processors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_post_processors();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2811,7 +2807,7 @@ pub fn list_post_processors() (KreuzbergError||error{OutOfMemory})![]u8 {
 /// **Errors:**
 ///
 /// Returns an error if the registry lock is poisoned.
-pub fn list_renderers() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_renderers() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_renderers();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2825,7 +2821,7 @@ pub fn list_renderers() (KreuzbergError||error{OutOfMemory})![]u8 {
 }
 
 /// List names of all registered validators.
-pub fn list_validators() (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn list_validators() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_validators();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
@@ -2851,7 +2847,7 @@ pub fn list_validators() (KreuzbergError||error{OutOfMemory})![]u8 {
 /// - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
 /// - `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
 ///   or the blocking inference task panics
-pub fn embed_texts_async(texts: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn embed_texts_async(texts: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const texts_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{texts}, 0);
@@ -2882,7 +2878,7 @@ pub fn embed_texts_async(texts: []const u8, config: []const u8) (KreuzbergError|
 ///
 /// Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
 /// or rendered, or if `page_index` is out of range.
-pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32, password: ?[]const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32, password: ?[]const u8) KreuzbergError![]u8 {
     const password_z: ?[:0]u8 = if (password) |v| try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{v}, 0) else null;
     defer if (password_z) |z| std.heap.c_allocator.free(z);
@@ -2902,7 +2898,7 @@ pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32,
 ///
 /// Uses the file extension and optionally the file content to determine the MIME type.
 /// Set `check_exists` to `true` to verify the file exists before detection.
-pub fn detect_mime_type(path: []const u8, check_exists: bool) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn detect_mime_type(path: []const u8, check_exists: bool) KreuzbergError![]u8 {
     const path_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
@@ -2921,7 +2917,7 @@ pub fn detect_mime_type(path: []const u8, check_exists: bool) (KreuzbergError||e
 /// Embed a list of texts using the configured embedding model.
 ///
 /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-pub fn embed_texts(texts: []const u8, config: []const u8) (KreuzbergError||error{OutOfMemory})![]u8 {
+pub fn embed_texts(texts: []const u8, config: []const u8) KreuzbergError![]u8 {
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
     const texts_z = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator, "{s}", .{texts}, 0);

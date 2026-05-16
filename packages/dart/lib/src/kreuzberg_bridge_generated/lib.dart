@@ -8,8 +8,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ApiDoc`, `ByteBufferPool`, `CharShape`, `CustomProperties`, `ExtractResponse`, `FracType`, `HwpImage`, `ImageOcrResult`, `MergedChunk`, `OcrBackendType`, `OcrCacheStats`, `OdtProperties`, `PSMMode`, `PaddleLanguage`, `PageMarginsPoints`, `PoolError`, `ProcessingStage`, `ResolvedStyle`, `StreamReader`, `StringBufferPool`, `StyleDefinition`, `TracingLayer`, `ZipBombValidator`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ApiDoc`, `CharShape`, `CustomProperties`, `ExtractResponse`, `FracType`, `HwpImage`, `ImageOcrResult`, `MergedChunk`, `OcrBackendType`, `OcrCacheStats`, `OdtProperties`, `PSMMode`, `PaddleLanguage`, `PageMarginsPoints`, `ProcessingStage`, `ResolvedStyle`, `StreamReader`, `StyleDefinition`, `TracingLayer`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -1122,25 +1122,6 @@ abstract class DocumentExtractorDartImpl implements RustOpaqueInterface {}
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>
 abstract class EmbeddingBackendDartImpl implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<HwpxExtractor>>
-abstract class HwpxExtractor implements RustOpaqueInterface {
-  Future<String> author();
-
-  Future<String> description();
-
-  Future<void> initialize();
-
-  Future<String> name();
-
-  Future<PlatformInt64> priority();
-
-  Future<void> shutdown();
-
-  Future<List<String>> supportedMimeTypes();
-
-  Future<String> version();
-}
-
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>
 abstract class OcrBackendDartImpl implements RustOpaqueInterface {}
 
@@ -1149,15 +1130,6 @@ abstract class PostProcessorDartImpl implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>
 abstract class RendererDartImpl implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TessdataManager>>
-abstract class TessdataManager implements RustOpaqueInterface {
-  Future<String> cacheDir();
-
-  Future<PlatformInt64> ensureAllLanguages();
-
-  Future<bool> isLanguageCached({required String lang});
-}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>
 abstract class ValidatorDartImpl implements RustOpaqueInterface {}
@@ -3575,46 +3547,46 @@ class Footnote {
 sealed class FormatMetadata with _$FormatMetadata {
   const FormatMetadata._();
 
-  const factory FormatMetadata.pdf({required PdfMetadata field0}) =
+  const factory FormatMetadata.pdf({required PdfMetadata metadata}) =
       FormatMetadata_Pdf;
-  const factory FormatMetadata.docx({required DocxMetadata field0}) =
+  const factory FormatMetadata.docx({required DocxMetadata metadata}) =
       FormatMetadata_Docx;
-  const factory FormatMetadata.excel({required ExcelMetadata field0}) =
+  const factory FormatMetadata.excel({required ExcelMetadata metadata}) =
       FormatMetadata_Excel;
-  const factory FormatMetadata.email({required EmailMetadata field0}) =
+  const factory FormatMetadata.email({required EmailMetadata metadata}) =
       FormatMetadata_Email;
-  const factory FormatMetadata.pptx({required PptxMetadata field0}) =
+  const factory FormatMetadata.pptx({required PptxMetadata metadata}) =
       FormatMetadata_Pptx;
-  const factory FormatMetadata.archive({required ArchiveMetadata field0}) =
+  const factory FormatMetadata.archive({required ArchiveMetadata metadata}) =
       FormatMetadata_Archive;
-  const factory FormatMetadata.image({required ImageMetadata field0}) =
+  const factory FormatMetadata.image({required ImageMetadata metadata}) =
       FormatMetadata_Image;
-  const factory FormatMetadata.xml({required XmlMetadata field0}) =
+  const factory FormatMetadata.xml({required XmlMetadata metadata}) =
       FormatMetadata_Xml;
-  const factory FormatMetadata.text({required TextMetadata field0}) =
+  const factory FormatMetadata.text({required TextMetadata metadata}) =
       FormatMetadata_Text;
-  const factory FormatMetadata.html({required HtmlMetadata field0}) =
+  const factory FormatMetadata.html({required HtmlMetadata metadata}) =
       FormatMetadata_Html;
-  const factory FormatMetadata.ocr({required OcrMetadata field0}) =
+  const factory FormatMetadata.ocr({required OcrMetadata metadata}) =
       FormatMetadata_Ocr;
-  const factory FormatMetadata.csv({required CsvMetadata field0}) =
+  const factory FormatMetadata.csv({required CsvMetadata metadata}) =
       FormatMetadata_Csv;
-  const factory FormatMetadata.bibtex({required BibtexMetadata field0}) =
+  const factory FormatMetadata.bibtex({required BibtexMetadata metadata}) =
       FormatMetadata_Bibtex;
-  const factory FormatMetadata.citation({required CitationMetadata field0}) =
+  const factory FormatMetadata.citation({required CitationMetadata metadata}) =
       FormatMetadata_Citation;
   const factory FormatMetadata.fictionBook({
-    required FictionBookMetadata field0,
+    required FictionBookMetadata metadata,
   }) = FormatMetadata_FictionBook;
-  const factory FormatMetadata.dbf({required DbfMetadata field0}) =
+  const factory FormatMetadata.dbf({required DbfMetadata metadata}) =
       FormatMetadata_Dbf;
-  const factory FormatMetadata.jats({required JatsMetadata field0}) =
+  const factory FormatMetadata.jats({required JatsMetadata metadata}) =
       FormatMetadata_Jats;
-  const factory FormatMetadata.epub({required EpubMetadata field0}) =
+  const factory FormatMetadata.epub({required EpubMetadata metadata}) =
       FormatMetadata_Epub;
-  const factory FormatMetadata.pst({required PstMetadata field0}) =
+  const factory FormatMetadata.pst({required PstMetadata metadata}) =
       FormatMetadata_Pst;
-  const factory FormatMetadata.code({required String field0}) =
+  const factory FormatMetadata.code({required String value}) =
       FormatMetadata_Code;
 }
 
@@ -5429,7 +5401,7 @@ sealed class OutputFormat with _$OutputFormat {
   const factory OutputFormat.html() = OutputFormat_Html;
   const factory OutputFormat.json() = OutputFormat_Json;
   const factory OutputFormat.structured() = OutputFormat_Structured;
-  const factory OutputFormat.custom({required String field0}) =
+  const factory OutputFormat.custom({required String value}) =
       OutputFormat_Custom;
 }
 

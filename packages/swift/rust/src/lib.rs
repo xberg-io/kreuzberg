@@ -2405,11 +2405,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type PoolError;
-        fn to_string(&self) -> String;
-    }
-
-    extern "Rust" {
         type KeywordAlgorithm;
         fn to_string(&self) -> String;
     }
@@ -10939,26 +10934,6 @@ impl UriKind {
             Self::Citation => "citation".to_string(),
             Self::Reference => "reference".to_string(),
             Self::Email => "email".to_string(),
-        }
-    }
-}
-
-pub enum PoolError {
-    LockPoisoned,
-}
-
-impl From<kreuzberg::utils::pool::PoolError> for PoolError {
-    fn from(val: kreuzberg::utils::pool::PoolError) -> Self {
-        match val {
-            kreuzberg::utils::pool::PoolError::LockPoisoned => Self::LockPoisoned,
-        }
-    }
-}
-
-impl PoolError {
-    pub fn to_string(&self) -> String {
-        match self {
-            Self::LockPoisoned => "LockPoisoned".to_string(),
         }
     }
 }

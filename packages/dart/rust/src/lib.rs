@@ -2058,11 +2058,6 @@ pub enum UriKind {
     Email,
 }
 
-#[frb(mirror(PoolError))]
-pub enum PoolError {
-    LockPoisoned,
-}
-
 #[frb(mirror(KeywordAlgorithm))]
 pub enum KeywordAlgorithm {
     Yake,
@@ -4771,14 +4766,6 @@ impl From<kreuzberg::UriKind> for UriKind {
             kreuzberg::UriKind::Citation => UriKind::Citation,
             kreuzberg::UriKind::Reference => UriKind::Reference,
             kreuzberg::UriKind::Email => UriKind::Email,
-        }
-    }
-}
-
-impl From<kreuzberg::utils::pool::PoolError> for PoolError {
-    fn from(v: kreuzberg::utils::pool::PoolError) -> Self {
-        match v {
-            kreuzberg::utils::pool::PoolError::LockPoisoned => PoolError::LockPoisoned,
         }
     }
 }

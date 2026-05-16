@@ -8,48 +8,525 @@
 #' @useDynLib kreuzberg, .registration = TRUE
 NULL
 
+#' Extract content from a byte array
+#'
+#' This is the main entry point for in-memory extraction. It performs the following steps:
+#' 1. Validate MIME type
+#' 2. Handle legacy format conversion if needed
+#' 3. Select appropriate extractor from registry
+#' 4. Extract content
+#' 5. Run post-processing pipeline
+#'
+#' # Arguments
+#'
+#' * `content` - The byte array to extract
+#' * `mime_type` - MIME type of the content
+#' * `config` - Extraction configuration
+#'
+#' # Returns
+#'
+#' An `ExtractionResult` containing the extracted content and metadata.
+#'
+#' # Errors
+#'
+#' Returns `KreuzbergError::Validation` if MIME type is invalid.
+#' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::extract_bytes;
+#' use kreuzberg::core::config::ExtractionConfig;
+#'
+#' let config = ExtractionConfig::default();
+#' let bytes = b"Hello, world!";
+#' let result = extract_bytes(bytes, "text/plain", &config).await?;
+#' println!("Content: {}", result.content);
+#' ```
+#' @param content Raw vector of bytes.
+#' @param mime_type Character string.
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_bytes <- function(content, mime_type, config) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "kreuzberg")
+#' Extract content from a file
+#'
+#' This is the main entry point for file-based extraction. It performs the following steps:
+#' 1. Check cache for existing result (if caching enabled)
+#' 2. Detect or validate MIME type
+#' 3. Select appropriate extractor from registry
+#' 4. Extract content
+#' 5. Run post-processing pipeline
+#' 6. Store result in cache (if caching enabled)
+#'
+#' # Arguments
+#'
+#' * `path` - Path to the file to extract
+#' * `mime_type` - Optional MIME type override. If None, will be auto-detected
+#' * `config` - Extraction configuration
+#'
+#' # Returns
+#'
+#' An `ExtractionResult` containing the extracted content and metadata.
+#'
+#' # Errors
+#'
+#' Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+#' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::extract_file;
+#' use kreuzberg::core::config::ExtractionConfig;
+#'
+#' let config = ExtractionConfig::default();
+#' let result = extract_file("document.pdf", None, &config).await?;
+#' println!("Content: {}", result.content);
+#' ```
+#' @param path File path as character string.
+#' @param mime_type Character string.
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_file <- function(path, mime_type, config) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `extract_file`
+#'
+#' This is a convenience function that blocks the current thread until extraction completes.
+#' For async code, use `extract_file` directly.
+#'
+#' Uses the global Tokio runtime for 100x+ performance improvement over creating
+#' a new runtime per call. Always uses the global runtime to avoid nested runtime issues.
+#'
+#' This function is only available with the `tokio-runtime` feature. For WASM targets,
+#' use a truly synchronous extraction approach instead.
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::extract_file_sync;
+#' use kreuzberg::core::config::ExtractionConfig;
+#'
+#' let config = ExtractionConfig::default();
+#' let result = extract_file_sync("document.pdf", None, &config)?;
+#' println!("Content: {}", result.content);
+#' ```
+#' @param path File path as character string.
+#' @param mime_type Character string.
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_file_sync <- function(path, mime_type, config) .Call("wrap__extract_file_sync", path, mime_type, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `extract_bytes`
+#'
+#' Uses the global Tokio runtime for 100x+ performance improvement over creating
+#' a new runtime per call.
+#'
+#' With the `tokio-runtime` feature, this blocks the current thread using the global
+#' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::extract_bytes_sync;
+#' use kreuzberg::core::config::ExtractionConfig;
+#'
+#' let config = ExtractionConfig::default();
+#' let bytes = b"Hello, world!";
+#' let result = extract_bytes_sync(bytes, "text/plain", &config)?;
+#' println!("Content: {}", result.content);
+#' ```
+#' @param content Raw vector of bytes.
+#' @param mime_type Character string.
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_bytes_sync <- function(content, mime_type, config) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `batch_extract_files`
+#'
+#' Uses the global Tokio runtime for optimal performance.
+#' Only available with `tokio-runtime` (WASM has no filesystem).
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_files_sync;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchFileItem {
+#'         path: "doc1.pdf".into(),
+#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+#'     },
+#'     BatchFileItem { path: "doc2.pdf".into(), config: None },
+#' ];
+#' let results = batch_extract_files_sync(items, &config)?;
+#' ```
+#' @param items List of batchfileitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
 #' @export
 batch_extract_files_sync <- function(items, config) .Call("wrap__batch_extract_files_sync", items, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `batch_extract_bytes`
+#'
+#' Uses the global Tokio runtime for optimal performance.
+#' With the `tokio-runtime` feature, this blocks the current thread using the global
+#' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
+#' that iterates through items and calls `extract_bytes_sync()`.
+#'
+#' # Example
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_bytes_sync;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+#'     BatchBytesItem {
+#'         content: b"other".to_vec(),
+#'         mime_type: "text/plain".to_string(),
+#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+#'     },
+#' ];
+#' let results = batch_extract_bytes_sync(items, &config)?;
+#' ```
+#' @param items List of batchbytesitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
 #' @export
 batch_extract_bytes_sync <- function(items, config) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
+#' Extract content from multiple files concurrently
+#'
+#' This function processes multiple files in parallel, automatically managing
+#' concurrency to prevent resource exhaustion. The concurrency limit can be
+#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
+#' to `(num_cpus * 1.5).ceil()`.
+#'
+#' Each file can optionally specify a [`FileExtractionConfig`] that overrides specific
+#' fields from the batch-level `config`. Pass `None` for a file to use the batch defaults.
+#' Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
+#' taken from the batch-level `config`.
+#'
+#' # Arguments
+#'
+#' * `items` - Vector of `BatchFileItem` structs, each containing a path and optional
+#'   per-file configuration overrides.
+#' * `config` - Batch-level extraction configuration (provides defaults and batch settings)
+#'
+#' # Returns
+#'
+#' A vector of `ExtractionResult` in the same order as the input items.
+#'
+#' # Errors
+#'
+#' Individual file errors are captured in the result metadata. System errors
+#' (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
+#'
+#' # Examples
+#'
+#' Simple usage with no per-file overrides:
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_files;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem};
+#' use std::path::PathBuf;
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchFileItem { path: "doc1.pdf".into(), config: None },
+#'     BatchFileItem { path: "doc2.pdf".into(), config: None },
+#' ];
+#' let results = batch_extract_files(items, &config).await?;
+#' println!("Processed {} files", results.len());
+#' ```
+#'
+#' Per-file configuration overrides:
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_files;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
+#' use std::path::PathBuf;
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchFileItem {
+#'         path: "scan.pdf".into(),
+#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+#'     },
+#'     BatchFileItem { path: "notes.txt".into(), config: None },
+#' ];
+#' let results = batch_extract_files(items, &config).await?;
+#' ```
+#' @param items List of batchfileitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
 #' @export
 batch_extract_files <- function(items, config) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
+#' Extract content from multiple byte arrays concurrently
+#'
+#' This function processes multiple byte arrays in parallel, automatically managing
+#' concurrency to prevent resource exhaustion. The concurrency limit can be
+#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
+#' to `(num_cpus * 1.5).ceil()`.
+#'
+#' Each item can optionally specify a [`FileExtractionConfig`] that overrides specific
+#' fields from the batch-level `config`. Pass `None` as the config to use
+#' the batch-level defaults for that item.
+#'
+#' # Arguments
+#'
+#' * `items` - Vector of `BatchBytesItem` structs, each containing content bytes,
+#'   MIME type, and optional per-item configuration overrides.
+#' * `config` - Batch-level extraction configuration
+#'
+#' # Returns
+#'
+#' A vector of `ExtractionResult` in the same order as the input items.
+#'
+#' # Examples
+#'
+#' Simple usage with no per-item overrides:
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_bytes;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem};
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchBytesItem { content: b"content 1".to_vec(), mime_type: "text/plain".to_string(), config: None },
+#'     BatchBytesItem { content: b"content 2".to_vec(), mime_type: "text/plain".to_string(), config: None },
+#' ];
+#' let results = batch_extract_bytes(items, &config).await?;
+#' println!("Processed {} items", results.len());
+#' ```
+#'
+#' Per-item configuration overrides:
+#'
+#' ```rust,no_run
+#' use kreuzberg::core::extractor::batch_extract_bytes;
+#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
+#'
+#' let config = ExtractionConfig::default();
+#' let items = vec![
+#'     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
+#'     BatchBytesItem {
+#'         content: b"<html>test</html>".to_vec(),
+#'         mime_type: "text/html".to_string(),
+#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
+#'     },
+#' ];
+#' let results = batch_extract_bytes(items, &config).await?;
+#' ```
+#' @param items List of batchbytesitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
 #' @export
 batch_extract_bytes <- function(items, config) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
+#' Detect MIME type from raw file bytes
+#'
+#' Uses magic byte signatures to detect file type from content.
+#' Falls back to `infer` crate for comprehensive detection.
+#'
+#' For ZIP-based files, inspects contents to distinguish Office Open XML
+#' formats (DOCX, XLSX, PPTX) from plain ZIP archives.
+#'
+#' # Arguments
+#'
+#' * `content` - Raw file bytes
+#'
+#' # Returns
+#'
+#' The detected MIME type string.
+#'
+#' # Errors
+#'
+#' Returns `KreuzbergError::UnsupportedFormat` if MIME type cannot be determined.
+#' @param content Raw vector of bytes.
+#' @return Character string.
 #' @export
 detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_from_bytes", content, PACKAGE = "kreuzberg")
+#' Get file extensions for a given MIME type
+#'
+#' Returns all known file extensions that map to the specified MIME type.
+#'
+#' # Arguments
+#'
+#' * `mime_type` - The MIME type to look up
+#'
+#' # Returns
+#'
+#' A vector of file extensions (without leading dot) for the MIME type.
+#'
+#' # Example
+#'
+#' ```
+#' use kreuzberg::core::mime::get_extensions_for_mime;
+#'
+#' let extensions = get_extensions_for_mime("application/pdf").unwrap();
+#' assert_eq!(extensions, vec!["pdf"]);
+#'
+#' let doc_extensions = get_extensions_for_mime("application/vnd.openxmlformats-officedocument.wordprocessingml.document").unwrap();
+#' assert!(doc_extensions.contains(&"docx".to_string()));
+#' ```
+#' @param mime_type Character string.
+#' @return List of character string.
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
+#' List the names of all registered embedding backends
+#'
+#' Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
+#' language bindings via `alef.toml [exclude].functions`.
+#' @return List of character string.
 #' @export
 list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PACKAGE = "kreuzberg")
+#' List names of all registered document extractors
+#' @return List of character string.
 #' @export
 list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "kreuzberg")
+#' List all registered OCR backends
+#'
+#' Returns the names of all OCR backends currently registered in the global registry.
+#'
+#' # Returns
+#'
+#' A vector of OCR backend names.
+#'
+#' # Example
+#'
+#' ```rust
+#' use kreuzberg::plugins::list_ocr_backends;
+#'
+#' let backends = list_ocr_backends()?;
+#' for name in backends {
+#'     println!("Registered OCR backend: {}", name);
+#' }
+#' ```
+#' @return List of character string.
 #' @export
 list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")
+#' List all registered post-processor names
+#'
+#' Returns a vector of all post-processor names currently registered in the
+#' global registry.
+#'
+#' # Returns
+#'
+#' - `Ok(Vec<String>)` - Vector of post-processor names
+#' - `Err(...)` if the registry lock is poisoned
+#'
+#' # Example
+#'
+#' ```rust
+#' use kreuzberg::plugins::list_post_processors;
+#'
+#' let processors = list_post_processors()?;
+#' for name in processors {
+#'     println!("Registered post-processor: {}", name);
+#' }
+#' ```
+#' @return List of character string.
 #' @export
 list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE = "kreuzberg")
+#' List names of all registered renderers
+#'
+#' # Errors
+#'
+#' Returns an error if the registry lock is poisoned.
+#' @return List of character string.
 #' @export
 list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg")
+#' List names of all registered validators
+#' @return List of character string.
 #' @export
 list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzberg")
+#' Generate embeddings asynchronously for a list of text strings
+#'
+#' This is the async counterpart to [`embed_texts`]. It offloads the blocking
+#' ONNX inference work to a dedicated blocking thread pool via Tokio's
+#' `spawn_blocking`, keeping the async executor free.
+#'
+#' Returns one embedding vector per input text in the same order.
+#'
+#' # Arguments
+#'
+#' * `texts` - Vec of strings to embed (owned, sent to blocking thread)
+#' * `config` - Embedding configuration specifying model, batch size, and normalization
+#'
+#' # Errors
+#'
+#' - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
+#' - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
+#'   or the blocking inference task panics
+#'
+#' # Example
+#'
+#' ```rust,ignore
+#' use kreuzberg::{embed_texts_async, EmbeddingConfig};
+#'
+#' let embeddings = embed_texts_async(
+#'     vec!["Hello!".to_string()],
+#'     &EmbeddingConfig::default(),
+#' ).await?;
+#' ```
+#' @param texts List of character string.
+#' @param config EmbeddingConfig object (list with class attribute).
+#' @return List of list of numeric.
 #' @export
 embed_texts_async <- function(texts, config) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
+#' Render a single PDF page to PNG bytes
+#'
+#' Returns raw PNG-encoded bytes for the specified page at the given DPI.
+#' Uses pdf_oxide with tiny-skia for pure-Rust rendering.
+#'
+#' # Arguments
+#'
+#' * `pdf_bytes` - Raw PDF file bytes
+#' * `page_index` - Zero-based page index
+#' * `dpi` - Resolution in dots per inch (default: 150)
+#' * `password` - Optional password for encrypted PDFs
+#'
+#' # Errors
+#'
+#' Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
+#' or rendered, or if `page_index` is out of range.
+#' @param pdf_bytes Raw vector of bytes.
+#' @param page_index Integer.
+#' @param dpi Integer.
+#' @param password Character string.
+#' @return Raw vector of bytes.
 #' @export
 render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi, password) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
+#' Detect the MIME type of a file at the given path
+#'
+#' Uses the file extension and optionally the file content to determine the MIME type.
+#' Set `check_exists` to `true` to verify the file exists before detection.
+#' @param path Character string.
+#' @param check_exists Logical (TRUE/FALSE).
+#' @return Character string.
 #' @export
 detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "kreuzberg")
+#' Embed a list of texts using the configured embedding model
+#'
+#' Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#' @param texts List of character string.
+#' @param config EmbeddingConfig object (list with class attribute).
+#' @return List of list of numeric.
 #' @export
 embed_texts <- function(texts, config) .Call("wrap__embed_texts", texts, config, PACKAGE = "kreuzberg")
+#' Get an embedding preset by name
+#'
+#' Returns `None` if no preset with the given name exists. Returns an owned
+#' clone so the value is safe to pass across FFI boundaries.
+#' @param name Character string.
+#' @return Optional EmbeddingPreset object (list with class attribute). Defaults to NULL.
 #' @export
 get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name, PACKAGE = "kreuzberg")
+#' List the names of all available embedding presets
+#'
+#' Returns owned `String`s so the values are safe to pass across FFI boundaries.
+#' @return List of character string.
 #' @export
 list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
 AccelerationConfig <- new.env(parent = emptyenv())

@@ -262,6 +262,7 @@ impl Recyclable for Vec<u8> {
 
 /// Error type for pool operations.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub enum PoolError {
     /// The pool's internal mutex was poisoned.
     ///

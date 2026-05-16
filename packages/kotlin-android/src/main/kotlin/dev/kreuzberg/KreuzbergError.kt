@@ -26,7 +26,7 @@ package dev.kreuzberg
 sealed class KreuzbergError(message: String) : Exception(message) {
     data class Io(
         val field0: String
-    ) : KreuzbergError("IO error: {0}")
+    ) : KreuzbergError("IO error: ${field0}")
     data class Parsing(
         override val message: String,
         val source: String?
@@ -53,17 +53,17 @@ sealed class KreuzbergError(message: String) : Exception(message) {
     ) : KreuzbergError("Serialization error: {message}")
     data class MissingDependency(
         val field0: String
-    ) : KreuzbergError("Missing dependency: {0}")
+    ) : KreuzbergError("Missing dependency: ${field0}")
     data class Plugin(
         override val message: String,
         val pluginName: String
     ) : KreuzbergError("Plugin error in '{plugin_name}': {message}")
     data class LockPoisoned(
         val field0: String
-    ) : KreuzbergError("Lock poisoned: {0}")
+    ) : KreuzbergError("Lock poisoned: ${field0}")
     data class UnsupportedFormat(
         val field0: String
-    ) : KreuzbergError("Unsupported format: {0}")
+    ) : KreuzbergError("Unsupported format: ${field0}")
     data class Embedding(
         override val message: String,
         val source: String?
@@ -79,5 +79,5 @@ sealed class KreuzbergError(message: String) : Exception(message) {
     ) : KreuzbergError("Security violation: {message}")
     data class Other(
         val field0: String
-    ) : KreuzbergError("{0}")
+    ) : KreuzbergError("${field0}")
 }

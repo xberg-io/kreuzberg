@@ -2,15 +2,78 @@
 
 package dev.kreuzberg
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 object Kreuzberg {
-    fun extractBytes(content: String, mimeType: String, config: String): String = KreuzbergBridge.nativeExtractBytes(content, mimeType, config)
-    fun extractFile(path: String, mimeType: String = "", config: String): String = KreuzbergBridge.nativeExtractFile(path, mimeType, config)
-    fun extractFileSync(path: String, mimeType: String = "", config: String): String = KreuzbergBridge.nativeExtractFileSync(path, mimeType, config)
-    fun extractBytesSync(content: String, mimeType: String, config: String): String = KreuzbergBridge.nativeExtractBytesSync(content, mimeType, config)
-    fun batchExtractFilesSync(items: String, config: String): String = KreuzbergBridge.nativeBatchExtractFilesSync(items, config)
-    fun batchExtractBytesSync(items: String, config: String): String = KreuzbergBridge.nativeBatchExtractBytesSync(items, config)
-    fun batchExtractFiles(items: String, config: String): String = KreuzbergBridge.nativeBatchExtractFiles(items, config)
-    fun batchExtractBytes(items: String, config: String): String = KreuzbergBridge.nativeBatchExtractBytes(items, config)
+    private val mapper = jacksonObjectMapper()
+
+    fun extractBytes(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult {
+        val resultJson = KreuzbergBridge.nativeExtractBytes(content, mimeType, mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, ExtractionResult::class.java)
+    }
+
+    suspend fun extractBytesAsync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult =
+        withContext(Dispatchers.IO) { extractBytes(content, mimeType, config) }
+
+    fun extractFile(path: String, mimeType: String? = null, config: ExtractionConfig): ExtractionResult {
+        val resultJson = KreuzbergBridge.nativeExtractFile(path, mimeType, mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, ExtractionResult::class.java)
+    }
+
+    suspend fun extractFileAsync(path: String, mimeType: String? = null, config: ExtractionConfig): ExtractionResult =
+        withContext(Dispatchers.IO) { extractFile(path, mimeType, config) }
+
+    fun extractFileSync(path: String, mimeType: String? = null, config: ExtractionConfig): ExtractionResult {
+        val resultJson = KreuzbergBridge.nativeExtractFileSync(path, mimeType, mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, ExtractionResult::class.java)
+    }
+
+    suspend fun extractFileSyncAsync(path: String, mimeType: String? = null, config: ExtractionConfig): ExtractionResult =
+        withContext(Dispatchers.IO) { extractFileSync(path, mimeType, config) }
+
+    fun extractBytesSync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult {
+        val resultJson = KreuzbergBridge.nativeExtractBytesSync(content, mimeType, mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, ExtractionResult::class.java)
+    }
+
+    suspend fun extractBytesSyncAsync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult =
+        withContext(Dispatchers.IO) { extractBytesSync(content, mimeType, config) }
+
+    fun batchExtractFilesSync(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult> {
+        val resultJson = KreuzbergBridge.nativeBatchExtractFilesSync(mapper.writeValueAsString(items), mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, object : TypeReference<List<ExtractionResult>>() {})
+    }
+
+    suspend fun batchExtractFilesSyncAsync(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult> =
+        withContext(Dispatchers.IO) { batchExtractFilesSync(items, config) }
+
+    fun batchExtractBytesSync(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult> {
+        val resultJson = KreuzbergBridge.nativeBatchExtractBytesSync(mapper.writeValueAsString(items), mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, object : TypeReference<List<ExtractionResult>>() {})
+    }
+
+    suspend fun batchExtractBytesSyncAsync(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult> =
+        withContext(Dispatchers.IO) { batchExtractBytesSync(items, config) }
+
+    fun batchExtractFiles(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult> {
+        val resultJson = KreuzbergBridge.nativeBatchExtractFiles(mapper.writeValueAsString(items), mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, object : TypeReference<List<ExtractionResult>>() {})
+    }
+
+    suspend fun batchExtractFilesAsync(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult> =
+        withContext(Dispatchers.IO) { batchExtractFiles(items, config) }
+
+    fun batchExtractBytes(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult> {
+        val resultJson = KreuzbergBridge.nativeBatchExtractBytes(mapper.writeValueAsString(items), mapper.writeValueAsString(config))
+        return mapper.readValue(resultJson, object : TypeReference<List<ExtractionResult>>() {})
+    }
+
+    suspend fun batchExtractBytesAsync(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult> =
+        withContext(Dispatchers.IO) { batchExtractBytes(items, config) }
+
     fun detectMimeTypeFromBytes(content: String): String = KreuzbergBridge.nativeDetectMimeTypeFromBytes(content)
     fun getExtensionsForMime(mimeType: String): String = KreuzbergBridge.nativeGetExtensionsForMime(mimeType)
     fun listEmbeddingBackends(): String = KreuzbergBridge.nativeListEmbeddingBackends()
@@ -19,10 +82,10 @@ object Kreuzberg {
     fun listPostProcessors(): String = KreuzbergBridge.nativeListPostProcessors()
     fun listRenderers(): String = KreuzbergBridge.nativeListRenderers()
     fun listValidators(): String = KreuzbergBridge.nativeListValidators()
-    fun embedTextsAsync(texts: String, config: String): String = KreuzbergBridge.nativeEmbedTextsAsync(texts, config)
-    fun renderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int = 0, password: String = ""): Long = KreuzbergBridge.nativeRenderPdfPageToPng(pdfBytes, pageIndex, dpi, password)
+    fun embedTextsAsync(texts: String, config: EmbeddingConfig): String = KreuzbergBridge.nativeEmbedTextsAsync(texts, mapper.writeValueAsString(config))
+    fun renderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int? = null, password: String? = null): Long = KreuzbergBridge.nativeRenderPdfPageToPng(pdfBytes, pageIndex, dpi, password)
     fun detectMimeType(path: String, checkExists: Boolean): String = KreuzbergBridge.nativeDetectMimeType(path, checkExists)
-    fun embedTexts(texts: String, config: String): String = KreuzbergBridge.nativeEmbedTexts(texts, config)
+    fun embedTexts(texts: String, config: EmbeddingConfig): String = KreuzbergBridge.nativeEmbedTexts(texts, mapper.writeValueAsString(config))
     fun getEmbeddingPreset(name: String): String? = KreuzbergBridge.nativeGetEmbeddingPreset(name)
     fun listEmbeddingPresets(): String = KreuzbergBridge.nativeListEmbeddingPresets()
 }

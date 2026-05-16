@@ -93,8 +93,8 @@ internal extension ContentFilterConfig {
 
 /// Configuration for email extraction.
 public struct EmailConfig: Codable, Sendable, Hashable {
-    public let msgFallbackCodepage: UInt32
-    public init(msgFallbackCodepage: UInt32) {
+    public let msgFallbackCodepage: UInt32?
+    public init(msgFallbackCodepage: UInt32? = nil) {
         self.msgFallbackCodepage = msgFallbackCodepage
     }
     private enum CodingKeys: String, CodingKey {
@@ -133,39 +133,39 @@ internal extension EmailConfig {
 public struct ExtractionConfig: Codable, Sendable, Hashable {
     public let useCache: Bool
     public let enableQualityProcessing: Bool
-    public let ocr: OcrConfig
+    public let ocr: OcrConfig?
     public let forceOcr: Bool
-    public let forceOcrPages: [UInt32]
+    public let forceOcrPages: [UInt32]?
     public let disableOcr: Bool
-    public let chunking: ChunkingConfig
-    public let contentFilter: ContentFilterConfig
-    public let images: ImageExtractionConfig
-    public let pdfOptions: PdfConfig
-    public let tokenReduction: TokenReductionOptions
-    public let languageDetection: LanguageDetectionConfig
-    public let pages: PageConfig
-    public let keywords: KeywordConfig
-    public let postprocessor: PostProcessorConfig
-    public let htmlOptions: String
-    public let htmlOutput: HtmlOutputConfig
-    public let extractionTimeoutSecs: UInt64
-    public let maxConcurrentExtractions: UInt
+    public let chunking: ChunkingConfig?
+    public let contentFilter: ContentFilterConfig?
+    public let images: ImageExtractionConfig?
+    public let pdfOptions: PdfConfig?
+    public let tokenReduction: TokenReductionOptions?
+    public let languageDetection: LanguageDetectionConfig?
+    public let pages: PageConfig?
+    public let keywords: KeywordConfig?
+    public let postprocessor: PostProcessorConfig?
+    public let htmlOptions: String?
+    public let htmlOutput: HtmlOutputConfig?
+    public let extractionTimeoutSecs: UInt64?
+    public let maxConcurrentExtractions: UInt?
     public let resultFormat: ResultFormat
-    public let securityLimits: SecurityLimits
+    public let securityLimits: SecurityLimits?
     public let outputFormat: OutputFormat
-    public let layout: LayoutDetectionConfig
+    public let layout: LayoutDetectionConfig?
     public let useLayoutForMarkdown: Bool
     public let includeDocumentStructure: Bool
-    public let acceleration: AccelerationConfig
-    public let cacheNamespace: String
-    public let cacheTtlSecs: UInt64
-    public let email: EmailConfig
-    public let concurrency: String
+    public let acceleration: AccelerationConfig?
+    public let cacheNamespace: String?
+    public let cacheTtlSecs: UInt64?
+    public let email: EmailConfig?
+    public let concurrency: String?
     public let maxArchiveDepth: UInt
-    public let treeSitter: TreeSitterConfig
-    public let structuredExtraction: StructuredExtractionConfig
-    public let cancelToken: String
-    public init(useCache: Bool, enableQualityProcessing: Bool, ocr: OcrConfig, forceOcr: Bool, forceOcrPages: [UInt32], disableOcr: Bool, chunking: ChunkingConfig, contentFilter: ContentFilterConfig, images: ImageExtractionConfig, pdfOptions: PdfConfig, tokenReduction: TokenReductionOptions, languageDetection: LanguageDetectionConfig, pages: PageConfig, keywords: KeywordConfig, postprocessor: PostProcessorConfig, htmlOptions: String, htmlOutput: HtmlOutputConfig, extractionTimeoutSecs: UInt64, maxConcurrentExtractions: UInt, resultFormat: ResultFormat, securityLimits: SecurityLimits, outputFormat: OutputFormat, layout: LayoutDetectionConfig, useLayoutForMarkdown: Bool, includeDocumentStructure: Bool, acceleration: AccelerationConfig, cacheNamespace: String, cacheTtlSecs: UInt64, email: EmailConfig, concurrency: String, maxArchiveDepth: UInt, treeSitter: TreeSitterConfig, structuredExtraction: StructuredExtractionConfig, cancelToken: String) {
+    public let treeSitter: TreeSitterConfig?
+    public let structuredExtraction: StructuredExtractionConfig?
+    public let cancelToken: String?
+    public init(useCache: Bool, enableQualityProcessing: Bool, ocr: OcrConfig? = nil, forceOcr: Bool, forceOcrPages: [UInt32]? = nil, disableOcr: Bool, chunking: ChunkingConfig? = nil, contentFilter: ContentFilterConfig? = nil, images: ImageExtractionConfig? = nil, pdfOptions: PdfConfig? = nil, tokenReduction: TokenReductionOptions? = nil, languageDetection: LanguageDetectionConfig? = nil, pages: PageConfig? = nil, keywords: KeywordConfig? = nil, postprocessor: PostProcessorConfig? = nil, htmlOptions: String? = nil, htmlOutput: HtmlOutputConfig? = nil, extractionTimeoutSecs: UInt64? = nil, maxConcurrentExtractions: UInt? = nil, resultFormat: ResultFormat, securityLimits: SecurityLimits? = nil, outputFormat: OutputFormat, layout: LayoutDetectionConfig? = nil, useLayoutForMarkdown: Bool, includeDocumentStructure: Bool, acceleration: AccelerationConfig? = nil, cacheNamespace: String? = nil, cacheTtlSecs: UInt64? = nil, email: EmailConfig? = nil, concurrency: String? = nil, maxArchiveDepth: UInt, treeSitter: TreeSitterConfig? = nil, structuredExtraction: StructuredExtractionConfig? = nil, cancelToken: String? = nil) {
         self.useCache = useCache
         self.enableQualityProcessing = enableQualityProcessing
         self.ocr = ocr
@@ -257,7 +257,7 @@ internal extension ExtractionConfig {
         self.pages = rb.pages()
         self.keywords = rb.keywords()
         self.postprocessor = rb.postprocessor()
-        self.htmlOptions = rb.htmlOptions().toString()
+        self.htmlOptions = rb.htmlOptions()?.toString()
         self.htmlOutput = rb.htmlOutput()
         self.extractionTimeoutSecs = rb.extractionTimeoutSecs()
         self.maxConcurrentExtractions = rb.maxConcurrentExtractions()
@@ -268,14 +268,14 @@ internal extension ExtractionConfig {
         self.useLayoutForMarkdown = rb.useLayoutForMarkdown()
         self.includeDocumentStructure = rb.includeDocumentStructure()
         self.acceleration = rb.acceleration()
-        self.cacheNamespace = rb.cacheNamespace().toString()
+        self.cacheNamespace = rb.cacheNamespace()?.toString()
         self.cacheTtlSecs = rb.cacheTtlSecs()
         self.email = rb.email()
-        self.concurrency = rb.concurrency().toString()
+        self.concurrency = rb.concurrency()?.toString()
         self.maxArchiveDepth = rb.maxArchiveDepth()
         self.treeSitter = rb.treeSitter()
         self.structuredExtraction = rb.structuredExtraction()
-        self.cancelToken = rb.cancelToken().toString()
+        self.cancelToken = rb.cancelToken()?.toString()
     }
     func intoRust() throws -> RustBridge.ExtractionConfig {
         let data = try JSONEncoder().encode(self)
@@ -312,29 +312,29 @@ internal extension ExtractionConfig {
 /// };
 /// ```
 public struct FileExtractionConfig: Codable, Sendable, Hashable {
-    public let enableQualityProcessing: Bool
-    public let ocr: OcrConfig
-    public let forceOcr: Bool
-    public let forceOcrPages: [UInt32]
-    public let disableOcr: Bool
-    public let chunking: ChunkingConfig
-    public let contentFilter: ContentFilterConfig
-    public let images: ImageExtractionConfig
-    public let pdfOptions: PdfConfig
-    public let tokenReduction: TokenReductionOptions
-    public let languageDetection: LanguageDetectionConfig
-    public let pages: PageConfig
-    public let keywords: KeywordConfig
-    public let postprocessor: PostProcessorConfig
-    public let htmlOptions: String
-    public let resultFormat: ResultFormat
-    public let outputFormat: OutputFormat
-    public let includeDocumentStructure: Bool
-    public let layout: LayoutDetectionConfig
-    public let timeoutSecs: UInt64
-    public let treeSitter: TreeSitterConfig
-    public let structuredExtraction: StructuredExtractionConfig
-    public init(enableQualityProcessing: Bool, ocr: OcrConfig, forceOcr: Bool, forceOcrPages: [UInt32], disableOcr: Bool, chunking: ChunkingConfig, contentFilter: ContentFilterConfig, images: ImageExtractionConfig, pdfOptions: PdfConfig, tokenReduction: TokenReductionOptions, languageDetection: LanguageDetectionConfig, pages: PageConfig, keywords: KeywordConfig, postprocessor: PostProcessorConfig, htmlOptions: String, resultFormat: ResultFormat, outputFormat: OutputFormat, includeDocumentStructure: Bool, layout: LayoutDetectionConfig, timeoutSecs: UInt64, treeSitter: TreeSitterConfig, structuredExtraction: StructuredExtractionConfig) {
+    public let enableQualityProcessing: Bool?
+    public let ocr: OcrConfig?
+    public let forceOcr: Bool?
+    public let forceOcrPages: [UInt32]?
+    public let disableOcr: Bool?
+    public let chunking: ChunkingConfig?
+    public let contentFilter: ContentFilterConfig?
+    public let images: ImageExtractionConfig?
+    public let pdfOptions: PdfConfig?
+    public let tokenReduction: TokenReductionOptions?
+    public let languageDetection: LanguageDetectionConfig?
+    public let pages: PageConfig?
+    public let keywords: KeywordConfig?
+    public let postprocessor: PostProcessorConfig?
+    public let htmlOptions: String?
+    public let resultFormat: ResultFormat?
+    public let outputFormat: OutputFormat?
+    public let includeDocumentStructure: Bool?
+    public let layout: LayoutDetectionConfig?
+    public let timeoutSecs: UInt64?
+    public let treeSitter: TreeSitterConfig?
+    public let structuredExtraction: StructuredExtractionConfig?
+    public init(enableQualityProcessing: Bool? = nil, ocr: OcrConfig? = nil, forceOcr: Bool? = nil, forceOcrPages: [UInt32]? = nil, disableOcr: Bool? = nil, chunking: ChunkingConfig? = nil, contentFilter: ContentFilterConfig? = nil, images: ImageExtractionConfig? = nil, pdfOptions: PdfConfig? = nil, tokenReduction: TokenReductionOptions? = nil, languageDetection: LanguageDetectionConfig? = nil, pages: PageConfig? = nil, keywords: KeywordConfig? = nil, postprocessor: PostProcessorConfig? = nil, htmlOptions: String? = nil, resultFormat: ResultFormat? = nil, outputFormat: OutputFormat? = nil, includeDocumentStructure: Bool? = nil, layout: LayoutDetectionConfig? = nil, timeoutSecs: UInt64? = nil, treeSitter: TreeSitterConfig? = nil, structuredExtraction: StructuredExtractionConfig? = nil) {
         self.enableQualityProcessing = enableQualityProcessing
         self.ocr = ocr
         self.forceOcr = forceOcr
@@ -401,7 +401,7 @@ internal extension FileExtractionConfig {
         self.pages = rb.pages()
         self.keywords = rb.keywords()
         self.postprocessor = rb.postprocessor()
-        self.htmlOptions = rb.htmlOptions().toString()
+        self.htmlOptions = rb.htmlOptions()?.toString()
         self.resultFormat = rb.resultFormat()
         self.outputFormat = rb.outputFormat()
         self.includeDocumentStructure = rb.includeDocumentStructure()
@@ -424,8 +424,8 @@ internal extension FileExtractionConfig {
 public struct BatchBytesItem: Codable, Sendable, Hashable {
     public let content: Data
     public let mimeType: String
-    public let config: FileExtractionConfig
-    public init(content: Data, mimeType: String, config: FileExtractionConfig) {
+    public let config: FileExtractionConfig?
+    public init(content: Data, mimeType: String, config: FileExtractionConfig? = nil) {
         self.content = content
         self.mimeType = mimeType
         self.config = config
@@ -457,8 +457,8 @@ internal extension BatchBytesItem {
 /// to represent a single file in a batch extraction job.
 public struct BatchFileItem: Codable, Sendable, Hashable {
     public let path: URL
-    public let config: FileExtractionConfig
-    public init(path: URL, config: FileExtractionConfig) {
+    public let config: FileExtractionConfig?
+    public init(path: URL, config: FileExtractionConfig? = nil) {
         self.path = path
         self.config = config
     }
@@ -486,9 +486,9 @@ public struct ImageExtractionConfig: Codable, Sendable, Hashable {
     public let autoAdjustDpi: Bool
     public let minDpi: Int32
     public let maxDpi: Int32
-    public let maxImagesPerPage: UInt32
+    public let maxImagesPerPage: UInt32?
     public let classify: Bool
-    public init(extractImages: Bool, targetDpi: Int32, maxImageDimension: Int32, injectPlaceholders: Bool, autoAdjustDpi: Bool, minDpi: Int32, maxDpi: Int32, maxImagesPerPage: UInt32, classify: Bool) {
+    public init(extractImages: Bool, targetDpi: Int32, maxImageDimension: Int32, injectPlaceholders: Bool, autoAdjustDpi: Bool, minDpi: Int32, maxDpi: Int32, maxImagesPerPage: UInt32? = nil, classify: Bool) {
         self.extractImages = extractImages
         self.targetDpi = targetDpi
         self.maxImageDimension = maxImageDimension
@@ -609,12 +609,12 @@ internal extension LanguageDetectionConfig {
 /// };
 /// ```
 public struct HtmlOutputConfig: Codable, Sendable, Hashable {
-    public let css: String
-    public let cssFile: URL
+    public let css: String?
+    public let cssFile: URL?
     public let theme: HtmlTheme
     public let classPrefix: String
     public let embedCss: Bool
-    public init(css: String, cssFile: URL, theme: HtmlTheme, classPrefix: String, embedCss: Bool) {
+    public init(css: String? = nil, cssFile: URL? = nil, theme: HtmlTheme, classPrefix: String, embedCss: Bool) {
         self.css = css
         self.cssFile = cssFile
         self.theme = theme
@@ -633,7 +633,7 @@ public struct HtmlOutputConfig: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for HtmlOutputConfig
 internal extension HtmlOutputConfig {
     init(_ rb: RustBridge.HtmlOutputConfig) throws {
-        self.css = rb.css().toString()
+        self.css = rb.css()?.toString()
         self.cssFile = rb.cssFile()
         self.theme = rb.theme()
         self.classPrefix = rb.classPrefix().toString()
@@ -652,11 +652,11 @@ internal extension HtmlOutputConfig {
 /// When set on [`ExtractionConfig`](super::ExtractionConfig), layout detection
 /// is enabled for PDF extraction.
 public struct LayoutDetectionConfig: Codable, Sendable, Hashable {
-    public let confidenceThreshold: Float
+    public let confidenceThreshold: Float?
     public let applyHeuristics: Bool
     public let tableModel: TableModel
-    public let acceleration: AccelerationConfig
-    public init(confidenceThreshold: Float, applyHeuristics: Bool, tableModel: TableModel, acceleration: AccelerationConfig) {
+    public let acceleration: AccelerationConfig?
+    public init(confidenceThreshold: Float? = nil, applyHeuristics: Bool, tableModel: TableModel, acceleration: AccelerationConfig? = nil) {
         self.confidenceThreshold = confidenceThreshold
         self.applyHeuristics = applyHeuristics
         self.tableModel = tableModel
@@ -699,13 +699,13 @@ internal extension LayoutDetectionConfig {
 /// ```
 public struct LlmConfig: Codable, Sendable, Hashable {
     public let model: String
-    public let apiKey: String
-    public let baseUrl: String
-    public let timeoutSecs: UInt64
-    public let maxRetries: UInt32
-    public let temperature: Double
-    public let maxTokens: UInt64
-    public init(model: String, apiKey: String, baseUrl: String, timeoutSecs: UInt64, maxRetries: UInt32, temperature: Double, maxTokens: UInt64) {
+    public let apiKey: String?
+    public let baseUrl: String?
+    public let timeoutSecs: UInt64?
+    public let maxRetries: UInt32?
+    public let temperature: Double?
+    public let maxTokens: UInt64?
+    public init(model: String, apiKey: String? = nil, baseUrl: String? = nil, timeoutSecs: UInt64? = nil, maxRetries: UInt32? = nil, temperature: Double? = nil, maxTokens: UInt64? = nil) {
         self.model = model
         self.apiKey = apiKey
         self.baseUrl = baseUrl
@@ -729,8 +729,8 @@ public struct LlmConfig: Codable, Sendable, Hashable {
 internal extension LlmConfig {
     init(_ rb: RustBridge.LlmConfig) throws {
         self.model = rb.model().toString()
-        self.apiKey = rb.apiKey().toString()
-        self.baseUrl = rb.baseUrl().toString()
+        self.apiKey = rb.apiKey()?.toString()
+        self.baseUrl = rb.baseUrl()?.toString()
         self.timeoutSecs = rb.timeoutSecs()
         self.maxRetries = rb.maxRetries()
         self.temperature = rb.temperature()
@@ -767,11 +767,11 @@ internal extension LlmConfig {
 public struct StructuredExtractionConfig: Codable, Sendable, Hashable {
     public let schema: String
     public let schemaName: String
-    public let schemaDescription: String
+    public let schemaDescription: String?
     public let strict: Bool
-    public let prompt: String
+    public let prompt: String?
     public let llm: LlmConfig
-    public init(schema: String, schemaName: String, schemaDescription: String, strict: Bool, prompt: String, llm: LlmConfig) {
+    public init(schema: String, schemaName: String, schemaDescription: String? = nil, strict: Bool, prompt: String? = nil, llm: LlmConfig) {
         self.schema = schema
         self.schemaName = schemaName
         self.schemaDescription = schemaDescription
@@ -794,9 +794,9 @@ internal extension StructuredExtractionConfig {
     init(_ rb: RustBridge.StructuredExtractionConfig) throws {
         self.schema = rb.schema()
         self.schemaName = rb.schemaName().toString()
-        self.schemaDescription = rb.schemaDescription().toString()
+        self.schemaDescription = rb.schemaDescription()?.toString()
         self.strict = rb.strict()
-        self.prompt = rb.prompt().toString()
+        self.prompt = rb.prompt()?.toString()
         self.llm = rb.llm()
     }
     func intoRust() throws -> RustBridge.StructuredExtractionConfig {
@@ -896,12 +896,12 @@ internal extension OcrQualityThresholds {
 public struct OcrPipelineStage: Codable, Sendable, Hashable {
     public let backend: String
     public let priority: UInt32
-    public let language: String
-    public let tesseractConfig: TesseractConfig
-    public let paddleOcrConfig: String
-    public let vlmConfig: LlmConfig
-    public let backendOptions: String
-    public init(backend: String, priority: UInt32, language: String, tesseractConfig: TesseractConfig, paddleOcrConfig: String, vlmConfig: LlmConfig, backendOptions: String) {
+    public let language: String?
+    public let tesseractConfig: TesseractConfig?
+    public let paddleOcrConfig: String?
+    public let vlmConfig: LlmConfig?
+    public let backendOptions: String?
+    public init(backend: String, priority: UInt32, language: String? = nil, tesseractConfig: TesseractConfig? = nil, paddleOcrConfig: String? = nil, vlmConfig: LlmConfig? = nil, backendOptions: String? = nil) {
         self.backend = backend
         self.priority = priority
         self.language = language
@@ -926,7 +926,7 @@ internal extension OcrPipelineStage {
     init(_ rb: RustBridge.OcrPipelineStage) throws {
         self.backend = rb.backend().toString()
         self.priority = rb.priority()
-        self.language = rb.language().toString()
+        self.language = rb.language()?.toString()
         self.tesseractConfig = rb.tesseractConfig()
         self.paddleOcrConfig = rb.paddleOcrConfig()
         self.vlmConfig = rb.vlmConfig()
@@ -975,19 +975,19 @@ public struct OcrConfig: Codable, Sendable, Hashable {
     public let enabled: Bool
     public let backend: String
     public let language: String
-    public let tesseractConfig: TesseractConfig
-    public let outputFormat: OutputFormat
-    public let paddleOcrConfig: String
-    public let backendOptions: String
-    public let elementConfig: OcrElementConfig
-    public let qualityThresholds: OcrQualityThresholds
-    public let pipeline: OcrPipelineConfig
+    public let tesseractConfig: TesseractConfig?
+    public let outputFormat: OutputFormat?
+    public let paddleOcrConfig: String?
+    public let backendOptions: String?
+    public let elementConfig: OcrElementConfig?
+    public let qualityThresholds: OcrQualityThresholds?
+    public let pipeline: OcrPipelineConfig?
     public let autoRotate: Bool
-    public let vlmConfig: LlmConfig
-    public let vlmPrompt: String
-    public let acceleration: AccelerationConfig
-    public let tessdataBytes: [String: Data]
-    public init(enabled: Bool, backend: String, language: String, tesseractConfig: TesseractConfig, outputFormat: OutputFormat, paddleOcrConfig: String, backendOptions: String, elementConfig: OcrElementConfig, qualityThresholds: OcrQualityThresholds, pipeline: OcrPipelineConfig, autoRotate: Bool, vlmConfig: LlmConfig, vlmPrompt: String, acceleration: AccelerationConfig, tessdataBytes: [String: Data]) {
+    public let vlmConfig: LlmConfig?
+    public let vlmPrompt: String?
+    public let acceleration: AccelerationConfig?
+    public let tessdataBytes: [String: Data]?
+    public init(enabled: Bool, backend: String, language: String, tesseractConfig: TesseractConfig? = nil, outputFormat: OutputFormat? = nil, paddleOcrConfig: String? = nil, backendOptions: String? = nil, elementConfig: OcrElementConfig? = nil, qualityThresholds: OcrQualityThresholds? = nil, pipeline: OcrPipelineConfig? = nil, autoRotate: Bool, vlmConfig: LlmConfig? = nil, vlmPrompt: String? = nil, acceleration: AccelerationConfig? = nil, tessdataBytes: [String: Data]? = nil) {
         self.enabled = enabled
         self.backend = backend
         self.language = language
@@ -1038,7 +1038,7 @@ internal extension OcrConfig {
         self.pipeline = rb.pipeline()
         self.autoRotate = rb.autoRotate()
         self.vlmConfig = rb.vlmConfig()
-        self.vlmPrompt = rb.vlmPrompt().toString()
+        self.vlmPrompt = rb.vlmPrompt()?.toString()
         self.acceleration = rb.acceleration()
         self.tessdataBytes = rb.tessdataBytes()
     }
@@ -1090,15 +1090,15 @@ internal extension PageConfig {
 public struct PdfConfig: Codable, Sendable, Hashable {
     public let extractImages: Bool
     public let extractTables: Bool
-    public let passwords: [String]
+    public let passwords: [String]?
     public let extractMetadata: Bool
-    public let hierarchy: HierarchyConfig
+    public let hierarchy: HierarchyConfig?
     public let extractAnnotations: Bool
-    public let topMarginFraction: Float
-    public let bottomMarginFraction: Float
+    public let topMarginFraction: Float?
+    public let bottomMarginFraction: Float?
     public let allowSingleColumnTables: Bool
     public let ocrInlineImages: Bool
-    public init(extractImages: Bool, extractTables: Bool, passwords: [String], extractMetadata: Bool, hierarchy: HierarchyConfig, extractAnnotations: Bool, topMarginFraction: Float, bottomMarginFraction: Float, allowSingleColumnTables: Bool, ocrInlineImages: Bool) {
+    public init(extractImages: Bool, extractTables: Bool, passwords: [String]? = nil, extractMetadata: Bool, hierarchy: HierarchyConfig? = nil, extractAnnotations: Bool, topMarginFraction: Float? = nil, bottomMarginFraction: Float? = nil, allowSingleColumnTables: Bool, ocrInlineImages: Bool) {
         self.extractImages = extractImages
         self.extractTables = extractTables
         self.passwords = passwords
@@ -1154,8 +1154,8 @@ public struct HierarchyConfig: Codable, Sendable, Hashable {
     public let enabled: Bool
     public let kClusters: UInt
     public let includeBbox: Bool
-    public let ocrCoverageThreshold: Float
-    public init(enabled: Bool, kClusters: UInt, includeBbox: Bool, ocrCoverageThreshold: Float) {
+    public let ocrCoverageThreshold: Float?
+    public init(enabled: Bool, kClusters: UInt, includeBbox: Bool, ocrCoverageThreshold: Float? = nil) {
         self.enabled = enabled
         self.kClusters = kClusters
         self.includeBbox = includeBbox
@@ -1187,11 +1187,11 @@ internal extension HierarchyConfig {
 /// Post-processor configuration.
 public struct PostProcessorConfig: Codable, Sendable, Hashable {
     public let enabled: Bool
-    public let enabledProcessors: [String]
-    public let disabledProcessors: [String]
-    public let enabledSet: String
-    public let disabledSet: String
-    public init(enabled: Bool, enabledProcessors: [String], disabledProcessors: [String], enabledSet: String, disabledSet: String) {
+    public let enabledProcessors: [String]?
+    public let disabledProcessors: [String]?
+    public let enabledSet: String?
+    public let disabledSet: String?
+    public init(enabled: Bool, enabledProcessors: [String]? = nil, disabledProcessors: [String]? = nil, enabledSet: String? = nil, disabledSet: String? = nil) {
         self.enabled = enabled
         self.enabledProcessors = enabledProcessors
         self.disabledProcessors = disabledProcessors
@@ -1213,8 +1213,8 @@ internal extension PostProcessorConfig {
         self.enabled = rb.enabled()
         self.enabledProcessors = rb.enabledProcessors()
         self.disabledProcessors = rb.disabledProcessors()
-        self.enabledSet = rb.enabledSet().toString()
-        self.disabledSet = rb.disabledSet().toString()
+        self.enabledSet = rb.enabledSet()?.toString()
+        self.disabledSet = rb.disabledSet()?.toString()
     }
     func intoRust() throws -> RustBridge.PostProcessorConfig {
         let data = try JSONEncoder().encode(self)
@@ -1240,12 +1240,12 @@ public struct ChunkingConfig: Codable, Sendable, Hashable {
     public let overlap: UInt
     public let trim: Bool
     public let chunkerType: ChunkerType
-    public let embedding: EmbeddingConfig
-    public let preset: String
+    public let embedding: EmbeddingConfig?
+    public let preset: String?
     public let sizing: ChunkSizing
     public let prependHeadingContext: Bool
-    public let topicThreshold: Float
-    public init(maxCharacters: UInt, overlap: UInt, trim: Bool, chunkerType: ChunkerType, embedding: EmbeddingConfig, preset: String, sizing: ChunkSizing, prependHeadingContext: Bool, topicThreshold: Float) {
+    public let topicThreshold: Float?
+    public init(maxCharacters: UInt, overlap: UInt, trim: Bool, chunkerType: ChunkerType, embedding: EmbeddingConfig? = nil, preset: String? = nil, sizing: ChunkSizing, prependHeadingContext: Bool, topicThreshold: Float? = nil) {
         self.maxCharacters = maxCharacters
         self.overlap = overlap
         self.trim = trim
@@ -1277,7 +1277,7 @@ internal extension ChunkingConfig {
         self.trim = rb.trim()
         self.chunkerType = rb.chunkerType()
         self.embedding = rb.embedding()
-        self.preset = rb.preset().toString()
+        self.preset = rb.preset()?.toString()
         self.sizing = rb.sizing()
         self.prependHeadingContext = rb.prependHeadingContext()
         self.topicThreshold = rb.topicThreshold()
@@ -1298,10 +1298,10 @@ public struct EmbeddingConfig: Codable, Sendable, Hashable {
     public let normalize: Bool
     public let batchSize: UInt
     public let showDownloadProgress: Bool
-    public let cacheDir: URL
-    public let acceleration: AccelerationConfig
-    public let maxEmbedDurationSecs: UInt64
-    public init(model: EmbeddingModelType, normalize: Bool, batchSize: UInt, showDownloadProgress: Bool, cacheDir: URL, acceleration: AccelerationConfig, maxEmbedDurationSecs: UInt64) {
+    public let cacheDir: URL?
+    public let acceleration: AccelerationConfig?
+    public let maxEmbedDurationSecs: UInt64?
+    public init(model: EmbeddingModelType, normalize: Bool, batchSize: UInt, showDownloadProgress: Bool, cacheDir: URL? = nil, acceleration: AccelerationConfig? = nil, maxEmbedDurationSecs: UInt64? = nil) {
         self.model = model
         self.normalize = normalize
         self.batchSize = batchSize
@@ -1357,11 +1357,11 @@ internal extension EmbeddingConfig {
 /// ```
 public struct TreeSitterConfig: Codable, Sendable, Hashable {
     public let enabled: Bool
-    public let cacheDir: URL
-    public let languages: [String]
-    public let groups: [String]
+    public let cacheDir: URL?
+    public let languages: [String]?
+    public let groups: [String]?
     public let process: TreeSitterProcessConfig
-    public init(enabled: Bool, cacheDir: URL, languages: [String], groups: [String], process: TreeSitterProcessConfig) {
+    public init(enabled: Bool, cacheDir: URL? = nil, languages: [String]? = nil, groups: [String]? = nil, process: TreeSitterProcessConfig) {
         self.enabled = enabled
         self.cacheDir = cacheDir
         self.languages = languages
@@ -1404,9 +1404,9 @@ public struct TreeSitterProcessConfig: Codable, Sendable, Hashable {
     public let docstrings: Bool
     public let symbols: Bool
     public let diagnostics: Bool
-    public let chunkMaxSize: UInt
+    public let chunkMaxSize: UInt?
     public let contentMode: CodeContentMode
-    public init(structure: Bool, imports: Bool, exports: Bool, comments: Bool, docstrings: Bool, symbols: Bool, diagnostics: Bool, chunkMaxSize: UInt, contentMode: CodeContentMode) {
+    public init(structure: Bool, imports: Bool, exports: Bool, comments: Bool, docstrings: Bool, symbols: Bool, diagnostics: Bool, chunkMaxSize: UInt? = nil, contentMode: CodeContentMode) {
         self.structure = structure
         self.imports = imports
         self.exports = exports
@@ -1454,14 +1454,14 @@ internal extension TreeSitterProcessConfig {
 ///
 /// Represents a file extension and its corresponding MIME type that Kreuzberg can process.
 public struct SupportedFormat: Codable, Sendable, Hashable {
-    public let extension_: String
+    public let `extension`: String
     public let mimeType: String
-    public init(extension_: String, mimeType: String) {
-        self.extension_ = extension_
+    public init(`extension`: String, mimeType: String) {
+        self.`extension` = `extension`
         self.mimeType = mimeType
     }
     private enum CodingKeys: String, CodingKey {
-        case extension_ = "extension"
+        case `extension` = "extension"
         case mimeType = "mime_type"
     }
 }
@@ -1469,7 +1469,7 @@ public struct SupportedFormat: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for SupportedFormat
 internal extension SupportedFormat {
     init(_ rb: RustBridge.SupportedFormat) throws {
-        self.extension_ = rb.extension_().toString()
+        self.`extension` = rb.extension_().toString()
         self.mimeType = rb.mimeType().toString()
     }
     func intoRust() throws -> RustBridge.SupportedFormat {
@@ -1602,11 +1602,11 @@ internal extension HtmlExtractionResult {
 public struct ExtractedInlineImage: Codable, Sendable, Hashable {
     public let data: Data
     public let format: String
-    public let filename: String
-    public let description: String
-    public let dimensions: [UInt32]
+    public let filename: String?
+    public let description: String?
+    public let dimensions: [UInt32]?
     public let attributes: [String]
-    public init(data: Data, format: String, filename: String, description: String, dimensions: [UInt32], attributes: [String]) {
+    public init(data: Data, format: String, filename: String? = nil, description: String? = nil, dimensions: [UInt32]? = nil, attributes: [String]) {
         self.data = data
         self.format = format
         self.filename = filename
@@ -1621,8 +1621,8 @@ internal extension ExtractedInlineImage {
     init(_ rb: RustBridge.ExtractedInlineImage) throws {
         self.data = rb.data()
         self.format = rb.format().toString()
-        self.filename = rb.filename().toString()
-        self.description = rb.description().toString()
+        self.filename = rb.filename()?.toString()
+        self.description = rb.description()?.toString()
         self.dimensions = rb.dimensions()
         self.attributes = rb.attributes()
     }
@@ -1636,10 +1636,10 @@ internal extension ExtractedInlineImage {
 /// A drawing object extracted from `<w:drawing>`.
 public struct Drawing: Codable, Sendable, Hashable {
     public let drawingType: String
-    public let extent: String
-    public let docProperties: String
-    public let imageRef: String
-    public init(drawingType: String, extent: String, docProperties: String, imageRef: String) {
+    public let extent: String?
+    public let docProperties: String?
+    public let imageRef: String?
+    public init(drawingType: String, extent: String? = nil, docProperties: String? = nil, imageRef: String? = nil) {
         self.drawingType = drawingType
         self.extent = extent
         self.docProperties = docProperties
@@ -1657,9 +1657,9 @@ public struct Drawing: Codable, Sendable, Hashable {
 internal extension Drawing {
     init(_ rb: RustBridge.Drawing) throws {
         self.drawingType = rb.drawingType().toString()
-        self.extent = rb.extent().toString()
-        self.docProperties = rb.docProperties().toString()
-        self.imageRef = rb.imageRef().toString()
+        self.extent = rb.extent()?.toString()
+        self.docProperties = rb.docProperties()?.toString()
+        self.imageRef = rb.imageRef()?.toString()
     }
     func intoRust() throws -> RustBridge.Drawing {
         let data = try JSONEncoder().encode(self)
@@ -1672,11 +1672,11 @@ internal extension Drawing {
 public struct AnchorProperties: Codable, Sendable, Hashable {
     public let behindDoc: Bool
     public let layoutInCell: Bool
-    public let relativeHeight: Int64
-    public let positionH: String
-    public let positionV: String
+    public let relativeHeight: Int64?
+    public let positionH: String?
+    public let positionV: String?
     public let wrapType: String
-    public init(behindDoc: Bool, layoutInCell: Bool, relativeHeight: Int64, positionH: String, positionV: String, wrapType: String) {
+    public init(behindDoc: Bool, layoutInCell: Bool, relativeHeight: Int64? = nil, positionH: String? = nil, positionV: String? = nil, wrapType: String) {
         self.behindDoc = behindDoc
         self.layoutInCell = layoutInCell
         self.relativeHeight = relativeHeight
@@ -1700,8 +1700,8 @@ internal extension AnchorProperties {
         self.behindDoc = rb.behindDoc()
         self.layoutInCell = rb.layoutInCell()
         self.relativeHeight = rb.relativeHeight()
-        self.positionH = rb.positionH().toString()
-        self.positionV = rb.positionV().toString()
+        self.positionH = rb.positionH()?.toString()
+        self.positionV = rb.positionV()?.toString()
         self.wrapType = rb.wrapType().toString()
     }
     func intoRust() throws -> RustBridge.AnchorProperties {
@@ -1724,23 +1724,23 @@ public typealias ResolvedStyle = RustBridge.ResolvedStyle
 ///
 /// Contains Word-specific document statistics and metadata.
 public struct DocxAppProperties: Codable, Sendable, Hashable {
-    public let application: String
-    public let appVersion: String
-    public let template: String
-    public let totalTime: Int32
-    public let pages: Int32
-    public let words: Int32
-    public let characters: Int32
-    public let charactersWithSpaces: Int32
-    public let lines: Int32
-    public let paragraphs: Int32
-    public let company: String
-    public let docSecurity: Int32
-    public let scaleCrop: Bool
-    public let linksUpToDate: Bool
-    public let sharedDoc: Bool
-    public let hyperlinksChanged: Bool
-    public init(application: String, appVersion: String, template: String, totalTime: Int32, pages: Int32, words: Int32, characters: Int32, charactersWithSpaces: Int32, lines: Int32, paragraphs: Int32, company: String, docSecurity: Int32, scaleCrop: Bool, linksUpToDate: Bool, sharedDoc: Bool, hyperlinksChanged: Bool) {
+    public let application: String?
+    public let appVersion: String?
+    public let template: String?
+    public let totalTime: Int32?
+    public let pages: Int32?
+    public let words: Int32?
+    public let characters: Int32?
+    public let charactersWithSpaces: Int32?
+    public let lines: Int32?
+    public let paragraphs: Int32?
+    public let company: String?
+    public let docSecurity: Int32?
+    public let scaleCrop: Bool?
+    public let linksUpToDate: Bool?
+    public let sharedDoc: Bool?
+    public let hyperlinksChanged: Bool?
+    public init(application: String? = nil, appVersion: String? = nil, template: String? = nil, totalTime: Int32? = nil, pages: Int32? = nil, words: Int32? = nil, characters: Int32? = nil, charactersWithSpaces: Int32? = nil, lines: Int32? = nil, paragraphs: Int32? = nil, company: String? = nil, docSecurity: Int32? = nil, scaleCrop: Bool? = nil, linksUpToDate: Bool? = nil, sharedDoc: Bool? = nil, hyperlinksChanged: Bool? = nil) {
         self.application = application
         self.appVersion = appVersion
         self.template = template
@@ -1781,9 +1781,9 @@ public struct DocxAppProperties: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for DocxAppProperties
 internal extension DocxAppProperties {
     init(_ rb: RustBridge.DocxAppProperties) throws {
-        self.application = rb.application().toString()
-        self.appVersion = rb.appVersion().toString()
-        self.template = rb.template().toString()
+        self.application = rb.application()?.toString()
+        self.appVersion = rb.appVersion()?.toString()
+        self.template = rb.template()?.toString()
         self.totalTime = rb.totalTime()
         self.pages = rb.pages()
         self.words = rb.words()
@@ -1791,7 +1791,7 @@ internal extension DocxAppProperties {
         self.charactersWithSpaces = rb.charactersWithSpaces()
         self.lines = rb.lines()
         self.paragraphs = rb.paragraphs()
-        self.company = rb.company().toString()
+        self.company = rb.company()?.toString()
         self.docSecurity = rb.docSecurity()
         self.scaleCrop = rb.scaleCrop()
         self.linksUpToDate = rb.linksUpToDate()
@@ -1809,16 +1809,16 @@ internal extension DocxAppProperties {
 ///
 /// Contains Excel-specific document metadata.
 public struct XlsxAppProperties: Codable, Sendable, Hashable {
-    public let application: String
-    public let appVersion: String
-    public let docSecurity: Int32
-    public let scaleCrop: Bool
-    public let linksUpToDate: Bool
-    public let sharedDoc: Bool
-    public let hyperlinksChanged: Bool
-    public let company: String
+    public let application: String?
+    public let appVersion: String?
+    public let docSecurity: Int32?
+    public let scaleCrop: Bool?
+    public let linksUpToDate: Bool?
+    public let sharedDoc: Bool?
+    public let hyperlinksChanged: Bool?
+    public let company: String?
     public let worksheetNames: [String]
-    public init(application: String, appVersion: String, docSecurity: Int32, scaleCrop: Bool, linksUpToDate: Bool, sharedDoc: Bool, hyperlinksChanged: Bool, company: String, worksheetNames: [String]) {
+    public init(application: String? = nil, appVersion: String? = nil, docSecurity: Int32? = nil, scaleCrop: Bool? = nil, linksUpToDate: Bool? = nil, sharedDoc: Bool? = nil, hyperlinksChanged: Bool? = nil, company: String? = nil, worksheetNames: [String]) {
         self.application = application
         self.appVersion = appVersion
         self.docSecurity = docSecurity
@@ -1845,14 +1845,14 @@ public struct XlsxAppProperties: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for XlsxAppProperties
 internal extension XlsxAppProperties {
     init(_ rb: RustBridge.XlsxAppProperties) throws {
-        self.application = rb.application().toString()
-        self.appVersion = rb.appVersion().toString()
+        self.application = rb.application()?.toString()
+        self.appVersion = rb.appVersion()?.toString()
         self.docSecurity = rb.docSecurity()
         self.scaleCrop = rb.scaleCrop()
         self.linksUpToDate = rb.linksUpToDate()
         self.sharedDoc = rb.sharedDoc()
         self.hyperlinksChanged = rb.hyperlinksChanged()
-        self.company = rb.company().toString()
+        self.company = rb.company()?.toString()
         self.worksheetNames = rb.worksheetNames()
     }
     func intoRust() throws -> RustBridge.XlsxAppProperties {
@@ -1866,22 +1866,22 @@ internal extension XlsxAppProperties {
 ///
 /// Contains PowerPoint-specific document metadata.
 public struct PptxAppProperties: Codable, Sendable, Hashable {
-    public let application: String
-    public let appVersion: String
-    public let totalTime: Int32
-    public let company: String
-    public let docSecurity: Int32
-    public let scaleCrop: Bool
-    public let linksUpToDate: Bool
-    public let sharedDoc: Bool
-    public let hyperlinksChanged: Bool
-    public let slides: Int32
-    public let notes: Int32
-    public let hiddenSlides: Int32
-    public let multimediaClips: Int32
-    public let presentationFormat: String
+    public let application: String?
+    public let appVersion: String?
+    public let totalTime: Int32?
+    public let company: String?
+    public let docSecurity: Int32?
+    public let scaleCrop: Bool?
+    public let linksUpToDate: Bool?
+    public let sharedDoc: Bool?
+    public let hyperlinksChanged: Bool?
+    public let slides: Int32?
+    public let notes: Int32?
+    public let hiddenSlides: Int32?
+    public let multimediaClips: Int32?
+    public let presentationFormat: String?
     public let slideTitles: [String]
-    public init(application: String, appVersion: String, totalTime: Int32, company: String, docSecurity: Int32, scaleCrop: Bool, linksUpToDate: Bool, sharedDoc: Bool, hyperlinksChanged: Bool, slides: Int32, notes: Int32, hiddenSlides: Int32, multimediaClips: Int32, presentationFormat: String, slideTitles: [String]) {
+    public init(application: String? = nil, appVersion: String? = nil, totalTime: Int32? = nil, company: String? = nil, docSecurity: Int32? = nil, scaleCrop: Bool? = nil, linksUpToDate: Bool? = nil, sharedDoc: Bool? = nil, hyperlinksChanged: Bool? = nil, slides: Int32? = nil, notes: Int32? = nil, hiddenSlides: Int32? = nil, multimediaClips: Int32? = nil, presentationFormat: String? = nil, slideTitles: [String]) {
         self.application = application
         self.appVersion = appVersion
         self.totalTime = totalTime
@@ -1920,10 +1920,10 @@ public struct PptxAppProperties: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for PptxAppProperties
 internal extension PptxAppProperties {
     init(_ rb: RustBridge.PptxAppProperties) throws {
-        self.application = rb.application().toString()
-        self.appVersion = rb.appVersion().toString()
+        self.application = rb.application()?.toString()
+        self.appVersion = rb.appVersion()?.toString()
         self.totalTime = rb.totalTime()
-        self.company = rb.company().toString()
+        self.company = rb.company()?.toString()
         self.docSecurity = rb.docSecurity()
         self.scaleCrop = rb.scaleCrop()
         self.linksUpToDate = rb.linksUpToDate()
@@ -1933,7 +1933,7 @@ internal extension PptxAppProperties {
         self.notes = rb.notes()
         self.hiddenSlides = rb.hiddenSlides()
         self.multimediaClips = rb.multimediaClips()
-        self.presentationFormat = rb.presentationFormat().toString()
+        self.presentationFormat = rb.presentationFormat()?.toString()
         self.slideTitles = rb.slideTitles()
     }
     func intoRust() throws -> RustBridge.PptxAppProperties {
@@ -1948,22 +1948,22 @@ internal extension PptxAppProperties {
 /// Contains standard metadata fields defined by the Dublin Core standard
 /// and Office-specific extensions.
 public struct CoreProperties: Codable, Sendable, Hashable {
-    public let title: String
-    public let subject: String
-    public let creator: String
-    public let keywords: String
-    public let description: String
-    public let lastModifiedBy: String
-    public let revision: String
-    public let created: String
-    public let modified: String
-    public let category: String
-    public let contentStatus: String
-    public let language: String
-    public let identifier: String
-    public let version: String
-    public let lastPrinted: String
-    public init(title: String, subject: String, creator: String, keywords: String, description: String, lastModifiedBy: String, revision: String, created: String, modified: String, category: String, contentStatus: String, language: String, identifier: String, version: String, lastPrinted: String) {
+    public let title: String?
+    public let subject: String?
+    public let creator: String?
+    public let keywords: String?
+    public let description: String?
+    public let lastModifiedBy: String?
+    public let revision: String?
+    public let created: String?
+    public let modified: String?
+    public let category: String?
+    public let contentStatus: String?
+    public let language: String?
+    public let identifier: String?
+    public let version: String?
+    public let lastPrinted: String?
+    public init(title: String? = nil, subject: String? = nil, creator: String? = nil, keywords: String? = nil, description: String? = nil, lastModifiedBy: String? = nil, revision: String? = nil, created: String? = nil, modified: String? = nil, category: String? = nil, contentStatus: String? = nil, language: String? = nil, identifier: String? = nil, version: String? = nil, lastPrinted: String? = nil) {
         self.title = title
         self.subject = subject
         self.creator = creator
@@ -2002,21 +2002,21 @@ public struct CoreProperties: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for CoreProperties
 internal extension CoreProperties {
     init(_ rb: RustBridge.CoreProperties) throws {
-        self.title = rb.title().toString()
-        self.subject = rb.subject().toString()
-        self.creator = rb.creator().toString()
-        self.keywords = rb.keywords().toString()
-        self.description = rb.description().toString()
-        self.lastModifiedBy = rb.lastModifiedBy().toString()
-        self.revision = rb.revision().toString()
-        self.created = rb.created().toString()
-        self.modified = rb.modified().toString()
-        self.category = rb.category().toString()
-        self.contentStatus = rb.contentStatus().toString()
-        self.language = rb.language().toString()
-        self.identifier = rb.identifier().toString()
-        self.version = rb.version().toString()
-        self.lastPrinted = rb.lastPrinted().toString()
+        self.title = rb.title()?.toString()
+        self.subject = rb.subject()?.toString()
+        self.creator = rb.creator()?.toString()
+        self.keywords = rb.keywords()?.toString()
+        self.description = rb.description()?.toString()
+        self.lastModifiedBy = rb.lastModifiedBy()?.toString()
+        self.revision = rb.revision()?.toString()
+        self.created = rb.created()?.toString()
+        self.modified = rb.modified()?.toString()
+        self.category = rb.category()?.toString()
+        self.contentStatus = rb.contentStatus()?.toString()
+        self.language = rb.language()?.toString()
+        self.identifier = rb.identifier()?.toString()
+        self.version = rb.version()?.toString()
+        self.lastPrinted = rb.lastPrinted()?.toString()
     }
     func intoRust() throws -> RustBridge.CoreProperties {
         let data = try JSONEncoder().encode(self)
@@ -2097,17 +2097,17 @@ internal extension SecurityLimits {
 
 public struct TokenReductionConfig: Codable, Sendable, Hashable {
     public let level: ReductionLevel
-    public let languageHint: String
+    public let languageHint: String?
     public let preserveMarkdown: Bool
     public let preserveCode: Bool
     public let semanticThreshold: Float
     public let enableParallel: Bool
     public let useSimd: Bool
-    public let customStopwords: [String: [String]]
+    public let customStopwords: [String: [String]]?
     public let preservePatterns: [String]
-    public let targetReduction: Float
+    public let targetReduction: Float?
     public let enableSemanticClustering: Bool
-    public init(level: ReductionLevel, languageHint: String, preserveMarkdown: Bool, preserveCode: Bool, semanticThreshold: Float, enableParallel: Bool, useSimd: Bool, customStopwords: [String: [String]], preservePatterns: [String], targetReduction: Float, enableSemanticClustering: Bool) {
+    public init(level: ReductionLevel, languageHint: String? = nil, preserveMarkdown: Bool, preserveCode: Bool, semanticThreshold: Float, enableParallel: Bool, useSimd: Bool, customStopwords: [String: [String]]? = nil, preservePatterns: [String], targetReduction: Float? = nil, enableSemanticClustering: Bool) {
         self.level = level
         self.languageHint = languageHint
         self.preserveMarkdown = preserveMarkdown
@@ -2139,7 +2139,7 @@ public struct TokenReductionConfig: Codable, Sendable, Hashable {
 internal extension TokenReductionConfig {
     init(_ rb: RustBridge.TokenReductionConfig) throws {
         self.level = rb.level()
-        self.languageHint = rb.languageHint().toString()
+        self.languageHint = rb.languageHint()?.toString()
         self.preserveMarkdown = rb.preserveMarkdown()
         self.preserveCode = rb.preserveCode()
         self.semanticThreshold = rb.semanticThreshold()
@@ -2160,10 +2160,10 @@ internal extension TokenReductionConfig {
 /// A PDF annotation extracted from a document page.
 public struct PdfAnnotation: Codable, Sendable, Hashable {
     public let annotationType: PdfAnnotationType
-    public let content: String
+    public let content: String?
     public let pageNumber: UInt32
-    public let boundingBox: String
-    public init(annotationType: PdfAnnotationType, content: String, pageNumber: UInt32, boundingBox: String) {
+    public let boundingBox: String?
+    public init(annotationType: PdfAnnotationType, content: String? = nil, pageNumber: UInt32, boundingBox: String? = nil) {
         self.annotationType = annotationType
         self.content = content
         self.pageNumber = pageNumber
@@ -2181,9 +2181,9 @@ public struct PdfAnnotation: Codable, Sendable, Hashable {
 internal extension PdfAnnotation {
     init(_ rb: RustBridge.PdfAnnotation) throws {
         self.annotationType = rb.annotationType()
-        self.content = rb.content().toString()
+        self.content = rb.content()?.toString()
         self.pageNumber = rb.pageNumber()
-        self.boundingBox = rb.boundingBox().toString()
+        self.boundingBox = rb.boundingBox()?.toString()
     }
     func intoRust() throws -> RustBridge.PdfAnnotation {
         let data = try JSONEncoder().encode(self)
@@ -2258,13 +2258,13 @@ internal extension DjotContent {
 /// Represents structural elements like headings, paragraphs, lists, code blocks, etc.
 public struct FormattedBlock: Codable, Sendable, Hashable {
     public let blockType: BlockType
-    public let level: UInt
+    public let level: UInt?
     public let inlineContent: [InlineElement]
-    public let attributes: String
-    public let language: String
-    public let code: String
+    public let attributes: String?
+    public let language: String?
+    public let code: String?
     public let children: [FormattedBlock]
-    public init(blockType: BlockType, level: UInt, inlineContent: [InlineElement], attributes: String, language: String, code: String, children: [FormattedBlock]) {
+    public init(blockType: BlockType, level: UInt? = nil, inlineContent: [InlineElement], attributes: String? = nil, language: String? = nil, code: String? = nil, children: [FormattedBlock]) {
         self.blockType = blockType
         self.level = level
         self.inlineContent = inlineContent
@@ -2290,9 +2290,9 @@ internal extension FormattedBlock {
         self.blockType = rb.blockType()
         self.level = rb.level()
         self.inlineContent = rb.inlineContent()
-        self.attributes = rb.attributes().toString()
-        self.language = rb.language().toString()
-        self.code = rb.code().toString()
+        self.attributes = rb.attributes()?.toString()
+        self.language = rb.language()?.toString()
+        self.code = rb.code()?.toString()
         self.children = rb.children()
     }
     func intoRust() throws -> RustBridge.FormattedBlock {
@@ -2308,9 +2308,9 @@ internal extension FormattedBlock {
 public struct InlineElement: Codable, Sendable, Hashable {
     public let elementType: InlineType
     public let content: String
-    public let attributes: String
-    public let metadata: [String: String]
-    public init(elementType: InlineType, content: String, attributes: String, metadata: [String: String]) {
+    public let attributes: String?
+    public let metadata: [String: String]?
+    public init(elementType: InlineType, content: String, attributes: String? = nil, metadata: [String: String]? = nil) {
         self.elementType = elementType
         self.content = content
         self.attributes = attributes
@@ -2329,7 +2329,7 @@ internal extension InlineElement {
     init(_ rb: RustBridge.InlineElement) throws {
         self.elementType = rb.elementType()
         self.content = rb.content().toString()
-        self.attributes = rb.attributes().toString()
+        self.attributes = rb.attributes()?.toString()
         self.metadata = rb.metadata()
     }
     func intoRust() throws -> RustBridge.InlineElement {
@@ -2343,9 +2343,9 @@ internal extension InlineElement {
 public struct DjotImage: Codable, Sendable, Hashable {
     public let src: String
     public let alt: String
-    public let title: String
-    public let attributes: String
-    public init(src: String, alt: String, title: String, attributes: String) {
+    public let title: String?
+    public let attributes: String?
+    public init(src: String, alt: String, title: String? = nil, attributes: String? = nil) {
         self.src = src
         self.alt = alt
         self.title = title
@@ -2358,8 +2358,8 @@ internal extension DjotImage {
     init(_ rb: RustBridge.DjotImage) throws {
         self.src = rb.src().toString()
         self.alt = rb.alt().toString()
-        self.title = rb.title().toString()
-        self.attributes = rb.attributes().toString()
+        self.title = rb.title()?.toString()
+        self.attributes = rb.attributes()?.toString()
     }
     func intoRust() throws -> RustBridge.DjotImage {
         let data = try JSONEncoder().encode(self)
@@ -2372,9 +2372,9 @@ internal extension DjotImage {
 public struct DjotLink: Codable, Sendable, Hashable {
     public let url: String
     public let text: String
-    public let title: String
-    public let attributes: String
-    public init(url: String, text: String, title: String, attributes: String) {
+    public let title: String?
+    public let attributes: String?
+    public init(url: String, text: String, title: String? = nil, attributes: String? = nil) {
         self.url = url
         self.text = text
         self.title = title
@@ -2387,8 +2387,8 @@ internal extension DjotLink {
     init(_ rb: RustBridge.DjotLink) throws {
         self.url = rb.url().toString()
         self.text = rb.text().toString()
-        self.title = rb.title().toString()
-        self.attributes = rb.attributes().toString()
+        self.title = rb.title()?.toString()
+        self.attributes = rb.attributes()?.toString()
     }
     func intoRust() throws -> RustBridge.DjotLink {
         let data = try JSONEncoder().encode(self)
@@ -2432,10 +2432,10 @@ internal extension Footnote {
 /// and parent-child relationships are bidirectionally consistent.
 public struct DocumentStructure: Codable, Sendable, Hashable {
     public let nodes: [DocumentNode]
-    public let sourceFormat: String
+    public let sourceFormat: String?
     public let relationships: [DocumentRelationship]
     public let nodeTypes: [String]
-    public init(nodes: [DocumentNode], sourceFormat: String, relationships: [DocumentRelationship], nodeTypes: [String]) {
+    public init(nodes: [DocumentNode], sourceFormat: String? = nil, relationships: [DocumentRelationship], nodeTypes: [String]) {
         self.nodes = nodes
         self.sourceFormat = sourceFormat
         self.relationships = relationships
@@ -2453,7 +2453,7 @@ public struct DocumentStructure: Codable, Sendable, Hashable {
 internal extension DocumentStructure {
     init(_ rb: RustBridge.DocumentStructure) throws {
         self.nodes = rb.nodes()
-        self.sourceFormat = rb.sourceFormat().toString()
+        self.sourceFormat = rb.sourceFormat()?.toString()
         self.relationships = rb.relationships()
         self.nodeTypes = rb.nodeTypes()
     }
@@ -2497,15 +2497,15 @@ internal extension DocumentRelationship {
 public struct DocumentNode: Codable, Sendable, Hashable {
     public let id: String
     public let content: NodeContent
-    public let parent: UInt32
+    public let parent: UInt32?
     public let children: [UInt32]
     public let contentLayer: ContentLayer
-    public let page: UInt32
-    public let pageEnd: UInt32
-    public let bbox: String
+    public let page: UInt32?
+    public let pageEnd: UInt32?
+    public let bbox: String?
     public let annotations: [TextAnnotation]
-    public let attributes: [String: String]
-    public init(id: String, content: NodeContent, parent: UInt32, children: [UInt32], contentLayer: ContentLayer, page: UInt32, pageEnd: UInt32, bbox: String, annotations: [TextAnnotation], attributes: [String: String]) {
+    public let attributes: [String: String]?
+    public init(id: String, content: NodeContent, parent: UInt32? = nil, children: [UInt32], contentLayer: ContentLayer, page: UInt32? = nil, pageEnd: UInt32? = nil, bbox: String? = nil, annotations: [TextAnnotation], attributes: [String: String]? = nil) {
         self.id = id
         self.content = content
         self.parent = parent
@@ -2541,7 +2541,7 @@ internal extension DocumentNode {
         self.contentLayer = rb.contentLayer()
         self.page = rb.page()
         self.pageEnd = rb.pageEnd()
-        self.bbox = rb.bbox().toString()
+        self.bbox = rb.bbox()?.toString()
         self.annotations = rb.annotations()
         self.attributes = rb.attributes()
     }
@@ -2588,8 +2588,8 @@ public struct GridCell: Codable, Sendable, Hashable {
     public let rowSpan: UInt32
     public let colSpan: UInt32
     public let isHeader: Bool
-    public let bbox: String
-    public init(content: String, row: UInt32, col: UInt32, rowSpan: UInt32, colSpan: UInt32, isHeader: Bool, bbox: String) {
+    public let bbox: String?
+    public init(content: String, row: UInt32, col: UInt32, rowSpan: UInt32, colSpan: UInt32, isHeader: Bool, bbox: String? = nil) {
         self.content = content
         self.row = row
         self.col = col
@@ -2618,7 +2618,7 @@ internal extension GridCell {
         self.rowSpan = rb.rowSpan()
         self.colSpan = rb.colSpan()
         self.isHeader = rb.isHeader()
-        self.bbox = rb.bbox().toString()
+        self.bbox = rb.bbox()?.toString()
     }
     func intoRust() throws -> RustBridge.GridCell {
         let data = try JSONEncoder().encode(self)
@@ -2663,28 +2663,28 @@ public struct ExtractionResult: Codable, Sendable, Hashable {
     public let content: String
     public let mimeType: String
     public let metadata: Metadata
-    public let extractionMethod: ExtractionMethod
+    public let extractionMethod: ExtractionMethod?
     public let tables: [Table]
-    public let detectedLanguages: [String]
-    public let chunks: [Chunk]
-    public let images: [ExtractedImage]
-    public let pages: [PageContent]
-    public let elements: [Element]
-    public let djotContent: DjotContent
-    public let ocrElements: [OcrElement]
-    public let document: DocumentStructure
-    public let extractedKeywords: [Keyword]
-    public let qualityScore: Double
+    public let detectedLanguages: [String]?
+    public let chunks: [Chunk]?
+    public let images: [ExtractedImage]?
+    public let pages: [PageContent]?
+    public let elements: [Element]?
+    public let djotContent: DjotContent?
+    public let ocrElements: [OcrElement]?
+    public let document: DocumentStructure?
+    public let extractedKeywords: [Keyword]?
+    public let qualityScore: Double?
     public let processingWarnings: [ProcessingWarning]
-    public let annotations: [PdfAnnotation]
-    public let children: [ArchiveEntry]
-    public let uris: [Uri]
-    public let structuredOutput: String
-    public let codeIntelligence: String
-    public let llmUsage: [LlmUsage]
-    public let formattedContent: String
-    public let ocrInternalDocument: String
-    public init(content: String, mimeType: String, metadata: Metadata, extractionMethod: ExtractionMethod, tables: [Table], detectedLanguages: [String], chunks: [Chunk], images: [ExtractedImage], pages: [PageContent], elements: [Element], djotContent: DjotContent, ocrElements: [OcrElement], document: DocumentStructure, extractedKeywords: [Keyword], qualityScore: Double, processingWarnings: [ProcessingWarning], annotations: [PdfAnnotation], children: [ArchiveEntry], uris: [Uri], structuredOutput: String, codeIntelligence: String, llmUsage: [LlmUsage], formattedContent: String, ocrInternalDocument: String) {
+    public let annotations: [PdfAnnotation]?
+    public let children: [ArchiveEntry]?
+    public let uris: [Uri]?
+    public let structuredOutput: String?
+    public let codeIntelligence: String?
+    public let llmUsage: [LlmUsage]?
+    public let formattedContent: String?
+    public let ocrInternalDocument: String?
+    public init(content: String, mimeType: String, metadata: Metadata, extractionMethod: ExtractionMethod? = nil, tables: [Table], detectedLanguages: [String]? = nil, chunks: [Chunk]? = nil, images: [ExtractedImage]? = nil, pages: [PageContent]? = nil, elements: [Element]? = nil, djotContent: DjotContent? = nil, ocrElements: [OcrElement]? = nil, document: DocumentStructure? = nil, extractedKeywords: [Keyword]? = nil, qualityScore: Double? = nil, processingWarnings: [ProcessingWarning], annotations: [PdfAnnotation]? = nil, children: [ArchiveEntry]? = nil, uris: [Uri]? = nil, structuredOutput: String? = nil, codeIntelligence: String? = nil, llmUsage: [LlmUsage]? = nil, formattedContent: String? = nil, ocrInternalDocument: String? = nil) {
         self.content = content
         self.mimeType = mimeType
         self.metadata = metadata
@@ -2761,10 +2761,10 @@ internal extension ExtractionResult {
         self.children = rb.children()
         self.uris = rb.uris()
         self.structuredOutput = rb.structuredOutput()
-        self.codeIntelligence = rb.codeIntelligence().toString()
+        self.codeIntelligence = rb.codeIntelligence()?.toString()
         self.llmUsage = rb.llmUsage()
-        self.formattedContent = rb.formattedContent().toString()
-        self.ocrInternalDocument = rb.ocrInternalDocument().toString()
+        self.formattedContent = rb.formattedContent()?.toString()
+        self.ocrInternalDocument = rb.ocrInternalDocument()?.toString()
     }
     func intoRust() throws -> RustBridge.ExtractionResult {
         let data = try JSONEncoder().encode(self)
@@ -2841,12 +2841,12 @@ internal extension ProcessingWarning {
 public struct LlmUsage: Codable, Sendable, Hashable {
     public let model: String
     public let source: String
-    public let inputTokens: UInt64
-    public let outputTokens: UInt64
-    public let totalTokens: UInt64
-    public let estimatedCost: Double
-    public let finishReason: String
-    public init(model: String, source: String, inputTokens: UInt64, outputTokens: UInt64, totalTokens: UInt64, estimatedCost: Double, finishReason: String) {
+    public let inputTokens: UInt64?
+    public let outputTokens: UInt64?
+    public let totalTokens: UInt64?
+    public let estimatedCost: Double?
+    public let finishReason: String?
+    public init(model: String, source: String, inputTokens: UInt64? = nil, outputTokens: UInt64? = nil, totalTokens: UInt64? = nil, estimatedCost: Double? = nil, finishReason: String? = nil) {
         self.model = model
         self.source = source
         self.inputTokens = inputTokens
@@ -2875,7 +2875,7 @@ internal extension LlmUsage {
         self.outputTokens = rb.outputTokens()
         self.totalTokens = rb.totalTokens()
         self.estimatedCost = rb.estimatedCost()
-        self.finishReason = rb.finishReason().toString()
+        self.finishReason = rb.finishReason()?.toString()
     }
     func intoRust() throws -> RustBridge.LlmUsage {
         let data = try JSONEncoder().encode(self)
@@ -2892,9 +2892,9 @@ internal extension LlmUsage {
 public struct Chunk: Codable, Sendable, Hashable {
     public let content: String
     public let chunkType: ChunkType
-    public let embedding: [Float]
+    public let embedding: [Float]?
     public let metadata: ChunkMetadata
-    public init(content: String, chunkType: ChunkType, embedding: [Float], metadata: ChunkMetadata) {
+    public init(content: String, chunkType: ChunkType, embedding: [Float]? = nil, metadata: ChunkMetadata) {
         self.content = content
         self.chunkType = chunkType
         self.embedding = embedding
@@ -2972,14 +2972,14 @@ internal extension HeadingLevel {
 public struct ChunkMetadata: Codable, Sendable, Hashable {
     public let byteStart: UInt
     public let byteEnd: UInt
-    public let tokenCount: UInt
+    public let tokenCount: UInt?
     public let chunkIndex: UInt
     public let totalChunks: UInt
-    public let firstPage: UInt32
-    public let lastPage: UInt32
-    public let headingContext: HeadingContext
+    public let firstPage: UInt32?
+    public let lastPage: UInt32?
+    public let headingContext: HeadingContext?
     public let imageIndices: [UInt32]
-    public init(byteStart: UInt, byteEnd: UInt, tokenCount: UInt, chunkIndex: UInt, totalChunks: UInt, firstPage: UInt32, lastPage: UInt32, headingContext: HeadingContext, imageIndices: [UInt32]) {
+    public init(byteStart: UInt, byteEnd: UInt, tokenCount: UInt? = nil, chunkIndex: UInt, totalChunks: UInt, firstPage: UInt32? = nil, lastPage: UInt32? = nil, headingContext: HeadingContext? = nil, imageIndices: [UInt32]) {
         self.byteStart = byteStart
         self.byteEnd = byteEnd
         self.tokenCount = tokenCount
@@ -3032,20 +3032,20 @@ public struct ExtractedImage: Codable, Sendable, Hashable {
     public let data: Data
     public let format: String
     public let imageIndex: UInt32
-    public let pageNumber: UInt32
-    public let width: UInt32
-    public let height: UInt32
-    public let colorspace: String
-    public let bitsPerComponent: UInt32
+    public let pageNumber: UInt32?
+    public let width: UInt32?
+    public let height: UInt32?
+    public let colorspace: String?
+    public let bitsPerComponent: UInt32?
     public let isMask: Bool
-    public let description: String
-    public let ocrResult: ExtractionResult
-    public let boundingBox: String
-    public let sourcePath: String
-    public let imageKind: ImageKind
-    public let kindConfidence: Float
-    public let clusterId: UInt32
-    public init(data: Data, format: String, imageIndex: UInt32, pageNumber: UInt32, width: UInt32, height: UInt32, colorspace: String, bitsPerComponent: UInt32, isMask: Bool, description: String, ocrResult: ExtractionResult, boundingBox: String, sourcePath: String, imageKind: ImageKind, kindConfidence: Float, clusterId: UInt32) {
+    public let description: String?
+    public let ocrResult: ExtractionResult?
+    public let boundingBox: String?
+    public let sourcePath: String?
+    public let imageKind: ImageKind?
+    public let kindConfidence: Float?
+    public let clusterId: UInt32?
+    public init(data: Data, format: String, imageIndex: UInt32, pageNumber: UInt32? = nil, width: UInt32? = nil, height: UInt32? = nil, colorspace: String? = nil, bitsPerComponent: UInt32? = nil, isMask: Bool, description: String? = nil, ocrResult: ExtractionResult? = nil, boundingBox: String? = nil, sourcePath: String? = nil, imageKind: ImageKind? = nil, kindConfidence: Float? = nil, clusterId: UInt32? = nil) {
         self.data = data
         self.format = format
         self.imageIndex = imageIndex
@@ -3092,13 +3092,13 @@ internal extension ExtractedImage {
         self.pageNumber = rb.pageNumber()
         self.width = rb.width()
         self.height = rb.height()
-        self.colorspace = rb.colorspace().toString()
+        self.colorspace = rb.colorspace()?.toString()
         self.bitsPerComponent = rb.bitsPerComponent()
         self.isMask = rb.isMask()
-        self.description = rb.description().toString()
+        self.description = rb.description()?.toString()
         self.ocrResult = rb.ocrResult()
-        self.boundingBox = rb.boundingBox().toString()
-        self.sourcePath = rb.sourcePath().toString()
+        self.boundingBox = rb.boundingBox()?.toString()
+        self.sourcePath = rb.sourcePath()?.toString()
         self.imageKind = rb.imageKind()
         self.kindConfidence = rb.kindConfidence()
         self.clusterId = rb.clusterId()
@@ -3112,12 +3112,12 @@ internal extension ExtractedImage {
 
 /// Metadata for a semantic element.
 public struct ElementMetadata: Codable, Sendable, Hashable {
-    public let pageNumber: UInt32
-    public let filename: String
-    public let coordinates: String
-    public let elementIndex: UInt
+    public let pageNumber: UInt32?
+    public let filename: String?
+    public let coordinates: String?
+    public let elementIndex: UInt?
     public let additional: [String: String]
-    public init(pageNumber: UInt32, filename: String, coordinates: String, elementIndex: UInt, additional: [String: String]) {
+    public init(pageNumber: UInt32? = nil, filename: String? = nil, coordinates: String? = nil, elementIndex: UInt? = nil, additional: [String: String]) {
         self.pageNumber = pageNumber
         self.filename = filename
         self.coordinates = coordinates
@@ -3137,8 +3137,8 @@ public struct ElementMetadata: Codable, Sendable, Hashable {
 internal extension ElementMetadata {
     init(_ rb: RustBridge.ElementMetadata) throws {
         self.pageNumber = rb.pageNumber()
-        self.filename = rb.filename().toString()
-        self.coordinates = rb.coordinates().toString()
+        self.filename = rb.filename()?.toString()
+        self.coordinates = rb.coordinates()?.toString()
         self.elementIndex = rb.elementIndex()
         self.additional = rb.additional()
     }
@@ -3223,8 +3223,8 @@ public struct ExcelSheet: Codable, Sendable, Hashable {
     public let rowCount: UInt
     public let colCount: UInt
     public let cellCount: UInt
-    public let tableCells: [[String]]
-    public init(name: String, markdown: String, rowCount: UInt, colCount: UInt, cellCount: UInt, tableCells: [[String]]) {
+    public let tableCells: [[String]]?
+    public init(name: String, markdown: String, rowCount: UInt, colCount: UInt, cellCount: UInt, tableCells: [[String]]? = nil) {
         self.name = name
         self.markdown = markdown
         self.rowCount = rowCount
@@ -3302,10 +3302,10 @@ public struct TextExtractionResult: Codable, Sendable, Hashable {
     public let lineCount: UInt
     public let wordCount: UInt
     public let characterCount: UInt
-    public let headers: [String]
-    public let links: [String]
-    public let codeBlocks: [String]
-    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String], links: [String], codeBlocks: [String]) {
+    public let headers: [String]?
+    public let links: [String]?
+    public let codeBlocks: [String]?
+    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String]? = nil, links: [String]? = nil, codeBlocks: [String]? = nil) {
         self.content = content
         self.lineCount = lineCount
         self.wordCount = wordCount
@@ -3353,12 +3353,12 @@ public struct PptxExtractionResult: Codable, Sendable, Hashable {
     public let imageCount: UInt
     public let tableCount: UInt
     public let images: [ExtractedImage]
-    public let pageStructure: PageStructure
-    public let pageContents: [PageContent]
-    public let document: DocumentStructure
+    public let pageStructure: PageStructure?
+    public let pageContents: [PageContent]?
+    public let document: DocumentStructure?
     public let hyperlinks: [String]
     public let officeMetadata: [String: String]
-    public init(content: String, metadata: PptxMetadata, slideCount: UInt, imageCount: UInt, tableCount: UInt, images: [ExtractedImage], pageStructure: PageStructure, pageContents: [PageContent], document: DocumentStructure, hyperlinks: [String], officeMetadata: [String: String]) {
+    public init(content: String, metadata: PptxMetadata, slideCount: UInt, imageCount: UInt, tableCount: UInt, images: [ExtractedImage], pageStructure: PageStructure? = nil, pageContents: [PageContent]? = nil, document: DocumentStructure? = nil, hyperlinks: [String], officeMetadata: [String: String]) {
         self.content = content
         self.metadata = metadata
         self.slideCount = slideCount
@@ -3413,19 +3413,19 @@ internal extension PptxExtractionResult {
 /// Complete representation of an extracted email message (.eml or .msg)
 /// including headers, body content, and attachments.
 public struct EmailExtractionResult: Codable, Sendable, Hashable {
-    public let subject: String
-    public let fromEmail: String
+    public let subject: String?
+    public let fromEmail: String?
     public let toEmails: [String]
     public let ccEmails: [String]
     public let bccEmails: [String]
-    public let date: String
-    public let messageId: String
-    public let plainText: String
-    public let htmlContent: String
+    public let date: String?
+    public let messageId: String?
+    public let plainText: String?
+    public let htmlContent: String?
     public let content: String
     public let attachments: [EmailAttachment]
     public let metadata: [String: String]
-    public init(subject: String, fromEmail: String, toEmails: [String], ccEmails: [String], bccEmails: [String], date: String, messageId: String, plainText: String, htmlContent: String, content: String, attachments: [EmailAttachment], metadata: [String: String]) {
+    public init(subject: String? = nil, fromEmail: String? = nil, toEmails: [String], ccEmails: [String], bccEmails: [String], date: String? = nil, messageId: String? = nil, plainText: String? = nil, htmlContent: String? = nil, content: String, attachments: [EmailAttachment], metadata: [String: String]) {
         self.subject = subject
         self.fromEmail = fromEmail
         self.toEmails = toEmails
@@ -3458,15 +3458,15 @@ public struct EmailExtractionResult: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for EmailExtractionResult
 internal extension EmailExtractionResult {
     init(_ rb: RustBridge.EmailExtractionResult) throws {
-        self.subject = rb.subject().toString()
-        self.fromEmail = rb.fromEmail().toString()
+        self.subject = rb.subject()?.toString()
+        self.fromEmail = rb.fromEmail()?.toString()
         self.toEmails = rb.toEmails()
         self.ccEmails = rb.ccEmails()
         self.bccEmails = rb.bccEmails()
-        self.date = rb.date().toString()
-        self.messageId = rb.messageId().toString()
-        self.plainText = rb.plainText().toString()
-        self.htmlContent = rb.htmlContent().toString()
+        self.date = rb.date()?.toString()
+        self.messageId = rb.messageId()?.toString()
+        self.plainText = rb.plainText()?.toString()
+        self.htmlContent = rb.htmlContent()?.toString()
         self.content = rb.content().toString()
         self.attachments = rb.attachments()
         self.metadata = rb.metadata()
@@ -3482,13 +3482,13 @@ internal extension EmailExtractionResult {
 ///
 /// Contains metadata and optionally the content of an email attachment.
 public struct EmailAttachment: Codable, Sendable, Hashable {
-    public let name: String
-    public let filename: String
-    public let mimeType: String
-    public let size: UInt
+    public let name: String?
+    public let filename: String?
+    public let mimeType: String?
+    public let size: UInt?
     public let isImage: Bool
-    public let data: Data
-    public init(name: String, filename: String, mimeType: String, size: UInt, isImage: Bool, data: Data) {
+    public let data: Data?
+    public init(name: String? = nil, filename: String? = nil, mimeType: String? = nil, size: UInt? = nil, isImage: Bool, data: Data? = nil) {
         self.name = name
         self.filename = filename
         self.mimeType = mimeType
@@ -3509,9 +3509,9 @@ public struct EmailAttachment: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for EmailAttachment
 internal extension EmailAttachment {
     init(_ rb: RustBridge.EmailAttachment) throws {
-        self.name = rb.name().toString()
-        self.filename = rb.filename().toString()
-        self.mimeType = rb.mimeType().toString()
+        self.name = rb.name()?.toString()
+        self.filename = rb.filename()?.toString()
+        self.mimeType = rb.mimeType()?.toString()
         self.size = rb.size()
         self.isImage = rb.isImage()
         self.data = rb.data()
@@ -3532,9 +3532,9 @@ public struct OcrExtractionResult: Codable, Sendable, Hashable {
     public let mimeType: String
     public let metadata: [String: String]
     public let tables: [OcrTable]
-    public let ocrElements: [OcrElement]
-    public let internalDocument: String
-    public init(content: String, mimeType: String, metadata: [String: String], tables: [OcrTable], ocrElements: [OcrElement], internalDocument: String) {
+    public let ocrElements: [OcrElement]?
+    public let internalDocument: String?
+    public init(content: String, mimeType: String, metadata: [String: String], tables: [OcrTable], ocrElements: [OcrElement]? = nil, internalDocument: String? = nil) {
         self.content = content
         self.mimeType = mimeType
         self.metadata = metadata
@@ -3560,7 +3560,7 @@ internal extension OcrExtractionResult {
         self.metadata = rb.metadata()
         self.tables = rb.tables()
         self.ocrElements = rb.ocrElements()
-        self.internalDocument = rb.internalDocument().toString()
+        self.internalDocument = rb.internalDocument()?.toString()
     }
     func intoRust() throws -> RustBridge.OcrExtractionResult {
         let data = try JSONEncoder().encode(self)
@@ -3576,8 +3576,8 @@ public struct OcrTable: Codable, Sendable, Hashable {
     public let cells: [[String]]
     public let markdown: String
     public let pageNumber: UInt32
-    public let boundingBox: OcrTableBoundingBox
-    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: OcrTableBoundingBox) {
+    public let boundingBox: OcrTableBoundingBox?
+    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: OcrTableBoundingBox? = nil) {
         self.cells = cells
         self.markdown = markdown
         self.pageNumber = pageNumber
@@ -3697,7 +3697,7 @@ public struct TesseractConfig: Codable, Sendable, Hashable {
     public let outputFormat: String
     public let oem: Int32
     public let minConfidence: Double
-    public let preprocessing: ImagePreprocessingConfig
+    public let preprocessing: ImagePreprocessingConfig?
     public let enableTableDetection: Bool
     public let tableMinConfidence: Double
     public let tableColumnThreshold: Int32
@@ -3713,7 +3713,7 @@ public struct TesseractConfig: Codable, Sendable, Hashable {
     public let tesseditUsePrimaryParamsModel: Bool
     public let textordSpaceSizeIsVariable: Bool
     public let thresholdingMethod: Bool
-    public init(language: String, psm: Int32, outputFormat: String, oem: Int32, minConfidence: Double, preprocessing: ImagePreprocessingConfig, enableTableDetection: Bool, tableMinConfidence: Double, tableColumnThreshold: Int32, tableRowThresholdRatio: Double, useCache: Bool, classifyUsePreAdaptedTemplates: Bool, languageModelNgramOn: Bool, tesseditDontBlkrejGoodWds: Bool, tesseditDontRowrejGoodWds: Bool, tesseditEnableDictCorrection: Bool, tesseditCharWhitelist: String, tesseditCharBlacklist: String, tesseditUsePrimaryParamsModel: Bool, textordSpaceSizeIsVariable: Bool, thresholdingMethod: Bool) {
+    public init(language: String, psm: Int32, outputFormat: String, oem: Int32, minConfidence: Double, preprocessing: ImagePreprocessingConfig? = nil, enableTableDetection: Bool, tableMinConfidence: Double, tableColumnThreshold: Int32, tableRowThresholdRatio: Double, useCache: Bool, classifyUsePreAdaptedTemplates: Bool, languageModelNgramOn: Bool, tesseditDontBlkrejGoodWds: Bool, tesseditDontRowrejGoodWds: Bool, tesseditEnableDictCorrection: Bool, tesseditCharWhitelist: String, tesseditCharBlacklist: String, tesseditUsePrimaryParamsModel: Bool, textordSpaceSizeIsVariable: Bool, thresholdingMethod: Bool) {
         self.language = language
         self.psm = psm
         self.outputFormat = outputFormat
@@ -3804,13 +3804,13 @@ public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
     public let scaleFactor: Double
     public let autoAdjusted: Bool
     public let finalDpi: Int32
-    public let newDimensions: [UInt]
+    public let newDimensions: [UInt]?
     public let resampleMethod: String
     public let dimensionClamped: Bool
-    public let calculatedDpi: Int32
+    public let calculatedDpi: Int32?
     public let skippedResize: Bool
-    public let resizeError: String
-    public init(originalDimensions: [UInt], originalDpi: [Double], targetDpi: Int32, scaleFactor: Double, autoAdjusted: Bool, finalDpi: Int32, newDimensions: [UInt], resampleMethod: String, dimensionClamped: Bool, calculatedDpi: Int32, skippedResize: Bool, resizeError: String) {
+    public let resizeError: String?
+    public init(originalDimensions: [UInt], originalDpi: [Double], targetDpi: Int32, scaleFactor: Double, autoAdjusted: Bool, finalDpi: Int32, newDimensions: [UInt]? = nil, resampleMethod: String, dimensionClamped: Bool, calculatedDpi: Int32? = nil, skippedResize: Bool, resizeError: String? = nil) {
         self.originalDimensions = originalDimensions
         self.originalDpi = originalDpi
         self.targetDpi = targetDpi
@@ -3854,7 +3854,7 @@ internal extension ImagePreprocessingMetadata {
         self.dimensionClamped = rb.dimensionClamped()
         self.calculatedDpi = rb.calculatedDpi()
         self.skippedResize = rb.skippedResize()
-        self.resizeError = rb.resizeError().toString()
+        self.resizeError = rb.resizeError()?.toString()
     }
     func intoRust() throws -> RustBridge.ImagePreprocessingMetadata {
         let data = try JSONEncoder().encode(self)
@@ -3868,29 +3868,29 @@ internal extension ImagePreprocessingMetadata {
 /// Contains common fields applicable to all formats, format-specific metadata
 /// via a discriminated union, and additional custom fields from postprocessors.
 public struct Metadata: Codable, Sendable, Hashable {
-    public let title: String
-    public let subject: String
-    public let authors: [String]
-    public let keywords: [String]
-    public let language: String
-    public let createdAt: String
-    public let modifiedAt: String
-    public let createdBy: String
-    public let modifiedBy: String
-    public let pages: PageStructure
-    public let format: FormatMetadata
-    public let imagePreprocessing: ImagePreprocessingMetadata
-    public let jsonSchema: String
-    public let error: ErrorMetadata
-    public let extractionDurationMs: UInt64
-    public let category: String
-    public let tags: [String]
-    public let documentVersion: String
-    public let abstractText: String
-    public let outputFormat: String
+    public let title: String?
+    public let subject: String?
+    public let authors: [String]?
+    public let keywords: [String]?
+    public let language: String?
+    public let createdAt: String?
+    public let modifiedAt: String?
+    public let createdBy: String?
+    public let modifiedBy: String?
+    public let pages: PageStructure?
+    public let format: FormatMetadata?
+    public let imagePreprocessing: ImagePreprocessingMetadata?
+    public let jsonSchema: String?
+    public let error: ErrorMetadata?
+    public let extractionDurationMs: UInt64?
+    public let category: String?
+    public let tags: [String]?
+    public let documentVersion: String?
+    public let abstractText: String?
+    public let outputFormat: String?
     public let ocrUsed: Bool
     public let additional: [String: String]
-    public init(title: String, subject: String, authors: [String], keywords: [String], language: String, createdAt: String, modifiedAt: String, createdBy: String, modifiedBy: String, pages: PageStructure, format: FormatMetadata, imagePreprocessing: ImagePreprocessingMetadata, jsonSchema: String, error: ErrorMetadata, extractionDurationMs: UInt64, category: String, tags: [String], documentVersion: String, abstractText: String, outputFormat: String, ocrUsed: Bool, additional: [String: String]) {
+    public init(title: String? = nil, subject: String? = nil, authors: [String]? = nil, keywords: [String]? = nil, language: String? = nil, createdAt: String? = nil, modifiedAt: String? = nil, createdBy: String? = nil, modifiedBy: String? = nil, pages: PageStructure? = nil, format: FormatMetadata? = nil, imagePreprocessing: ImagePreprocessingMetadata? = nil, jsonSchema: String? = nil, error: ErrorMetadata? = nil, extractionDurationMs: UInt64? = nil, category: String? = nil, tags: [String]? = nil, documentVersion: String? = nil, abstractText: String? = nil, outputFormat: String? = nil, ocrUsed: Bool, additional: [String: String]) {
         self.title = title
         self.subject = subject
         self.authors = authors
@@ -3943,26 +3943,26 @@ public struct Metadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for Metadata
 internal extension Metadata {
     init(_ rb: RustBridge.Metadata) throws {
-        self.title = rb.title().toString()
-        self.subject = rb.subject().toString()
+        self.title = rb.title()?.toString()
+        self.subject = rb.subject()?.toString()
         self.authors = rb.authors()
         self.keywords = rb.keywords()
-        self.language = rb.language().toString()
-        self.createdAt = rb.createdAt().toString()
-        self.modifiedAt = rb.modifiedAt().toString()
-        self.createdBy = rb.createdBy().toString()
-        self.modifiedBy = rb.modifiedBy().toString()
+        self.language = rb.language()?.toString()
+        self.createdAt = rb.createdAt()?.toString()
+        self.modifiedAt = rb.modifiedAt()?.toString()
+        self.createdBy = rb.createdBy()?.toString()
+        self.modifiedBy = rb.modifiedBy()?.toString()
         self.pages = rb.pages()
         self.format = rb.format()
         self.imagePreprocessing = rb.imagePreprocessing()
         self.jsonSchema = rb.jsonSchema()
         self.error = rb.error()
         self.extractionDurationMs = rb.extractionDurationMs()
-        self.category = rb.category().toString()
+        self.category = rb.category()?.toString()
         self.tags = rb.tags()
-        self.documentVersion = rb.documentVersion().toString()
-        self.abstractText = rb.abstractText().toString()
-        self.outputFormat = rb.outputFormat().toString()
+        self.documentVersion = rb.documentVersion()?.toString()
+        self.abstractText = rb.abstractText()?.toString()
+        self.outputFormat = rb.outputFormat()?.toString()
         self.ocrUsed = rb.ocrUsed()
         self.additional = rb.additional()
     }
@@ -3978,9 +3978,9 @@ internal extension Metadata {
 /// Identifies the document as a spreadsheet source via the `FormatMetadata::Excel`
 /// discriminant. Sheet count and sheet names are stored inside this struct.
 public struct ExcelMetadata: Codable, Sendable, Hashable {
-    public let sheetCount: UInt32
-    public let sheetNames: [String]
-    public init(sheetCount: UInt32, sheetNames: [String]) {
+    public let sheetCount: UInt32?
+    public let sheetNames: [String]?
+    public init(sheetCount: UInt32? = nil, sheetNames: [String]? = nil) {
         self.sheetCount = sheetCount
         self.sheetNames = sheetNames
     }
@@ -4007,14 +4007,14 @@ internal extension ExcelMetadata {
 ///
 /// Includes sender/recipient information, message ID, and attachment list.
 public struct EmailMetadata: Codable, Sendable, Hashable {
-    public let fromEmail: String
-    public let fromName: String
+    public let fromEmail: String?
+    public let fromName: String?
     public let toEmails: [String]
     public let ccEmails: [String]
     public let bccEmails: [String]
-    public let messageId: String
+    public let messageId: String?
     public let attachments: [String]
-    public init(fromEmail: String, fromName: String, toEmails: [String], ccEmails: [String], bccEmails: [String], messageId: String, attachments: [String]) {
+    public init(fromEmail: String? = nil, fromName: String? = nil, toEmails: [String], ccEmails: [String], bccEmails: [String], messageId: String? = nil, attachments: [String]) {
         self.fromEmail = fromEmail
         self.fromName = fromName
         self.toEmails = toEmails
@@ -4037,12 +4037,12 @@ public struct EmailMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for EmailMetadata
 internal extension EmailMetadata {
     init(_ rb: RustBridge.EmailMetadata) throws {
-        self.fromEmail = rb.fromEmail().toString()
-        self.fromName = rb.fromName().toString()
+        self.fromEmail = rb.fromEmail()?.toString()
+        self.fromName = rb.fromName()?.toString()
         self.toEmails = rb.toEmails()
         self.ccEmails = rb.ccEmails()
         self.bccEmails = rb.bccEmails()
-        self.messageId = rb.messageId().toString()
+        self.messageId = rb.messageId()?.toString()
         self.attachments = rb.attachments()
     }
     func intoRust() throws -> RustBridge.EmailMetadata {
@@ -4060,8 +4060,8 @@ public struct ArchiveMetadata: Codable, Sendable, Hashable {
     public let fileCount: UInt32
     public let fileList: [String]
     public let totalSize: UInt64
-    public let compressedSize: UInt64
-    public init(format: String, fileCount: UInt32, fileList: [String], totalSize: UInt64, compressedSize: UInt64) {
+    public let compressedSize: UInt64?
+    public init(format: String, fileCount: UInt32, fileList: [String], totalSize: UInt64, compressedSize: UInt64? = nil) {
         self.format = format
         self.fileCount = fileCount
         self.fileList = fileList
@@ -4161,10 +4161,10 @@ public struct TextMetadata: Codable, Sendable, Hashable {
     public let lineCount: UInt32
     public let wordCount: UInt32
     public let characterCount: UInt32
-    public let headers: [String]
-    public let links: [String]
-    public let codeBlocks: [String]
-    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String], links: [String], codeBlocks: [String]) {
+    public let headers: [String]?
+    public let links: [String]?
+    public let codeBlocks: [String]?
+    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String]? = nil, links: [String]? = nil, codeBlocks: [String]? = nil) {
         self.lineCount = lineCount
         self.wordCount = wordCount
         self.characterCount = characterCount
@@ -4203,10 +4203,10 @@ internal extension TextMetadata {
 public struct HeaderMetadata: Codable, Sendable, Hashable {
     public let level: UInt8
     public let text: String
-    public let id: String
+    public let id: String?
     public let depth: UInt32
     public let htmlOffset: UInt32
-    public init(level: UInt8, text: String, id: String, depth: UInt32, htmlOffset: UInt32) {
+    public init(level: UInt8, text: String, id: String? = nil, depth: UInt32, htmlOffset: UInt32) {
         self.level = level
         self.text = text
         self.id = id
@@ -4227,7 +4227,7 @@ internal extension HeaderMetadata {
     init(_ rb: RustBridge.HeaderMetadata) throws {
         self.level = rb.level()
         self.text = rb.text().toString()
-        self.id = rb.id().toString()
+        self.id = rb.id()?.toString()
         self.depth = rb.depth()
         self.htmlOffset = rb.htmlOffset()
     }
@@ -4242,11 +4242,11 @@ internal extension HeaderMetadata {
 public struct LinkMetadata: Codable, Sendable, Hashable {
     public let href: String
     public let text: String
-    public let title: String
+    public let title: String?
     public let linkType: LinkType
     public let rel: [String]
     public let attributes: [String]
-    public init(href: String, text: String, title: String, linkType: LinkType, rel: [String], attributes: [String]) {
+    public init(href: String, text: String, title: String? = nil, linkType: LinkType, rel: [String], attributes: [String]) {
         self.href = href
         self.text = text
         self.title = title
@@ -4269,7 +4269,7 @@ internal extension LinkMetadata {
     init(_ rb: RustBridge.LinkMetadata) throws {
         self.href = rb.href().toString()
         self.text = rb.text().toString()
-        self.title = rb.title().toString()
+        self.title = rb.title()?.toString()
         self.linkType = rb.linkType()
         self.rel = rb.rel()
         self.attributes = rb.attributes()
@@ -4284,12 +4284,12 @@ internal extension LinkMetadata {
 /// Image element metadata.
 public struct ImageMetadataType: Codable, Sendable, Hashable {
     public let src: String
-    public let alt: String
-    public let title: String
-    public let dimensions: [UInt32]
+    public let alt: String?
+    public let title: String?
+    public let dimensions: [UInt32]?
     public let imageType: ImageType
     public let attributes: [String]
-    public init(src: String, alt: String, title: String, dimensions: [UInt32], imageType: ImageType, attributes: [String]) {
+    public init(src: String, alt: String? = nil, title: String? = nil, dimensions: [UInt32]? = nil, imageType: ImageType, attributes: [String]) {
         self.src = src
         self.alt = alt
         self.title = title
@@ -4311,8 +4311,8 @@ public struct ImageMetadataType: Codable, Sendable, Hashable {
 internal extension ImageMetadataType {
     init(_ rb: RustBridge.ImageMetadataType) throws {
         self.src = rb.src().toString()
-        self.alt = rb.alt().toString()
-        self.title = rb.title().toString()
+        self.alt = rb.alt()?.toString()
+        self.title = rb.title()?.toString()
         self.dimensions = rb.dimensions()
         self.imageType = rb.imageType()
         self.attributes = rb.attributes()
@@ -4328,8 +4328,8 @@ internal extension ImageMetadataType {
 public struct StructuredData: Codable, Sendable, Hashable {
     public let dataType: StructuredDataType
     public let rawJson: String
-    public let schemaType: String
-    public init(dataType: StructuredDataType, rawJson: String, schemaType: String) {
+    public let schemaType: String?
+    public init(dataType: StructuredDataType, rawJson: String, schemaType: String? = nil) {
         self.dataType = dataType
         self.rawJson = rawJson
         self.schemaType = schemaType
@@ -4346,7 +4346,7 @@ internal extension StructuredData {
     init(_ rb: RustBridge.StructuredData) throws {
         self.dataType = rb.dataType()
         self.rawJson = rb.rawJson().toString()
-        self.schemaType = rb.schemaType().toString()
+        self.schemaType = rb.schemaType()?.toString()
     }
     func intoRust() throws -> RustBridge.StructuredData {
         let data = try JSONEncoder().encode(self)
@@ -4360,14 +4360,14 @@ internal extension StructuredData {
 /// Includes document-level metadata, Open Graph data, Twitter Card metadata,
 /// and extracted structural elements (headers, links, images, structured data).
 public struct HtmlMetadata: Codable, Sendable, Hashable {
-    public let title: String
-    public let description: String
+    public let title: String?
+    public let description: String?
     public let keywords: [String]
-    public let author: String
-    public let canonicalUrl: String
-    public let baseHref: String
-    public let language: String
-    public let textDirection: TextDirection
+    public let author: String?
+    public let canonicalUrl: String?
+    public let baseHref: String?
+    public let language: String?
+    public let textDirection: TextDirection?
     public let openGraph: [String: String]
     public let twitterCard: [String: String]
     public let metaTags: [String: String]
@@ -4375,7 +4375,7 @@ public struct HtmlMetadata: Codable, Sendable, Hashable {
     public let links: [LinkMetadata]
     public let images: [ImageMetadataType]
     public let structuredData: [StructuredData]
-    public init(title: String, description: String, keywords: [String], author: String, canonicalUrl: String, baseHref: String, language: String, textDirection: TextDirection, openGraph: [String: String], twitterCard: [String: String], metaTags: [String: String], headers: [HeaderMetadata], links: [LinkMetadata], images: [ImageMetadataType], structuredData: [StructuredData]) {
+    public init(title: String? = nil, description: String? = nil, keywords: [String], author: String? = nil, canonicalUrl: String? = nil, baseHref: String? = nil, language: String? = nil, textDirection: TextDirection? = nil, openGraph: [String: String], twitterCard: [String: String], metaTags: [String: String], headers: [HeaderMetadata], links: [LinkMetadata], images: [ImageMetadataType], structuredData: [StructuredData]) {
         self.title = title
         self.description = description
         self.keywords = keywords
@@ -4414,13 +4414,13 @@ public struct HtmlMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for HtmlMetadata
 internal extension HtmlMetadata {
     init(_ rb: RustBridge.HtmlMetadata) throws {
-        self.title = rb.title().toString()
-        self.description = rb.description().toString()
+        self.title = rb.title()?.toString()
+        self.description = rb.description()?.toString()
         self.keywords = rb.keywords()
-        self.author = rb.author().toString()
-        self.canonicalUrl = rb.canonicalUrl().toString()
-        self.baseHref = rb.baseHref().toString()
-        self.language = rb.language().toString()
+        self.author = rb.author()?.toString()
+        self.canonicalUrl = rb.canonicalUrl()?.toString()
+        self.baseHref = rb.baseHref()?.toString()
+        self.language = rb.language()?.toString()
         self.textDirection = rb.textDirection()
         self.openGraph = rb.openGraph()
         self.twitterCard = rb.twitterCard()
@@ -4445,9 +4445,9 @@ public struct OcrMetadata: Codable, Sendable, Hashable {
     public let psm: Int32
     public let outputFormat: String
     public let tableCount: UInt32
-    public let tableRows: UInt32
-    public let tableCols: UInt32
-    public init(language: String, psm: Int32, outputFormat: String, tableCount: UInt32, tableRows: UInt32, tableCols: UInt32) {
+    public let tableRows: UInt32?
+    public let tableCols: UInt32?
+    public init(language: String, psm: Int32, outputFormat: String, tableCount: UInt32, tableRows: UInt32? = nil, tableCols: UInt32? = nil) {
         self.language = language
         self.psm = psm
         self.outputFormat = outputFormat
@@ -4515,9 +4515,9 @@ internal extension ErrorMetadata {
 public struct PptxMetadata: Codable, Sendable, Hashable {
     public let slideCount: UInt32
     public let slideNames: [String]
-    public let imageCount: UInt32
-    public let tableCount: UInt32
-    public init(slideCount: UInt32, slideNames: [String], imageCount: UInt32, tableCount: UInt32) {
+    public let imageCount: UInt32?
+    public let tableCount: UInt32?
+    public init(slideCount: UInt32, slideNames: [String], imageCount: UInt32? = nil, tableCount: UInt32? = nil) {
         self.slideCount = slideCount
         self.slideNames = slideNames
         self.imageCount = imageCount
@@ -4551,10 +4551,10 @@ internal extension PptxMetadata {
 /// Extracted from DOCX files using shared Office Open XML metadata extraction.
 /// Integrates with `office_metadata` module for core/app/custom properties.
 public struct DocxMetadata: Codable, Sendable, Hashable {
-    public let coreProperties: CoreProperties
-    public let appProperties: DocxAppProperties
-    public let customProperties: [String: String]
-    public init(coreProperties: CoreProperties, appProperties: DocxAppProperties, customProperties: [String: String]) {
+    public let coreProperties: CoreProperties?
+    public let appProperties: DocxAppProperties?
+    public let customProperties: [String: String]?
+    public init(coreProperties: CoreProperties? = nil, appProperties: DocxAppProperties? = nil, customProperties: [String: String]? = nil) {
         self.coreProperties = coreProperties
         self.appProperties = appProperties
         self.customProperties = customProperties
@@ -4584,10 +4584,10 @@ internal extension DocxMetadata {
 public struct CsvMetadata: Codable, Sendable, Hashable {
     public let rowCount: UInt32
     public let columnCount: UInt32
-    public let delimiter: String
+    public let delimiter: String?
     public let hasHeader: Bool
-    public let columnTypes: [String]
-    public init(rowCount: UInt32, columnCount: UInt32, delimiter: String, hasHeader: Bool, columnTypes: [String]) {
+    public let columnTypes: [String]?
+    public init(rowCount: UInt32, columnCount: UInt32, delimiter: String? = nil, hasHeader: Bool, columnTypes: [String]? = nil) {
         self.rowCount = rowCount
         self.columnCount = columnCount
         self.delimiter = delimiter
@@ -4608,7 +4608,7 @@ internal extension CsvMetadata {
     init(_ rb: RustBridge.CsvMetadata) throws {
         self.rowCount = rb.rowCount()
         self.columnCount = rb.columnCount()
-        self.delimiter = rb.delimiter().toString()
+        self.delimiter = rb.delimiter()?.toString()
         self.hasHeader = rb.hasHeader()
         self.columnTypes = rb.columnTypes()
     }
@@ -4624,9 +4624,9 @@ public struct BibtexMetadata: Codable, Sendable, Hashable {
     public let entryCount: UInt
     public let citationKeys: [String]
     public let authors: [String]
-    public let yearRange: YearRange
-    public let entryTypes: [String: UInt]
-    public init(entryCount: UInt, citationKeys: [String], authors: [String], yearRange: YearRange, entryTypes: [String: UInt]) {
+    public let yearRange: YearRange?
+    public let entryTypes: [String: UInt]?
+    public init(entryCount: UInt, citationKeys: [String], authors: [String], yearRange: YearRange? = nil, entryTypes: [String: UInt]? = nil) {
         self.entryCount = entryCount
         self.citationKeys = citationKeys
         self.authors = authors
@@ -4661,12 +4661,12 @@ internal extension BibtexMetadata {
 /// Citation file metadata (RIS, PubMed, EndNote).
 public struct CitationMetadata: Codable, Sendable, Hashable {
     public let citationCount: UInt
-    public let format: String
+    public let format: String?
     public let authors: [String]
-    public let yearRange: YearRange
+    public let yearRange: YearRange?
     public let dois: [String]
     public let keywords: [String]
-    public init(citationCount: UInt, format: String, authors: [String], yearRange: YearRange, dois: [String], keywords: [String]) {
+    public init(citationCount: UInt, format: String? = nil, authors: [String], yearRange: YearRange? = nil, dois: [String], keywords: [String]) {
         self.citationCount = citationCount
         self.format = format
         self.authors = authors
@@ -4688,7 +4688,7 @@ public struct CitationMetadata: Codable, Sendable, Hashable {
 internal extension CitationMetadata {
     init(_ rb: RustBridge.CitationMetadata) throws {
         self.citationCount = rb.citationCount()
-        self.format = rb.format().toString()
+        self.format = rb.format()?.toString()
         self.authors = rb.authors()
         self.yearRange = rb.yearRange()
         self.dois = rb.dois()
@@ -4703,10 +4703,10 @@ internal extension CitationMetadata {
 
 /// Year range for bibliographic metadata.
 public struct YearRange: Codable, Sendable, Hashable {
-    public let min: UInt32
-    public let max: UInt32
+    public let min: UInt32?
+    public let max: UInt32?
     public let years: [UInt32]
-    public init(min: UInt32, max: UInt32, years: [UInt32]) {
+    public init(min: UInt32? = nil, max: UInt32? = nil, years: [UInt32]) {
         self.min = min
         self.max = max
         self.years = years
@@ -4731,8 +4731,8 @@ internal extension YearRange {
 public struct FictionBookMetadata: Codable, Sendable, Hashable {
     public let genres: [String]
     public let sequences: [String]
-    public let annotation: String
-    public init(genres: [String], sequences: [String], annotation: String) {
+    public let annotation: String?
+    public init(genres: [String], sequences: [String], annotation: String? = nil) {
         self.genres = genres
         self.sequences = sequences
         self.annotation = annotation
@@ -4744,7 +4744,7 @@ internal extension FictionBookMetadata {
     init(_ rb: RustBridge.FictionBookMetadata) throws {
         self.genres = rb.genres()
         self.sequences = rb.sequences()
-        self.annotation = rb.annotation().toString()
+        self.annotation = rb.annotation()?.toString()
     }
     func intoRust() throws -> RustBridge.FictionBookMetadata {
         let data = try JSONEncoder().encode(self)
@@ -4813,11 +4813,11 @@ internal extension DbfFieldInfo {
 
 /// JATS (Journal Article Tag Suite) metadata.
 public struct JatsMetadata: Codable, Sendable, Hashable {
-    public let copyright: String
-    public let license: String
+    public let copyright: String?
+    public let license: String?
     public let historyDates: [String: String]
     public let contributorRoles: [ContributorRole]
-    public init(copyright: String, license: String, historyDates: [String: String], contributorRoles: [ContributorRole]) {
+    public init(copyright: String? = nil, license: String? = nil, historyDates: [String: String], contributorRoles: [ContributorRole]) {
         self.copyright = copyright
         self.license = license
         self.historyDates = historyDates
@@ -4834,8 +4834,8 @@ public struct JatsMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for JatsMetadata
 internal extension JatsMetadata {
     init(_ rb: RustBridge.JatsMetadata) throws {
-        self.copyright = rb.copyright().toString()
-        self.license = rb.license().toString()
+        self.copyright = rb.copyright()?.toString()
+        self.license = rb.license()?.toString()
         self.historyDates = rb.historyDates()
         self.contributorRoles = rb.contributorRoles()
     }
@@ -4849,8 +4849,8 @@ internal extension JatsMetadata {
 /// JATS contributor with role.
 public struct ContributorRole: Codable, Sendable, Hashable {
     public let name: String
-    public let role: String
-    public init(name: String, role: String) {
+    public let role: String?
+    public init(name: String, role: String? = nil) {
         self.name = name
         self.role = role
     }
@@ -4860,7 +4860,7 @@ public struct ContributorRole: Codable, Sendable, Hashable {
 internal extension ContributorRole {
     init(_ rb: RustBridge.ContributorRole) throws {
         self.name = rb.name().toString()
-        self.role = rb.role().toString()
+        self.role = rb.role()?.toString()
     }
     func intoRust() throws -> RustBridge.ContributorRole {
         let data = try JSONEncoder().encode(self)
@@ -4871,13 +4871,13 @@ internal extension ContributorRole {
 
 /// EPUB metadata (Dublin Core extensions).
 public struct EpubMetadata: Codable, Sendable, Hashable {
-    public let coverage: String
-    public let dcFormat: String
-    public let relation: String
-    public let source: String
-    public let dcType: String
-    public let coverImage: String
-    public init(coverage: String, dcFormat: String, relation: String, source: String, dcType: String, coverImage: String) {
+    public let coverage: String?
+    public let dcFormat: String?
+    public let relation: String?
+    public let source: String?
+    public let dcType: String?
+    public let coverImage: String?
+    public init(coverage: String? = nil, dcFormat: String? = nil, relation: String? = nil, source: String? = nil, dcType: String? = nil, coverImage: String? = nil) {
         self.coverage = coverage
         self.dcFormat = dcFormat
         self.relation = relation
@@ -4898,12 +4898,12 @@ public struct EpubMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for EpubMetadata
 internal extension EpubMetadata {
     init(_ rb: RustBridge.EpubMetadata) throws {
-        self.coverage = rb.coverage().toString()
-        self.dcFormat = rb.dcFormat().toString()
-        self.relation = rb.relation().toString()
-        self.source = rb.source().toString()
-        self.dcType = rb.dcType().toString()
-        self.coverImage = rb.coverImage().toString()
+        self.coverage = rb.coverage()?.toString()
+        self.dcFormat = rb.dcFormat()?.toString()
+        self.relation = rb.relation()?.toString()
+        self.source = rb.source()?.toString()
+        self.dcType = rb.dcType()?.toString()
+        self.coverImage = rb.coverImage()?.toString()
     }
     func intoRust() throws -> RustBridge.EpubMetadata {
         let data = try JSONEncoder().encode(self)
@@ -4940,9 +4940,9 @@ internal extension PstMetadata {
 /// Separates detection confidence (how confident that text exists at this location)
 /// from recognition confidence (how confident about the actual text content).
 public struct OcrConfidence: Codable, Sendable, Hashable {
-    public let detection: Double
+    public let detection: Double?
     public let recognition: Double
-    public init(detection: Double, recognition: Double) {
+    public init(detection: Double? = nil, recognition: Double) {
         self.detection = detection
         self.recognition = recognition
     }
@@ -4964,8 +4964,8 @@ internal extension OcrConfidence {
 /// Rotation information for an OCR element.
 public struct OcrRotation: Codable, Sendable, Hashable {
     public let angleDegrees: Double
-    public let confidence: Double
-    public init(angleDegrees: Double, confidence: Double) {
+    public let confidence: Double?
+    public init(angleDegrees: Double, confidence: Double? = nil) {
         self.angleDegrees = angleDegrees
         self.confidence = confidence
     }
@@ -4997,11 +4997,11 @@ public struct OcrElement: Codable, Sendable, Hashable {
     public let geometry: OcrBoundingGeometry
     public let confidence: OcrConfidence
     public let level: OcrElementLevel
-    public let rotation: OcrRotation
+    public let rotation: OcrRotation?
     public let pageNumber: UInt32
-    public let parentId: String
+    public let parentId: String?
     public let backendMetadata: [String: String]
-    public init(text: String, geometry: OcrBoundingGeometry, confidence: OcrConfidence, level: OcrElementLevel, rotation: OcrRotation, pageNumber: UInt32, parentId: String, backendMetadata: [String: String]) {
+    public init(text: String, geometry: OcrBoundingGeometry, confidence: OcrConfidence, level: OcrElementLevel, rotation: OcrRotation? = nil, pageNumber: UInt32, parentId: String? = nil, backendMetadata: [String: String]) {
         self.text = text
         self.geometry = geometry
         self.confidence = confidence
@@ -5032,7 +5032,7 @@ internal extension OcrElement {
         self.level = rb.level()
         self.rotation = rb.rotation()
         self.pageNumber = rb.pageNumber()
-        self.parentId = rb.parentId().toString()
+        self.parentId = rb.parentId()?.toString()
         self.backendMetadata = rb.backendMetadata()
     }
     func intoRust() throws -> RustBridge.OcrElement {
@@ -5086,9 +5086,9 @@ internal extension OcrElementConfig {
 public struct PageStructure: Codable, Sendable, Hashable {
     public let totalCount: UInt32
     public let unitType: PageUnitType
-    public let boundaries: [PageBoundary]
-    public let pages: [PageInfo]
-    public init(totalCount: UInt32, unitType: PageUnitType, boundaries: [PageBoundary], pages: [PageInfo]) {
+    public let boundaries: [PageBoundary]?
+    public let pages: [PageInfo]?
+    public init(totalCount: UInt32, unitType: PageUnitType, boundaries: [PageBoundary]? = nil, pages: [PageInfo]? = nil) {
         self.totalCount = totalCount
         self.unitType = unitType
         self.boundaries = boundaries
@@ -5158,14 +5158,14 @@ internal extension PageBoundary {
 /// and visibility state (for presentations).
 public struct PageInfo: Codable, Sendable, Hashable {
     public let number: UInt32
-    public let title: String
-    public let dimensions: [Double]
-    public let imageCount: UInt32
-    public let tableCount: UInt32
-    public let hidden: Bool
-    public let isBlank: Bool
+    public let title: String?
+    public let dimensions: [Double]?
+    public let imageCount: UInt32?
+    public let tableCount: UInt32?
+    public let hidden: Bool?
+    public let isBlank: Bool?
     public let hasVectorGraphics: Bool
-    public init(number: UInt32, title: String, dimensions: [Double], imageCount: UInt32, tableCount: UInt32, hidden: Bool, isBlank: Bool, hasVectorGraphics: Bool) {
+    public init(number: UInt32, title: String? = nil, dimensions: [Double]? = nil, imageCount: UInt32? = nil, tableCount: UInt32? = nil, hidden: Bool? = nil, isBlank: Bool? = nil, hasVectorGraphics: Bool) {
         self.number = number
         self.title = title
         self.dimensions = dimensions
@@ -5191,7 +5191,7 @@ public struct PageInfo: Codable, Sendable, Hashable {
 internal extension PageInfo {
     init(_ rb: RustBridge.PageInfo) throws {
         self.number = rb.number()
-        self.title = rb.title().toString()
+        self.title = rb.title()?.toString()
         self.dimensions = rb.dimensions()
         self.imageCount = rb.imageCount()
         self.tableCount = rb.tableCount()
@@ -5225,10 +5225,10 @@ public struct PageContent: Codable, Sendable, Hashable {
     public let content: String
     public let tables: [Table]
     public let imageIndices: [UInt32]
-    public let hierarchy: PageHierarchy
-    public let isBlank: Bool
-    public let layoutRegions: [LayoutRegion]
-    public init(pageNumber: UInt32, content: String, tables: [Table], imageIndices: [UInt32], hierarchy: PageHierarchy, isBlank: Bool, layoutRegions: [LayoutRegion]) {
+    public let hierarchy: PageHierarchy?
+    public let isBlank: Bool?
+    public let layoutRegions: [LayoutRegion]?
+    public init(pageNumber: UInt32, content: String, tables: [Table], imageIndices: [UInt32], hierarchy: PageHierarchy? = nil, isBlank: Bool? = nil, layoutRegions: [LayoutRegion]? = nil) {
         self.pageNumber = pageNumber
         self.content = content
         self.tables = tables
@@ -5343,8 +5343,8 @@ public struct HierarchicalBlock: Codable, Sendable, Hashable {
     public let text: String
     public let fontSize: Float
     public let level: String
-    public let bbox: [Float]
-    public init(text: String, fontSize: Float, level: String, bbox: [Float]) {
+    public let bbox: [Float]?
+    public init(text: String, fontSize: Float, level: String, bbox: [Float]? = nil) {
         self.text = text
         self.fontSize = fontSize
         self.level = level
@@ -5381,8 +5381,8 @@ public struct Table: Codable, Sendable, Hashable {
     public let cells: [[String]]
     public let markdown: String
     public let pageNumber: UInt32
-    public let boundingBox: String
-    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: String) {
+    public let boundingBox: String?
+    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: String? = nil) {
         self.cells = cells
         self.markdown = markdown
         self.pageNumber = pageNumber
@@ -5402,7 +5402,7 @@ internal extension Table {
         self.cells = rb.cells()
         self.markdown = rb.markdown().toString()
         self.pageNumber = rb.pageNumber()
-        self.boundingBox = rb.boundingBox().toString()
+        self.boundingBox = rb.boundingBox()?.toString()
     }
     func intoRust() throws -> RustBridge.Table {
         let data = try JSONEncoder().encode(self)
@@ -5455,10 +5455,10 @@ internal extension TableCell {
 /// optional human-readable display text.
 public struct Uri: Codable, Sendable, Hashable {
     public let url: String
-    public let label: String
-    public let page: UInt32
+    public let label: String?
+    public let page: UInt32?
     public let kind: UriKind
-    public init(url: String, label: String, page: UInt32, kind: UriKind) {
+    public init(url: String, label: String? = nil, page: UInt32? = nil, kind: UriKind) {
         self.url = url
         self.label = label
         self.page = page
@@ -5470,7 +5470,7 @@ public struct Uri: Codable, Sendable, Hashable {
 internal extension Uri {
     init(_ rb: RustBridge.Uri) throws {
         self.url = rb.url().toString()
-        self.label = rb.label().toString()
+        self.label = rb.label()?.toString()
         self.page = rb.page()
         self.kind = rb.kind()
     }
@@ -5523,8 +5523,8 @@ public typealias ExtractResponse = RustBridge.ExtractResponse
 /// Embedding request for generating embeddings from text.
 public struct EmbedRequest: Codable, Sendable, Hashable {
     public let texts: [String]
-    public let config: EmbeddingConfig
-    public init(texts: [String], config: EmbeddingConfig) {
+    public let config: EmbeddingConfig?
+    public init(texts: [String], config: EmbeddingConfig? = nil) {
         self.texts = texts
         self.config = config
     }
@@ -5575,9 +5575,9 @@ internal extension EmbedResponse {
 /// Chunk request with text and configuration.
 public struct ChunkRequest: Codable, Sendable, Hashable {
     public let text: String
-    public let config: String
+    public let config: String?
     public let chunkerType: String
-    public init(text: String, config: String, chunkerType: String) {
+    public init(text: String, config: String? = nil, chunkerType: String) {
         self.text = text
         self.config = config
         self.chunkerType = chunkerType
@@ -5593,7 +5593,7 @@ public struct ChunkRequest: Codable, Sendable, Hashable {
 internal extension ChunkRequest {
     init(_ rb: RustBridge.ChunkRequest) throws {
         self.text = rb.text().toString()
-        self.config = rb.config().toString()
+        self.config = rb.config()?.toString()
         self.chunkerType = rb.chunkerType().toString()
     }
     func intoRust() throws -> RustBridge.ChunkRequest {
@@ -5645,8 +5645,8 @@ internal extension ChunkResponse {
 /// MIME type detection response.
 public struct DetectResponse: Codable, Sendable, Hashable {
     public let mimeType: String
-    public let filename: String
-    public init(mimeType: String, filename: String) {
+    public let filename: String?
+    public init(mimeType: String, filename: String? = nil) {
         self.mimeType = mimeType
         self.filename = filename
     }
@@ -5660,7 +5660,7 @@ public struct DetectResponse: Codable, Sendable, Hashable {
 internal extension DetectResponse {
     init(_ rb: RustBridge.DetectResponse) throws {
         self.mimeType = rb.mimeType().toString()
-        self.filename = rb.filename().toString()
+        self.filename = rb.filename()?.toString()
     }
     func intoRust() throws -> RustBridge.DetectResponse {
         let data = try JSONEncoder().encode(self)
@@ -5885,8 +5885,8 @@ internal extension DetectMimeTypeParams {
 /// Request parameters for cache warm (model download).
 public struct CacheWarmParams: Codable, Sendable, Hashable {
     public let allEmbeddings: Bool
-    public let embeddingModel: String
-    public init(allEmbeddings: Bool, embeddingModel: String) {
+    public let embeddingModel: String?
+    public init(allEmbeddings: Bool, embeddingModel: String? = nil) {
         self.allEmbeddings = allEmbeddings
         self.embeddingModel = embeddingModel
     }
@@ -5900,7 +5900,7 @@ public struct CacheWarmParams: Codable, Sendable, Hashable {
 internal extension CacheWarmParams {
     init(_ rb: RustBridge.CacheWarmParams) throws {
         self.allEmbeddings = rb.allEmbeddings()
-        self.embeddingModel = rb.embeddingModel().toString()
+        self.embeddingModel = rb.embeddingModel()?.toString()
     }
     func intoRust() throws -> RustBridge.CacheWarmParams {
         let data = try JSONEncoder().encode(self)
@@ -5912,11 +5912,11 @@ internal extension CacheWarmParams {
 /// Request parameters for embedding generation.
 public struct EmbedTextParams: Codable, Sendable, Hashable {
     public let texts: [String]
-    public let preset: String
-    public let model: String
-    public let apiKey: String
-    public let embeddingPlugin: String
-    public init(texts: [String], preset: String, model: String, apiKey: String, embeddingPlugin: String) {
+    public let preset: String?
+    public let model: String?
+    public let apiKey: String?
+    public let embeddingPlugin: String?
+    public init(texts: [String], preset: String? = nil, model: String? = nil, apiKey: String? = nil, embeddingPlugin: String? = nil) {
         self.texts = texts
         self.preset = preset
         self.model = model
@@ -5936,10 +5936,10 @@ public struct EmbedTextParams: Codable, Sendable, Hashable {
 internal extension EmbedTextParams {
     init(_ rb: RustBridge.EmbedTextParams) throws {
         self.texts = rb.texts()
-        self.preset = rb.preset().toString()
-        self.model = rb.model().toString()
-        self.apiKey = rb.apiKey().toString()
-        self.embeddingPlugin = rb.embeddingPlugin().toString()
+        self.preset = rb.preset()?.toString()
+        self.model = rb.model()?.toString()
+        self.apiKey = rb.apiKey()?.toString()
+        self.embeddingPlugin = rb.embeddingPlugin()?.toString()
     }
     func intoRust() throws -> RustBridge.EmbedTextParams {
         let data = try JSONEncoder().encode(self)
@@ -5954,11 +5954,11 @@ public struct ExtractStructuredParams: Codable, Sendable, Hashable {
     public let schema: String
     public let model: String
     public let schemaName: String
-    public let schemaDescription: String
-    public let prompt: String
-    public let apiKey: String
+    public let schemaDescription: String?
+    public let prompt: String?
+    public let apiKey: String?
     public let strict: Bool
-    public init(path: String, schema: String, model: String, schemaName: String, schemaDescription: String, prompt: String, apiKey: String, strict: Bool) {
+    public init(path: String, schema: String, model: String, schemaName: String, schemaDescription: String? = nil, prompt: String? = nil, apiKey: String? = nil, strict: Bool) {
         self.path = path
         self.schema = schema
         self.model = model
@@ -5987,9 +5987,9 @@ internal extension ExtractStructuredParams {
         self.schema = rb.schema()
         self.model = rb.model().toString()
         self.schemaName = rb.schemaName().toString()
-        self.schemaDescription = rb.schemaDescription().toString()
-        self.prompt = rb.prompt().toString()
-        self.apiKey = rb.apiKey().toString()
+        self.schemaDescription = rb.schemaDescription()?.toString()
+        self.prompt = rb.prompt()?.toString()
+        self.apiKey = rb.apiKey()?.toString()
         self.strict = rb.strict()
     }
     func intoRust() throws -> RustBridge.ExtractStructuredParams {
@@ -6002,11 +6002,11 @@ internal extension ExtractStructuredParams {
 /// Request parameters for text chunking.
 public struct ChunkTextParams: Codable, Sendable, Hashable {
     public let text: String
-    public let maxCharacters: UInt
-    public let overlap: UInt
-    public let chunkerType: String
-    public let topicThreshold: Float
-    public init(text: String, maxCharacters: UInt, overlap: UInt, chunkerType: String, topicThreshold: Float) {
+    public let maxCharacters: UInt?
+    public let overlap: UInt?
+    public let chunkerType: String?
+    public let topicThreshold: Float?
+    public init(text: String, maxCharacters: UInt? = nil, overlap: UInt? = nil, chunkerType: String? = nil, topicThreshold: Float? = nil) {
         self.text = text
         self.maxCharacters = maxCharacters
         self.overlap = overlap
@@ -6028,7 +6028,7 @@ internal extension ChunkTextParams {
         self.text = rb.text().toString()
         self.maxCharacters = rb.maxCharacters()
         self.overlap = rb.overlap()
-        self.chunkerType = rb.chunkerType().toString()
+        self.chunkerType = rb.chunkerType()?.toString()
         self.topicThreshold = rb.topicThreshold()
     }
     func intoRust() throws -> RustBridge.ChunkTextParams {
@@ -6210,10 +6210,10 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
     public let maxKeywords: UInt
     public let minScore: Float
     public let ngramRange: [UInt]
-    public let language: String
-    public let yakeParams: YakeParams
-    public let rakeParams: RakeParams
-    public init(algorithm: KeywordAlgorithm, maxKeywords: UInt, minScore: Float, ngramRange: [UInt], language: String, yakeParams: YakeParams, rakeParams: RakeParams) {
+    public let language: String?
+    public let yakeParams: YakeParams?
+    public let rakeParams: RakeParams?
+    public init(algorithm: KeywordAlgorithm, maxKeywords: UInt, minScore: Float, ngramRange: [UInt], language: String? = nil, yakeParams: YakeParams? = nil, rakeParams: RakeParams? = nil) {
         self.algorithm = algorithm
         self.maxKeywords = maxKeywords
         self.minScore = minScore
@@ -6240,7 +6240,7 @@ internal extension KeywordConfig {
         self.maxKeywords = rb.maxKeywords()
         self.minScore = rb.minScore()
         self.ngramRange = rb.ngramRange()
-        self.language = rb.language().toString()
+        self.language = rb.language()?.toString()
         self.yakeParams = rb.yakeParams()
         self.rakeParams = rb.rakeParams()
     }
@@ -6256,8 +6256,8 @@ public struct Keyword: Codable, Sendable, Hashable {
     public let text: String
     public let score: Float
     public let algorithm: KeywordAlgorithm
-    public let positions: [UInt]
-    public init(text: String, score: Float, algorithm: KeywordAlgorithm, positions: [UInt]) {
+    public let positions: [UInt]?
+    public init(text: String, score: Float, algorithm: KeywordAlgorithm, positions: [UInt]? = nil) {
         self.text = text
         self.score = score
         self.algorithm = algorithm
@@ -6305,7 +6305,7 @@ public typealias OcrCacheStats = RustBridge.OcrCacheStats
 /// ```
 public struct PaddleOcrConfig: Codable, Sendable, Hashable {
     public let language: String
-    public let cacheDir: URL
+    public let cacheDir: URL?
     public let useAngleCls: Bool
     public let enableTableDetection: Bool
     public let detDbThresh: Float
@@ -6316,7 +6316,7 @@ public struct PaddleOcrConfig: Codable, Sendable, Hashable {
     public let padding: UInt32
     public let dropScore: Float
     public let modelTier: String
-    public init(language: String, cacheDir: URL, useAngleCls: Bool, enableTableDetection: Bool, detDbThresh: Float, detDbBoxThresh: Float, detDbUnclipRatio: Float, detLimitSideLen: UInt32, recBatchNum: UInt32, padding: UInt32, dropScore: Float, modelTier: String) {
+    public init(language: String, cacheDir: URL? = nil, useAngleCls: Bool, enableTableDetection: Bool, detDbThresh: Float, detDbBoxThresh: Float, detDbUnclipRatio: Float, detLimitSideLen: UInt32, recBatchNum: UInt32, padding: UInt32, dropScore: Float, modelTier: String) {
         self.language = language
         self.cacheDir = cacheDir
         self.useAngleCls = useAngleCls
@@ -6558,8 +6558,8 @@ internal extension DetectionResult {
 public struct EmbeddedFile: Codable, Sendable, Hashable {
     public let name: String
     public let data: Data
-    public let mimeType: String
-    public init(name: String, data: Data, mimeType: String) {
+    public let mimeType: String?
+    public init(name: String, data: Data, mimeType: String? = nil) {
         self.name = name
         self.data = data
         self.mimeType = mimeType
@@ -6576,7 +6576,7 @@ internal extension EmbeddedFile {
     init(_ rb: RustBridge.EmbeddedFile) throws {
         self.name = rb.name().toString()
         self.data = rb.data()
-        self.mimeType = rb.mimeType().toString()
+        self.mimeType = rb.mimeType()?.toString()
     }
     func intoRust() throws -> RustBridge.EmbeddedFile {
         let data = try JSONEncoder().encode(self)
@@ -6591,13 +6591,13 @@ internal extension EmbeddedFile {
 /// `Metadata` structure. Common fields like title, authors, keywords, and dates
 /// are at the `Metadata` level.
 public struct PdfMetadata: Codable, Sendable, Hashable {
-    public let pdfVersion: String
-    public let producer: String
-    public let isEncrypted: Bool
-    public let width: Int64
-    public let height: Int64
-    public let pageCount: UInt32
-    public init(pdfVersion: String, producer: String, isEncrypted: Bool, width: Int64, height: Int64, pageCount: UInt32) {
+    public let pdfVersion: String?
+    public let producer: String?
+    public let isEncrypted: Bool?
+    public let width: Int64?
+    public let height: Int64?
+    public let pageCount: UInt32?
+    public init(pdfVersion: String? = nil, producer: String? = nil, isEncrypted: Bool? = nil, width: Int64? = nil, height: Int64? = nil, pageCount: UInt32? = nil) {
         self.pdfVersion = pdfVersion
         self.producer = producer
         self.isEncrypted = isEncrypted
@@ -6618,8 +6618,8 @@ public struct PdfMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for PdfMetadata
 internal extension PdfMetadata {
     init(_ rb: RustBridge.PdfMetadata) throws {
-        self.pdfVersion = rb.pdfVersion().toString()
-        self.producer = rb.producer().toString()
+        self.pdfVersion = rb.pdfVersion()?.toString()
+        self.producer = rb.producer()?.toString()
         self.isEncrypted = rb.isEncrypted()
         self.width = rb.width()
         self.height = rb.height()
@@ -6679,7 +6679,7 @@ public enum HtmlTheme {
     /// Sensible defaults: system font stack, neutral colours, readable line
     /// measure. CSS custom properties (`--kb-*`) are all defined so user CSS
     /// can override individual values.
-    case default_
+    case `default`
     /// GitHub Markdown-inspired palette and spacing.
     case gitHub
     /// Dark background, light text.
@@ -6891,7 +6891,7 @@ public enum InlineType {
     case strong
     case emphasis
     case highlight
-    case subscript_
+    case `subscript`
     case superscript
     case insert
     case delete
@@ -6999,7 +6999,7 @@ public enum AnnotationKind {
     case underline
     case strikethrough
     case code
-    case subscript_
+    case `subscript`
     case superscript
     case link(url: String, title: String)
     /// Highlighted text (PDF highlights, HTML `<mark>`).
@@ -7162,7 +7162,7 @@ public enum LinkType {
     /// Anchor link (#section)
     case anchor
     /// Internal link (same domain)
-    case internal_
+    case `internal`
     /// External link (different domain)
     case external
     /// Email link (mailto:)
@@ -7251,9 +7251,6 @@ public enum UriKind {
     /// An email address (`mailto:` link or bare email).
     case email
 }
-
-/// Error type for pool operations.
-public typealias PoolError = RustBridge.PoolError
 
 /// Keyword algorithm selection.
 public enum KeywordAlgorithm {
