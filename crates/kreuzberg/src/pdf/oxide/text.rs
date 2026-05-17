@@ -201,41 +201,82 @@ fn extract_text_with_tracking(doc: &mut OxideDocument, config: &PageConfig) -> R
     Ok((content, Some(boundaries), page_contents))
 }
 
-/// Minimum number of x-disorder events required to classify the span list as glyph-fragmented.
+/// Maximum y-gap (pt) between two spans that can still be considered "same line" under
+/// the glyph-fragmentation detection heuristic.
 ///
-/// Two events avoid false positives: a single x-reset can occur naturally in right-to-left
-/// or wrapped text, but ≥ 2 resets in "same-line" transitions reliably indicate that
-/// pdf_oxide's ColumnAware ordering has shuffled glyph-level spans by y-group.
-const MIN_DISORDER_COUNT: usize = 2;
+/// Word's per-glyph BT/ET sinusoidal jitter (6-glyph period, ~3 pt amplitude) produces
+/// consecutive-pair y-gaps of ≤ ~3.03 pt. 5 pt adds headroom for atypical Word
+/// configurations while remaining well below normal body-text line spacing (~12–14 pt).
+/// Using an absolute value instead of a font-size fraction avoids the false-positive
+/// zone where `font_size * 0.25` (the old fallback) is large enough for bigger fonts
+/// to classify consecutive real lines as "same line".
+const MAX_GLYPH_JITTER_PT: f32 = 5.0;
 
-/// y-proximity threshold (pt) for coalescing glyph-jitter spans onto one text line.
-/// Word's BT-per-glyph sinusoidal jitter (6-glyph period) produces consecutive-pair
-/// y-gaps ≤ ~3.03 pt; 4.0 pt covers this while staying below normal line spacing (~14 pt).
-const COALESCE_THRESHOLD: f32 = 4.0;
+/// Minimum number of qualifying x-disorder events before the span list is classified
+/// as glyph-fragmented. Five events require at least 10 short spans to be involved and
+/// produce ≥ 5 consecutive same-line x-resets — a strong signal: normal word-wrapped
+/// paragraphs have long spans (> 3 chars) that are excluded from the count, and single
+/// isolated x-resets (e.g. a centred title followed by left-aligned body) count for zero
+/// because the short-span guard filters them out.
+const MIN_DISORDER_COUNT: usize = 5;
 
-/// Returns true when `spans` exhibits the glyph-fragmentation signature.
+/// y-proximity threshold (pt) for grouping spans into visual lines during reconstruction.
+/// Must be ≥ MAX_GLYPH_JITTER_PT so every span pair accepted by the detection gate is
+/// also merged into the same group during reconstruction.
+const COALESCE_THRESHOLD: f32 = 5.0;
+
+// TODO: evaluate whether pdf_oxide's ColumnAware ReadingOrder should handle
+// per-glyph BT…ET PDFs by coalescing spans with sinusoidal y-jitter before returning
+// them. If confirmed as a pdf_oxide bug, file an upstream issue, link it here, and
+// remove this heuristic once it is fixed. Raised in kreuzberg PR #986 (2026-05-17).
+
+/// Returns true when `spans` exhibits the glyph-fragmentation signature (issue #962).
 ///
-/// pdf_oxide's ColumnAware reading order groups all spans at one y-level before moving to the
-/// next. For Word-exported PDFs where each glyph has its own BT…ET block with a sinusoidal
-/// y-jitter, this produces groups ordered by y-level rather than by reading order: "et" (y=703)
-/// appears before "H" (y=700) even though "H" comes first in the text. The signature is
-/// consecutive "same-line" span transitions where the current span's x-coordinate resets
-/// significantly to the left — indicating a new y-group started. ≥ MIN_DISORDER_COUNT such
-/// events means position-based reconstruction is needed. (issue #962)
+/// pdf_oxide's ColumnAware reading order groups all spans at one y-level before moving
+/// to the next. For Word-exported PDFs where each glyph has its own BT…ET block with a
+/// sinusoidal y-jitter, this produces groups ordered by y-level rather than by reading
+/// order: "et" (y=703) appears before "H" (y=700) even though "H" comes first visually.
+///
+/// Two-part signature:
+/// 1. Both spans are short (≤ 3 chars): per-glyph BT/ET always produces single-character
+///    spans; multi-character spans are word-level and cannot be glyph artifacts.
+/// 2. The spans are on the same visual line (y-gap ≤ MAX_GLYPH_JITTER_PT when heights
+///    are zero, or < half the measured height otherwise) yet the x-coordinate resets
+///    significantly leftward — indicating a new y-group started mid-reading-order.
+///
+/// ≥ MIN_DISORDER_COUNT such events means position-based reconstruction is needed.
 fn is_fragmented_span_list(spans: &[pdf_oxide::layout::TextSpan]) -> bool {
     let mut disorder_count = 0;
     for window in spans.windows(2) {
         let prev = &window[0];
         let cur = &window[1];
+
+        // Per-glyph BT/ET fragmentation always produces single-character spans.
+        // Word-level spans (> 3 chars) cannot be glyph-positioning artifacts and
+        // must not count toward the disorder total — this is the primary false-positive
+        // guard for paragraphs where line breaks naturally reset x.
+        if prev.text.chars().count() > 3 || cur.text.chars().count() > 3 {
+            continue;
+        }
+
         let y_gap = (prev.bbox.y - cur.bbox.y).abs();
-        let eff_height = prev.bbox.height.max(cur.bbox.height).max(prev.font_size * 0.5);
-        if y_gap < eff_height * 0.5 {
-            // Same-line transition: a significant x-reset means the ordering is wrong.
-            if cur.bbox.x < prev.bbox.x - prev.font_size {
-                disorder_count += 1;
-                if disorder_count >= MIN_DISORDER_COUNT {
-                    return true;
-                }
+
+        // When bbox.height is zero (common for pdf_oxide on some font descriptors),
+        // fall back to the absolute Word jitter ceiling rather than a font-size fraction.
+        // A fraction (font_size * 0.25) scales with font size: for a 24 pt font it
+        // reaches 6 pt, which overlaps with normal tight leading and produces false
+        // positives on height-zero span lists from legitimate documents.
+        let eff_height = prev.bbox.height.max(cur.bbox.height);
+        let same_line = if eff_height > 0.0 {
+            y_gap < eff_height * 0.5
+        } else {
+            y_gap <= MAX_GLYPH_JITTER_PT
+        };
+
+        if same_line && cur.bbox.x < prev.bbox.x - prev.font_size {
+            disorder_count += 1;
+            if disorder_count >= MIN_DISORDER_COUNT {
+                return true;
             }
         }
     }
@@ -262,7 +303,7 @@ fn rebuild_text_from_fragmented_spans(spans: &[pdf_oxide::layout::TextSpan]) -> 
     // Group by chained y-proximity.
     let mut groups: Vec<Vec<&pdf_oxide::layout::TextSpan>> = Vec::new();
     for span in sorted {
-        let belongs = groups.last().map_or(false, |g| {
+        let belongs = groups.last().is_some_and(|g| {
             let prev_y = g.last().unwrap().bbox.y;
             (span.bbox.y - prev_y).abs() <= COALESCE_THRESHOLD
         });
@@ -388,4 +429,101 @@ fn apply_text_cleanup(text: &str) -> Cow<'_, str> {
     let _ = contains_html_markup(&cleaned);
 
     cleaned
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pdf_oxide::geometry::Rect;
+    use pdf_oxide::layout::TextSpan;
+
+    fn span(text: &str, x: f32, y: f32, height: f32, font_size: f32) -> TextSpan {
+        TextSpan {
+            text: text.to_string(),
+            bbox: Rect {
+                x,
+                y,
+                width: font_size * 0.6,
+                height,
+            },
+            font_size,
+            ..TextSpan::default()
+        }
+    }
+
+    /// Build a list of N single-char spans that each trigger a same-line x-disorder
+    /// event. All at the same y (zero height fallback path), each span's x is
+    /// `prev.x - font_size - 1` so cur.x < prev.x - font_size is always true.
+    fn disorder_spans(count: usize) -> Vec<TextSpan> {
+        let font_size = 12.0_f32;
+        let mut spans = Vec::with_capacity(count + 1);
+        // First span at x=300; each subsequent span is reset to the left.
+        let mut x = 300.0_f32;
+        for _i in 0..=count {
+            spans.push(span("A", x, 700.0, 0.0, font_size));
+            // Next span resets leftward so cur.x < prev.x - font_size
+            x = x - font_size - 1.0;
+        }
+        spans
+    }
+
+    #[test]
+    fn fragmentation_detected_at_threshold() {
+        let spans = disorder_spans(MIN_DISORDER_COUNT);
+        assert!(
+            is_fragmented_span_list(&spans),
+            "should detect fragmentation at exactly MIN_DISORDER_COUNT ({MIN_DISORDER_COUNT}) events"
+        );
+    }
+
+    #[test]
+    fn fragmentation_not_detected_below_threshold() {
+        // One fewer disorder event than required must NOT trigger reconstruction.
+        let spans = disorder_spans(MIN_DISORDER_COUNT - 1);
+        assert!(
+            !is_fragmented_span_list(&spans),
+            "must NOT detect fragmentation with {} events (threshold is {MIN_DISORDER_COUNT})",
+            MIN_DISORDER_COUNT - 1
+        );
+    }
+
+    #[test]
+    fn long_spans_never_count_toward_disorder() {
+        // A span list with many x-resets but all spans > 3 chars must return false.
+        let font_size = 12.0_f32;
+        let mut spans = Vec::new();
+        let mut x = 500.0_f32;
+        for _ in 0..20 {
+            spans.push(span("word", x, 700.0, 0.0, font_size));
+            x = x - font_size - 1.0;
+        }
+        assert!(
+            !is_fragmented_span_list(&spans),
+            "word-level spans (> 3 chars) must never trigger fragmentation detection"
+        );
+    }
+
+    #[test]
+    fn large_y_gap_not_classified_as_same_line() {
+        // Two short spans separated by 14 pt (normal line spacing) with an x-reset.
+        // With zero heights, MAX_GLYPH_JITTER_PT = 5.0, so 14 pt gap is above the ceiling.
+        let spans = vec![
+            span("A", 300.0, 700.0, 0.0, 12.0),
+            span("B", 50.0, 686.0, 0.0, 12.0), // y_gap=14, x resets
+        ];
+        assert!(
+            !is_fragmented_span_list(&spans),
+            "14 pt y-gap must not be classified as same-line (MAX_GLYPH_JITTER_PT={MAX_GLYPH_JITTER_PT})"
+        );
+    }
+
+    #[test]
+    fn empty_spans_returns_false() {
+        assert!(!is_fragmented_span_list(&[]));
+    }
+
+    #[test]
+    fn single_span_returns_false() {
+        assert!(!is_fragmented_span_list(&[span("A", 100.0, 700.0, 0.0, 12.0)]));
+    }
 }
