@@ -229,10 +229,10 @@ const MIN_DISORDER_COUNT: usize = 3;
 /// also merged into the same group during reconstruction.
 const COALESCE_THRESHOLD: f32 = 5.0;
 
-// TODO: evaluate whether pdf_oxide's ColumnAware ReadingOrder should handle
-// per-glyph BT…ET PDFs by coalescing spans with sinusoidal y-jitter before returning
-// them. If confirmed as a pdf_oxide bug, file an upstream issue, link it here, and
-// remove this heuristic once it is fixed. Raised in kreuzberg PR #986 (2026-05-17).
+// TODO: remove this heuristic once https://github.com/yfedoseev/pdf_oxide/issues/518 is fixed.
+// pdf_oxide's Tm continuation check (`f.round() as i32`) tolerates only ±0.5 pt of Y-jitter;
+// Word's per-glyph PDFs jitter 2.5–5 pt, splitting same-line characters into separate spans
+// that are then sorted by Y-band, scrambling reading order.
 
 /// Returns true when `spans` exhibits the glyph-fragmentation signature (issue #962).
 ///
