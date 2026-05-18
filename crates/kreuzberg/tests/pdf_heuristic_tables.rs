@@ -103,3 +103,55 @@ fn test_minimal_pdf_does_not_panic() {
     let config = ExtractionConfig::default();
     let _ = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
 }
+
+/// Integration test for issue #964: the three-tier pipeline (native → bordered → heuristic)
+/// detects a 2-column stroke-bordered table via the `extract_tables_bordered` tier.
+///
+/// Uses the same synthetic PDF that the unit tests build (5 rows × 2 columns, all cells
+/// delimited by explicit stroke lines). The unit tests verify the internal function directly;
+/// this test exercises the full public API path: `extract_bytes_sync` with default config.
+#[test]
+fn test_bordered_two_column_table_detected_via_pipeline() {
+    use pdf_oxide::geometry::Rect;
+    use pdf_oxide::writer::{DocumentBuilder, LineStyle, TextAlign};
+
+    let style = LineStyle::new(1.0, 0.0, 0.0, 0.0);
+    let mut doc = DocumentBuilder::new();
+    doc.a4_page()
+        .stroke_rect(50.0, 550.0, 350.0, 200.0, style.clone())
+        .stroke_line(200.0, 550.0, 200.0, 750.0, style.clone())
+        .stroke_line(50.0, 710.0, 400.0, 710.0, style.clone())
+        .stroke_line(50.0, 670.0, 400.0, 670.0, style.clone())
+        .stroke_line(50.0, 630.0, 400.0, 630.0, style.clone())
+        .stroke_line(50.0, 590.0, 400.0, 590.0, style.clone())
+        .text_in_rect(Rect::new(50.0, 710.0, 150.0, 40.0), "Item", TextAlign::Left)
+        .text_in_rect(Rect::new(200.0, 710.0, 200.0, 40.0), "Status", TextAlign::Left)
+        .text_in_rect(Rect::new(50.0, 670.0, 150.0, 40.0), "8", TextAlign::Left)
+        .text_in_rect(Rect::new(200.0, 670.0, 200.0, 40.0), "Not correct", TextAlign::Left)
+        .text_in_rect(Rect::new(50.0, 630.0, 150.0, 40.0), "27", TextAlign::Left)
+        .text_in_rect(Rect::new(200.0, 630.0, 200.0, 40.0), "Incomplete", TextAlign::Left)
+        .text_in_rect(Rect::new(50.0, 590.0, 150.0, 40.0), "29,30", TextAlign::Left)
+        .text_in_rect(Rect::new(200.0, 590.0, 200.0, 40.0), "Missing data", TextAlign::Left)
+        .text_in_rect(Rect::new(50.0, 550.0, 150.0, 40.0), "45", TextAlign::Left)
+        .text_in_rect(Rect::new(200.0, 550.0, 200.0, 40.0), "Fixed", TextAlign::Left)
+        .done();
+    let bytes = doc.build().expect("build synthetic PDF");
+
+    let config = ExtractionConfig::default();
+    let result = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
+
+    assert!(
+        !result.tables.is_empty(),
+        "pipeline must detect the 2-column stroke-bordered table via the bordered tier"
+    );
+    let table = &result.tables[0];
+    assert!(
+        table.cells.iter().any(|row| row.len() == 2),
+        "detected table must have 2-column rows; got: {:?}",
+        table.cells.iter().map(|r| r.len()).collect::<Vec<_>>()
+    );
+    assert!(
+        !table.markdown.trim().is_empty(),
+        "table must produce non-empty markdown"
+    );
+}

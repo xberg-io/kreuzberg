@@ -58,14 +58,12 @@ pub(crate) fn extract_all_from_oxide_document(
         })?;
 
     // --- Tables ---
-    // Run pdf_oxide's native grid detector first; on pages where it found
-    // nothing, fall back to the heuristic spatial reconstruction so tables
-    // without explicit ruling lines (invoice line items, financial tables,
-    // etc.) are still recovered. Native and heuristic results are merged at
-    // the per-page level so a document with a ruled table on page 1 and an
-    // unruled table on page 4 produces both. Use `unwrap_or_default` so
-    // detection failures don't block extraction. Skipped entirely when
-    // `pdf_options.extract_tables` is `false`.
+    // Three-tier detection, each tier running only on pages the previous left empty:
+    //   1. native  — strict Lines strategy (≥3 cols), high precision
+    //   2. bordered — relaxed Lines strategy (≥2 cols), catches 2-column bordered tables
+    //   3. heuristic — text-edge fallback for unruled tables (invoice line items, etc.)
+    // Use `unwrap_or_default` so individual failures don't block extraction.
+    // Skipped entirely when `pdf_options.extract_tables` is `false`.
     let extract_tables_flag = config.pdf_options.as_ref().is_none_or(|opts| opts.extract_tables);
     let allow_single_column = config
         .pdf_options
@@ -74,8 +72,11 @@ pub(crate) fn extract_all_from_oxide_document(
     let tables = if extract_tables_flag {
         let mut combined = crate::pdf::oxide::table::extract_tables_native(&mut doc).unwrap_or_default();
         let native_pages: std::collections::HashSet<u32> = combined.iter().map(|t| t.page_number).collect();
+        let bordered = crate::pdf::oxide::table::extract_tables_bordered(&mut doc, &native_pages).unwrap_or_default();
+        combined.extend(bordered);
+        let covered_pages: std::collections::HashSet<u32> = combined.iter().map(|t| t.page_number).collect();
         let heuristic =
-            crate::pdf::oxide::table::extract_tables_heuristic(&mut doc, allow_single_column, &native_pages)
+            crate::pdf::oxide::table::extract_tables_heuristic(&mut doc, allow_single_column, &covered_pages)
                 .unwrap_or_default();
         combined.extend(heuristic);
         combined

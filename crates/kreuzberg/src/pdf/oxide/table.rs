@@ -1,18 +1,20 @@
 //! Native table detection using the pdf_oxide backend.
 //!
-//! Two entry points:
+//! Three entry points:
 //!
 //! - [`extract_tables_native`] — pdf_oxide's built-in `extract_tables_with_config`
-//!   in strict mode. High precision, requires explicit table grid in the PDF.
+//!   in strict mode. High precision, requires explicit table grid with 3+ columns.
+//! - [`extract_tables_bordered`] — relaxed Lines-strategy pass for bordered tables
+//!   with 2+ columns. Catches 2-column data tables (label/value) whose cells are
+//!   delimited by stroke lines that `strict()` skips due to `min_table_columns=3`.
 //! - [`extract_tables_heuristic`] — text-layer fallback that reuses the same
 //!   spatial reconstruction the layout-detection path uses, but without
 //!   requiring layout hints. Catches tables that pdf_oxide's grid detector
 //!   misses (e.g. invoice line items, financial tables without ruling lines).
 //!
-//! The default extraction flow in `extractors::pdf::extraction` runs both
-//! per-page and merges: the heuristic only runs on pages where native found
-//! nothing, so a document that has a ruled table on page 1 and an unruled
-//! table on page 4 emits both rather than dropping the unruled one.
+//! The default extraction flow in `extractors::pdf::extraction` runs all three
+//! per-page in priority order (native → bordered → heuristic), where each tier
+//! only runs on pages where the previous tier found nothing.
 
 use super::OxideDocument;
 use crate::pdf::error::{PdfError, Result};
@@ -79,6 +81,102 @@ pub(crate) fn extract_tables_native(doc: &mut OxideDocument) -> Result<Vec<Table
                     rows = cells.len(),
                     cols = cells.first().map(|r| r.len()).unwrap_or(0),
                     "Skipping table below minimum dimensions (need ≥2 rows and ≥2 cols)"
+                );
+                continue;
+            }
+
+            let bounding_box = extracted_table.bbox.map(|rect| BoundingBox {
+                x0: rect.x as f64,
+                y0: rect.y as f64,
+                x1: (rect.x + rect.width) as f64,
+                y1: (rect.y + rect.height) as f64,
+            });
+
+            all_tables.push(Table {
+                cells,
+                markdown,
+                page_number,
+                bounding_box,
+            });
+        }
+    }
+
+    Ok(all_tables)
+}
+
+/// Extract bordered tables from all pages using a relaxed Lines-strategy config.
+///
+/// Targets 2-column tables whose cells are delimited by stroke/fill rectangles
+/// (the `re` PDF operator or explicit `m/l` paths) that `extract_tables_native`
+/// misses because `strict()` requires ≥ 3 columns.
+///
+/// Uses `TableStrategy::Lines` for both axes — path primitives only, no text-
+/// edge heuristics — so this pass does not introduce new text-based false positives.
+/// The relaxed thresholds:
+///
+/// - `min_table_columns = 2` (vs 3 in strict)
+/// - `min_table_cells = 4` (vs 6 in strict)
+/// - `regular_row_ratio = 0.5` (vs 0.8 in strict)
+///
+/// `skip_pages` (1-indexed) suppresses this pass on pages where a higher-priority
+/// detector already produced a result. Pass an empty set to run on every page.
+pub(crate) fn extract_tables_bordered(doc: &mut OxideDocument, skip_pages: &HashSet<u32>) -> Result<Vec<Table>> {
+    use pdf_oxide::structure::spatial_table_detector::{TableDetectionConfig, TableStrategy};
+
+    let page_count = doc
+        .doc
+        .page_count()
+        .map_err(|e| PdfError::MetadataExtractionFailed(format!("pdf_oxide: failed to get page count: {e}")))?;
+
+    let config = TableDetectionConfig {
+        enabled: true,
+        horizontal_strategy: TableStrategy::Lines,
+        vertical_strategy: TableStrategy::Lines,
+        column_tolerance: 3.0,
+        row_tolerance: 2.0,
+        min_table_cells: 4,
+        min_table_columns: 2,
+        regular_row_ratio: 0.5,
+        max_table_columns: 15,
+        column_merge_threshold: 12.0,
+        v_split_gap: 4.0,
+        text_fallback: false,
+        ..TableDetectionConfig::default()
+    };
+
+    let mut all_tables = Vec::new();
+
+    for page_idx in 0..page_count {
+        let page_number = (page_idx + 1) as u32;
+        if skip_pages.contains(&page_number) {
+            continue;
+        }
+
+        let extracted = match doc.doc.extract_tables_with_config(page_idx, config.clone()) {
+            Ok(tables) => tables,
+            Err(e) => {
+                tracing::debug!(page = page_idx, "pdf_oxide bordered extract_tables failed: {e}");
+                continue;
+            }
+        };
+
+        for extracted_table in extracted {
+            if extracted_table.rows.is_empty() || extracted_table.col_count == 0 {
+                continue;
+            }
+
+            let (cells, markdown) = convert_extracted_table(&extracted_table);
+
+            if cells.is_empty() || markdown.trim().is_empty() {
+                continue;
+            }
+
+            if cells.len() < 2 || cells.iter().all(|row| row.len() < 2) {
+                tracing::debug!(
+                    page = page_idx,
+                    rows = cells.len(),
+                    cols = cells.first().map(|r| r.len()).unwrap_or(0),
+                    "Skipping bordered table below minimum dimensions"
                 );
                 continue;
             }
@@ -859,6 +957,90 @@ mod tests {
         assert_eq!(
             text, "hello world",
             "fallback must trim and collapse newlines; got: {text:?}"
+        );
+    }
+
+    /// Build a minimal single-page PDF with a 2-column stroke-bordered table.
+    ///
+    /// 5 rows × 2 columns. Every cell boundary is drawn with stroke_rect/stroke_line
+    /// so pdf_oxide's detect_tables_with_lines can lock onto the paths.
+    fn build_two_column_bordered_table_pdf() -> Vec<u8> {
+        use pdf_oxide::geometry::Rect;
+        use pdf_oxide::writer::{DocumentBuilder, LineStyle, TextAlign};
+
+        let style = LineStyle::new(1.0, 0.0, 0.0, 0.0);
+
+        // A4: 595 × 842 pt. Table: y=550..750 (PDF y-up coords).
+        // 2 columns: left x=50..200, right x=200..400. 5 rows of 40pt each.
+        let mut doc = DocumentBuilder::new();
+        doc.a4_page()
+            .stroke_rect(50.0, 550.0, 350.0, 200.0, style.clone())
+            .stroke_line(200.0, 550.0, 200.0, 750.0, style.clone())
+            .stroke_line(50.0, 710.0, 400.0, 710.0, style.clone())
+            .stroke_line(50.0, 670.0, 400.0, 670.0, style.clone())
+            .stroke_line(50.0, 630.0, 400.0, 630.0, style.clone())
+            .stroke_line(50.0, 590.0, 400.0, 590.0, style.clone())
+            .text_in_rect(Rect::new(50.0, 710.0, 150.0, 40.0), "Item", TextAlign::Left)
+            .text_in_rect(Rect::new(200.0, 710.0, 200.0, 40.0), "Status", TextAlign::Left)
+            .text_in_rect(Rect::new(50.0, 670.0, 150.0, 40.0), "8", TextAlign::Left)
+            .text_in_rect(Rect::new(200.0, 670.0, 200.0, 40.0), "Not correct", TextAlign::Left)
+            .text_in_rect(Rect::new(50.0, 630.0, 150.0, 40.0), "27", TextAlign::Left)
+            .text_in_rect(Rect::new(200.0, 630.0, 200.0, 40.0), "Incomplete", TextAlign::Left)
+            .text_in_rect(Rect::new(50.0, 590.0, 150.0, 40.0), "29,30", TextAlign::Left)
+            .text_in_rect(Rect::new(200.0, 590.0, 200.0, 40.0), "Missing data", TextAlign::Left)
+            .text_in_rect(Rect::new(50.0, 550.0, 150.0, 40.0), "45", TextAlign::Left)
+            .text_in_rect(Rect::new(200.0, 550.0, 200.0, 40.0), "Fixed", TextAlign::Left)
+            .done();
+        doc.build().expect("DocumentBuilder must produce valid PDF bytes")
+    }
+
+    /// `extract_tables_native` (strict, min_table_columns=3) must NOT detect a
+    /// 2-column bordered table. Regression baseline for issue #964.
+    #[test]
+    fn extract_tables_native_misses_two_column_bordered_table() {
+        let bytes = build_two_column_bordered_table_pdf();
+        let mut doc = OxideDocument::open_bytes(&bytes).expect("open synthetic PDF");
+        let tables = extract_tables_native(&mut doc).expect("extract_tables_native must not error");
+        assert!(
+            tables.is_empty(),
+            "extract_tables_native (strict, min 3 cols) must not detect a 2-column table; got: {tables:?}"
+        );
+    }
+
+    /// `extract_tables_bordered` (relaxed, min_table_columns=2) must detect the
+    /// 2-column stroke-bordered table that `extract_tables_native` skips.
+    #[test]
+    fn extract_tables_bordered_detects_two_column_bordered_table() {
+        let bytes = build_two_column_bordered_table_pdf();
+        let mut doc = OxideDocument::open_bytes(&bytes).expect("open synthetic PDF");
+        let skip = HashSet::new();
+        let tables = extract_tables_bordered(&mut doc, &skip).expect("extract_tables_bordered must not error");
+        assert!(
+            !tables.is_empty(),
+            "extract_tables_bordered must detect the 2-column stroke-bordered table"
+        );
+        let table = &tables[0];
+        assert_eq!(table.cells.len(), 5, "expected 5 rows, got {}", table.cells.len());
+        assert!(
+            table.cells.iter().all(|row| row.len() == 2),
+            "all rows must have 2 columns; rows: {:?}",
+            table.cells.iter().map(|r| r.len()).collect::<Vec<_>>()
+        );
+        assert_eq!(table.page_number, 1);
+        assert!(!table.markdown.trim().is_empty(), "must produce non-empty markdown");
+    }
+
+    /// `extract_tables_bordered` must skip pages listed in `skip_pages`.
+    #[test]
+    fn extract_tables_bordered_skip_pages_honored() {
+        let bytes = build_two_column_bordered_table_pdf();
+        let mut doc = OxideDocument::open_bytes(&bytes).expect("open synthetic PDF");
+        let mut skip = HashSet::new();
+        skip.insert(1u32);
+        let tables = extract_tables_bordered(&mut doc, &skip).expect("extract_tables_bordered must not error");
+        assert!(
+            tables.is_empty(),
+            "skip_pages={{1}} must suppress the only page; got: {tables:?}"
         );
     }
 }
