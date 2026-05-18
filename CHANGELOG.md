@@ -44,6 +44,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   impl methods like `From::from` / `Display::fmt` / `Deref::deref` auto-emitted
   by derive).
 
+### Fixed
+
+- **Cover-page lines dropped from `result.content` after consecutive-H1 merging (#966)**:
+  `merge_consecutive_h1s` extended `para.lines` when merging same-font-size H1
+  paragraphs but never updated `para.text`. Since `push_paragraph_element` prefers
+  `para.text` when non-empty (always true in production), all merged lines beyond
+  the first were silently discarded from `result.content` — for example, three of
+  four product model codes on a cover page would disappear entirely, making the
+  document invisible to retrieval queries against those variants. Fixed by (1)
+  keeping `para.text` in sync with `para.lines` after every merge, and (2) adding
+  a continuation guard that prevents distinct standalone headings (product model
+  codes such as `HR 22`, `HR 28/24`) from being merged in the first place. The
+  canonical split-title case (`KAISUN HOLDINGS` / `LIMITED`) continues to merge
+  correctly.
+
 ## [5.0.0-rc.1] - 2026-05-16
 
 ### Changed
