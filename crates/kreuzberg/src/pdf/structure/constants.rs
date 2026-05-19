@@ -8,9 +8,13 @@
 // order for these documents. The constants below parameterise the
 // detection and reconstruction heuristic in `pdf::oxide::text`.
 //
-// TODO: remove once https://github.com/yfedoseev/pdf_oxide/issues/518 is
-// fixed. pdf_oxide's Tm continuation check tolerates only ±0.5 pt of
-// Y-jitter; Word PDFs jitter 2.5–5 pt.
+// TODO: remove this heuristic when kreuzberg upgrades to pdf_oxide ≥ 0.3.51.
+// Upstream fix shipped in v0.3.51 (2026-05-19, closing issue #518): the Tm
+// continuation check now uses glyph height as the tolerance floor (≥ 0.5 pt)
+// so per-glyph sinusoidal jitter merges natively into a single span and the
+// reading-order scramble no longer occurs. kreuzberg currently pins v0.3.50.
+// After bumping, verify with test_3_5pt_jitter_coalesced and the other tests
+// in tests/pdf_glyph_spacing_issue_962.rs before deleting this block.
 
 /// Maximum y-gap (pt) between two spans that can still be considered "same
 /// line" under the glyph-fragmentation detection heuristic.

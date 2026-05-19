@@ -32,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Reconstruction: sort by y-descending, group by 5 pt y-proximity, re-sort each group
   by x-ascending, insert spaces at word gaps (x-gap > `font_size × 0.5`). Heuristic
   constants live in `crate::pdf::structure::constants` with measurement justification;
-  upstream TODO references pdf_oxide issue #518. Dutch word `relatie` (from
+  upstream fix shipped in pdf_oxide v0.3.51 (issue #518, closed 2026-05-19);
+  heuristic removable when kreuzberg upgrades to ≥ 0.3.51. Dutch word `relatie` (from
   "relatie-id" in the Word broken-image placeholder string) added to `.typos.toml`.
 
 ### Changed
