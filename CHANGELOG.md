@@ -44,6 +44,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   impl methods like `From::from` / `Display::fmt` / `Deref::deref` auto-emitted
   by derive).
 
+- **`kreuzberg::CacheStats` now refers to `cache::core::CacheStats`** (was
+  previously aliased to `paddle_ocr::CacheStats`). The paddle-OCR variant is
+  renamed to `ModelCacheStats` and re-exported as `kreuzberg::ModelCacheStats`.
+  Breaking change for Python/TypeScript/Ruby/PHP/Go/Java/C#/Elixir/Dart/Swift
+  bindings — consumers of the previous `kreuzberg.CacheStats` (paddle model
+  cache variant) must migrate to `kreuzberg.ModelCacheStats`.
+
+- **`kreuzberg::extraction::image::ImageMetadata` renamed to
+  `ExtractedImageMetadata`** to disambiguate from
+  `kreuzberg::types::metadata::ImageMetadata`. Internal use only; no public
+  binding surface impact.
+
+### Removed
+
+- **Orphan `kreuzberg::types::formats::CacheStats`** (unused duplicate of
+  `kreuzberg::cache::core::CacheStats`; superseded by the canonical re-export
+  at the crate root).
+
+### Added
+
+- **`Serialize`/`Deserialize` derives on DOCX and HWP parser types**: `Table`,
+  `TableRow`, `TableCell`, `Paragraph`, and `Run` in
+  `extraction::docx::parser`, and `Section`, `Paragraph`, and `ParaText` in
+  `extraction::hwp::model`. These types remain internal (still annotated
+  `#[cfg_attr(alef, alef(skip))]` — out of binding surface) but can now flow
+  through Rust-side caching, snapshot tests, and any internal JSON-based
+  pipelines. No change to public binding API.
+
+- **Plugin registry functions now exposed in every binding**:
+  `register_ocr_backend`, `register_post_processor`, `register_validator`,
+  `register_embedding_backend`, `register_renderer`,
+  `register_document_extractor`, their `unregister_*` siblings, and
+  `clear_*` group counterparts. Bindings previously hid these because the
+  alef codegen emitted duplicate definitions; alef ≥ v0.16.65 auto-deduplicates
+  trait-bridge registrations, so the kreuzberg `alef.toml` global function
+  exclusions are dropped.
+
+- **`kreuzberg-ffi` `register_ocr_backend` / `unregister_ocr_backend` are now
+  callable from C, Go, Java, C#**. The previous `*const c_void` Send issue was
+  resolved by the alef-backend-ffi Jinja migration; the binding now compiles
+  with `unsafe impl Send + Sync` on the bridge struct.
+
+- **WASM bindings now expose `HwpxExtractor`, `process_images_with_ocr`,
+  and the canonical `CacheStats`**. alef ≥ v0.16.65 auto-excludes feature-gated
+  types, so the explicit WASM exclusions for these are redundant.
+
+- **`task demo:dev:setup` for WASM demo prerequisites (#1007)**: new task
+  installs `wasm-pack` 0.13.1 (matches CI pin), `wasm-bindgen-cli` at the
+  version pinned in `Cargo.lock`, and WASI SDK 25 — all idempotent with exact
+  version checks and SHA256 verification on the WASI SDK download. Run once
+  before `task demo:dev`.
+
 ### Fixed
 
 - **Cover-page lines dropped from `result.content` after consecutive-H1 merging (#966)**:
@@ -58,6 +110,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   codes such as `HR 22`, `HR 28/24`) from being merged in the first place. The
   canonical split-title case (`KAISUN HOLDINGS` / `LIMITED`) continues to merge
   correctly.
+
+- **`task demo:dev` broken after native WASM OCR migration (#1006)**: commit
+  `198c9e99e` removed the JS OCR worker bridge files without updating `demo.html`,
+  leaving the asset server with nothing to serve for the CDN imports. Restores
+  `dist/index.js`, `dist/extraction/files.js`, and `dist/ocr/enabler.js` for the
+  new architecture where `TesseractWasmBackend` auto-registers at WASM init time
+  and `enableOcr()` is a no-op.
 
 ## [5.0.0-rc.1] - 2026-05-16
 
