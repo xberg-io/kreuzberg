@@ -141,7 +141,6 @@ pub(crate) fn extract_tables_bordered(doc: &mut OxideDocument, skip_pages: &Hash
         column_merge_threshold: 12.0,
         v_split_gap: 4.0,
         text_fallback: false,
-        ..TableDetectionConfig::default()
     };
 
     let mut all_tables = Vec::new();
