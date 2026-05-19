@@ -44,6 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   impl methods like `From::from` / `Display::fmt` / `Deref::deref` auto-emitted
   by derive).
 
+### Added
+
+- **`task demo:dev:setup` for WASM demo prerequisites (#1007)**: new task
+  installs `wasm-pack` 0.13.1 (matches CI pin), `wasm-bindgen-cli` at the
+  version pinned in `Cargo.lock`, and WASI SDK 25 — all idempotent with exact
+  version checks and SHA256 verification on the WASI SDK download. Run once
+  before `task demo:dev`.
+
 ### Fixed
 
 - **`task demo:dev` broken after native WASM OCR migration (#1006)**: commit
