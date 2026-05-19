@@ -44,6 +44,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   impl methods like `From::from` / `Display::fmt` / `Deref::deref` auto-emitted
   by derive).
 
+### Fixed
+
+- **`task demo:dev` broken after native WASM OCR migration (#1006)**: commit
+  `198c9e99e` removed the JS OCR worker bridge files without updating `demo.html`,
+  leaving the asset server with nothing to serve for the CDN imports. Restores
+  `dist/index.js`, `dist/extraction/files.js`, and `dist/ocr/enabler.js` for the
+  new architecture where `TesseractWasmBackend` auto-registers at WASM init time
+  and `enableOcr()` is a no-op.
+
 ## [5.0.0-rc.1] - 2026-05-16
 
 ### Changed
