@@ -1043,17 +1043,8 @@ fn adapt_batch_size_to_memory(configured: usize, document_size: usize) -> usize 
 fn get_available_memory() -> usize {
     #[cfg(target_os = "linux")]
     {
-        if let Ok(contents) = std::fs::read_to_string("/proc/meminfo") {
-            for line in contents.lines() {
-                if let Some(rest) = line.strip_prefix("MemAvailable:") {
-                    let kb_str = rest.trim().trim_end_matches("kB").trim();
-                    if let Ok(kb) = kb_str.parse::<usize>() {
-                        return kb * 1024;
-                    }
-                }
-            }
-        }
-        0
+        let host = read_meminfo_available();
+        host.min(cgroup_headroom().unwrap_or(usize::MAX))
     }
     #[cfg(target_os = "macos")]
     {
@@ -1074,7 +1065,34 @@ fn get_available_memory() -> usize {
         0
     }
 }
+#[cfg(all(feature = "ocr", target_os = "linux"))]
+fn read_meminfo_available() -> usize {
+    std::fs::read_to_string("/proc/meminfo")
+        .ok()
+        .and_then(|c| {
+            c.lines().find_map(|l| {
+                l.strip_prefix("MemAvailable:")?
+                    .trim()
+                    .trim_end_matches("kB")
+                    .trim()
+                    .parse::<usize>()
+                    .ok()
+            })
+        })
+        .map(|kb| kb * 1024)
+        .unwrap_or(0)
+}
 
+#[cfg(all(feature = "ocr", target_os = "linux"))]
+fn cgroup_headroom() -> Option<usize> {
+    use cgroups_rs::{hierarchies, memory::MemController, Cgroup};
+    let cg = Cgroup::load(hierarchies::auto(), "");
+    let mem: &MemController = cg.controller_of()?;
+    let stat = mem.memory_stat();
+    let limit = usize::try_from(stat.limit_in_bytes).ok()?;
+    (limit < isize::MAX as usize)
+        .then(|| limit.saturating_sub(stat.usage_in_bytes as usize))
+}
 /// Run a multi-backend OCR pipeline with quality-based fallback.
 ///
 /// Images and layout detections are computed once and shared across all stages.

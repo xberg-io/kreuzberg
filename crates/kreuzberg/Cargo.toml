@@ -292,6 +292,7 @@ blake3 = { workspace = true }
 bytes = { workspace = true }
 calamine = { version = "0.35.0", features = ["dates"], optional = true }
 cfb = { workspace = true, optional = true }
+cgroups-rs = "0.5.0"
 chardetng = { version = "1.0.0", optional = true }
 chrono = { workspace = true, optional = true }
 comrak = { workspace = true }
