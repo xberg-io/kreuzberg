@@ -23,7 +23,7 @@ RSpec.describe 'embed_async_pending' do
   end
 
   it 'embed_texts_async_preset_switch: embed_texts_async: preset override' do
-    result = Kreuzberg.embed_texts_async(['Text'], {embedding_model: 'default'})
+    result = Kreuzberg.embed_texts_async(['Text'], {model: { type: 'preset', name: 'balanced' }})
 
     expect(result).not_to be_nil
   end

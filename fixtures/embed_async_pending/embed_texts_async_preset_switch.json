@@ -8,7 +8,10 @@
       "Text"
     ],
     "config": {
-      "embedding_model": "default"
+      "model": {
+        "type": "preset",
+        "name": "balanced"
+      }
     }
   },
   "assertions": [
