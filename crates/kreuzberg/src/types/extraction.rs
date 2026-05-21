@@ -224,7 +224,7 @@ pub struct ExtractionResult {
     /// LLM token usage and cost data for all LLM calls made during this extraction.
     ///
     /// Contains one entry per LLM call. Multiple entries are produced when
-    /// VLM OCR, structured extraction, and/or LLM embeddings all run during
+    /// VLM OCR, structured extraction, or LLM embeddings run during
     /// the same extraction.
     ///
     /// `None` when no LLM was used.
