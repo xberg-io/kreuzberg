@@ -801,3 +801,230 @@ async fn test_pptx_image_page_numbers_issue329_user_file() {
         }
     }
 }
+
+/// Test that a `<pic>` element whose `<a:blip>` lacks `r:embed` is skipped
+/// gracefully instead of failing the entire page.
+///
+/// This is a regression test for PR #1016: before the fix, `parse_pic(node)?`
+/// propagated the error, aborting extraction of the whole slide. After the fix,
+/// the broken image is logged and skipped while the rest of the slide content
+/// is preserved.
+#[tokio::test]
+async fn test_pptx_broken_image_blip_missing_embed_skipped_gracefully() {
+    let mut temp_file = NamedTempFile::with_suffix(".pptx").expect("Failed to create temp file");
+
+    {
+        let mut zip = ZipWriter::new(&mut temp_file);
+        let options: FileOptions<()> = FileOptions::default().compression_method(CompressionMethod::Stored);
+
+        // Add [Content_Types].xml
+        zip.start_file("[Content_Types].xml", options)
+            .expect("Operation failed");
+        zip.write_all(br#"<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>
+  <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
+</Types>"#).expect("Operation failed");
+
+        // Add _rels/.rels
+        zip.start_file("_rels/.rels", options).expect("Operation failed");
+        zip.write_all(br#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+</Relationships>"#).expect("Operation failed");
+
+        // Add ppt/presentation.xml
+        zip.start_file("ppt/presentation.xml", options)
+            .expect("Operation failed");
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+                xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+  <p:sldIdLst>
+    <p:sldId id="256" r:id="rId2"/>
+  </p:sldIdLst>
+</p:presentation>"#,
+        )
+        .expect("Operation failed");
+
+        // Add ppt/_rels/presentation.xml.rels
+        zip.start_file("ppt/_rels/presentation.xml.rels", options)
+            .expect("Operation failed");
+        zip.write_all(br#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide1.xml"/>
+</Relationships>"#).expect("Operation failed");
+
+        // Add ppt/slides/slide1.xml
+        // KEY TEST CASE: <a:blip> inside <p:pic> does NOT have r:embed attribute.
+        // The slide also has text shapes before and after the broken image.
+        zip.start_file("ppt/slides/slide1.xml", options)
+            .expect("Operation failed");
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+       xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+
+      <!-- Normal text shape BEFORE the broken image - must be preserved -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name="Title"/>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="0"/>
+            <a:ext cx="100000" cy="100000"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          <a:p>
+            <a:r>
+              <a:rPr lang="en-US"/>
+              <a:t>Text before broken image</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- BROKEN IMAGE: <a:blip> has NO r:embed attribute -->
+      <!-- Before the fix, this would abort the entire page with:
+           "Image embed attribute not found" -->
+      <p:pic>
+        <p:nvPicPr>
+          <p:cNvPr id="4" name="Broken Image"/>
+          <p:cNvPicPr>
+            <a:picLocks noChangeAspect="1"/>
+          </p:cNvPicPr>
+          <p:nvPr/>
+        </p:nvPicPr>
+        <p:blipFill>
+          <a:blip/>
+          <a:stretch>
+            <a:fillRect/>
+          </a:stretch>
+        </p:blipFill>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="200000"/>
+            <a:ext cx="100000" cy="100000"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+      </p:pic>
+
+      <!-- Normal text shape AFTER the broken image - must be preserved -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="3" name="Content"/>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="400000"/>
+            <a:ext cx="100000" cy="100000"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          <a:p>
+            <a:r>
+              <a:rPr lang="en-US"/>
+              <a:t>Text after broken image</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+    </p:spTree>
+  </p:cSld>
+</p:sld>"#,
+        )
+        .expect("Operation failed");
+
+        // Add ppt/slides/_rels/slide1.xml.rels (empty - no image rels needed for this test)
+        zip.start_file("ppt/slides/_rels/slide1.xml.rels", options)
+            .expect("Operation failed");
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+</Relationships>"#,
+        )
+        .expect("Operation failed");
+
+        zip.finish().expect("Operation failed");
+    }
+
+    let result = extract_file(
+        temp_file.path(),
+        Some("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+        &ExtractionConfig::default(),
+    )
+    .await;
+
+    match result {
+        Ok(extraction) => {
+            assert!(!extraction.content.is_empty(), "Content should not be empty");
+
+            // Verify text BEFORE the broken image is extracted
+            assert!(
+                extraction.content.contains("Text before broken image"),
+                "Should preserve text before broken image. Got: {}",
+                extraction.content
+            );
+
+            // Verify text AFTER the broken image is extracted
+            assert!(
+                extraction.content.contains("Text after broken image"),
+                "Should preserve text after broken image. Got: {}",
+                extraction.content
+            );
+
+            println!("✅ PPTX with broken image (blip missing r:embed) extraction succeeded!");
+            println!("   Content: {}", extraction.content);
+        }
+        Err(e) => {
+            let error_msg = format!("{:?}", e);
+            if error_msg.contains("Image embed attribute not found") {
+                panic!(
+                    "PPTX extraction failed with 'Image embed attribute not found' error!\n\
+                     This is the regression for PR #1016.\n\
+                     The parser should skip <pic> elements whose <a:blip> lacks r:embed\n\
+                     instead of failing the entire page.\n\
+                     Error: {:?}",
+                    e
+                );
+            } else {
+                panic!("PPTX extraction failed with unexpected error: {:?}", e);
+            }
+        }
+    }
+}
