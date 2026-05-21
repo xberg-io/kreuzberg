@@ -634,9 +634,14 @@ class KreuzbergBridge {
   /// ```
   /// throws anyhow::Error on failure
   static Future<List<List<double>>> embedTextsAsync(
-    List<String> texts,
-    EmbeddingConfig config,
-  ) async {
+    List<String> texts, [
+    EmbeddingConfig? config,
+  ]) async {
+    if (config == null) {
+      config = await createEmbeddingConfigFromJson(
+        json: '{"model":{"type":"preset","name":"balanced"}}',
+      );
+    }
     return await rust_bridge.embedTextsAsync(texts: texts, config: config);
   }
 
@@ -658,8 +663,8 @@ class KreuzbergBridge {
   /// or rendered, or if `page_index` is out of range.
   /// throws anyhow::Error on failure
   static Future<Uint8List> renderPdfPageToPng(
-    Uint8List pdfBytes,
-    int pageIndex, {
+    Uint8List pdfBytes, {
+    int pageIndex = 0,
     int? dpi,
     String? password,
   }) async {
