@@ -368,14 +368,19 @@
         };
       })();
 
-      // ── Resolve CDN version ────────────────────────────────────────────────
-      // Only the version string is resolved on the main thread — WASM init and
-      // extraction run inside a per-extraction Web Worker so the main thread
-      // stays free (setTimeout / repaint / input events all work during extraction).
+      // ── Resolve CDN base URL ───────────────────────────────────────────────
+      // WASM_CDN_ORIGIN is the only URL that needs to change between prod and dev.
+      // patch-demo-dev.mjs rewrites it to http://localhost:9000 for local dev —
+      // that substitution covers the version fetch AND the URL passed into the
+      // Worker, so the Worker always loads from the same origin as the main thread.
+      // In production the origin stays @latest; after version is confirmed we pin
+      // to the exact version so the Worker and the version log agree.
+      const WASM_CDN_ORIGIN = "https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@latest";
       let resolvedVersion = null;
+      let wasmCdnBase = null;
       try {
         const t = log.phase("version resolve");
-        const pkg = await fetch("https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@latest/package.json")
+        const pkg = await fetch(WASM_CDN_ORIGIN + "/package.json")
           .then((r) => {
             if (!r.ok) throw new Error(`CDN version fetch failed: ${r.status}`);
             return r.json();
@@ -384,7 +389,14 @@
         resolvedVersion = pkg.version;
         if (!resolvedVersion || typeof resolvedVersion !== "string")
           throw new Error("Invalid version in @kreuzberg/wasm package.json");
-        log.info("CDN version resolved", { version: resolvedVersion });
+        // Dev: keep localhost base as-is. Prod: pin to resolved version so the
+        // Worker loads the exact same release that was verified above.
+        // NOTE: string concatenation (not a template literal) is intentional —
+        // the patch regex stops at '"' so the prod URL is never misreplaced.
+        wasmCdnBase = WASM_CDN_ORIGIN.startsWith("http://localhost")
+          ? WASM_CDN_ORIGIN
+          : "https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@" + resolvedVersion;
+        log.info("CDN version resolved", { version: resolvedVersion, base: wasmCdnBase });
       } catch (e) {
         log.error("version resolution failed", e);
       }
@@ -529,13 +541,12 @@
       //   setTimeout, which can never fire on a blocked main-thread event loop)
       // - ArrayBuffer is transferred (not copied) to avoid peak memory doubling
       // - Worker emits progress phases so the UI can show what is happening
-      function extractInWorker(fileBytes, mimeType, version, onProgress) {
+      function extractInWorker(fileBytes, mimeType, cdnBase, onProgress) {
         return new Promise((resolve, reject) => {
           const workerCode = `
             self.onmessage = async (e) => {
-              const { fileBytes, mimeType, version } = e.data;
+              const { fileBytes, mimeType, cdnBase } = e.data;
               try {
-                const cdnBase = 'https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@' + version;
                 self.postMessage({ type: 'progress', msg: 'Loading WASM module…' });
                 const mod = await import(cdnBase + '/dist/index.js');
                 self.postMessage({ type: 'progress', msg: 'Initializing…' });
@@ -588,13 +599,13 @@
 
           // Transfer the ArrayBuffer so the worker owns the memory — avoids
           // a full copy and halves peak memory for large files.
-          worker.postMessage({ fileBytes, mimeType, version }, [fileBytes]);
+          worker.postMessage({ fileBytes, mimeType, cdnBase }, [fileBytes]);
         });
       }
 
       // ── Process File ───────────────────────────────────────────────────────
       async function processFile(file) {
-        if (!resolvedVersion) {
+        if (!wasmCdnBase) {
           const errorBox = document.getElementById("error-message");
           if (errorBox) {
             errorBox.style.display = "flex";
@@ -641,7 +652,7 @@
           const result = await extractInWorker(
             fileBytes,
             file.type || null,
-            resolvedVersion,
+            wasmCdnBase,
             (msg) => {
               if (mdEl) mdEl.innerHTML = `<p style="color:#888;text-align:center;margin-top:2rem">${msg}</p>`;
             },
