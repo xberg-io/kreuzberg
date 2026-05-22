@@ -3154,6 +3154,7 @@ registry_getter = "kreuzberg::plugins::registry::get_ocr_backend_registry"
 register_fn = "register_ocr_backend"
 unregister_fn = "unregister_ocr_backend"
 clear_fn = "clear_ocr_backends"
+exclude_languages = ["kotlin_android"]
 
 [[crates.trait_bridges]]
 trait_name = "PostProcessor"
@@ -3162,6 +3163,7 @@ registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
 register_fn = "register_post_processor"
 unregister_fn = "unregister_post_processor"
 clear_fn = "clear_post_processors"
+exclude_languages = ["kotlin_android"]
 
 [[crates.trait_bridges]]
 trait_name = "Validator"
@@ -3170,6 +3172,7 @@ registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
 register_fn = "register_validator"
 unregister_fn = "unregister_validator"
 clear_fn = "clear_validators"
+exclude_languages = ["kotlin_android"]
 
 [[crates.trait_bridges]]
 trait_name = "EmbeddingBackend"
@@ -3178,6 +3181,7 @@ registry_getter = "kreuzberg::plugins::registry::get_embedding_backend_registry"
 register_fn = "register_embedding_backend"
 unregister_fn = "unregister_embedding_backend"
 clear_fn = "clear_embedding_backends"
+exclude_languages = ["kotlin_android"]
 
 [[crates.trait_bridges]]
 trait_name = "DocumentExtractor"
@@ -3190,6 +3194,7 @@ clear_fn = "clear_document_extractors"
 # cannot traverse the C FFI boundary. Skip it in the FFI vtable and let the default impl
 # (returns None) take over.
 ffi_skip_methods = ["as_sync_extractor"]
+exclude_languages = ["kotlin_android"]
 
 [[crates.trait_bridges]]
 trait_name = "Renderer"
@@ -3198,3 +3203,4 @@ registry_getter = "kreuzberg::plugins::registry::get_renderer_registry"
 register_fn = "register_renderer"
 unregister_fn = "unregister_renderer"
 clear_fn = "clear_renderers"
+exclude_languages = ["kotlin_android"]
