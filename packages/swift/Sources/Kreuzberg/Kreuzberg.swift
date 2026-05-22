@@ -6077,6 +6077,17 @@ public func detectMimeTypeFromBytes(
     let data = try Data(contentsOf: url)
     return try detectMimeTypeFromBytes(makeByteVec(data.map { $0 })).toString()
 }
+
+/// E2e wrapper (async): embed multiple texts with an EmbeddingConfig.
+public func embedTextsAsync(
+    texts: [String],
+    config: EmbeddingConfig
+) async throws -> [[Float]] {
+    let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
+    let _rb_json = try await RustBridge.embedTextsAsync(_rb_texts, config).toString()
+    let _rb_data = _rb_json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode([[Float]].self, from: _rb_data)
+}
 // MARK: - From-JSON Helpers
 // Public helpers that decode JSON into first-class Swift types.
 // First-class struct types (Codable) use JSONDecoder directly.

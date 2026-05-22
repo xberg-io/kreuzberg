@@ -31,7 +31,7 @@ data class OcrQualityThresholds(
     /** Minimum total non-whitespace characters to consider text substantive. */
     val minTotalNonWhitespace: Long = 64L,
     /** Minimum non-whitespace characters per page on average. */
-    val minNonWhitespacePerPage: Double = 32.0,
+    val minNonWhitespacePerPage: Double = 32,
     /** Minimum character count for a word to be "meaningful". */
     val minMeaningfulWordLen: Long = 4L,
     /** Minimum count of meaningful words before text is accepted. */
@@ -48,7 +48,7 @@ data class OcrQualityThresholds(
      */
     val criticalFragmentedWordRatio: Double = 0.8,
     /** Minimum average word length. Below this with enough words indicates garbled extraction. */
-    val minAvgWordLength: Double = 2.0,
+    val minAvgWordLength: Double = 2,
     /** Minimum word count before average word length check applies. */
     val minWordsForAvgLengthCheck: Long = 50L,
     /** Minimum consecutive word repetition ratio to detect column scrambling. */

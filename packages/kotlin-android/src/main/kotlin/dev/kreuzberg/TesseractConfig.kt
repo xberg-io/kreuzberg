@@ -56,7 +56,7 @@ data class TesseractConfig(
      *
      * Words with confidence below this threshold may be rejected or flagged.
      */
-    val minConfidence: Double = 0.0,
+    val minConfidence: Double = 0,
     /**
      * Image preprocessing configuration.
      *
@@ -67,7 +67,7 @@ data class TesseractConfig(
     /** Enable automatic table detection and reconstruction */
     val enableTableDetection: Boolean = true,
     /** Minimum confidence threshold for table detection (0.0-1.0) */
-    val tableMinConfidence: Double = 0.0,
+    val tableMinConfidence: Double = 0,
     /** Column threshold for table detection (pixels) */
     val tableColumnThreshold: Int = 50,
     /** Row threshold ratio for table detection (0.0-1.0) */

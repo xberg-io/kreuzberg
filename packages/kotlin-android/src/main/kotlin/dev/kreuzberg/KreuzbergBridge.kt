@@ -97,42 +97,4 @@ object KreuzbergBridge {
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeListEmbeddingPresets(): String
-
-    // JNI trait-bridge external funs — implementations are Rust JNI shims.
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterOcrBackend(impl: dev.kreuzberg.IOcrBackend)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterOcrBackend(name: String)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterPostProcessor(impl: dev.kreuzberg.IPostProcessor)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterPostProcessor(name: String)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterValidator(impl: dev.kreuzberg.IValidator)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterValidator(name: String)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterEmbeddingBackend(impl: dev.kreuzberg.IEmbeddingBackend)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterEmbeddingBackend(name: String)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterDocumentExtractor(impl: dev.kreuzberg.IDocumentExtractor)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterDocumentExtractor(name: String)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeRegisterRenderer(impl: dev.kreuzberg.IRenderer)
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeUnregisterRenderer(name: String)
 }

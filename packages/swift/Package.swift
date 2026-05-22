@@ -11,9 +11,7 @@ let package = Package(
     .iOS(.v16),
   ],
   products: [
-    .library(name: "Kreuzberg", targets: ["Kreuzberg"]),
-    // RustBridge is internal but exposed for e2e tests that need RustVec<UInt8>, RustString, etc.
-    .library(name: "RustBridge", targets: ["RustBridge"])
+    .library(name: "Kreuzberg", targets: ["Kreuzberg"])
   ],
   targets: [
     // RustBridgeC: pure C/headers target. Swift files in RustBridge import this
