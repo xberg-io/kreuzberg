@@ -6965,6 +6965,42 @@ public func listValidators() throws -> [String] {
     return try RustBridge.listValidators().map { $0.as_str().toString() }
 }
 
+/// Generate embeddings asynchronously for a list of text strings.
+///
+/// This is the async counterpart to [`embed_texts`]. It offloads the blocking
+/// ONNX inference work to a dedicated blocking thread pool via Tokio's
+/// `spawn_blocking`, keeping the async executor free.
+///
+/// Returns one embedding vector per input text in the same order.
+///
+/// # Arguments
+///
+/// * `texts` - Vec of strings to embed (owned, sent to blocking thread)
+/// * `config` - Embedding configuration specifying model, batch size, and normalization
+///
+/// # Errors
+///
+/// - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
+/// - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
+///   or the blocking inference task panics
+///
+/// # Example
+///
+/// ```rust,ignore
+/// use kreuzberg::{embed_texts_async, EmbeddingConfig};
+///
+/// let embeddings = embed_texts_async(
+///     vec!["Hello!".to_string()],
+///     &EmbeddingConfig::default(),
+/// ).await?;
+/// ```
+public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Float]] {
+    let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
+    return try await Task.detached(priority: .userInitiated) {
+        try RustBridge.embedTextsAsync(_rb_texts, config)
+    }.value
+}
+
 /// Render a single PDF page to PNG bytes.
 ///
 /// Returns raw PNG-encoded bytes for the specified page at the given DPI.

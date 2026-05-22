@@ -3872,6 +3872,7 @@ dependencies = [
  "getrandom 0.4.2",
  "js-sys",
  "kreuzberg",
+ "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",

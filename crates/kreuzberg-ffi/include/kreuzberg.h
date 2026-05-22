@@ -12703,17 +12703,6 @@ char *kreuzberg_get_extensions_for_mime(const char *mime_type);
 uintptr_t kreuzberg_get_extensions_for_mime_len(const char *mime_type);
 
 /**
- * Clear all embedding backends from the global registry.
- *
- * Calls `shutdown()` on every registered backend, then empties the registry.
- * \note - Any error returned by a backend's `shutdown()` method. The first error
- *   encountered stops processing of remaining backends.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-int32_t kreuzberg_clear_embedding_backends(void);
-
-/**
  * List the names of all registered embedding backends.
  *
  * Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
@@ -12749,17 +12738,6 @@ char *kreuzberg_list_document_extractors(void);
 uintptr_t kreuzberg_list_document_extractors_len(void);
 
 /**
- * Clear all document extractors from the global registry.
- *
- * Calls `shutdown()` on every registered extractor, then empties the registry.
- * \note - Any error returned by an extractor's `shutdown()` method. The first error
- *   encountered stops processing of remaining extractors.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-int32_t kreuzberg_clear_document_extractors(void);
-
-/**
  * List all registered OCR backends.
  *
  * Returns the names of all OCR backends currently registered in the global registry.
@@ -12784,22 +12762,6 @@ char *kreuzberg_list_ocr_backends(void);
  * \note SAFETY: All pointer parameters obey the same validity rules as `kreuzberg_list_ocr_backends`.
  */
 uintptr_t kreuzberg_list_ocr_backends_len(void);
-
-/**
- * Clear all OCR backends from the global registry.
- *
- * Removes all OCR backends and calls their `shutdown()` methods.
- * \return - `Ok(())` if all backends were cleared successfully
- * - `Err(...)` if any shutdown method failed
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- * \code
- * use kreuzberg::plugins::clear_ocr_backends;
- *
- * clear_ocr_backends()?;
- * \endcode
- */
-int32_t kreuzberg_clear_ocr_backends(void);
 
 /**
  * List all registered post-processor names.
@@ -12831,13 +12793,6 @@ char *kreuzberg_list_post_processors(void);
 uintptr_t kreuzberg_list_post_processors_len(void);
 
 /**
- * Remove all registered post-processors.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-int32_t kreuzberg_clear_post_processors(void);
-
-/**
  * List names of all registered renderers.
  * \note Returns an error if the registry lock is poisoned.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
@@ -12854,18 +12809,6 @@ char *kreuzberg_list_renderers(void);
 uintptr_t kreuzberg_list_renderers_len(void);
 
 /**
- * Clear all renderers from the global registry.
- *
- * Removes every renderer, including the built-in defaults (markdown, html,
- * djot, plain). After calling this no renderers are registered; re-register
- * as needed.
- * \note Returns an error if the registry lock is poisoned.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-int32_t kreuzberg_clear_renderers(void);
-
-/**
  * List names of all registered validators.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
@@ -12879,13 +12822,6 @@ char *kreuzberg_list_validators(void);
  * \note SAFETY: All pointer parameters obey the same validity rules as `kreuzberg_list_validators`.
  */
 uintptr_t kreuzberg_list_validators_len(void);
-
-/**
- * Remove all registered validators.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-int32_t kreuzberg_clear_validators(void);
 
 /**
  * Generate embeddings asynchronously for a list of text strings.
