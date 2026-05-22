@@ -19,9 +19,22 @@ const ASSET_PORT = process.env.ASSET_PORT ?? "9000";
 
 const cdnRe = /https:\/\/cdn\.jsdelivr\.net\/npm\/@kreuzberg\/wasm@[^/'"]+/g;
 
+// Importmap for WASI/env bare specifiers.  The local 5.x WASM binary is compiled
+// with WASI syscalls (tesseract C layer); the published CDN release is not.  This
+// importmap is injected only into demo-dev.html so production is unaffected.
+const IMPORTMAP = `<script type="importmap">
+    {
+      "imports": {
+        "env": "http://localhost:${ASSET_PORT}/dist/shims/env.js",
+        "wasi_snapshot_preview1": "http://localhost:${ASSET_PORT}/dist/shims/wasi_snapshot_preview1.js"
+      }
+    }
+  </script>`;
+
 const patched = readFileSync(src, "utf8")
   .replace(cdnRe, `http://localhost:${ASSET_PORT}`)
   .replace(/<title>(.*?)<\/title>/, "<title>$1 [local dev]</title>")
+  .replace("<head>", `<head>\n  ${IMPORTMAP}`)
   .replace(
     "</body>",
     `  <div style="position:fixed;bottom:12px;right:12px;background:#1a172a;border:1px solid #58FBDA55;color:#58FBDA;font-family:monospace;font-size:11px;padding:6px 10px;border-radius:6px;z-index:9999">
