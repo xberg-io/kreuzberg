@@ -555,7 +555,27 @@
                 self.postMessage({ type: 'progress', msg: 'Extracting content…' });
                 const blob = new Blob([new Uint8Array(fileBytes)]);
                 const result = await mod.extractFromFile(blob, mimeType || null);
-                self.postMessage({ type: 'result', ok: true, result: JSON.parse(JSON.stringify(result)) });
+                // WASM bindgen instances expose data via prototype getters only;
+                // structured clone (postMessage) and JSON.stringify both miss them.
+                // Build a plain object from known scalar/array getters, then
+                // JSON-round-trip it so postMessage never sees a non-cloneable value.
+                const meta = result.metadata;
+                const plain = JSON.parse(JSON.stringify({
+                  content: result.content ?? null,
+                  mime_type: result.mimeType ?? null,
+                  extraction_method: result.extractionMethod ?? null,
+                  pages: result.pages
+                    ? Array.from(result.pages, p => ({ content: p.content, page_number: p.pageNumber }))
+                    : [],
+                  metadata: meta ? {
+                    format: meta.format ?? null,
+                    title: meta.title ?? null,
+                    language: meta.language ?? null,
+                    ocr_used: meta.ocrUsed ?? null,
+                    is_empty: meta.isEmpty ?? null,
+                  } : null,
+                }, (_k, v) => v instanceof Map ? Object.fromEntries(v) : v));
+                self.postMessage({ type: 'result', ok: true, result: plain });
               } catch (err) {
                 self.postMessage({ type: 'result', ok: false, error: err?.message || String(err) });
               }
