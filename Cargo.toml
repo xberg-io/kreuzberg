@@ -81,7 +81,7 @@ rayon = "1.12.0"
 reqwest = { version = "0.13.3", default-features = false }
 
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.149" }
+serde_json = { version = "1.0.150" }
 serde_toon_format = "0.1"
 tempfile = "3.27.0"
 thiserror = "2.0.18"
