@@ -42,8 +42,8 @@ fn recompute_boundaries_from_pages(content: &str, pages: &[crate::types::PageCon
         // paragraph separator, trim each segment (PDF pages often carry trailing
         // spaces before "\n\n" that render_plain strips via paragraph.trim()), then
         // re-join.  Using the normalised form means exact-match succeeds and the
-        // resulting byte_end is correct — avoiding the cascading search_offset
-        // over-advance that caused null page metadata on subsequent pages (#1004).
+        // resulting byte_end is correct — avoiding cascading search_offset
+        // over-advance that would push past subsequent pages.
         let normalized: String = page
             .content
             .split("\n\n")
@@ -196,7 +196,7 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
         // Recompute page boundaries against `result.content` (rendered by `render_plain`)
         // if per-page content is available.  The boundaries stored in
         // `result.metadata.pages.boundaries` were computed against the raw extractor text
-        // and may have different byte offsets than the rendered content (fix for #636).
+        // and may have different byte offsets than the rendered content.
         let recomputed_boundaries: Option<Vec<PageBoundary>> = result
             .pages
             .as_deref()
@@ -204,6 +204,7 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
 
         let page_boundaries: Option<&[PageBoundary]> = recomputed_boundaries
             .as_deref()
+            .filter(|s| !s.is_empty())
             .or_else(|| result.metadata.pages.as_ref().and_then(|ps| ps.boundaries.as_deref()));
 
         // Pass formatted_content (markdown) for heading context resolution when available.

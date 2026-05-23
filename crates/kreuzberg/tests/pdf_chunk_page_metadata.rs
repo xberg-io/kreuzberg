@@ -1,11 +1,5 @@
-//! Regression tests for issue #1013: chunk `first_page`/`last_page` null when
-//! extracting multi-page PDFs with chunking enabled.
-//!
-//! Root cause: `extract_text_with_tracking` stored raw `page_text` in
-//! `PageContent.content` while `result.content` held the cleaned version
-//! (after `fix_pdf_control_chars`).  When the two diverged, the substring
-//! search in `recompute_boundaries_from_pages` failed, producing null page
-//! metadata on the affected chunks.
+//! Integration tests verifying that chunk `first_page`/`last_page` are populated
+//! for all chunks when extracting multi-page PDFs with chunking enabled.
 
 #![cfg(all(feature = "pdf", feature = "chunking"))]
 
@@ -17,10 +11,9 @@ use kreuzberg::extract_file_sync;
 
 /// All chunks produced from a multi-page PDF must have non-null page metadata.
 ///
-/// Regression guard for issue #1013: previously, chunks whose underlying page text
-/// contained PDF control characters (U+0001–U+001F) would lose their
-/// `first_page`/`last_page` because `recompute_boundaries_from_pages` could not
-/// locate the raw page text inside the cleaned `result.content`.
+/// Verifies that `recompute_boundaries_from_pages` successfully locates every
+/// page's content inside `result.content` so the chunker receives valid byte
+/// offsets and can populate `first_page`/`last_page` on every chunk.
 #[test]
 fn chunks_from_multi_page_pdf_all_have_page_metadata() {
     if skip_if_missing("pdf/multi_page.pdf") {
