@@ -763,6 +763,8 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
                 hierarchy: None,
                 is_blank: None,
                 layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
             }
         })
         .collect();

@@ -176,6 +176,21 @@ pub struct PageContent {
     /// and area fraction. Only populated when layout detection is configured.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub layout_regions: Option<Vec<LayoutRegion>>,
+
+    /// Speaker notes for this slide (PPTX only).
+    ///
+    /// Contains the text from the slide's notes pane (`ppt/notesSlides/notesSlide{N}.xml`).
+    /// Only populated when the source is a PPTX file and notes are present.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speaker_notes: Option<String>,
+
+    /// Section name this slide belongs to (PPTX only).
+    ///
+    /// PowerPoint sections group slides into logical chapters (`<p:sectionLst>` in
+    /// `ppt/presentation.xml`). Only populated when the source is a PPTX file and
+    /// the slide belongs to a named section.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub section_name: Option<String>,
 }
 
 /// A detected layout region on a page.

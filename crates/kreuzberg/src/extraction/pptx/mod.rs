@@ -58,7 +58,7 @@ use container::{PptxContainer, SlideIterator};
 use content_builder::ContentBuilder;
 use elements::{ParserConfig, Run, SlideElement};
 use image_handling::detect_image_format;
-use metadata::{extract_all_notes, extract_metadata};
+use metadata::{extract_all_notes, extract_metadata, extract_section_names};
 
 /// Options for PPTX content extraction.
 #[cfg_attr(alef, alef(skip))]
@@ -153,6 +153,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
     let (metadata, office_metadata) = extract_metadata(&mut container.archive);
 
     let notes = extract_all_notes(&mut container)?;
+    let section_names = extract_section_names(&mut container)?;
 
     let mut iterator = SlideIterator::new(container);
     let slide_count = iterator.slide_count();
@@ -181,12 +182,21 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         let slide_content = slide.to_markdown(&config);
         content_builder.add_text(&slide_content);
 
-        if let Some(slide_notes) = notes.get(&slide.slide_number) {
-            content_builder.add_notes(slide_notes);
+        let slide_notes = notes.get(&slide.slide_number).cloned();
+        if let Some(ref note_text) = slide_notes {
+            content_builder.add_notes(note_text);
         }
 
+        let slide_section = section_names.get(&slide.slide_number).cloned();
+
         if page_config.is_some() {
-            content_builder.end_slide(slide.slide_number, byte_start, slide_content.clone());
+            content_builder.end_slide(
+                slide.slide_number,
+                byte_start,
+                slide_content.clone(),
+                slide_notes,
+                slide_section,
+            );
         }
 
         // Build document structure for this slide (only when requested)
@@ -693,7 +703,7 @@ impl elements::Slide {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
 
     fn create_test_pptx_bytes(slides: Vec<&str>) -> Vec<u8> {
@@ -903,6 +913,263 @@ mod tests {
         );
 
         assert!(result.is_err());
+    }
+
+    /// Build a PPTX bytes with sections and optional speaker notes for integration testing.
+    pub(crate) fn create_pptx_with_sections_and_notes(
+        slides: &[(&str, Option<&str>)], // (text, notes)
+        sections: &[(&str, &[usize])],   // (name, 1-indexed slide positions)
+    ) -> Vec<u8> {
+        use std::io::Write;
+        use zip::write::{SimpleFileOptions, ZipWriter};
+
+        let mut buffer = Vec::new();
+        let mut zip = ZipWriter::new(std::io::Cursor::new(&mut buffer));
+        let opts = SimpleFileOptions::default();
+
+        zip.start_file("[Content_Types].xml", opts).unwrap();
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+    <Default Extension="xml" ContentType="application/xml"/>
+    <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+</Types>"#,
+        )
+        .unwrap();
+
+        zip.start_file("_rels/.rels", opts).unwrap();
+        zip.write_all(br#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+</Relationships>"#).unwrap();
+
+        // Build rels file listing each slide
+        let mut pres_rels = String::from(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
+        );
+        for (i, _) in slides.iter().enumerate() {
+            use std::fmt::Write as FmtWrite;
+            let _ = write!(
+                pres_rels,
+                r#"<Relationship Id="rId{id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide{id}.xml"/>"#,
+                id = i + 1
+            );
+        }
+        pres_rels.push_str("</Relationships>");
+        zip.start_file("ppt/_rels/presentation.xml.rels", opts).unwrap();
+        zip.write_all(pres_rels.as_bytes()).unwrap();
+
+        // Build sldIdLst: base ID = 256
+        let base_id: u32 = 256;
+        let mut sld_id_lst = String::new();
+        for (i, _) in slides.iter().enumerate() {
+            use std::fmt::Write as FmtWrite;
+            let _ = write!(
+                sld_id_lst,
+                r#"<p:sldId id="{}" r:id="rId{}"/>"#,
+                base_id + i as u32,
+                i + 1
+            );
+        }
+
+        // Build sectionLst
+        let mut section_lst = String::new();
+        for (name, positions) in sections {
+            use std::fmt::Write as FmtWrite;
+            let mut sld_ids = String::new();
+            for &pos in *positions {
+                let _ = write!(sld_ids, r#"<p14:sectionSldId id="{}"/>"#, base_id + (pos as u32 - 1));
+            }
+            let _ = write!(
+                section_lst,
+                r#"<p14:section name="{}"><p14:sectionSldIdLst>{}</p14:sectionSldIdLst></p14:section>"#,
+                name, sld_ids
+            );
+        }
+
+        let ext_lst = if section_lst.is_empty() {
+            String::new()
+        } else {
+            format!(
+                r#"<p:extLst><p:ext uri="{{521415D9-36F7-43E2-AB2F-B90AF26B5E84}}"><p14:sectionLst xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">{}</p14:sectionLst></p:ext></p:extLst>"#,
+                section_lst
+            )
+        };
+
+        let presentation_xml = format!(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+                xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <p:sldIdLst>{}</p:sldIdLst>
+  {}
+</p:presentation>"#,
+            sld_id_lst, ext_lst
+        );
+        zip.start_file("ppt/presentation.xml", opts).unwrap();
+        zip.write_all(presentation_xml.as_bytes()).unwrap();
+
+        // Write slide XML and optional notes XML
+        for (i, (text, notes)) in slides.iter().enumerate() {
+            let slide_xml = format!(
+                r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+    <p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>{}</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld>
+</p:sld>"#,
+                text
+            );
+            zip.start_file(format!("ppt/slides/slide{}.xml", i + 1), opts).unwrap();
+            zip.write_all(slide_xml.as_bytes()).unwrap();
+
+            if let Some(note_text) = notes {
+                let notes_xml = format!(
+                    r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+         xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+    <p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>{}</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld>
+</p:notes>"#,
+                    note_text
+                );
+                zip.start_file(format!("ppt/notesSlides/notesSlide{}.xml", i + 1), opts)
+                    .unwrap();
+                zip.write_all(notes_xml.as_bytes()).unwrap();
+            }
+        }
+
+        zip.start_file("docProps/core.xml", opts).unwrap();
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+                   xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>Test</dc:title></cp:coreProperties>"#,
+        )
+        .unwrap();
+
+        let app_xml = format!(
+            r#"<?xml version="1.0"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Slides>{}</Slides></Properties>"#,
+            slides.len()
+        );
+        zip.start_file("docProps/app.xml", opts).unwrap();
+        zip.write_all(app_xml.as_bytes()).unwrap();
+
+        let _ = zip.finish().unwrap();
+        buffer
+    }
+
+    #[test]
+    fn test_speaker_notes_in_page_contents() {
+        use crate::core::config::PageConfig;
+
+        let pptx = create_pptx_with_sections_and_notes(
+            &[
+                ("Intro Slide", Some("These are intro notes.")),
+                ("Content Slide", None),
+                ("Outro Slide", Some("Final notes here.")),
+            ],
+            &[],
+        );
+
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                page_config: Some(PageConfig::default()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let pages = result
+            .page_contents
+            .as_ref()
+            .expect("page_contents should be populated");
+        assert_eq!(pages.len(), 3);
+
+        assert_eq!(pages[0].speaker_notes.as_deref(), Some("These are intro notes."));
+        assert!(pages[1].speaker_notes.is_none(), "slide 2 has no notes");
+        assert_eq!(pages[2].speaker_notes.as_deref(), Some("Final notes here."));
+    }
+
+    #[test]
+    fn test_section_name_in_page_contents() {
+        use crate::core::config::PageConfig;
+
+        let pptx = create_pptx_with_sections_and_notes(
+            &[("Slide 1", None), ("Slide 2", None), ("Slide 3", None)],
+            &[("Introduction", &[1]), ("Deep Dive", &[2, 3])],
+        );
+
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                page_config: Some(PageConfig::default()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let pages = result
+            .page_contents
+            .as_ref()
+            .expect("page_contents should be populated");
+        assert_eq!(pages.len(), 3);
+
+        assert_eq!(pages[0].section_name.as_deref(), Some("Introduction"));
+        assert_eq!(pages[1].section_name.as_deref(), Some("Deep Dive"));
+        assert_eq!(pages[2].section_name.as_deref(), Some("Deep Dive"));
+    }
+
+    #[test]
+    fn test_section_name_and_notes_combined() {
+        use crate::core::config::PageConfig;
+
+        let pptx = create_pptx_with_sections_and_notes(
+            &[
+                ("Title Slide", Some("Welcome notes.")),
+                ("Methods", Some("Methodology notes.")),
+            ],
+            &[("Part One", &[1, 2])],
+        );
+
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                page_config: Some(PageConfig::default()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let pages = result
+            .page_contents
+            .as_ref()
+            .expect("page_contents should be populated");
+        assert_eq!(pages[0].section_name.as_deref(), Some("Part One"));
+        assert_eq!(pages[0].speaker_notes.as_deref(), Some("Welcome notes."));
+        assert_eq!(pages[1].section_name.as_deref(), Some("Part One"));
+        assert_eq!(pages[1].speaker_notes.as_deref(), Some("Methodology notes."));
+    }
+
+    #[test]
+    fn test_no_page_contents_without_page_config() {
+        let pptx = create_pptx_with_sections_and_notes(&[("Slide 1", Some("Notes."))], &[("Section A", &[1])]);
+
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                // no page_config → page_contents should be None
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        assert!(
+            result.page_contents.is_none(),
+            "page_contents should be None when page_config is not set"
+        );
     }
 
     #[test]

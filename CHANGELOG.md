@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **pptx**: `PageContent` gains two optional fields populated during PPTX per-page extraction (requires `page_config` to be set): `speaker_notes` (text from `ppt/notesSlides/notesSlideN.xml`) and `section_name` (from `<p14:sectionLst>` in `ppt/presentation.xml`). Both serialize with `skip_serializing_if = "Option::is_none"` and are `None` for all non-PPTX formats. (`crates/kreuzberg/src/types/page.rs`, `crates/kreuzberg/src/extraction/pptx/`)
+
 ### Changed
 
 - **deps**: bump alef pin to v0.19.5 (bundles AHashMap binding fixes for FFI/Dart/Swift/Elixir/Ruby/PHP and WASM emitter dedup + collect + From-impl + sub-config deserialize fixes).

@@ -57,7 +57,14 @@ impl ContentBuilder {
         byte_start
     }
 
-    pub(super) fn end_slide(&mut self, slide_number: u32, byte_start: usize, slide_content: String) {
+    pub(super) fn end_slide(
+        &mut self,
+        slide_number: u32,
+        byte_start: usize,
+        slide_content: String,
+        speaker_notes: Option<String>,
+        section_name: Option<String>,
+    ) {
         let byte_end = self.content.len();
 
         if self.config.is_some() {
@@ -76,6 +83,8 @@ impl ContentBuilder {
                 hierarchy: None,
                 is_blank,
                 layout_regions: None,
+                speaker_notes,
+                section_name,
             });
         }
     }

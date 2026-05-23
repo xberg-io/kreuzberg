@@ -293,6 +293,9 @@ impl PptxExtractor {
             doc.push_uri(Uri::hyperlink(&url, label));
         }
 
+        // Transfer per-page content (speaker notes, section names, etc.)
+        doc.prebuilt_pages = pptx_result.page_contents;
+
         // Transfer images
         if extract_images {
             doc.images = pptx_result.images;
@@ -479,5 +482,47 @@ mod tests {
         let mime_types = extractor.supported_mime_types();
         assert_eq!(mime_types.len(), 5);
         assert!(mime_types.contains(&"application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+    }
+
+    /// Full round-trip through PptxExtractor::extract_bytes → derive_extraction_result →
+    /// ExtractionResult.pages, asserting that speaker_notes and section_name are present.
+    #[tokio::test]
+    async fn test_extract_bytes_populates_speaker_notes_and_section_name() {
+        use crate::core::config::{ExtractionConfig, PageConfig};
+        use crate::extraction::derive::derive_extraction_result;
+        use crate::plugins::DocumentExtractor;
+
+        let pptx = crate::extraction::pptx::tests::create_pptx_with_sections_and_notes(
+            &[
+                ("Title", Some("Intro notes.")),
+                ("Body", Some("Body notes.")),
+                ("End", None),
+            ],
+            &[("Chapter 1", &[1, 2]), ("Chapter 2", &[3])],
+        );
+
+        let extractor = PptxExtractor::new();
+        let config = ExtractionConfig {
+            pages: Some(PageConfig::default()),
+            ..Default::default()
+        };
+        let mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        let internal_doc = extractor
+            .extract_bytes(&pptx, mime, &config)
+            .await
+            .expect("extraction failed");
+        let result = derive_extraction_result(internal_doc, true, crate::core::config::OutputFormat::Plain);
+
+        let pages = result.pages.as_ref().expect("pages should be populated");
+        assert_eq!(pages.len(), 3);
+
+        assert_eq!(pages[0].speaker_notes.as_deref(), Some("Intro notes."));
+        assert_eq!(pages[0].section_name.as_deref(), Some("Chapter 1"));
+
+        assert_eq!(pages[1].speaker_notes.as_deref(), Some("Body notes."));
+        assert_eq!(pages[1].section_name.as_deref(), Some("Chapter 1"));
+
+        assert!(pages[2].speaker_notes.is_none());
+        assert_eq!(pages[2].section_name.as_deref(), Some("Chapter 2"));
     }
 }

@@ -295,6 +295,8 @@ mod tests {
                     }),
                     is_blank: None,
                     layout_regions: None,
+                    speaker_notes: None,
+                    section_name: None,
                 },
                 PageContent {
                     page_number: 2,
@@ -304,6 +306,8 @@ mod tests {
                     hierarchy: None,
                     is_blank: None,
                     layout_regions: None,
+                    speaker_notes: None,
+                    section_name: None,
                 },
             ]),
             ..Default::default()
@@ -400,6 +404,8 @@ mod tests {
                 hierarchy: None,
                 is_blank: None,
                 layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
             }]),
             ..Default::default()
         };
@@ -599,6 +605,8 @@ mod tests {
                 }),
                 is_blank: None,
                 layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
             }]),
             ..Default::default()
         };
@@ -663,6 +671,8 @@ mod tests {
                 }),
                 is_blank: None,
                 layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
             }]),
             ..Default::default()
         };

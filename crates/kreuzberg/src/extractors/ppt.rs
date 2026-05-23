@@ -318,4 +318,37 @@ mod tests {
         let slide_count = result.metadata.additional.get("slide_count").unwrap();
         assert!(slide_count.as_u64().unwrap_or(0) > 0, "Slide count should be > 0");
     }
+
+    /// PPT speaker notes go to `metadata.additional["speaker_notes"]` as a JSON array,
+    /// NOT to `PageContent.speaker_notes`.  The legacy binary format does not support
+    /// per-slide `PageContent` objects, so `page_contents` is always `None` for PPT
+    /// regardless of whether `page_config` is set.
+    #[tokio::test]
+    async fn test_ppt_speaker_notes_in_metadata_not_page_contents() {
+        let test_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/ppt/simple.ppt");
+        if !test_file.exists() {
+            return;
+        }
+        let content = std::fs::read(&test_file).expect("Failed to read test PPT");
+        let extractor = PptExtractor::new();
+        let config = ExtractionConfig {
+            pages: Some(crate::core::config::PageConfig::default()),
+            ..Default::default()
+        };
+        let result = extractor
+            .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
+            .await
+            .expect("PPT extraction failed");
+        let result =
+            crate::extraction::derive::derive_extraction_result(result, true, crate::core::config::OutputFormat::Plain);
+        // PPT path uses InternalDocumentBuilder — no per-slide PageContent objects.
+        assert!(
+            result.pages.is_none(),
+            "PPT should not produce pages; speaker notes are in metadata.additional"
+        );
+        // If the fixture has notes, they surface under metadata.additional["speaker_notes"].
+        if let Some(notes) = result.metadata.additional.get("speaker_notes") {
+            assert!(notes.is_array(), "PPT speaker_notes in metadata should be a JSON array");
+        }
+    }
 }

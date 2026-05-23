@@ -43,3 +43,8 @@ pub const WORDPROCESSINGDRAWING_NAMESPACE: &str =
 ///
 /// Used in: `<pic:...>` elements (pic, blipFill)
 pub const PICTURE_NAMESPACE: &str = "http://schemas.openxmlformats.org/drawingml/2006/picture";
+
+/// PowerPoint 2010 extension namespace - sections and other extended features.
+///
+/// Used in: `<p14:sectionLst>`, `<p14:section>` elements inside `<p:extLst>`
+pub const PRESENTATIONML_2010_NAMESPACE: &str = "http://schemas.microsoft.com/office/powerpoint/2010/main";

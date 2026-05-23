@@ -1381,6 +1381,8 @@ impl DocumentExtractor for DocxExtractor {
                         hierarchy: None,
                         is_blank: Some(is_blank),
                         layout_regions: None,
+                        speaker_notes: None,
+                        section_name: None,
                     });
                 }
                 Some(pages)
@@ -1394,6 +1396,8 @@ impl DocumentExtractor for DocxExtractor {
                     hierarchy: None,
                     is_blank: Some(text.chars().filter(|c| !c.is_whitespace()).count() < 3),
                     layout_regions: None,
+                    speaker_notes: None,
+                    section_name: None,
                 }])
             }
         };

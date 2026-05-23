@@ -170,6 +170,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();
@@ -192,6 +194,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();
@@ -222,6 +226,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         };
 
         let page2 = PageContent {
@@ -232,6 +238,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         };
 
         assert!(Arc::ptr_eq(&page1.tables[0], &page2.tables[0]));
@@ -255,6 +263,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         };
 
         let json = serde_json::to_string(&page).unwrap();

@@ -119,6 +119,8 @@ impl ImageExtractor {
                         hierarchy: None,
                         is_blank: None,
                         layout_regions: None,
+                        speaker_notes: None,
+                        section_name: None,
                     }]);
                 }
             }
@@ -144,6 +146,8 @@ impl ImageExtractor {
                     hierarchy: None,
                     is_blank: None,
                     layout_regions: None,
+                    speaker_notes: None,
+                    section_name: None,
                 }]);
             }
             Ok(doc)
