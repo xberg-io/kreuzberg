@@ -2660,6 +2660,8 @@ mod ffi {
         fn list_renderers() -> Result<Vec<String>, String>;
         #[swift_bridge(swift_name = "listValidators")]
         fn list_validators() -> Result<Vec<String>, String>;
+        #[swift_bridge(swift_name = "calculateQualityScore")]
+        fn calculate_quality_score(text: String, metadata: Option<String>) -> f64;
         #[swift_bridge(swift_name = "embedTextsAsync")]
         fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String>;
         #[swift_bridge(swift_name = "renderPdfPageToPng")]
@@ -11659,6 +11661,14 @@ pub fn list_validators() -> Result<Vec<String>, String> {
     kreuzberg::list_validators()
         .map_err(|e| e.to_string())
         .map(|v| v.into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
+}
+
+pub fn calculate_quality_score(text: String, metadata: Option<String>) -> f64 {
+    kreuzberg::text::quality::calculate_quality_score(
+        &text,
+        &::serde_json::from_str::<std::collections::HashMap<String, String>>(&metadata)
+            .expect("valid JSON for metadata"),
+    )
 }
 
 pub fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String> {

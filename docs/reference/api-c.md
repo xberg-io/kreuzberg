@@ -584,6 +584,35 @@ void kreuzberg_clear_validators();
 
 ---
 
+#### kreuzberg_calculate_quality_score()
+
+Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
+
+`1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+script/style noise, navigation chrome) subtract, structural cues (headings,
+punctuation) add. The result is clamped to `[0.0, 1.0]`.
+
+Pass `metadata` as `NULL` when the caller has no extraction metadata available;
+the metadata bonus simply isn't applied in that case. Texts shorter than
+`MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+
+**Signature:**
+
+```c
+double kreuzberg_calculate_quality_score(const char* text, void* metadata);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `metadata` | `void**` | No | The metadata |
+
+**Returns:** `double`
+
+---
+
 #### kreuzberg_embed_texts_async()
 
 Generate embeddings asynchronously for a list of text strings.

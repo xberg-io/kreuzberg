@@ -584,6 +584,35 @@ pub fn clear_validators() -> Result<(), Error>
 
 ---
 
+#### calculate_quality_score()
+
+Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
+
+`1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+script/style noise, navigation chrome) subtract, structural cues (headings,
+punctuation) add. The result is clamped to `[0.0, 1.0]`.
+
+Pass `metadata` as `None` when the caller has no extraction metadata available;
+the metadata bonus simply isn't applied in that case. Texts shorter than
+`MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+
+**Signature:**
+
+```rust
+pub fn calculate_quality_score(text: &str, metadata: Option<HashMap<String, serde_json::Value>>) -> f64
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `metadata` | `Option<HashMap<String, serde_json::Value>>` | No | The metadata |
+
+**Returns:** `f64`
+
+---
+
 #### embed_texts_async()
 
 Generate embeddings asynchronously for a list of text strings.

@@ -186,6 +186,20 @@ list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg"
 #' @return List of character string.
 #' @export
 list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzberg")
+#' Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better
+#'
+#' `1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+#' script/style noise, navigation chrome) subtract, structural cues (headings,
+#' punctuation) add. The result is clamped to `[0.0, 1.0]`.
+#'
+#' Pass `metadata` as `None` when the caller has no extraction metadata available;
+#' the metadata bonus simply isn't applied in that case. Texts shorter than
+#' `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+#' @param text Character string.
+#' @param metadata Named list.
+#' @return Numeric.
+#' @export
+calculate_quality_score <- function(text, metadata) .Call("wrap__calculate_quality_score", text, metadata, PACKAGE = "kreuzberg")
 #' Generate embeddings asynchronously for a list of text strings
 #'
 #' This is the async counterpart to [`embed_texts`]. It offloads the blocking

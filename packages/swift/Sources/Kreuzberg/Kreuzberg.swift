@@ -4952,15 +4952,15 @@ internal extension PdfMetadata {
 /// `Auto` (default) selects the best available provider per platform.
 public enum ExecutionProviderType: String, Codable, Sendable, Hashable {
     /// Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere.
-    case auto = "Auto"
+    case auto
     /// CPU execution provider (always available).
-    case cpu = "Cpu"
+    case cpu
     /// Apple CoreML (macOS/iOS Neural Engine + GPU).
-    case coreMl = "CoreMl"
+    case coreMl = "coreml"
     /// NVIDIA CUDA GPU acceleration.
-    case cuda = "Cuda"
+    case cuda
     /// NVIDIA TensorRT (optimized CUDA inference).
-    case tensorRt = "TensorRt"
+    case tensorRt = "tensorrt"
 }
 extension ExecutionProviderType {
     func intoRust() throws -> RustBridge.ExecutionProviderType {
@@ -5007,16 +5007,16 @@ public enum HtmlTheme: String, Codable, Sendable, Hashable {
     /// Sensible defaults: system font stack, neutral colours, readable line
     /// measure. CSS custom properties (`--kb-*`) are all defined so user CSS
     /// can override individual values.
-    case `default` = "Default"
+    case `default`
     /// GitHub Markdown-inspired palette and spacing.
-    case gitHub = "GitHub"
+    case gitHub = "github"
     /// Dark background, light text.
-    case dark = "Dark"
+    case dark
     /// Minimal light theme with generous whitespace.
-    case light = "Light"
+    case light
     /// No built-in stylesheet emitted. CSS custom properties are still defined
     /// on `:root` so user stylesheets can reference `var(--kb-*)` tokens.
-    case unstyled = "Unstyled"
+    case unstyled
 }
 extension HtmlTheme {
     func intoRust() throws -> RustBridge.HtmlTheme {
@@ -5069,10 +5069,10 @@ extension TableModel {
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
 public enum ChunkerType: String, Codable, Sendable, Hashable {
-    case text = "Text"
-    case markdown = "Markdown"
-    case yaml = "Yaml"
-    case semantic = "Semantic"
+    case text
+    case markdown
+    case yaml
+    case semantic
 }
 extension ChunkerType {
     func intoRust() throws -> RustBridge.ChunkerType {
@@ -5939,17 +5939,17 @@ extension TextDirection {
 /// Link type classification.
 public enum LinkType: String, Codable, Sendable, Hashable {
     /// Anchor link (#section)
-    case anchor = "Anchor"
+    case anchor
     /// Internal link (same domain)
-    case `internal` = "Internal"
+    case `internal`
     /// External link (different domain)
-    case external = "External"
+    case external
     /// Email link (mailto:)
-    case email = "Email"
+    case email
     /// Phone link (tel:)
-    case phone = "Phone"
+    case phone
     /// Other link type
-    case other = "Other"
+    case other
 }
 extension LinkType {
     func intoRust() throws -> RustBridge.LinkType {
@@ -5966,9 +5966,9 @@ public enum ImageType: String, Codable, Sendable, Hashable {
     /// Inline SVG
     case inlineSvg = "inline-svg"
     /// External image URL
-    case external = "External"
+    case external
     /// Relative path image
-    case relative = "Relative"
+    case relative
 }
 extension ImageType {
     func intoRust() throws -> RustBridge.ImageType {
@@ -5983,7 +5983,7 @@ public enum StructuredDataType: String, Codable, Sendable, Hashable {
     /// JSON-LD structured data
     case jsonLd = "json-ld"
     /// Microdata
-    case microdata = "Microdata"
+    case microdata
     /// RDFa
     case rdFa = "rdfa"
 }
@@ -6124,9 +6124,9 @@ extension UriKind {
 /// Keyword algorithm selection.
 public enum KeywordAlgorithm: String, Codable, Sendable, Hashable {
     /// YAKE (Yet Another Keyword Extractor) - statistical approach
-    case yake = "Yake"
+    case yake
     /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
-    case rake = "Rake"
+    case rake
 }
 extension KeywordAlgorithm {
     func intoRust() throws -> RustBridge.KeywordAlgorithm {
@@ -7395,6 +7395,19 @@ public func listRenderers() throws -> [String] {
 /// List names of all registered validators.
 public func listValidators() throws -> [String] {
     return try RustBridge.listValidators().map { $0.as_str().toString() }
+}
+
+/// Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
+///
+/// `1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+/// script/style noise, navigation chrome) subtract, structural cues (headings,
+/// punctuation) add. The result is clamped to `[0.0, 1.0]`.
+///
+/// Pass `metadata` as `None` when the caller has no extraction metadata available;
+/// the metadata bonus simply isn't applied in that case. Texts shorter than
+/// `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+public func calculateQualityScore(text: String, metadata: [String: String]?) -> Double {
+    return RustBridge.calculateQualityScore(text, metadata)
 }
 
 /// Render a single PDF page to PNG bytes.

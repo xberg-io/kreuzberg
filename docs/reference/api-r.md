@@ -584,6 +584,35 @@ clear_validators()
 
 ---
 
+#### calculate_quality_score()
+
+Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
+
+`1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+script/style noise, navigation chrome) subtract, structural cues (headings,
+punctuation) add. The result is clamped to `[0.0, 1.0]`.
+
+Pass `metadata` as `NULL` when the caller has no extraction metadata available;
+the metadata bonus simply isn't applied in that case. Texts shorter than
+`MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+
+**Signature:**
+
+```r
+calculate_quality_score(text, metadata = NULL)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `character` | Yes | The text |
+| `metadata` | `list or NULL` | No | The metadata |
+
+**Returns:** `numeric`
+
+---
+
 #### embed_texts_async()
 
 Generate embeddings asynchronously for a list of text strings.

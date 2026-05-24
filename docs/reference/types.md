@@ -485,7 +485,7 @@ OCR configuration.
 | `tesseract_config` | `Option<TesseractConfig>` | `None` | Tesseract-specific configuration (optional) |
 | `output_format` | `Option<OutputFormat>` | `None` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `Option<serde_json::Value>` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backend_options` | `Option<serde_json::Value>` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backend_options` | `Option<serde_json::Value>` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `Option<OcrElementConfig>` | `None` | OCR element extraction configuration |
 | `quality_thresholds` | `Option<OcrQualityThresholds>` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `Option<OcrPipelineConfig>` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -511,7 +511,7 @@ when page boundaries are available and chunking is configured.
 |-------|------|---------|-------------|
 | `extract_pages` | `bool` | `false` | Extract pages as separate array (ExtractionResult.pages) |
 | `insert_page_markers` | `bool` | `false` | Insert page markers in main content string |
-| `marker_format` | `String` | `" |  |
+| `marker_format` | `String` | `"
 
 <!-- PAGE {page_num} -->
 
@@ -1683,7 +1683,7 @@ Bounding box for an OCR-detected table in pixel coordinates.
 Pre-computed table markdown for a table detection region.
 
 Produced by the TATR-based table structure recognizer and surfaced as part of
-layout-aware OCR results. The struct lives here (under `layout-types`, pure-Rust)
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
 
@@ -1709,7 +1709,7 @@ A single backend stage in the OCR pipeline.
 | `tesseract_config` | `Option<TesseractConfig>` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `Option<serde_json::Value>` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `vlm_config` | `Option<LlmConfig>` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
+| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -2602,12 +2602,12 @@ Designed to be extended in future versions without breaking changes.
 
 Type of text chunker to use.
 
-## Variants
+# Variants
 
-- `Text` - Generic text splitter, splits on whitespace and punctuation
-- `Markdown` - Markdown-aware splitter, preserves formatting and structure
-- `Yaml` - YAML-aware splitter, creates one chunk per top-level key
-- `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
+* `Text` - Generic text splitter, splits on whitespace and punctuation
+* `Markdown` - Markdown-aware splitter, preserves formatting and structure
+* `Yaml` - YAML-aware splitter, creates one chunk per top-level key
+* `Semantic` - Topic-aware chunker. With an `EmbeddingConfig`, splits at
   embedding-based topic shifts tuned by `topic_threshold` (default 0.75,
   lower = more splits). Without an embedding, falls back to a
   structural-boundary heuristic (ALL-CAPS headers, numbered sections,
@@ -2624,7 +2624,7 @@ Type of text chunker to use.
 
 ---
 
-### CodeContentMode
+#### CodeContentMode
 
 Content rendering mode for code extraction.
 
@@ -2654,7 +2654,7 @@ Replaces separate body/furniture arrays with per-node granularity.
 
 ---
 
-##### ElementType
+#### ElementType
 
 Semantic element type classification.
 
@@ -2677,7 +2677,7 @@ Supports the element types commonly found in Unstructured documents.
 
 ---
 
-##### EmbeddingModelType
+#### EmbeddingModelType
 
 Embedding model types supported by Kreuzberg.
 
@@ -2690,7 +2690,7 @@ Embedding model types supported by Kreuzberg.
 
 ---
 
-##### ExecutionProviderType
+#### ExecutionProviderType
 
 ONNX Runtime execution provider type.
 
@@ -2707,7 +2707,7 @@ Determines which hardware backend is used for model inference.
 
 ---
 
-##### ExtractionMethod
+#### ExtractionMethod
 
 How the extracted text was produced.
 
@@ -2719,7 +2719,7 @@ How the extracted text was produced.
 
 ---
 
-##### FormatMetadata
+#### FormatMetadata
 
 Format-specific metadata (discriminated union).
 
@@ -2751,7 +2751,7 @@ type-safe, clean metadata without nested optionals.
 
 ---
 
-##### FracType
+#### FracType
 
 | Variant | Description |
 |---------|-------------|
@@ -2762,7 +2762,7 @@ type-safe, clean metadata without nested optionals.
 
 ---
 
-##### HtmlTheme
+#### HtmlTheme
 
 Built-in HTML theme selection.
 
@@ -2776,7 +2776,7 @@ Built-in HTML theme selection.
 
 ---
 
-##### ImageKind
+#### ImageKind
 
 Heuristic classification of what an image likely depicts.
 
@@ -2796,7 +2796,7 @@ Heuristic classification of what an image likely depicts.
 
 ---
 
-##### ImageType
+#### ImageType
 
 Image type classification.
 
@@ -2809,7 +2809,7 @@ Image type classification.
 
 ---
 
-##### InlineType
+#### InlineType
 
 Types of inline elements in Djot.
 
@@ -2834,7 +2834,7 @@ Types of inline elements in Djot.
 
 ---
 
-##### KeywordAlgorithm
+#### KeywordAlgorithm
 
 Keyword algorithm selection.
 
@@ -2845,7 +2845,7 @@ Keyword algorithm selection.
 
 ---
 
-##### LayoutClass
+#### LayoutClass
 
 The 17 canonical document layout classes.
 
@@ -2877,7 +2877,7 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 
 ---
 
-##### LinkType
+#### LinkType
 
 Link type classification.
 
@@ -2892,7 +2892,7 @@ Link type classification.
 
 ---
 
-##### ListType
+#### ListType
 
 Type of list detection.
 
@@ -2905,7 +2905,7 @@ Type of list detection.
 
 ---
 
-##### NodeContent
+#### NodeContent
 
 Tagged enum for node content. Each variant carries only type-specific data.
 
@@ -2937,7 +2937,7 @@ Go/Java/TypeScript bindings.
 
 ---
 
-##### OcrBackendType
+#### OcrBackendType
 
 OCR backend types.
 
@@ -2950,7 +2950,7 @@ OCR backend types.
 
 ---
 
-##### OcrBoundingGeometry
+#### OcrBoundingGeometry
 
 Bounding geometry for an OCR element.
 
@@ -2964,7 +2964,7 @@ Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilateral
 
 ---
 
-##### OcrElementLevel
+#### OcrElementLevel
 
 Hierarchical level of an OCR element.
 
@@ -2980,7 +2980,7 @@ equivalent semantics for PaddleOCR.
 
 ---
 
-##### OutputFormat
+#### OutputFormat
 
 Output format for extraction results.
 
@@ -3002,7 +3002,7 @@ boxes and confidence scores.
 
 ---
 
-##### PSMMode
+#### PSMMode
 
 Page Segmentation Mode for Tesseract OCR
 
@@ -3022,7 +3022,7 @@ Page Segmentation Mode for Tesseract OCR
 
 ---
 
-##### PaddleLanguage
+#### PaddleLanguage
 
 Supported languages in PaddleOCR.
 
@@ -3049,7 +3049,7 @@ Maps user-friendly language codes to paddle-ocr-rs language identifiers.
 
 ---
 
-##### PageUnitType
+#### PageUnitType
 
 Type of paginated unit in a document.
 
@@ -3063,7 +3063,7 @@ Distinguishes between different types of "pages" (PDF pages, presentation slides
 
 ---
 
-##### PdfAnnotationType
+#### PdfAnnotationType
 
 Type of PDF annotation.
 
@@ -3079,7 +3079,7 @@ Type of PDF annotation.
 
 ---
 
-##### ProcessingStage
+#### ProcessingStage
 
 Processing stages for post-processors.
 
@@ -3094,7 +3094,7 @@ Use stages to control the order of post-processing operations.
 
 ---
 
-##### ReductionLevel
+#### ReductionLevel
 
 | Variant | Description |
 |---------|-------------|
@@ -3106,7 +3106,7 @@ Use stages to control the order of post-processing operations.
 
 ---
 
-##### RelationshipKind
+#### RelationshipKind
 
 Semantic kind of a relationship between document elements.
 
@@ -3122,7 +3122,7 @@ Semantic kind of a relationship between document elements.
 
 ---
 
-##### ResultFormat
+#### ResultFormat
 
 Result-shape selection for extraction results.
 
@@ -3137,7 +3137,7 @@ blob vs. an element-based decomposition.
 
 ---
 
-##### StructuredDataType
+#### StructuredDataType
 
 Structured data type classification.
 
@@ -3149,7 +3149,7 @@ Structured data type classification.
 
 ---
 
-##### TableModel
+#### TableModel
 
 Which table structure recognition model to use.
 
@@ -3168,7 +3168,7 @@ YAML).
 
 ---
 
-##### TextDirection
+#### TextDirection
 
 Text direction enumeration for HTML documents.
 
@@ -3180,7 +3180,7 @@ Text direction enumeration for HTML documents.
 
 ---
 
-##### UriKind
+#### UriKind
 
 Semantic classification of an extracted URI.
 

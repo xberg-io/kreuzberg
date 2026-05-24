@@ -584,6 +584,35 @@ func ClearValidators() error
 
 ---
 
+#### CalculateQualityScore()
+
+Score an extracted text on the closed interval `[0.0, 1.0]`, where higher is better.
+
+`1.0` is the neutral score for clean prose; penalties (OCR artifacts, embedded
+script/style noise, navigation chrome) subtract, structural cues (headings,
+punctuation) add. The result is clamped to `[0.0, 1.0]`.
+
+Pass `metadata` as `nil` when the caller has no extraction metadata available;
+the metadata bonus simply isn't applied in that case. Texts shorter than
+`MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
+
+**Signature:**
+
+```go
+func CalculateQualityScore(text string, metadata map[string]interface{}) float64
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Metadata` | `*map[string]interface{}` | No | The metadata |
+
+**Returns:** `float64`
+
+---
+
 #### EmbedTextsAsync()
 
 Generate embeddings asynchronously for a list of text strings.
