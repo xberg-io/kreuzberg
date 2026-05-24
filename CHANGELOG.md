@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **core**: `ImageKind::PageRaster` variant — full-page renders produced during OCR preprocessing can now be captured as `ExtractedImage` entries. Enable via `ImageExtractionConfig.include_page_rasters = true` (default `false`). PDF + OCR only; a `ProcessingWarning` is emitted when the active OCR backend uses document-level processing without per-page rendering. **Breaking change**: `ImageKind` is now `#[non_exhaustive]` — exhaustive `match` blocks on `ImageKind` in downstream code will fail to compile; add a `_ =>` arm.
+
 ### Changed
 
 - **deps**: bump alef pin to v0.19.5 (bundles AHashMap binding fixes for FFI/Dart/Swift/Elixir/Ruby/PHP and WASM emitter dedup + collect + From-impl + sub-config deserialize fixes).

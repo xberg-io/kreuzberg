@@ -890,6 +890,166 @@ fn test_ocr_inline_images_enters_decompression_path() {
     );
 }
 
+// ─── include_page_rasters integration tests ──────────────────────────────────
+//
+// These tests exercise the full pipeline: ExtractionConfig with
+// include_page_rasters=true → PDF OCR via Tesseract (per-page rendering) →
+// merge/reindex in mod.rs → ExtractionResult.images contains PageRaster entries.
+//
+// They are the minimum proof that build_page_raster_image is actually called and
+// that the result survives the merge/reindex at mod.rs:501-507.  The unit tests
+// for build_page_raster_image in ocr.rs verify the helper itself; these tests
+// verify the integration path.
+
+/// Enabling `include_page_rasters` on a PDF with `force_ocr=true` must produce
+/// `ImageKind::PageRaster` entries in `ExtractionResult.images`.
+///
+/// Verifies:
+/// - At least one `PageRaster` entry is present (per-page rendering ran).
+/// - Every raster has `page_number = Some(N)` where N >= 1 (1-based assignment).
+/// - Every raster has non-empty `data` (actual PNG bytes were captured).
+/// - `image_index` values are unique across the full result set (reindex in
+///   mod.rs:501-507 did not produce collisions).
+/// - No `page_rasters` processing warning (Tesseract uses per-page path, not bypass).
+#[cfg(feature = "ocr")]
+#[test]
+fn test_include_page_rasters_produces_rasters_on_force_ocr_pdf() {
+    use kreuzberg::core::config::{ImageExtractionConfig, OcrConfig};
+    use kreuzberg::extract_file_sync;
+    use kreuzberg::types::ImageKind;
+
+    let path = test_documents_dir().join("pdf/fake_memo.pdf");
+    if !path.exists() {
+        eprintln!("SKIP: test_documents/pdf/fake_memo.pdf not present");
+        return;
+    }
+
+    let config = ExtractionConfig {
+        ocr: Some(OcrConfig {
+            backend: "tesseract".to_string(),
+            language: "eng".to_string(),
+            ..Default::default()
+        }),
+        force_ocr: true,
+        images: Some(ImageExtractionConfig {
+            include_page_rasters: true,
+            ..Default::default()
+        }),
+        use_cache: false,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("force_ocr extraction must succeed");
+
+    let images = result
+        .images
+        .as_ref()
+        .expect("images must be Some when include_page_rasters=true");
+
+    let rasters: Vec<_> = images
+        .iter()
+        .filter(|img| img.image_kind == Some(ImageKind::PageRaster))
+        .collect();
+
+    assert!(
+        !rasters.is_empty(),
+        "include_page_rasters=true must produce at least one PageRaster entry; \
+         got {} total images but none with PageRaster kind",
+        images.len()
+    );
+
+    for raster in &rasters {
+        assert!(
+            raster.page_number.is_some(),
+            "PageRaster at image_index={} must have page_number set",
+            raster.image_index
+        );
+        assert!(
+            raster.page_number.unwrap() >= 1,
+            "PageRaster page_number must be >= 1 (1-based), got {}",
+            raster.page_number.unwrap()
+        );
+        assert!(
+            !raster.data.is_empty(),
+            "PageRaster at image_index={} must have non-empty PNG data",
+            raster.image_index
+        );
+    }
+
+    // image_index values must be unique — reindex in mod.rs:501-507 must not collide.
+    let mut seen = std::collections::HashSet::new();
+    for img in images {
+        assert!(
+            seen.insert(img.image_index),
+            "image_index {} appears more than once — reindex produced duplicates",
+            img.image_index
+        );
+    }
+
+    // No page_rasters warning: Tesseract processes per-page, so the bypass never fires.
+    let raster_warnings: Vec<_> = result
+        .processing_warnings
+        .iter()
+        .filter(|w| w.source.as_ref() == "page_rasters")
+        .collect();
+    assert!(
+        raster_warnings.is_empty(),
+        "no page_rasters warning expected for Tesseract per-page OCR; got: {:?}",
+        raster_warnings.iter().map(|w| w.message.as_ref()).collect::<Vec<_>>()
+    );
+}
+
+/// `include_page_rasters=false` (the default) must not produce any `PageRaster`
+/// entries even when `force_ocr=true` triggers per-page rendering.
+///
+/// Regression guard: the raster capture is conditional on the config flag;
+/// removing that condition would cause this to fail.
+#[cfg(feature = "ocr")]
+#[test]
+fn test_include_page_rasters_false_does_not_capture_rasters() {
+    use kreuzberg::core::config::{ImageExtractionConfig, OcrConfig};
+    use kreuzberg::extract_file_sync;
+    use kreuzberg::types::ImageKind;
+
+    let path = test_documents_dir().join("pdf/fake_memo.pdf");
+    if !path.exists() {
+        eprintln!("SKIP: test_documents/pdf/fake_memo.pdf not present");
+        return;
+    }
+
+    let config = ExtractionConfig {
+        ocr: Some(OcrConfig {
+            backend: "tesseract".to_string(),
+            language: "eng".to_string(),
+            ..Default::default()
+        }),
+        force_ocr: true,
+        images: Some(ImageExtractionConfig {
+            include_page_rasters: false,
+            ..Default::default()
+        }),
+        use_cache: false,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("force_ocr extraction must succeed");
+
+    let raster_count = result
+        .images
+        .as_ref()
+        .map(|imgs| {
+            imgs.iter()
+                .filter(|i| i.image_kind == Some(ImageKind::PageRaster))
+                .count()
+        })
+        .unwrap_or(0);
+
+    assert_eq!(
+        raster_count, 0,
+        "include_page_rasters=false must not produce any PageRaster images; got {raster_count}"
+    );
+}
+
 /// `image_indices` on chunks must be empty when image extraction is disabled.
 #[cfg(feature = "chunking")]
 #[test]

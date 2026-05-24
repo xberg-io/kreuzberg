@@ -313,6 +313,7 @@ fn test_extraction_config_needs_image_processing() {
         max_dpi: 600,
         max_images_per_page: None,
         classify: true,
+        include_page_rasters: false,
     });
     assert!(
         config.needs_image_processing(),

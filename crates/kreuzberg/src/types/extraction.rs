@@ -453,6 +453,7 @@ pub struct ChunkMetadata {
 }
 
 /// Heuristic classification of what an image likely depicts.
+#[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(rename_all = "snake_case")]
@@ -477,6 +478,8 @@ pub enum ImageKind {
     TileFragment,
     /// Mask or transparency map
     Mask,
+    /// Full-page render produced during OCR preprocessing; used as a citation thumbnail.
+    PageRaster,
     /// Could not classify with reasonable confidence
     Unknown,
 }

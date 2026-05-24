@@ -42,6 +42,7 @@ async fn run_ocr_with_layout(
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
     Vec<String>,
+    Option<Vec<crate::types::ExtractedImage>>,
 )> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
@@ -51,20 +52,29 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts) = ocr::run_ocr_pipeline(
-            Some(content),
-            None,
-            #[cfg(feature = "layout-detection")]
-            layout_detections.as_deref(),
-            config,
-            &pipeline,
-            path,
-        )
-        .await?;
-        return Ok((text, Vec::new(), ocr_elements, pipeline_doc, llm_usage, ocr_pts));
+        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts, pipeline_rasters) =
+            ocr::run_ocr_pipeline(
+                Some(content),
+                None,
+                #[cfg(feature = "layout-detection")]
+                layout_detections.as_deref(),
+                config,
+                &pipeline,
+                path,
+            )
+            .await?;
+        return Ok((
+            text,
+            Vec::new(),
+            ocr_elements,
+            pipeline_doc,
+            llm_usage,
+            ocr_pts,
+            pipeline_rasters,
+        ));
     }
 
-    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts) = extract_with_ocr(
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters) = extract_with_ocr(
         Some(content),
         None,
         #[cfg(feature = "layout-detection")]
@@ -73,7 +83,7 @@ async fn run_ocr_with_layout(
         path,
     )
     .await?;
-    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts))
+    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters))
 }
 
 /// PDF document extractor using pdf_oxide.
@@ -217,28 +227,32 @@ impl PdfExtractor {
         let mut ocr_page_texts: Option<Vec<String>> = None;
         #[cfg(feature = "ocr")]
         let mut ocr_results_map: Option<ahash::AHashMap<u32, String>> = None;
+        #[cfg(feature = "ocr")]
+        let mut ocr_page_rasters: Option<Vec<crate::types::ExtractedImage>> = None;
 
         #[cfg(feature = "ocr")]
         let (text, extraction_method) = if config.effective_disable_ocr() {
             (native_text, ExtractionMethod::Native)
         } else if config.force_ocr {
-            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts) =
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs) =
                 run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             ocr_elements = ocr_elems;
             ocr_internal_doc = ocr_doc;
             ocr_llm_usage = llm_usage;
             ocr_page_texts = Some(ocr_pts);
+            ocr_page_rasters = ocr_rstrs;
             (ocr_text, ExtractionMethod::Ocr)
         } else if let Some(ref ocr_pages) = config.force_ocr_pages {
             if !ocr_pages.is_empty() {
                 if let Some(ref bounds) = boundaries {
                     if !bounds.is_empty() {
-                        let (mixed, results_map, mixed_llm_usage) =
+                        let (mixed, results_map, mixed_llm_usage, mixed_rstrs) =
                             ocr::extract_mixed_ocr_native(&native_text, bounds, ocr_pages, content, config, path)
                                 .await?;
                         ocr_llm_usage = mixed_llm_usage;
                         ocr_results_map = Some(results_map);
+                        ocr_page_rasters = mixed_rstrs;
                         (mixed, ExtractionMethod::Mixed)
                     } else {
                         tracing::warn!("force_ocr_pages set but no page boundaries available; using native text");
@@ -316,12 +330,13 @@ impl PdfExtractor {
                     (native_text, ExtractionMethod::Native)
                 }
                 ocr::OcrGateOutcome::RunFallback => match run_ocr_with_layout(content, config, path).await {
-                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts)) => {
+                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs)) => {
                         ocr_tables = ocr_tbls;
                         ocr_elements = ocr_elems;
                         ocr_internal_doc = ocr_doc;
                         ocr_llm_usage = llm_usage;
                         ocr_page_texts = Some(ocr_pts);
+                        ocr_page_rasters = ocr_rstrs;
                         (ocr_text, ExtractionMethod::Ocr)
                     }
                     Err(e) => {
@@ -479,6 +494,32 @@ impl PdfExtractor {
 
         if let Some(imgs) = images {
             doc.images = imgs;
+        }
+
+        // Append OCR page rasters after embedded images; reindex to keep image_index contiguous.
+        // None → document-level bypass; Some([]) → zero-page PDF; Some([..]) → rasters captured.
+        #[cfg(feature = "ocr")]
+        let ocr_rasters_bypass = ocr_page_rasters.is_none();
+        #[cfg(feature = "ocr")]
+        if let Some(rasters) = ocr_page_rasters {
+            let base_idx = doc.images.len() as u32;
+            for (offset, mut raster) in rasters.into_iter().enumerate() {
+                raster.image_index = base_idx + offset as u32;
+                doc.images.push(raster);
+            }
+        }
+
+        // Warn only on the document-level bypass path — not for zero-page PDFs that
+        // went through per-page rendering but produced an empty raster list.
+        #[cfg(feature = "ocr")]
+        if used_ocr && ocr_rasters_bypass && config.images.as_ref().is_some_and(|c| c.include_page_rasters) {
+            doc.processing_warnings.push(crate::types::ProcessingWarning {
+                source: std::borrow::Cow::Borrowed("page_rasters"),
+                message: std::borrow::Cow::Borrowed(
+                    "include_page_rasters is set but no page rasters were produced; \
+                     the active OCR backend used document-level processing without per-page rendering",
+                ),
+            });
         }
 
         // On the OCR/VLM path the doc is a flat text document — image elements are not
@@ -1215,7 +1256,8 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("per-page-ocr-mock-928").unwrap();
 
-        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts) = result.expect("extract_with_ocr should succeed");
+        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts, _rasters) =
+            result.expect("extract_with_ocr should succeed");
 
         assert_eq!(page_texts.len(), 2, "expected one entry per page");
         assert!(page_texts[0].starts_with("ocr-page-"), "page 0 should have OCR text");

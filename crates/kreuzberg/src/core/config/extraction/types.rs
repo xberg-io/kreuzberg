@@ -90,6 +90,19 @@ pub struct ImageExtractionConfig {
     /// into clusters where they appear to belong to one figure.
     #[serde(default = "default_true")]
     pub classify: bool,
+
+    /// When `true`, full-page renders produced during OCR preprocessing are captured
+    /// and returned as `ImageKind::PageRaster` entries in `ExtractionResult.images`.
+    ///
+    /// **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the
+    /// document-level OCR bypass is active (whole-document backend). When OCR is
+    /// enabled and this flag is set but the active backend skips per-page rendering,
+    /// a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`.
+    ///
+    /// Defaults to `false`. Enable when downstream consumers need page thumbnails
+    /// (e.g. citation previews, visual grounding).
+    #[serde(default)]
+    pub include_page_rasters: bool,
 }
 
 /// Token reduction configuration.
@@ -132,6 +145,7 @@ impl Default for ImageExtractionConfig {
             max_dpi: 600,
             max_images_per_page: None,
             classify: true,
+            include_page_rasters: false,
         }
     }
 }
@@ -267,5 +281,37 @@ mod tests {
                        "min_dpi":72,"max_dpi":600}"#;
         let config: ImageExtractionConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.max_images_per_page, None);
+    }
+
+    #[test]
+    fn test_include_page_rasters_defaults_false() {
+        let config = ImageExtractionConfig::default();
+        assert!(
+            !config.include_page_rasters,
+            "include_page_rasters must default to false"
+        );
+    }
+
+    #[test]
+    fn test_include_page_rasters_absent_in_json_deserializes_as_false() {
+        let json = r#"{"extract_images":true,"target_dpi":300,"max_image_dimension":4096,
+                       "inject_placeholders":true,"auto_adjust_dpi":true,
+                       "min_dpi":72,"max_dpi":600}"#;
+        let config: ImageExtractionConfig = serde_json::from_str(json).unwrap();
+        assert!(
+            !config.include_page_rasters,
+            "absent include_page_rasters must deserialize to false (backward compat)"
+        );
+    }
+
+    #[test]
+    fn test_include_page_rasters_roundtrips_via_json() {
+        let config = ImageExtractionConfig {
+            include_page_rasters: true,
+            ..Default::default()
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        let back: ImageExtractionConfig = serde_json::from_str(&json).unwrap();
+        assert!(back.include_page_rasters);
     }
 }
