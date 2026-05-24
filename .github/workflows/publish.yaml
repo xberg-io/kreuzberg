@@ -1579,6 +1579,20 @@ jobs:
           name: python-sdist
           path: dist
 
+      - name: Verify Python wheel package contents
+        uses: kreuzberg-dev/actions/verify-package-contents@v1
+        with:
+          language: python
+          artifact-path: dist
+          package-name: kreuzberg
+          required-extras: |
+            **/*.pyi
+            **/__init__.py
+            **/py.typed
+            **/*.so
+            **/*.dylib
+            **/*.dll
+
       - uses: kreuzberg-dev/actions/publish-pypi@v1
         with:
           packages-dir: dist
@@ -1605,6 +1619,19 @@ jobs:
           bundler-cache: false
 
       - uses: rubygems/configure-rubygems-credentials@v2.0.0
+
+      - name: Verify Ruby gem package contents
+        uses: kreuzberg-dev/actions/verify-package-contents@v1
+        with:
+          language: ruby
+          artifact-path: dist
+          package-name: kreuzberg
+          required-extras: |
+            **/*.rbs
+            **/lib/**/*.rb
+            **/*.so
+            **/*.dylib
+            **/*.dll
 
       - uses: kreuzberg-dev/actions/publish-rubygems@v1
         with:
@@ -1656,6 +1683,17 @@ jobs:
             [ -d "$d" ] || continue
             (cd "$d" && npm pack)
           done
+
+      - name: Verify Node platform sub-package contents
+        uses: kreuzberg-dev/actions/verify-package-contents@v1
+        with:
+          language: node
+          artifact-path: crates/kreuzberg-node/npm
+          package-name: "@kreuzberg/node"
+          required-extras: |
+            **/*.d.ts
+            **/index.js
+            **/*.node
 
       - name: Publish platform sub-packages
         uses: kreuzberg-dev/actions/publish-npm@v1
@@ -2127,10 +2165,11 @@ jobs:
       matrix:
         include:
           - { os: macos-latest, bottle_tag: arm64_sonoma, install_brew: false }
+          - { os: macos-15-intel, bottle_tag: sequoia, install_brew: false }
           - { os: ubuntu-latest, bottle_tag: x86_64_linux, install_brew: true }
           - { os: ubuntu-24.04-arm, bottle_tag: arm64_linux, install_brew: true }
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v5
         with:
           ref: ${{ needs.prepare.outputs.checkout_ref }}
 
