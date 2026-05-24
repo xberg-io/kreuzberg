@@ -382,7 +382,12 @@ pub(crate) async fn extract_mixed_ocr_native(
     content: &[u8],
     config: &ExtractionConfig,
     _path: Option<&std::path::Path>,
-) -> crate::Result<(String, ahash::AHashMap<u32, String>, Vec<crate::types::LlmUsage>)> {
+) -> crate::Result<(
+    String,
+    ahash::AHashMap<u32, String>,
+    Vec<crate::types::LlmUsage>,
+    Option<Vec<crate::types::ExtractedImage>>,
+)> {
     // Deduplicate and validate page numbers (must be >= 1)
     let ocr_set: std::collections::HashSet<u32> = ocr_page_numbers
         .iter()
@@ -398,7 +403,7 @@ pub(crate) async fn extract_mixed_ocr_native(
         .collect();
 
     if ocr_set.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new()));
+        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
     }
 
     // Convert 1-indexed page numbers to 0-indexed for rendering (sorted + deduplicated)
@@ -407,7 +412,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
 
     if page_images.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new()));
+        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
     }
 
     // OCR all selected pages concurrently using the same batched pipeline pattern
@@ -432,10 +437,12 @@ pub(crate) async fn extract_mixed_ocr_native(
 
     let batch_size = crate::core::config::concurrency::resolve_thread_budget(config.concurrency.as_ref());
 
+    let capture_rasters = config.images.as_ref().is_some_and(|c| c.include_page_rasters);
     let ocr_config_owned = ocr_config_resolved;
     let total = page_images.len();
     let mut ocr_results: ahash::AHashMap<u32, String> = ahash::AHashMap::with_capacity(total);
     let mut accumulated_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
+    let mut captured_rasters: Vec<crate::types::ExtractedImage> = Vec::new();
 
     // Process in batches to bound peak memory (PNG buffers freed between batches)
     for batch_start in (0..total).step_by(batch_size) {
@@ -443,7 +450,7 @@ pub(crate) async fn extract_mixed_ocr_native(
         let batch_slice = &page_images[batch_start..batch_end];
 
         // Encode this batch's images to PNG in parallel (CPU-bound, rayon)
-        let encoded: crate::Result<Vec<(usize, Arc<Vec<u8>>)>> = batch_slice
+        let encoded: crate::Result<Vec<(usize, Arc<Vec<u8>>, u32, u32)>> = batch_slice
             .par_iter()
             .map(|(page_idx, image)| {
                 let rgb = image.to_rgb8();
@@ -455,14 +462,14 @@ pub(crate) async fn extract_mixed_ocr_native(
                         message: format!("Failed to encode page {} for OCR: {}", page_idx + 1, e),
                         source: None,
                     })?;
-                Ok((*page_idx, Arc::new(buf.into_inner())))
+                Ok((*page_idx, Arc::new(buf.into_inner()), w, h))
             })
             .collect();
         let encoded = encoded?;
 
         // OCR this batch concurrently (tokio JoinSet)
         let mut join_set = tokio::task::JoinSet::new();
-        for (page_idx, data) in &encoded {
+        for (page_idx, data, _w, _h) in &encoded {
             let backend_clone = Arc::clone(&backend);
             let config_clone = ocr_config_owned.clone();
             let data_clone = Arc::clone(data);
@@ -484,6 +491,13 @@ pub(crate) async fn extract_mixed_ocr_native(
             }
             ocr_results.insert((page_idx + 1) as u32, extraction_result.content); // 1-indexed
         }
+
+        if capture_rasters {
+            for (page_idx, png_arc, w, h) in &encoded {
+                let png_bytes = bytes::Bytes::copy_from_slice(png_arc.as_ref());
+                captured_rasters.push(build_page_raster_image(*page_idx, png_bytes, *w, *h));
+            }
+        }
         // encoded PNGs dropped here — memory freed before next batch
     }
 
@@ -503,7 +517,12 @@ pub(crate) async fn extract_mixed_ocr_native(
         }
     }
 
-    Ok((result, ocr_results, accumulated_llm_usage))
+    Ok((
+        result,
+        ocr_results,
+        accumulated_llm_usage,
+        if capture_rasters { Some(captured_rasters) } else { None },
+    ))
 }
 
 /// Extract text from PDF using OCR on pre-rendered page images.
@@ -536,6 +555,7 @@ pub(crate) async fn extract_with_ocr(
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
     Vec<String>,
+    Option<Vec<crate::types::ExtractedImage>>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
     use image::ImageEncoder;
@@ -619,8 +639,12 @@ pub(crate) async fn extract_with_ocr(
             None,
             llm_usage,
             page_texts,
+            None, // no per-page renders on document-level bypass
         ));
     }
+    let capture_rasters = config.images.as_ref().is_some_and(|c| c.include_page_rasters);
+    let mut captured_rasters: Vec<crate::types::ExtractedImage> = Vec::new();
+
     let mut lazy_pdf_page_count = 0;
 
     if !use_document_processing
@@ -913,11 +937,21 @@ pub(crate) async fn extract_with_ocr(
                 }
 
                 // Use tesseract's own text output (preserves reading order).
+                if capture_rasters {
+                    let (_, png_arc, w, h) = &encoded_batch[offset];
+                    let png_bytes = bytes::Bytes::copy_from_slice(png_arc.as_ref());
+                    captured_rasters.push(build_page_raster_image(page_idx, png_bytes, *w, *h));
+                }
                 page_texts[page_idx] = ocr_result.content;
                 continue;
             }
 
             let _ = page_idx;
+            if capture_rasters {
+                let (_, png_arc, w, h) = &encoded_batch[offset];
+                let png_bytes = bytes::Bytes::copy_from_slice(png_arc.as_ref());
+                captured_rasters.push(build_page_raster_image(page_idx, png_bytes, *w, *h));
+            }
             page_texts[page_idx] = ocr_result.content;
         }
     }
@@ -988,7 +1022,39 @@ pub(crate) async fn extract_with_ocr(
         ocr_doc,
         accumulated_llm_usage,
         page_texts,
+        if capture_rasters { Some(captured_rasters) } else { None },
     ))
+}
+
+/// Build an [`crate::types::ExtractedImage`] for a full-page OCR raster.
+///
+/// `image_index` is set to 0; the caller must reindex after merging into
+/// the document's image collection.
+#[cfg(feature = "ocr")]
+pub(crate) fn build_page_raster_image(
+    page_idx: usize,
+    png_bytes: bytes::Bytes,
+    width: u32,
+    height: u32,
+) -> crate::types::ExtractedImage {
+    crate::types::ExtractedImage {
+        data: png_bytes,
+        format: std::borrow::Cow::Borrowed("png"),
+        image_index: 0,
+        page_number: Some((page_idx + 1) as u32),
+        width: Some(width),
+        height: Some(height),
+        colorspace: Some("RGB".to_string()),
+        bits_per_component: Some(8),
+        is_mask: false,
+        description: None,
+        ocr_result: None,
+        bounding_box: None,
+        source_path: None,
+        image_kind: Some(crate::types::ImageKind::PageRaster),
+        kind_confidence: None,
+        cluster_id: None,
+    }
 }
 
 /// Adapt batch size to available system memory.
@@ -1096,6 +1162,7 @@ pub(crate) async fn run_ocr_pipeline(
     Option<crate::types::internal::InternalDocument>,
     Vec<crate::types::LlmUsage>,
     Vec<String>,
+    Option<Vec<crate::types::ExtractedImage>>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
@@ -1135,6 +1202,7 @@ pub(crate) async fn run_ocr_pipeline(
         Vec<crate::types::OcrElement>,
         Option<crate::types::internal::InternalDocument>,
         Vec<String>,
+        Option<Vec<crate::types::ExtractedImage>>,
     )> = None;
 
     // Accumulate LLM usage from ALL attempted stages for accurate billing.
@@ -1177,7 +1245,16 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, mean_conf, stage_tables, stage_ocr_elements, stage_doc, stage_llm_usage, stage_page_texts)) => {
+            Ok((
+                text,
+                mean_conf,
+                stage_tables,
+                stage_ocr_elements,
+                stage_doc,
+                stage_llm_usage,
+                stage_page_texts,
+                stage_rasters,
+            )) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 let score = match mean_conf {
@@ -1205,12 +1282,13 @@ pub(crate) async fn run_ocr_pipeline(
                         stage_doc,
                         accumulated_usage,
                         stage_page_texts,
+                        stage_rasters,
                     ));
                 }
 
                 // Track best-so-far (without usage, which is in accumulated_usage)
                 match best_result {
-                    Some((_, best_score, _, _, _, _)) if score > best_score => {
+                    Some((_, best_score, _, _, _, _, _)) if score > best_score => {
                         best_result = Some((
                             text,
                             score,
@@ -1218,6 +1296,7 @@ pub(crate) async fn run_ocr_pipeline(
                             stage_ocr_elements,
                             stage_doc,
                             stage_page_texts,
+                            stage_rasters,
                         ));
                     }
                     None => {
@@ -1228,6 +1307,7 @@ pub(crate) async fn run_ocr_pipeline(
                             stage_ocr_elements,
                             stage_doc,
                             stage_page_texts,
+                            stage_rasters,
                         ));
                     }
                     _ => {}
@@ -1245,13 +1325,13 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Return best result (with warning) or error if all backends failed entirely
     match best_result {
-        Some((text, score, tables, elements, doc, page_texts)) => {
+        Some((text, score, tables, elements, doc, page_texts, rasters)) => {
             tracing::warn!(
                 score,
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, tables, elements, doc, accumulated_usage, page_texts))
+            Ok((text, tables, elements, doc, accumulated_usage, page_texts, rasters))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),
@@ -2011,7 +2091,7 @@ mod tests {
 
         assert!(result.is_ok());
         assert!(called.load(Ordering::SeqCst), "process_document was not called");
-        let (_, _, _, _, _, llm_usage, _) = result.unwrap();
+        let (_, _, _, _, _, llm_usage, _, _) = result.unwrap();
         assert!(llm_usage.is_empty(), "No LLM usage expected for mock backend");
 
         // Clean up
@@ -2112,7 +2192,7 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("vlm-mock").unwrap();
 
-        let (_, _, _, _, _, llm_usage, _) = result.expect("extract_with_ocr should succeed");
+        let (_, _, _, _, _, llm_usage, _, _) = result.expect("extract_with_ocr should succeed");
         assert_eq!(
             llm_usage.len(),
             2,
@@ -2122,5 +2202,38 @@ mod tests {
         assert_eq!(llm_usage[0].model, "gpt-4o");
         assert_eq!(llm_usage[0].source, "vlm_ocr");
         assert_eq!(llm_usage[0].total_tokens, Some(150));
+    }
+
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_build_page_raster_image_fields() {
+        let png_bytes = bytes::Bytes::from_static(b"\x89PNG\r\n\x1a\n");
+        let img = build_page_raster_image(0, png_bytes.clone(), 800, 600);
+
+        assert_eq!(img.page_number, Some(1), "page_number must be 1-indexed");
+        assert_eq!(img.width, Some(800));
+        assert_eq!(img.height, Some(600));
+        assert_eq!(img.format.as_ref(), "png");
+        assert_eq!(img.image_kind, Some(crate::types::ImageKind::PageRaster));
+        assert_eq!(img.colorspace.as_deref(), Some("RGB"));
+        assert_eq!(img.bits_per_component, Some(8));
+        assert!(!img.is_mask);
+        assert!(img.bounding_box.is_none());
+        assert!(img.ocr_result.is_none());
+        assert_eq!(img.data, png_bytes);
+        assert_eq!(img.image_index, 0, "image_index is a placeholder; caller must reindex");
+    }
+
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_build_page_raster_image_page_idx_to_page_number() {
+        for page_idx in 0usize..5 {
+            let img = build_page_raster_image(page_idx, bytes::Bytes::new(), 100, 100);
+            assert_eq!(
+                img.page_number,
+                Some((page_idx + 1) as u32),
+                "page_number must be page_idx + 1"
+            );
+        }
     }
 }

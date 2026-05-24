@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **core**: `ImageKind::PageRaster` variant — full-page renders produced during OCR preprocessing can now be captured as `ExtractedImage` entries. Enable via `ImageExtractionConfig.include_page_rasters = true` (default `false`). PDF + OCR only; a `ProcessingWarning` is emitted when the active OCR backend uses document-level processing without per-page rendering. **Breaking change for exhaustive `match` on `ImageKind`** — add a `PageRaster` arm or mark `ImageKind` with `#[non_exhaustive]` in downstream code.
+
 ### Fixed
 
 - **embeddings**: Serialize concurrent first-time model downloads across processes. `hf-hub`'s own download lock is non-blocking and retries for only ~5s — far shorter than a 100MB+ sentence-transformer model download — so racing processes (e.g. parallel e2e workers) failed outright with `ApiError::LockAcquisition`. `download_model_files` now holds a blocking `flock(LOCK_EX)` on a kreuzberg-owned lock file (`<cache>/models--<repo>/.kbz-download.lock`) for the full download; other processes block until release, then find the model already cached. The lock is released on drop or by the OS on process exit. Non-unix targets fall back to the prior `hf-hub` behavior. (`crates/kreuzberg/src/embeddings/mod.rs`)

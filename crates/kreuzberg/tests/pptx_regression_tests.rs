@@ -688,14 +688,7 @@ async fn test_pptx_image_page_numbers_not_reversed() {
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
             extract_images: true,
-            target_dpi: 300,
-            max_image_dimension: 4096,
-            inject_placeholders: true,
-            auto_adjust_dpi: true,
-            min_dpi: 72,
-            max_dpi: 600,
-            max_images_per_page: None,
-            classify: true,
+            ..Default::default()
         }),
         ..Default::default()
     };
@@ -758,14 +751,7 @@ async fn test_pptx_image_page_numbers_issue329_user_file() {
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
             extract_images: true,
-            target_dpi: 300,
-            max_image_dimension: 4096,
-            inject_placeholders: true,
-            auto_adjust_dpi: true,
-            min_dpi: 72,
-            max_dpi: 600,
-            max_images_per_page: None,
-            classify: true,
+            ..Default::default()
         }),
         ..Default::default()
     };
