@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **java**: Update `alef.toml` Java output path from `packages/java/src/main/java/` to `packages/java/` to match pom.xml `<sourceDirectory>` expectation. The alef backend appends the package path (`dev/kreuzberg/`) to the configured output, so `packages/java/src/main/java/` generated files to `packages/java/src/main/java/dev/kreuzberg/*.java`, but pom.xml's `sourceDirectory=${project.basedir}` expects files at `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the JAR was missing generated classes like `JsonUtil` and plugin registration methods. The pom.xml layout already matches the FFI-style bindings (Go, C#, Dart, etc.), so aligning Java to the same convention restores consistency. (`alef.toml`)
+
 ### Changed
 
 - **deps**: bump alef pin to v0.19.5 (bundles AHashMap binding fixes for FFI/Dart/Swift/Elixir/Ruby/PHP and WASM emitter dedup + collect + From-impl + sub-config deserialize fixes).
