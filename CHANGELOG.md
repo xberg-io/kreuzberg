@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **deps**: bump alef pin to v0.19.5 (bundles AHashMap binding fixes for FFI/Dart/Swift/Elixir/Ruby/PHP and WASM emitter dedup + collect + From-impl + sub-config deserialize fixes).
+
 ### Fixed
 
 - **swift**: Regenerate `packages/swift/rust/src/lib.rs` and `packages/swift/rust/Cargo.toml` with alef v0.19.5 fixes for `AHashMap<Cow, _>` param types. The prior generated code for `calculate_quality_score` attempted `&serde_json::from_str::<HashMap<String, String>>(&metadata).expect("...")` on an `Option<String>` parameter, producing two compile errors: (1) `HashMap` does not implement `Deref` so `.as_deref()` was not available, and (2) the deserialized `HashMap<String, V>` did not match the core function's expected `Option<&AHashMap<Cow<'static, str>, Value>>`. Fixed by alef v0.19.5: the Swift shim now emits a pre-call `let __metadata_ahash` binding that deserializes the JSON string into `HashMap<String, String>`, converts to `AHashMap<Cow::Owned, Value::String>`, and passes `.as_ref()` to the core. Added unconditional `ahash = "0.8"` to `packages/swift/rust/Cargo.toml` so generated Swift crates reference `ahash::AHashMap` without manual additions. (`packages/swift/rust/src/lib.rs`, `packages/swift/rust/Cargo.toml`)

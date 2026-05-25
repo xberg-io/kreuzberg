@@ -213,7 +213,7 @@ repos:
         exclude: ^templates/
       - id: cpd
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.19.4
+    rev: v0.19.5
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
