@@ -1130,6 +1130,57 @@ fn test_include_page_rasters_on_force_ocr_pages_path() {
     }
 }
 
+/// When `force_ocr_pages` contains only page numbers that are out of range (e.g.,
+/// page 99 on a 1-page PDF), `extract_mixed_ocr_native` returns `None` for rasters
+/// because `render_selected_pages_for_ocr` produces an empty list. This is NOT a
+/// document-level bypass, so no `ProcessingWarning` with `source = "page_rasters"`
+/// should be emitted even when `include_page_rasters=true`.
+#[cfg(feature = "ocr")]
+#[test]
+fn test_include_page_rasters_no_warning_on_out_of_range_pages() {
+    use kreuzberg::core::config::{ImageExtractionConfig, OcrConfig};
+    use kreuzberg::extract_file_sync;
+
+    let path = test_documents_dir().join("pdf/fake_memo.pdf");
+    if !path.exists() {
+        eprintln!("SKIP: test_documents/pdf/fake_memo.pdf not present");
+        return;
+    }
+
+    let config = ExtractionConfig {
+        ocr: Some(OcrConfig {
+            backend: "tesseract".to_string(),
+            language: "eng".to_string(),
+            ..Default::default()
+        }),
+        force_ocr_pages: Some(vec![99]),
+        images: Some(ImageExtractionConfig {
+            include_page_rasters: true,
+            ..Default::default()
+        }),
+        use_cache: false,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("out-of-range force_ocr_pages must not error");
+
+    let raster_warning = result
+        .processing_warnings
+        .iter()
+        .find(|w| w.source.as_ref() == "page_rasters");
+
+    assert!(
+        raster_warning.is_none(),
+        "force_ocr_pages with all-out-of-range pages must not emit a page_rasters warning \
+         (no document-level bypass occurred); got: {:?}",
+        result
+            .processing_warnings
+            .iter()
+            .map(|w| (w.source.as_ref(), w.message.as_ref()))
+            .collect::<Vec<_>>()
+    );
+}
+
 /// When `include_page_rasters=true` but the active OCR backend uses document-level
 /// processing (bypassing per-page rendering), a `ProcessingWarning` with
 /// `source = "page_rasters"` must be emitted.

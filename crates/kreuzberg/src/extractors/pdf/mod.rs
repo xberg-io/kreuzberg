@@ -509,10 +509,15 @@ impl PdfExtractor {
             }
         }
 
-        // Warn only on the document-level bypass path — not for zero-page PDFs that
-        // went through per-page rendering but produced an empty raster list.
+        // Warn only on the document-level bypass path (ExtractionMethod::Ocr) — not when
+        // force_ocr_pages resolved to an empty set because all requested pages were out of
+        // range (ExtractionMethod::Mixed returns None rasters without document-level bypass).
         #[cfg(feature = "ocr")]
-        if used_ocr && ocr_rasters_bypass && config.images.as_ref().is_some_and(|c| c.include_page_rasters) {
+        if used_ocr
+            && ocr_rasters_bypass
+            && extraction_method == ExtractionMethod::Ocr
+            && config.images.as_ref().is_some_and(|c| c.include_page_rasters)
+        {
             doc.processing_warnings.push(crate::types::ProcessingWarning {
                 source: std::borrow::Cow::Borrowed("page_rasters"),
                 message: std::borrow::Cow::Borrowed(
