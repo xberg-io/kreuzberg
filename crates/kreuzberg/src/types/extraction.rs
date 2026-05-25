@@ -453,7 +453,6 @@ pub struct ChunkMetadata {
 }
 
 /// Heuristic classification of what an image likely depicts.
-#[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(rename_all = "snake_case")]

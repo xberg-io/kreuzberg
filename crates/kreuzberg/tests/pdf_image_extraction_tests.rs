@@ -1050,6 +1050,189 @@ fn test_include_page_rasters_false_does_not_capture_rasters() {
     );
 }
 
+/// `force_ocr_pages` path through `extract_mixed_ocr_native` must also produce
+/// `PageRaster` entries when `include_page_rasters=true`.
+///
+/// This exercises a different code path than `force_ocr=true`: the mixed-OCR
+/// path in `extract_mixed_ocr_native` (ocr.rs) encodes only the selected pages,
+/// not all pages. Verifies that the per-page raster capture in that path works
+/// end-to-end and produces correctly numbered entries.
+#[cfg(feature = "ocr")]
+#[test]
+fn test_include_page_rasters_on_force_ocr_pages_path() {
+    use kreuzberg::core::config::{ImageExtractionConfig, OcrConfig};
+    use kreuzberg::extract_file_sync;
+    use kreuzberg::types::ImageKind;
+
+    let path = test_documents_dir().join("pdf/fake_memo.pdf");
+    if !path.exists() {
+        eprintln!("SKIP: test_documents/pdf/fake_memo.pdf not present");
+        return;
+    }
+
+    let config = ExtractionConfig {
+        ocr: Some(OcrConfig {
+            backend: "tesseract".to_string(),
+            language: "eng".to_string(),
+            ..Default::default()
+        }),
+        force_ocr_pages: Some(vec![1]),
+        images: Some(ImageExtractionConfig {
+            include_page_rasters: true,
+            ..Default::default()
+        }),
+        use_cache: false,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("force_ocr_pages extraction must succeed");
+
+    let images = result
+        .images
+        .as_ref()
+        .expect("images must be Some when include_page_rasters=true");
+
+    let rasters: Vec<_> = images
+        .iter()
+        .filter(|img| img.image_kind == Some(ImageKind::PageRaster))
+        .collect();
+
+    assert!(
+        !rasters.is_empty(),
+        "include_page_rasters=true on force_ocr_pages=[1] must produce at least one PageRaster; \
+         got {} total images but none with PageRaster kind",
+        images.len()
+    );
+
+    // Only page 1 was selected — all rasters must reference page 1.
+    for raster in &rasters {
+        assert_eq!(
+            raster.page_number,
+            Some(1),
+            "force_ocr_pages=[1] rasters must all be page_number=1; got {:?}",
+            raster.page_number
+        );
+        assert!(
+            !raster.data.is_empty(),
+            "PageRaster at image_index={} must have non-empty PNG data",
+            raster.image_index
+        );
+    }
+
+    // image_index values must be unique across the full result set.
+    let mut seen = std::collections::HashSet::new();
+    for img in images {
+        assert!(
+            seen.insert(img.image_index),
+            "image_index {} appears more than once — reindex produced duplicates",
+            img.image_index
+        );
+    }
+}
+
+/// When `include_page_rasters=true` but the active OCR backend uses document-level
+/// processing (bypassing per-page rendering), a `ProcessingWarning` with
+/// `source = "page_rasters"` must be emitted.
+///
+/// This is the only scenario where `None` rasters flow through the `force_ocr`
+/// path while `used_ocr=true`. Exercises the warning guard in
+/// `PdfExtractor::extract` (mod.rs).
+///
+/// A mock backend with `supports_document_processing() = true` is registered so
+/// that `extract_with_ocr` takes the document-level bypass instead of per-page
+/// rendering. The mock returns an empty result — enough to trigger the warning.
+#[cfg(feature = "ocr")]
+#[test]
+fn test_include_page_rasters_emits_warning_on_document_level_ocr_bypass() {
+    use kreuzberg::core::config::{ImageExtractionConfig, OcrConfig};
+    use kreuzberg::core::extractor::extract_file;
+    use kreuzberg::plugins::{OcrBackend, OcrBackendType, Plugin};
+    use kreuzberg::types::ExtractionResult;
+    use std::path::Path;
+    use std::sync::Arc;
+
+    let pdf_path = test_documents_dir().join("pdf/fake_memo.pdf");
+    if !pdf_path.exists() {
+        eprintln!("SKIP: test_documents/pdf/fake_memo.pdf not present");
+        return;
+    }
+
+    struct DocLevelMock;
+
+    #[async_trait::async_trait]
+    impl OcrBackend for DocLevelMock {
+        fn backend_type(&self) -> OcrBackendType {
+            OcrBackendType::Custom
+        }
+        fn supports_language(&self, _: &str) -> bool {
+            true
+        }
+        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> kreuzberg::Result<ExtractionResult> {
+            panic!("process_image must not be called for a document-level backend")
+        }
+        fn supports_document_processing(&self) -> bool {
+            true
+        }
+        async fn process_document(&self, _: &Path, _: &OcrConfig) -> kreuzberg::Result<ExtractionResult> {
+            Ok(ExtractionResult::default())
+        }
+    }
+
+    impl Plugin for DocLevelMock {
+        fn name(&self) -> &str {
+            "doc-level-mock-raster-warn"
+        }
+        fn version(&self) -> String {
+            "1.0.0".to_string()
+        }
+        fn initialize(&self) -> kreuzberg::Result<()> {
+            Ok(())
+        }
+        fn shutdown(&self) -> kreuzberg::Result<()> {
+            Ok(())
+        }
+    }
+
+    kreuzberg::plugins::register_ocr_backend(Arc::new(DocLevelMock)).unwrap();
+
+    let config = ExtractionConfig {
+        ocr: Some(OcrConfig {
+            backend: "doc-level-mock-raster-warn".to_string(),
+            ..Default::default()
+        }),
+        force_ocr: true,
+        images: Some(ImageExtractionConfig {
+            include_page_rasters: true,
+            ..Default::default()
+        }),
+        use_cache: false,
+        ..Default::default()
+    };
+
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let result = rt
+        .block_on(extract_file(&pdf_path, None, &config))
+        .expect("document-level OCR mock must succeed");
+
+    kreuzberg::plugins::unregister_ocr_backend("doc-level-mock-raster-warn").unwrap();
+
+    let raster_warning = result
+        .processing_warnings
+        .iter()
+        .find(|w| w.source.as_ref() == "page_rasters");
+
+    assert!(
+        raster_warning.is_some(),
+        "expected a page_rasters ProcessingWarning when include_page_rasters=true \
+         and OCR backend uses document-level processing; got warnings: {:?}",
+        result
+            .processing_warnings
+            .iter()
+            .map(|w| (w.source.as_ref(), w.message.as_ref()))
+            .collect::<Vec<_>>()
+    );
+}
+
 /// `image_indices` on chunks must be empty when image extraction is disabled.
 #[cfg(feature = "chunking")]
 #[test]
