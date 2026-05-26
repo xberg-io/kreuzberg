@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **deps**: bump alef pin v0.19.14 → v0.19.20. v0.19.15-v0.19.20 ship generator fixes addressing the systemic trait-bridge stub regressions surfaced by v5.0.0-rc.3 CI E2E (11 of 14 lang jobs failing on plugin_api stubs missing super-trait methods, wrong return types, internal type leakage, missing PHP interface emission, etc.) — plus the v0.19.20 hotfix that registers the new PHP interface Jinja templates in alef's embedded `TEMPLATES` array. Affects every binding (`crates/kreuzberg-{node,wasm,ffi}`, `packages/*`) and every e2e suite under `e2e/`.
+- **deps**: bump `html-to-markdown-rs` from `3.4.1` to `3.5.2` — adopts the upstream fix for nested mixed-list (`ul > li > ul > li > ol`) content duplication (kreuzberg-dev/html-to-markdown#385).
+
+### Fixed
+
+- **chunking (pptx)**: skip `<pic>` elements whose `<a:blip>` lacks `r:embed` instead of aborting the entire slide; logs a warning and preserves the rest of the slide content. (#1016)
+- **pdf/chunking**: populate `first_page`/`last_page` on every chunk from multi-page PDFs by normalising trailing whitespace in page content before locating it inside `result.content`; previously caused 7 of 24 chunks to have null page metadata. (#1013, #1004)
+- **chunking (yaml/json)**: populate `first_page`/`last_page` on YAML/JSON section chunks by threading `page_boundaries` into `chunk_yaml_by_sections`. This unblocks the image-indices population step in `features.rs` for YAML chunks. (#963)
+- **html/chunking**: nested mixed lists (`ul > li > ul > li > ol`) no longer duplicate content in extracted Markdown, and the Markdown chunker no longer panics with an integer underflow on the previously malformed output. (#1004)
 
 ## [5.0.0-rc.3] - 2026-05-26
 
