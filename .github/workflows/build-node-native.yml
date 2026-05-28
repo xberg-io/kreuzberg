@@ -1,0 +1,74 @@
+name: Build Node Native
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "crates/kreuzberg-node/**"
+      - "crates/kreuzberg/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - ".github/workflows/build-node-native.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "crates/kreuzberg-node/**"
+      - "crates/kreuzberg/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - ".github/workflows/build-node-native.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: build-node-native-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: macos-13
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          submodules: recursive
+
+      - uses: kreuzberg-dev/actions/setup-rust@v1
+        with:
+          target: ${{ matrix.target }}
+
+      - uses: kreuzberg-dev/actions/setup-node-workspace@v1
+        with:
+          node-version: "24"
+
+      - name: Build NAPI binding
+        uses: kreuzberg-dev/actions/build-node-napi@v1
+        with:
+          crate-dir: crates/kreuzberg-node
+          build-command: pnpm exec napi build --release --target ${{ matrix.target }} --platform

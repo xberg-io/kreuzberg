@@ -314,6 +314,9 @@ fn test_extraction_config_needs_image_processing() {
         max_images_per_page: None,
         classify: true,
         include_page_rasters: false,
+        run_ocr_on_images: true,
+        ocr_text_only: false,
+        append_ocr_text: false,
     });
     assert!(
         config.needs_image_processing(),

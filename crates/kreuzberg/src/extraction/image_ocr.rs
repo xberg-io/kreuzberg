@@ -16,15 +16,13 @@
 //! derived from the configured thread budget to prevent resource
 //! exhaustion when documents contain many embedded images.
 
-#[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-use crate::ocr::OcrProcessor;
 use crate::types::{ExtractedImage, ExtractionResult};
 
 /// Process extracted images with OCR if configured.
 ///
-/// For each image, spawns a blocking OCR task and stores the result
-/// in `image.ocr_result`. If OCR is not configured or fails for an
-/// individual image, that image's `ocr_result` remains `None`.
+/// For each image, spawns an async OCR task using the backend from the registry
+/// and stores the result in `image.ocr_result`. If OCR is not configured or
+/// fails for an individual image, that image's `ocr_result` remains `None`.
 ///
 /// This function is the single shared implementation used by all
 /// document extractors (DOCX, PPTX, Jupyter, Markdown, etc.).
@@ -50,8 +48,8 @@ pub(crate) async fn process_images_with_ocr(
     }
 
     let ocr_config = config.ocr.as_ref().unwrap();
-    let tess_config = ocr_config.tesseract_config.as_ref().cloned().unwrap_or_default();
     let output_format = config.output_format.clone();
+    let acceleration = ocr_config.acceleration.clone();
 
     use std::sync::Arc;
     use tokio::sync::Semaphore;
@@ -61,70 +59,66 @@ pub(crate) async fn process_images_with_ocr(
     let max_tasks = crate::core::config::concurrency::resolve_thread_budget(config.concurrency.as_ref());
     let semaphore = Arc::new(Semaphore::new(max_tasks));
 
-    // Each spawned task returns `(image_index, spawn_blocking_result)`.
-    // `spawn_blocking` itself may fail if the thread panics; we carry that
-    // as a `Result` so we can translate it into a `KreuzbergError` in the
-    // collection loop below, keeping the JoinSet item type concrete.
-    type OcrTaskResult = (
-        usize,
-        Result<Result<crate::types::OcrExtractionResult, crate::ocr::error::OcrError>, tokio::task::JoinError>,
-    );
+    // Each spawned task returns `(image_index, ocr_result)`.
+    type OcrTaskResult = (usize, crate::Result<ExtractionResult>);
     let mut join_set: JoinSet<OcrTaskResult> = JoinSet::new();
 
     for (idx, image) in images.iter().enumerate() {
         let image_data = image.data.clone();
-        let tess_config_clone = tess_config.clone();
-        let span = tracing::Span::current();
         let permit = Arc::clone(&semaphore);
-        let output_format = output_format.clone();
+        let mut ocr_config_clone = ocr_config.clone();
+        ocr_config_clone.output_format = Some(output_format.clone());
+        ocr_config_clone.acceleration = acceleration.clone();
 
         join_set.spawn(async move {
             // Acquire a semaphore permit before starting OCR work.
-            // The permit is held for the duration of the blocking task,
-            // ensuring at most MAX_CONCURRENT_OCR_TASKS run simultaneously.
+            // The permit is held for the duration of the OCR task,
+            // ensuring at most max_tasks run simultaneously.
             let _permit = permit.acquire().await.expect("semaphore should not be closed");
 
-            let blocking_result = tokio::task::spawn_blocking(move || {
-                let _guard = span.entered();
-                let cache_dir = std::env::var("KREUZBERG_CACHE_DIR").ok().map(std::path::PathBuf::from);
+            let backend = {
+                let registry = crate::plugins::registry::get_ocr_backend_registry();
+                let registry = registry.read();
+                match registry.get(&ocr_config_clone.backend) {
+                    Ok(b) => b.clone(),
+                    Err(e) => {
+                        return (
+                            idx,
+                            Err(crate::KreuzbergError::Ocr {
+                                message: format!("OCR backend '{}' not found: {}", ocr_config_clone.backend, e),
+                                source: None,
+                            }),
+                        );
+                    }
+                }
+            };
 
-                let proc = OcrProcessor::new(cache_dir)?;
-                let ocr_tess_config: crate::ocr::types::TesseractConfig = (&tess_config_clone).into();
-                proc.process_image_with_format(&image_data, &ocr_tess_config, output_format)
-            })
-            .await;
-            (idx, blocking_result)
+            let ocr_result = backend.process_image(&image_data, &ocr_config_clone).await;
+            (idx, ocr_result)
         });
     }
 
     while let Some(join_result) = join_set.join_next().await {
         // JoinSet join error means the async wrapper itself panicked, which is
         // not expected; propagate as a hard error.
-        let (idx, blocking_result) = join_result.map_err(|e| crate::KreuzbergError::Ocr {
+        let (idx, ocr_result) = join_result.map_err(|e| crate::KreuzbergError::Ocr {
             message: format!("OCR task panicked: {}", e),
             source: None,
         })?;
 
-        // Translate spawn_blocking join error (thread panic) into a KreuzbergError.
-        let ocr_result = blocking_result.map_err(|e| crate::KreuzbergError::Ocr {
-            message: format!("OCR blocking task panicked: {}", e),
-            source: None,
-        })?;
-
         match ocr_result {
-            Ok(ocr_extraction) => {
+            Ok(extraction_result) => {
                 // Recursion prevention: the child ExtractionResult explicitly
                 // disables image extraction (`images: None`) and omits all
                 // expensive post-processing fields (chunking, language detection,
                 // keywords, etc.) to prevent further extraction cycles and
                 // minimize overhead.
-                let extraction_result = ExtractionResult {
-                    content: ocr_extraction.content,
-                    mime_type: ocr_extraction.mime_type.into(),
-                    ocr_elements: ocr_extraction.ocr_elements,
+                images[idx].ocr_result = Some(Box::new(ExtractionResult {
+                    content: extraction_result.content,
+                    mime_type: extraction_result.mime_type,
+                    ocr_elements: extraction_result.ocr_elements,
                     ..Default::default()
-                };
-                images[idx].ocr_result = Some(Box::new(extraction_result));
+                }));
             }
             Err(e) => {
                 warnings.push(crate::types::ProcessingWarning {

@@ -103,6 +103,25 @@ pub struct ImageExtractionConfig {
     /// (e.g. citation previews, visual grounding).
     #[serde(default)]
     pub include_page_rasters: bool,
+
+    /// Run OCR on extracted images and include the recognized text in the document content.
+    ///
+    /// When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images
+    /// are processed with the configured OCR backend. Set to `false` to extract images
+    /// without OCR processing, even when OCR is enabled.
+    #[serde(default = "default_true")]
+    pub run_ocr_on_images: bool,
+
+    /// When `true`, image OCR results are rendered as plain text without the
+    /// `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images`
+    /// is also `true`.
+    #[serde(default)]
+    pub ocr_text_only: bool,
+
+    /// When `true` and `ocr_text_only` is `false`, append the OCR text after
+    /// the image placeholder in the rendered output.
+    #[serde(default)]
+    pub append_ocr_text: bool,
 }
 
 /// Token reduction configuration.
@@ -146,6 +165,9 @@ impl Default for ImageExtractionConfig {
             max_images_per_page: None,
             classify: true,
             include_page_rasters: false,
+            run_ocr_on_images: true,
+            ocr_text_only: false,
+            append_ocr_text: false,
         }
     }
 }
@@ -213,6 +235,12 @@ mod tests {
         assert_eq!(cfg.max_image_dimension, 4096);
         assert_eq!(cfg.min_dpi, 72);
         assert_eq!(cfg.max_dpi, 600);
+    }
+
+    #[test]
+    fn test_image_extraction_config_defaults() {
+        let cfg = ImageExtractionConfig::default();
+        assert!(cfg.run_ocr_on_images, "run_ocr_on_images must default to true");
     }
 
     #[test]

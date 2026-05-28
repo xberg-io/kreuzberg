@@ -718,6 +718,25 @@ pub struct JsImageExtractionConfig {
     #[napi(js_name = "includePageRasters")]
     #[serde(rename = "includePageRasters")]
     pub include_page_rasters: Option<bool>,
+    /// Run OCR on extracted images and include the recognized text in the document content.
+    ///
+    /// When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images
+    /// are processed with the configured OCR backend. Set to `false` to extract images
+    /// without OCR processing, even when OCR is enabled.
+    #[napi(js_name = "runOcrOnImages")]
+    #[serde(rename = "runOcrOnImages")]
+    pub run_ocr_on_images: Option<bool>,
+    /// When `true`, image OCR results are rendered as plain text without the
+    /// `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images`
+    /// is also `true`.
+    #[napi(js_name = "ocrTextOnly")]
+    #[serde(rename = "ocrTextOnly")]
+    pub ocr_text_only: Option<bool>,
+    /// When `true` and `ocr_text_only` is `false`, append the OCR text after
+    /// the image placeholder in the rendered output.
+    #[napi(js_name = "appendOcrText")]
+    #[serde(rename = "appendOcrText")]
+    pub append_ocr_text: Option<bool>,
 }
 
 #[napi(js_name = "imageExtractionConfigDefault")]
@@ -6320,10 +6339,27 @@ pub fn list_embedding_presets() -> Vec<String> {
     kreuzberg::list_embedding_presets()
 }
 
-/// Wrapper that bridges a foreign Js object to the `OcrBackend` trait.
+/// Wrapper that bridges a foreign JS object to the `OcrBackend` trait.
+///
+/// Uses a persistent `napi_ref` (prevents GC after `registerOcrBackend` returns) and a
+/// `ThreadsafeFunction` for `process_image` so the callback is safe to call from tokio
+/// worker threads with real binary data (not a debug-string representation).
+///
+/// NOTE: This replaces the alef-generated transmute + debug-string pattern. Needs to be
+/// upstreamed into alef's node bridge template before the next full regen.
 pub struct JsOcrBackendBridge {
-    inner: napi::bindgen_prelude::Object<'static>,
+    env: napi::sys::napi_env,
+    ref_: napi::sys::napi_ref,
     cached_name: String,
+    process_tsfn: napi::threadsafe_function::ThreadsafeFunction<
+        napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Buffer, String)>,
+        napi::bindgen_prelude::Promise<String>,
+        napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Buffer, String)>,
+        napi::Status,
+        false,
+        false,
+        0,
+    >,
 }
 
 impl std::fmt::Debug for JsOcrBackendBridge {
@@ -6332,10 +6368,33 @@ impl std::fmt::Debug for JsOcrBackendBridge {
     }
 }
 
+/// RAII guard that opens and closes a NAPI handle scope.
+struct HandleScope {
+    env: napi::sys::napi_env,
+    scope: napi::sys::napi_handle_scope,
+}
+
+impl HandleScope {
+    fn open(env: napi::sys::napi_env) -> napi::Result<Self> {
+        let mut scope = std::ptr::null_mut();
+        napi::check_status!(
+            unsafe { napi::sys::napi_open_handle_scope(env, &mut scope) },
+            "Failed to open handle scope"
+        )?;
+        Ok(Self { env, scope })
+    }
+}
+
+impl Drop for HandleScope {
+    fn drop(&mut self) {
+        unsafe {
+            let _ = napi::sys::napi_close_handle_scope(self.env, self.scope);
+        }
+    }
+}
+
 impl JsOcrBackendBridge {
-    /// Create a new bridge wrapping a NAPI Object.
-    ///
-    /// Validates that the object provides all required methods.
+    #[allow(deprecated)]
     pub fn new(js_obj: napi::bindgen_prelude::Object<'_>) -> napi::Result<Self> {
         if !js_obj.has_named_property("process_image").unwrap_or(false) {
             return Err(napi::Error::new(
@@ -6354,41 +6413,75 @@ impl JsOcrBackendBridge {
                 napi::Status::GenericFailure,
                 format!("Object missing required method: {}", "backend_type"),
             ));
-        } // SAFETY: The JS object is owned by the Node.js runtime and lives for
-        // the duration of the enclosing #[napi] call. The bridge is only used
-        // synchronously during that same call, so 'static is safe here.
-        let js_obj: napi::bindgen_prelude::Object<'static> = unsafe { std::mem::transmute(js_obj) };
+        }
 
-        // Cache the plugin name. `name` may be either a string property or a
-        // zero-arg function returning a string (the trait method form). Try the
-        // function first, then fall back to a string property, and finally to
-        // "unknown" so registration never panics — but the cached value is what
-        // shows up in list_*() output, so plugins authored with the function-style
-        // `name()` must actually be invoked.
+        let env = js_obj.value().env;
+
+        let mut ref_ = std::ptr::null_mut();
+        napi::check_status!(
+            unsafe { napi::sys::napi_create_reference(env, js_obj.raw(), 1, &mut ref_) },
+            "Failed to create reference for JS OCR backend"
+        )?;
+
         let cached_name = js_obj
             .get_named_property::<napi::bindgen_prelude::Function<(), String>>("name")
             .and_then(|f| f.call(()))
             .or_else(|_| js_obj.get_named_property::<String>("name"))
             .unwrap_or_else(|_| "unknown".to_string());
 
+        let process_tsfn = {
+            let func: napi::bindgen_prelude::Function<
+                napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Buffer, String)>,
+                napi::bindgen_prelude::Promise<String>,
+            > = js_obj.get_named_property("process_image")?;
+            let mut tsfn = func
+                .build_threadsafe_function::<napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Buffer, String)>>()
+                .callee_handled::<false>()
+                .weak::<false>()
+                .build_callback(
+                    |ctx: napi::threadsafe_function::ThreadsafeCallContext<
+                        napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Buffer, String)>,
+                    >| Ok(ctx.value),
+                )?;
+            let env_wrapper = napi::Env::from_raw(env);
+            let _ = tsfn.unref(&env_wrapper);
+            tsfn
+        };
+
         Ok(Self {
-            inner: js_obj,
+            env,
+            ref_,
             cached_name,
+            process_tsfn,
         })
     }
 
-    /// Extract napi::Env from the stored Object.
+    fn get_object(&self) -> napi::Result<napi::bindgen_prelude::Object<'_>> {
+        let mut result = std::ptr::null_mut();
+        napi::check_status!(
+            unsafe { napi::sys::napi_get_reference_value(self.env, self.ref_, &mut result) },
+            "Failed to get reference value"
+        )?;
+        Ok(napi::bindgen_prelude::Object::from_raw(self.env, result))
+    }
+
     fn env(&self) -> napi::Env {
-        // SAFETY: Object<'static> is 3 pointer-sized words; first word is napi_env.
-        let raw: [*mut std::ffi::c_void; 3] = unsafe { std::mem::transmute_copy(&self.inner) };
-        napi::Env::from_raw(raw[0] as napi::sys::napi_env)
+        napi::Env::from_raw(self.env)
     }
 }
 
-// SAFETY: The bridge is created from a NAPI Object that is pinned to the
-// Node.js event loop thread. All access occurs on that thread. Send+Sync
-// are required by the Plugin trait but the bridge is never actually moved
-// across threads.
+impl Drop for JsOcrBackendBridge {
+    fn drop(&mut self) {
+        if !self.ref_.is_null() {
+            unsafe {
+                let _ = napi::sys::napi_delete_reference(self.env, self.ref_);
+            }
+        }
+    }
+}
+
+// SAFETY: napi_ref and napi_env are node-thread-affine; sync methods acquire a
+// HandleScope. process_image uses ThreadsafeFunction, which is cross-thread safe.
 unsafe impl Send for JsOcrBackendBridge {}
 unsafe impl Sync for JsOcrBackendBridge {}
 
@@ -6398,18 +6491,22 @@ impl kreuzberg::plugins::Plugin for JsOcrBackendBridge {
     }
 
     fn version(&self) -> String {
+        let _scope = match HandleScope::open(self.env) {
+            Ok(s) => s,
+            Err(_) => return Default::default(),
+        };
+        let obj = match self.get_object() {
+            Ok(o) => o,
+            Err(_) => return Default::default(),
+        };
         let func: napi::bindgen_prelude::Function<(), napi::bindgen_prelude::Unknown> =
-            match self.inner.get_named_property("version") {
+            match obj.get_named_property("version") {
                 Ok(f) => f,
                 Err(_) => return Default::default(),
             };
-
-        let result = func.call(());
-
-        match result {
+        match func.call(()) {
             Err(_) => Default::default(),
             Ok(val) => {
-                // Convert JS value to Rust type via string coercion
                 let s = val
                     .coerce_to_string()
                     .and_then(|s| s.into_utf8())
@@ -6424,43 +6521,44 @@ impl kreuzberg::plugins::Plugin for JsOcrBackendBridge {
     }
 
     fn initialize(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
+        let _scope = match HandleScope::open(self.env) {
+            Ok(s) => s,
+            Err(_) => return Ok(()),
+        };
+        let obj = match self.get_object() {
+            Ok(o) => o,
+            Err(_) => return Ok(()),
+        };
         let func: napi::bindgen_prelude::Function<(), napi::bindgen_prelude::Unknown> =
-            match self.inner.get_named_property("initialize") {
+            match obj.get_named_property("initialize") {
                 Ok(f) => f,
-                // Method has a default impl on the Rust trait — treat missing JS property as a no-op
-                // (the foreign object opted out of overriding it).
                 Err(_) => return Ok(()),
             };
-
-        let result = func.call(());
-
-        match result {
-            Err(e) => Err(kreuzberg::KreuzbergError::Other(format!(
+        func.call(()).map(|_| ()).map_err(|e| {
+            kreuzberg::KreuzbergError::Other(format!(
                 "Plugin '{}' method 'initialize' failed: {}",
                 self.cached_name, e
-            ))),
-            Ok(_) => Ok(()),
-        }
+            ))
+        })
     }
 
     fn shutdown(&self) -> std::result::Result<(), kreuzberg::KreuzbergError> {
+        let _scope = match HandleScope::open(self.env) {
+            Ok(s) => s,
+            Err(_) => return Ok(()),
+        };
+        let obj = match self.get_object() {
+            Ok(o) => o,
+            Err(_) => return Ok(()),
+        };
         let func: napi::bindgen_prelude::Function<(), napi::bindgen_prelude::Unknown> =
-            match self.inner.get_named_property("shutdown") {
+            match obj.get_named_property("shutdown") {
                 Ok(f) => f,
-                // Method has a default impl on the Rust trait — treat missing JS property as a no-op
-                // (the foreign object opted out of overriding it).
                 Err(_) => return Ok(()),
             };
-
-        let result = func.call(());
-
-        match result {
-            Err(e) => Err(kreuzberg::KreuzbergError::Other(format!(
-                "Plugin '{}' method 'shutdown' failed: {}",
-                self.cached_name, e
-            ))),
-            Ok(_) => Ok(()),
-        }
+        func.call(()).map(|_| ()).map_err(|e| {
+            kreuzberg::KreuzbergError::Other(format!("Plugin '{}' method 'shutdown' failed: {}", self.cached_name, e))
+        })
     }
 }
 
@@ -6472,107 +6570,61 @@ impl kreuzberg::OcrBackend for JsOcrBackendBridge {
         config: &kreuzberg::OcrConfig,
     ) -> std::result::Result<kreuzberg::ExtractionResult, kreuzberg::KreuzbergError> {
         let cached_name = self.cached_name.clone();
+        let buffer = napi::bindgen_prelude::Buffer::from(image_bytes.to_vec());
+        let args = napi::bindgen_prelude::FnArgs::from((buffer, config.language.clone()));
 
-        let func: napi::bindgen_prelude::Function<
-            napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Unknown, napi::bindgen_prelude::Unknown)>,
-            napi::bindgen_prelude::Unknown,
-        > = match self.inner.get_named_property("process_image") {
-            Ok(f) => f,
-            Err(e) => {
-                return Err(kreuzberg::KreuzbergError::Other(format!(
-                    "Method '{}' not found on bridge object: {}",
-                    cached_name, e
-                )));
-            }
-        };
-
-        let result = func.call(napi::bindgen_prelude::FnArgs::from((
-            match self.env().create_string(&format!("{:?}", image_bytes)) {
-                Ok(s) => s.to_unknown(),
-                Err(_) => unsafe {
-                    let r = napi::bindgen_prelude::ToNapiValue::to_napi_value(
-                        self.env().raw(),
-                        napi::bindgen_prelude::Null,
-                    )
-                    .unwrap_or(std::ptr::null_mut());
-                    napi::bindgen_prelude::Unknown::from_raw_unchecked(self.env().raw(), r)
-                },
-            },
-            match self.env().create_string(&format!("{:?}", config)) {
-                Ok(s) => s.to_unknown(),
-                Err(_) => unsafe {
-                    let r = napi::bindgen_prelude::ToNapiValue::to_napi_value(
-                        self.env().raw(),
-                        napi::bindgen_prelude::Null,
-                    )
-                    .unwrap_or(std::ptr::null_mut());
-                    napi::bindgen_prelude::Unknown::from_raw_unchecked(self.env().raw(), r)
-                },
-            },
-        )));
-
-        match result {
-            Err(e) => Err(kreuzberg::KreuzbergError::Other(format!(
-                "Plugin '{}' method 'process_image' failed: {}",
+        let promise = self.process_tsfn.call_async(args).await.map_err(|e| {
+            kreuzberg::KreuzbergError::Other(format!(
+                "Plugin '{}' method 'process_image' call failed: {}",
                 cached_name, e
+            ))
+        })?;
+
+        let result_str = promise.await.map_err(|e| {
+            kreuzberg::KreuzbergError::Other(format!(
+                "Plugin '{}' method 'process_image' promise rejected: {}",
+                cached_name, e
+            ))
+        })?;
+
+        match result_str.as_str() {
+            "" | "null" => Err(kreuzberg::KreuzbergError::Other(format!(
+                "Plugin '{}' method 'process_image' returned null/empty",
+                cached_name
             ))),
-            Ok(val) => {
-                // Convert JS value to Rust type via string coercion
-                let s = val
-                    .coerce_to_string()
-                    .and_then(|s| s.into_utf8())
-                    .and_then(|s| s.into_owned())
-                    .map_err(|e| {
-                        kreuzberg::KreuzbergError::Other(format!(
-                            "Failed to extract return value from method 'process_image': {}",
-                            e
-                        ))
-                    })?;
-                // null/empty is a protocol error for Result-returning methods: the JS
-                // implementation must always return a serialisable value, never null.
-                // Avoid requiring Default on the return type (excluded types like
-                // InternalDocument do not implement Default).
-                match s.as_str() {
-                    "" | "null" => Err(kreuzberg::KreuzbergError::Other(
-                        "Failed to parse return value for method 'process_image'".to_string(),
-                    )),
-                    _ => serde_json::from_str::<_>(&s).map_err(|_| {
-                        kreuzberg::KreuzbergError::Other(
-                            "Failed to parse return value for method 'process_image'".to_string(),
-                        )
-                    }),
-                }
-            }
+            _ => serde_json::from_str::<kreuzberg::ExtractionResult>(&result_str).map_err(|e| {
+                kreuzberg::KreuzbergError::Other(format!(
+                    "Plugin '{}' method 'process_image' returned invalid JSON: {}",
+                    cached_name, e
+                ))
+            }),
         }
     }
 
     fn supports_language(&self, lang: &str) -> bool {
+        let _scope = match HandleScope::open(self.env) {
+            Ok(s) => s,
+            Err(_) => return Default::default(),
+        };
+        let obj = match self.get_object() {
+            Ok(o) => o,
+            Err(_) => return Default::default(),
+        };
         let func: napi::bindgen_prelude::Function<
             napi::bindgen_prelude::FnArgs<(napi::bindgen_prelude::Unknown,)>,
             napi::bindgen_prelude::Unknown,
-        > = match self.inner.get_named_property("supports_language") {
+        > = match obj.get_named_property("supports_language") {
             Ok(f) => f,
             Err(_) => return Default::default(),
         };
-
-        let result = func.call(napi::bindgen_prelude::FnArgs::from((
-            match self.env().create_string(lang) {
-                Ok(s) => s.to_unknown(),
-                Err(_) => unsafe {
-                    let r = napi::bindgen_prelude::ToNapiValue::to_napi_value(
-                        self.env().raw(),
-                        napi::bindgen_prelude::Null,
-                    )
-                    .unwrap_or(std::ptr::null_mut());
-                    napi::bindgen_prelude::Unknown::from_raw_unchecked(self.env().raw(), r)
-                },
-            },
-        )));
-
-        match result {
+        let env = self.env();
+        let arg = match env.create_string(lang) {
+            Ok(s) => s.to_unknown(),
+            Err(_) => return Default::default(),
+        };
+        match func.call(napi::bindgen_prelude::FnArgs::from((arg,))) {
             Err(_) => Default::default(),
             Ok(val) => {
-                // Convert JS value to Rust type via string coercion
                 let s = val
                     .coerce_to_string()
                     .and_then(|s| s.into_utf8())
@@ -6587,18 +6639,22 @@ impl kreuzberg::OcrBackend for JsOcrBackendBridge {
     }
 
     fn backend_type(&self) -> kreuzberg::OcrBackendType {
+        let _scope = match HandleScope::open(self.env) {
+            Ok(s) => s,
+            Err(_) => return Default::default(),
+        };
+        let obj = match self.get_object() {
+            Ok(o) => o,
+            Err(_) => return Default::default(),
+        };
         let func: napi::bindgen_prelude::Function<(), napi::bindgen_prelude::Unknown> =
-            match self.inner.get_named_property("backend_type") {
+            match obj.get_named_property("backend_type") {
                 Ok(f) => f,
                 Err(_) => return Default::default(),
             };
-
-        let result = func.call(());
-
-        match result {
+        match func.call(()) {
             Err(_) => Default::default(),
             Ok(val) => {
-                // Convert JS value to Rust type via string coercion
                 let s = val
                     .coerce_to_string()
                     .and_then(|s| s.into_utf8())
@@ -6612,7 +6668,6 @@ impl kreuzberg::OcrBackend for JsOcrBackendBridge {
         }
     }
 }
-
 #[napi]
 pub fn register_ocr_backend(obj: napi::bindgen_prelude::Object) -> napi::Result<()> {
     let bridge = JsOcrBackendBridge::new(obj)?;
@@ -8198,6 +8253,15 @@ impl From<JsImageExtractionConfig> for kreuzberg::ImageExtractionConfig {
         if let Some(__v) = val.include_page_rasters {
             __result.include_page_rasters = __v;
         }
+        if let Some(__v) = val.run_ocr_on_images {
+            __result.run_ocr_on_images = __v;
+        }
+        if let Some(__v) = val.ocr_text_only {
+            __result.ocr_text_only = __v;
+        }
+        if let Some(__v) = val.append_ocr_text {
+            __result.append_ocr_text = __v;
+        }
         __result
     }
 }
@@ -8216,6 +8280,9 @@ impl From<kreuzberg::ImageExtractionConfig> for JsImageExtractionConfig {
             max_images_per_page: val.max_images_per_page,
             classify: Some(val.classify),
             include_page_rasters: Some(val.include_page_rasters),
+            run_ocr_on_images: Some(val.run_ocr_on_images),
+            ocr_text_only: Some(val.ocr_text_only),
+            append_ocr_text: Some(val.append_ocr_text),
         }
     }
 }

@@ -2,7 +2,7 @@
 // alef:hash:25e9c4d9a77f5aa7e91abfbef63bef93b7a18619696dd4c190178be7267cc4fe
 // To regenerate: alef generate
 // To verify freshness: alef verify --exit-code
-// Issues & docs: https://github.com/sample_crate-dev/alef
+// Issues & docs: https://github.com/kreuzberg-dev/alef
 /* eslint-disable */
 
 export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
@@ -2456,6 +2456,25 @@ export interface ImageExtractionConfig {
    * (e.g. citation previews, visual grounding).
    */
   readonly includePageRasters?: boolean
+  /**
+   * Run OCR on extracted images and include the recognized text in the document content.
+   *
+   * When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images
+   * are processed with the configured OCR backend. Set to `false` to extract images
+   * without OCR processing, even when OCR is enabled.
+   */
+  readonly runOcrOnImages?: boolean
+  /**
+   * When `true`, image OCR results are rendered as plain text without the
+   * `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images`
+   * is also `true`.
+   */
+  readonly ocrTextOnly?: boolean
+  /**
+   * When `true` and `ocr_text_only` is `false`, append the OCR text after
+   * the image placeholder in the rendered output.
+   */
+  readonly appendOcrText?: boolean
 }
 
 /** Heuristic classification of what an image likely depicts. */

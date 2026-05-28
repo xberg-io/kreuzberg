@@ -329,24 +329,32 @@ impl PdfExtractor {
                     );
                     (native_text, ExtractionMethod::Native)
                 }
-                ocr::OcrGateOutcome::RunFallback => match run_ocr_with_layout(content, config, path).await {
-                    Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs)) => {
-                        ocr_tables = ocr_tbls;
-                        ocr_elements = ocr_elems;
-                        ocr_internal_doc = ocr_doc;
-                        ocr_llm_usage = llm_usage;
-                        ocr_page_texts = Some(ocr_pts);
-                        ocr_page_rasters = ocr_rstrs;
-                        (ocr_text, ExtractionMethod::Ocr)
-                    }
-                    Err(e) => {
-                        tracing::warn!(
-                            error = %e,
-                            "OCR fallback failed; using native text extraction result"
-                        );
+                ocr::OcrGateOutcome::RunFallback => {
+                    let image_ocr_enabled = config.images.as_ref().map(|i| i.run_ocr_on_images).unwrap_or(true);
+                    if image_ocr_enabled {
+                        tracing::debug!("Skipping document-level OCR fallback because image OCR is enabled");
                         (native_text, ExtractionMethod::Native)
+                    } else {
+                        match run_ocr_with_layout(content, config, path).await {
+                            Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs)) => {
+                                ocr_tables = ocr_tbls;
+                                ocr_elements = ocr_elems;
+                                ocr_internal_doc = ocr_doc;
+                                ocr_llm_usage = llm_usage;
+                                ocr_page_texts = Some(ocr_pts);
+                                ocr_page_rasters = ocr_rstrs;
+                                (ocr_text, ExtractionMethod::Ocr)
+                            }
+                            Err(e) => {
+                                tracing::warn!(
+                                    error = %e,
+                                    "OCR fallback failed; using native text extraction result"
+                                );
+                                (native_text, ExtractionMethod::Native)
+                            }
+                        }
                     }
-                },
+                }
                 ocr::OcrGateOutcome::UseNative => (native_text, ExtractionMethod::Native),
             }
         } else {
@@ -495,6 +503,19 @@ impl PdfExtractor {
         }
 
         if let Some(imgs) = images {
+            if !use_structured_doc {
+                for (idx, img) in imgs.iter().enumerate() {
+                    let mut elem = InternalElement::text(
+                        ElementKind::Image {
+                            image_index: idx as u32,
+                        },
+                        "",
+                        0,
+                    );
+                    elem.page = img.page_number;
+                    doc.push_element(elem);
+                }
+            }
             doc.images = imgs;
         }
 
