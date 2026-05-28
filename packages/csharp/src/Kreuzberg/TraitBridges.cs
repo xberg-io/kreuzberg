@@ -36,7 +36,7 @@ public interface IOcrBackend {
     bool SupportsLanguage(string Lang);
 
     /// <summary>backend_type</summary>
-    OcrBackendType BackendType();
+    string BackendType();
 
     /// <summary>supported_languages</summary>
     List<string> SupportedLanguages();
@@ -278,7 +278,7 @@ public sealed class OcrBackendBridge : IDisposable {
     private int BackendTypeFnCallback(IntPtr userData, out IntPtr outResult, out IntPtr outError) {
         try {
             var methodResult = _impl.BackendType();
-            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult.ToFfiJson());
+            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult);
             outError = IntPtr.Zero;
             return 0;
         } catch (Exception ex) {
@@ -498,7 +498,7 @@ public interface IPostProcessor {
     void Process(ExtractionResult Result, ExtractionConfig Config);
 
     /// <summary>processing_stage</summary>
-    ProcessingStage ProcessingStage();
+    string ProcessingStage();
 
     /// <summary>should_process</summary>
     bool ShouldProcess(ExtractionResult Result, ExtractionConfig Config);
@@ -682,7 +682,7 @@ public sealed class PostProcessorBridge : IDisposable {
     private int ProcessingStageFnCallback(IntPtr userData, out IntPtr outResult, out IntPtr outError) {
         try {
             var methodResult = _impl.ProcessingStage();
-            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult.ToFfiJson());
+            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult);
             outError = IntPtr.Zero;
             return 0;
         } catch (Exception ex) {
@@ -1738,7 +1738,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
             var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
             var methodResult = _impl.ExtractBytes(managed_content, managed_mimeType, managed_config);
-            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(methodResult));
+            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult);
             outError = IntPtr.Zero;
             return 0;
         } catch (Exception ex) {
@@ -1756,7 +1756,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
             var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config)!;
             var methodResult = _impl.ExtractFile(managed_path, managed_mimeType, managed_config);
-            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ToJsonString(methodResult));
+            outResult = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(methodResult);
             outError = IntPtr.Zero;
             return 0;
         } catch (Exception ex) {

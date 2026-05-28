@@ -25,8 +25,12 @@ final class SwiftDocumentExtractorAdapter {
 
     func extractBytesCall(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String {
         do {
-        let result = try await self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
-            return marshal_ok_result(try JSONEncoder().encode(result))
+    let result = try await self.bridge.extractBytes(content: content, mime_type: mime_type, config: config)
+            let encodedData = try marshal_encode_excluded(result)
+    if let jsonString = String(data: encodedData, encoding: .utf8) {
+        return "{\"ok\": \(jsonString)}"
+    }
+    return "{\"ok\": null}"
     } catch {
         return marshal_error_result(error)
     }
@@ -50,6 +54,11 @@ private func marshal_ok_result<T: Encodable>(_ value: T) -> String {
         return "{\"ok\": \(jsonString)}"
     }
     return "{\"ok\": null}"
+}
+
+private func marshal_encode_excluded<T: Encodable>(_ value: T) throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(value)
 }
 
 private func marshal_error_result(_ error: any Error) -> String {

@@ -25,7 +25,7 @@ final class SwiftPostProcessorAdapter {
 
     func processCall(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
         do {
-        let result = try await self.bridge.process(result: result, config: config)
+    let result = try await self.bridge.process(result: result, config: config)
             return marshal_ok_result(Empty())
     } catch {
         return marshal_error_result(error)
@@ -50,6 +50,11 @@ private func marshal_ok_result<T: Encodable>(_ value: T) -> String {
         return "{\"ok\": \(jsonString)}"
     }
     return "{\"ok\": null}"
+}
+
+private func marshal_encode_excluded<T: Encodable>(_ value: T) throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(value)
 }
 
 private func marshal_error_result(_ error: any Error) -> String {

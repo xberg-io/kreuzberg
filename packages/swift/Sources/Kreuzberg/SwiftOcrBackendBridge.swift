@@ -26,7 +26,7 @@ final class SwiftOcrBackendAdapter {
 
     func processImageCall(image_bytes: Data, config: OcrConfig) async throws -> String {
         do {
-        let result = try await self.bridge.processImage(image_bytes: image_bytes, config: config)
+    let result = try await self.bridge.processImage(image_bytes: image_bytes, config: config)
             return marshal_ok_result(try JSONEncoder().encode(result))
     } catch {
         return marshal_error_result(error)
@@ -56,6 +56,11 @@ private func marshal_ok_result<T: Encodable>(_ value: T) -> String {
         return "{\"ok\": \(jsonString)}"
     }
     return "{\"ok\": null}"
+}
+
+private func marshal_encode_excluded<T: Encodable>(_ value: T) throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(value)
 }
 
 private func marshal_error_result(_ error: any Error) -> String {

@@ -9,7 +9,7 @@ import RustBridge
 /// Conform your Swift class or struct to this protocol to implement
 /// a Rust trait from the host side.
 public protocol SwiftRendererBridge: AnyObject {
-    func render(doc: String) throws -> String
+    func render(doc: InternalDocument) throws -> String
 }
 
 /// Internal adapter wrapping a `SwiftRendererBridge` conformer.
@@ -24,7 +24,7 @@ final class SwiftRendererAdapter {
 
     func renderCall(doc: String) throws -> String {
         do {
-        let result = try self.bridge.render(doc: doc)
+    let result = try self.bridge.render(doc: doc)
             return marshal_ok_result(result)
     } catch {
         return marshal_error_result(error)
@@ -44,6 +44,11 @@ private func marshal_ok_result<T: Encodable>(_ value: T) -> String {
         return "{\"ok\": \(jsonString)}"
     }
     return "{\"ok\": null}"
+}
+
+private func marshal_encode_excluded<T: Encodable>(_ value: T) throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(value)
 }
 
 private func marshal_error_result(_ error: any Error) -> String {
