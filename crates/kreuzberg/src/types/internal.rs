@@ -199,6 +199,18 @@ pub struct InternalDocument {
     /// Populated by extractors that call LLM-backed backends (VLM OCR).
     /// `derive_extraction_result` transfers this to `ExtractionResult.llm_usage`.
     pub llm_usage: Option<Vec<crate::types::LlmUsage>>,
+
+    /// When `true`, image OCR results are rendered as plain text without the
+    /// `![...](...)` markdown placeholder. Set by the pipeline from
+    /// `ImageExtractionConfig.ocr_text_only`.
+    #[serde(skip)]
+    pub ocr_text_only: bool,
+
+    /// When `true` and `ocr_text_only` is `false`, append the OCR text after
+    /// the image placeholder in the rendered output. Set by the pipeline from
+    /// `ImageExtractionConfig.append_ocr_text`.
+    #[serde(skip)]
+    pub append_ocr_text: bool,
 }
 
 impl InternalDocument {
@@ -220,6 +232,8 @@ impl InternalDocument {
             pre_rendered_content: None,
             prebuilt_ocr_elements: None,
             llm_usage: None,
+            ocr_text_only: false,
+            append_ocr_text: false,
         }
     }
 

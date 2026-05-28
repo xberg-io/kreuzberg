@@ -546,10 +546,23 @@ fn render_image(image: &crate::types::ExtractedImage, alt: &str, p: &str, buf: &
     };
     write!(
         buf,
-        r#"<figure class="{p}figure"><img class="{p}img" src="data:{mime};base64,{b64}" alt="{}"></figure>"#,
+        r#"<figure class="{p}figure"><img class="{p}img" src="data:{mime};base64,{b64}" alt="{}">"#,
         esc(alt)
     )
     .unwrap();
+
+    if let Some(ocr_result) = &image.ocr_result
+        && !ocr_result.content.is_empty()
+    {
+        write!(
+            buf,
+            r#"<figcaption class="{p}figcaption">{}</figcaption>"#,
+            esc(&ocr_result.content)
+        )
+        .unwrap();
+    }
+
+    buf.push_str("</figure>");
 }
 
 // ============================================================================

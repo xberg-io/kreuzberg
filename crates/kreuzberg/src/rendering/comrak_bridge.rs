@@ -699,25 +699,37 @@ pub(crate) fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Ar
                     }
                 };
 
-                let para = mk(arena, NodeValue::Paragraph);
-                let img_node = mk(
-                    arena,
-                    NodeValue::Image(Box::new(NodeLink {
-                        url,
-                        title: String::new(),
-                    })),
-                );
-                img_node.append(mk_text(arena, desc));
-                para.append(img_node);
-                parent.append(para);
+                let has_ocr = image
+                    .and_then(|img| img.ocr_result.as_ref())
+                    .map(|r| !r.content.is_empty())
+                    .unwrap_or(false);
 
-                // If the image has an OCR result, append its content as a paragraph
-                if let Some(ocr_result) = image.and_then(|img| img.ocr_result.as_ref())
-                    && !ocr_result.content.is_empty()
-                {
+                if doc.ocr_text_only && has_ocr {
+                    let ocr_result = image.and_then(|img| img.ocr_result.as_ref()).unwrap();
                     let ocr_para = mk(arena, NodeValue::Paragraph);
                     ocr_para.append(mk_text(arena, &ocr_result.content));
                     parent.append(ocr_para);
+                } else {
+                    let para = mk(arena, NodeValue::Paragraph);
+                    let img_node = mk(
+                        arena,
+                        NodeValue::Image(Box::new(NodeLink {
+                            url,
+                            title: String::new(),
+                        })),
+                    );
+                    img_node.append(mk_text(arena, desc));
+                    para.append(img_node);
+                    parent.append(para);
+
+                    if doc.append_ocr_text
+                        && let Some(ocr_result) = image.and_then(|img| img.ocr_result.as_ref())
+                        && !ocr_result.content.is_empty()
+                    {
+                        let ocr_para = mk(arena, NodeValue::Paragraph);
+                        ocr_para.append(mk_text(arena, &ocr_result.content));
+                        parent.append(ocr_para);
+                    }
                 }
             }
 

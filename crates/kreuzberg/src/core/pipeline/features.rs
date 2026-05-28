@@ -366,6 +366,8 @@ mod tests {
             hierarchy: None,
             is_blank: None,
             layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
         }
     }
 

@@ -55,12 +55,16 @@ use initialization::{get_processors_from_cache, initialize_features, initialize_
     )
 ))]
 #[cfg_attr(alef, alef(skip))]
-pub async fn run_pipeline(doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+    // Propagate rendering preferences from config into the document.
+    doc.ocr_text_only = config.images.as_ref().map(|i| i.ocr_text_only).unwrap_or(false);
+    doc.append_ocr_text = config.images.as_ref().map(|i| i.append_ocr_text).unwrap_or(false);
+
     // 1. Process extracted images with OCR if configured
     #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-    let mut doc = doc;
+    let image_ocr_enabled = config.images.as_ref().map(|i| i.run_ocr_on_images).unwrap_or(true);
     #[cfg(all(feature = "ocr", feature = "tokio-runtime"))]
-    if config.ocr.is_some() && !doc.images.is_empty() {
+    if image_ocr_enabled && config.ocr.is_some() && !doc.images.is_empty() {
         let images_to_process = std::mem::take(&mut doc.images);
         match crate::extraction::image_ocr::process_images_with_ocr(
             images_to_process,
@@ -80,6 +84,9 @@ pub async fn run_pipeline(doc: InternalDocument, config: &ExtractionConfig) -> R
             }
         }
     }
+
+    replace_embedded_image_markdown_with_ocr(&mut doc);
+    append_embedded_image_ocr_text(&mut doc);
 
     // Pre-render markdown for the chunker's heading context resolution when:
     // - Markdown chunking is configured
@@ -330,6 +337,121 @@ fn apply_element_transform(result: &mut ExtractionResult, config: &ExtractionCon
             result,
         ));
     }
+}
+
+/// Replace inline markdown image references with OCR text for formats (e.g. PPTX)
+/// that bake placeholders into paragraph text rather than using `ElementKind::Image`.
+fn replace_embedded_image_markdown_with_ocr(doc: &mut InternalDocument) {
+    if !doc.ocr_text_only || doc.images.is_empty() {
+        return;
+    }
+
+    let mut image_idx = 0usize;
+
+    for elem in &mut doc.elements {
+        if !matches!(elem.kind, crate::types::internal::ElementKind::Paragraph) {
+            continue;
+        }
+        if !is_markdown_image_reference(&elem.text) {
+            continue;
+        }
+        if let Some(img) = doc.images.get(image_idx)
+            && let Some(ocr) = &img.ocr_result
+            && !ocr.content.is_empty()
+        {
+            elem.text = ocr.content.clone();
+            image_idx += 1;
+            continue;
+        }
+        image_idx += 1;
+    }
+
+    for table in &mut doc.tables {
+        for row in &mut table.cells {
+            for cell in row {
+                if !is_markdown_image_reference(cell) {
+                    continue;
+                }
+                if let Some(img) = doc.images.get(image_idx)
+                    && let Some(ocr) = &img.ocr_result
+                    && !ocr.content.is_empty()
+                {
+                    *cell = ocr.content.clone();
+                    image_idx += 1;
+                    continue;
+                }
+                image_idx += 1;
+            }
+        }
+    }
+}
+
+/// Append OCR text after inline markdown image references for formats (e.g. PPTX)
+/// that bake placeholders into paragraph text. Only runs when `append_ocr_text` is
+/// `true` and `ocr_text_only` is `false`.
+fn append_embedded_image_ocr_text(doc: &mut InternalDocument) {
+    if doc.ocr_text_only || !doc.append_ocr_text || doc.images.is_empty() {
+        return;
+    }
+
+    let mut image_idx = 0usize;
+    let mut new_elements = Vec::with_capacity(doc.elements.len() * 2);
+
+    for elem in &doc.elements {
+        new_elements.push(elem.clone());
+
+        if matches!(elem.kind, crate::types::internal::ElementKind::Paragraph)
+            && is_markdown_image_reference(&elem.text)
+        {
+            if let Some(img) = doc.images.get(image_idx)
+                && let Some(ocr) = &img.ocr_result
+                && !ocr.content.is_empty()
+            {
+                let ocr_elem = crate::types::internal::InternalElement::text(
+                    crate::types::internal::ElementKind::Paragraph,
+                    ocr.content.clone(),
+                    0,
+                );
+                new_elements.push(ocr_elem);
+            }
+            image_idx += 1;
+        }
+    }
+
+    doc.elements = new_elements;
+
+    for table in &mut doc.tables {
+        for row in &mut table.cells {
+            for cell in row {
+                if !is_markdown_image_reference(cell) {
+                    continue;
+                }
+                if let Some(img) = doc.images.get(image_idx)
+                    && let Some(ocr) = &img.ocr_result
+                    && !ocr.content.is_empty()
+                {
+                    *cell = format!("{}\n\n{}", cell.trim(), ocr.content);
+                }
+                image_idx += 1;
+            }
+        }
+    }
+}
+
+/// Returns `true` if `text` is exactly a markdown image reference (`![alt](url)`).
+fn is_markdown_image_reference(text: &str) -> bool {
+    let t = text.trim();
+    if !t.starts_with("![") {
+        return false;
+    }
+    let Some(bracket_end) = t.find("](") else {
+        return false;
+    };
+    if bracket_end < 2 {
+        return false;
+    }
+    let after = &t[bracket_end + 2..];
+    after.ends_with(')')
 }
 
 /// Apply NFC unicode normalization to all text content.

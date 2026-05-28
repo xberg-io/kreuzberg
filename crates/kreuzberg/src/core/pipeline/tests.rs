@@ -895,3 +895,57 @@ async fn test_chunking_populates_page_numbers_for_pdf() {
         chunks.len()
     );
 }
+
+#[test]
+fn test_append_ocr_text_for_pptx_images() {
+    use crate::types::ExtractedImage;
+    use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+    use std::borrow::Cow;
+
+    let mut doc = InternalDocument::new("pptx");
+    doc.append_ocr_text = true;
+    doc.elements
+        .push(InternalElement::text(ElementKind::Paragraph, "Before image.", 0));
+    doc.elements.push(InternalElement::text(
+        ElementKind::Paragraph,
+        "![img](../media/image-1.jpeg)",
+        0,
+    ));
+    doc.elements
+        .push(InternalElement::text(ElementKind::Paragraph, "After image.", 0));
+
+    doc.images.push(ExtractedImage {
+        data: bytes::Bytes::new(),
+        format: Cow::Borrowed("jpeg"),
+        image_index: 0,
+        page_number: Some(1),
+        width: Some(100),
+        height: Some(100),
+        colorspace: None,
+        bits_per_component: None,
+        is_mask: false,
+        description: None,
+        ocr_result: Some(Box::new(crate::types::ExtractionResult {
+            content: "OCR text here".to_string(),
+            mime_type: Cow::Borrowed("text/plain"),
+            ..Default::default()
+        })),
+        bounding_box: None,
+        source_path: None,
+        image_kind: None,
+        kind_confidence: None,
+        cluster_id: None,
+    });
+
+    super::append_embedded_image_ocr_text(&mut doc);
+
+    assert_eq!(
+        doc.elements.len(),
+        4,
+        "should have 4 elements (original 3 + 1 OCR paragraph)"
+    );
+    assert_eq!(doc.elements[2].text, "OCR text here");
+
+    let rendered = crate::rendering::render_markdown(&doc);
+    assert!(rendered.contains("OCR text here"));
+}

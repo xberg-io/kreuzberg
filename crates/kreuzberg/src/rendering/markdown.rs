@@ -180,7 +180,7 @@ pub(crate) fn render_markdown(doc: &InternalDocument) -> String {
     // and our content uses these characters literally. Single-pass over all five targets;
     // returns Cow::Borrowed (zero alloc) when none are present.
     {
-        const UNESCAPE_TARGETS: &[char] = &['_', '[', ']', '(', ')'];
+        const UNESCAPE_TARGETS: &[char] = &['_', '[', ']', '(', ')', '*', '='];
         let cow = unescape_backslash_sequences(&output, UNESCAPE_TARGETS);
         if let Cow::Owned(s) = cow {
             output = s;

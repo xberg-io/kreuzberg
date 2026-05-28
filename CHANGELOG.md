@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **extraction**: `ImageExtractionConfig` gains three new fields for controlling image-OCR output:
+  - `run_ocr_on_images` (default `true`) — when `false`, suppresses per-image OCR even if an OCR backend is configured. Useful for extracting images without OCR overhead.
+  - `ocr_text_only` (default `false`) — replaces the `![alt](url)` image placeholder with the OCR text. Only takes effect when `run_ocr_on_images` is `true`.
+  - `append_ocr_text` (default `false`) — appends an OCR text paragraph after the image placeholder. Takes effect when `run_ocr_on_images` is `true` and `ocr_text_only` is `false`.
+  All three fields serialize as snake_case (`run_ocr_on_images`, `ocr_text_only`, `append_ocr_text`) in config files and JSON. (#1017)
+- **extraction**: image OCR now routes through the plugin backend registry instead of hard-coding `OcrProcessor`. Custom OCR backends registered via `registerOcrBackend` (Node.js) or the Rust registry API are used for per-image OCR, enabling mixed-mode extraction: native text from the document layer, custom-backend OCR on embedded images. (#1017)
+- **extraction (pdf)**: when `images.run_ocr_on_images` is `true`, the PDF document-level OCR fallback (`RunFallback`) is skipped in favour of per-image OCR, preserving native PDF text extraction while still OCR-ing embedded images. (#1017)
+- **node**: `JsOcrBackendBridge` now uses a persistent `napi_ref` to keep the JS object alive after `registerOcrBackend` returns, and a `ThreadsafeFunction` for `process_image` so the callback is invokable from tokio worker threads with the actual image bytes (previously the bytes were passed as a debug string, making the bridge non-functional for real binary payloads). (#1017)
+
 - **pptx**: `PageContent` gains two optional fields populated during PPTX per-page extraction (requires `page_config` to be set): `speaker_notes` (text from `ppt/notesSlides/notesSlideN.xml`) and `section_name` (from `<p14:sectionLst>` in `ppt/presentation.xml`). Both serialize with `skip_serializing_if = "Option::is_none"` and are `None` for all non-PPTX formats. (#960)
 - **pdf**: opt-in capture of full-page renders produced during PDF OCR preprocessing. When `ImageExtractionConfig.include_page_rasters = true`, per-page PNG renders are returned as `ImageKind::PageRaster` entries in `ExtractionResult.images`, enabling citation thumbnails and visual grounding downstream. Capture covers all three OCR entry paths (`force_ocr`, `force_ocr_pages`, `RunFallback`); document-level backend bypass emits a `ProcessingWarning`. (#1018)
 
