@@ -330,9 +330,12 @@ impl PdfExtractor {
                     (native_text, ExtractionMethod::Native)
                 }
                 ocr::OcrGateOutcome::RunFallback => {
-                    let image_ocr_enabled = config.images.as_ref().map(|i| i.run_ocr_on_images).unwrap_or(true);
-                    if image_ocr_enabled {
-                        tracing::debug!("Skipping document-level OCR fallback because image OCR is enabled");
+                    // Only skip document-level OCR when the caller explicitly configured
+                    // image extraction AND opted into per-image OCR. Callers with no
+                    // `images` config must not lose the fallback they previously relied on.
+                    let skip_fallback = config.images.as_ref().map(|i| i.run_ocr_on_images).unwrap_or(false);
+                    if skip_fallback {
+                        tracing::debug!("Skipping document-level OCR fallback: run_ocr_on_images=true");
                         (native_text, ExtractionMethod::Native)
                     } else {
                         match run_ocr_with_layout(content, config, path).await {

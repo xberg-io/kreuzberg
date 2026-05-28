@@ -74,7 +74,18 @@ pub(crate) async fn process_images_with_ocr(
             // Acquire a semaphore permit before starting OCR work.
             // The permit is held for the duration of the OCR task,
             // ensuring at most max_tasks run simultaneously.
-            let _permit = permit.acquire().await.expect("semaphore should not be closed");
+            let _permit = match permit.acquire().await {
+                Ok(p) => p,
+                Err(_) => {
+                    return (
+                        idx,
+                        Err(crate::KreuzbergError::Ocr {
+                            message: "OCR concurrency semaphore closed unexpectedly".to_string(),
+                            source: None,
+                        }),
+                    );
+                }
+            };
 
             let backend = {
                 let registry = crate::plugins::registry::get_ocr_backend_registry();

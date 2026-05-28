@@ -456,7 +456,7 @@ fn render_elements(doc: &InternalDocument, p: &str, buf: &mut String) {
             // ── Image ─────────────────────────────────────────────────
             ElementKind::Image { image_index } => {
                 if let Some(image) = doc.images.get(image_index as usize) {
-                    render_image(image, &elem.text, p, buf);
+                    render_image(image, &elem.text, p, doc.ocr_text_only, doc.append_ocr_text, buf);
                 }
             }
 
@@ -532,8 +532,27 @@ fn render_table(table: &crate::types::tables::Table, p: &str, buf: &mut String) 
 // Image rendering
 // ============================================================================
 
-fn render_image(image: &crate::types::ExtractedImage, alt: &str, p: &str, buf: &mut String) {
+fn render_image(
+    image: &crate::types::ExtractedImage,
+    alt: &str,
+    p: &str,
+    ocr_text_only: bool,
+    append_ocr_text: bool,
+    buf: &mut String,
+) {
     use base64::Engine as _;
+
+    let ocr_content = image
+        .ocr_result
+        .as_ref()
+        .map(|r| r.content.as_str())
+        .filter(|s| !s.is_empty());
+
+    if ocr_text_only && let Some(text) = ocr_content {
+        write!(buf, r#"<p class="{p}ocr-text">{}</p>"#, esc(text)).unwrap();
+        return;
+    }
+
     let b64 = base64::engine::general_purpose::STANDARD.encode(&image.data);
     let mime = match image.format.as_ref() {
         "jpeg" | "jpg" => "image/jpeg",
@@ -551,15 +570,8 @@ fn render_image(image: &crate::types::ExtractedImage, alt: &str, p: &str, buf: &
     )
     .unwrap();
 
-    if let Some(ocr_result) = &image.ocr_result
-        && !ocr_result.content.is_empty()
-    {
-        write!(
-            buf,
-            r#"<figcaption class="{p}figcaption">{}</figcaption>"#,
-            esc(&ocr_result.content)
-        )
-        .unwrap();
+    if append_ocr_text && let Some(text) = ocr_content {
+        write!(buf, r#"<figcaption class="{p}figcaption">{}</figcaption>"#, esc(text)).unwrap();
     }
 
     buf.push_str("</figure>");
@@ -725,5 +737,98 @@ mod tests {
         assert!(out.contains(r#"class="kb-tbody""#), "tbody missing: {out}");
         assert!(out.contains("<th"), "th missing: {out}");
         assert!(out.contains("<td"), "td missing: {out}");
+    }
+
+    fn make_image_doc(ocr_text_only: bool, append_ocr_text: bool) -> InternalDocument {
+        use crate::types::ExtractedImage;
+        use std::borrow::Cow;
+        let mut doc = InternalDocument::new("test");
+        doc.ocr_text_only = ocr_text_only;
+        doc.append_ocr_text = append_ocr_text;
+        let idx = doc.push_image(ExtractedImage {
+            data: bytes::Bytes::from_static(b"\x89PNG"),
+            format: Cow::Borrowed("png"),
+            image_index: 0,
+            page_number: None,
+            width: None,
+            height: None,
+            colorspace: None,
+            bits_per_component: None,
+            is_mask: false,
+            description: None,
+            ocr_result: Some(Box::new(crate::types::ExtractionResult {
+                content: "OCR caption".to_string(),
+                mime_type: Cow::Borrowed("text/plain"),
+                ..Default::default()
+            })),
+            bounding_box: None,
+            source_path: None,
+            image_kind: None,
+            kind_confidence: None,
+            cluster_id: None,
+        });
+        doc.push_element(crate::types::internal::InternalElement::text(
+            crate::types::internal::ElementKind::Image { image_index: idx },
+            "alt text",
+            0,
+        ));
+        doc
+    }
+
+    #[test]
+    fn image_no_flags_emits_figure_without_figcaption() {
+        let doc = make_image_doc(false, false);
+        let out = render(
+            HtmlOutputConfig {
+                embed_css: false,
+                ..Default::default()
+            },
+            &doc,
+        );
+        assert!(out.contains("<figure"), "expected <figure>: {out}");
+        assert!(
+            !out.contains("<figcaption"),
+            "unexpected figcaption when both flags false: {out}"
+        );
+        assert!(
+            !out.contains("OCR caption"),
+            "unexpected OCR text when both flags false: {out}"
+        );
+    }
+
+    #[test]
+    fn image_append_ocr_text_emits_figcaption() {
+        let doc = make_image_doc(false, true);
+        let out = render(
+            HtmlOutputConfig {
+                embed_css: false,
+                ..Default::default()
+            },
+            &doc,
+        );
+        assert!(out.contains("<figure"), "expected <figure>: {out}");
+        assert!(
+            out.contains("<figcaption"),
+            "expected figcaption with append_ocr_text=true: {out}"
+        );
+        assert!(out.contains("OCR caption"), "expected OCR text in figcaption: {out}");
+    }
+
+    #[test]
+    fn image_ocr_text_only_emits_paragraph_not_figure() {
+        let doc = make_image_doc(true, false);
+        let out = render(
+            HtmlOutputConfig {
+                embed_css: false,
+                ..Default::default()
+            },
+            &doc,
+        );
+        assert!(
+            !out.contains("<figure"),
+            "unexpected <figure> when ocr_text_only=true: {out}"
+        );
+        assert!(out.contains("OCR caption"), "expected OCR text as paragraph: {out}");
+        assert!(out.contains("kb-ocr-text"), "expected ocr-text class: {out}");
     }
 }

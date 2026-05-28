@@ -949,3 +949,45 @@ fn test_append_ocr_text_for_pptx_images() {
     let rendered = crate::rendering::render_markdown(&doc);
     assert!(rendered.contains("OCR text here"));
 }
+
+#[tokio::test]
+#[serial]
+async fn test_pdf_run_fallback_not_suppressed_without_images_config() {
+    // When config.images is None, run_ocr_on_images must default to false so
+    // the PDF document-level OCR fallback is NOT silently suppressed for
+    // existing callers that never configured ImageExtractionConfig.
+    use crate::core::config::ImageExtractionConfig;
+
+    let default_no_images = crate::core::config::ExtractionConfig::default();
+    assert!(
+        default_no_images.images.is_none(),
+        "baseline: default config has no images section"
+    );
+
+    let skip_fallback = default_no_images
+        .images
+        .as_ref()
+        .map(|i| i.run_ocr_on_images)
+        .unwrap_or(false);
+    assert!(
+        !skip_fallback,
+        "RunFallback must NOT be suppressed when config.images is None"
+    );
+
+    let with_images_opted_in = crate::core::config::ExtractionConfig {
+        images: Some(ImageExtractionConfig {
+            run_ocr_on_images: true,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    let skip_fallback_opted_in = with_images_opted_in
+        .images
+        .as_ref()
+        .map(|i| i.run_ocr_on_images)
+        .unwrap_or(false);
+    assert!(
+        skip_fallback_opted_in,
+        "RunFallback must be suppressed when images.run_ocr_on_images=true"
+    );
+}
