@@ -1756,8 +1756,8 @@ public class ImageExtractionConfig: ImageExtractionConfigRefMut {
     }
 }
 extension ImageExtractionConfig {
-    public convenience init(_ extract_images: Bool, _ target_dpi: Int32, _ max_image_dimension: Int32, _ inject_placeholders: Bool, _ auto_adjust_dpi: Bool, _ min_dpi: Int32, _ max_dpi: Int32, _ max_images_per_page: Optional<UInt32>, _ classify: Bool, _ include_page_rasters: Bool) {
-        self.init(ptr: __swift_bridge__$ImageExtractionConfig$new(extract_images, target_dpi, max_image_dimension, inject_placeholders, auto_adjust_dpi, min_dpi, max_dpi, max_images_per_page.intoFfiRepr(), classify, include_page_rasters))
+    public convenience init(_ extract_images: Bool, _ target_dpi: Int32, _ max_image_dimension: Int32, _ inject_placeholders: Bool, _ auto_adjust_dpi: Bool, _ min_dpi: Int32, _ max_dpi: Int32, _ max_images_per_page: Optional<UInt32>, _ classify: Bool, _ include_page_rasters: Bool, _ run_ocr_on_images: Bool, _ ocr_text_only: Bool, _ append_ocr_text: Bool) {
+        self.init(ptr: __swift_bridge__$ImageExtractionConfig$new(extract_images, target_dpi, max_image_dimension, inject_placeholders, auto_adjust_dpi, min_dpi, max_dpi, max_images_per_page.intoFfiRepr(), classify, include_page_rasters, run_ocr_on_images, ocr_text_only, append_ocr_text))
     }
 }
 public class ImageExtractionConfigRefMut: ImageExtractionConfigRef {
@@ -1811,6 +1811,18 @@ extension ImageExtractionConfigRef {
 
     public func includePageRasters() -> Bool {
         __swift_bridge__$ImageExtractionConfig$include_page_rasters(ptr)
+    }
+
+    public func runOcrOnImages() -> Bool {
+        __swift_bridge__$ImageExtractionConfig$run_ocr_on_images(ptr)
+    }
+
+    public func ocrTextOnly() -> Bool {
+        __swift_bridge__$ImageExtractionConfig$ocr_text_only(ptr)
+    }
+
+    public func appendOcrText() -> Bool {
+        __swift_bridge__$ImageExtractionConfig$append_ocr_text(ptr)
     }
 }
 extension ImageExtractionConfig: Vectorizable {

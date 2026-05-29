@@ -5,7 +5,7 @@ edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
-keywords = ["document", "extraction", "pdf", "ocr", "text"]
+keywords = ["document", "extraction", "ocr", "pdf", "text"]
 categories = ["text-processing"]
 
 # `pyo3-async-runtimes` and `serde_json` are emitted unconditionally above so

@@ -4631,7 +4631,12 @@ pub const IOcrBackend = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_ocr_backend(name: [*c]const u8, vtable: IOcrBackend, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_ocr_backend(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_ocr_backend(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `OcrBackend` implementation by name.
@@ -4935,7 +4940,12 @@ pub const IPostProcessor = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_post_processor(name: [*c]const u8, vtable: IPostProcessor, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_post_processor(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_post_processor(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `PostProcessor` implementation by name.
@@ -5217,7 +5227,12 @@ pub const IValidator = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_validator(name: [*c]const u8, vtable: IValidator, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_validator(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_validator(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `Validator` implementation by name.
@@ -5362,7 +5377,12 @@ pub const IEmbeddingBackend = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_embedding_backend(name: [*c]const u8, vtable: IEmbeddingBackend, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_embedding_backend(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_embedding_backend(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `EmbeddingBackend` implementation by name.
@@ -5570,7 +5590,12 @@ pub const IDocumentExtractor = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_document_extractor(name: [*c]const u8, vtable: IDocumentExtractor, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_document_extractor(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_document_extractor(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `DocumentExtractor` implementation by name.
@@ -5742,7 +5767,12 @@ pub const IRenderer = extern struct {
 ///
 /// Returns 0 on success; non-zero on failure (error text written to `out_error`).
 pub fn register_renderer(name: [*c]const u8, vtable: IRenderer, user_data: ?*anyopaque, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_register_renderer(name, vtable, user_data, out_error);
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_register_renderer(name, @bitCast(vtable), user_data, @ptrCast(&_out_error));
+    if (out_error) |ptr| {
+        ptr.* = _out_error;
+    }
+    return _rc;
 }
 
 /// Unregister a previously registered `Renderer` implementation by name.

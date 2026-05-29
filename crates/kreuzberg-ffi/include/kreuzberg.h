@@ -3058,6 +3058,27 @@ int32_t kreuzberg_image_extraction_config_classify(const KREUZBERGImageExtractio
 int32_t kreuzberg_image_extraction_config_include_page_rasters(const KREUZBERGImageExtractionConfig *ptr);
 
 /**
+ * Get the `run_ocr_on_images` field from a `ImageExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_image_extraction_config_run_ocr_on_images(const KREUZBERGImageExtractionConfig *ptr);
+
+/**
+ * Get the `ocr_text_only` field from a `ImageExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_image_extraction_config_ocr_text_only(const KREUZBERGImageExtractionConfig *ptr);
+
+/**
+ * Get the `append_ocr_text` field from a `ImageExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kreuzberg_image_extraction_config_append_ocr_text(const KREUZBERGImageExtractionConfig *ptr);
+
+/**
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */

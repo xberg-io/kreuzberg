@@ -7,9 +7,6 @@ let package = Package(
         .macOS(.v13),
         .iOS(.v16),
     ],
-    dependencies: [
-        .package(path: "../../packages/swift"),
-    ],
     targets: [
         .testTarget(
             name: "KreuzbergE2ETests",

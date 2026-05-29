@@ -9,6 +9,9 @@
     "url": "https://github.com/kreuzberg-dev/kreuzberg",
     "directory": "crates/kreuzberg-wasm"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "files": [
     "pkg",

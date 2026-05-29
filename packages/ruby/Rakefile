@@ -2,24 +2,39 @@
 
 require "bundler"
 Bundler::GemHelper.install_tasks name: "kreuzberg"
-require "rake/extensiontask"
+require "rb_sys/extensiontask"
 require "rspec/core/rake_task"
 
 GEM_ROOT = __dir__
 GEMSPEC = Gem::Specification.load(File.expand_path("kreuzberg.gemspec", GEM_ROOT))
 
-Rake::ExtensionTask.new("kreuzberg_rb", GEMSPEC) do |ext|
-  ext.lib_dir = "lib"
-  ext.ext_dir = "ext/kreuzberg_rb"
-  ext.cross_compile = true
-  ext.cross_platform = %w[
-    x86_64-linux
-    aarch64-linux
-    x86_64-darwin
-    arm64-darwin
-    x64-mingw32
-    x64-mingw-ucrt
-  ]
+# RbSys::ExtensionTask runs `cargo metadata` from Dir.pwd to look up the
+# native crate. The native binding crate at ext/kreuzberg_rb/native is excluded
+# from the parent Cargo workspace (so the parent does not pull in rb_sys
+# deps), so the lookup raises PackageNotFoundError when the Rakefile runs
+# from the gem root. Change to the native dir for ExtensionTask initialization
+# to allow cargo metadata to find the standalone Cargo.toml. Pre-declare the
+# Cargo.lock file task with absolute path so rake finds it regardless of CWD.
+EXT_NATIVE_DIR = File.expand_path("ext/kreuzberg_rb/native", GEM_ROOT)
+
+Dir.chdir(EXT_NATIVE_DIR) do
+  # Declare Cargo.lock and Cargo.toml file tasks here (within chdir context)
+  # so they are resolved relative to the native dir where rake will access them.
+  file "Cargo.lock"
+  file "Cargo.toml"
+
+  RbSys::ExtensionTask.new("kreuzberg-rb", GEMSPEC) do |ext|
+    ext.lib_dir = "lib"
+    ext.cross_compile = true
+    ext.cross_platform = %w[
+      x86_64-linux
+      aarch64-linux
+      x86_64-darwin
+      arm64-darwin
+      x64-mingw32
+      x64-mingw-ucrt
+    ]
+  end
 end
 
 RSpec::Core::RakeTask.new(:spec)

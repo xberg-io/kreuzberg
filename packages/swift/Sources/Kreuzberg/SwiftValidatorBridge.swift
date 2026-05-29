@@ -13,7 +13,8 @@ public protocol SwiftValidatorBridge: AnyObject {
 }
 
 /// Internal adapter wrapping a `SwiftValidatorBridge` conformer.
-/// Exposes C function pointers that call the bridge implementation.
+/// Marshals Swift types and trait calls to/from the C boundary.
+/// Excluded/internal types are serialised to/from JSON strings.
 final class SwiftValidatorAdapter {
     private let bridge: any SwiftValidatorBridge
 
@@ -21,17 +22,41 @@ final class SwiftValidatorAdapter {
     self.bridge = bridge
     }
 
-    func validateCall(result: ExtractionResult, config: ExtractionConfig) -> Void {
-        // Marshalling code would go here
-        ""
+    func validateCall(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
+        do {
+    let result = try await self.bridge.validate(result: result, config: config)
+            return marshal_ok_result(Empty())
+    } catch {
+        return marshal_error_result(error)
+    }
     }
 
 }
 
-/// Register an outbound `Validator` plugin.
-/// Pass an instance conforming to `SwiftValidatorBridge`.
-public func registerValidator(_ bridge: any SwiftValidatorBridge) throws {
-    let adapter = SwiftValidatorAdapter(bridge: bridge)
-    // Call into Rust to register the adapter
-    try RustBridge.registerValidator(adapter)
+// MARK: - Marshalling helpers
+
+private struct Empty: Codable {}
+
+private func marshal_ok_result<T: Encodable>(_ value: T) -> String {
+    let encoder = JSONEncoder()
+    if let data = try? encoder.encode(value),
+       let jsonString = String(data: data, encoding: .utf8) {
+        return "{\"ok\": \(jsonString)}"
+    }
+    return "{\"ok\": null}"
+}
+
+private func marshal_encode_excluded<T: Encodable>(_ value: T) throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(value)
+}
+
+private func marshal_error_result(_ error: any Error) -> String {
+    let errorString = String(describing: error)
+    let encoder = JSONEncoder()
+    if let data = try? encoder.encode(errorString),
+       let jsonString = String(data: data, encoding: .utf8) {
+        return "{\"err\": \(jsonString)}"
+    }
+    return "{\"err\": \"unknown error\"}"
 }
