@@ -517,6 +517,14 @@ fn pad_cfb_to_fat_size(data: &[u8]) -> std::borrow::Cow<'_, [u8]> {
     Cow::Owned(padded)
 }
 
+/// Maximum capacity pre-allocated for a decompressed RTF body (16 MiB).
+///
+/// `raw_size` in the OXRTFCP header is attacker-controlled; using it directly
+/// as a `Vec::with_capacity` argument lets a crafted `.msg` file trigger a 4 GiB
+/// allocation.  This constant caps the hint — the `Vec` grows freely beyond it if
+/// the actual decompressed content is larger, so correctness is unaffected.
+const MAX_RTF_DECOMPRESSED_CAPACITY: usize = 16 * 1024 * 1024;
+
 /// Pre-filled dictionary used by the MS-OXRTFCP compressed RTF format.
 ///
 /// See [MS-OXRTFCP] section 2.1.3.1.
@@ -558,7 +566,7 @@ fn decompress_rtf_compressed(data: &[u8]) -> Option<Vec<u8>> {
     // comp_size includes the 12 bytes after the first u32, so input length should be comp_size - 12.
     let end = (comp_size.saturating_sub(12)).min(input.len());
 
-    let mut output = Vec::with_capacity(raw_size as usize);
+    let mut output = Vec::with_capacity((raw_size as usize).min(MAX_RTF_DECOMPRESSED_CAPACITY));
     let mut pos = 0usize;
 
     while pos < end {
@@ -2066,6 +2074,57 @@ mod tests {
         assert_eq!(headers.get("mime_version").unwrap(), "1.0");
         assert_eq!(headers.get("x_mailer").unwrap(), "MyApp/2.0");
         assert_eq!(headers.get("user_agent").unwrap(), "MyAgent/1.0");
+    }
+
+    #[test]
+    fn test_decompress_rtf_compressed_crafted_raw_size_does_not_over_allocate() {
+        // Regression for #1058: raw_size = 0xFFFF_FFFF must not cause a 4 GiB
+        // Vec::with_capacity call. The capacity hint is capped to
+        // MAX_RTF_DECOMPRESSED_CAPACITY; decompression must still return normally.
+        let mut data = Vec::with_capacity(20);
+        // comp_size = 16 → end = (16 - 12).min(input.len()) = 4
+        data.extend_from_slice(&16u32.to_le_bytes());
+        // raw_size = attacker-controlled maximum
+        data.extend_from_slice(&0xFFFF_FFFFu32.to_le_bytes());
+        // magic = LZFu (compressed path)
+        data.extend_from_slice(&0x75465a4cu32.to_le_bytes());
+        // crc (skipped)
+        data.extend_from_slice(&0u32.to_le_bytes());
+        // Four literal payload bytes (all control-flag=0 → four literal copies)
+        data.extend_from_slice(&[0x00, b'A', b'B', b'C']);
+
+        let result = decompress_rtf_compressed(&data);
+        // Must return Some with a tiny output — not OOM, not None.
+        let out = result.expect("should decompress without error");
+        assert!(out.len() < 16, "output should be tiny, not a huge allocation");
+    }
+
+    #[test]
+    fn test_decompress_rtf_compressed_cap_is_hint_only() {
+        // Verify MAX_RTF_DECOMPRESSED_CAPACITY is a *hint*, not a hard truncation.
+        // Set raw_size = 1 (under-estimate), produce 24 bytes of output, and
+        // assert the Vec grew past the hint to hold the full decompressed payload.
+        let payload: &[u8] = &[
+            0x00, b'A', b'B', b'C', b'D', b'E', b'F', b'G', b'H', // group 1: 8 literals
+            0x00, b'I', b'J', b'K', b'L', b'M', b'N', b'O', b'P', // group 2: 8 literals
+            0x00, b'Q', b'R', b'S', b'T', b'U', b'V', b'W', b'X', // group 3: 8 literals
+        ];
+        let comp_size = (12 + payload.len()) as u32;
+        let raw_size = 1u32; // deliberate under-estimate — hint only, not a truncation limit
+        let mut data: Vec<u8> = Vec::new();
+        data.extend_from_slice(&comp_size.to_le_bytes());
+        data.extend_from_slice(&raw_size.to_le_bytes());
+        data.extend_from_slice(&0x75465a4cu32.to_le_bytes()); // LZFu
+        data.extend_from_slice(&0u32.to_le_bytes()); // crc
+        data.extend_from_slice(payload);
+
+        let out = decompress_rtf_compressed(&data).expect("should decompress");
+        assert_eq!(
+            out.len(),
+            24,
+            "Vec must grow past the raw_size=1 hint to hold all 24 bytes"
+        );
+        assert_eq!(&out[..8], b"ABCDEFGH");
     }
 
     #[test]
