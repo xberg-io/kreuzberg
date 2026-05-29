@@ -29858,8 +29858,13 @@ pub struct KreuzbergPostProcessorVTable {
     /// ProcessingStage::Early  // Run before other processors
     /// }
     /// ```
-    pub processing_stage:
-        Option<unsafe extern "C" fn(user_data: *const std::ffi::c_void, out_result: *mut *mut std::ffi::c_char, out_error: *mut *mut std::ffi::c_char) -> i32>,
+    pub processing_stage: Option<
+        unsafe extern "C" fn(
+            user_data: *const std::ffi::c_void,
+            out_result: *mut *mut std::ffi::c_char,
+            out_error: *mut *mut std::ffi::c_char,
+        ) -> i32,
+    >,
     /// Optional: Check if this processor should run for a given result.
     ///
     /// Allows conditional processing based on MIME type, metadata, or content.
@@ -30108,7 +30113,7 @@ impl kreuzberg::PostProcessor for KreuzbergPostProcessorBridge {
         let _rc = unsafe { fp(self.user_data, &mut _out_result, &mut _out_error) };
         // Free error if present
         if !_out_error.is_null() {
-            unsafe { ffi_free_string(_out_error) };
+            unsafe { let _ = std::ffi::CString::from_raw(_out_error); };
         }
         if _out_result.is_null() {
             return Default::default();
