@@ -3857,6 +3857,10 @@ dependencies = [
 [[package]]
 name = "kreuzberg-jni"
 version = "5.0.0-rc.3"
+dependencies = [
+ "jni 0.21.1",
+ "kreuzberg-ffi",
+]
 
 [[package]]
 name = "kreuzberg-node"
