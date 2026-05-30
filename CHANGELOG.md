@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **rust**: `Uri` struct renamed to `ExtractedUri` to avoid collision with `dart:core.Uri` in Dart bindings. This is a breaking change for Rust consumers who reference `kreuzberg::Uri` directly; import `use kreuzberg::ExtractedUri` instead. All language bindings (`dart`, `python`, `node`, `ruby`, `php`, `go`, `java`, `csharp`, `kotlin`, `swift`, `r`, `elixir`, `zig`) automatically inherit the new struct name.
+- **kreuzberg-ffi**: crate-types extended with `rlib` so downstream Rust crates (e.g. `kreuzberg-jni`) can take an in-process Rust dep on it without re-exporting the C ABI through a separate dylib.
+
+### Fixed
+
+- **swift**: extract bytes/sync overloads now resolve the first argument against the test-documents/fixtures directories before falling back to UTF-8 string content. Add Bridge-protocol `register*` overloads so trait-stub e2e fixtures compile against the typed Box surface. Add `name:` argument-label overloads for every `unregister*` function.
+- **wasm**: feature-gate `LayoutDetectionConfig`, `TreeSitterConfig`, `FormatMetadata::Code`, and `ExtractionResult.code_intelligence` references that aren't part of `wasm-target`. Fix `WasmEmbeddingBackendBridge::dimensions` to parse JS numbers as `f64`/usize rather than JSON strings. Reorder the e2e setup to install the `require('env')` and WASI shims before the wasm bundle is pre-imported. Gate `tempfile`-based PST extraction behind `not(target_arch = "wasm32")` (WASI doesn't expose `mkstemp`).
+- **kotlin-android**: force-link every `kreuzberg-ffi` C export into `libkreuzberg_jni.dylib` via a `#[used]` function-pointer table — without this, rlib dead-code elimination dropped the FFI symbols, leaving the JNI shim with unresolved jumps that crashed the JVM with SIGSEGV on the first call. Outstanding: JNI arg-marshalling alignment with the Kotlin e2e fixtures (tracked in `feedback_kotlin_android_partial`).
 
 ### Added
 
