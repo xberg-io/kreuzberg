@@ -6,6 +6,7 @@
 //! - Nesting depth limits
 //! - Input size limits
 //! - Entity length validation
+//! - Path traversal detection
 
 #[cfg(any(feature = "archives", feature = "hwpx"))]
 use std::io::{Read, Seek};
@@ -515,6 +516,26 @@ impl SecurityBudget {
     }
 }
 
+/// Return `true` when `path_str` contains a path-traversal component (`..`).
+///
+/// Uses [`std::path::Path::components`] rather than a string search so that
+/// normalised representations (e.g. `a/../b`) are caught while benign values
+/// like `"1..2"` in list-numbering prefixes are not falsely flagged.
+///
+/// # Examples
+///
+/// ```
+/// # use kreuzberg::extractors::security::has_path_traversal;
+/// assert!(has_path_traversal("word/../../etc/passwd"));
+/// assert!(!has_path_traversal("word/images/photo.png"));
+/// ```
+pub(crate) fn has_path_traversal(path_str: &str) -> bool {
+    use std::path::{Component, Path};
+    Path::new(path_str)
+        .components()
+        .any(|c| c == Component::ParentDir)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -608,5 +629,43 @@ mod tests {
             v.add_cells(1),
             Err(SecurityError::TooManyCells { cells: 11, max: 10 })
         ));
+    }
+
+    // ---- has_path_traversal tests ------------------------------------------
+
+    #[test]
+    fn test_path_traversal_detected_in_simple_dotdot() {
+        assert!(has_path_traversal("../etc/passwd"));
+    }
+
+    #[test]
+    fn test_path_traversal_detected_in_middle_of_path() {
+        assert!(has_path_traversal("word/images/../../etc/passwd"));
+    }
+
+    #[test]
+    fn test_path_traversal_detected_at_end() {
+        assert!(has_path_traversal("word/images/.."));
+    }
+
+    #[test]
+    fn test_normal_path_not_flagged() {
+        assert!(!has_path_traversal("word/images/photo.png"));
+    }
+
+    #[test]
+    fn test_empty_path_not_flagged() {
+        assert!(!has_path_traversal(""));
+    }
+
+    #[test]
+    fn test_dotdot_in_filename_not_flagged() {
+        // A filename like "1..2.png" has no ParentDir component.
+        assert!(!has_path_traversal("images/1..2.png"));
+    }
+
+    #[test]
+    fn test_absolute_path_without_traversal_not_flagged() {
+        assert!(!has_path_traversal("/usr/local/share/doc.pdf"));
     }
 }

@@ -1242,8 +1242,10 @@ impl DocumentExtractor for DocxExtractor {
                 && let Some(ref rid) = drawing.image_ref
                 && let Some(target) = image_rels.get(rid)
             {
-                // Reject path traversal attempts within the archive
-                if !target.contains("..") {
+                // Reject path traversal attempts within the archive using
+                // component-based inspection rather than a string search so
+                // normalised paths (e.g. `a/../b`) are always caught.
+                if !crate::extractors::security::has_path_traversal(target) {
                     let zip_path = if let Some(stripped) = target.strip_prefix('/') {
                         stripped.to_string()
                     } else {

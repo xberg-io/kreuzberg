@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is attempted. Applies to OOXML embedded objects (DOCX/PPTX) and email attachments. Files
   exceeding the cap are skipped with a `ProcessingWarning`. Set to `None` to disable.
 
+- **security**: Component-based path traversal detection. The DOCX image extractor
+  previously rejected archive paths with a string search (`!target.contains("..")`),
+  which can be bypassed with normalised paths on some platforms. A new
+  `has_path_traversal(path_str)` helper in `extractors::security` uses
+  `std::path::Path::components()` and checks for `Component::ParentDir`, which is
+  always correct regardless of path encoding or OS conventions. The docx extractor
+  now calls this helper, and the `"1..2"` false-positive in the list-numbering
+  check is correctly untouched (it never dealt with file-system paths).
+
 - **pdf/email**: `SecurityBudget` wired into the PDF extractor and the email extractor.
   Both extractors now enforce `SecurityLimits.max_content_size` (default 100 MiB) on
   the total accumulated element text after extraction. A crafted document that produces
