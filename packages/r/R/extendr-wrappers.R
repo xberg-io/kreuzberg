@@ -25,7 +25,7 @@ NULL
 #' Returns `KreuzbergError::Validation` if MIME type is invalid.
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
-extract_bytes <- function(content, mime_type, config) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "kreuzberg")
+extract_bytes <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "kreuzberg")
 #' Extract content from a file
 #'
 #' This is the main entry point for file-based extraction. It performs the following steps:
@@ -44,7 +44,7 @@ extract_bytes <- function(content, mime_type, config) .Call("wrap__extract_bytes
 #' Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
-extract_file <- function(path, mime_type, config) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
+extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `extract_file`
 #'
 #' This is a convenience function that blocks the current thread until extraction completes.
@@ -60,7 +60,7 @@ extract_file <- function(path, mime_type, config) .Call("wrap__extract_file", pa
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return ExtractionResult object (list with class attribute).
 #' @export
-extract_file_sync <- function(path, mime_type, config) .Call("wrap__extract_file_sync", path, mime_type, config, PACKAGE = "kreuzberg")
+extract_file_sync <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file_sync", path, mime_type, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `extract_bytes`
 #'
 #' Uses the global Tokio runtime for 100x+ performance improvement over creating
@@ -73,7 +73,7 @@ extract_file_sync <- function(path, mime_type, config) .Call("wrap__extract_file
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return ExtractionResult object (list with class attribute).
 #' @export
-extract_bytes_sync <- function(content, mime_type, config) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
+extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `batch_extract_files`
 #'
 #' Uses the global Tokio runtime for optimal performance.
@@ -82,7 +82,7 @@ extract_bytes_sync <- function(content, mime_type, config) .Call("wrap__extract_
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return List of extractionresult object (list with class attribute).
 #' @export
-batch_extract_files_sync <- function(items, config) .Call("wrap__batch_extract_files_sync", items, config, PACKAGE = "kreuzberg")
+batch_extract_files_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files_sync", items, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `batch_extract_bytes`
 #'
 #' Uses the global Tokio runtime for optimal performance.
@@ -93,7 +93,7 @@ batch_extract_files_sync <- function(items, config) .Call("wrap__batch_extract_f
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return List of extractionresult object (list with class attribute).
 #' @export
-batch_extract_bytes_sync <- function(items, config) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
+batch_extract_bytes_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
 #' Extract content from multiple files concurrently
 #'
 #' This function processes multiple files in parallel, automatically managing
@@ -113,7 +113,7 @@ batch_extract_bytes_sync <- function(items, config) .Call("wrap__batch_extract_b
 #' Individual file errors are captured in the result metadata. System errors
 #' (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
 #' @export
-batch_extract_files <- function(items, config) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
+batch_extract_files <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
 #' Extract content from multiple byte arrays concurrently
 #'
 #' This function processes multiple byte arrays in parallel, automatically managing
@@ -128,7 +128,7 @@ batch_extract_files <- function(items, config) .Call("wrap__batch_extract_files"
 #' @param config Batch-level extraction configuration.
 #' @return A vector of `ExtractionResult` in the same order as the input items.
 #' @export
-batch_extract_bytes <- function(items, config) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
+batch_extract_bytes <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
 #' Detect MIME type from raw file bytes
 #'
 #' Uses magic byte signatures to detect file type from content.
@@ -202,7 +202,7 @@ list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzber
 #' - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
 #'   or the blocking inference task panics
 #' @export
-embed_texts_async <- function(texts, config) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
+embed_texts_async <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 #' Render a single PDF page to PNG bytes
 #'
 #' Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -217,7 +217,7 @@ embed_texts_async <- function(texts, config) .Call("wrap__embed_texts_async", te
 #' Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
 #' or rendered, or if `page_index` is out of range.
 #' @export
-render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi, password) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
+render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi = NULL, password = NULL) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
 #' Detect the MIME type of a file at the given path
 #'
 #' Uses the file extension and optionally the file content to determine the MIME type.
@@ -234,7 +234,7 @@ detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type",
 #' @param config EmbeddingConfig object (list with class attribute).
 #' @return List of list of numeric.
 #' @export
-embed_texts <- function(texts, config) .Call("wrap__embed_texts", texts, config, PACKAGE = "kreuzberg")
+embed_texts <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts", texts, config, PACKAGE = "kreuzberg")
 #' Get an embedding preset by name
 #'
 #' Returns `None` if no preset with the given name exists. Returns an owned
@@ -405,6 +405,25 @@ unregister_renderer <- function(name) .Call("wrap__unregister_renderer", name, P
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
 clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzberg")
+#' CacheStats
+#' @field total_files total_files
+#' @field total_size_mb total_size_mb
+#' @field available_space_mb available_space_mb
+#' @field oldest_file_age_days oldest_file_age_days
+#' @field newest_file_age_days newest_file_age_days
+#' @export
+CacheStats <- new.env(parent = emptyenv())
+#' @export
+`$.CacheStats` <- function(self, name) {
+  func <- CacheStats[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.CacheStats` <- `$.CacheStats`
 #' Hardware acceleration configuration for ONNX Runtime models
 #'
 #' Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
@@ -1214,24 +1233,6 @@ StructuredDataResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.StructuredDataResult` <- `$.StructuredDataResult`
-#' Image metadata extracted from an image file
-#' @field width Image width in pixels
-#' @field height Image height in pixels
-#' @field format Image format (e.g., "PNG", "JPEG")
-#' @field exif_data EXIF data if available
-#' @export
-ExtractedImageMetadata <- new.env(parent = emptyenv())
-#' @export
-`$.ExtractedImageMetadata` <- function(self, name) {
-  func <- ExtractedImageMetadata[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.ExtractedImageMetadata` <- `$.ExtractedImageMetadata`
 #' Application properties from docProps/app.xml for DOCX
 #'
 #' Contains Word-specific document statistics and metadata.
@@ -2743,22 +2744,6 @@ Keyword <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Keyword` <- `$.Keyword`
-#' OcrCacheStats
-#' @field total_files total_files
-#' @field total_size_mb total_size_mb
-#' @export
-OcrCacheStats <- new.env(parent = emptyenv())
-#' @export
-`$.OcrCacheStats` <- function(self, name) {
-  func <- OcrCacheStats[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.OcrCacheStats` <- `$.OcrCacheStats`
 #' Configuration for PaddleOCR backend
 #'
 #' Configures PaddleOCR text detection and recognition with multi-language support.
@@ -3049,14 +3034,6 @@ CodeContentMode  <- function() list() |> structure(class = "CodeContentMode")
 #' @return A ListType enum value
 #' @export
 ListType  <- function() list() |> structure(class = "ListType")
-
-#' Create a FracType enum value
-#'
-#' Returns the default FracType variant.
-#'
-#' @return A FracType enum value
-#' @export
-FracType  <- function() list() |> structure(class = "FracType")
 
 #' Create a OcrBackendType enum value
 #'

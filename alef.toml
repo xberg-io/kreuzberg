@@ -136,6 +136,7 @@ sources = [
   "crates/kreuzberg/src/chunking/mod.rs",
   "crates/kreuzberg/src/embeddings/mod.rs",
   "crates/kreuzberg/src/language_detection/mod.rs",
+  "crates/kreuzberg/src/cache/core.rs",
   # Batch extraction functions (re-exported from lib.rs)
   "crates/kreuzberg/src/core/extractor/mod.rs",
   "crates/kreuzberg/src/core/extractor/sync.rs",
@@ -274,32 +275,12 @@ exclude_types = [
 
 [crates.wasm]
 exclude_types = [
-  # paddle-ocr / layout-detection / embeddings (ort-dependent)
-  "PaddleOcrConfig",
-  "PaddleLanguage",
-  "LayoutClass",
-  "LayoutDetectionConfig",
-  "LayoutDetection",
-  "DetectionResult",
-  "PSMMode",
-  "BBox",
-  "TableModel",
-  "EmbeddingConfig",
-  "EmbeddingResult",
-  "DocOrientationResult",
-  "OrientationResult",
+  # ORT/runtime-only types not available in the wasm-target feature set
   "OcrFallbackDecision",
-  "ModelPaths",
   "OcrProcessor",
-  "TesseractConfig",
   "OcrCacheStats",
   "TessdataManager",
   "PageLayoutResult",
-  "PageTiming",
-  "ProcessingWarning",
-  "RecognizedTable",
-  # Feature-gated types (not available in WASM feature set)
-  "ChunkSizing",
   # MCP parameter types not compatible with wasm-bindgen (Option<JsValue> fields)
   "BatchExtractFilesParams",
 ]
@@ -371,26 +352,7 @@ exclude_functions = [
   "batch_reduce_tokens",
   "chunk_texts_batch",
 ]
-features = [
-  "pdf",
-  "excel-wasm",
-  "office",
-  "hwp",
-  "iwork",
-  "email",
-  "html",
-  "xml",
-  "archives",
-  "language-detection",
-  "chunking",
-  "quality",
-  "keywords",
-  "mdx",
-  "ocr-wasm",
-  "tree-sitter-wasm",
-  "stopwords",
-  "liter-llm",
-]
+features = ["wasm-target"]
 
 [crates.wasm.extra_dependencies]
 async-trait = "0.1"
@@ -497,8 +459,6 @@ exclude_types = [
 ]
 exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
 exclude_functions = [
-  # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge
-  "get_preset",
   "calculate_quality_score",
 ]
 

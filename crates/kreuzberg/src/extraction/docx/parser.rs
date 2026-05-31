@@ -22,7 +22,7 @@ use quick_xml::events::{BytesStart, Event};
 /// Tracks document element ordering (paragraphs, tables, and drawings interleaved).
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum DocumentElement {
+pub(crate) enum DocumentElement {
     Paragraph(usize), // index into Document::paragraphs
     Table(usize),     // index into Document::tables
     Drawing(usize),   // index into Document::drawings
@@ -31,7 +31,7 @@ pub enum DocumentElement {
 
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
-pub struct Document {
+pub(crate) struct Document {
     pub paragraphs: Vec<Paragraph>,
     pub tables: Vec<Table>,
     pub headers: Vec<HeaderFooter>,
@@ -108,7 +108,7 @@ pub struct TableCell {
 
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ListType {
+pub(crate) enum ListType {
     Bullet,
     Numbered,
 }

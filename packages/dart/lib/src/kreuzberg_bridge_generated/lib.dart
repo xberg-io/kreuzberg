@@ -8,8 +8,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ExtractedImageMetadata`, `FracType`, `KreuzbergError`, `ListType`, `OcrBackendType`, `OcrCacheStats`, `PSMMode`, `PaddleLanguage`, `ProcessingStage`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `InternalDocumentBridge`, `KreuzbergError`, `ListType`, `OcrBackendDartCallbacks`, `OcrBackendType`, `PSMMode`, `PaddleLanguage`, `PostProcessorDartCallbacks`, `ProcessingStage`, `RendererDartCallbacks`, `ValidatorDartCallbacks`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`
+// These functions have error during generation (see debug logs or enable `stop_on_error: true` for more details): `create_document_extractor_dart_impl`, `create_embedding_backend_dart_impl`, `create_ocr_backend_dart_impl`, `create_post_processor_dart_impl`, `create_renderer_dart_impl`, `create_validator_dart_impl`
 
 /// Extract content from a byte array.
 ///
@@ -337,6 +338,9 @@ Future<EmbeddingPreset?> getEmbeddingPreset({required String name}) =>
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
 Future<List<String>> listEmbeddingPresets() =>
     RustLib.instance.api.crateListEmbeddingPresets();
+
+Future<CacheStats> createCacheStatsFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateCacheStatsFromJson(json: json);
 
 Future<AccelerationConfig> createAccelerationConfigFromJson({
   required String json,
@@ -772,36 +776,11 @@ Future<EmbeddedFile> createEmbeddedFileFromJson({required String json}) =>
 Future<PdfMetadata> createPdfMetadataFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePdfMetadataFromJson(json: json);
 
-/// Create a `OcrBackendDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<OcrBackendDartImpl> createOcrBackendDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnVecU8OcrConfigDartFnFutureExtractionResult processImage,
-  required BoxFnStringOcrConfigDartFnFutureExtractionResult processImageFile,
-  required BoxFnStringDartFnFutureBool supportsLanguage,
-  required BoxFnDartFnFutureOcrBackendType backendType,
-  required BoxFnDartFnFutureVecString supportedLanguages,
-  required BoxFnDartFnFutureBool supportsTableDetection,
-  required BoxFnDartFnFutureBool supportsDocumentProcessing,
-  required BoxFnStringOcrConfigDartFnFutureExtractionResult processDocument,
-}) => RustLib.instance.api.crateCreateOcrBackendDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  processImage: processImage,
-  processImageFile: processImageFile,
-  supportsLanguage: supportsLanguage,
-  backendType: backendType,
-  supportedLanguages: supportedLanguages,
-  supportsTableDetection: supportsTableDetection,
-  supportsDocumentProcessing: supportsDocumentProcessing,
-  processDocument: processDocument,
-);
-
 /// Register a Dart implementation as a `OcrBackend` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_ocr_backend_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn OcrBackend>` wrapped by `OcrBackendDartImpl` to
+/// `kreuzberg::plugins::registry::get_ocr_backend_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerOcrBackend({required OcrBackendDartImpl impl}) =>
     RustLib.instance.api.crateRegisterOcrBackend(impl: impl);
 
@@ -814,30 +793,11 @@ Future<void> unregisterOcrBackend({required String name}) =>
 /// Removes every plugin from `kreuzberg::plugins::registry::get_ocr_backend_registry()` and stringifies any host error.
 Future<void> clearOcrBackends() => RustLib.instance.api.crateClearOcrBackends();
 
-/// Create a `PostProcessorDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<PostProcessorDartImpl> createPostProcessorDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnExtractionResultExtractionConfigDartFnFuture process,
-  required BoxFnDartFnFutureProcessingStage processingStage,
-  required BoxFnExtractionResultExtractionConfigDartFnFutureBool shouldProcess,
-  required BoxFnExtractionResultDartFnFutureI64 estimatedDurationMs,
-  required BoxFnDartFnFutureI64 priority,
-}) => RustLib.instance.api.crateCreatePostProcessorDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  process: process,
-  processingStage: processingStage,
-  shouldProcess: shouldProcess,
-  estimatedDurationMs: estimatedDurationMs,
-  priority: priority,
-);
-
 /// Register a Dart implementation as a `PostProcessor` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_post_processor_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn PostProcessor>` wrapped by `PostProcessorDartImpl` to
+/// `kreuzberg::plugins::registry::get_post_processor_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerPostProcessor({required PostProcessorDartImpl impl}) =>
     RustLib.instance.api.crateRegisterPostProcessor(impl: impl);
 
@@ -851,26 +811,11 @@ Future<void> unregisterPostProcessor({required String name}) =>
 Future<void> clearPostProcessors() =>
     RustLib.instance.api.crateClearPostProcessors();
 
-/// Create a `ValidatorDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<ValidatorDartImpl> createValidatorDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnExtractionResultExtractionConfigDartFnFuture validate,
-  required BoxFnExtractionResultExtractionConfigDartFnFutureBool shouldValidate,
-  required BoxFnDartFnFutureI64 priority,
-}) => RustLib.instance.api.crateCreateValidatorDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  validate: validate,
-  shouldValidate: shouldValidate,
-  priority: priority,
-);
-
 /// Register a Dart implementation as a `Validator` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_validator_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn Validator>` wrapped by `ValidatorDartImpl` to
+/// `kreuzberg::plugins::registry::get_validator_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerValidator({required ValidatorDartImpl impl}) =>
     RustLib.instance.api.crateRegisterValidator(impl: impl);
 
@@ -883,24 +828,11 @@ Future<void> unregisterValidator({required String name}) =>
 /// Removes every plugin from `kreuzberg::plugins::registry::get_validator_registry()` and stringifies any host error.
 Future<void> clearValidators() => RustLib.instance.api.crateClearValidators();
 
-/// Create a `EmbeddingBackendDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<EmbeddingBackendDartImpl> createEmbeddingBackendDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnDartFnFutureI64 dimensions,
-  required BoxFnVecStringDartFnFutureVecVecF64 embed,
-}) => RustLib.instance.api.crateCreateEmbeddingBackendDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  dimensions: dimensions,
-  embed: embed,
-);
-
 /// Register a Dart implementation as a `EmbeddingBackend` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_embedding_backend_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn EmbeddingBackend>` wrapped by `EmbeddingBackendDartImpl` to
+/// `kreuzberg::plugins::registry::get_embedding_backend_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerEmbeddingBackend({
   required EmbeddingBackendDartImpl impl,
 }) => RustLib.instance.api.crateRegisterEmbeddingBackend(impl: impl);
@@ -915,32 +847,11 @@ Future<void> unregisterEmbeddingBackend({required String name}) =>
 Future<void> clearEmbeddingBackends() =>
     RustLib.instance.api.crateClearEmbeddingBackends();
 
-/// Create a `DocumentExtractorDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<DocumentExtractorDartImpl> createDocumentExtractorDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  extractBytes,
-  required BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  extractFile,
-  required BoxFnDartFnFutureVecString supportedMimeTypes,
-  required BoxFnDartFnFutureI64 priority,
-  required BoxFnStringStringDartFnFutureBool canHandle,
-}) => RustLib.instance.api.crateCreateDocumentExtractorDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  extractBytes: extractBytes,
-  extractFile: extractFile,
-  supportedMimeTypes: supportedMimeTypes,
-  priority: priority,
-  canHandle: canHandle,
-);
-
 /// Register a Dart implementation as a `DocumentExtractor` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_document_extractor_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn DocumentExtractor>` wrapped by `DocumentExtractorDartImpl` to
+/// `kreuzberg::plugins::registry::get_document_extractor_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerDocumentExtractor({
   required DocumentExtractorDartImpl impl,
 }) => RustLib.instance.api.crateRegisterDocumentExtractor(impl: impl);
@@ -955,22 +866,11 @@ Future<void> unregisterDocumentExtractor({required String name}) =>
 Future<void> clearDocumentExtractors() =>
     RustLib.instance.api.crateClearDocumentExtractors();
 
-/// Create a `RendererDartImpl` from Dart callback closures.
-/// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
-Future<RendererDartImpl> createRendererDartImpl({
-  required String pluginName,
-  required String pluginVersion,
-  required BoxFnInternalDocumentDartFnFutureString render,
-}) => RustLib.instance.api.crateCreateRendererDartImpl(
-  pluginName: pluginName,
-  pluginVersion: pluginVersion,
-  render: render,
-);
-
 /// Register a Dart implementation as a `Renderer` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_renderer_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn Renderer>` wrapped by `RendererDartImpl` to
+/// `kreuzberg::plugins::registry::get_renderer_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 Future<void> registerRenderer({required RendererDartImpl impl}) =>
     RustLib.instance.api.crateRegisterRenderer(impl: impl);
 
@@ -983,82 +883,65 @@ Future<void> unregisterRenderer({required String name}) =>
 /// Removes every plugin from `kreuzberg::plugins::registry::get_renderer_registry()` and stringifies any host error.
 Future<void> clearRenderers() => RustLib.instance.api.crateClearRenderers();
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < OcrBackendType > + Send + Sync >>>
-abstract class BoxFnDartFnFutureOcrBackendType implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>
+abstract class ArcDocumentExtractor implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < ProcessingStage > + Send + Sync >>>
-abstract class BoxFnDartFnFutureProcessingStage
-    implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>
+abstract class ArcEmbeddingBackend implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < Vec < String > > + Send + Sync >>>
-abstract class BoxFnDartFnFutureVecString implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>
+abstract class ArcOcrBackend implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < bool > + Send + Sync >>>
-abstract class BoxFnDartFnFutureBool implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>
+abstract class ArcPostProcessor implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn () -> DartFnFuture < i64 > + Send + Sync >>>
-abstract class BoxFnDartFnFutureI64 implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>
+abstract class ArcRenderer implements RustOpaqueInterface {}
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult) -> DartFnFuture < i64 > + Send + Sync >>>
-abstract class BoxFnExtractionResultDartFnFutureI64
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult , ExtractionConfig) -> DartFnFuture < () > + Send + Sync >>>
-abstract class BoxFnExtractionResultExtractionConfigDartFnFuture
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (ExtractionResult , ExtractionConfig) -> DartFnFuture < bool > + Send + Sync >>>
-abstract class BoxFnExtractionResultExtractionConfigDartFnFutureBool
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (InternalDocument) -> DartFnFuture < String > + Send + Sync >>>
-abstract class BoxFnInternalDocumentDartFnFutureString
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String) -> DartFnFuture < bool > + Send + Sync >>>
-abstract class BoxFnStringDartFnFutureBool implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , OcrConfig) -> DartFnFuture < ExtractionResult > + Send + Sync >>>
-abstract class BoxFnStringOcrConfigDartFnFutureExtractionResult
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String) -> DartFnFuture < bool > + Send + Sync >>>
-abstract class BoxFnStringStringDartFnFutureBool
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (String , String , ExtractionConfig) -> DartFnFuture < InternalDocument > + Send + Sync >>>
-abstract class BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < String >) -> DartFnFuture < Vec < Vec < f64 > > > + Send + Sync >>>
-abstract class BoxFnVecStringDartFnFutureVecVecF64
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < u8 > , OcrConfig) -> DartFnFuture < ExtractionResult > + Send + Sync >>>
-abstract class BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-    implements RustOpaqueInterface {}
-
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box < dyn Fn (Vec < u8 > , String , ExtractionConfig) -> DartFnFuture < InternalDocument > + Send + Sync >>>
-abstract class BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-    implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>
+abstract class ArcValidator implements RustOpaqueInterface {}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>>
-abstract class DocumentExtractorDartImpl implements RustOpaqueInterface {}
+abstract class DocumentExtractorDartImpl implements RustOpaqueInterface {
+  ArcDocumentExtractor get field0;
+
+  set field0(ArcDocumentExtractor field0);
+}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>
-abstract class EmbeddingBackendDartImpl implements RustOpaqueInterface {}
+abstract class EmbeddingBackendDartImpl implements RustOpaqueInterface {
+  ArcEmbeddingBackend get field0;
+
+  set field0(ArcEmbeddingBackend field0);
+}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>
-abstract class OcrBackendDartImpl implements RustOpaqueInterface {}
+abstract class OcrBackendDartImpl implements RustOpaqueInterface {
+  ArcOcrBackend get field0;
+
+  set field0(ArcOcrBackend field0);
+}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>>
-abstract class PostProcessorDartImpl implements RustOpaqueInterface {}
+abstract class PostProcessorDartImpl implements RustOpaqueInterface {
+  ArcPostProcessor get field0;
+
+  set field0(ArcPostProcessor field0);
+}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>
-abstract class RendererDartImpl implements RustOpaqueInterface {}
+abstract class RendererDartImpl implements RustOpaqueInterface {
+  ArcRenderer get field0;
+
+  set field0(ArcRenderer field0);
+}
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>
-abstract class ValidatorDartImpl implements RustOpaqueInterface {}
+abstract class ValidatorDartImpl implements RustOpaqueInterface {
+  ArcValidator get field0;
+
+  set field0(ArcValidator field0);
+}
 
 /// Hardware acceleration configuration for ONNX Runtime models.
 ///
@@ -1390,6 +1273,41 @@ class BoundingBox {
           y0 == other.y0 &&
           x1 == other.x1 &&
           y1 == other.y1;
+}
+
+class CacheStats {
+  final PlatformInt64 totalFiles;
+  final double totalSizeMb;
+  final double availableSpaceMb;
+  final double oldestFileAgeDays;
+  final double newestFileAgeDays;
+
+  const CacheStats({
+    required this.totalFiles,
+    required this.totalSizeMb,
+    required this.availableSpaceMb,
+    required this.oldestFileAgeDays,
+    required this.newestFileAgeDays,
+  });
+
+  @override
+  int get hashCode =>
+      totalFiles.hashCode ^
+      totalSizeMb.hashCode ^
+      availableSpaceMb.hashCode ^
+      oldestFileAgeDays.hashCode ^
+      newestFileAgeDays.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CacheStats &&
+          runtimeType == other.runtimeType &&
+          totalFiles == other.totalFiles &&
+          totalSizeMb == other.totalSizeMb &&
+          availableSpaceMb == other.availableSpaceMb &&
+          oldestFileAgeDays == other.oldestFileAgeDays &&
+          newestFileAgeDays == other.newestFileAgeDays;
 }
 
 /// A text chunk with optional embedding and metadata.

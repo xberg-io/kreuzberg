@@ -24,7 +24,6 @@ use super::cleanup::smart_cleanup_cache;
 /// Minimum seconds between automatic cleanup runs (5 minutes).
 const CLEANUP_INTERVAL_SECS: u64 = 300;
 
-#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CacheStats {
     pub total_files: usize,

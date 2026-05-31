@@ -24,15 +24,15 @@ pub(crate) fn is_j2k(bytes: &[u8]) -> bool {
 
 /// Image metadata extracted from an image file.
 #[derive(Debug, Clone)]
-pub struct ExtractedImageMetadata {
+pub(crate) struct ExtractedImageMetadata {
     /// Image width in pixels
-    pub width: u32,
+    pub(crate) width: u32,
     /// Image height in pixels
-    pub height: u32,
+    pub(crate) height: u32,
     /// Image format (e.g., "PNG", "JPEG")
-    pub format: String,
+    pub(crate) format: String,
     /// EXIF data if available
-    pub exif_data: HashMap<String, String>,
+    pub(crate) exif_data: HashMap<String, String>,
 }
 
 /// Parse JP2 file header boxes to extract image dimensions.

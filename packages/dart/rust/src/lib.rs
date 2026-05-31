@@ -13,8 +13,25 @@
 mod frb_generated;
 pub use flutter_rust_bridge::DartFnFuture;
 use flutter_rust_bridge::frb;
+
+/// Opaque JSON carrier for Rust's internal `InternalDocument` trait contract.
+/// Dart code should pass this value back to Alef-generated bridge APIs rather
+/// than treating it as the public `ExtractionResult` DTO.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct InternalDocumentBridge {
+    pub json: String,
+}
 #[allow(unused_imports)]
 pub use kreuzberg::InternalDocument;
+
+#[frb(mirror(CacheStats))]
+pub struct CacheStats {
+    pub total_files: i64,
+    pub total_size_mb: f64,
+    pub available_space_mb: f64,
+    pub oldest_file_age_days: f64,
+    pub newest_file_age_days: f64,
+}
 
 /// Hardware acceleration configuration for ONNX Runtime models.
 ///
@@ -1128,19 +1145,6 @@ pub struct StructuredDataResult {
     pub format: String,
     pub metadata: std::collections::HashMap<String, String>,
     pub text_fields: Vec<String>,
-}
-
-/// Image metadata extracted from an image file.
-#[frb(mirror(ExtractedImageMetadata))]
-pub struct ExtractedImageMetadata {
-    /// Image width in pixels
-    pub width: i64,
-    /// Image height in pixels
-    pub height: i64,
-    /// Image format (e.g., "PNG", "JPEG")
-    pub format: String,
-    /// EXIF data if available
-    pub exif_data: std::collections::HashMap<String, String>,
 }
 
 /// Application properties from docProps/app.xml for DOCX
@@ -3091,12 +3095,6 @@ pub struct Keyword {
     pub positions: Option<Vec<i64>>,
 }
 
-#[frb(mirror(OcrCacheStats))]
-pub struct OcrCacheStats {
-    pub total_files: i64,
-    pub total_size_mb: f64,
-}
-
 /// Configuration for PaddleOCR backend.
 ///
 /// Configures PaddleOCR text detection and recognition with multi-language support.
@@ -3441,14 +3439,6 @@ pub enum ListType {
     Lettered,
     /// Indented items
     Indented,
-}
-
-#[frb(mirror(FracType))]
-pub enum FracType {
-    Bar,
-    NoBar,
-    Linear,
-    Skewed,
 }
 
 /// OCR backend types.
@@ -4109,6 +4099,18 @@ pub enum KreuzbergError {
 
 // From<SourceT> conversions for bridge return types.
 
+impl From<kreuzberg::CacheStats> for CacheStats {
+    fn from(v: kreuzberg::CacheStats) -> Self {
+        CacheStats {
+            total_files: v.total_files as _,
+            total_size_mb: v.total_size_mb as _,
+            available_space_mb: v.available_space_mb as _,
+            oldest_file_age_days: v.oldest_file_age_days as _,
+            newest_file_age_days: v.newest_file_age_days as _,
+        }
+    }
+}
+
 impl From<kreuzberg::AccelerationConfig> for AccelerationConfig {
     fn from(v: kreuzberg::AccelerationConfig) -> Self {
         AccelerationConfig {
@@ -4529,17 +4531,6 @@ impl From<kreuzberg::extraction::structured::StructuredDataResult> for Structure
             format: v.format.into(),
             metadata: v.metadata.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
             text_fields: v.text_fields.into_iter().map(|s| s.into()).collect(),
-        }
-    }
-}
-
-impl From<kreuzberg::extraction::image::ExtractedImageMetadata> for ExtractedImageMetadata {
-    fn from(v: kreuzberg::extraction::image::ExtractedImageMetadata) -> Self {
-        ExtractedImageMetadata {
-            width: v.width as _,
-            height: v.height as _,
-            format: v.format.into(),
-            exif_data: v.exif_data.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 }
@@ -5773,15 +5764,6 @@ impl From<kreuzberg::Keyword> for Keyword {
     }
 }
 
-impl From<kreuzberg::ocr::OcrCacheStats> for OcrCacheStats {
-    fn from(v: kreuzberg::ocr::OcrCacheStats) -> Self {
-        OcrCacheStats {
-            total_files: v.total_files as _,
-            total_size_mb: v.total_size_mb as _,
-        }
-    }
-}
-
 impl From<kreuzberg::PaddleOcrConfig> for PaddleOcrConfig {
     fn from(v: kreuzberg::PaddleOcrConfig) -> Self {
         PaddleOcrConfig {
@@ -5992,17 +5974,6 @@ impl From<kreuzberg::extraction::transform::ListType> for ListType {
             kreuzberg::extraction::transform::ListType::Numbered => ListType::Numbered,
             kreuzberg::extraction::transform::ListType::Lettered => ListType::Lettered,
             kreuzberg::extraction::transform::ListType::Indented => ListType::Indented,
-        }
-    }
-}
-
-impl From<kreuzberg::extraction::docx::math::FracType> for FracType {
-    fn from(v: kreuzberg::extraction::docx::math::FracType) -> Self {
-        match v {
-            kreuzberg::extraction::docx::math::FracType::Bar => FracType::Bar,
-            kreuzberg::extraction::docx::math::FracType::NoBar => FracType::NoBar,
-            kreuzberg::extraction::docx::math::FracType::Linear => FracType::Linear,
-            kreuzberg::extraction::docx::math::FracType::Skewed => FracType::Skewed,
         }
     }
 }
@@ -8850,6 +8821,13 @@ pub fn list_embedding_presets() -> Vec<String> {
 // `create_<Type>_from_json` helpers — deserialize a JSON string into a mirror type.
 
 #[frb]
+pub fn create_cache_stats_from_json(json: String) -> Result<CacheStats, String> {
+    serde_json::from_str::<kreuzberg::CacheStats>(&json)
+        .map(CacheStats::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
 pub fn create_acceleration_config_from_json(json: String) -> Result<AccelerationConfig, String> {
     serde_json::from_str::<kreuzberg::AccelerationConfig>(&json)
         .map(AccelerationConfig::from)
@@ -9752,10 +9730,14 @@ pub fn create_pdf_metadata_from_json(json: String) -> Result<PdfMetadata, String
         .map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct OcrBackendDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct OcrBackendDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
@@ -9771,13 +9753,13 @@ pub struct OcrBackendDartImpl {
     process_document:
         Box<dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
 }
-impl ::std::fmt::Debug for OcrBackendDartImpl {
+impl ::std::fmt::Debug for OcrBackendDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("OcrBackendDartImpl").finish_non_exhaustive()
+        f.debug_struct("OcrBackendDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for OcrBackendDartImpl {
+impl kreuzberg::plugins::Plugin for OcrBackendDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -9796,7 +9778,7 @@ impl kreuzberg::plugins::Plugin for OcrBackendDartImpl {
 }
 
 #[async_trait::async_trait]
-impl kreuzberg::OcrBackend for OcrBackendDartImpl {
+impl kreuzberg::OcrBackend for OcrBackendDartCallbacks {
     async fn process_image(
         &self,
         image_bytes: &[u8],
@@ -9869,47 +9851,75 @@ impl kreuzberg::OcrBackend for OcrBackendDartImpl {
     }
 }
 
-/// Create a `OcrBackendDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `OcrBackend`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::OcrBackend;
+
+/// Public opaque handle returned by `create_ocr_backend_dart_impl(...)`.
+/// Wraps an `Arc<dyn OcrBackend + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct OcrBackendDartImpl {
+    pub field0: std::sync::Arc<dyn OcrBackend + Send + Sync>,
+}
+
+/// Construct a `OcrBackendDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_ocr_backend_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    process_image: Box<dyn Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync>,
-    process_image_file: Box<
-        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
-    >,
-    supports_language: Box<dyn Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    backend_type: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync>,
-    supported_languages: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    supports_table_detection: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    supports_document_processing: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
-    process_document: Box<
-        dyn Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult> + Send + Sync,
-    >,
+    process_image: impl Fn(Vec<u8>, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult>
+    + Send
+    + Sync
+    + 'static,
+    process_image_file: impl Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult>
+    + Send
+    + Sync
+    + 'static,
+    supports_language: impl Fn(String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync + 'static,
+    backend_type: impl Fn() -> flutter_rust_bridge::DartFnFuture<OcrBackendType> + Send + Sync + 'static,
+    supported_languages: impl Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync + 'static,
+    supports_table_detection: impl Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync + 'static,
+    supports_document_processing: impl Fn() -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync + 'static,
+    process_document: impl Fn(String, OcrConfig) -> flutter_rust_bridge::DartFnFuture<ExtractionResult>
+    + Send
+    + Sync
+    + 'static,
 ) -> OcrBackendDartImpl {
-    OcrBackendDartImpl {
+    let __impl = OcrBackendDartCallbacks {
         plugin_name,
         plugin_version,
-        process_image,
-        process_image_file,
-        supports_language,
-        backend_type,
-        supported_languages,
-        supports_table_detection,
-        supports_document_processing,
-        process_document,
+        process_image: Box::new(process_image),
+        process_image_file: Box::new(process_image_file),
+        supports_language: Box::new(supports_language),
+        backend_type: Box::new(backend_type),
+        supported_languages: Box::new(supported_languages),
+        supports_table_detection: Box::new(supports_table_detection),
+        supports_document_processing: Box::new(supports_document_processing),
+        process_document: Box::new(process_document),
+    };
+    OcrBackendDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `OcrBackend` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_ocr_backend_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn OcrBackend>` wrapped by `OcrBackendDartImpl` to
+/// `kreuzberg::plugins::registry::get_ocr_backend_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_ocr_backend(impl_: OcrBackendDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::OcrBackend> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_ocr_backend_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `OcrBackend` plugin by name.
@@ -9928,10 +9938,14 @@ pub fn clear_ocr_backends() -> Result<(), String> {
     registry.clear().map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct PostProcessorDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct PostProcessorDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
@@ -9943,13 +9957,13 @@ pub struct PostProcessorDartImpl {
     estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
     priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 }
-impl ::std::fmt::Debug for PostProcessorDartImpl {
+impl ::std::fmt::Debug for PostProcessorDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("PostProcessorDartImpl").finish_non_exhaustive()
+        f.debug_struct("PostProcessorDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for PostProcessorDartImpl {
+impl kreuzberg::plugins::Plugin for PostProcessorDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -9968,7 +9982,7 @@ impl kreuzberg::plugins::Plugin for PostProcessorDartImpl {
 }
 
 #[async_trait::async_trait]
-impl kreuzberg::PostProcessor for PostProcessorDartImpl {
+impl kreuzberg::PostProcessor for PostProcessorDartCallbacks {
     async fn process(
         &self,
         result: &mut kreuzberg::ExtractionResult,
@@ -10015,39 +10029,63 @@ impl kreuzberg::PostProcessor for PostProcessorDartImpl {
     }
 }
 
-/// Create a `PostProcessorDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `PostProcessor`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::PostProcessor;
+
+/// Public opaque handle returned by `create_post_processor_dart_impl(...)`.
+/// Wraps an `Arc<dyn PostProcessor + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct PostProcessorDartImpl {
+    pub field0: std::sync::Arc<dyn PostProcessor + Send + Sync>,
+}
+
+/// Construct a `PostProcessorDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_post_processor_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    process: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
-    processing_stage: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync>,
-    should_process: Box<
-        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
-    >,
-    estimated_duration_ms: Box<dyn Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    process: impl Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync + 'static,
+    processing_stage: impl Fn() -> flutter_rust_bridge::DartFnFuture<ProcessingStage> + Send + Sync + 'static,
+    should_process: impl Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+    + Send
+    + Sync
+    + 'static,
+    estimated_duration_ms: impl Fn(ExtractionResult) -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync + 'static,
+    priority: impl Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync + 'static,
 ) -> PostProcessorDartImpl {
-    PostProcessorDartImpl {
+    let __impl = PostProcessorDartCallbacks {
         plugin_name,
         plugin_version,
-        process,
-        processing_stage,
-        should_process,
-        estimated_duration_ms,
-        priority,
+        process: Box::new(process),
+        processing_stage: Box::new(processing_stage),
+        should_process: Box::new(should_process),
+        estimated_duration_ms: Box::new(estimated_duration_ms),
+        priority: Box::new(priority),
+    };
+    PostProcessorDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `PostProcessor` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_post_processor_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn PostProcessor>` wrapped by `PostProcessorDartImpl` to
+/// `kreuzberg::plugins::registry::get_post_processor_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_post_processor(impl_: PostProcessorDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::PostProcessor> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_post_processor_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `PostProcessor` plugin by name.
@@ -10066,10 +10104,14 @@ pub fn clear_post_processors() -> Result<(), String> {
     registry.clear().map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct ValidatorDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct ValidatorDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
@@ -10079,13 +10121,13 @@ pub struct ValidatorDartImpl {
         Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
     priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
 }
-impl ::std::fmt::Debug for ValidatorDartImpl {
+impl ::std::fmt::Debug for ValidatorDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("ValidatorDartImpl").finish_non_exhaustive()
+        f.debug_struct("ValidatorDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for ValidatorDartImpl {
+impl kreuzberg::plugins::Plugin for ValidatorDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -10104,7 +10146,7 @@ impl kreuzberg::plugins::Plugin for ValidatorDartImpl {
 }
 
 #[async_trait::async_trait]
-impl kreuzberg::Validator for ValidatorDartImpl {
+impl kreuzberg::Validator for ValidatorDartCallbacks {
     async fn validate(
         &self,
         result: &kreuzberg::ExtractionResult,
@@ -10134,35 +10176,59 @@ impl kreuzberg::Validator for ValidatorDartImpl {
     }
 }
 
-/// Create a `ValidatorDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `Validator`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::Validator;
+
+/// Public opaque handle returned by `create_validator_dart_impl(...)`.
+/// Wraps an `Arc<dyn Validator + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct ValidatorDartImpl {
+    pub field0: std::sync::Arc<dyn Validator + Send + Sync>,
+}
+
+/// Construct a `ValidatorDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_validator_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    validate: Box<dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync>,
-    should_validate: Box<
-        dyn Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync,
-    >,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
+    validate: impl Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<()> + Send + Sync + 'static,
+    should_validate: impl Fn(ExtractionResult, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<bool>
+    + Send
+    + Sync
+    + 'static,
+    priority: impl Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync + 'static,
 ) -> ValidatorDartImpl {
-    ValidatorDartImpl {
+    let __impl = ValidatorDartCallbacks {
         plugin_name,
         plugin_version,
-        validate,
-        should_validate,
-        priority,
+        validate: Box::new(validate),
+        should_validate: Box::new(should_validate),
+        priority: Box::new(priority),
+    };
+    ValidatorDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `Validator` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_validator_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn Validator>` wrapped by `ValidatorDartImpl` to
+/// `kreuzberg::plugins::registry::get_validator_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_validator(impl_: ValidatorDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::Validator> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_validator_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `Validator` plugin by name.
@@ -10181,10 +10247,14 @@ pub fn clear_validators() -> Result<(), String> {
     registry.clear().map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct EmbeddingBackendDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct EmbeddingBackendDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
@@ -10192,13 +10262,13 @@ pub struct EmbeddingBackendDartImpl {
     dimensions: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
     embed: Box<dyn Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
 }
-impl ::std::fmt::Debug for EmbeddingBackendDartImpl {
+impl ::std::fmt::Debug for EmbeddingBackendDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("EmbeddingBackendDartImpl").finish_non_exhaustive()
+        f.debug_struct("EmbeddingBackendDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for EmbeddingBackendDartImpl {
+impl kreuzberg::plugins::Plugin for EmbeddingBackendDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -10217,7 +10287,7 @@ impl kreuzberg::plugins::Plugin for EmbeddingBackendDartImpl {
 }
 
 #[async_trait::async_trait]
-impl kreuzberg::EmbeddingBackend for EmbeddingBackendDartImpl {
+impl kreuzberg::EmbeddingBackend for EmbeddingBackendDartCallbacks {
     fn dimensions(&self) -> usize {
         let __result = ::tokio::runtime::Builder::new_current_thread()
             .build()
@@ -10235,31 +10305,54 @@ impl kreuzberg::EmbeddingBackend for EmbeddingBackendDartImpl {
     }
 }
 
-/// Create a `EmbeddingBackendDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `EmbeddingBackend`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::EmbeddingBackend;
+
+/// Public opaque handle returned by `create_embedding_backend_dart_impl(...)`.
+/// Wraps an `Arc<dyn EmbeddingBackend + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct EmbeddingBackendDartImpl {
+    pub field0: std::sync::Arc<dyn EmbeddingBackend + Send + Sync>,
+}
+
+/// Construct a `EmbeddingBackendDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_embedding_backend_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    dimensions: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    embed: Box<dyn Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
+    dimensions: impl Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync + 'static,
+    embed: impl Fn(Vec<String>) -> flutter_rust_bridge::DartFnFuture<Vec<Vec<f64>>> + Send + Sync + 'static,
 ) -> EmbeddingBackendDartImpl {
-    EmbeddingBackendDartImpl {
+    let __impl = EmbeddingBackendDartCallbacks {
         plugin_name,
         plugin_version,
-        dimensions,
-        embed,
+        dimensions: Box::new(dimensions),
+        embed: Box::new(embed),
+    };
+    EmbeddingBackendDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `EmbeddingBackend` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_embedding_backend_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn EmbeddingBackend>` wrapped by `EmbeddingBackendDartImpl` to
+/// `kreuzberg::plugins::registry::get_embedding_backend_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_embedding_backend(impl_: EmbeddingBackendDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::EmbeddingBackend> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_embedding_backend_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `EmbeddingBackend` plugin by name.
@@ -10278,21 +10371,25 @@ pub fn clear_embedding_backends() -> Result<(), String> {
     registry.clear().map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct DocumentExtractorDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct DocumentExtractorDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
     extract_bytes: Box<
-        dyn Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::InternalDocument>
+        dyn Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocumentBridge>
             + Send
             + Sync,
     >,
     extract_file: Box<
-        dyn Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::InternalDocument>
+        dyn Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocumentBridge>
             + Send
             + Sync,
     >,
@@ -10300,13 +10397,13 @@ pub struct DocumentExtractorDartImpl {
     priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
     can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
 }
-impl ::std::fmt::Debug for DocumentExtractorDartImpl {
+impl ::std::fmt::Debug for DocumentExtractorDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("DocumentExtractorDartImpl").finish_non_exhaustive()
+        f.debug_struct("DocumentExtractorDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for DocumentExtractorDartImpl {
+impl kreuzberg::plugins::Plugin for DocumentExtractorDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -10325,7 +10422,7 @@ impl kreuzberg::plugins::Plugin for DocumentExtractorDartImpl {
 }
 
 #[async_trait::async_trait]
-impl kreuzberg::DocumentExtractor for DocumentExtractorDartImpl {
+impl kreuzberg::DocumentExtractor for DocumentExtractorDartCallbacks {
     async fn extract_bytes(
         &self,
         content: &[u8],
@@ -10335,7 +10432,10 @@ impl kreuzberg::DocumentExtractor for DocumentExtractorDartImpl {
         let content = content.to_vec();
         let mime_type = mime_type.to_string();
         let config = ExtractionConfig::from(config.clone());
-        Ok((self.extract_bytes)(content, mime_type, config).await.into())
+        let __ret_bridge: InternalDocumentBridge = (self.extract_bytes)(content, mime_type, config).await;
+        let __ret: kreuzberg::InternalDocument =
+            serde_json::from_str(&__ret_bridge.json).expect("deserialize InternalDocument from Dart trait bridge");
+        Ok(__ret)
     }
 
     async fn extract_file(
@@ -10347,7 +10447,10 @@ impl kreuzberg::DocumentExtractor for DocumentExtractorDartImpl {
         let path = path.to_string_lossy().into_owned();
         let mime_type = mime_type.to_string();
         let config = ExtractionConfig::from(config.clone());
-        Ok((self.extract_file)(path, mime_type, config).await.into())
+        let __ret_bridge: InternalDocumentBridge = (self.extract_file)(path, mime_type, config).await;
+        let __ret: kreuzberg::InternalDocument =
+            serde_json::from_str(&__ret_bridge.json).expect("deserialize InternalDocument from Dart trait bridge");
+        Ok(__ret)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -10381,45 +10484,66 @@ impl kreuzberg::DocumentExtractor for DocumentExtractorDartImpl {
     }
 }
 
-/// Create a `DocumentExtractorDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `DocumentExtractor`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::DocumentExtractor;
+
+/// Public opaque handle returned by `create_document_extractor_dart_impl(...)`.
+/// Wraps an `Arc<dyn DocumentExtractor + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct DocumentExtractorDartImpl {
+    pub field0: std::sync::Arc<dyn DocumentExtractor + Send + Sync>,
+}
+
+/// Construct a `DocumentExtractorDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_document_extractor_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    extract_bytes: Box<
-        dyn Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::InternalDocument>
-            + Send
-            + Sync,
-    >,
-    extract_file: Box<
-        dyn Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<kreuzberg::InternalDocument>
-            + Send
-            + Sync,
-    >,
-    supported_mime_types: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync>,
-    priority: Box<dyn Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync>,
-    can_handle: Box<dyn Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync>,
+    extract_bytes: impl Fn(Vec<u8>, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocumentBridge>
+    + Send
+    + Sync
+    + 'static,
+    extract_file: impl Fn(String, String, ExtractionConfig) -> flutter_rust_bridge::DartFnFuture<InternalDocumentBridge>
+    + Send
+    + Sync
+    + 'static,
+    supported_mime_types: impl Fn() -> flutter_rust_bridge::DartFnFuture<Vec<String>> + Send + Sync + 'static,
+    priority: impl Fn() -> flutter_rust_bridge::DartFnFuture<i64> + Send + Sync + 'static,
+    can_handle: impl Fn(String, String) -> flutter_rust_bridge::DartFnFuture<bool> + Send + Sync + 'static,
 ) -> DocumentExtractorDartImpl {
-    DocumentExtractorDartImpl {
+    let __impl = DocumentExtractorDartCallbacks {
         plugin_name,
         plugin_version,
-        extract_bytes,
-        extract_file,
-        supported_mime_types,
-        priority,
-        can_handle,
+        extract_bytes: Box::new(extract_bytes),
+        extract_file: Box::new(extract_file),
+        supported_mime_types: Box::new(supported_mime_types),
+        priority: Box::new(priority),
+        can_handle: Box::new(can_handle),
+    };
+    DocumentExtractorDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `DocumentExtractor` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_document_extractor_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn DocumentExtractor>` wrapped by `DocumentExtractorDartImpl` to
+/// `kreuzberg::plugins::registry::get_document_extractor_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_document_extractor(impl_: DocumentExtractorDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::DocumentExtractor> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_document_extractor_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `DocumentExtractor` plugin by name.
@@ -10438,23 +10562,27 @@ pub fn clear_document_extractors() -> Result<(), String> {
     registry.clear().map_err(|e| e.to_string())
 }
 
-/// FRB opaque handle holding Dart callbacks for each trait method.
-/// Dart-side: register callbacks via `create_{snake}_dart_impl(...)` factory.
-#[frb(opaque)]
-pub struct RendererDartImpl {
+/// Internal Rust-side storage for Dart-provided plugin callbacks.
+/// Not exposed via FRB (private to the bridge crate). The public factory
+/// `create_{trait_snake}_dart_impl(...)` wraps an `Arc<dyn Trait + Send + Sync>`
+/// of this struct in the public opaque `{Trait}DartImpl` newtype. Hiding the
+/// closure fields behind the wrapper keeps FRB from walking them and silently
+/// dropping the factory (FRB v2 cannot generate callable Dart classes for
+/// `Box<dyn Fn(...)>` opaque-struct fields).
+struct RendererDartCallbacks {
     /// Plugin name used by the Plugin super-trait impl.
     plugin_name: String,
     /// Plugin version used by the Plugin super-trait impl.
     plugin_version: String,
-    render: Box<dyn Fn(kreuzberg::InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
+    render: Box<dyn Fn(InternalDocumentBridge) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
 }
-impl ::std::fmt::Debug for RendererDartImpl {
+impl ::std::fmt::Debug for RendererDartCallbacks {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        f.debug_struct("RendererDartImpl").finish_non_exhaustive()
+        f.debug_struct("RendererDartCallbacks").finish_non_exhaustive()
     }
 }
 
-impl kreuzberg::plugins::Plugin for RendererDartImpl {
+impl kreuzberg::plugins::Plugin for RendererDartCallbacks {
     fn name(&self) -> &str {
         &self.plugin_name
     }
@@ -10472,40 +10600,66 @@ impl kreuzberg::plugins::Plugin for RendererDartImpl {
     }
 }
 
-impl kreuzberg::Renderer for RendererDartImpl {
+impl kreuzberg::Renderer for RendererDartCallbacks {
     fn render(&self, doc: &kreuzberg::InternalDocument) -> kreuzberg::Result<String> {
         let doc = doc.clone();
+        let __doc_local = InternalDocumentBridge {
+            json: serde_json::to_string(&doc).expect("serialize InternalDocument for Dart trait bridge"),
+        };
         let __result = ::tokio::runtime::Builder::new_current_thread()
             .build()
             .expect("build alef visitor tokio runtime")
-            .block_on(async { (self.render)(doc).await });
+            .block_on(async { (self.render)(__doc_local).await });
         Ok(__result)
     }
 }
 
-/// Create a `RendererDartImpl` from Dart callback closures.
+/// Re-exported so FRB's generated `frb_generated.rs` (which strips `dyn` and the
+/// qualified path when copying the wrapper's inner type) can resolve `Renderer`
+/// as a bare ident via its `use crate::*;` preamble.
+pub use kreuzberg::Renderer;
+
+/// Public opaque handle returned by `create_renderer_dart_impl(...)`.
+/// Wraps an `Arc<dyn Renderer + Send + Sync>` whose backing object carries the
+/// Dart-side callbacks (private to this crate). The wrapper has no closure
+/// fields itself, so FRB can bridge it as an opaque type without seeing the
+/// callbacks.
+#[frb(opaque)]
+pub struct RendererDartImpl {
+    pub field0: std::sync::Arc<dyn Renderer + Send + Sync>,
+}
+
+/// Construct a `RendererDartImpl` from Dart callback closures.
+/// FRB synthesises a Dart-callable function type for each closure parameter,
+/// which is the whole point of taking them as `impl Fn(...) -> DartFnFuture<R>`
+/// parameters rather than storing them as `Box<dyn Fn(...)>` fields on an opaque
+/// struct (FRB v2 silently drops factories that return opaque structs whose fields
+/// it cannot bridge). The returned wrapper holds an `Arc<dyn Trait + Send + Sync>`
+/// whose backing object carries the supplied callbacks privately.
 /// `plugin_name` and `plugin_version` are required for the Plugin super-trait.
 pub fn create_renderer_dart_impl(
     plugin_name: String,
     plugin_version: String,
-    render: Box<dyn Fn(kreuzberg::InternalDocument) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync>,
+    render: impl Fn(InternalDocumentBridge) -> flutter_rust_bridge::DartFnFuture<String> + Send + Sync + 'static,
 ) -> RendererDartImpl {
-    RendererDartImpl {
+    let __impl = RendererDartCallbacks {
         plugin_name,
         plugin_version,
-        render,
+        render: Box::new(render),
+    };
+    RendererDartImpl {
+        field0: std::sync::Arc::new(__impl),
     }
 }
-
 /// Register a Dart implementation as a `Renderer` plugin.
 ///
-/// Wraps `impl_` in an `Arc` and inserts it into `kreuzberg::plugins::registry::get_renderer_registry()`.
-/// Errors from the host registry are stringified for FRB transport.
+/// Forwards the `Arc<dyn Renderer>` wrapped by `RendererDartImpl` to
+/// `kreuzberg::plugins::registry::get_renderer_registry()`. Errors from the host registry are stringified
+/// for FRB transport.
 pub fn register_renderer(impl_: RendererDartImpl) -> Result<(), String> {
-    let arc: std::sync::Arc<dyn kreuzberg::plugins::Renderer> = std::sync::Arc::new(impl_);
     let registry = kreuzberg::plugins::registry::get_renderer_registry();
     let mut registry = registry.write();
-    registry.register(arc).map_err(|e| e.to_string())
+    registry.register(impl_.field0).map_err(|e| e.to_string())
 }
 
 /// Unregister a previously-registered `Renderer` plugin by name.

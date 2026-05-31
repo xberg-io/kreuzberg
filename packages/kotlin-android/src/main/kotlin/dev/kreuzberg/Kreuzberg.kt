@@ -105,7 +105,7 @@ object Kreuzberg {
      * Returns `KreuzbergError.Validation` if MIME type is invalid.
      * Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
      */
-    fun extractBytes(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult {
+    fun extractBytes(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult {
         val resultJson = KreuzbergBridge.nativeExtractBytes(content, mimeType, mapper.writeValueAsString(config))
         return mapper.readValue(resultJson, ExtractionResult::class.java)
     }
@@ -130,7 +130,7 @@ object Kreuzberg {
      * Returns `KreuzbergError.Validation` if MIME type is invalid.
      * Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
      */
-    suspend fun extractBytesAsync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult =
+    suspend fun extractBytesAsync(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult =
         withContext(Dispatchers.IO) { extractBytes(content, mimeType, config) }
 
     /**
@@ -224,7 +224,7 @@ object Kreuzberg {
      * With the `tokio-runtime` feature, this blocks the current thread using the global
      * Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
      */
-    fun extractBytesSync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult {
+    fun extractBytesSync(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult {
         val resultJson = KreuzbergBridge.nativeExtractBytesSync(content, mimeType, mapper.writeValueAsString(config))
         return mapper.readValue(resultJson, ExtractionResult::class.java)
     }
@@ -238,7 +238,7 @@ object Kreuzberg {
      * With the `tokio-runtime` feature, this blocks the current thread using the global
      * Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
      */
-    suspend fun extractBytesSyncAsync(content: String, mimeType: String, config: ExtractionConfig): ExtractionResult =
+    suspend fun extractBytesSyncAsync(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult =
         withContext(Dispatchers.IO) { extractBytesSync(content, mimeType, config) }
 
     /**
@@ -430,7 +430,7 @@ object Kreuzberg {
      *
      * Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
      */
-    fun detectMimeTypeFromBytes(content: String): String = KreuzbergBridge.nativeDetectMimeTypeFromBytes(content)
+    fun detectMimeTypeFromBytes(content: ByteArray): String = KreuzbergBridge.nativeDetectMimeTypeFromBytes(content)
     /**
      * Get file extensions for a given MIME type.
      *
@@ -635,7 +635,7 @@ object Kreuzberg {
      * Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
      * or rendered, or if `page_index` is out of range.
      */
-    fun renderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int? = null, password: String? = null): ByteArray = KreuzbergBridge.nativeRenderPdfPageToPng(pdfBytes, pageIndex, dpi ?: 0, password ?: "")
+    fun renderPdfPageToPng(pdfBytes: ByteArray, pageIndex: Long, dpi: Int? = null, password: String? = null): ByteArray = KreuzbergBridge.nativeRenderPdfPageToPng(pdfBytes, pageIndex, dpi ?: 0, password ?: "")
     /**
      * Detect the MIME type of a file at the given path.
      *

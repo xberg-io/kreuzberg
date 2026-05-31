@@ -545,7 +545,7 @@ abstract class DocumentExtractor {
   /// - `KreuzbergError::Io` - I/O errors (these always bubble up)
   /// - `KreuzbergError::MissingDependency` - Required dependency not available
   /// throws anyhow::Error on failure
-  Future<InternalDocument> extractBytes(Uint8List content, String mimeType, ExtractionConfig config);
+  Future<InternalDocumentBridge> extractBytes(Uint8List content, String mimeType, ExtractionConfig config);
   /// Extract content from a file.
   ///
   /// Default implementation reads the file and calls `extract_bytes`.
@@ -565,7 +565,7 @@ abstract class DocumentExtractor {
   ///
   /// Same as `extract_bytes`, plus file I/O errors.
   /// throws anyhow::Error on failure
-  Future<InternalDocument> extractFile(String path, String mimeType, ExtractionConfig config);
+  Future<InternalDocumentBridge> extractFile(String path, String mimeType, ExtractionConfig config);
   /// Get the list of MIME types supported by this extractor.
   ///
   /// Can include exact MIME types and prefix patterns:
@@ -638,18 +638,21 @@ abstract class Renderer {
   ///
   /// Returns an error if rendering fails.
   /// throws anyhow::Error on failure
-  Future<String> render(InternalDocument doc);
+  Future<String> render(InternalDocumentBridge doc);
 }
 
+
+/// Opaque JSON carrier for Rust's internal InternalDocument trait contract.
+final class InternalDocumentBridge {
+  const InternalDocumentBridge({required this.json});
+  final String json;
+}
 
 /// OCR backend type identifier — used by e2e test plugin_api stubs.
 enum OcrBackendType { tesseract, easyocr, paddleocr, rapidocr }
 
 /// Processing stage for post-processors — used by e2e test plugin_api stubs.
 enum ProcessingStage { preProcessing, processing, postProcessing }
-
-/// Internal document representation — used by e2e test plugin_api stubs.
-class InternalDocument {}
 
 /// Synchronous extractor trait stub — used by e2e test plugin_api stubs.
 abstract class SyncExtractor {}

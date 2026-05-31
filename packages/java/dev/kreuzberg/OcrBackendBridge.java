@@ -273,8 +273,7 @@ public final class OcrBackendBridge implements AutoCloseable {
     private int handleBackendType(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
             String result = impl.backend_type();
-            String json = JSON.writeValueAsString(result);
-            MemorySegment jsonCs = arena.allocateFrom(json);
+            MemorySegment jsonCs = arena.allocateFrom(result);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {

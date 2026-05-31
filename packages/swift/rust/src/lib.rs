@@ -34,6 +34,28 @@ fn __alef_tokio_runtime() -> &'static ::tokio::runtime::Runtime {
 #[swift_bridge::bridge]
 mod ffi {
     extern "Rust" {
+        type CacheStats;
+        #[swift_bridge(init)]
+        fn new(
+            total_files: usize,
+            total_size_mb: f64,
+            available_space_mb: f64,
+            oldest_file_age_days: f64,
+            newest_file_age_days: f64,
+        ) -> CacheStats;
+        #[swift_bridge(swift_name = "totalFiles")]
+        fn total_files(&self) -> usize;
+        #[swift_bridge(swift_name = "totalSizeMb")]
+        fn total_size_mb(&self) -> f64;
+        #[swift_bridge(swift_name = "availableSpaceMb")]
+        fn available_space_mb(&self) -> f64;
+        #[swift_bridge(swift_name = "oldestFileAgeDays")]
+        fn oldest_file_age_days(&self) -> f64;
+        #[swift_bridge(swift_name = "newestFileAgeDays")]
+        fn newest_file_age_days(&self) -> f64;
+    }
+
+    extern "Rust" {
         type AccelerationConfig;
         #[swift_bridge(init)]
         fn new(provider: ExecutionProviderType, device_id: u32) -> AccelerationConfig;
@@ -732,15 +754,6 @@ mod ffi {
         fn metadata(&self) -> String;
         #[swift_bridge(swift_name = "textFields")]
         fn text_fields(&self) -> Vec<String>;
-    }
-
-    extern "Rust" {
-        type ExtractedImageMetadata;
-        fn width(&self) -> u32;
-        fn height(&self) -> u32;
-        fn format(&self) -> String;
-        #[swift_bridge(swift_name = "exifData")]
-        fn exif_data(&self) -> String;
     }
 
     extern "Rust" {
@@ -2290,16 +2303,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type OcrCacheStats;
-        #[swift_bridge(init)]
-        fn new(total_files: usize, total_size_mb: f64) -> OcrCacheStats;
-        #[swift_bridge(swift_name = "totalFiles")]
-        fn total_files(&self) -> usize;
-        #[swift_bridge(swift_name = "totalSizeMb")]
-        fn total_size_mb(&self) -> f64;
-    }
-
-    extern "Rust" {
         type PaddleOcrConfig;
         #[swift_bridge(init)]
         fn new(
@@ -2467,11 +2470,6 @@ mod ffi {
 
     extern "Rust" {
         type ListType;
-        fn to_string(&self) -> String;
-    }
-
-    extern "Rust" {
-        type FracType;
         fn to_string(&self) -> String;
     }
 
@@ -2888,6 +2886,8 @@ mod ffi {
         fn ocr_extraction_result_from_json(json: String) -> Result<OcrExtractionResult, String>;
     }
     extern "Rust" {
+        #[swift_bridge(swift_name = "cacheStatsFromJson")]
+        fn cache_stats_from_json(json: String) -> Result<CacheStats, String>;
         #[swift_bridge(swift_name = "accelerationConfigFromJson")]
         fn acceleration_config_from_json(json: String) -> Result<AccelerationConfig, String>;
         #[swift_bridge(swift_name = "contentFilterConfigFromJson")]
@@ -3206,6 +3206,55 @@ mod ffi {
         fn paddle_language_from_json(json: String) -> Result<PaddleLanguage, String>;
         #[swift_bridge(swift_name = "layoutClassFromJson")]
         fn layout_class_from_json(json: String) -> Result<LayoutClass, String>;
+    }
+}
+
+pub struct CacheStats(pub kreuzberg::CacheStats);
+impl CacheStats {
+    pub fn new(
+        total_files: usize,
+        total_size_mb: f64,
+        available_space_mb: f64,
+        oldest_file_age_days: f64,
+        newest_file_age_days: f64,
+    ) -> CacheStats {
+        CacheStats(kreuzberg::CacheStats {
+            total_files,
+            total_size_mb,
+            available_space_mb,
+            oldest_file_age_days,
+            newest_file_age_days,
+        })
+    }
+    pub fn total_files(&self) -> usize {
+        ::serde_json::to_value(&self.0.total_files)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn total_size_mb(&self) -> f64 {
+        ::serde_json::to_value(&self.0.total_size_mb)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn available_space_mb(&self) -> f64 {
+        ::serde_json::to_value(&self.0.available_space_mb)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn oldest_file_age_days(&self) -> f64 {
+        ::serde_json::to_value(&self.0.oldest_file_age_days)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn newest_file_age_days(&self) -> f64 {
+        ::serde_json::to_value(&self.0.newest_file_age_days)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
 }
 
@@ -5128,22 +5177,6 @@ impl StructuredDataResult {
             .ok()
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
-    }
-}
-
-pub struct ExtractedImageMetadata(pub kreuzberg::extraction::image::ExtractedImageMetadata);
-impl ExtractedImageMetadata {
-    pub fn width(&self) -> u32 {
-        self.0.width.clone()
-    }
-    pub fn height(&self) -> u32 {
-        self.0.height.clone()
-    }
-    pub fn format(&self) -> String {
-        format!("{:?}", &self.0.format)
-    }
-    pub fn exif_data(&self) -> String {
-        serde_json::to_string(&self.0.exif_data).expect("serializable exif_data")
     }
 }
 
@@ -9756,22 +9789,6 @@ impl Keyword {
     }
 }
 
-pub struct OcrCacheStats(pub kreuzberg::ocr::OcrCacheStats);
-impl OcrCacheStats {
-    pub fn new(total_files: usize, total_size_mb: f64) -> OcrCacheStats {
-        OcrCacheStats(kreuzberg::ocr::OcrCacheStats {
-            total_files,
-            total_size_mb,
-        })
-    }
-    pub fn total_files(&self) -> usize {
-        self.0.total_files.clone()
-    }
-    pub fn total_size_mb(&self) -> f64 {
-        self.0.total_size_mb.clone()
-    }
-}
-
 pub struct PaddleOcrConfig(pub kreuzberg::PaddleOcrConfig);
 impl PaddleOcrConfig {
     pub fn new(
@@ -10370,35 +10387,6 @@ impl ListType {
             Self::Numbered => "Numbered".to_string(),
             Self::Lettered => "Lettered".to_string(),
             Self::Indented => "Indented".to_string(),
-        }
-    }
-}
-
-pub enum FracType {
-    Bar,
-    NoBar,
-    Linear,
-    Skewed,
-}
-
-impl From<kreuzberg::extraction::docx::math::FracType> for FracType {
-    fn from(val: kreuzberg::extraction::docx::math::FracType) -> Self {
-        match val {
-            kreuzberg::extraction::docx::math::FracType::Bar => Self::Bar,
-            kreuzberg::extraction::docx::math::FracType::NoBar => Self::NoBar,
-            kreuzberg::extraction::docx::math::FracType::Linear => Self::Linear,
-            kreuzberg::extraction::docx::math::FracType::Skewed => Self::Skewed,
-        }
-    }
-}
-
-impl FracType {
-    pub fn to_string(&self) -> String {
-        match self {
-            Self::Bar => "Bar".to_string(),
-            Self::NoBar => "NoBar".to_string(),
-            Self::Linear => "Linear".to_string(),
-            Self::Skewed => "Skewed".to_string(),
         }
     }
 }
@@ -12453,6 +12441,11 @@ pub fn extraction_result_from_json(json: String) -> Result<ExtractionResult, Str
 pub fn ocr_extraction_result_from_json(json: String) -> Result<OcrExtractionResult, String> {
     serde_json::from_str::<kreuzberg::OcrExtractionResult>(&json)
         .map(OcrExtractionResult)
+        .map_err(|e| e.to_string())
+}
+pub fn cache_stats_from_json(json: String) -> Result<CacheStats, String> {
+    serde_json::from_str::<kreuzberg::CacheStats>(&json)
+        .map(CacheStats)
         .map_err(|e| e.to_string())
 }
 pub fn acceleration_config_from_json(json: String) -> Result<AccelerationConfig, String> {

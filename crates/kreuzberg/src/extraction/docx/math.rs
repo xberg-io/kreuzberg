@@ -12,7 +12,7 @@ use quick_xml::events::Event;
 // --- MathNode tree ---
 
 #[derive(Debug, Clone)]
-pub enum FracType {
+enum FracType {
     Bar,
     NoBar,
     Linear,
@@ -21,7 +21,7 @@ pub enum FracType {
 
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone)]
-pub enum MathNode {
+enum MathNode {
     /// Plain text from m:r/m:t
     Run(String),
     /// Superscript: base^{sup}

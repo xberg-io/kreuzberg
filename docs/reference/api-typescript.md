@@ -854,6 +854,18 @@ Bounding box coordinates for element positioning.
 
 ---
 
+#### CacheStats
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `totalFiles` | `number` | — | Total files |
+| `totalSizeMb` | `number` | — | Total size mb |
+| `availableSpaceMb` | `number` | — | Available space mb |
+| `oldestFileAgeDays` | `number` | — | Oldest file age days |
+| `newestFileAgeDays` | `number` | — | Newest file age days |
+
+---
+
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -1732,19 +1744,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind \| null` | `/* serde(default) */` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `number \| null` | `/* serde(default) */` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `number \| null` | `/* serde(default) */` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
----
-
-#### ExtractedImageMetadata
-
-Image metadata extracted from an image file.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `width` | `number` | — | Image width in pixels |
-| `height` | `number` | — | Image height in pixels |
-| `format` | `string` | — | Image format (e.g., "PNG", "JPEG") |
-| `exifData` | `Record<string, string>` | — | EXIF data if available |
 
 ---
 
@@ -2636,15 +2635,6 @@ Only called if `supports_document_processing` returns `true`.
 ```typescript
 processDocument(path: string, config: OcrConfig): ExtractionResult
 ```
-
----
-
-#### OcrCacheStats
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `totalFiles` | `number` | — | Total files |
-| `totalSizeMb` | `number` | — | Total size mb |
 
 ---
 
@@ -4512,17 +4502,6 @@ Type of list detection.
 | `Numbered` | Numbered lists (1., 2., etc.) |
 | `Lettered` | Lettered lists (a., b., A., B., etc.) |
 | `Indented` | Indented items |
-
----
-
-#### FracType
-
-| Value | Description |
-|-------|-------------|
-| `Bar` | Bar |
-| `NoBar` | No bar |
-| `Linear` | Linear |
-| `Skewed` | Skewed |
 
 ---
 

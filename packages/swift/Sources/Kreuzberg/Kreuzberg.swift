@@ -4,6 +4,42 @@
 import Foundation
 import RustBridge
 
+public struct CacheStats: Codable, Sendable, Hashable {
+    public let totalFiles: UInt
+    public let totalSizeMb: Double
+    public let availableSpaceMb: Double
+    public let oldestFileAgeDays: Double
+    public let newestFileAgeDays: Double
+    public init(totalFiles: UInt, totalSizeMb: Double, availableSpaceMb: Double, oldestFileAgeDays: Double, newestFileAgeDays: Double) {
+        self.totalFiles = totalFiles
+        self.totalSizeMb = totalSizeMb
+        self.availableSpaceMb = availableSpaceMb
+        self.oldestFileAgeDays = oldestFileAgeDays
+        self.newestFileAgeDays = newestFileAgeDays
+    }
+    private enum CodingKeys: String, CodingKey {
+        case totalFiles = "total_files"
+        case totalSizeMb = "total_size_mb"
+        case availableSpaceMb = "available_space_mb"
+        case oldestFileAgeDays = "oldest_file_age_days"
+        case newestFileAgeDays = "newest_file_age_days"
+    }
+}
+
+// MARK: - Internal FFI conversions for CacheStats
+internal extension CacheStats {
+    init(_ rb: RustBridge.CacheStatsRef) throws {
+        self.totalFiles = rb.totalFiles()
+        self.totalSizeMb = rb.totalSizeMb()
+        self.availableSpaceMb = rb.availableSpaceMb()
+        self.oldestFileAgeDays = rb.oldestFileAgeDays()
+        self.newestFileAgeDays = rb.newestFileAgeDays()
+    }
+    func intoRust() throws -> RustBridge.CacheStats {
+        return RustBridge.CacheStats(self.totalFiles, self.totalSizeMb, self.availableSpaceMb, self.oldestFileAgeDays, self.newestFileAgeDays)
+    }
+}
+
 /// Hardware acceleration configuration for ONNX Runtime models.
 ///
 /// Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
@@ -1214,9 +1250,6 @@ internal extension ServerConfig {
 }
 
 public typealias StructuredDataResult = RustBridge.StructuredDataResult
-
-/// Image metadata extracted from an image file.
-public typealias ExtractedImageMetadata = RustBridge.ExtractedImageMetadata
 
 /// Application properties from docProps/app.xml for DOCX
 ///
@@ -4761,8 +4794,6 @@ internal extension Keyword {
     }
 }
 
-public typealias OcrCacheStats = RustBridge.OcrCacheStats
-
 /// Configuration for PaddleOCR backend.
 ///
 /// Configures PaddleOCR text detection and recognition with multi-language support.
@@ -5306,8 +5337,6 @@ extension CodeContentMode {
 
 /// Type of list detection.
 public typealias ListType = RustBridge.ListType
-
-public typealias FracType = RustBridge.FracType
 
 /// OCR backend types.
 public enum OcrBackendType: String, Codable, Sendable, Hashable {
@@ -6417,14 +6446,14 @@ private func _loadBytesFromPathOrUtf8(_ pathOrContent: String) throws -> [UInt8]
     return [UInt8](pathOrContent.utf8)
 }
 
-public func extractBytes(_ content: [UInt8], _ mimeType: String, _ configJson: String) throws -> ExtractionResult {
+public func extractBytes(_ content: [UInt8], _ mimeType: String, _ configJson: String) async throws -> ExtractionResult {
     let config = try extractionConfigFromJson(configJson)
-    return try extractBytes(content: content, mimeType: mimeType, config: config)
+    return try await extractBytes(content: content, mimeType: mimeType, config: config)
 }
 
-public func extractFile(_ path: String, _ mimeType: String?, _ configJson: String) throws -> ExtractionResult {
+public func extractFile(_ path: String, _ mimeType: String?, _ configJson: String) async throws -> ExtractionResult {
     let config = try extractionConfigFromJson(configJson)
-    return try extractFile(path: path, mimeType: mimeType, config: config)
+    return try await extractFile(path: path, mimeType: mimeType, config: config)
 }
 
 public func extractFileSync(_ path: String, _ mimeType: String?, _ configJson: String) throws -> ExtractionResult {
@@ -6447,19 +6476,19 @@ public func batchExtractBytesSync(_ items: [BatchBytesItem], _ configJson: Strin
     return try batchExtractBytesSync(items: items, config: config)
 }
 
-public func batchExtractFiles(_ items: [BatchFileItem], _ configJson: String) throws -> [ExtractionResult] {
+public func batchExtractFiles(_ items: [BatchFileItem], _ configJson: String) async throws -> [ExtractionResult] {
     let config = try extractionConfigFromJson(configJson)
-    return try batchExtractFiles(items: items, config: config)
+    return try await batchExtractFiles(items: items, config: config)
 }
 
-public func batchExtractBytes(_ items: [BatchBytesItem], _ configJson: String) throws -> [ExtractionResult] {
+public func batchExtractBytes(_ items: [BatchBytesItem], _ configJson: String) async throws -> [ExtractionResult] {
     let config = try extractionConfigFromJson(configJson)
-    return try batchExtractBytes(items: items, config: config)
+    return try await batchExtractBytes(items: items, config: config)
 }
 
-public func embedTextsAsync(_ texts: [String], _ configJson: String) throws -> [[Float]] {
+public func embedTextsAsync(_ texts: [String], _ configJson: String) async throws -> [[Float]] {
     let config = try embeddingConfigFromJson(configJson)
-    return try embedTextsAsync(texts: texts, config: config)
+    return try await embedTextsAsync(texts: texts, config: config)
 }
 
 public func embedTexts(_ texts: [String], _ configJson: String) throws -> [[Float]] {
@@ -6471,6 +6500,11 @@ public func embedTexts(_ texts: [String], _ configJson: String) throws -> [[Floa
 // Public helpers that decode JSON into first-class Swift types.
 // First-class struct types (Codable) use JSONDecoder directly.
 // Opaque RustBridge types forward to RustBridge.
+
+public func cacheStatsFromJson(_ json: String) throws -> CacheStats {
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(CacheStats.self, from: data)
+}
 
 public func accelerationConfigFromJson(_ json: String) throws -> AccelerationConfig {
     let data = json.data(using: .utf8) ?? Data()

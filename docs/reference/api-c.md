@@ -854,6 +854,18 @@ Bounding box coordinates for element positioning.
 
 ---
 
+#### KreuzbergCacheStats
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `total_files` | `uintptr_t` | — | Total files |
+| `total_size_mb` | `double` | — | Total size mb |
+| `available_space_mb` | `double` | — | Available space mb |
+| `oldest_file_age_days` | `double` | — | Oldest file age days |
+| `newest_file_age_days` | `double` | — | Newest file age days |
+
+---
+
 #### KreuzbergChunk
 
 A text chunk with optional embedding and metadata.
@@ -1732,19 +1744,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `image_kind` | `KreuzbergImageKind*` | `/* serde(default) */` | Heuristic classification of what this image likely depicts. `NULL` if classification was disabled or inconclusive. |
 | `kind_confidence` | `float*` | `/* serde(default) */` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `uint32_t*` | `/* serde(default) */` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `NULL` for singletons. |
-
----
-
-#### KreuzbergExtractedImageMetadata
-
-Image metadata extracted from an image file.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `width` | `uint32_t` | — | Image width in pixels |
-| `height` | `uint32_t` | — | Image height in pixels |
-| `format` | `const char*` | — | Image format (e.g., "PNG", "JPEG") |
-| `exif_data` | `void*` | — | EXIF data if available |
 
 ---
 
@@ -2636,15 +2635,6 @@ Only called if `supports_document_processing` returns `true`.
 ```c
 KreuzbergExtractionResult kreuzberg_process_document(const char* path, KreuzbergOcrConfig config);
 ```
-
----
-
-#### KreuzbergOcrCacheStats
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `total_files` | `uintptr_t` | — | Total files |
-| `total_size_mb` | `double` | — | Total size mb |
 
 ---
 
@@ -4512,17 +4502,6 @@ Type of list detection.
 | `KREUZBERG_NUMBERED` | Numbered lists (1., 2., etc.) |
 | `KREUZBERG_LETTERED` | Lettered lists (a., b., A., B., etc.) |
 | `KREUZBERG_INDENTED` | Indented items |
-
----
-
-#### KreuzbergFracType
-
-| Value | Description |
-|-------|-------------|
-| `KREUZBERG_BAR` | Bar |
-| `KREUZBERG_NO_BAR` | No bar |
-| `KREUZBERG_LINEAR` | Linear |
-| `KREUZBERG_SKEWED` | Skewed |
 
 ---
 

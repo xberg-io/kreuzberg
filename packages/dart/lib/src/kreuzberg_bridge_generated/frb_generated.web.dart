@@ -21,68 +21,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   });
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendTypePtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync;
+  get rust_arc_decrement_strong_count_ArcDocumentExtractorPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStagePtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync;
+  get rust_arc_decrement_strong_count_ArcEmbeddingBackendPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureVecStringPtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync;
+  get rust_arc_decrement_strong_count_ArcOcrBackendPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureBoolPtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync;
+  get rust_arc_decrement_strong_count_ArcPostProcessorPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureI64Ptr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync;
+  get rust_arc_decrement_strong_count_ArcRendererPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64Ptr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuturePtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBoolPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureStringPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBoolPtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResultPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBoolPtr => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64Ptr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResultPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentPtr =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync;
+  get rust_arc_decrement_strong_count_ArcValidatorPtr => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync;
 
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_DocumentExtractorDartImplPtr => wire
@@ -109,98 +69,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl;
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureVecString
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureI64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+  ArcValidator
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     dynamic raw,
   );
 
@@ -241,6 +141,78 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  DocumentExtractorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  EmbeddingBackendDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  OcrBackendDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  PostProcessorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  RendererDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  ValidatorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  DocumentExtractorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  EmbeddingBackendDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  OcrBackendDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  PostProcessorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  RendererDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  );
+
+  @protected
+  ValidatorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    dynamic raw,
+  );
+
+  @protected
   Map<String, String> dco_decode_Map_String_String_None(dynamic raw);
 
   @protected
@@ -255,98 +227,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureVecString
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnDartFnFutureI64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     dynamic raw,
   );
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  );
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+  ArcValidator
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     dynamic raw,
   );
 
@@ -658,6 +570,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   YearRange dco_decode_box_autoadd_year_range(dynamic raw);
+
+  @protected
+  CacheStats dco_decode_cache_stats(dynamic raw);
 
   @protected
   Chunk dco_decode_chunk(dynamic raw);
@@ -1562,98 +1477,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   YearRange dco_decode_year_range(dynamic raw);
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureVecString
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureI64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+  ArcValidator
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
   );
 
@@ -1694,6 +1549,78 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  DocumentExtractorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EmbeddingBackendDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OcrBackendDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PostProcessorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RendererDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ValidatorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  DocumentExtractorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EmbeddingBackendDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  OcrBackendDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PostProcessorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  RendererDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ValidatorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   Map<String, String> sse_decode_Map_String_String_None(
     SseDeserializer deserializer,
   );
@@ -1714,98 +1641,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureVecString
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnDartFnFutureI64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     SseDeserializer deserializer,
   );
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+  ArcValidator
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
   );
 
@@ -2205,6 +2072,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   YearRange sse_decode_box_autoadd_year_range(SseDeserializer deserializer);
+
+  @protected
+  CacheStats sse_decode_cache_stats(SseDeserializer deserializer);
 
   @protected
   Chunk sse_decode_chunk(SseDeserializer deserializer);
@@ -3332,113 +3202,43 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
-    BoxFnDartFnFutureOcrBackendType self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    ArcDocumentExtractor self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
-    BoxFnDartFnFutureProcessingStage self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    ArcEmbeddingBackend self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-    BoxFnDartFnFutureVecString self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    ArcOcrBackend self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-    BoxFnDartFnFutureBool self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    ArcPostProcessor self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-    BoxFnDartFnFutureI64 self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    ArcRenderer self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    BoxFnExtractionResultDartFnFutureI64 self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFuture self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    BoxFnInternalDocumentDartFnFutureString self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    BoxFnStringDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnStringOcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    BoxFnStringStringDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnStringStringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    BoxFnVecStringDartFnFutureVecVecF64 self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnVecU8OcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    ArcValidator self,
     SseSerializer serializer,
   );
 
@@ -3485,6 +3285,90 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    DocumentExtractorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    EmbeddingBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    OcrBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    PostProcessorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    RendererDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    ValidatorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    DocumentExtractorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    EmbeddingBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    OcrBackendDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    PostProcessorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    RendererDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    ValidatorDartImpl self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_Map_String_String_None(
     Map<String, String> self,
     SseSerializer serializer,
@@ -3510,113 +3394,43 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
-    BoxFnDartFnFutureOcrBackendType self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    ArcDocumentExtractor self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
-    BoxFnDartFnFutureProcessingStage self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    ArcEmbeddingBackend self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-    BoxFnDartFnFutureVecString self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    ArcOcrBackend self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-    BoxFnDartFnFutureBool self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    ArcPostProcessor self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-    BoxFnDartFnFutureI64 self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    ArcRenderer self,
     SseSerializer serializer,
   );
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    BoxFnExtractionResultDartFnFutureI64 self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFuture self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    BoxFnInternalDocumentDartFnFutureString self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    BoxFnStringDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnStringOcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    BoxFnStringStringDartFnFutureBool self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnStringStringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    BoxFnVecStringDartFnFutureVecVecF64 self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnVecU8OcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    ArcValidator self,
     SseSerializer serializer,
   );
 
@@ -4144,6 +3958,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     YearRange self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_cache_stats(CacheStats self, SseSerializer serializer);
 
   @protected
   void sse_encode_chunk(Chunk self, SseSerializer serializer);
@@ -5568,258 +5385,98 @@ class RustLibWire implements BaseWire {
   RustLibWire.fromExternalLibrary(ExternalLibrary lib);
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr,
       );
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr,
       );
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr,
       );
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr,
       );
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr,
       );
 
   void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr,
       );
 
   void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr,
-      );
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  ) => wasmModule
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr,
       );
 
@@ -5927,162 +5584,62 @@ external RustLibWasmModule get wasmModule;
 @anonymous
 extension type RustLibWasmModule._(JSObject _) implements JSObject {
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   );
 
   external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    int ptr,
-  );
-
-  external void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
+  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     int ptr,
   );
 

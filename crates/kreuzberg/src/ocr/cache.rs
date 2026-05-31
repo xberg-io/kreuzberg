@@ -140,6 +140,7 @@ impl OcrCache {
     }
 }
 
+#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default)]
 pub struct OcrCacheStats {
     pub total_files: usize,

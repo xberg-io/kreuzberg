@@ -203,8 +203,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig config = JSON.readValue(config_json, ExtractionConfig.class);
             String result = impl.extract_bytes(content, mime_type, config);
-            String json = JSON.writeValueAsString(result);
-            MemorySegment jsonCs = arena.allocateFrom(json);
+            MemorySegment jsonCs = arena.allocateFrom(result);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {
@@ -227,8 +226,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig config = JSON.readValue(config_json, ExtractionConfig.class);
             String result = impl.extract_file(path, mime_type, config);
-            String json = JSON.writeValueAsString(result);
-            MemorySegment jsonCs = arena.allocateFrom(json);
+            MemorySegment jsonCs = arena.allocateFrom(result);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {

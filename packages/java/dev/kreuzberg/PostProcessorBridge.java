@@ -182,8 +182,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private int handleProcessingStage(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
             String result = impl.processing_stage();
-            String json = JSON.writeValueAsString(result);
-            MemorySegment jsonCs = arena.allocateFrom(json);
+            MemorySegment jsonCs = arena.allocateFrom(result);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {

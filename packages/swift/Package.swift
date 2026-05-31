@@ -1,9 +1,10 @@
 // swift-tools-version: 6.0
 import PackageDescription
 
-// NOTE: Run `cargo build -p kreuzberg-swift` before `swift build`.
-// The build step generates Swift + C bridge sources; copy them into Sources/RustBridge
-// and Sources/RustBridgeC before building. See README.md for the full workflow.
+// NOTE: Run `cargo build -p kreuzberg-swift` and then rerun `alef generate`
+// before `swift build`. Alef materializes the swift-bridge Swift/C outputs into
+// Sources/RustBridge and Sources/RustBridgeC when the Cargo build output exists.
+// See README.md for the full workflow.
 let package = Package(
   name: "Kreuzberg",
   platforms: [

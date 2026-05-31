@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -291804795;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 704675083;
 
 // Section: executor
 
@@ -47,6 +47,460 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__DocumentExtractorDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "DocumentExtractorDartImpl_auto_accessor_get_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok(api_that_guard.field0.clone())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__DocumentExtractorDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "DocumentExtractorDartImpl_auto_accessor_set_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            let api_field0 = <Arc<dyn DocumentExtractor + Send + Sync>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                        _ => unreachable!(),
+                    }
+                }
+                let mut api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok({
+                    {
+                        api_that_guard.field0 = api_field0;
+                    };
+                })?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__EmbeddingBackendDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "EmbeddingBackendDartImpl_auto_accessor_get_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok(api_that_guard.field0.clone())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__EmbeddingBackendDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "EmbeddingBackendDartImpl_auto_accessor_set_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            let api_field0 = <Arc<dyn EmbeddingBackend + Send + Sync>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                        _ => unreachable!(),
+                    }
+                }
+                let mut api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok({
+                    {
+                        api_that_guard.field0 = api_field0;
+                    };
+                })?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__OcrBackendDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "OcrBackendDartImpl_auto_accessor_get_field0", port: None, mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync }, move || { 
+            let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>>::sse_decode(&mut deserializer);deserializer.end();
+                transform_result_sse::<_, ()>((move || {
+                    let mut api_that_guard = None;
+let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false)]);
+        for i in decode_indices_ {
+            match i {
+                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                _ => unreachable!(),
+            }
+        }
+        let api_that_guard = api_that_guard.unwrap();
+ let output_ok = Result::<_,()>::Ok(api_that_guard.field0.clone())?;   Ok(output_ok)
+                })()) })
+}
+fn wire__crate__OcrBackendDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "OcrBackendDartImpl_auto_accessor_set_field0", port: None, mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync }, move || { 
+            let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>>::sse_decode(&mut deserializer);
+let api_field0 = < Arc < dyn OcrBackend + Send + Sync >>::sse_decode(&mut deserializer);deserializer.end();
+                transform_result_sse::<_, ()>((move || {
+                    let mut api_that_guard = None;
+let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true)]);
+        for i in decode_indices_ {
+            match i {
+                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                _ => unreachable!(),
+            }
+        }
+        let mut api_that_guard = api_that_guard.unwrap();
+ let output_ok = Result::<_,()>::Ok({ { api_that_guard.field0 = api_field0; }; })?;   Ok(output_ok)
+                })()) })
+}
+fn wire__crate__PostProcessorDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "PostProcessorDartImpl_auto_accessor_get_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok(api_that_guard.field0.clone())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__PostProcessorDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "PostProcessorDartImpl_auto_accessor_set_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>,
+            >>::sse_decode(&mut deserializer);
+            let api_field0 = <Arc<dyn PostProcessor + Send + Sync>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                        _ => unreachable!(),
+                    }
+                }
+                let mut api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok({
+                    {
+                        api_that_guard.field0 = api_field0;
+                    };
+                })?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__RendererDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "RendererDartImpl_auto_accessor_get_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that =
+                <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>>::sse_decode(
+                    &mut deserializer,
+                );
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok(api_that_guard.field0.clone())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__RendererDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "RendererDartImpl_auto_accessor_set_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that =
+                <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>>::sse_decode(
+                    &mut deserializer,
+                );
+            let api_field0 = <Arc<dyn Renderer + Send + Sync>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                        _ => unreachable!(),
+                    }
+                }
+                let mut api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok({
+                    {
+                        api_that_guard.field0 = api_field0;
+                    };
+                })?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__ValidatorDartImpl_auto_accessor_get_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ValidatorDartImpl_auto_accessor_get_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that =
+                <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>>::sse_decode(
+                    &mut deserializer,
+                );
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, false),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
+                    }
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok(api_that_guard.field0.clone())?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__ValidatorDartImpl_auto_accessor_set_field0_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ValidatorDartImpl_auto_accessor_set_field0",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that =
+                <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>>::sse_decode(
+                    &mut deserializer,
+                );
+            let api_field0 = <Arc<dyn Validator + Send + Sync>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ = flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                    flutter_rust_bridge::for_generated::LockableOrderInfo::new(&api_that, 0, true),
+                ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                        _ => unreachable!(),
+                    }
+                }
+                let mut api_that_guard = api_that_guard.unwrap();
+                let output_ok = Result::<_, ()>::Ok({
+                    {
+                        api_that_guard.field0 = api_field0;
+                    };
+                })?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
 fn wire__crate__batch_extract_bytes_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -555,6 +1009,34 @@ fn wire__crate__create_bounding_box_from_json_impl(
         },
     )
 }
+fn wire__crate__create_cache_stats_from_json_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_cache_stats_from_json",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_json = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::create_cache_stats_from_json(api_json)?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__create_chunk_from_json_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -975,54 +1457,6 @@ fn wire__crate__create_djot_link_from_json_impl(
         },
     )
 }
-fn wire__crate__create_document_extractor_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_document_extractor_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_extract_bytes = <Box<
-                dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync,
-            >>::sse_decode(&mut deserializer);
-            let api_extract_file = <Box<
-                dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync,
-            >>::sse_decode(&mut deserializer);
-            let api_supported_mime_types =
-                <Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_priority = <Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_can_handle =
-                <Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_document_extractor_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_extract_bytes,
-                        api_extract_file,
-                        api_supported_mime_types,
-                        api_priority,
-                        api_can_handle,
-                    ))?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
 fn wire__crate__create_document_node_from_json_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -1353,43 +1787,6 @@ fn wire__crate__create_embedded_file_from_json_impl(
             move |context| {
                 transform_result_sse::<_, String>((move || {
                     let output_ok = crate::create_embedded_file_from_json(api_json)?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
-fn wire__crate__create_embedding_backend_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_embedding_backend_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_dimensions = <Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_embed =
-                <Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_embedding_backend_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_dimensions,
-                        api_embed,
-                    ))?;
                     Ok(output_ok)
                 })())
             }
@@ -2544,68 +2941,6 @@ fn wire__crate__create_model_paths_from_json_impl(
         },
     )
 }
-fn wire__crate__create_ocr_backend_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_ocr_backend_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_process_image =
-                <Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>::sse_decode(
-                    &mut deserializer,
-                );
-            let api_process_image_file =
-                <Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>::sse_decode(
-                    &mut deserializer,
-                );
-            let api_supports_language =
-                <Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_backend_type =
-                <Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_supported_languages =
-                <Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_supports_table_detection =
-                <Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_supports_document_processing =
-                <Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_process_document =
-                <Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>::sse_decode(
-                    &mut deserializer,
-                );
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_ocr_backend_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_process_image,
-                        api_process_image_file,
-                        api_supports_language,
-                        api_backend_type,
-                        api_supported_languages,
-                        api_supports_table_detection,
-                        api_supports_document_processing,
-                        api_process_document,
-                    ))?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
 fn wire__crate__create_ocr_confidence_from_json_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -3278,55 +3613,6 @@ fn wire__crate__create_post_processor_config_from_json_impl(
         },
     )
 }
-fn wire__crate__create_post_processor_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_post_processor_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_process =
-                <Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>>::sse_decode(
-                    &mut deserializer,
-                );
-            let api_processing_stage =
-                <Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_should_process = <Box<
-                dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync,
-            >>::sse_decode(&mut deserializer);
-            let api_estimated_duration_ms =
-                <Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
-            let api_priority = <Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_post_processor_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_process,
-                        api_processing_stage,
-                        api_should_process,
-                        api_estimated_duration_ms,
-                        api_priority,
-                    ))?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
 fn wire__crate__create_pptx_app_properties_from_json_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -3517,41 +3803,6 @@ fn wire__crate__create_recognized_table_from_json_impl(
             move |context| {
                 transform_result_sse::<_, String>((move || {
                     let output_ok = crate::create_recognized_table_from_json(api_json)?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
-fn wire__crate__create_renderer_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_renderer_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_render =
-                <Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_renderer_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_render,
-                    ))?;
                     Ok(output_ok)
                 })())
             }
@@ -4028,49 +4279,6 @@ fn wire__crate__create_tree_sitter_process_config_from_json_impl(
             move |context| {
                 transform_result_sse::<_, String>((move || {
                     let output_ok = crate::create_tree_sitter_process_config_from_json(api_json)?;
-                    Ok(output_ok)
-                })())
-            }
-        },
-    )
-}
-fn wire__crate__create_validator_dart_impl_impl(
-    port_: flutter_rust_bridge::for_generated::MessagePort,
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "create_validator_dart_impl",
-            port: Some(port_),
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
-            };
-            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_plugin_name = <String>::sse_decode(&mut deserializer);
-            let api_plugin_version = <String>::sse_decode(&mut deserializer);
-            let api_validate =
-                <Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>>::sse_decode(
-                    &mut deserializer,
-                );
-            let api_should_validate = <Box<
-                dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync,
-            >>::sse_decode(&mut deserializer);
-            let api_priority = <Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>::sse_decode(&mut deserializer);
-            deserializer.end();
-            move |context| {
-                transform_result_sse::<_, ()>((move || {
-                    let output_ok = Result::<_, ()>::Ok(crate::create_validator_dart_impl(
-                        api_plugin_name,
-                        api_plugin_version,
-                        api_validate,
-                        api_should_validate,
-                        api_priority,
-                    ))?;
                     Ok(output_ok)
                 })())
             }
@@ -5154,6 +5362,14 @@ const _: fn() = || {
         let _: f64 = BoundingBox.y0;
         let _: f64 = BoundingBox.x1;
         let _: f64 = BoundingBox.y1;
+    }
+    {
+        let CacheStats = None::<crate::CacheStats>.unwrap();
+        let _: i64 = CacheStats.total_files;
+        let _: f64 = CacheStats.total_size_mb;
+        let _: f64 = CacheStats.available_space_mb;
+        let _: f64 = CacheStats.oldest_file_age_days;
+        let _: f64 = CacheStats.newest_file_age_days;
     }
     {
         let Chunk = None::<crate::Chunk>.unwrap();
@@ -6476,76 +6692,22 @@ const _: fn() = || {
 // Section: related_funcs
 
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-    >
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn DocumentExtractor + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-    >
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn EmbeddingBackend + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>>
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn OcrBackend + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn PostProcessor + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Renderer + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>>
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-    >
-);
-flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
-    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-        Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-    >
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Validator + Send + Sync>>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>
@@ -6568,189 +6730,61 @@ flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
 
 // Section: dart2rust
 
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync> {
+impl SseDecode for Arc<dyn DocumentExtractor + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn DocumentExtractor + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync> {
+impl SseDecode for Arc<dyn EmbeddingBackend + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn EmbeddingBackend + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync> {
+impl SseDecode for Arc<dyn OcrBackend + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn OcrBackend + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync> {
+impl SseDecode for Arc<dyn PostProcessor + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn PostProcessor + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
-impl SseDecode for Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync> {
+impl SseDecode for Arc<dyn Renderer + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Renderer + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
-impl SseDecode for Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync> {
+impl SseDecode for Arc<dyn Validator + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >>::sse_decode(deserializer);
-        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
-    }
-}
-
-impl SseDecode for Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Validator + Send + Sync>>,
         >>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
@@ -6853,11 +6887,7 @@ impl SseDecode for std::collections::HashMap<String, Vec<u8>> {
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn DocumentExtractor + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6867,11 +6897,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn EmbeddingBackend + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6881,11 +6907,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn OcrBackend + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6895,9 +6917,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn PostProcessor + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6907,9 +6927,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Renderer + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -6919,151 +6937,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <usize>::sse_decode(deserializer);
-        return decode_rust_opaque_moi(inner);
-    }
-}
-
-impl SseDecode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Validator + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -7337,6 +7211,24 @@ impl SseDecode for crate::BoundingBox {
             y0: var_y0,
             x1: var_x1,
             y1: var_y1,
+        };
+    }
+}
+
+impl SseDecode for crate::CacheStats {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_totalFiles = <i64>::sse_decode(deserializer);
+        let mut var_totalSizeMb = <f64>::sse_decode(deserializer);
+        let mut var_availableSpaceMb = <f64>::sse_decode(deserializer);
+        let mut var_oldestFileAgeDays = <f64>::sse_decode(deserializer);
+        let mut var_newestFileAgeDays = <f64>::sse_decode(deserializer);
+        return crate::CacheStats {
+            total_files: var_totalFiles,
+            total_size_mb: var_totalSizeMb,
+            available_space_mb: var_availableSpaceMb,
+            oldest_file_age_days: var_oldestFileAgeDays,
+            newest_file_age_days: var_newestFileAgeDays,
         };
     }
 }
@@ -12083,181 +11975,176 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__batch_extract_bytes_impl(port, ptr, rust_vec_len, data_len),
-        2 => wire__crate__batch_extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
-        3 => wire__crate__batch_extract_files_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__batch_extract_files_sync_impl(port, ptr, rust_vec_len, data_len),
-        5 => wire__crate__clear_document_extractors_impl(port, ptr, rust_vec_len, data_len),
-        6 => wire__crate__clear_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__clear_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire__crate__clear_post_processors_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__clear_renderers_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire__crate__clear_validators_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire__crate__create_acceleration_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__create_archive_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire__crate__create_archive_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__create_b_box_from_json_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire__crate__create_batch_bytes_item_from_json_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire__crate__create_batch_file_item_from_json_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire__crate__create_bibtex_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire__crate__create_bounding_box_from_json_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire__crate__create_chunk_from_json_impl(port, ptr, rust_vec_len, data_len),
-        20 => wire__crate__create_chunk_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        21 => wire__crate__create_chunking_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        22 => wire__crate__create_citation_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        23 => wire__crate__create_content_filter_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        24 => wire__crate__create_contributor_role_from_json_impl(port, ptr, rust_vec_len, data_len),
-        25 => wire__crate__create_core_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
-        26 => wire__crate__create_csv_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        27 => wire__crate__create_dbf_field_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        28 => wire__crate__create_dbf_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__create_detect_response_from_json_impl(port, ptr, rust_vec_len, data_len),
-        30 => wire__crate__create_detection_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__create_djot_content_from_json_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__create_djot_image_from_json_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__create_djot_link_from_json_impl(port, ptr, rust_vec_len, data_len),
-        34 => wire__crate__create_document_extractor_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__create_document_node_from_json_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__create_document_relationship_from_json_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__create_document_structure_from_json_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__create_docx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__create_docx_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__create_element_from_json_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__create_element_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__create_email_attachment_from_json_impl(port, ptr, rust_vec_len, data_len),
-        43 => wire__crate__create_email_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        44 => wire__crate__create_email_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        45 => wire__crate__create_email_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        46 => wire__crate__create_embedded_file_from_json_impl(port, ptr, rust_vec_len, data_len),
-        47 => wire__crate__create_embedding_backend_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        48 => wire__crate__create_embedding_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        49 => wire__crate__create_embedding_preset_from_json_impl(port, ptr, rust_vec_len, data_len),
-        50 => wire__crate__create_epub_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        51 => wire__crate__create_error_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        52 => wire__crate__create_excel_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        53 => wire__crate__create_excel_sheet_from_json_impl(port, ptr, rust_vec_len, data_len),
-        54 => wire__crate__create_excel_workbook_from_json_impl(port, ptr, rust_vec_len, data_len),
-        55 => wire__crate__create_extracted_image_from_json_impl(port, ptr, rust_vec_len, data_len),
-        56 => wire__crate__create_extracted_uri_from_json_impl(port, ptr, rust_vec_len, data_len),
-        57 => wire__crate__create_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        58 => wire__crate__create_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        59 => wire__crate__create_fiction_book_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        60 => wire__crate__create_file_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        61 => wire__crate__create_footnote_from_json_impl(port, ptr, rust_vec_len, data_len),
-        62 => wire__crate__create_formatted_block_from_json_impl(port, ptr, rust_vec_len, data_len),
-        63 => wire__crate__create_grid_cell_from_json_impl(port, ptr, rust_vec_len, data_len),
-        64 => wire__crate__create_header_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        65 => wire__crate__create_heading_context_from_json_impl(port, ptr, rust_vec_len, data_len),
-        66 => wire__crate__create_heading_level_from_json_impl(port, ptr, rust_vec_len, data_len),
-        67 => wire__crate__create_hierarchical_block_from_json_impl(port, ptr, rust_vec_len, data_len),
-        68 => wire__crate__create_hierarchy_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        69 => wire__crate__create_html_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        70 => wire__crate__create_html_output_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        71 => wire__crate__create_image_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        72 => wire__crate__create_image_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        73 => wire__crate__create_image_metadata_type_from_json_impl(port, ptr, rust_vec_len, data_len),
-        74 => wire__crate__create_image_preprocessing_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        75 => wire__crate__create_image_preprocessing_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        76 => wire__crate__create_inline_element_from_json_impl(port, ptr, rust_vec_len, data_len),
-        77 => wire__crate__create_jats_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        78 => wire__crate__create_keyword_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        79 => wire__crate__create_keyword_from_json_impl(port, ptr, rust_vec_len, data_len),
-        80 => wire__crate__create_language_detection_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        81 => wire__crate__create_layout_detection_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        82 => wire__crate__create_layout_detection_from_json_impl(port, ptr, rust_vec_len, data_len),
-        83 => wire__crate__create_layout_region_from_json_impl(port, ptr, rust_vec_len, data_len),
-        84 => wire__crate__create_link_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        85 => wire__crate__create_llm_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        86 => wire__crate__create_llm_usage_from_json_impl(port, ptr, rust_vec_len, data_len),
-        87 => wire__crate__create_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        88 => wire__crate__create_model_paths_from_json_impl(port, ptr, rust_vec_len, data_len),
-        89 => wire__crate__create_ocr_backend_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        90 => wire__crate__create_ocr_confidence_from_json_impl(port, ptr, rust_vec_len, data_len),
-        91 => wire__crate__create_ocr_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        92 => wire__crate__create_ocr_element_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        93 => wire__crate__create_ocr_element_from_json_impl(port, ptr, rust_vec_len, data_len),
-        94 => wire__crate__create_ocr_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        95 => wire__crate__create_ocr_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        96 => wire__crate__create_ocr_pipeline_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        97 => wire__crate__create_ocr_pipeline_stage_from_json_impl(port, ptr, rust_vec_len, data_len),
-        98 => wire__crate__create_ocr_quality_thresholds_from_json_impl(port, ptr, rust_vec_len, data_len),
-        99 => wire__crate__create_ocr_rotation_from_json_impl(port, ptr, rust_vec_len, data_len),
-        100 => wire__crate__create_ocr_table_bounding_box_from_json_impl(port, ptr, rust_vec_len, data_len),
-        101 => wire__crate__create_ocr_table_from_json_impl(port, ptr, rust_vec_len, data_len),
-        102 => wire__crate__create_orientation_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        103 => wire__crate__create_paddle_ocr_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        104 => wire__crate__create_page_boundary_from_json_impl(port, ptr, rust_vec_len, data_len),
-        105 => wire__crate__create_page_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        106 => wire__crate__create_page_content_from_json_impl(port, ptr, rust_vec_len, data_len),
-        107 => wire__crate__create_page_hierarchy_from_json_impl(port, ptr, rust_vec_len, data_len),
-        108 => wire__crate__create_page_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        109 => wire__crate__create_page_structure_from_json_impl(port, ptr, rust_vec_len, data_len),
-        110 => wire__crate__create_pdf_annotation_from_json_impl(port, ptr, rust_vec_len, data_len),
-        111 => wire__crate__create_pdf_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        112 => wire__crate__create_pdf_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        113 => wire__crate__create_post_processor_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        114 => wire__crate__create_post_processor_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        115 => wire__crate__create_pptx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
-        116 => wire__crate__create_pptx_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        117 => wire__crate__create_pptx_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        118 => wire__crate__create_processing_warning_from_json_impl(port, ptr, rust_vec_len, data_len),
-        119 => wire__crate__create_pst_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        120 => wire__crate__create_rake_params_from_json_impl(port, ptr, rust_vec_len, data_len),
-        121 => wire__crate__create_recognized_table_from_json_impl(port, ptr, rust_vec_len, data_len),
-        122 => wire__crate__create_renderer_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        123 => wire__crate__create_security_limits_from_json_impl(port, ptr, rust_vec_len, data_len),
-        124 => wire__crate__create_server_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        125 => wire__crate__create_structured_data_from_json_impl(port, ptr, rust_vec_len, data_len),
-        126 => wire__crate__create_structured_data_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        127 => wire__crate__create_structured_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        128 => wire__crate__create_supported_format_from_json_impl(port, ptr, rust_vec_len, data_len),
-        129 => wire__crate__create_table_cell_from_json_impl(port, ptr, rust_vec_len, data_len),
-        130 => wire__crate__create_table_from_json_impl(port, ptr, rust_vec_len, data_len),
-        131 => wire__crate__create_table_grid_from_json_impl(port, ptr, rust_vec_len, data_len),
-        132 => wire__crate__create_tesseract_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        133 => wire__crate__create_text_annotation_from_json_impl(port, ptr, rust_vec_len, data_len),
-        134 => wire__crate__create_text_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        135 => wire__crate__create_text_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        136 => wire__crate__create_token_reduction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        137 => wire__crate__create_token_reduction_options_from_json_impl(port, ptr, rust_vec_len, data_len),
-        138 => wire__crate__create_tree_sitter_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        139 => wire__crate__create_tree_sitter_process_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        140 => wire__crate__create_validator_dart_impl_impl(port, ptr, rust_vec_len, data_len),
-        141 => wire__crate__create_xlsx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
-        142 => wire__crate__create_xml_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        143 => wire__crate__create_xml_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        144 => wire__crate__create_yake_params_from_json_impl(port, ptr, rust_vec_len, data_len),
-        145 => wire__crate__create_year_range_from_json_impl(port, ptr, rust_vec_len, data_len),
-        146 => wire__crate__detect_mime_type_impl(port, ptr, rust_vec_len, data_len),
-        147 => wire__crate__detect_mime_type_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        148 => wire__crate__embed_texts_impl(port, ptr, rust_vec_len, data_len),
-        149 => wire__crate__embed_texts_async_impl(port, ptr, rust_vec_len, data_len),
-        150 => wire__crate__extract_bytes_impl(port, ptr, rust_vec_len, data_len),
-        151 => wire__crate__extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
-        152 => wire__crate__extract_file_impl(port, ptr, rust_vec_len, data_len),
-        153 => wire__crate__extract_file_sync_impl(port, ptr, rust_vec_len, data_len),
-        154 => wire__crate__get_embedding_preset_impl(port, ptr, rust_vec_len, data_len),
-        155 => wire__crate__get_extensions_for_mime_impl(port, ptr, rust_vec_len, data_len),
-        156 => wire__crate__list_document_extractors_impl(port, ptr, rust_vec_len, data_len),
-        157 => wire__crate__list_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
-        158 => wire__crate__list_embedding_presets_impl(port, ptr, rust_vec_len, data_len),
-        159 => wire__crate__list_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
-        160 => wire__crate__list_post_processors_impl(port, ptr, rust_vec_len, data_len),
-        161 => wire__crate__list_renderers_impl(port, ptr, rust_vec_len, data_len),
-        162 => wire__crate__list_validators_impl(port, ptr, rust_vec_len, data_len),
-        163 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        164 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        165 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        166 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        167 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
-        168 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
-        169 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
-        170 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        171 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        172 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        173 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        174 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
-        175 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__batch_extract_bytes_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__batch_extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire__crate__batch_extract_files_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire__crate__batch_extract_files_sync_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__clear_document_extractors_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire__crate__clear_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire__crate__clear_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
+        20 => wire__crate__clear_post_processors_impl(port, ptr, rust_vec_len, data_len),
+        21 => wire__crate__clear_renderers_impl(port, ptr, rust_vec_len, data_len),
+        22 => wire__crate__clear_validators_impl(port, ptr, rust_vec_len, data_len),
+        23 => wire__crate__create_acceleration_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        24 => wire__crate__create_archive_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
+        25 => wire__crate__create_archive_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        26 => wire__crate__create_b_box_from_json_impl(port, ptr, rust_vec_len, data_len),
+        27 => wire__crate__create_batch_bytes_item_from_json_impl(port, ptr, rust_vec_len, data_len),
+        28 => wire__crate__create_batch_file_item_from_json_impl(port, ptr, rust_vec_len, data_len),
+        29 => wire__crate__create_bibtex_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__create_bounding_box_from_json_impl(port, ptr, rust_vec_len, data_len),
+        31 => wire__crate__create_cache_stats_from_json_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__create_chunk_from_json_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__create_chunk_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__create_chunking_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        35 => wire__crate__create_citation_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__create_content_filter_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__create_contributor_role_from_json_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__create_core_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__create_csv_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__create_dbf_field_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__create_dbf_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        42 => wire__crate__create_detect_response_from_json_impl(port, ptr, rust_vec_len, data_len),
+        43 => wire__crate__create_detection_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__create_djot_content_from_json_impl(port, ptr, rust_vec_len, data_len),
+        45 => wire__crate__create_djot_image_from_json_impl(port, ptr, rust_vec_len, data_len),
+        46 => wire__crate__create_djot_link_from_json_impl(port, ptr, rust_vec_len, data_len),
+        47 => wire__crate__create_document_node_from_json_impl(port, ptr, rust_vec_len, data_len),
+        48 => wire__crate__create_document_relationship_from_json_impl(port, ptr, rust_vec_len, data_len),
+        49 => wire__crate__create_document_structure_from_json_impl(port, ptr, rust_vec_len, data_len),
+        50 => wire__crate__create_docx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
+        51 => wire__crate__create_docx_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        52 => wire__crate__create_element_from_json_impl(port, ptr, rust_vec_len, data_len),
+        53 => wire__crate__create_element_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        54 => wire__crate__create_email_attachment_from_json_impl(port, ptr, rust_vec_len, data_len),
+        55 => wire__crate__create_email_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        56 => wire__crate__create_email_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        57 => wire__crate__create_email_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        58 => wire__crate__create_embedded_file_from_json_impl(port, ptr, rust_vec_len, data_len),
+        59 => wire__crate__create_embedding_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        60 => wire__crate__create_embedding_preset_from_json_impl(port, ptr, rust_vec_len, data_len),
+        61 => wire__crate__create_epub_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        62 => wire__crate__create_error_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        63 => wire__crate__create_excel_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        64 => wire__crate__create_excel_sheet_from_json_impl(port, ptr, rust_vec_len, data_len),
+        65 => wire__crate__create_excel_workbook_from_json_impl(port, ptr, rust_vec_len, data_len),
+        66 => wire__crate__create_extracted_image_from_json_impl(port, ptr, rust_vec_len, data_len),
+        67 => wire__crate__create_extracted_uri_from_json_impl(port, ptr, rust_vec_len, data_len),
+        68 => wire__crate__create_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        69 => wire__crate__create_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        70 => wire__crate__create_fiction_book_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        71 => wire__crate__create_file_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        72 => wire__crate__create_footnote_from_json_impl(port, ptr, rust_vec_len, data_len),
+        73 => wire__crate__create_formatted_block_from_json_impl(port, ptr, rust_vec_len, data_len),
+        74 => wire__crate__create_grid_cell_from_json_impl(port, ptr, rust_vec_len, data_len),
+        75 => wire__crate__create_header_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        76 => wire__crate__create_heading_context_from_json_impl(port, ptr, rust_vec_len, data_len),
+        77 => wire__crate__create_heading_level_from_json_impl(port, ptr, rust_vec_len, data_len),
+        78 => wire__crate__create_hierarchical_block_from_json_impl(port, ptr, rust_vec_len, data_len),
+        79 => wire__crate__create_hierarchy_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        80 => wire__crate__create_html_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        81 => wire__crate__create_html_output_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        82 => wire__crate__create_image_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        83 => wire__crate__create_image_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        84 => wire__crate__create_image_metadata_type_from_json_impl(port, ptr, rust_vec_len, data_len),
+        85 => wire__crate__create_image_preprocessing_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        86 => wire__crate__create_image_preprocessing_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        87 => wire__crate__create_inline_element_from_json_impl(port, ptr, rust_vec_len, data_len),
+        88 => wire__crate__create_jats_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        89 => wire__crate__create_keyword_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        90 => wire__crate__create_keyword_from_json_impl(port, ptr, rust_vec_len, data_len),
+        91 => wire__crate__create_language_detection_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        92 => wire__crate__create_layout_detection_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        93 => wire__crate__create_layout_detection_from_json_impl(port, ptr, rust_vec_len, data_len),
+        94 => wire__crate__create_layout_region_from_json_impl(port, ptr, rust_vec_len, data_len),
+        95 => wire__crate__create_link_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        96 => wire__crate__create_llm_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        97 => wire__crate__create_llm_usage_from_json_impl(port, ptr, rust_vec_len, data_len),
+        98 => wire__crate__create_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        99 => wire__crate__create_model_paths_from_json_impl(port, ptr, rust_vec_len, data_len),
+        100 => wire__crate__create_ocr_confidence_from_json_impl(port, ptr, rust_vec_len, data_len),
+        101 => wire__crate__create_ocr_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        102 => wire__crate__create_ocr_element_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        103 => wire__crate__create_ocr_element_from_json_impl(port, ptr, rust_vec_len, data_len),
+        104 => wire__crate__create_ocr_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        105 => wire__crate__create_ocr_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        106 => wire__crate__create_ocr_pipeline_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        107 => wire__crate__create_ocr_pipeline_stage_from_json_impl(port, ptr, rust_vec_len, data_len),
+        108 => wire__crate__create_ocr_quality_thresholds_from_json_impl(port, ptr, rust_vec_len, data_len),
+        109 => wire__crate__create_ocr_rotation_from_json_impl(port, ptr, rust_vec_len, data_len),
+        110 => wire__crate__create_ocr_table_bounding_box_from_json_impl(port, ptr, rust_vec_len, data_len),
+        111 => wire__crate__create_ocr_table_from_json_impl(port, ptr, rust_vec_len, data_len),
+        112 => wire__crate__create_orientation_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        113 => wire__crate__create_paddle_ocr_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        114 => wire__crate__create_page_boundary_from_json_impl(port, ptr, rust_vec_len, data_len),
+        115 => wire__crate__create_page_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        116 => wire__crate__create_page_content_from_json_impl(port, ptr, rust_vec_len, data_len),
+        117 => wire__crate__create_page_hierarchy_from_json_impl(port, ptr, rust_vec_len, data_len),
+        118 => wire__crate__create_page_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        119 => wire__crate__create_page_structure_from_json_impl(port, ptr, rust_vec_len, data_len),
+        120 => wire__crate__create_pdf_annotation_from_json_impl(port, ptr, rust_vec_len, data_len),
+        121 => wire__crate__create_pdf_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        122 => wire__crate__create_pdf_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        123 => wire__crate__create_post_processor_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        124 => wire__crate__create_pptx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
+        125 => wire__crate__create_pptx_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        126 => wire__crate__create_pptx_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        127 => wire__crate__create_processing_warning_from_json_impl(port, ptr, rust_vec_len, data_len),
+        128 => wire__crate__create_pst_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        129 => wire__crate__create_rake_params_from_json_impl(port, ptr, rust_vec_len, data_len),
+        130 => wire__crate__create_recognized_table_from_json_impl(port, ptr, rust_vec_len, data_len),
+        131 => wire__crate__create_security_limits_from_json_impl(port, ptr, rust_vec_len, data_len),
+        132 => wire__crate__create_server_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        133 => wire__crate__create_structured_data_from_json_impl(port, ptr, rust_vec_len, data_len),
+        134 => wire__crate__create_structured_data_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        135 => wire__crate__create_structured_extraction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        136 => wire__crate__create_supported_format_from_json_impl(port, ptr, rust_vec_len, data_len),
+        137 => wire__crate__create_table_cell_from_json_impl(port, ptr, rust_vec_len, data_len),
+        138 => wire__crate__create_table_from_json_impl(port, ptr, rust_vec_len, data_len),
+        139 => wire__crate__create_table_grid_from_json_impl(port, ptr, rust_vec_len, data_len),
+        140 => wire__crate__create_tesseract_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        141 => wire__crate__create_text_annotation_from_json_impl(port, ptr, rust_vec_len, data_len),
+        142 => wire__crate__create_text_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        143 => wire__crate__create_text_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        144 => wire__crate__create_token_reduction_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        145 => wire__crate__create_token_reduction_options_from_json_impl(port, ptr, rust_vec_len, data_len),
+        146 => wire__crate__create_tree_sitter_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        147 => wire__crate__create_tree_sitter_process_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        148 => wire__crate__create_xlsx_app_properties_from_json_impl(port, ptr, rust_vec_len, data_len),
+        149 => wire__crate__create_xml_extraction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        150 => wire__crate__create_xml_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        151 => wire__crate__create_yake_params_from_json_impl(port, ptr, rust_vec_len, data_len),
+        152 => wire__crate__create_year_range_from_json_impl(port, ptr, rust_vec_len, data_len),
+        153 => wire__crate__detect_mime_type_impl(port, ptr, rust_vec_len, data_len),
+        154 => wire__crate__detect_mime_type_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        155 => wire__crate__embed_texts_impl(port, ptr, rust_vec_len, data_len),
+        156 => wire__crate__embed_texts_async_impl(port, ptr, rust_vec_len, data_len),
+        157 => wire__crate__extract_bytes_impl(port, ptr, rust_vec_len, data_len),
+        158 => wire__crate__extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
+        159 => wire__crate__extract_file_impl(port, ptr, rust_vec_len, data_len),
+        160 => wire__crate__extract_file_sync_impl(port, ptr, rust_vec_len, data_len),
+        161 => wire__crate__get_embedding_preset_impl(port, ptr, rust_vec_len, data_len),
+        162 => wire__crate__get_extensions_for_mime_impl(port, ptr, rust_vec_len, data_len),
+        163 => wire__crate__list_document_extractors_impl(port, ptr, rust_vec_len, data_len),
+        164 => wire__crate__list_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
+        165 => wire__crate__list_embedding_presets_impl(port, ptr, rust_vec_len, data_len),
+        166 => wire__crate__list_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
+        167 => wire__crate__list_post_processors_impl(port, ptr, rust_vec_len, data_len),
+        168 => wire__crate__list_renderers_impl(port, ptr, rust_vec_len, data_len),
+        169 => wire__crate__list_validators_impl(port, ptr, rust_vec_len, data_len),
+        170 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        171 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        172 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        173 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        174 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
+        175 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
+        176 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
+        177 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        178 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        179 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        180 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        181 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
+        182 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -12270,6 +12157,18 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
+        1 => wire__crate__DocumentExtractorDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        2 => wire__crate__DocumentExtractorDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
+        3 => wire__crate__EmbeddingBackendDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        4 => wire__crate__EmbeddingBackendDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
+        5 => wire__crate__OcrBackendDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        6 => wire__crate__OcrBackendDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
+        7 => wire__crate__PostProcessorDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        8 => wire__crate__PostProcessorDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
+        9 => wire__crate__RendererDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        10 => wire__crate__RendererDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
+        11 => wire__crate__ValidatorDartImpl_auto_accessor_get_field0_impl(ptr, rust_vec_len, data_len),
+        12 => wire__crate__ValidatorDartImpl_auto_accessor_set_field0_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -12277,345 +12176,103 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn DocumentExtractor + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>>
+    for FrbWrapper<Arc<dyn DocumentExtractor + Send + Sync>>
 {
 }
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn DocumentExtractor + Send + Sync>>>
+    for Arc<dyn DocumentExtractor + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>> {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn DocumentExtractor + Send + Sync>> {
         self.into()
     }
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn EmbeddingBackend + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>>
+    for FrbWrapper<Arc<dyn EmbeddingBackend + Send + Sync>>
 {
 }
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn EmbeddingBackend + Send + Sync>>>
+    for Arc<dyn EmbeddingBackend + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>> {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn EmbeddingBackend + Send + Sync>> {
         self.into()
     }
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn OcrBackend + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>>
-{
-}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Arc<dyn OcrBackend + Send + Sync>> {}
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn OcrBackend + Send + Sync>>>
+    for Arc<dyn OcrBackend + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>> {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn OcrBackend + Send + Sync>> {
         self.into()
     }
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn PostProcessor + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>
-{
-}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Arc<dyn PostProcessor + Send + Sync>> {}
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn PostProcessor + Send + Sync>>>
+    for Arc<dyn PostProcessor + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>> {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn PostProcessor + Send + Sync>> {
         self.into()
     }
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn Renderer + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>
-{
-}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Arc<dyn Renderer + Send + Sync>> {}
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>>
-    for Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn Renderer + Send + Sync>>>
+    for Arc<dyn Renderer + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>> {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn Renderer + Send + Sync>> {
         self.into()
     }
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>> {
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Arc<dyn Validator + Send + Sync>> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>>
-{
-}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Arc<dyn Validator + Send + Sync>> {}
 
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>>>
-    for Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Arc<dyn Validator + Send + Sync>>>
+    for Arc<dyn Validator + Send + Sync>
 {
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>>,
-    > for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>>,
-    > for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>>
-{
-}
-
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>>>
-    for Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>
-{
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>>
-{
-}
-
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>>>
-    for Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>
-{
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>,
-    > for Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>>
-{
-}
-
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>>>
-    for Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>
-{
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>,
-    > for Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<FrbWrapper<Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>>>
-    for Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>
-{
-    fn into_into_dart(self) -> FrbWrapper<Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>>,
-    > for Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>> {
-        self.into()
-    }
-}
-
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart
-    for FrbWrapper<Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>
-{
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0).into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for FrbWrapper<Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>
-{
-}
-
-impl
-    flutter_rust_bridge::IntoIntoDart<
-        FrbWrapper<Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>,
-    > for Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>
-{
-    fn into_into_dart(
-        self,
-    ) -> FrbWrapper<Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>>
-    {
+    fn into_into_dart(self) -> FrbWrapper<Arc<dyn Validator + Send + Sync>> {
         self.into()
     }
 }
@@ -12911,6 +12568,25 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BoundingBox> {
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::BoundingBox> {}
 impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::BoundingBox>> for crate::BoundingBox {
     fn into_into_dart(self) -> FrbWrapper<crate::BoundingBox> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::CacheStats> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.total_files.into_into_dart().into_dart(),
+            self.0.total_size_mb.into_into_dart().into_dart(),
+            self.0.available_space_mb.into_into_dart().into_dart(),
+            self.0.oldest_file_age_days.into_into_dart().into_dart(),
+            self.0.newest_file_age_days.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::CacheStats> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::CacheStats>> for crate::CacheStats {
+    fn into_into_dart(self) -> FrbWrapper<crate::CacheStats> {
         self.into()
     }
 }
@@ -16101,13 +15777,11 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::YearRange>> for crate::
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync> {
+impl SseEncode for Arc<dyn DocumentExtractor + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn DocumentExtractor + Send + Sync>>,
         >>::sse_encode(
             flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
             serializer,
@@ -16115,209 +15789,38 @@ impl SseEncode for Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync> {
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync> {
+impl SseEncode for Arc<dyn EmbeddingBackend + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync> {
+impl SseEncode for Arc<dyn OcrBackend + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync> {
+impl SseEncode for Arc<dyn PostProcessor + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
-impl SseEncode for Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync> {
+impl SseEncode for Arc<dyn Renderer + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
-impl SseEncode for Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync> {
+impl SseEncode for Arc<dyn Validator + Send + Sync> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
-    }
-}
-
-impl SseEncode for Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <RustOpaqueMoi<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >>::sse_encode(
-            flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self),
-            serializer,
-        );
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
     }
 }
 
@@ -16410,11 +15913,7 @@ impl SseEncode for std::collections::HashMap<String, Vec<u8>> {
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn DocumentExtractor + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16425,11 +15924,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn EmbeddingBackend + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16440,11 +15935,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn OcrBackend + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16455,9 +15946,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn PostProcessor + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16468,9 +15957,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Renderer + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16481,161 +15968,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-        >,
-    >
-{
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        let (ptr, size) = self.sse_encode_raw();
-        <usize>::sse_encode(ptr, serializer);
-        <i32>::sse_encode(size, serializer);
-    }
-}
-
-impl SseEncode
-    for RustOpaqueMoi<
-        flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-            Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-        >,
-    >
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Arc<dyn Validator + Send + Sync>>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -16869,6 +16202,17 @@ impl SseEncode for crate::BoundingBox {
         <f64>::sse_encode(self.y0, serializer);
         <f64>::sse_encode(self.x1, serializer);
         <f64>::sse_encode(self.y1, serializer);
+    }
+}
+
+impl SseEncode for crate::CacheStats {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i64>::sse_encode(self.total_files, serializer);
+        <f64>::sse_encode(self.total_size_mb, serializer);
+        <f64>::sse_encode(self.available_space_mb, serializer);
+        <f64>::sse_encode(self.oldest_file_age_days, serializer);
+        <f64>::sse_encode(self.newest_file_age_days, serializer);
     }
 }
 
@@ -20497,347 +19841,87 @@ mod io {
     flutter_rust_bridge::frb_generated_boilerplate_io!();
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
@@ -20960,347 +20044,87 @@ mod web {
     flutter_rust_bridge::frb_generated_boilerplate_web!();
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<OcrBackendType> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<ProcessingStage> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn() -> DartFnFuture<Vec<String>> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<bool> + Send + Sync>>,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Box<dyn Fn() -> DartFnFuture<i64> + Send + Sync>>,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult) -> DartFnFuture<i64> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<()> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(ExtractionResult, ExtractionConfig) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(InternalDocument) -> DartFnFuture<String> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String) -> DartFnFuture<bool> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(String, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<String>) -> DartFnFuture<Vec<Vec<f64>>> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, OcrConfig) -> DartFnFuture<ExtractionResult> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::increment_strong_count(ptr as _);
-    }
-
-    #[wasm_bindgen]
-    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-        ptr: *const std::ffi::c_void,
-    ) {
-        MoiArc::<
-            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<
-                Box<dyn Fn(Vec<u8>, String, ExtractionConfig) -> DartFnFuture<InternalDocument> + Send + Sync>,
-            >,
-        >::decrement_strong_count(ptr as _);
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]

@@ -40,27 +40,27 @@ public func _loadBytesFromPathOrUtf8(_ pathOrContent: String) throws -> [UInt8] 
 // MARK: - Unregister name: label overloads
 
 public func unregisterOcrBackend(name: String) throws {
-    try unregisterOcrBackend(name)
+    try RustBridge.unregisterOcrBackend(name)
 }
 
 public func unregisterPostProcessor(name: String) throws {
-    try unregisterPostProcessor(name)
+    try RustBridge.unregisterPostProcessor(name)
 }
 
 public func unregisterValidator(name: String) throws {
-    try unregisterValidator(name)
+    try RustBridge.unregisterValidator(name)
 }
 
 public func unregisterEmbeddingBackend(name: String) throws {
-    try unregisterEmbeddingBackend(name)
+    try RustBridge.unregisterEmbeddingBackend(name)
 }
 
 public func unregisterDocumentExtractor(name: String) throws {
-    try unregisterDocumentExtractor(name)
+    try RustBridge.unregisterDocumentExtractor(name)
 }
 
 public func unregisterRenderer(name: String) throws {
-    try unregisterRenderer(name)
+    try RustBridge.unregisterRenderer(name)
 }
 
 // MARK: - Bridge → Box register overloads
@@ -116,11 +116,15 @@ private final class _OcrBackendBridgeAdapter: OcrBackend {
     init(bridge: any SwiftOcrBackendBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-ocr-stub" }
-    func processImage(image_bytes_image_bytes: String, config_config: String) throws -> String {
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
+    func processImage(image_bytes: Data, config: OcrConfig) async throws -> String {
         throw _BridgeStubError(description: "async bridge processImage cannot be invoked from sync FFI stub")
     }
 
-    func supportsLanguage(lang_lang: String) -> Bool { false }
+    func supportsLanguage(lang: String) -> Bool { false }
 
     // TODO: Implement backendType stub
 
@@ -131,7 +135,11 @@ private final class _PostProcessorBridgeAdapter: PostProcessor {
     init(bridge: any SwiftPostProcessorBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-post-processor-stub" }
-    func process(result_result: String, config_config: String) throws -> String {
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
+    func process(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
         throw _BridgeStubError(description: "async bridge process cannot be invoked from sync FFI stub")
     }
 
@@ -144,7 +152,11 @@ private final class _ValidatorBridgeAdapter: Validator {
     init(bridge: any SwiftValidatorBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-validator-stub" }
-    func validate(result_result: String, config_config: String) throws -> String {
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
+    func validate(result: ExtractionResult, config: ExtractionConfig) async throws -> String {
         throw _BridgeStubError(description: "async bridge validate cannot be invoked from sync FFI stub")
     }
 
@@ -155,9 +167,13 @@ private final class _EmbeddingBackendBridgeAdapter: EmbeddingBackend {
     init(bridge: any SwiftEmbeddingBackendBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-embedding-stub" }
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
     // TODO: Implement dimensions stub
 
-    func embed(texts_texts: String) throws -> String {
+    func embed(texts: [String]) async throws -> String {
         throw _BridgeStubError(description: "async bridge embed cannot be invoked from sync FFI stub")
     }
 
@@ -168,7 +184,11 @@ private final class _DocumentExtractorBridgeAdapter: DocumentExtractor {
     init(bridge: any SwiftDocumentExtractorBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-document-extractor-stub" }
-    func extractBytes(content_content: String, mime_type_mime_type: String, config_config: String) throws -> String {
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
+    func extractBytes(content: Data, mime_type: String, config: ExtractionConfig) async throws -> String {
         throw _BridgeStubError(description: "async bridge extractBytes cannot be invoked from sync FFI stub")
     }
 
@@ -181,6 +201,10 @@ private final class _RendererBridgeAdapter: Renderer {
     init(bridge: any SwiftRendererBridge) { self.bridge = bridge }
 
     func name() -> String { "swift-bridge-renderer-stub" }
-    func render(doc_doc: String) -> String { "" }
+    func version() -> String { "0.0.0" }
+    func initialize() throws {}
+    func shutdown() throws {}
+
+    func render(doc: InternalDocument) -> String { "" }
 
 }

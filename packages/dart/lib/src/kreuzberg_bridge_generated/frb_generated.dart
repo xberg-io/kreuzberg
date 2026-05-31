@@ -124,7 +124,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -291804795;
+  int get rustContentHash => 704675083;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -136,6 +136,60 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  ArcDocumentExtractor crateDocumentExtractorDartImplAutoAccessorGetField0({
+    required DocumentExtractorDartImpl that,
+  });
+
+  void crateDocumentExtractorDartImplAutoAccessorSetField0({
+    required DocumentExtractorDartImpl that,
+    required ArcDocumentExtractor field0,
+  });
+
+  ArcEmbeddingBackend crateEmbeddingBackendDartImplAutoAccessorGetField0({
+    required EmbeddingBackendDartImpl that,
+  });
+
+  void crateEmbeddingBackendDartImplAutoAccessorSetField0({
+    required EmbeddingBackendDartImpl that,
+    required ArcEmbeddingBackend field0,
+  });
+
+  ArcOcrBackend crateOcrBackendDartImplAutoAccessorGetField0({
+    required OcrBackendDartImpl that,
+  });
+
+  void crateOcrBackendDartImplAutoAccessorSetField0({
+    required OcrBackendDartImpl that,
+    required ArcOcrBackend field0,
+  });
+
+  ArcPostProcessor cratePostProcessorDartImplAutoAccessorGetField0({
+    required PostProcessorDartImpl that,
+  });
+
+  void cratePostProcessorDartImplAutoAccessorSetField0({
+    required PostProcessorDartImpl that,
+    required ArcPostProcessor field0,
+  });
+
+  ArcRenderer crateRendererDartImplAutoAccessorGetField0({
+    required RendererDartImpl that,
+  });
+
+  void crateRendererDartImplAutoAccessorSetField0({
+    required RendererDartImpl that,
+    required ArcRenderer field0,
+  });
+
+  ArcValidator crateValidatorDartImplAutoAccessorGetField0({
+    required ValidatorDartImpl that,
+  });
+
+  void crateValidatorDartImplAutoAccessorSetField0({
+    required ValidatorDartImpl that,
+    required ArcValidator field0,
+  });
+
   Future<List<ExtractionResult>> crateBatchExtractBytes({
     required List<BatchBytesItem> items,
     required ExtractionConfig config,
@@ -194,6 +248,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<BoundingBox> crateCreateBoundingBoxFromJson({required String json});
 
+  Future<CacheStats> crateCreateCacheStatsFromJson({required String json});
+
   Future<Chunk> crateCreateChunkFromJson({required String json});
 
   Future<ChunkMetadata> crateCreateChunkMetadataFromJson({
@@ -240,18 +296,6 @@ abstract class RustLibApi extends BaseApi {
 
   Future<DjotLink> crateCreateDjotLinkFromJson({required String json});
 
-  Future<DocumentExtractorDartImpl> crateCreateDocumentExtractorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-    extractBytes,
-    required BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-    extractFile,
-    required BoxFnDartFnFutureVecString supportedMimeTypes,
-    required BoxFnDartFnFutureI64 priority,
-    required BoxFnStringStringDartFnFutureBool canHandle,
-  });
-
   Future<DocumentNode> crateCreateDocumentNodeFromJson({required String json});
 
   Future<DocumentRelationship> crateCreateDocumentRelationshipFromJson({
@@ -289,13 +333,6 @@ abstract class RustLibApi extends BaseApi {
   });
 
   Future<EmbeddedFile> crateCreateEmbeddedFileFromJson({required String json});
-
-  Future<EmbeddingBackendDartImpl> crateCreateEmbeddingBackendDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnDartFnFutureI64 dimensions,
-    required BoxFnVecStringDartFnFutureVecVecF64 embed,
-  });
 
   Future<EmbeddingConfig> crateCreateEmbeddingConfigFromJson({
     required String json,
@@ -430,19 +467,6 @@ abstract class RustLibApi extends BaseApi {
 
   Future<ModelPaths> crateCreateModelPathsFromJson({required String json});
 
-  Future<OcrBackendDartImpl> crateCreateOcrBackendDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnVecU8OcrConfigDartFnFutureExtractionResult processImage,
-    required BoxFnStringOcrConfigDartFnFutureExtractionResult processImageFile,
-    required BoxFnStringDartFnFutureBool supportsLanguage,
-    required BoxFnDartFnFutureOcrBackendType backendType,
-    required BoxFnDartFnFutureVecString supportedLanguages,
-    required BoxFnDartFnFutureBool supportsTableDetection,
-    required BoxFnDartFnFutureBool supportsDocumentProcessing,
-    required BoxFnStringOcrConfigDartFnFutureExtractionResult processDocument,
-  });
-
   Future<OcrConfidence> crateCreateOcrConfidenceFromJson({
     required String json,
   });
@@ -517,17 +541,6 @@ abstract class RustLibApi extends BaseApi {
     required String json,
   });
 
-  Future<PostProcessorDartImpl> crateCreatePostProcessorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnExtractionResultExtractionConfigDartFnFuture process,
-    required BoxFnDartFnFutureProcessingStage processingStage,
-    required BoxFnExtractionResultExtractionConfigDartFnFutureBool
-    shouldProcess,
-    required BoxFnExtractionResultDartFnFutureI64 estimatedDurationMs,
-    required BoxFnDartFnFutureI64 priority,
-  });
-
   Future<PptxAppProperties> crateCreatePptxAppPropertiesFromJson({
     required String json,
   });
@@ -548,12 +561,6 @@ abstract class RustLibApi extends BaseApi {
 
   Future<RecognizedTable> crateCreateRecognizedTableFromJson({
     required String json,
-  });
-
-  Future<RendererDartImpl> crateCreateRendererDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnInternalDocumentDartFnFutureString render,
   });
 
   Future<SecurityLimits> crateCreateSecurityLimitsFromJson({
@@ -611,15 +618,6 @@ abstract class RustLibApi extends BaseApi {
 
   Future<TreeSitterProcessConfig> crateCreateTreeSitterProcessConfigFromJson({
     required String json,
-  });
-
-  Future<ValidatorDartImpl> crateCreateValidatorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnExtractionResultExtractionConfigDartFnFuture validate,
-    required BoxFnExtractionResultExtractionConfigDartFnFutureBool
-    shouldValidate,
-    required BoxFnDartFnFutureI64 priority,
   });
 
   Future<XlsxAppProperties> crateCreateXlsxAppPropertiesFromJson({
@@ -733,148 +731,56 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateUnregisterValidator({required String name});
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureOcrBackendType;
+  get rust_arc_increment_strong_count_ArcDocumentExtractor;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendType;
+  get rust_arc_decrement_strong_count_ArcDocumentExtractor;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendTypePtr;
+  get rust_arc_decrement_strong_count_ArcDocumentExtractorPtr;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureProcessingStage;
+  get rust_arc_increment_strong_count_ArcEmbeddingBackend;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStage;
+  get rust_arc_decrement_strong_count_ArcEmbeddingBackend;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStagePtr;
+  get rust_arc_decrement_strong_count_ArcEmbeddingBackendPtr;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureVecString;
+  get rust_arc_increment_strong_count_ArcOcrBackend;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureVecString;
+  get rust_arc_decrement_strong_count_ArcOcrBackend;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureVecStringPtr;
+  get rust_arc_decrement_strong_count_ArcOcrBackendPtr;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureBool;
+  get rust_arc_increment_strong_count_ArcPostProcessor;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureBool;
+  get rust_arc_decrement_strong_count_ArcPostProcessor;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureBoolPtr;
+  get rust_arc_decrement_strong_count_ArcPostProcessorPtr;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureI64;
+  get rust_arc_increment_strong_count_ArcRenderer;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureI64;
+  get rust_arc_decrement_strong_count_ArcRenderer;
 
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureI64Ptr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ArcRendererPtr;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultDartFnFutureI64;
+  get rust_arc_increment_strong_count_ArcValidator;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64;
+  get rust_arc_decrement_strong_count_ArcValidator;
 
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64Ptr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuturePtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBoolPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnInternalDocumentDartFnFutureString;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureString;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureStringPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringDartFnFutureBool;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBool;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBoolPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResultPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringStringDartFnFutureBool;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBool;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBoolPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecStringDartFnFutureVecVecF64;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64Ptr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResultPtr;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument;
-
-  CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentPtr;
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_ArcValidatorPtr;
 
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_DocumentExtractorDartImpl;
@@ -940,6 +846,420 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
+  ArcDocumentExtractor crateDocumentExtractorDartImplAutoAccessorGetField0({
+    required DocumentExtractorDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateDocumentExtractorDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateDocumentExtractorDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "DocumentExtractorDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void crateDocumentExtractorDartImplAutoAccessorSetField0({
+    required DocumentExtractorDartImpl that,
+    required ArcDocumentExtractor field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateDocumentExtractorDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateDocumentExtractorDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "DocumentExtractorDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
+  ArcEmbeddingBackend crateEmbeddingBackendDartImplAutoAccessorGetField0({
+    required EmbeddingBackendDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateEmbeddingBackendDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateEmbeddingBackendDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "EmbeddingBackendDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void crateEmbeddingBackendDartImplAutoAccessorSetField0({
+    required EmbeddingBackendDartImpl that,
+    required ArcEmbeddingBackend field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateEmbeddingBackendDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateEmbeddingBackendDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "EmbeddingBackendDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
+  ArcOcrBackend crateOcrBackendDartImplAutoAccessorGetField0({
+    required OcrBackendDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateOcrBackendDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateOcrBackendDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "OcrBackendDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void crateOcrBackendDartImplAutoAccessorSetField0({
+    required OcrBackendDartImpl that,
+    required ArcOcrBackend field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateOcrBackendDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateOcrBackendDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "OcrBackendDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
+  ArcPostProcessor cratePostProcessorDartImplAutoAccessorGetField0({
+    required PostProcessorDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta: kCratePostProcessorDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCratePostProcessorDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "PostProcessorDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void cratePostProcessorDartImplAutoAccessorSetField0({
+    required PostProcessorDartImpl that,
+    required ArcPostProcessor field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCratePostProcessorDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCratePostProcessorDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "PostProcessorDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
+  ArcRenderer crateRendererDartImplAutoAccessorGetField0({
+    required RendererDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateRendererDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateRendererDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "RendererDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void crateRendererDartImplAutoAccessorSetField0({
+    required RendererDartImpl that,
+    required ArcRenderer field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateRendererDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateRendererDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "RendererDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
+  ArcValidator crateValidatorDartImplAutoAccessorGetField0({
+    required ValidatorDartImpl that,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+            that,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateValidatorDartImplAutoAccessorGetField0ConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateValidatorDartImplAutoAccessorGetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "ValidatorDartImpl_auto_accessor_get_field0",
+        argNames: ["that"],
+      );
+
+  @override
+  void crateValidatorDartImplAutoAccessorSetField0({
+    required ValidatorDartImpl that,
+    required ArcValidator field0,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+            that,
+            serializer,
+          );
+          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+            field0,
+            serializer,
+          );
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateValidatorDartImplAutoAccessorSetField0ConstMeta,
+        argValues: [that, field0],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateValidatorDartImplAutoAccessorSetField0ConstMeta =>
+      const TaskConstMeta(
+        debugName: "ValidatorDartImpl_auto_accessor_set_field0",
+        argNames: ["that", "field0"],
+      );
+
+  @override
   Future<List<ExtractionResult>> crateBatchExtractBytes({
     required List<BatchBytesItem> items,
     required ExtractionConfig config,
@@ -953,7 +1273,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 1,
+            funcId: 13,
             port: port_,
           );
         },
@@ -987,7 +1307,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 2,
+            funcId: 14,
             port: port_,
           );
         },
@@ -1021,7 +1341,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 3,
+            funcId: 15,
             port: port_,
           );
         },
@@ -1055,7 +1375,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 16,
             port: port_,
           );
         },
@@ -1084,7 +1404,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 5,
+            funcId: 17,
             port: port_,
           );
         },
@@ -1111,7 +1431,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 6,
+            funcId: 18,
             port: port_,
           );
         },
@@ -1138,7 +1458,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 7,
+            funcId: 19,
             port: port_,
           );
         },
@@ -1165,7 +1485,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 20,
             port: port_,
           );
         },
@@ -1192,7 +1512,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 9,
+            funcId: 21,
             port: port_,
           );
         },
@@ -1219,7 +1539,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 10,
+            funcId: 22,
             port: port_,
           );
         },
@@ -1249,7 +1569,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 11,
+            funcId: 23,
             port: port_,
           );
         },
@@ -1280,7 +1600,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 12,
+            funcId: 24,
             port: port_,
           );
         },
@@ -1313,7 +1633,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 13,
+            funcId: 25,
             port: port_,
           );
         },
@@ -1344,7 +1664,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 14,
+            funcId: 26,
             port: port_,
           );
         },
@@ -1376,7 +1696,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 15,
+            funcId: 27,
             port: port_,
           );
         },
@@ -1409,7 +1729,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 16,
+            funcId: 28,
             port: port_,
           );
         },
@@ -1442,7 +1762,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 17,
+            funcId: 29,
             port: port_,
           );
         },
@@ -1473,7 +1793,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 18,
+            funcId: 30,
             port: port_,
           );
         },
@@ -1495,6 +1815,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<CacheStats> crateCreateCacheStatsFromJson({required String json}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(json, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 31,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_cache_stats,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateCreateCacheStatsFromJsonConstMeta,
+        argValues: [json],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateCreateCacheStatsFromJsonConstMeta =>
+      const TaskConstMeta(
+        debugName: "create_cache_stats_from_json",
+        argNames: ["json"],
+      );
+
+  @override
   Future<Chunk> crateCreateChunkFromJson({required String json}) {
     return handler.executeNormal(
       NormalTask(
@@ -1504,7 +1855,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 19,
+            funcId: 32,
             port: port_,
           );
         },
@@ -1536,7 +1887,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 20,
+            funcId: 33,
             port: port_,
           );
         },
@@ -1569,7 +1920,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 21,
+            funcId: 34,
             port: port_,
           );
         },
@@ -1602,7 +1953,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 22,
+            funcId: 35,
             port: port_,
           );
         },
@@ -1635,7 +1986,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 23,
+            funcId: 36,
             port: port_,
           );
         },
@@ -1668,7 +2019,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 24,
+            funcId: 37,
             port: port_,
           );
         },
@@ -1701,7 +2052,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 25,
+            funcId: 38,
             port: port_,
           );
         },
@@ -1732,7 +2083,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 26,
+            funcId: 39,
             port: port_,
           );
         },
@@ -1763,7 +2114,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 27,
+            funcId: 40,
             port: port_,
           );
         },
@@ -1794,7 +2145,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 28,
+            funcId: 41,
             port: port_,
           );
         },
@@ -1827,7 +2178,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 29,
+            funcId: 42,
             port: port_,
           );
         },
@@ -1860,7 +2211,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 30,
+            funcId: 43,
             port: port_,
           );
         },
@@ -1891,7 +2242,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 31,
+            funcId: 44,
             port: port_,
           );
         },
@@ -1922,7 +2273,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 32,
+            funcId: 45,
             port: port_,
           );
         },
@@ -1953,7 +2304,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 33,
+            funcId: 46,
             port: port_,
           );
         },
@@ -1975,85 +2326,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DocumentExtractorDartImpl> crateCreateDocumentExtractorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-    extractBytes,
-    required BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-    extractFile,
-    required BoxFnDartFnFutureVecString supportedMimeTypes,
-    required BoxFnDartFnFutureI64 priority,
-    required BoxFnStringStringDartFnFutureBool canHandle,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-            extractBytes,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-            extractFile,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-            supportedMimeTypes,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-            priority,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-            canHandle,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 34,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreateDocumentExtractorDartImplConstMeta,
-        argValues: [
-          pluginName,
-          pluginVersion,
-          extractBytes,
-          extractFile,
-          supportedMimeTypes,
-          priority,
-          canHandle,
-        ],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreateDocumentExtractorDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_document_extractor_dart_impl",
-        argNames: [
-          "pluginName",
-          "pluginVersion",
-          "extractBytes",
-          "extractFile",
-          "supportedMimeTypes",
-          "priority",
-          "canHandle",
-        ],
-      );
-
-  @override
   Future<DocumentNode> crateCreateDocumentNodeFromJson({required String json}) {
     return handler.executeNormal(
       NormalTask(
@@ -2063,7 +2335,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 35,
+            funcId: 47,
             port: port_,
           );
         },
@@ -2096,7 +2368,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 36,
+            funcId: 48,
             port: port_,
           );
         },
@@ -2129,7 +2401,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 37,
+            funcId: 49,
             port: port_,
           );
         },
@@ -2162,7 +2434,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 38,
+            funcId: 50,
             port: port_,
           );
         },
@@ -2193,7 +2465,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 39,
+            funcId: 51,
             port: port_,
           );
         },
@@ -2224,7 +2496,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 40,
+            funcId: 52,
             port: port_,
           );
         },
@@ -2256,7 +2528,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 41,
+            funcId: 53,
             port: port_,
           );
         },
@@ -2289,7 +2561,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 42,
+            funcId: 54,
             port: port_,
           );
         },
@@ -2320,7 +2592,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 43,
+            funcId: 55,
             port: port_,
           );
         },
@@ -2353,7 +2625,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 44,
+            funcId: 56,
             port: port_,
           );
         },
@@ -2386,7 +2658,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 45,
+            funcId: 57,
             port: port_,
           );
         },
@@ -2417,7 +2689,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 46,
+            funcId: 58,
             port: port_,
           );
         },
@@ -2439,52 +2711,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<EmbeddingBackendDartImpl> crateCreateEmbeddingBackendDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnDartFnFutureI64 dimensions,
-    required BoxFnVecStringDartFnFutureVecVecF64 embed,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-            dimensions,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-            embed,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 47,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreateEmbeddingBackendDartImplConstMeta,
-        argValues: [pluginName, pluginVersion, dimensions, embed],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreateEmbeddingBackendDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_embedding_backend_dart_impl",
-        argNames: ["pluginName", "pluginVersion", "dimensions", "embed"],
-      );
-
-  @override
   Future<EmbeddingConfig> crateCreateEmbeddingConfigFromJson({
     required String json,
   }) {
@@ -2496,7 +2722,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 48,
+            funcId: 59,
             port: port_,
           );
         },
@@ -2529,7 +2755,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 49,
+            funcId: 60,
             port: port_,
           );
         },
@@ -2560,7 +2786,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 50,
+            funcId: 61,
             port: port_,
           );
         },
@@ -2593,7 +2819,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 51,
+            funcId: 62,
             port: port_,
           );
         },
@@ -2626,7 +2852,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 52,
+            funcId: 63,
             port: port_,
           );
         },
@@ -2657,7 +2883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 53,
+            funcId: 64,
             port: port_,
           );
         },
@@ -2690,7 +2916,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 54,
+            funcId: 65,
             port: port_,
           );
         },
@@ -2723,7 +2949,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 55,
+            funcId: 66,
             port: port_,
           );
         },
@@ -2754,7 +2980,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 56,
+            funcId: 67,
             port: port_,
           );
         },
@@ -2787,7 +3013,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 57,
+            funcId: 68,
             port: port_,
           );
         },
@@ -2820,7 +3046,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 58,
+            funcId: 69,
             port: port_,
           );
         },
@@ -2853,7 +3079,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 59,
+            funcId: 70,
             port: port_,
           );
         },
@@ -2886,7 +3112,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 60,
+            funcId: 71,
             port: port_,
           );
         },
@@ -2917,7 +3143,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 61,
+            funcId: 72,
             port: port_,
           );
         },
@@ -2950,7 +3176,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 62,
+            funcId: 73,
             port: port_,
           );
         },
@@ -2981,7 +3207,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 63,
+            funcId: 74,
             port: port_,
           );
         },
@@ -3014,7 +3240,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 64,
+            funcId: 75,
             port: port_,
           );
         },
@@ -3047,7 +3273,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 65,
+            funcId: 76,
             port: port_,
           );
         },
@@ -3078,7 +3304,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 66,
+            funcId: 77,
             port: port_,
           );
         },
@@ -3111,7 +3337,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 67,
+            funcId: 78,
             port: port_,
           );
         },
@@ -3144,7 +3370,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 68,
+            funcId: 79,
             port: port_,
           );
         },
@@ -3175,7 +3401,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 69,
+            funcId: 80,
             port: port_,
           );
         },
@@ -3208,7 +3434,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 70,
+            funcId: 81,
             port: port_,
           );
         },
@@ -3241,7 +3467,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 71,
+            funcId: 82,
             port: port_,
           );
         },
@@ -3274,7 +3500,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 72,
+            funcId: 83,
             port: port_,
           );
         },
@@ -3307,7 +3533,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 73,
+            funcId: 84,
             port: port_,
           );
         },
@@ -3340,7 +3566,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 74,
+            funcId: 85,
             port: port_,
           );
         },
@@ -3372,7 +3598,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 75,
+            funcId: 86,
             port: port_,
           );
         },
@@ -3405,7 +3631,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 76,
+            funcId: 87,
             port: port_,
           );
         },
@@ -3436,7 +3662,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 77,
+            funcId: 88,
             port: port_,
           );
         },
@@ -3469,7 +3695,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 78,
+            funcId: 89,
             port: port_,
           );
         },
@@ -3500,7 +3726,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 79,
+            funcId: 90,
             port: port_,
           );
         },
@@ -3532,7 +3758,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 80,
+            funcId: 91,
             port: port_,
           );
         },
@@ -3565,7 +3791,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 81,
+            funcId: 92,
             port: port_,
           );
         },
@@ -3598,7 +3824,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 82,
+            funcId: 93,
             port: port_,
           );
         },
@@ -3629,7 +3855,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 83,
+            funcId: 94,
             port: port_,
           );
         },
@@ -3660,7 +3886,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 84,
+            funcId: 95,
             port: port_,
           );
         },
@@ -3691,7 +3917,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 85,
+            funcId: 96,
             port: port_,
           );
         },
@@ -3722,7 +3948,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 86,
+            funcId: 97,
             port: port_,
           );
         },
@@ -3753,7 +3979,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 87,
+            funcId: 98,
             port: port_,
           );
         },
@@ -3784,7 +4010,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 88,
+            funcId: 99,
             port: port_,
           );
         },
@@ -3806,104 +4032,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrBackendDartImpl> crateCreateOcrBackendDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnVecU8OcrConfigDartFnFutureExtractionResult processImage,
-    required BoxFnStringOcrConfigDartFnFutureExtractionResult processImageFile,
-    required BoxFnStringDartFnFutureBool supportsLanguage,
-    required BoxFnDartFnFutureOcrBackendType backendType,
-    required BoxFnDartFnFutureVecString supportedLanguages,
-    required BoxFnDartFnFutureBool supportsTableDetection,
-    required BoxFnDartFnFutureBool supportsDocumentProcessing,
-    required BoxFnStringOcrConfigDartFnFutureExtractionResult processDocument,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-            processImage,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-            processImageFile,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-            supportsLanguage,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
-            backendType,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-            supportedLanguages,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-            supportsTableDetection,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-            supportsDocumentProcessing,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-            processDocument,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 89,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreateOcrBackendDartImplConstMeta,
-        argValues: [
-          pluginName,
-          pluginVersion,
-          processImage,
-          processImageFile,
-          supportsLanguage,
-          backendType,
-          supportedLanguages,
-          supportsTableDetection,
-          supportsDocumentProcessing,
-          processDocument,
-        ],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreateOcrBackendDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_ocr_backend_dart_impl",
-        argNames: [
-          "pluginName",
-          "pluginVersion",
-          "processImage",
-          "processImageFile",
-          "supportsLanguage",
-          "backendType",
-          "supportedLanguages",
-          "supportsTableDetection",
-          "supportsDocumentProcessing",
-          "processDocument",
-        ],
-      );
-
-  @override
   Future<OcrConfidence> crateCreateOcrConfidenceFromJson({
     required String json,
   }) {
@@ -3915,7 +4043,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 90,
+            funcId: 100,
             port: port_,
           );
         },
@@ -3946,7 +4074,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 91,
+            funcId: 101,
             port: port_,
           );
         },
@@ -3979,7 +4107,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 92,
+            funcId: 102,
             port: port_,
           );
         },
@@ -4010,7 +4138,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 93,
+            funcId: 103,
             port: port_,
           );
         },
@@ -4043,7 +4171,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 94,
+            funcId: 104,
             port: port_,
           );
         },
@@ -4074,7 +4202,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 95,
+            funcId: 105,
             port: port_,
           );
         },
@@ -4107,7 +4235,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 96,
+            funcId: 106,
             port: port_,
           );
         },
@@ -4140,7 +4268,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 97,
+            funcId: 107,
             port: port_,
           );
         },
@@ -4173,7 +4301,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 98,
+            funcId: 108,
             port: port_,
           );
         },
@@ -4204,7 +4332,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 99,
+            funcId: 109,
             port: port_,
           );
         },
@@ -4237,7 +4365,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 100,
+            funcId: 110,
             port: port_,
           );
         },
@@ -4268,7 +4396,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 101,
+            funcId: 111,
             port: port_,
           );
         },
@@ -4301,7 +4429,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 102,
+            funcId: 112,
             port: port_,
           );
         },
@@ -4334,7 +4462,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 103,
+            funcId: 113,
             port: port_,
           );
         },
@@ -4365,7 +4493,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 104,
+            funcId: 114,
             port: port_,
           );
         },
@@ -4396,7 +4524,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 105,
+            funcId: 115,
             port: port_,
           );
         },
@@ -4427,7 +4555,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 106,
+            funcId: 116,
             port: port_,
           );
         },
@@ -4460,7 +4588,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 107,
+            funcId: 117,
             port: port_,
           );
         },
@@ -4491,7 +4619,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 108,
+            funcId: 118,
             port: port_,
           );
         },
@@ -4524,7 +4652,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 109,
+            funcId: 119,
             port: port_,
           );
         },
@@ -4557,7 +4685,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 110,
+            funcId: 120,
             port: port_,
           );
         },
@@ -4588,7 +4716,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 111,
+            funcId: 121,
             port: port_,
           );
         },
@@ -4619,7 +4747,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 112,
+            funcId: 122,
             port: port_,
           );
         },
@@ -4652,7 +4780,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 113,
+            funcId: 123,
             port: port_,
           );
         },
@@ -4674,84 +4802,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PostProcessorDartImpl> crateCreatePostProcessorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnExtractionResultExtractionConfigDartFnFuture process,
-    required BoxFnDartFnFutureProcessingStage processingStage,
-    required BoxFnExtractionResultExtractionConfigDartFnFutureBool
-    shouldProcess,
-    required BoxFnExtractionResultDartFnFutureI64 estimatedDurationMs,
-    required BoxFnDartFnFutureI64 priority,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-            process,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
-            processingStage,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-            shouldProcess,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-            estimatedDurationMs,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-            priority,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 114,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreatePostProcessorDartImplConstMeta,
-        argValues: [
-          pluginName,
-          pluginVersion,
-          process,
-          processingStage,
-          shouldProcess,
-          estimatedDurationMs,
-          priority,
-        ],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreatePostProcessorDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_post_processor_dart_impl",
-        argNames: [
-          "pluginName",
-          "pluginVersion",
-          "process",
-          "processingStage",
-          "shouldProcess",
-          "estimatedDurationMs",
-          "priority",
-        ],
-      );
-
-  @override
   Future<PptxAppProperties> crateCreatePptxAppPropertiesFromJson({
     required String json,
   }) {
@@ -4763,7 +4813,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 115,
+            funcId: 124,
             port: port_,
           );
         },
@@ -4796,7 +4846,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 116,
+            funcId: 125,
             port: port_,
           );
         },
@@ -4827,7 +4877,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 117,
+            funcId: 126,
             port: port_,
           );
         },
@@ -4860,7 +4910,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 118,
+            funcId: 127,
             port: port_,
           );
         },
@@ -4891,7 +4941,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 119,
+            funcId: 128,
             port: port_,
           );
         },
@@ -4922,7 +4972,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 120,
+            funcId: 129,
             port: port_,
           );
         },
@@ -4955,7 +5005,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 121,
+            funcId: 130,
             port: port_,
           );
         },
@@ -4977,47 +5027,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<RendererDartImpl> crateCreateRendererDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnInternalDocumentDartFnFutureString render,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-            render,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 122,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreateRendererDartImplConstMeta,
-        argValues: [pluginName, pluginVersion, render],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreateRendererDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_renderer_dart_impl",
-        argNames: ["pluginName", "pluginVersion", "render"],
-      );
-
-  @override
   Future<SecurityLimits> crateCreateSecurityLimitsFromJson({
     required String json,
   }) {
@@ -5029,7 +5038,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 123,
+            funcId: 131,
             port: port_,
           );
         },
@@ -5060,7 +5069,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 124,
+            funcId: 132,
             port: port_,
           );
         },
@@ -5093,7 +5102,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 125,
+            funcId: 133,
             port: port_,
           );
         },
@@ -5126,7 +5135,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 126,
+            funcId: 134,
             port: port_,
           );
         },
@@ -5158,7 +5167,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 127,
+            funcId: 135,
             port: port_,
           );
         },
@@ -5191,7 +5200,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 128,
+            funcId: 136,
             port: port_,
           );
         },
@@ -5222,7 +5231,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 129,
+            funcId: 137,
             port: port_,
           );
         },
@@ -5253,7 +5262,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 130,
+            funcId: 138,
             port: port_,
           );
         },
@@ -5283,7 +5292,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 131,
+            funcId: 139,
             port: port_,
           );
         },
@@ -5316,7 +5325,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 132,
+            funcId: 140,
             port: port_,
           );
         },
@@ -5349,7 +5358,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 133,
+            funcId: 141,
             port: port_,
           );
         },
@@ -5382,7 +5391,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 134,
+            funcId: 142,
             port: port_,
           );
         },
@@ -5413,7 +5422,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 135,
+            funcId: 143,
             port: port_,
           );
         },
@@ -5446,7 +5455,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 136,
+            funcId: 144,
             port: port_,
           );
         },
@@ -5479,7 +5488,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 137,
+            funcId: 145,
             port: port_,
           );
         },
@@ -5512,7 +5521,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 138,
+            funcId: 146,
             port: port_,
           );
         },
@@ -5545,7 +5554,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 139,
+            funcId: 147,
             port: port_,
           );
         },
@@ -5567,70 +5576,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ValidatorDartImpl> crateCreateValidatorDartImpl({
-    required String pluginName,
-    required String pluginVersion,
-    required BoxFnExtractionResultExtractionConfigDartFnFuture validate,
-    required BoxFnExtractionResultExtractionConfigDartFnFutureBool
-    shouldValidate,
-    required BoxFnDartFnFutureI64 priority,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(pluginName, serializer);
-          sse_encode_String(pluginVersion, serializer);
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-            validate,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-            shouldValidate,
-            serializer,
-          );
-          sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-            priority,
-            serializer,
-          );
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 140,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData:
-              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateCreateValidatorDartImplConstMeta,
-        argValues: [
-          pluginName,
-          pluginVersion,
-          validate,
-          shouldValidate,
-          priority,
-        ],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateCreateValidatorDartImplConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_validator_dart_impl",
-        argNames: [
-          "pluginName",
-          "pluginVersion",
-          "validate",
-          "shouldValidate",
-          "priority",
-        ],
-      );
-
-  @override
   Future<XlsxAppProperties> crateCreateXlsxAppPropertiesFromJson({
     required String json,
   }) {
@@ -5642,7 +5587,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 141,
+            funcId: 148,
             port: port_,
           );
         },
@@ -5675,7 +5620,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 142,
+            funcId: 149,
             port: port_,
           );
         },
@@ -5706,7 +5651,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 143,
+            funcId: 150,
             port: port_,
           );
         },
@@ -5737,7 +5682,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 144,
+            funcId: 151,
             port: port_,
           );
         },
@@ -5768,7 +5713,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 145,
+            funcId: 152,
             port: port_,
           );
         },
@@ -5803,7 +5748,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 146,
+            funcId: 153,
             port: port_,
           );
         },
@@ -5833,7 +5778,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 147,
+            funcId: 154,
             port: port_,
           );
         },
@@ -5868,7 +5813,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 148,
+            funcId: 155,
             port: port_,
           );
         },
@@ -5902,7 +5847,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 149,
+            funcId: 156,
             port: port_,
           );
         },
@@ -5938,7 +5883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 150,
+            funcId: 157,
             port: port_,
           );
         },
@@ -5974,7 +5919,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 151,
+            funcId: 158,
             port: port_,
           );
         },
@@ -6010,7 +5955,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 152,
+            funcId: 159,
             port: port_,
           );
         },
@@ -6046,7 +5991,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 153,
+            funcId: 160,
             port: port_,
           );
         },
@@ -6076,7 +6021,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 154,
+            funcId: 161,
             port: port_,
           );
         },
@@ -6106,7 +6051,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 155,
+            funcId: 162,
             port: port_,
           );
         },
@@ -6135,7 +6080,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 156,
+            funcId: 163,
             port: port_,
           );
         },
@@ -6162,7 +6107,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 157,
+            funcId: 164,
             port: port_,
           );
         },
@@ -6189,7 +6134,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 158,
+            funcId: 165,
             port: port_,
           );
         },
@@ -6216,7 +6161,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 159,
+            funcId: 166,
             port: port_,
           );
         },
@@ -6243,7 +6188,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 160,
+            funcId: 167,
             port: port_,
           );
         },
@@ -6270,7 +6215,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 161,
+            funcId: 168,
             port: port_,
           );
         },
@@ -6297,7 +6242,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 162,
+            funcId: 169,
             port: port_,
           );
         },
@@ -6330,7 +6275,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 163,
+            funcId: 170,
             port: port_,
           );
         },
@@ -6366,7 +6311,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 164,
+            funcId: 171,
             port: port_,
           );
         },
@@ -6400,7 +6345,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 165,
+            funcId: 172,
             port: port_,
           );
         },
@@ -6435,7 +6380,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 166,
+            funcId: 173,
             port: port_,
           );
         },
@@ -6468,7 +6413,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 167,
+            funcId: 174,
             port: port_,
           );
         },
@@ -6499,7 +6444,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 168,
+            funcId: 175,
             port: port_,
           );
         },
@@ -6535,7 +6480,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 169,
+            funcId: 176,
             port: port_,
           );
         },
@@ -6565,7 +6510,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 170,
+            funcId: 177,
             port: port_,
           );
         },
@@ -6596,7 +6541,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 171,
+            funcId: 178,
             port: port_,
           );
         },
@@ -6627,7 +6572,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 172,
+            funcId: 179,
             port: port_,
           );
         },
@@ -6657,7 +6602,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 173,
+            funcId: 180,
             port: port_,
           );
         },
@@ -6688,7 +6633,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 174,
+            funcId: 181,
             port: port_,
           );
         },
@@ -6716,7 +6661,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 175,
+            funcId: 182,
             port: port_,
           );
         },
@@ -6737,132 +6682,52 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureOcrBackendType => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync;
+  get rust_arc_increment_strong_count_ArcDocumentExtractor => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendType => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync;
+  get rust_arc_decrement_strong_count_ArcDocumentExtractor => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureProcessingStage => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync;
+  get rust_arc_increment_strong_count_ArcEmbeddingBackend => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStage => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync;
+  get rust_arc_decrement_strong_count_ArcEmbeddingBackend => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureVecString => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync;
+  get rust_arc_increment_strong_count_ArcOcrBackend => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureVecString => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync;
+  get rust_arc_decrement_strong_count_ArcOcrBackend => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureBool => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync;
+  get rust_arc_increment_strong_count_ArcPostProcessor => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureBool => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync;
+  get rust_arc_decrement_strong_count_ArcPostProcessor => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnDartFnFutureI64 => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync;
+  get rust_arc_increment_strong_count_ArcRenderer => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnDartFnFutureI64 => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync;
+  get rust_arc_decrement_strong_count_ArcRenderer => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync;
 
   RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultDartFnFutureI64 => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync;
+  get rust_arc_increment_strong_count_ArcValidator => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync;
 
   RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64 => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnInternalDocumentDartFnFutureString =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureString =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringDartFnFutureBool => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBool => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringStringDartFnFutureBool => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBool => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecStringDartFnFutureVecVecF64 => wire
-      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64 => wire
-      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync;
-
-  RustArcIncrementStrongCountFnType
-  get rust_arc_increment_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument =>
-      wire.rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync;
-
-  RustArcDecrementStrongCountFnType
-  get rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument =>
-      wire.rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync;
+  get rust_arc_decrement_strong_count_ArcValidator => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync;
 
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_DocumentExtractorDartImpl => wire
@@ -6913,175 +6778,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl;
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcDocumentExtractorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureProcessingStageImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcEmbeddingBackendImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureVecString
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureVecStringImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcOcrBackendImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureBoolImpl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ArcPostProcessorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureI64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureI64Impl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ArcRendererImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  ArcValidator
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultDartFnFutureI64Impl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringStringDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcValidatorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -7143,6 +6890,122 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DocumentExtractorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return DocumentExtractorDartImplImpl.frbInternalDcoDecode(
+      raw as List<dynamic>,
+    );
+  }
+
+  @protected
+  EmbeddingBackendDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return EmbeddingBackendDartImplImpl.frbInternalDcoDecode(
+      raw as List<dynamic>,
+    );
+  }
+
+  @protected
+  OcrBackendDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return OcrBackendDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  PostProcessorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return PostProcessorDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  RendererDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return RendererDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ValidatorDartImpl
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ValidatorDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  DocumentExtractorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return DocumentExtractorDartImplImpl.frbInternalDcoDecode(
+      raw as List<dynamic>,
+    );
+  }
+
+  @protected
+  EmbeddingBackendDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return EmbeddingBackendDartImplImpl.frbInternalDcoDecode(
+      raw as List<dynamic>,
+    );
+  }
+
+  @protected
+  OcrBackendDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return OcrBackendDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  PostProcessorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return PostProcessorDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  RendererDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return RendererDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  ValidatorDartImpl
+  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ValidatorDartImplImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   Map<String, String> dco_decode_Map_String_String_None(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return Map.fromEntries(
@@ -7185,175 +7048,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcDocumentExtractorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureProcessingStageImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcEmbeddingBackendImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureVecString
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureVecStringImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcOcrBackendImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureBoolImpl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ArcPostProcessorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnDartFnFutureI64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnDartFnFutureI64Impl.frbInternalDcoDecode(raw as List<dynamic>);
+    return ArcRendererImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  ArcValidator
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultDartFnFutureI64Impl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringStringDartFnFutureBoolImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
-  }
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    dynamic raw,
-  ) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-      raw as List<dynamic>,
-    );
+    return ArcValidatorImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -8039,6 +7784,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   YearRange dco_decode_box_autoadd_year_range(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_year_range(raw);
+  }
+
+  @protected
+  CacheStats dco_decode_cache_stats(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return CacheStats(
+      totalFiles: dco_decode_i_64(arr[0]),
+      totalSizeMb: dco_decode_f_64(arr[1]),
+      availableSpaceMb: dco_decode_f_64(arr[2]),
+      oldestFileAgeDays: dco_decode_f_64(arr[3]),
+      newestFileAgeDays: dco_decode_f_64(arr[4]),
+    );
   }
 
   @protected
@@ -11337,192 +11097,72 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalSseDecode(
+    return ArcDocumentExtractorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureProcessingStageImpl.frbInternalSseDecode(
+    return ArcEmbeddingBackendImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureVecString
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureVecStringImpl.frbInternalSseDecode(
+    return ArcOcrBackendImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureBoolImpl.frbInternalSseDecode(
+    return ArcPostProcessorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureI64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureI64Impl.frbInternalSseDecode(
+    return ArcRendererImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  ArcValidator
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultDartFnFutureI64Impl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringStringDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
+    return ArcValidatorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -11601,6 +11241,150 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DocumentExtractorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return DocumentExtractorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  EmbeddingBackendDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return EmbeddingBackendDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  OcrBackendDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return OcrBackendDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  PostProcessorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return PostProcessorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  RendererDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return RendererDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ValidatorDartImpl
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ValidatorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  DocumentExtractorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return DocumentExtractorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  EmbeddingBackendDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return EmbeddingBackendDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  OcrBackendDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return OcrBackendDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  PostProcessorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return PostProcessorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  RendererDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return RendererDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  ValidatorDartImpl
+  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return ValidatorDartImplImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   Map<String, String> sse_decode_Map_String_String_None(
     SseDeserializer deserializer,
   ) {
@@ -11639,192 +11423,72 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  BoxFnDartFnFutureOcrBackendType
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
+  ArcDocumentExtractor
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalSseDecode(
+    return ArcDocumentExtractorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureProcessingStage
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
+  ArcEmbeddingBackend
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureProcessingStageImpl.frbInternalSseDecode(
+    return ArcEmbeddingBackendImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureVecString
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
+  ArcOcrBackend
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureVecStringImpl.frbInternalSseDecode(
+    return ArcOcrBackendImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
+  ArcPostProcessor
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureBoolImpl.frbInternalSseDecode(
+    return ArcPostProcessorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnDartFnFutureI64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
+  ArcRenderer
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnDartFnFutureI64Impl.frbInternalSseDecode(
+    return ArcRendererImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
   }
 
   @protected
-  BoxFnExtractionResultDartFnFutureI64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
+  ArcValidator
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultDartFnFutureI64Impl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFuture
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnExtractionResultExtractionConfigDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnInternalDocumentDartFnFutureString
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringOcrConfigDartFnFutureExtractionResult
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringStringDartFnFutureBool
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringStringDartFnFutureBoolImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecStringDartFnFutureVecVecF64
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResult
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-      sse_decode_usize(deserializer),
-      sse_decode_i_32(deserializer),
-    );
-  }
-
-  @protected
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
+    return ArcValidatorImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -12625,6 +12289,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   YearRange sse_decode_box_autoadd_year_range(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_year_range(deserializer));
+  }
+
+  @protected
+  CacheStats sse_decode_cache_stats(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_totalFiles = sse_decode_i_64(deserializer);
+    var var_totalSizeMb = sse_decode_f_64(deserializer);
+    var var_availableSpaceMb = sse_decode_f_64(deserializer);
+    var var_oldestFileAgeDays = sse_decode_f_64(deserializer);
+    var var_newestFileAgeDays = sse_decode_f_64(deserializer);
+    return CacheStats(
+      totalFiles: var_totalFiles,
+      totalSizeMb: var_totalSizeMb,
+      availableSpaceMb: var_availableSpaceMb,
+      oldestFileAgeDays: var_oldestFileAgeDays,
+      newestFileAgeDays: var_newestFileAgeDays,
+    );
   }
 
   @protected
@@ -17247,227 +16928,78 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
-    BoxFnDartFnFutureOcrBackendType self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    ArcDocumentExtractor self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureOcrBackendTypeImpl).frbInternalSseEncode(
-        move: true,
-      ),
+      (self as ArcDocumentExtractorImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
-    BoxFnDartFnFutureProcessingStage self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    ArcEmbeddingBackend self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureProcessingStageImpl).frbInternalSseEncode(
-        move: true,
-      ),
+      (self as ArcEmbeddingBackendImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-    BoxFnDartFnFutureVecString self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    ArcOcrBackend self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureVecStringImpl).frbInternalSseEncode(move: true),
+      (self as ArcOcrBackendImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-    BoxFnDartFnFutureBool self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    ArcPostProcessor self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureBoolImpl).frbInternalSseEncode(move: true),
+      (self as ArcPostProcessorImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-    BoxFnDartFnFutureI64 self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    ArcRenderer self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureI64Impl).frbInternalSseEncode(move: true),
+      (self as ArcRendererImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    BoxFnExtractionResultDartFnFutureI64 self,
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    ArcValidator self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnExtractionResultDartFnFutureI64Impl).frbInternalSseEncode(
-        move: true,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFuture self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnExtractionResultExtractionConfigDartFnFutureImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    BoxFnInternalDocumentDartFnFutureString self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnInternalDocumentDartFnFutureStringImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    BoxFnStringDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringDartFnFutureBoolImpl).frbInternalSseEncode(
-        move: true,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnStringOcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringOcrConfigDartFnFutureExtractionResultImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    BoxFnStringStringDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringStringDartFnFutureBoolImpl).frbInternalSseEncode(
-        move: true,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnStringStringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    BoxFnVecStringDartFnFutureVecVecF64 self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecStringDartFnFutureVecVecF64Impl).frbInternalSseEncode(
-        move: true,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnVecU8OcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl)
-          .frbInternalSseEncode(move: true),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl)
-          .frbInternalSseEncode(move: true),
+      (self as ArcValidatorImpl).frbInternalSseEncode(move: true),
       serializer,
     );
   }
@@ -17551,6 +17083,162 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    DocumentExtractorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as DocumentExtractorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    EmbeddingBackendDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as EmbeddingBackendDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    OcrBackendDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as OcrBackendDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    PostProcessorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as PostProcessorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    RendererDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as RendererDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    ValidatorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ValidatorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    DocumentExtractorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as DocumentExtractorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    EmbeddingBackendDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as EmbeddingBackendDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    OcrBackendDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as OcrBackendDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    PostProcessorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as PostProcessorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    RendererDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as RendererDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    ValidatorDartImpl self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as ValidatorDartImplImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
   void sse_encode_Map_String_String_None(
     Map<String, String> self,
     SseSerializer serializer,
@@ -17600,227 +17288,78 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureOcrBackendTypeSendSync(
-    BoxFnDartFnFutureOcrBackendType self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    ArcDocumentExtractor self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureOcrBackendTypeImpl).frbInternalSseEncode(
-        move: null,
-      ),
+      (self as ArcDocumentExtractorImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureProcessingStageSendSync(
-    BoxFnDartFnFutureProcessingStage self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    ArcEmbeddingBackend self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureProcessingStageImpl).frbInternalSseEncode(
-        move: null,
-      ),
+      (self as ArcEmbeddingBackendImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureVecStringSendSync(
-    BoxFnDartFnFutureVecString self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    ArcOcrBackend self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureVecStringImpl).frbInternalSseEncode(move: null),
+      (self as ArcOcrBackendImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFutureboolSendSync(
-    BoxFnDartFnFutureBool self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    ArcPostProcessor self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureBoolImpl).frbInternalSseEncode(move: null),
+      (self as ArcPostProcessorImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnDartFnFuturei64SendSync(
-    BoxFnDartFnFutureI64 self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    ArcRenderer self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnDartFnFutureI64Impl).frbInternalSseEncode(move: null),
+      (self as ArcRendererImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultDartFnFuturei64SendSync(
-    BoxFnExtractionResultDartFnFutureI64 self,
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    ArcValidator self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
-      (self as BoxFnExtractionResultDartFnFutureI64Impl).frbInternalSseEncode(
-        move: null,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFuture self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnExtractionResultExtractionConfigDartFnFutureImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnExtractionResultExtractionConfigDartFnFutureboolSendSync(
-    BoxFnExtractionResultExtractionConfigDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnInternalDocumentDartFnFutureStringSendSync(
-    BoxFnInternalDocumentDartFnFutureString self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnInternalDocumentDartFnFutureStringImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringDartFnFutureboolSendSync(
-    BoxFnStringDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringDartFnFutureBoolImpl).frbInternalSseEncode(
-        move: null,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringOcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnStringOcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringOcrConfigDartFnFutureExtractionResultImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringDartFnFutureboolSendSync(
-    BoxFnStringStringDartFnFutureBool self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringStringDartFnFutureBoolImpl).frbInternalSseEncode(
-        move: null,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnStringStringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnStringStringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecStringDartFnFutureVecVecf64SendSync(
-    BoxFnVecStringDartFnFutureVecVecF64 self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecStringDartFnFutureVecVecF64Impl).frbInternalSseEncode(
-        move: null,
-      ),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8OcrConfigDartFnFutureExtractionResultSendSync(
-    BoxFnVecU8OcrConfigDartFnFutureExtractionResult self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl)
-          .frbInternalSseEncode(move: null),
-      serializer,
-    );
-  }
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBoxdynFnVecu8StringExtractionConfigDartFnFutureInternalDocumentSendSync(
-    BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_usize(
-      (self as BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl)
-          .frbInternalSseEncode(move: null),
+      (self as ArcValidatorImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
@@ -18693,6 +18232,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_year_range(self, serializer);
+  }
+
+  @protected
+  void sse_encode_cache_stats(CacheStats self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self.totalFiles, serializer);
+    sse_encode_f_64(self.totalSizeMb, serializer);
+    sse_encode_f_64(self.availableSpaceMb, serializer);
+    sse_encode_f_64(self.oldestFileAgeDays, serializer);
+    sse_encode_f_64(self.newestFileAgeDays, serializer);
   }
 
   @protected
@@ -22362,14 +21911,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 }
 
 @sealed
-class BoxFnDartFnFutureBoolImpl extends RustOpaque
-    implements BoxFnDartFnFutureBool {
+class ArcDocumentExtractorImpl extends RustOpaque
+    implements ArcDocumentExtractor {
   // Not to be used by end users
-  BoxFnDartFnFutureBoolImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcDocumentExtractorImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnDartFnFutureBoolImpl.frbInternalSseDecode(
+  ArcDocumentExtractorImpl.frbInternalSseDecode(
     BigInt ptr,
     int externalSizeOnNative,
   ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
@@ -22378,27 +21927,27 @@ class BoxFnDartFnFutureBoolImpl extends RustOpaque
     rustArcIncrementStrongCount: RustLib
         .instance
         .api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureBool,
+        .rust_arc_increment_strong_count_ArcDocumentExtractor,
     rustArcDecrementStrongCount: RustLib
         .instance
         .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureBool,
+        .rust_arc_decrement_strong_count_ArcDocumentExtractor,
     rustArcDecrementStrongCountPtr: RustLib
         .instance
         .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureBoolPtr,
+        .rust_arc_decrement_strong_count_ArcDocumentExtractorPtr,
   );
 }
 
 @sealed
-class BoxFnDartFnFutureI64Impl extends RustOpaque
-    implements BoxFnDartFnFutureI64 {
+class ArcEmbeddingBackendImpl extends RustOpaque
+    implements ArcEmbeddingBackend {
   // Not to be used by end users
-  BoxFnDartFnFutureI64Impl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcEmbeddingBackendImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnDartFnFutureI64Impl.frbInternalSseDecode(
+  ArcEmbeddingBackendImpl.frbInternalSseDecode(
     BigInt ptr,
     int externalSizeOnNative,
   ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
@@ -22407,433 +21956,99 @@ class BoxFnDartFnFutureI64Impl extends RustOpaque
     rustArcIncrementStrongCount: RustLib
         .instance
         .api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureI64,
+        .rust_arc_increment_strong_count_ArcEmbeddingBackend,
     rustArcDecrementStrongCount: RustLib
         .instance
         .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureI64,
+        .rust_arc_decrement_strong_count_ArcEmbeddingBackend,
     rustArcDecrementStrongCountPtr: RustLib
         .instance
         .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureI64Ptr,
+        .rust_arc_decrement_strong_count_ArcEmbeddingBackendPtr,
   );
 }
 
 @sealed
-class BoxFnDartFnFutureOcrBackendTypeImpl extends RustOpaque
-    implements BoxFnDartFnFutureOcrBackendType {
+class ArcOcrBackendImpl extends RustOpaque implements ArcOcrBackend {
   // Not to be used by end users
-  BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcOcrBackendImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnDartFnFutureOcrBackendTypeImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+  ArcOcrBackendImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureOcrBackendType,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendType,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureOcrBackendTypePtr,
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ArcOcrBackend,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcOcrBackend,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcOcrBackendPtr,
   );
 }
 
 @sealed
-class BoxFnDartFnFutureProcessingStageImpl extends RustOpaque
-    implements BoxFnDartFnFutureProcessingStage {
+class ArcPostProcessorImpl extends RustOpaque implements ArcPostProcessor {
   // Not to be used by end users
-  BoxFnDartFnFutureProcessingStageImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcPostProcessorImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnDartFnFutureProcessingStageImpl.frbInternalSseDecode(
+  ArcPostProcessorImpl.frbInternalSseDecode(
     BigInt ptr,
     int externalSizeOnNative,
   ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureProcessingStage,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStage,
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ArcPostProcessor,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcPostProcessor,
     rustArcDecrementStrongCountPtr: RustLib
         .instance
         .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureProcessingStagePtr,
+        .rust_arc_decrement_strong_count_ArcPostProcessorPtr,
   );
 }
 
 @sealed
-class BoxFnDartFnFutureVecStringImpl extends RustOpaque
-    implements BoxFnDartFnFutureVecString {
+class ArcRendererImpl extends RustOpaque implements ArcRenderer {
   // Not to be used by end users
-  BoxFnDartFnFutureVecStringImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcRendererImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnDartFnFutureVecStringImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+  ArcRendererImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnDartFnFutureVecString,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureVecString,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnDartFnFutureVecStringPtr,
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ArcRenderer,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcRenderer,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcRendererPtr,
   );
 }
 
 @sealed
-class BoxFnExtractionResultDartFnFutureI64Impl extends RustOpaque
-    implements BoxFnExtractionResultDartFnFutureI64 {
+class ArcValidatorImpl extends RustOpaque implements ArcValidator {
   // Not to be used by end users
-  BoxFnExtractionResultDartFnFutureI64Impl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnExtractionResultDartFnFutureI64Impl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnExtractionResultDartFnFutureI64,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultDartFnFutureI64Ptr,
-  );
-}
-
-@sealed
-class BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl
-    extends RustOpaque
-    implements BoxFnExtractionResultExtractionConfigDartFnFutureBool {
-  // Not to be used by end users
-  BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnExtractionResultExtractionConfigDartFnFutureBoolImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBool,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFutureBoolPtr,
-  );
-}
-
-@sealed
-class BoxFnExtractionResultExtractionConfigDartFnFutureImpl extends RustOpaque
-    implements BoxFnExtractionResultExtractionConfigDartFnFuture {
-  // Not to be used by end users
-  BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnExtractionResultExtractionConfigDartFnFutureImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuture,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnExtractionResultExtractionConfigDartFnFuturePtr,
-  );
-}
-
-@sealed
-class BoxFnInternalDocumentDartFnFutureStringImpl extends RustOpaque
-    implements BoxFnInternalDocumentDartFnFutureString {
-  // Not to be used by end users
-  BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnInternalDocumentDartFnFutureStringImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnInternalDocumentDartFnFutureString,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureString,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnInternalDocumentDartFnFutureStringPtr,
-  );
-}
-
-@sealed
-class BoxFnStringDartFnFutureBoolImpl extends RustOpaque
-    implements BoxFnStringDartFnFutureBool {
-  // Not to be used by end users
-  BoxFnStringDartFnFutureBoolImpl.frbInternalDcoDecode(List<dynamic> wire)
+  ArcValidatorImpl.frbInternalDcoDecode(List<dynamic> wire)
     : super.frbInternalDcoDecode(wire, _kStaticData);
 
   // Not to be used by end users
-  BoxFnStringDartFnFutureBoolImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+  ArcValidatorImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
 
   static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnStringDartFnFutureBool,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBool,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringDartFnFutureBoolPtr,
-  );
-}
-
-@sealed
-class BoxFnStringOcrConfigDartFnFutureExtractionResultImpl extends RustOpaque
-    implements BoxFnStringOcrConfigDartFnFutureExtractionResult {
-  // Not to be used by end users
-  BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnStringOcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResult,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringOcrConfigDartFnFutureExtractionResultPtr,
-  );
-}
-
-@sealed
-class BoxFnStringStringDartFnFutureBoolImpl extends RustOpaque
-    implements BoxFnStringStringDartFnFutureBool {
-  // Not to be used by end users
-  BoxFnStringStringDartFnFutureBoolImpl.frbInternalDcoDecode(List<dynamic> wire)
-    : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnStringStringDartFnFutureBoolImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnStringStringDartFnFutureBool,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBool,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringStringDartFnFutureBoolPtr,
-  );
-}
-
-@sealed
-class BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl
-    extends RustOpaque
-    implements BoxFnStringStringExtractionConfigDartFnFutureInternalDocument {
-  // Not to be used by end users
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocument,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnStringStringExtractionConfigDartFnFutureInternalDocumentPtr,
-  );
-}
-
-@sealed
-class BoxFnVecStringDartFnFutureVecVecF64Impl extends RustOpaque
-    implements BoxFnVecStringDartFnFutureVecVecF64 {
-  // Not to be used by end users
-  BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnVecStringDartFnFutureVecVecF64Impl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnVecStringDartFnFutureVecVecF64,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecStringDartFnFutureVecVecF64Ptr,
-  );
-}
-
-@sealed
-class BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl extends RustOpaque
-    implements BoxFnVecU8OcrConfigDartFnFutureExtractionResult {
-  // Not to be used by end users
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnVecU8OcrConfigDartFnFutureExtractionResultImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResult,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecU8OcrConfigDartFnFutureExtractionResultPtr,
-  );
-}
-
-@sealed
-class BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl
-    extends RustOpaque
-    implements BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument {
-  // Not to be used by end users
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalDcoDecode(
-    List<dynamic> wire,
-  ) : super.frbInternalDcoDecode(wire, _kStaticData);
-
-  // Not to be used by end users
-  BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentImpl.frbInternalSseDecode(
-    BigInt ptr,
-    int externalSizeOnNative,
-  ) : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
-
-  static final _kStaticData = RustArcStaticData(
-    rustArcIncrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_increment_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument,
-    rustArcDecrementStrongCount: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocument,
-    rustArcDecrementStrongCountPtr: RustLib
-        .instance
-        .api
-        .rust_arc_decrement_strong_count_BoxFnVecU8StringExtractionConfigDartFnFutureInternalDocumentPtr,
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_ArcValidator,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcValidator,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_ArcValidatorPtr,
   );
 }
 
@@ -22864,6 +22079,15 @@ class DocumentExtractorDartImplImpl extends RustOpaque
         .api
         .rust_arc_decrement_strong_count_DocumentExtractorDartImplPtr,
   );
+
+  ArcDocumentExtractor get field0 => RustLib.instance.api
+      .crateDocumentExtractorDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcDocumentExtractor field0) =>
+      RustLib.instance.api.crateDocumentExtractorDartImplAutoAccessorSetField0(
+        that: this,
+        field0: field0,
+      );
 }
 
 @sealed
@@ -22893,6 +22117,15 @@ class EmbeddingBackendDartImplImpl extends RustOpaque
         .api
         .rust_arc_decrement_strong_count_EmbeddingBackendDartImplPtr,
   );
+
+  ArcEmbeddingBackend get field0 => RustLib.instance.api
+      .crateEmbeddingBackendDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcEmbeddingBackend field0) =>
+      RustLib.instance.api.crateEmbeddingBackendDartImplAutoAccessorSetField0(
+        that: this,
+        field0: field0,
+      );
 }
 
 @sealed
@@ -22917,6 +22150,12 @@ class OcrBackendDartImplImpl extends RustOpaque implements OcrBackendDartImpl {
         .api
         .rust_arc_decrement_strong_count_OcrBackendDartImplPtr,
   );
+
+  ArcOcrBackend get field0 => RustLib.instance.api
+      .crateOcrBackendDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcOcrBackend field0) => RustLib.instance.api
+      .crateOcrBackendDartImplAutoAccessorSetField0(that: this, field0: field0);
 }
 
 @sealed
@@ -22946,6 +22185,15 @@ class PostProcessorDartImplImpl extends RustOpaque
         .api
         .rust_arc_decrement_strong_count_PostProcessorDartImplPtr,
   );
+
+  ArcPostProcessor get field0 => RustLib.instance.api
+      .cratePostProcessorDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcPostProcessor field0) =>
+      RustLib.instance.api.cratePostProcessorDartImplAutoAccessorSetField0(
+        that: this,
+        field0: field0,
+      );
 }
 
 @sealed
@@ -22970,6 +22218,12 @@ class RendererDartImplImpl extends RustOpaque implements RendererDartImpl {
         .api
         .rust_arc_decrement_strong_count_RendererDartImplPtr,
   );
+
+  ArcRenderer get field0 => RustLib.instance.api
+      .crateRendererDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcRenderer field0) => RustLib.instance.api
+      .crateRendererDartImplAutoAccessorSetField0(that: this, field0: field0);
 }
 
 @sealed
@@ -22994,4 +22248,10 @@ class ValidatorDartImplImpl extends RustOpaque implements ValidatorDartImpl {
         .api
         .rust_arc_decrement_strong_count_ValidatorDartImplPtr,
   );
+
+  ArcValidator get field0 => RustLib.instance.api
+      .crateValidatorDartImplAutoAccessorGetField0(that: this);
+
+  set field0(ArcValidator field0) => RustLib.instance.api
+      .crateValidatorDartImplAutoAccessorSetField0(that: this, field0: field0);
 }

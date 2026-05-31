@@ -69,6 +69,14 @@ pub const KreuzbergError = error {
     OutOfMemory,
 };
 
+pub const CacheStats = struct {
+    total_files: u64,
+    total_size_mb: f64,
+    available_space_mb: f64,
+    oldest_file_age_days: f64,
+    newest_file_age_days: f64,
+};
+
 /// Hardware acceleration configuration for ONNX Runtime models.
 ///
 /// Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
@@ -3254,13 +3262,6 @@ pub const ListType = enum {
     indented,
 };
 
-pub const FracType = enum {
-    bar,
-    no_bar,
-    linear,
-    skewed,
-};
-
 /// OCR backend types.
 pub const OcrBackendType = enum {
     /// Tesseract OCR (native Rust binding)
@@ -3876,11 +3877,12 @@ pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_bytes(content.ptr, content.len, mime_type_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
         defer _free_string(_json_ptr);
@@ -3922,11 +3924,12 @@ pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_file(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
         defer _free_string(_json_ptr);
@@ -3959,11 +3962,12 @@ pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []con
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_file_sync(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
         defer _free_string(_json_ptr);
@@ -3990,11 +3994,12 @@ pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_bytes_sync(content.ptr, content.len, mime_type_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         const _json_ptr = c.kreuzberg_extraction_result_to_json(_result.?);
         defer _free_string(_json_ptr);
@@ -4019,12 +4024,13 @@ pub fn batch_extract_files_sync(items: []const u8, config: []const u8) Kreuzberg
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_files_sync(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_files_sync_len(items_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4049,12 +4055,13 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_bytes_sync_len(items_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4102,12 +4109,13 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_files(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_files_len(items_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4149,12 +4157,13 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_bytes(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_bytes_len(items_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4358,12 +4367,13 @@ pub fn embed_texts_async(texts: []const u8, config: []const u8) KreuzbergError![
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_embedding_config_free(config_handle);
     const _result = c.kreuzberg_embed_texts_async(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_embed_texts_async_len(texts_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4432,12 +4442,13 @@ pub fn embed_texts(texts: []const u8, config: []const u8) KreuzbergError![]u8 {
         std.heap.c_allocator, "{s}", .{config}, 0);
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
+    if (config_handle == null) return _first_error(KreuzbergError);
+    defer c.kreuzberg_embedding_config_free(config_handle);
     const _result = c.kreuzberg_embed_texts(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_embed_texts_len(texts_z, config_handle);
-    if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];
@@ -4710,7 +4721,7 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
                 if (self.process_image(image_bytes_ptr, config)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -4725,7 +4736,7 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
                 if (self.process_image_file(path, config)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -4783,7 +4794,7 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
                 if (self.process_document(_path, _config)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -5462,7 +5473,7 @@ pub fn make_embedding_backend_vtable(comptime T: type, instance: *T) IEmbeddingB
                 if (self.embed(texts)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -5669,7 +5680,7 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
                 if (self.extract_bytes(content_ptr, mime_type, config)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -5684,7 +5695,7 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
                 if (self.extract_file(path, mime_type, config)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -5847,7 +5858,7 @@ pub fn make_renderer_vtable(comptime T: type, instance: *T) IRenderer {
                 if (self.render(doc)) |value| {
                     _ = value;
                     if (out_result) |ptr| ptr.* = null;
-                    return 1; // complex return: implement this vtable slot manually
+                    @compileError("unsupported complex trait-vtable return; implement this vtable slot manually");
                 } else |err| {
                     _ = err;
                     if (out_error) |ptr| ptr.* = null; // caller checks error code
@@ -5863,22 +5874,3 @@ pub fn make_renderer_vtable(comptime T: type, instance: *T) IRenderer {
         }.thunk,
     };
 }
-
-/// Image metadata extracted from an image file.
-pub const ExtractedImageMetadata = struct {
-    _handle: *anyopaque,
-
-    /// Release the underlying FFI handle. Safe to call once per instance.
-    pub fn free(self: *ExtractedImageMetadata) void {
-        c.kreuzberg_extracted_image_metadata_free(@as(*c.KREUZBERGExtractedImageMetadata, @ptrCast(self._handle)));
-    }
-};
-
-pub const OcrCacheStats = struct {
-    _handle: *anyopaque,
-
-    /// Release the underlying FFI handle. Safe to call once per instance.
-    pub fn free(self: *OcrCacheStats) void {
-        c.kreuzberg_ocr_cache_stats_free(@as(*c.KREUZBERGOcrCacheStats, @ptrCast(self._handle)));
-    }
-};

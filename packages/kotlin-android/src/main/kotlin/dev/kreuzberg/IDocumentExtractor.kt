@@ -73,7 +73,11 @@ interface IDocumentExtractor {
      * - `KreuzbergError.Io` - I/O errors (these always bubble up)
      * - `KreuzbergError.MissingDependency` - Required dependency not available
      */
-    suspend fun extractBytes(content: ByteArray, mimeType: String, config: ExtractionConfig): InternalDocument
+    suspend fun extractBytes(
+        content: ByteArray,
+        mimeType: String,
+        config: ExtractionConfig,
+    ): ExtractionResult
     /**
      * Extract content from a file.
      *
@@ -88,7 +92,11 @@ interface IDocumentExtractor {
      *
      * Same as `extract_bytes`, plus file I/O errors.
      */
-    suspend fun extractFile(path: java.nio.file.Path, mimeType: String, config: ExtractionConfig): InternalDocument
+    suspend fun extractFile(
+        path: java.nio.file.Path,
+        mimeType: String,
+        config: ExtractionConfig,
+    ): ExtractionResult
     /**
      * Get the list of MIME types supported by this extractor.
      *

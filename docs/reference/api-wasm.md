@@ -761,6 +761,19 @@ Extracted from compressed archive files containing file lists and size informati
 
 ---
 
+#### BBox
+
+Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `x1` | `number` | — | X1 |
+| `y1` | `number` | — | Y1 |
+| `x2` | `number` | — | X2 |
+| `y2` | `number` | — | Y2 |
+
+---
+
 #### BatchBytesItem
 
 Batch item for byte array extraction.
@@ -814,6 +827,18 @@ Bounding box coordinates for element positioning.
 | `y0` | `number` | — | Bottom y-coordinate |
 | `x1` | `number` | — | Right x-coordinate |
 | `y1` | `number` | — | Top y-coordinate |
+
+---
+
+#### CacheStats
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `totalFiles` | `number` | — | Total files |
+| `totalSizeMb` | `number` | — | Total size mb |
+| `availableSpaceMb` | `number` | — | Available space mb |
+| `oldestFileAgeDays` | `number` | — | Oldest file age days |
+| `newestFileAgeDays` | `number` | — | Newest file age days |
 
 ---
 
@@ -1014,6 +1039,18 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mimeType` | `string` | — | Detected MIME type |
 | `filename` | `string \| null` | `null` | Original filename (if provided) |
+
+---
+
+#### DetectionResult
+
+Page-level detection result containing all detections and page metadata.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `pageWidth` | `number` | — | Page width |
+| `pageHeight` | `number` | — | Page height |
+| `detections` | `Array<LayoutDetection>` | — | Detections |
 
 ---
 
@@ -1533,6 +1570,35 @@ embed(texts: Array<string>): Array<Array<number>>
 
 ---
 
+#### EmbeddingConfig
+
+Embedding configuration for text chunks.
+
+Configures embedding generation using ONNX models via the vendored embedding engine.
+Requires the `embeddings` feature to be enabled.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `model` | `EmbeddingModelType` | `EmbeddingModelType.Preset` | The embedding model to use (defaults to "balanced" preset if not specified) |
+| `normalize` | `boolean` | `true` | Whether to normalize embedding vectors (recommended for cosine similarity) |
+| `batchSize` | `number` | `32` | Batch size for embedding generation |
+| `showDownloadProgress` | `boolean` | `false` | Show model download progress |
+| `cacheDir` | `string \| null` | `null` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
+| `maxEmbedDurationSecs` | `number \| null` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
+
+### Methods
+
+#### default()
+
+**Signature:**
+
+```typescript
+static default(): EmbeddingConfig
+```
+
+---
+
 #### EmbeddingPreset
 
 Preset configurations for common RAG use cases.
@@ -1654,19 +1720,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind \| null` | `/* serde(default) */` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `number \| null` | `/* serde(default) */` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `number \| null` | `/* serde(default) */` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
----
-
-#### ExtractedImageMetadata
-
-Image metadata extracted from an image file.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `width` | `number` | — | Image width in pixels |
-| `height` | `number` | — | Image height in pixels |
-| `format` | `string` | — | Image format (e.g., "PNG", "JPEG") |
-| `exifData` | `Record<string, string>` | — | EXIF data if available |
 
 ---
 
@@ -2254,6 +2307,45 @@ static default(): LanguageDetectionConfig
 
 ---
 
+#### LayoutDetection
+
+A single layout detection result.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `className` | `LayoutClass` | — | Class name (layout class) |
+| `confidence` | `number` | — | Confidence |
+| `bbox` | `BBox` | — | Bbox (b box) |
+
+---
+
+#### LayoutDetectionConfig
+
+Layout detection configuration.
+
+Controls layout detection behavior in the extraction pipeline.
+When set on `ExtractionConfig`, layout detection
+is enabled for PDF extraction.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `confidenceThreshold` | `number \| null` | `null` | Confidence threshold override (None = use model default). |
+| `applyHeuristics` | `boolean` | `true` | Whether to apply postprocessing heuristics (default: true). |
+| `tableModel` | `TableModel` | `TableModel.Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
+| `acceleration` | `AccelerationConfig \| null` | `null` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
+
+### Methods
+
+#### default()
+
+**Signature:**
+
+```typescript
+static default(): LayoutDetectionConfig
+```
+
+---
+
 #### LayoutRegion
 
 A detected layout region on a page.
@@ -2369,6 +2461,19 @@ additional postprocessor fields are populated.
 ```typescript
 isEmpty(): boolean
 ```
+
+---
+
+#### ModelPaths
+
+Combined paths to all models needed for OCR (backward compatibility).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `detModel` | `string` | — | Path to the detection model directory. |
+| `clsModel` | `string` | — | Path to the classification model directory. |
+| `recModel` | `string` | — | Path to the recognition model directory. |
+| `dictFile` | `string` | — | Path to the character dictionary file. |
 
 ---
 
@@ -2732,6 +2837,163 @@ Bounding box for an OCR-detected table in pixel coordinates.
 | `top` | `number` | — | Top y-coordinate (pixels) |
 | `right` | `number` | — | Right x-coordinate (pixels) |
 | `bottom` | `number` | — | Bottom y-coordinate (pixels) |
+
+---
+
+#### OrientationResult
+
+Document orientation detection result.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `degrees` | `number` | — | Detected orientation in degrees (0, 90, 180, or 270). |
+| `confidence` | `number` | — | Confidence score (0.0-1.0). |
+
+---
+
+#### PaddleOcrConfig
+
+Configuration for PaddleOCR backend.
+
+Configures PaddleOCR text detection and recognition with multi-language support.
+Uses a builder pattern for convenient configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `language` | `string` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
+| `cacheDir` | `string \| null` | `null` | Optional custom cache directory for model files |
+| `useAngleCls` | `boolean` | — | Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition. |
+| `enableTableDetection` | `boolean` | — | Enable table structure detection (default: false) |
+| `detDbThresh` | `number` | — | Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections |
+| `detDbBoxThresh` | `number` | — | Box threshold for text bounding box refinement (default: 0.5) Range: 0.0-1.0 |
+| `detDbUnclipRatio` | `number` | — | Unclip ratio for expanding text bounding boxes (default: 1.6) Controls the expansion of detected text regions |
+| `detLimitSideLen` | `number` | — | Maximum side length for detection image (default: 960) Larger images may be resized to this limit for faster inference |
+| `recBatchNum` | `number` | — | Batch size for recognition inference (default: 6) Number of text regions to process simultaneously |
+| `padding` | `number` | — | Padding in pixels added around the image before detection (default: 10). Large values can include surrounding content like table gridlines. |
+| `dropScore` | `number` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
+| `modelTier` | `string` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
+
+### Methods
+
+#### withCacheDir()
+
+Sets a custom cache directory for model files.
+
+**Signature:**
+
+```typescript
+withCacheDir(path: string): PaddleOcrConfig
+```
+
+#### withTableDetection()
+
+Enables or disables table structure detection.
+
+**Signature:**
+
+```typescript
+withTableDetection(enable: boolean): PaddleOcrConfig
+```
+
+#### withAngleCls()
+
+Enables or disables angle classification for rotated text.
+
+**Signature:**
+
+```typescript
+withAngleCls(enable: boolean): PaddleOcrConfig
+```
+
+#### withDetDbThresh()
+
+Sets the database threshold for text detection.
+
+**Signature:**
+
+```typescript
+withDetDbThresh(threshold: number): PaddleOcrConfig
+```
+
+#### withDetDbBoxThresh()
+
+Sets the box threshold for text bounding box refinement.
+
+**Signature:**
+
+```typescript
+withDetDbBoxThresh(threshold: number): PaddleOcrConfig
+```
+
+#### withDetDbUnclipRatio()
+
+Sets the unclip ratio for expanding text bounding boxes.
+
+**Signature:**
+
+```typescript
+withDetDbUnclipRatio(ratio: number): PaddleOcrConfig
+```
+
+#### withDetLimitSideLen()
+
+Sets the maximum side length for detection images.
+
+**Signature:**
+
+```typescript
+withDetLimitSideLen(length: number): PaddleOcrConfig
+```
+
+#### withRecBatchNum()
+
+Sets the batch size for recognition inference.
+
+**Signature:**
+
+```typescript
+withRecBatchNum(batchSize: number): PaddleOcrConfig
+```
+
+#### withDropScore()
+
+Sets the minimum recognition confidence threshold.
+
+**Signature:**
+
+```typescript
+withDropScore(score: number): PaddleOcrConfig
+```
+
+#### withPadding()
+
+Sets padding in pixels added around images before detection.
+
+**Signature:**
+
+```typescript
+withPadding(padding: number): PaddleOcrConfig
+```
+
+#### withModelTier()
+
+Sets the model tier controlling detection/recognition model size.
+
+**Signature:**
+
+```typescript
+withModelTier(tier: string): PaddleOcrConfig
+```
+
+#### default()
+
+Creates a default configuration with English language support.
+
+**Signature:**
+
+```typescript
+static default(): PaddleOcrConfig
+```
 
 ---
 
@@ -3284,6 +3546,20 @@ Extracted from PPTX files containing slide counts and presentation details.
 
 ---
 
+#### ProcessingWarning
+
+A non-fatal warning from a processing pipeline stage.
+
+Captures errors from optional features that don't prevent extraction
+but may indicate degraded results.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `source` | `string` | — | The pipeline stage or feature that produced this warning (e.g., "embedding", "chunking", "language_detection", "output_format"). |
+| `message` | `string` | — | Human-readable description of what went wrong. |
+
+---
+
 #### PstMetadata
 
 Outlook PST archive metadata.
@@ -3312,6 +3588,23 @@ RAKE-specific parameters.
 ```typescript
 static default(): RakeParams
 ```
+
+---
+
+#### RecognizedTable
+
+Pre-computed table markdown for a table detection region.
+
+Produced by the TATR-based table structure recognizer and surfaced as part of
+layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
+so that consumers who do not enable `layout-detection` (ORT) can still reference
+the type in their own code.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `detectionBbox` | `BBox` | — | Detection bbox that this table corresponds to (for matching). |
+| `cells` | `Array<Array<string>>` | — | Table cells as a 2D vector (rows × columns). |
+| `markdown` | `string` | — | Rendered markdown table. |
 
 ---
 
@@ -3575,6 +3868,50 @@ Stores row/column dimensions and a flat list of cells with position info.
 | `rows` | `number` | — | Number of rows in the table. |
 | `cols` | `number` | — | Number of columns in the table. |
 | `cells` | `Array<GridCell>` | `[]` | All cells in row-major order. |
+
+---
+
+#### TesseractConfig
+
+Tesseract OCR configuration.
+
+Provides fine-grained control over Tesseract OCR engine parameters.
+Most users can use the defaults, but these settings allow optimization
+for specific document types (invoices, handwriting, etc.).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `language` | `string` | `"eng"` | Language code (e.g., "eng", "deu", "fra") |
+| `psm` | `number` | `3` | Page Segmentation Mode (0-13). Common values: - 3: Fully automatic page segmentation (native default) - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang) - 11: Sparse text with no particular order |
+| `outputFormat` | `string` | `"markdown"` | Output format ("text" or "markdown") |
+| `oem` | `number` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
+| `minConfidence` | `number` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
+| `preprocessing` | `ImagePreprocessingConfig \| null` | `null` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `enableTableDetection` | `boolean` | `true` | Enable automatic table detection and reconstruction |
+| `tableMinConfidence` | `number` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
+| `tableColumnThreshold` | `number` | `50` | Column threshold for table detection (pixels) |
+| `tableRowThresholdRatio` | `number` | `0.5` | Row threshold ratio for table detection (0.0-1.0) |
+| `useCache` | `boolean` | `true` | Enable OCR result caching |
+| `classifyUsePreAdaptedTemplates` | `boolean` | `true` | Use pre-adapted templates for character classification |
+| `languageModelNgramOn` | `boolean` | `false` | Enable N-gram language model |
+| `tesseditDontBlkrejGoodWds` | `boolean` | `true` | Don't reject good words during block-level processing |
+| `tesseditDontRowrejGoodWds` | `boolean` | `true` | Don't reject good words during row-level processing |
+| `tesseditEnableDictCorrection` | `boolean` | `true` | Enable dictionary correction |
+| `tesseditCharWhitelist` | `string` | `""` | Whitelist of allowed characters (empty = all allowed) |
+| `tesseditCharBlacklist` | `string` | `""` | Blacklist of forbidden characters (empty = none forbidden) |
+| `tesseditUsePrimaryParamsModel` | `boolean` | `true` | Use primary language params model |
+| `textordSpaceSizeIsVariable` | `boolean` | `true` | Variable-width space detection |
+| `thresholdingMethod` | `boolean` | `false` | Use adaptive thresholding method |
+
+### Methods
+
+#### default()
+
+**Signature:**
+
+```typescript
+static default(): TesseractConfig
+```
 
 ---
 
@@ -4040,6 +4377,25 @@ Built-in HTML theme selection.
 
 ---
 
+#### TableModel
+
+Which table structure recognition model to use.
+
+Controls the model used for table cell detection within layout-detected
+table regions. Wire format is snake_case in all serializers (JSON, TOML,
+YAML).
+
+| Value | Description |
+|-------|-------------|
+| `Tatr` | TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. |
+| `SlanetWired` | SLANeXT wired variant -- 365MB, optimized for bordered tables. |
+| `SlanetWireless` | SLANeXT wireless variant -- 365MB, optimized for borderless tables. |
+| `SlanetPlus` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
+| `SlanetAuto` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
+| `Disabled` | Disable table structure model inference entirely; use heuristic path only. |
+
+---
+
 #### ChunkerType
 
 Type of text chunker to use.
@@ -4063,6 +4419,24 @@ Type of text chunker to use.
 | `Markdown` | Markdown format |
 | `Yaml` | Yaml format |
 | `Semantic` | Semantic |
+
+---
+
+#### ChunkSizing
+
+How chunk size is measured.
+
+Defaults to `Characters` (Unicode character count). When using token-based sizing,
+chunks are sized by token count according to the specified tokenizer.
+
+Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
+available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
+(e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
+
+| Value | Description |
+|-------|-------------|
+| `Characters` | Size measured in Unicode characters (default). |
+| `Tokenizer` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `string`, `cacheDir`: `string` |
 
 ---
 
@@ -4104,17 +4478,6 @@ Type of list detection.
 | `Numbered` | Numbered lists (1., 2., etc.) |
 | `Lettered` | Lettered lists (a., b., A., B., etc.) |
 | `Indented` | Indented items |
-
----
-
-#### FracType
-
-| Value | Description |
-|-------|-------------|
-| `Bar` | Bar |
-| `NoBar` | No bar |
-| `Linear` | Linear |
-| `Skewed` | Skewed |
 
 ---
 
@@ -4556,6 +4919,85 @@ Keyword algorithm selection.
 |-------|-------------|
 | `Yake` | YAKE (Yet Another Keyword Extractor) - statistical approach |
 | `Rake` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
+
+---
+
+#### PsmMode
+
+Page Segmentation Mode for Tesseract OCR
+
+| Value | Description |
+|-------|-------------|
+| `OsdOnly` | Osd only |
+| `AutoOsd` | Auto osd |
+| `AutoOnly` | Auto only |
+| `Auto` | Auto |
+| `SingleColumn` | Single column |
+| `SingleBlockVertical` | Single block vertical |
+| `SingleBlock` | Single block |
+| `SingleLine` | Single line |
+| `SingleWord` | Single word |
+| `CircleWord` | Circle word |
+| `SingleChar` | Single char |
+
+---
+
+#### PaddleLanguage
+
+Supported languages in PaddleOCR.
+
+Maps user-friendly language codes to paddle-ocr-rs language identifiers.
+
+| Value | Description |
+|-------|-------------|
+| `English` | English |
+| `Chinese` | Simplified Chinese |
+| `Japanese` | Japanese |
+| `Korean` | Korean |
+| `German` | German |
+| `French` | French |
+| `Latin` | Latin script (covers most European languages) |
+| `Cyrillic` | Cyrillic (Russian and related) |
+| `TraditionalChinese` | Traditional Chinese |
+| `Thai` | Thai |
+| `Greek` | Greek |
+| `EastSlavic` | East Slavic (Russian, Ukrainian, Belarusian) |
+| `Arabic` | Arabic (Arabic, Persian, Urdu) |
+| `Devanagari` | Devanagari (Hindi, Marathi, Sanskrit, Nepali) |
+| `Tamil` | Tamil |
+| `Telugu` | Telugu |
+
+---
+
+#### LayoutClass
+
+The 17 canonical document layout classes.
+
+All model backends (RT-DETR, YOLO, etc.) map their native class IDs
+to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
+map to the closest equivalent.
+
+Wire format is snake_case in all serializers (JSON, TOML, YAML).
+
+| Value | Description |
+|-------|-------------|
+| `Caption` | Caption element |
+| `Footnote` | Footnote element |
+| `Formula` | Formula |
+| `ListItem` | List item |
+| `PageFooter` | Page footer |
+| `PageHeader` | Page header |
+| `Picture` | Picture |
+| `SectionHeader` | Section header |
+| `Table` | Table element |
+| `Text` | Text format |
+| `Title` | Title element |
+| `DocumentIndex` | Document index |
+| `Code` | Code |
+| `CheckboxSelected` | Checkbox selected |
+| `CheckboxUnselected` | Checkbox unselected |
+| `Form` | Form |
+| `KeyValueRegion` | Key value region |
 
 ---
 
