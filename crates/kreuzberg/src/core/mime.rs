@@ -543,7 +543,7 @@ static FORMATS: &[FormatEntry] = &[
     FormatEntry {
         extensions: &["mp4", "mpeg"],
         mime_type: "video/mp4",
-        aliases: &["audio/mp4", "video/mpeg"],
+        aliases: &["video/mpeg"],
     },
     // ── Source code (tree-sitter) ──────────────────────────────────────
     // No file extension mapping — detection is dynamic via TSLP's
@@ -1075,7 +1075,16 @@ mod tests {
     #[test]
     fn test_validate_mime_type_unsupported() {
         assert!(validate_mime_type("application/unknown").is_err());
-        // audio/video MIME types are now declared (transcription feature controls actual extraction)
+    }
+
+    #[test]
+    fn test_validate_mime_type_audio_video() {
+        assert!(validate_mime_type("audio/mpeg").is_ok());
+        assert!(validate_mime_type("audio/mp4").is_ok());
+        assert!(validate_mime_type("audio/wav").is_ok());
+        assert!(validate_mime_type("audio/webm").is_ok());
+        assert!(validate_mime_type("video/mp4").is_ok());
+        assert!(validate_mime_type("video/webm").is_ok());
     }
 
     #[test]

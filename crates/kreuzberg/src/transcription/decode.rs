@@ -11,9 +11,6 @@ use crate::KreuzbergError;
 use crate::Result;
 
 /// The canonical PCM format that all transcription engines receive.
-///
-/// Fields are currently only used by the stub implementation. Real decode will use them.
-#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct PcmAudio {
     pub samples: Vec<f32>,

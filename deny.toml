@@ -56,7 +56,6 @@ exceptions = [
   { allow = ["MPL-2.0"], crate = "symphonia" },
   { allow = ["MPL-2.0"], crate = "symphonia-core" },
   { allow = ["MPL-2.0"], crate = "symphonia-bundle-mp3" },
-  { allow = ["MPL-2.0"], crate = "symphonia-format-wav" },
   { allow = ["MPL-2.0"], crate = "symphonia-format-isomp4" },
   { allow = ["MPL-2.0"], crate = "symphonia-format-mkv" },
   { allow = ["MPL-2.0"], crate = "symphonia-codec-aac" },

@@ -369,15 +369,7 @@ full = [
     "qr-codes",
 ]
 # Server deployment preset — formats + analysis + services + OCR.
-server = [
-    "formats",
-    "analysis",
-    "services",
-    "ocr",
-    "paddle-ocr",
-    "layout-detection",
-    "transcription",
-]
+server = ["formats", "analysis", "services", "ocr", "paddle-ocr", "layout-detection"]
 # CLI-only features (thin gate for kreuzberg-cli).
 cli = ["services", "chunking"]
 

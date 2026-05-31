@@ -14,8 +14,6 @@ use crate::transcription::decode::{PcmAudio, decode_audio_to_pcm};
 use crate::types::internal::InternalDocument;
 use crate::{KreuzbergError, Result};
 use async_trait::async_trait;
-
-#[cfg(feature = "transcription")]
 use tokio::task;
 
 /// The transcription extractor.
@@ -92,18 +90,9 @@ impl DocumentExtractor for TranscriptionExtractor {
             )));
         }
 
-        // TODO in follow-up PR: actual Whisper ONNX inference via ORT + ModelCache.
-        // For the initial Rust-only implementation we produce a high-quality stub
-        // so that the plumbing, limits, error paths, metadata shape, and E2E
-        // fixture expectations can be validated immediately.
-        // For the absolute initial Rust-only PR we exercise decode + limits + config plumbing.
-        // A rich InternalDocument with proper elements will be added when the real engine lands.
-        let _transcript_note = format!(
-            "Decoded {} samples ({:.1}s). Real Whisper STT coming in follow-up PR.",
-            pcm.samples.len(),
-            pcm.duration_ms as f64 / 1000.0
-        );
-
+        // TODO(follow-up): Whisper ONNX inference via ORT + ModelCache.
+        // Foundation PR exercises: decode, size/duration limits, config plumbing, error paths.
+        let _ = pcm; // used for limit checks above; inference wired in next PR
         let doc = InternalDocument::new("audio-transcript");
         Ok(doc)
     }
@@ -148,8 +137,7 @@ impl SyncExtractor for TranscriptionExtractor {
             return Err(KreuzbergError::transcription("Duration limit exceeded (sync)"));
         }
 
-        // Same stub shape as the async path.
-        let _note = format!("{} samples decoded in sync path", pcm.samples.len());
+        let _ = pcm;
         let doc = InternalDocument::new("audio-transcript");
         Ok(doc)
     }
@@ -158,6 +146,7 @@ impl SyncExtractor for TranscriptionExtractor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::config::ExtractionConfig;
     use crate::core::config::transcription::{TranscriptionConfig, WhisperModel};
 
     #[test]
@@ -168,7 +157,6 @@ mod tests {
         assert!(ext.supported_mime_types().contains(&"video/mp4"));
     }
 
-    #[cfg(feature = "transcription")]
     #[test]
     fn test_transcription_config_defaults_roundtrip() {
         let cfg = TranscriptionConfig {
@@ -178,5 +166,67 @@ mod tests {
         let json = serde_json::to_string(&cfg).unwrap();
         let back: TranscriptionConfig = serde_json::from_str(&json).unwrap();
         assert_eq!(back.model, WhisperModel::Base);
+    }
+
+    fn config_with_transcription(tcfg: TranscriptionConfig) -> ExtractionConfig {
+        ExtractionConfig {
+            transcription: Some(tcfg),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn test_sync_no_config_returns_error() {
+        let ext = TranscriptionExtractor;
+        let cfg = ExtractionConfig::default(); // no transcription block
+        let result = ext.extract_sync(&[], "audio/mpeg", &cfg);
+        assert!(result.is_err(), "expected error when no transcription config");
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("config") || msg.contains("disabled"), "unexpected: {msg}");
+    }
+
+    #[test]
+    fn test_sync_disabled_config_returns_error() {
+        let ext = TranscriptionExtractor;
+        let tcfg = TranscriptionConfig {
+            enabled: false,
+            ..Default::default()
+        };
+        let cfg = config_with_transcription(tcfg);
+        let result = ext.extract_sync(&[], "audio/mpeg", &cfg);
+        assert!(result.is_err(), "expected error when transcription disabled");
+    }
+
+    #[test]
+    fn test_sync_size_limit_enforced() {
+        let ext = TranscriptionExtractor;
+        let tcfg = TranscriptionConfig {
+            max_bytes: Some(10),
+            ..Default::default()
+        };
+        let cfg = config_with_transcription(tcfg);
+        let oversized = vec![0u8; 11];
+        let result = ext.extract_sync(&oversized, "audio/mpeg", &cfg);
+        assert!(result.is_err(), "expected error when input exceeds max_bytes");
+        let msg = result.unwrap_err().to_string();
+        assert!(
+            msg.contains("exceed") || msg.contains("limit") || msg.contains("size"),
+            "unexpected: {msg}"
+        );
+    }
+
+    #[test]
+    fn test_sync_duration_limit_enforced() {
+        let ext = TranscriptionExtractor;
+        // Decode stub returns duration_ms based on byte count; use a tiny limit to trigger it.
+        let tcfg = TranscriptionConfig {
+            max_duration_ms: Some(0),
+            ..Default::default()
+        };
+        let cfg = config_with_transcription(tcfg);
+        let result = ext.extract_sync(&[0u8; 16], "audio/mpeg", &cfg);
+        assert!(result.is_err(), "expected error when decoded duration exceeds limit");
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("duration") || msg.contains("limit"), "unexpected: {msg}");
     }
 }
