@@ -11693,13 +11693,17 @@ pub fn list_validators() -> Result<Vec<String>> {
 }
 
 #[extendr]
-pub fn compare(a: &ExtractionResult, b: &ExtractionResult, opts: &DiffOptions) -> String {
-    let a_core: kreuzberg::ExtractionResult = a.clone().into();
-    let b_core: kreuzberg::ExtractionResult = b.clone().into();
-    let opts_core: kreuzberg::DiffOptions = opts.clone().into();
+pub fn compare(a_json: String, b_json: String, opts_json: String) -> Result<String> {
+    let a_core: kreuzberg::ExtractionResult = serde_json::from_str(&a_json)
+        .map_err(|e| extendr_api::Error::Other(format!("Failed to parse a: {}", e)))?;
+    let b_core: kreuzberg::ExtractionResult = serde_json::from_str(&b_json)
+        .map_err(|e| extendr_api::Error::Other(format!("Failed to parse b: {}", e)))?;
+    let opts_core: kreuzberg::DiffOptions = serde_json::from_str(&opts_json)
+        .map_err(|e| extendr_api::Error::Other(format!("Failed to parse opts: {}", e)))?;
     let result = kreuzberg::compare(&a_core, &b_core, &opts_core);
     let result: ExtractionDiff = result.into();
-    serde_json::to_string(&result).expect("serialization failed")
+    serde_json::to_string(&result)
+        .map_err(|e| extendr_api::Error::Other(format!("Serialization failed: {}", e)))
 }
 
 #[allow(clippy::missing_errors_doc)]

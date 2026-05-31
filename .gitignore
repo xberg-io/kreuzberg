@@ -284,6 +284,8 @@ packages/go/v5/.lib/
 
 .build/
 
+packages/r/src/*.o
+
 # BEGIN ai-rulez (DO NOT EDIT - managed by ai-rulez)
 .agents/
 .cursor/
@@ -292,4 +294,3 @@ packages/go/v5/.lib/
 .github/copilot-instructions.md
 .github/skills/
 # END ai-rulez
-packages/r/src/*.o
