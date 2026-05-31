@@ -297,6 +297,7 @@ mod tests {
                     layout_regions: None,
                     speaker_notes: None,
                     section_name: None,
+                    sheet_name: None,
                 },
                 PageContent {
                     page_number: 2,
@@ -308,6 +309,7 @@ mod tests {
                     layout_regions: None,
                     speaker_notes: None,
                     section_name: None,
+                    sheet_name: None,
                 },
             ]),
             ..Default::default()
@@ -406,6 +408,7 @@ mod tests {
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             }]),
             ..Default::default()
         };
@@ -607,6 +610,7 @@ mod tests {
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             }]),
             ..Default::default()
         };
@@ -673,6 +677,7 @@ mod tests {
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             }]),
             ..Default::default()
         };

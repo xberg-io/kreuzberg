@@ -60,6 +60,36 @@ impl ExcelExtractor {
         Self
     }
 
+    /// Escape markdown-significant characters in a sheet name for use in a heading.
+    ///
+    /// Prevents adversarial or unusual sheet names from producing double headings (e.g.
+    /// `## ## Profit`) or broken inline elements (e.g. `[Sales](evil)` rendered as a
+    /// link). Escapes: `#`, `>`, `-`, `*`, `+`, `\`, `` ` ``, `_`, `[`, `]`, `<`, `>`.
+    /// Leading whitespace is stripped because it is invisible and can confuse renderers.
+    ///
+    /// Scope: used only for the per-page heading in XLSX/ODS output; does not affect the
+    /// stored `sheet_name` field, which always carries the raw name.
+    fn escape_sheet_name_for_heading(name: &str) -> String {
+        const INLINE_METACHARS: &[char] = &['\\', '`', '*', '_', '[', ']', '<', '>', '!'];
+
+        let name = name.trim_start();
+        let mut out = String::with_capacity(name.len() + 8);
+
+        for (i, ch) in name.char_indices() {
+            if i == 0 && matches!(ch, '#' | '>' | '-' | '*' | '+' | '~') {
+                out.push('\\');
+                out.push(ch);
+            } else if INLINE_METACHARS.contains(&ch) {
+                out.push('\\');
+                out.push(ch);
+            } else {
+                out.push(ch);
+            }
+        }
+
+        out
+    }
+
     /// Build an `InternalDocument` from the workbook.
     ///
     /// Each sheet becomes a table preceded by an H2 heading with the sheet name (when
@@ -75,6 +105,11 @@ impl ExcelExtractor {
 
         for (sheet_index, sheet) in workbook.sheets.iter().enumerate() {
             let page_number = (sheet_index + 1) as u32;
+            let name_opt: Option<String> = if sheet.name.is_empty() {
+                None
+            } else {
+                Some(sheet.name.clone())
+            };
 
             if let Some(ref cells) = sheet.table_cells
                 && !cells.is_empty()
@@ -85,10 +120,16 @@ impl ExcelExtractor {
                 builder.push_table_from_cells(cells, Some(page_number), None);
 
                 // Build per-sheet content: heading (when named) + markdown table.
+                // Sheet name is escaped so markdown-significant characters in the name
+                // don't produce double headings or broken inline elements.
                 let page_content = if sheet.name.is_empty() {
                     sheet.markdown.clone()
                 } else {
-                    format!("## {}\n\n{}", sheet.name, sheet.markdown)
+                    format!(
+                        "## {}\n\n{}",
+                        Self::escape_sheet_name_for_heading(&sheet.name),
+                        sheet.markdown
+                    )
                 };
 
                 // Wrap the sheet table in Arc for zero-copy sharing.
@@ -108,32 +149,29 @@ impl ExcelExtractor {
                     is_blank: Some(false),
                     layout_regions: None,
                     speaker_notes: None,
-                    section_name: if sheet.name.is_empty() {
-                        None
-                    } else {
-                        Some(sheet.name.clone())
-                    },
+                    section_name: None,
+                    sheet_name: name_opt,
                 });
             } else {
                 // Empty sheet: emit a PageContent so page index == sheet index.
+                // Content is always "## <name>\n\n" (or empty string) so that
+                // concatenating per-page content never mashes two headings together.
+                let content = match name_opt.as_deref() {
+                    Some(n) => format!("## {}\n\n", Self::escape_sheet_name_for_heading(n)),
+                    None => String::new(),
+                };
+
                 pages.push(PageContent {
                     page_number,
-                    content: if sheet.name.is_empty() {
-                        String::new()
-                    } else {
-                        format!("## {}", sheet.name)
-                    },
+                    content,
                     tables: Vec::new(),
                     image_indices: Vec::new(),
                     hierarchy: None,
                     is_blank: Some(true),
                     layout_regions: None,
                     speaker_notes: None,
-                    section_name: if sheet.name.is_empty() {
-                        None
-                    } else {
-                        Some(sheet.name.clone())
-                    },
+                    section_name: None,
+                    sheet_name: name_opt,
                 });
             }
         }
@@ -444,7 +482,9 @@ mod tests {
         let pages = doc.prebuilt_pages.as_ref().unwrap();
         assert_eq!(pages.len(), 1);
         assert_eq!(pages[0].page_number, 1);
-        assert_eq!(pages[0].section_name.as_deref(), Some("Sheet1"));
+        // sheet_name carries the raw sheet name; section_name is PPTX-only
+        assert_eq!(pages[0].sheet_name.as_deref(), Some("Sheet1"));
+        assert_eq!(pages[0].section_name, None);
         assert!(pages[0].content.contains("Sheet1"));
         assert_eq!(pages[0].tables.len(), 1);
         assert_eq!(pages[0].is_blank, Some(false));
@@ -493,10 +533,13 @@ mod tests {
         assert_eq!(pages[1].page_number, 2);
         assert_eq!(pages[2].page_number, 3);
 
-        // Section names match sheet names
-        assert_eq!(pages[0].section_name.as_deref(), Some("First"));
-        assert_eq!(pages[1].section_name.as_deref(), Some("Second"));
-        assert_eq!(pages[2].section_name.as_deref(), Some("Third"));
+        // sheet_name carries the raw sheet name; section_name is PPTX-only and must be None
+        assert_eq!(pages[0].sheet_name.as_deref(), Some("First"));
+        assert_eq!(pages[1].sheet_name.as_deref(), Some("Second"));
+        assert_eq!(pages[2].sheet_name.as_deref(), Some("Third"));
+        assert_eq!(pages[0].section_name, None);
+        assert_eq!(pages[1].section_name, None);
+        assert_eq!(pages[2].section_name, None);
 
         // Each page's content is only that sheet's markdown (not other sheets)
         assert!(pages[0].content.contains("First"));
@@ -514,6 +557,42 @@ mod tests {
         assert_eq!(pages[0].tables[0].cells[0][0], "A");
         assert_eq!(pages[1].tables[0].cells[0][0], "X");
         assert_eq!(pages[2].tables[0].cells[0][0], "P");
+    }
+
+    #[test]
+    fn test_top_level_tables_populated_for_multi_sheet_workbook() {
+        // ExtractionResult.tables (top-level) must be populated after XLSX extraction
+        // and the count must equal the number of sheets with data. This is the primary
+        // backward-compat surface for callers that do not read .pages.
+        let sheet1_cells = vec![
+            vec!["H1".to_string(), "H2".to_string()],
+            vec!["r1c1".to_string(), "r1c2".to_string()],
+        ];
+        let sheet2_cells = vec![vec!["X".to_string()], vec!["99".to_string()]];
+        let sheet3_cells = vec![vec!["P".to_string()]];
+        let workbook = make_workbook(vec![
+            make_sheet("Alpha", Some(sheet1_cells)),
+            make_sheet("Beta", Some(sheet2_cells)),
+            make_sheet("Gamma", Some(sheet3_cells)),
+        ]);
+        let doc = ExcelExtractor::build_internal_document(&workbook);
+
+        // Top-level tables come from the builder's push_table_from_cells calls
+        assert_eq!(
+            doc.tables.len(),
+            3,
+            "top-level tables count must equal number of sheets with data"
+        );
+
+        // Table page numbers must align with sheet order (1-indexed)
+        assert_eq!(doc.tables[0].page_number, 1);
+        assert_eq!(doc.tables[1].page_number, 2);
+        assert_eq!(doc.tables[2].page_number, 3);
+
+        // Spot-check cell content to confirm identity
+        assert_eq!(doc.tables[0].cells[0][0], "H1");
+        assert_eq!(doc.tables[1].cells[0][0], "X");
+        assert_eq!(doc.tables[2].cells[0][0], "P");
     }
 
     #[test]
@@ -538,7 +617,16 @@ mod tests {
         // Empty sheet has no tables and is marked blank
         assert_eq!(pages[1].tables.len(), 0);
         assert_eq!(pages[1].is_blank, Some(true));
-        assert_eq!(pages[1].section_name.as_deref(), Some("Empty"));
+        // sheet_name is still set; section_name is PPTX-only
+        assert_eq!(pages[1].sheet_name.as_deref(), Some("Empty"));
+        assert_eq!(pages[1].section_name, None);
+        // Empty-sheet content must end with "\n\n" so per-page concatenation
+        // produces a blank line between two adjacent headings.
+        assert!(
+            pages[1].content.ends_with("\n\n"),
+            "empty-sheet content must end with two newlines, got: {:?}",
+            pages[1].content
+        );
 
         // Non-empty sheets are not blank
         assert_eq!(pages[0].is_blank, Some(false));
@@ -559,6 +647,7 @@ mod tests {
         assert_eq!(pages[1].page_number, 2);
         assert_eq!(pages[1].tables.len(), 0);
         assert_eq!(pages[1].is_blank, Some(true));
+        assert!(pages[1].content.ends_with("\n\n"), "empty sheet must end with \\n\\n");
     }
 
     #[test]
@@ -572,8 +661,45 @@ mod tests {
         let doc = ExcelExtractor::build_internal_document(&workbook);
 
         let pages = doc.prebuilt_pages.as_ref().unwrap();
-        assert_eq!(pages[0].section_name.as_deref(), Some("Z"));
-        assert_eq!(pages[1].section_name.as_deref(), Some("A"));
-        assert_eq!(pages[2].section_name.as_deref(), Some("M"));
+        assert_eq!(pages[0].sheet_name.as_deref(), Some("Z"));
+        assert_eq!(pages[1].sheet_name.as_deref(), Some("A"));
+        assert_eq!(pages[2].sheet_name.as_deref(), Some("M"));
+    }
+
+    #[test]
+    fn test_sheet_name_markdown_escape_in_heading() {
+        // A sheet named "## Profit (2025) [Q1]" must not produce a double heading
+        // ("## ## Profit...") and must not render as a markdown link.
+        let cells = vec![
+            vec!["Revenue".to_string(), "Cost".to_string()],
+            vec!["100".to_string(), "80".to_string()],
+        ];
+        let workbook = make_workbook(vec![make_sheet("## Profit (2025) [Q1]", Some(cells))]);
+        let doc = ExcelExtractor::build_internal_document(&workbook);
+
+        let pages = doc.prebuilt_pages.as_ref().unwrap();
+        assert_eq!(pages.len(), 1);
+
+        // The raw sheet name is stored unescaped in sheet_name
+        assert_eq!(pages[0].sheet_name.as_deref(), Some("## Profit (2025) [Q1]"));
+
+        // The heading in content must not start with "## ##" (double heading)
+        assert!(
+            !pages[0].content.starts_with("## ##"),
+            "double heading detected: {:?}",
+            &pages[0].content[..pages[0].content.find('\n').unwrap_or(pages[0].content.len())]
+        );
+        // The heading line must not contain an unescaped "[Q1]" that renders as a link
+        let first_line = pages[0].content.lines().next().unwrap_or("");
+        // Unescaped "[Q1]" followed by "(..." is what creates a link; after escaping
+        // the "[" is preceded by a backslash so the pattern "[Q1]" → "\[Q1\]"
+        assert!(
+            !first_line.contains("[Q1]") || first_line.contains("\\["),
+            "unescaped markdown link syntax in heading: {:?}",
+            first_line
+        );
+        // Content must still contain the heading marker and the word "Profit"
+        assert!(pages[0].content.starts_with("## "), "content must start with H2 marker");
+        assert!(pages[0].content.contains("Profit"));
     }
 }

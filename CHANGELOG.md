@@ -37,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **excel**: split `PageContent.sheet_name` from `PageContent.section_name` (the latter is PPTX-only)
+  so the type's doc-comment matches the data again. Escape markdown-significant characters in sheet
+  names when rendering per-page headings, preventing double-heading or broken-link rendering on
+  adversarial sheet names (e.g. `## Profit` or `[Sales](evil)`). Normalise the empty-sheet content
+  shape to `## <name>\n\n` so per-page concatenation produces consistent separation between headings.
+
 - **core/extractor**: fix `let validated_mime = if ... else { ... }` arm-type mismatch when `tree-sitter` feature is disabled. The octet-stream branch was wrapped in `#[cfg(feature = "tree-sitter")]` with no `#[cfg(not(...))]` fallback, causing the arm to evaluate to `()` under default features (which don't include tree-sitter) while the else arm produced `String`. Added an explicit `#[cfg(not(feature = "tree-sitter"))]` fallback that calls `mime::detect_mime_type_from_bytes`.
 
 ### Changed

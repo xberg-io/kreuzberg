@@ -766,6 +766,7 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             }
         })
         .collect();

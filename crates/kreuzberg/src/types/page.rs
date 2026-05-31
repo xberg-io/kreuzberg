@@ -191,6 +191,14 @@ pub struct PageContent {
     /// the slide belongs to a named section.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub section_name: Option<String>,
+
+    /// Sheet name for this page (XLSX/ODS only).
+    ///
+    /// Each spreadsheet sheet maps to one `PageContent` entry. This field carries the
+    /// sheet's display name as it appears in the workbook. `None` for all non-spreadsheet
+    /// formats and for sheets with an empty name.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sheet_name: Option<String>,
 }
 
 /// A detected layout region on a page.
