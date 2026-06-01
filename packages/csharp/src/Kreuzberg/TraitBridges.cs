@@ -59,10 +59,12 @@ public sealed class OcrBackendBridge : IDisposable {
 
     internal readonly IOcrBackend _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -118,11 +120,12 @@ public sealed class OcrBackendBridge : IDisposable {
 
     public OcrBackendBridge(IOcrBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[14];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(14);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -138,72 +141,72 @@ public sealed class OcrBackendBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: process_image_fn
         var processImageFn = new ProcessImageFn(ProcessImageFnCallback);
-        _delegates[4] = processImageFn;
+        _delegateRoots.Add(processImageFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(processImageFn));
 
         // Slot 5: process_image_file_fn
         var processImageFileFn = new ProcessImageFileFn(ProcessImageFileFnCallback);
-        _delegates[5] = processImageFileFn;
+        _delegateRoots.Add(processImageFileFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(processImageFileFn));
 
         // Slot 6: supports_language_fn
         var supportsLanguageFn = new SupportsLanguageFn(SupportsLanguageFnCallback);
-        _delegates[6] = supportsLanguageFn;
+        _delegateRoots.Add(supportsLanguageFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(supportsLanguageFn));
 
         // Slot 7: backend_type_fn
         var backendTypeFn = new BackendTypeFn(BackendTypeFnCallback);
-        _delegates[7] = backendTypeFn;
+        _delegateRoots.Add(backendTypeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 56, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(backendTypeFn));
 
         // Slot 8: supported_languages_fn
         var supportedLanguagesFn = new SupportedLanguagesFn(SupportedLanguagesFnCallback);
-        _delegates[8] = supportedLanguagesFn;
+        _delegateRoots.Add(supportedLanguagesFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 64, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(supportedLanguagesFn));
 
         // Slot 9: supports_table_detection_fn
         var supportsTableDetectionFn = new SupportsTableDetectionFn(SupportsTableDetectionFnCallback);
-        _delegates[9] = supportsTableDetectionFn;
+        _delegateRoots.Add(supportsTableDetectionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 72, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(supportsTableDetectionFn));
 
         // Slot 10: supports_document_processing_fn
         var supportsDocumentProcessingFn = new SupportsDocumentProcessingFn(SupportsDocumentProcessingFnCallback);
-        _delegates[10] = supportsDocumentProcessingFn;
+        _delegateRoots.Add(supportsDocumentProcessingFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 80, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(supportsDocumentProcessingFn));
 
         // Slot 11: process_document_fn
         var processDocumentFn = new ProcessDocumentFn(ProcessDocumentFnCallback);
-        _delegates[11] = processDocumentFn;
+        _delegateRoots.Add(processDocumentFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 88, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(processDocumentFn));
 
         // Slot 12: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[12] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 96, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 13: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[13] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 104, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -335,7 +338,7 @@ public sealed class OcrBackendBridge : IDisposable {
             var managed_imageBytes = new byte[(int)imageBytesLen];
             Marshal.Copy(imageBytes, managed_imageBytes, 0, (int)imageBytesLen);
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessImage(managed_imageBytes, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -388,9 +391,9 @@ public sealed class OcrBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessImageFile(managed_path, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -621,9 +624,9 @@ public sealed class OcrBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessDocument(managed_path, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -685,9 +688,8 @@ public sealed class OcrBackendBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a OcrBackend implementation and return its native handle</summary>
@@ -867,10 +869,12 @@ public sealed class PostProcessorBridge : IDisposable {
 
     internal readonly IPostProcessor _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -917,11 +921,12 @@ public sealed class PostProcessorBridge : IDisposable {
 
     public PostProcessorBridge(IPostProcessor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[11];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(11);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -937,57 +942,57 @@ public sealed class PostProcessorBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: process_fn
         var processFn = new ProcessFn(ProcessFnCallback);
-        _delegates[4] = processFn;
+        _delegateRoots.Add(processFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(processFn));
 
         // Slot 5: processing_stage_fn
         var processingStageFn = new ProcessingStageFn(ProcessingStageFnCallback);
-        _delegates[5] = processingStageFn;
+        _delegateRoots.Add(processingStageFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(processingStageFn));
 
         // Slot 6: should_process_fn
         var shouldProcessFn = new ShouldProcessFn(ShouldProcessFnCallback);
-        _delegates[6] = shouldProcessFn;
+        _delegateRoots.Add(shouldProcessFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shouldProcessFn));
 
         // Slot 7: estimated_duration_ms_fn
         var estimatedDurationMsFn = new EstimatedDurationMsFn(EstimatedDurationMsFnCallback);
-        _delegates[7] = estimatedDurationMsFn;
+        _delegateRoots.Add(estimatedDurationMsFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 56, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(estimatedDurationMsFn));
 
         // Slot 8: priority_fn
         var priorityFn = new PriorityFn(PriorityFnCallback);
-        _delegates[8] = priorityFn;
+        _delegateRoots.Add(priorityFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 64, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(priorityFn));
 
         // Slot 9: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[9] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 72, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 10: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[10] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 80, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -1115,9 +1120,9 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             bridge._impl.Process(managed_result, managed_config);
             return 0;
         } catch (Exception) {
@@ -1195,9 +1200,9 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ShouldProcess(managed_result, managed_config);
             return methodResult ? 1 : 0;
         } catch (Exception) {
@@ -1224,7 +1229,7 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.EstimatedDurationMs(managed_result);
             return methodResult;
         } catch (Exception) {
@@ -1287,9 +1292,8 @@ public sealed class PostProcessorBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a PostProcessor implementation and return its native handle</summary>
@@ -1463,10 +1467,12 @@ public sealed class ValidatorBridge : IDisposable {
 
     internal readonly IValidator _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -1507,11 +1513,12 @@ public sealed class ValidatorBridge : IDisposable {
 
     public ValidatorBridge(IValidator impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[9];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(9);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -1527,47 +1534,47 @@ public sealed class ValidatorBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: validate_fn
         var validateFn = new ValidateFn(ValidateFnCallback);
-        _delegates[4] = validateFn;
+        _delegateRoots.Add(validateFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(validateFn));
 
         // Slot 5: should_validate_fn
         var shouldValidateFn = new ShouldValidateFn(ShouldValidateFnCallback);
-        _delegates[5] = shouldValidateFn;
+        _delegateRoots.Add(shouldValidateFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shouldValidateFn));
 
         // Slot 6: priority_fn
         var priorityFn = new PriorityFn(PriorityFnCallback);
-        _delegates[6] = priorityFn;
+        _delegateRoots.Add(priorityFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(priorityFn));
 
         // Slot 7: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[7] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 56, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 8: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[8] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 64, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -1695,9 +1702,9 @@ public sealed class ValidatorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             bridge._impl.Validate(managed_result, managed_config);
             return 0;
         } catch (Exception) {
@@ -1724,9 +1731,9 @@ public sealed class ValidatorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ShouldValidate(managed_result, managed_config);
             return methodResult ? 1 : 0;
         } catch (Exception) {
@@ -1789,9 +1796,8 @@ public sealed class ValidatorBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a Validator implementation and return its native handle</summary>
@@ -1962,10 +1968,12 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
     internal readonly IEmbeddingBackend _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -2003,11 +2011,12 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
     public EmbeddingBackendBridge(IEmbeddingBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[8];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(8);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -2023,42 +2032,42 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: dimensions_fn
         var dimensionsFn = new DimensionsFn(DimensionsFnCallback);
-        _delegates[4] = dimensionsFn;
+        _delegateRoots.Add(dimensionsFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(dimensionsFn));
 
         // Slot 5: embed_fn
         var embedFn = new EmbedFn(EmbedFnCallback);
-        _delegates[5] = embedFn;
+        _delegateRoots.Add(embedFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(embedFn));
 
         // Slot 6: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[6] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 7: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[7] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 56, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -2213,7 +2222,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_texts = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(texts) ?? "{}";
-            var managed_texts = JsonSerializer.Deserialize<List<string>>(json_texts, FfiJsonOptions)!;
+            var managed_texts = JsonSerializer.Deserialize<List<string>>(json_texts, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.Embed(managed_texts);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2275,9 +2284,8 @@ public sealed class EmbeddingBackendBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a EmbeddingBackend implementation and return its native handle</summary>
@@ -2457,10 +2465,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
     internal readonly IDocumentExtractor _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -2507,11 +2517,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
     public DocumentExtractorBridge(IDocumentExtractor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[11];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(11);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -2527,57 +2538,57 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: extract_bytes_fn
         var extractBytesFn = new ExtractBytesFn(ExtractBytesFnCallback);
-        _delegates[4] = extractBytesFn;
+        _delegateRoots.Add(extractBytesFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(extractBytesFn));
 
         // Slot 5: extract_file_fn
         var extractFileFn = new ExtractFileFn(ExtractFileFnCallback);
-        _delegates[5] = extractFileFn;
+        _delegateRoots.Add(extractFileFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(extractFileFn));
 
         // Slot 6: supported_mime_types_fn
         var supportedMimeTypesFn = new SupportedMimeTypesFn(SupportedMimeTypesFnCallback);
-        _delegates[6] = supportedMimeTypesFn;
+        _delegateRoots.Add(supportedMimeTypesFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(supportedMimeTypesFn));
 
         // Slot 7: priority_fn
         var priorityFn = new PriorityFn(PriorityFnCallback);
-        _delegates[7] = priorityFn;
+        _delegateRoots.Add(priorityFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 56, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(priorityFn));
 
         // Slot 8: can_handle_fn
         var canHandleFn = new CanHandleFn(CanHandleFnCallback);
-        _delegates[8] = canHandleFn;
+        _delegateRoots.Add(canHandleFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 64, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(canHandleFn));
 
         // Slot 9: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[9] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 72, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 10: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[10] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 80, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -2710,7 +2721,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
             Marshal.Copy(content, managed_content, 0, (int)contentLen);
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ExtractBytes(managed_content, managed_mimeType, managed_config);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2763,10 +2774,10 @@ public sealed class DocumentExtractorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
             var methodResult = bridge._impl.ExtractFile(managed_path, managed_mimeType, managed_config);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2893,7 +2904,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var methodResult = bridge._impl.CanHandle(managed_path, managed_mimeType);
             return methodResult ? 1 : 0;
@@ -2932,9 +2943,8 @@ public sealed class DocumentExtractorBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a DocumentExtractor implementation and return its native handle</summary>
@@ -3102,10 +3112,12 @@ public sealed class RendererBridge : IDisposable {
 
     internal readonly IRenderer _impl;
     private readonly GCHandle _implHandle;
-    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
-    private readonly object[] _delegates;
+    // Keep all delegates alive for the lifetime of the bridge.
+    // Delegates must not be GC'd because Rust holds function pointers obtained via
+    // GetFunctionPointerForDelegate; those pointers become invalid if the delegate is collected.
+    private readonly List<object> _delegateRoots;
     internal readonly IntPtr _bridgeId;
     private int _callbackRefCount = 0;
 
@@ -3140,11 +3152,12 @@ public sealed class RendererBridge : IDisposable {
 
     public RendererBridge(IRenderer impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
-        _delegates = new object[7];
-        // Pin the delegates array to prevent GC during callback round-trips.
-        // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
-        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Pinned);
+        // Keep impl alive via normal GCHandle (sufficient for callback rooting).
+        // The impl instance itself is not pinned, just kept in the GC root set.
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        // Delegate list roots all delegates by reference to prevent GC.
+        // This avoids trying to pin an object array containing references, which .NET 10 forbids.
+        _delegateRoots = new List<object>(7);
         _vtable = IntPtr.Zero;
         _disposed = false;
         // Allocate unique bridge ID for registry lookup during callbacks
@@ -3160,37 +3173,37 @@ public sealed class RendererBridge : IDisposable {
 
         // Slot 0: name_fn
         var nameFn = new NameFn(NameFnCallback);
-        _delegates[0] = nameFn;
+        _delegateRoots.Add(nameFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 0, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(nameFn));
 
         // Slot 1: version_fn
         var versionFn = new VersionFn(VersionFnCallback);
-        _delegates[1] = versionFn;
+        _delegateRoots.Add(versionFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 8, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(versionFn));
 
         // Slot 2: initialize_fn
         var initFn = new InitializeFn(InitializeFnCallback);
-        _delegates[2] = initFn;
+        _delegateRoots.Add(initFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 16, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(initFn));
 
         // Slot 3: shutdown_fn
         var shutdownFn = new ShutdownFn(ShutdownFnCallback);
-        _delegates[3] = shutdownFn;
+        _delegateRoots.Add(shutdownFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 24, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(shutdownFn));
 
         // Slot 4: render_fn
         var renderFn = new RenderFn(RenderFnCallback);
-        _delegates[4] = renderFn;
+        _delegateRoots.Add(renderFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 32, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(renderFn));
 
         // Slot 5: free_string
         var freeStringFn = new FreeStringFn(FreeStringCallback);
-        _delegates[5] = freeStringFn;
+        _delegateRoots.Add(freeStringFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 40, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeStringFn));
 
         // Slot 6: free_user_data
         var freeFn = new FreeUserDataFn(FreeUserDataCallback);
-        _delegates[6] = freeFn;
+        _delegateRoots.Add(freeFn);
         global::System.Runtime.InteropServices.Marshal.WriteIntPtr(_vtable, 48, global::System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(freeFn));
 
     }
@@ -3381,9 +3394,8 @@ public sealed class RendererBridge : IDisposable {
             _implHandle.Free();
         }
 
-        if (_delegatesHandle.IsAllocated) {
-            _delegatesHandle.Free();
-        }
+        // _delegateRoots is kept as a managed list; GC handles it automatically.
+        // No need to free individual delegates or the list.
     }
 
     /// <summary>Register a Renderer implementation and return its native handle</summary>
