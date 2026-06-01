@@ -13,4 +13,7 @@
     <suppress checks="AvoidStarImport" files=".*Test\.java"/>
     <suppress checks="MagicNumber" files=".*Test\.java"/>
     <suppress checks="MethodLength" files=".*Test\.java"/>
+
+    <!-- Alef-generated Bridge files: suppress LineLength and MethodLength checks -->
+    <suppress files=".*Bridge\.java$" checks="LineLength|MethodLength"/>
 </suppressions>
