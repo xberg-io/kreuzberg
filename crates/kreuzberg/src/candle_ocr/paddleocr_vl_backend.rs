@@ -25,60 +25,19 @@ use kreuzberg_candle_ocr::models::PaddleOcrVlTask;
 #[cfg(not(target_arch = "wasm32"))]
 use kreuzberg_candle_ocr::models::PaddleOcrVlEngine;
 
-/// Coarse device discriminant used as the pool key.
-///
-/// Mirrors the variants of `DevicePreference` so that the pool key is stable
-/// without requiring a direct `candle_core` dependency in this crate.
-/// `DevicePreference::select()` always uses ordinal 0 for CUDA and Metal; the
-/// ordinal field is included for future multi-GPU support.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-enum DeviceKind {
-    Cpu,
-    /// Candle CUDA device, ordinal stored for future multi-GPU support.
-    Cuda(usize),
-    /// Candle Metal device, ordinal stored for future multi-GPU support.
-    Metal(usize),
-    /// Best available device chosen at runtime by `DevicePreference::Auto`.
-    Auto,
-}
-
-impl From<DevicePreference> for DeviceKind {
-    fn from(pref: DevicePreference) -> Self {
-        // DevicePreference::select() always uses ordinal 0 for CUDA and Metal.
-        match pref {
-            DevicePreference::Cpu => DeviceKind::Cpu,
-            DevicePreference::Cuda => DeviceKind::Cuda(0),
-            DevicePreference::Metal => DeviceKind::Metal(0),
-            // Auto resolves to whatever hardware is available at runtime; it gets
-            // its own pool slot so it is never confused with an explicit preference.
-            DevicePreference::Auto => DeviceKind::Auto,
-        }
-    }
-}
-
-/// String key for the engine pool: `"{task}/{device_kind}"`.
-///
-/// Using a string avoids the need for `Hash` on `PaddleOcrVlTask` (which only
-/// derives `PartialEq + Eq` from the external crate).  The pool has at most
-/// 4 tasks × 3 device kinds = 12 entries, so string hashing overhead is negligible.
-#[cfg(not(target_arch = "wasm32"))]
-fn pool_key(task: PaddleOcrVlTask, dk: DeviceKind) -> String {
-    let device_str = match dk {
-        DeviceKind::Cpu => "cpu".to_string(),
-        DeviceKind::Cuda(n) => format!("cuda:{n}"),
-        DeviceKind::Metal(n) => format!("metal:{n}"),
-        DeviceKind::Auto => "auto".to_string(),
-    };
-    format!("{task}/{device_str}")
-}
-
-/// Process-wide engine pool keyed by `"{task}/{device_kind}"`.
+/// Process-wide engine pool keyed by `(task, device_preference)`.
 ///
 /// Engines are expensive to initialise (~900 MB of safetensors weights, BF16→F32
-/// conversion).  The pool ensures each `(task, device)` combination is loaded at
+/// conversion). The pool ensures each `(task, device)` combination is loaded at
 /// most once per process.
+///
+/// `DevicePreference` already carries the canonical candle device taxonomy
+/// (`Auto | Cpu | Cuda | Metal`); we reuse it directly as the key rather than
+/// inventing a parallel enum. `DevicePreference::Auto` keeps its own slot
+/// because it resolves to whatever is available at runtime — collapsing it
+/// onto a concrete device would be wrong.
 #[cfg(not(target_arch = "wasm32"))]
-static ENGINE_POOL: LazyLock<RwLock<AHashMap<String, Arc<PaddleOcrVlEngine>>>> =
+static ENGINE_POOL: LazyLock<RwLock<AHashMap<(PaddleOcrVlTask, DevicePreference), Arc<PaddleOcrVlEngine>>>> =
     LazyLock::new(|| RwLock::new(AHashMap::new()));
 
 /// Return a cached engine for `(task, preference)`, initialising one on first use.
@@ -90,8 +49,7 @@ fn get_or_init_engine(
     task: PaddleOcrVlTask,
     preference: DevicePreference,
 ) -> crate::Result<Arc<PaddleOcrVlEngine>> {
-    let dk = DeviceKind::from(preference);
-    let key = pool_key(task, dk);
+    let key = (task, preference);
 
     // Fast path: engine already in pool.
     {
@@ -107,7 +65,7 @@ fn get_or_init_engine(
         source: None,
     })?;
 
-    tracing::info!(task = %task, ?dk, "Initialising PaddleOCR-VL engine (cold start)");
+    tracing::info!(task = ?task, preference = ?preference, "Initialising PaddleOCR-VL engine (cold start)");
     let new_engine = PaddleOcrVlEngine::new(task, device, DType::F32).map_err(|e| {
         crate::KreuzbergError::Ocr {
             message: format!("PaddleOCR-VL engine initialisation failed: {e}"),
@@ -161,32 +119,24 @@ impl PaddleOcrVlBackend {
     }
 
     /// Parse backend options to extract PaddleOCR-VL-specific configuration.
+    ///
+    /// Device selection is delegated to [`crate::candle_ocr::resolve_device_preference`]
+    /// so the central `AccelerationConfig` is honoured.
     fn parse_options(config: &OcrConfig) -> (PaddleOcrVlTask, DevicePreference) {
         let mut task = PaddleOcrVlTask::default();
-        let mut device = DevicePreference::default();
 
-        if let Some(opts) = &config.backend_options {
-            // Parse task preference
-            if let Some(t) = opts.get("task").and_then(|v| v.as_str()) {
-                task = match t {
-                    "table" => PaddleOcrVlTask::Table,
-                    "formula" => PaddleOcrVlTask::Formula,
-                    "chart" => PaddleOcrVlTask::Chart,
-                    _ => PaddleOcrVlTask::Ocr, // default on unknown
-                };
-            }
-
-            // Parse device preference
-            if let Some(d) = opts.get("device").and_then(|v| v.as_str()) {
-                device = match d {
-                    "cpu" => DevicePreference::Cpu,
-                    "cuda" => DevicePreference::Cuda,
-                    "metal" => DevicePreference::Metal,
-                    _ => DevicePreference::Auto,
-                };
-            }
+        if let Some(opts) = &config.backend_options
+            && let Some(t) = opts.get("task").and_then(|v| v.as_str())
+        {
+            task = match t {
+                "table" => PaddleOcrVlTask::Table,
+                "formula" => PaddleOcrVlTask::Formula,
+                "chart" => PaddleOcrVlTask::Chart,
+                _ => PaddleOcrVlTask::Ocr, // default on unknown
+            };
         }
 
+        let device = super::resolve_device_preference(config);
         (task, device)
     }
 }

@@ -52,32 +52,24 @@ impl TrocrBackend {
     /// Returns `(Some(variant), device)` only when `backend_options` contains an explicit
     /// `"variant"` key. Returns `None` for the variant when the key is absent, so the
     /// caller can fall back to the constructor-time default stored in `self.variant`.
+    ///
+    /// Device selection is delegated to [`crate::candle_ocr::resolve_device_preference`]
+    /// so the central `AccelerationConfig` is honoured.
     fn parse_options(config: &OcrConfig) -> (Option<TrocrVariant>, DevicePreference) {
         let mut variant: Option<TrocrVariant> = None;
-        let mut device = DevicePreference::default();
 
-        if let Some(opts) = &config.backend_options {
-            // Parse variant preference — only set when explicitly present
-            if let Some(v) = opts.get("variant").and_then(|v| v.as_str()) {
-                variant = Some(match v {
-                    "large-printed" => TrocrVariant::LargePrinted,
-                    "base-handwritten" => TrocrVariant::BaseHandwritten,
-                    "large-handwritten" => TrocrVariant::LargeHandwritten,
-                    _ => TrocrVariant::BasePrinted, // default on unknown
-                });
-            }
-
-            // Parse device preference
-            if let Some(d) = opts.get("device").and_then(|v| v.as_str()) {
-                device = match d {
-                    "cpu" => DevicePreference::Cpu,
-                    "cuda" => DevicePreference::Cuda,
-                    "metal" => DevicePreference::Metal,
-                    _ => DevicePreference::Auto,
-                };
-            }
+        if let Some(opts) = &config.backend_options
+            && let Some(v) = opts.get("variant").and_then(|v| v.as_str())
+        {
+            variant = Some(match v {
+                "large-printed" => TrocrVariant::LargePrinted,
+                "base-handwritten" => TrocrVariant::BaseHandwritten,
+                "large-handwritten" => TrocrVariant::LargeHandwritten,
+                _ => TrocrVariant::BasePrinted, // default on unknown
+            });
         }
 
+        let device = super::resolve_device_preference(config);
         (variant, device)
     }
 }

@@ -30,9 +30,8 @@ use std::sync::Arc;
 use tokenizers::Tokenizer;
 
 /// PaddleOCR-VL task selection.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-#[derive(Default)]
 pub enum PaddleOcrVlTask {
     /// Text recognition (OCR)
     #[default]
