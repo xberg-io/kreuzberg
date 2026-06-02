@@ -47,7 +47,7 @@ impl DocumentExtractor for TranscriptionExtractor {
     async fn extract_bytes(
         &self,
         content: &[u8],
-        _mime_type: &str,
+        mime_type: &str,
         config: &ExtractionConfig,
     ) -> Result<InternalDocument> {
         // The registry already validated the MIME, but we still need the
@@ -95,7 +95,8 @@ impl DocumentExtractor for TranscriptionExtractor {
         // all guards and config plumbing without silently producing wrong output.
         let _ = pcm;
         tracing::warn!("transcription stub: returning empty document — Whisper inference not yet wired (follow-up PR)");
-        let doc = InternalDocument::new("audio-transcript");
+        let mut doc = InternalDocument::new("audio-transcript");
+        doc.mime_type = mime_type.to_string();
         Ok(doc)
     }
 
@@ -122,7 +123,7 @@ impl DocumentExtractor for TranscriptionExtractor {
 }
 
 impl SyncExtractor for TranscriptionExtractor {
-    fn extract_sync(&self, content: &[u8], _mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         // Sync path used when no tokio runtime is available.
         let tcfg = config.transcription.as_ref().filter(|c| c.enabled).ok_or_else(|| {
             KreuzbergError::transcription(
@@ -156,7 +157,8 @@ impl SyncExtractor for TranscriptionExtractor {
 
         let _ = pcm;
         tracing::warn!("transcription stub: returning empty document — Whisper inference not yet wired (follow-up PR)");
-        let doc = InternalDocument::new("audio-transcript");
+        let mut doc = InternalDocument::new("audio-transcript");
+        doc.mime_type = mime_type.to_string();
         Ok(doc)
     }
 }
