@@ -90,9 +90,11 @@ impl DocumentExtractor for TranscriptionExtractor {
             )));
         }
 
-        // TODO(follow-up): Whisper ONNX inference via ORT + ModelCache.
-        // Foundation PR exercises: decode, size/duration limits, config plumbing, error paths.
-        let _ = pcm; // used for limit checks above; inference wired in next PR
+        // Whisper ONNX inference is wired in the follow-up PR.
+        // Until then, return an empty placeholder so the pipeline exercises
+        // all guards and config plumbing without silently producing wrong output.
+        let _ = pcm;
+        tracing::warn!("transcription stub: returning empty document — Whisper inference not yet wired (follow-up PR)");
         let doc = InternalDocument::new("audio-transcript");
         Ok(doc)
     }
@@ -121,16 +123,24 @@ impl DocumentExtractor for TranscriptionExtractor {
 
 impl SyncExtractor for TranscriptionExtractor {
     fn extract_sync(&self, content: &[u8], _mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
-        // For the sync (WASM / no-tokio) path we still want the same logic.
-        // Decode is sync here; the stub path does not require the runtime.
+        // Sync path used when no tokio runtime is available.
         let tcfg = config.transcription.as_ref().filter(|c| c.enabled).ok_or_else(|| {
-            KreuzbergError::transcription("Transcription requested but config missing or disabled (sync path)")
+            KreuzbergError::transcription(
+                "Transcription requested for audio/video input, but no `transcription` \
+                 config block was provided (or `enabled` is false). \
+                 Add `transcription = { enabled = true, model = \"tiny\" }` (or equivalent) \
+                 to your ExtractionConfig.",
+            )
         })?;
 
         if let Some(max_b) = tcfg.max_bytes
             && content.len() as u64 > max_b
         {
-            return Err(KreuzbergError::transcription("Size limit exceeded (sync)"));
+            return Err(KreuzbergError::transcription(format!(
+                "Input size {} bytes exceeds transcription.max_bytes limit of {}",
+                content.len(),
+                max_b
+            )));
         }
 
         let pcm = decode_audio_to_pcm(content, tcfg.max_bytes)?;
@@ -138,10 +148,14 @@ impl SyncExtractor for TranscriptionExtractor {
         if let Some(max_d) = tcfg.max_duration_ms
             && pcm.duration_ms > max_d
         {
-            return Err(KreuzbergError::transcription("Duration limit exceeded (sync)"));
+            return Err(KreuzbergError::transcription(format!(
+                "Decoded audio duration {} ms exceeds transcription.max_duration_ms limit of {}",
+                pcm.duration_ms, max_d
+            )));
         }
 
         let _ = pcm;
+        tracing::warn!("transcription stub: returning empty document — Whisper inference not yet wired (follow-up PR)");
         let doc = InternalDocument::new("audio-transcript");
         Ok(doc)
     }
@@ -232,5 +246,46 @@ mod tests {
         assert!(result.is_err(), "expected error when decoded duration exceeds limit");
         let msg = result.unwrap_err().to_string();
         assert!(msg.contains("duration") || msg.contains("limit"), "unexpected: {msg}");
+    }
+
+    #[tokio::test]
+    async fn test_async_no_config_returns_error() {
+        let ext = TranscriptionExtractor;
+        let cfg = ExtractionConfig::default();
+        let result = ext.extract_bytes(&[], "audio/mpeg", &cfg).await;
+        assert!(result.is_err(), "expected error when no transcription config (async)");
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("config") || msg.contains("disabled"), "unexpected: {msg}");
+    }
+
+    #[tokio::test]
+    async fn test_async_size_limit_enforced() {
+        let ext = TranscriptionExtractor;
+        let tcfg = TranscriptionConfig {
+            max_bytes: Some(10),
+            ..Default::default()
+        };
+        let cfg = config_with_transcription(tcfg);
+        let oversized = vec![0u8; 11];
+        let result = ext.extract_bytes(&oversized, "audio/mpeg", &cfg).await;
+        assert!(result.is_err(), "expected error when input exceeds max_bytes (async)");
+        let msg = result.unwrap_err().to_string();
+        assert!(
+            msg.contains("exceed") || msg.contains("limit") || msg.contains("size"),
+            "unexpected: {msg}"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_async_stub_succeeds_with_valid_config() {
+        let ext = TranscriptionExtractor;
+        let cfg = config_with_transcription(TranscriptionConfig::default());
+        // Stub always returns an empty document — no inference yet.
+        let result = ext.extract_bytes(&[0u8; 64], "audio/mpeg", &cfg).await;
+        assert!(
+            result.is_ok(),
+            "stub should succeed for valid config: {:?}",
+            result.err()
+        );
     }
 }

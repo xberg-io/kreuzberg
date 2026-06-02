@@ -467,7 +467,7 @@ impl ExtractionConfig {
             #[cfg(feature = "layout-types")]
             ref layout,
             #[cfg(feature = "transcription-types")]
-                transcription: _,
+            ref transcription,
             ref timeout_secs,
             #[cfg(feature = "tree-sitter")]
             ref tree_sitter,
@@ -536,6 +536,10 @@ impl ExtractionConfig {
         #[cfg(feature = "layout-types")]
         if let Some(v) = layout {
             config.layout = Some(v.clone());
+        }
+        #[cfg(feature = "transcription-types")]
+        if let Some(v) = transcription {
+            config.transcription = Some(v.clone());
         }
         if let Some(v) = timeout_secs {
             config.extraction_timeout_secs = Some(*v);

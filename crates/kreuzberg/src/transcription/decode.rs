@@ -76,7 +76,33 @@ pub fn decode_audio_to_pcm(_bytes: &[u8], _max_bytes: Option<u64>) -> Result<Pcm
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
-    // Resample test removed for the stub foundation PR.
-    // Real linear (or better) resampler + test will return with the production decode.
+    #[cfg(feature = "transcription")]
+    #[test]
+    fn test_zero_length_input_does_not_panic() {
+        let result = decode_audio_to_pcm(&[], None);
+        assert!(result.is_ok(), "zero-length input should return Ok (stub)");
+        let pcm = result.unwrap();
+        assert_eq!(pcm.duration_ms, 0);
+    }
+
+    #[cfg(feature = "transcription")]
+    #[test]
+    fn test_size_limit_enforced() {
+        let result = decode_audio_to_pcm(&[0u8; 20], Some(10));
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("exceed") || msg.contains("limit"), "unexpected: {msg}");
+    }
+
+    #[cfg(feature = "transcription")]
+    #[test]
+    fn test_duration_heuristic_does_not_overflow_large_input() {
+        // bytes.len() * 8 must not overflow u64 for realistic inputs.
+        // 512 MiB = 536_870_912 bytes; * 8 = 4_294_967_296 < u64::MAX.
+        let large = vec![0u8; 512 * 1024 * 1024];
+        let result = decode_audio_to_pcm(&large, None);
+        assert!(result.is_ok());
+    }
 }
