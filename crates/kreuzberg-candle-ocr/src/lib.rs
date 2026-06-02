@@ -2,18 +2,10 @@
 //!
 //! Candle-based VLM OCR engines for Kreuzberg. Pure-Rust transformer OCR.
 //!
-//! ## Phase 1 status
-//!
-//! This crate currently exposes only the skeleton: error types, device selection,
-//! and per-model module placeholders. Real model code is wired in Phase 3 per the
-//! plan at the end of `feat/candle-backends`.
-//!
 //! ## Per-model sub-features
 //!
-//! - `trocr` — Microsoft TrOCR
-//! - `paddleocr-vl` — PaddleOCR-VL 0.9B
-//! - `got-ocr` — GOT-OCR 2.0 0.7B
-//! - `glm-ocr` — GLM-OCR 0.9B
+//! - `trocr` — Microsoft TrOCR (printed and handwritten variants)
+//! - `paddleocr-vl` — PaddleOCR-VL 0.9B (multi-task: OCR, tables, formulas, charts)
 //!
 //! ## Device acceleration
 //!

@@ -6,6 +6,13 @@
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::path::Path;
+#[cfg(not(target_arch = "wasm32"))]
+use std::sync::{Arc, LazyLock};
+
+#[cfg(not(target_arch = "wasm32"))]
+use ahash::AHashMap;
+#[cfg(not(target_arch = "wasm32"))]
+use parking_lot::RwLock;
 
 use crate::Result;
 use crate::core::config::OcrConfig;
@@ -15,6 +22,108 @@ use crate::types::ExtractionResult;
 use kreuzberg_candle_ocr::DType;
 use kreuzberg_candle_ocr::DevicePreference;
 use kreuzberg_candle_ocr::models::PaddleOcrVlTask;
+#[cfg(not(target_arch = "wasm32"))]
+use kreuzberg_candle_ocr::models::PaddleOcrVlEngine;
+
+/// Coarse device discriminant used as the pool key.
+///
+/// Mirrors the variants of `DevicePreference` so that the pool key is stable
+/// without requiring a direct `candle_core` dependency in this crate.
+/// `DevicePreference::select()` always uses ordinal 0 for CUDA and Metal; the
+/// ordinal field is included for future multi-GPU support.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+enum DeviceKind {
+    Cpu,
+    /// Candle CUDA device, ordinal stored for future multi-GPU support.
+    Cuda(usize),
+    /// Candle Metal device, ordinal stored for future multi-GPU support.
+    Metal(usize),
+    /// Best available device chosen at runtime by `DevicePreference::Auto`.
+    Auto,
+}
+
+impl From<DevicePreference> for DeviceKind {
+    fn from(pref: DevicePreference) -> Self {
+        // DevicePreference::select() always uses ordinal 0 for CUDA and Metal.
+        match pref {
+            DevicePreference::Cpu => DeviceKind::Cpu,
+            DevicePreference::Cuda => DeviceKind::Cuda(0),
+            DevicePreference::Metal => DeviceKind::Metal(0),
+            // Auto resolves to whatever hardware is available at runtime; it gets
+            // its own pool slot so it is never confused with an explicit preference.
+            DevicePreference::Auto => DeviceKind::Auto,
+        }
+    }
+}
+
+/// String key for the engine pool: `"{task}/{device_kind}"`.
+///
+/// Using a string avoids the need for `Hash` on `PaddleOcrVlTask` (which only
+/// derives `PartialEq + Eq` from the external crate).  The pool has at most
+/// 4 tasks × 3 device kinds = 12 entries, so string hashing overhead is negligible.
+#[cfg(not(target_arch = "wasm32"))]
+fn pool_key(task: PaddleOcrVlTask, dk: DeviceKind) -> String {
+    let device_str = match dk {
+        DeviceKind::Cpu => "cpu".to_string(),
+        DeviceKind::Cuda(n) => format!("cuda:{n}"),
+        DeviceKind::Metal(n) => format!("metal:{n}"),
+        DeviceKind::Auto => "auto".to_string(),
+    };
+    format!("{task}/{device_str}")
+}
+
+/// Process-wide engine pool keyed by `"{task}/{device_kind}"`.
+///
+/// Engines are expensive to initialise (~900 MB of safetensors weights, BF16→F32
+/// conversion).  The pool ensures each `(task, device)` combination is loaded at
+/// most once per process.
+#[cfg(not(target_arch = "wasm32"))]
+static ENGINE_POOL: LazyLock<RwLock<AHashMap<String, Arc<PaddleOcrVlEngine>>>> =
+    LazyLock::new(|| RwLock::new(AHashMap::new()));
+
+/// Return a cached engine for `(task, preference)`, initialising one on first use.
+///
+/// Uses a read → miss → write → double-check pattern so that two racing callers
+/// do not both pay the initialisation cost.
+#[cfg(not(target_arch = "wasm32"))]
+fn get_or_init_engine(
+    task: PaddleOcrVlTask,
+    preference: DevicePreference,
+) -> crate::Result<Arc<PaddleOcrVlEngine>> {
+    let dk = DeviceKind::from(preference);
+    let key = pool_key(task, dk);
+
+    // Fast path: engine already in pool.
+    {
+        let pool = ENGINE_POOL.read();
+        if let Some(engine) = pool.get(&key) {
+            return Ok(Arc::clone(engine));
+        }
+    }
+
+    // Slow path: select the device and build the engine, then insert under write lock.
+    let device = preference.select().map_err(|e| crate::KreuzbergError::Ocr {
+        message: format!("Failed to select compute device: {e}"),
+        source: None,
+    })?;
+
+    tracing::info!(task = %task, ?dk, "Initialising PaddleOCR-VL engine (cold start)");
+    let new_engine = PaddleOcrVlEngine::new(task, device, DType::F32).map_err(|e| {
+        crate::KreuzbergError::Ocr {
+            message: format!("PaddleOCR-VL engine initialisation failed: {e}"),
+            source: None,
+        }
+    })?;
+    let new_engine = Arc::new(new_engine);
+
+    let mut pool = ENGINE_POOL.write();
+    // Double-check: another thread may have inserted while we were building.
+    if let Some(existing) = pool.get(&key) {
+        return Ok(Arc::clone(existing));
+    }
+    pool.insert(key, Arc::clone(&new_engine));
+    Ok(new_engine)
+}
 
 /// PaddleOCR-VL backend using candle transformers.
 ///
@@ -120,19 +229,10 @@ impl OcrBackend for PaddleOcrVlBackend {
 
         // Run inference in a blocking task to avoid blocking the async runtime
         let content = tokio::task::spawn_blocking(move || {
-            // Select compute device
-            let candle_device = device.select().map_err(|e| crate::KreuzbergError::Ocr {
-                message: format!("Failed to select compute device: {}", e),
-                source: None,
-            })?;
-
-            // Load or retrieve cached engine
-            // Use f32 dtype for compatibility and stability
-            let engine = kreuzberg_candle_ocr::models::PaddleOcrVlEngine::new(task, candle_device, DType::F32)
-                .map_err(|e| crate::KreuzbergError::Ocr {
-                    message: format!("PaddleOCR-VL engine initialization failed: {}", e),
-                    source: None,
-                })?;
+            // Retrieve a cached engine or initialise one on first use.
+            // Device selection happens inside get_or_init_engine on first call;
+            // subsequent calls for the same (task, device) reuse the pooled engine.
+            let engine = get_or_init_engine(task, device)?;
 
             // Process image through encoder-decoder pipeline
             let output = engine

@@ -80,6 +80,8 @@ pub struct PaddleOcrVlEngine {
     task: PaddleOcrVlTask,
     device: Device,
     dtype: DType,
+    bos_token_id: u32,
+    eos_token_id: u32,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -137,6 +139,17 @@ impl PaddleOcrVlEngine {
         let model = PaddleOCRVLModel::new(&config, vb)
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Model init error: {}", e)))?;
 
+        // The upstream `paddleocr_vl::Config` struct does not expose bos/eos token ids
+        // (only vision-token ids). Resolve from the tokenizer's vocab once at load time
+        // and cache on the engine so the decode loop does not repeat name lookups.
+        let bos_token_id = tokenizer.token_to_id("<|begin_of_sentence|>").unwrap_or(1);
+        let eos_token_id = tokenizer
+            .token_to_id("</s>")
+            .or_else(|| tokenizer.token_to_id("<|end_of_sentence|>"))
+            .or_else(|| tokenizer.token_to_id("<|endoftext|>"))
+            .unwrap_or(2);
+        tracing::debug!(bos_token_id, eos_token_id, "Resolved PaddleOCR-VL special tokens from tokenizer");
+
         Ok(PaddleOcrVlEngine {
             model: Arc::new(Mutex::new(model)),
             tokenizer,
@@ -144,6 +157,8 @@ impl PaddleOcrVlEngine {
             task,
             device,
             dtype,
+            bos_token_id,
+            eos_token_id,
         })
     }
 
@@ -164,14 +179,6 @@ impl PaddleOcrVlEngine {
 
         let input_ids = self.build_input_tokens(num_image_tokens)?;
 
-        // Generate output tokens
-        let eos_token_id = self
-            .tokenizer
-            .token_to_id("</s>")
-            .or_else(|| self.tokenizer.token_to_id("<|end_of_sentence|>"))
-            .or_else(|| self.tokenizer.token_to_id("<|endoftext|>"))
-            .unwrap_or(2);
-
         let max_length = 4096; // Maximum new tokens to generate
 
         {
@@ -182,7 +189,7 @@ impl PaddleOcrVlEngine {
         let generated_tokens = {
             let mut model = self.model.lock();
             model
-                .generate(&input_ids, &pixel_values, &grid_thw, max_length, eos_token_id)
+                .generate(&input_ids, &pixel_values, &grid_thw, max_length, self.eos_token_id)
                 .map_err(|e| CandleOcrError::InferenceFailed(format!("Generation error: {}", e)))?
         };
 
@@ -225,23 +232,32 @@ impl PaddleOcrVlEngine {
             image::imageops::FilterType::CatmullRom,
         );
 
-        // Normalize to [-1, 1] range
-        let mut normalized = vec![0f32; 3 * new_height * new_width];
-
-        for c in 0..3 {
-            for y in 0..new_height {
-                for x in 0..new_width {
-                    let pixel = resized.get_pixel(x as u32, y as u32);
-                    let idx = c * new_height * new_width + y * new_width + x;
-                    // Simple [-1, 1] normalization: 2 * (x/255) - 1
-                    normalized[idx] = pixel[c] as f32 / 255.0 * 2.0 - 1.0;
-                }
-            }
-        }
+        // Normalize to [-1, 1] range using tensor ops: 2 * (x / 255) - 1.
+        // Equivalent to mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5] normalization.
+        let raw: Vec<u8> = resized.into_raw();
+        let mean_vals = [0.5f32, 0.5, 0.5];
+        let std_vals = [0.5f32, 0.5, 0.5];
+        let mean_t = Tensor::from_vec(mean_vals.to_vec(), (3, 1, 1), &self.device)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Mean tensor: {}", e)))?;
+        let std_t = Tensor::from_vec(std_vals.to_vec(), (3, 1, 1), &self.device)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Std tensor: {}", e)))?;
+        let normalized = Tensor::from_vec(raw, &[new_height, new_width, 3], &self.device)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Raw tensor: {}", e)))?
+            .permute((2, 0, 1))
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Permute: {}", e)))?
+            .to_dtype(DType::F32)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Dtype F32: {}", e)))?
+            .affine(1.0 / 255.0, 0.0)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Scale [0,1]: {}", e)))?
+            .broadcast_sub(&mean_t)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Subtract mean: {}", e)))?
+            .broadcast_div(&std_t)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Divide std: {}", e)))?;
 
         // Create tensor: (1, 3, H, W)
-        let pixel_values = Tensor::from_vec(normalized, (1, 3, new_height, new_width), &self.device)
-            .map_err(|e| CandleOcrError::InferenceFailed(format!("Tensor creation: {}", e)))?
+        let pixel_values = normalized
+            .unsqueeze(0)
+            .map_err(|e| CandleOcrError::InferenceFailed(format!("Unsqueeze batch: {}", e)))?
             .to_dtype(self.dtype)
             .map_err(|e| CandleOcrError::InferenceFailed(format!("Dtype conversion: {}", e)))?;
 
@@ -312,7 +328,7 @@ impl PaddleOcrVlEngine {
 
     /// Build input token tensor for the given task and number of image tokens.
     fn build_input_tokens(&self, num_image_tokens: usize) -> Result<Tensor> {
-        let bos_token_id = self.tokenizer.token_to_id("<|begin_of_sentence|>").unwrap_or(1); // Default BOS
+        let bos_token_id = self.bos_token_id;
 
         let user_prefix = "User: ";
         let task_text = self.task.prompt();

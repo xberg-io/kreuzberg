@@ -106,6 +106,8 @@ pub struct TrocrEngine {
     device: Device,
     model: Arc<Mutex<trocr::TrOCRModel>>,
     tokenizer: Tokenizer,
+    decoder_start_token_id: u32,
+    eos_token_id: u32,
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -168,7 +170,7 @@ impl TrocrEngine {
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to parse config.json: {}", e)))?;
 
         // Load weights using memory mapping
-        // SAFETY: VarBuilder::from_mapped_safetensors requires that:
+        // SAFETY: VarBuilder::from_mmaped_safetensors requires that:
         // 1. The file path is valid and readable (guaranteed by hf_hub cache)
         // 2. The safetensors format is valid (guaranteed by HF validation)
         // 3. The device is compatible (guaranteed by candle)
@@ -178,7 +180,7 @@ impl TrocrEngine {
         // and the underlying file handle is managed by hf_hub's cache system.
         #[allow(unsafe_code)]
         let vb = unsafe {
-            VarBuilder::from_mapped_safetensors(&[model_file], DType::F32, &device)
+            VarBuilder::from_mmaped_safetensors(&[model_file], DType::F32, &device)
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to load safetensors: {}", e)))?
         };
 
@@ -203,6 +205,8 @@ impl TrocrEngine {
             device,
             model: Arc::new(Mutex::new(model)),
             tokenizer,
+            decoder_start_token_id: full_config.decoder.decoder_start_token_id,
+            eos_token_id: full_config.decoder.eos_token_id,
         })
     }
 
@@ -248,9 +252,9 @@ impl TrocrEngine {
             .forward(&image_tensor)
             .map_err(|e| CandleOcrError::InferenceFailed(format!("Encoder forward failed: {}", e)))?;
 
-        // Decoder configuration for generation (from TrOCRConfig defaults)
-        let decoder_start_token_id = trocr::TrOCRConfig::default().decoder_start_token_id;
-        let eos_token_id = trocr::TrOCRConfig::default().eos_token_id;
+        // Decoder configuration for generation (from the loaded checkpoint config)
+        let decoder_start_token_id = self.decoder_start_token_id;
+        let eos_token_id = self.eos_token_id;
 
         // Initialize decoder input with start token
         let mut token_ids = vec![decoder_start_token_id];

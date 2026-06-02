@@ -48,19 +48,23 @@ impl TrocrBackend {
     }
 
     /// Parse backend options to extract TrOCR-specific configuration.
-    fn parse_options(config: &OcrConfig) -> (TrocrVariant, DevicePreference) {
-        let mut variant = TrocrVariant::default();
+    ///
+    /// Returns `(Some(variant), device)` only when `backend_options` contains an explicit
+    /// `"variant"` key. Returns `None` for the variant when the key is absent, so the
+    /// caller can fall back to the constructor-time default stored in `self.variant`.
+    fn parse_options(config: &OcrConfig) -> (Option<TrocrVariant>, DevicePreference) {
+        let mut variant: Option<TrocrVariant> = None;
         let mut device = DevicePreference::default();
 
         if let Some(opts) = &config.backend_options {
-            // Parse variant preference
+            // Parse variant preference — only set when explicitly present
             if let Some(v) = opts.get("variant").and_then(|v| v.as_str()) {
-                variant = match v {
+                variant = Some(match v {
                     "large-printed" => TrocrVariant::LargePrinted,
                     "base-handwritten" => TrocrVariant::BaseHandwritten,
                     "large-handwritten" => TrocrVariant::LargeHandwritten,
                     _ => TrocrVariant::BasePrinted, // default on unknown
-                };
+                });
             }
 
             // Parse device preference
@@ -99,9 +103,16 @@ impl Plugin for TrocrBackend {
 
 #[async_trait]
 impl OcrBackend for TrocrBackend {
+    /// Recognize text in `image_bytes` via the configured TrOCR variant and device.
+    ///
+    /// The variant is resolved by taking any explicit `"variant"` key from
+    /// `config.backend_options`, falling back to the constructor-time variant stored
+    /// in `self.variant`. Inference runs inside `tokio::task::spawn_blocking` so the
+    /// async runtime is never blocked.
     async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
         // Parse configuration
-        let (_variant, device) = Self::parse_options(config);
+        let (parsed_variant, device) = Self::parse_options(config);
+        let variant = parsed_variant.unwrap_or(self.variant);
 
         // Validate image data
         if image_bytes.is_empty() {
@@ -111,18 +122,39 @@ impl OcrBackend for TrocrBackend {
             });
         }
 
-        // In Phase 3b, this will:
-        // 1. Select device (CPU/CUDA/Metal)
-        // 2. Load the engine from cache or HF Hub
-        // 3. Process the image through the encoder-decoder pipeline
-        // 4. Decode the output tokens to text
-        // 5. Return confidence from token logits
-        //
-        // For now, stub out the interface to validate the harness works.
-        let content = format!(
-            "TrOCR {} processing not yet implemented (device: {:?})",
-            self.variant, device
-        );
+        // Clone image bytes for the blocking task
+        let image_bytes = image_bytes.to_vec();
+
+        // Run inference in a blocking task to avoid blocking the async runtime
+        let content = tokio::task::spawn_blocking(move || {
+            // Select compute device
+            let candle_device = device.select().map_err(|e| crate::KreuzbergError::Ocr {
+                message: format!("Failed to select compute device: {}", e),
+                source: None,
+            })?;
+
+            // Load engine from HF Hub (weights are cached locally after first download)
+            let engine = kreuzberg_candle_ocr::models::TrocrEngine::new(variant, candle_device)
+                .map_err(|e| crate::KreuzbergError::Ocr {
+                    message: format!("TrOCR engine initialization failed: {}", e),
+                    source: None,
+                })?;
+
+            // Process image through encoder-decoder pipeline
+            let output = engine
+                .process_image(&image_bytes)
+                .map_err(|e| crate::KreuzbergError::Ocr {
+                    message: format!("TrOCR inference failed: {}", e),
+                    source: None,
+                })?;
+
+            Ok::<String, crate::KreuzbergError>(output.content)
+        })
+        .await
+        .map_err(|e| crate::KreuzbergError::Ocr {
+            message: format!("TrOCR task execution failed: {}", e),
+            source: None,
+        })??;
 
         Ok(ExtractionResult {
             content,
@@ -184,7 +216,8 @@ mod tests {
     fn test_parse_options_defaults() {
         let config = OcrConfig::default();
         let (variant, device) = TrocrBackend::parse_options(&config);
-        assert_eq!(variant, TrocrVariant::BasePrinted);
+        // No "variant" key in options → None, caller falls back to self.variant
+        assert_eq!(variant, None);
         assert_eq!(device, DevicePreference::Auto);
     }
 
@@ -195,7 +228,7 @@ mod tests {
             "variant": "large-printed"
         }));
         let (variant, _device) = TrocrBackend::parse_options(&config);
-        assert_eq!(variant, TrocrVariant::LargePrinted);
+        assert_eq!(variant, Some(TrocrVariant::LargePrinted));
     }
 
     #[test]
