@@ -3873,7 +3873,7 @@ name = "kreuzberg-jni"
 version = "5.0.0-rc.3"
 dependencies = [
  "base64 0.22.1",
- "jni 0.22.4",
+ "jni 0.21.1",
  "kreuzberg-ffi",
 ]
 

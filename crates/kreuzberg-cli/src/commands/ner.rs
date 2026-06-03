@@ -27,7 +27,7 @@ pub fn download_command(
     if all {
         to_download.extend(kreuzberg::text::ner::known_models().iter().map(|s| s.to_string()));
     } else if !models.is_empty() {
-        to_download.extend(models.into_iter());
+        to_download.extend(models);
     } else if ner {
         to_download.push(kreuzberg::text::ner::default_model_name().to_string());
     } else {

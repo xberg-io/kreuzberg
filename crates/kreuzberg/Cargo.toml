@@ -23,6 +23,9 @@ ignored = [
     # cargo-machete cannot resolve `dep:icu_provider` references in feature flag chains.
     "icu_provider",
     "serde_toon_format",
+    # optional deps only referenced via dep: in feature lists — cargo-machete false positive
+    "kreuzberg-gliner-rs",
+    "kreuzberg-orp",
 ]
 
 [lib]

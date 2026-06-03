@@ -581,6 +581,7 @@ mod tests {
         assert!(!config.trim);
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn new_sizer() {
         #[derive(Debug, PartialEq)]
@@ -650,12 +651,14 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_reference() {
         let config = ChunkConfig::new(1).with_sizer(&Characters);
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_cow() {
         let sizer: Cow<'_, Characters> = Cow::Owned(Characters);
@@ -667,6 +670,7 @@ mod tests {
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_arc() {
         let sizer = Arc::new(Characters);
@@ -674,6 +678,7 @@ mod tests {
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_ref() {
         let sizer = RefCell::new(Characters);
@@ -681,6 +686,7 @@ mod tests {
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_ref_mut() {
         let sizer = RefCell::new(Characters);
@@ -688,6 +694,7 @@ mod tests {
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_box() {
         let sizer = Box::new(Characters);
@@ -695,6 +702,7 @@ mod tests {
         config.sizer.size("chunk");
     }
 
+    #[cfg(feature = "chunking-tokenizers")]
     #[test]
     fn chunk_size_rc() {
         let sizer = Rc::new(Characters);
