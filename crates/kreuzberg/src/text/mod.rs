@@ -30,7 +30,9 @@ pub mod classification {
 
     /// Classify pages in an extraction result.
     pub async fn classify_pages(_result: &mut ExtractionResult, _config: &PageClassificationConfig) -> Result<()> {
-        Err(crate::KreuzbergError::Other("classification feature not available on this target".into()))
+        Err(crate::KreuzbergError::Other(
+            "classification feature not available on this target".into(),
+        ))
     }
 }
 
@@ -49,7 +51,9 @@ pub mod ner {
 
     /// Download a NER model into the kreuzberg cache.
     pub fn download_model(_name: &str, _cache_dir: Option<PathBuf>) -> Result<PathBuf> {
-        Err(crate::KreuzbergError::Other("ner feature not available on this target".into()))
+        Err(crate::KreuzbergError::Other(
+            "ner feature not available on this target".into(),
+        ))
     }
 
     /// Default NER model identifier.
@@ -74,10 +78,12 @@ pub mod translation;
 // Stub module for Android x86_64 when translation feature is disabled (android-target has no ORT).
 #[cfg(not(all(feature = "translation", not(target_os = "windows"))))]
 pub mod translation {
-    use crate::{ExtractionResult, TranslationConfig, Result};
+    use crate::{ExtractionResult, Result, TranslationConfig};
 
     /// Translate an extraction result.
     pub async fn translate_result(_result: &mut ExtractionResult, _config: &TranslationConfig) -> Result<()> {
-        Err(crate::KreuzbergError::Other("translation feature not available on this target".into()))
+        Err(crate::KreuzbergError::Other(
+            "translation feature not available on this target".into(),
+        ))
     }
 }
