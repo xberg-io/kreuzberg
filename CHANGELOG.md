@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **pipeline(chunking)**: `chunks[].content` now matches `output_format` — when `output_format` is Markdown, Djot, HTML, or a custom format, chunks are split from the pre-rendered `formatted_content` instead of plain text, so `chunks[].content` carries the same formatted representation as the top-level `content` field. Previously `chunks[].content` was always plain text regardless of `output_format`. Page metadata (`first_page`/`last_page`) is not populated for non-plain chunks (byte offsets from plain text are invalid for the formatted string; tracked in #1074). Fixes #1073.
 - **ci(ruby)**: Refreshed `packages/ruby/Gemfile.lock` to match current gemspec. The `kreuzberg.gemspec` constraint for `rb_sys` changed from `~> 0.9` to `>= 0.9`, but the lock file was stale and conflicted with frozen mode in CI. Bundle install now succeeds in frozen mode.
 - **chore(alef)**: pin to alef v0.22.8 with 6 Dart FRB codegen fixes (slice/Vec borrow, &Vec<&str> vs &[String], .collect turbofish, PathBuf Display, &mut self propagation, Vec<PathBuf> lossy-display).
 - **fix(jni)**: port to jni 0.22 EnvUnowned/Env split. Updated five call sites in `crates/kreuzberg-jni/src/lib.rs` (`throw_exception`, `throw_exception_void`, `jstring_to_string`, `string_to_jstring`, `byte_array_from_slice`) to use `env.with_env(|env| { ... })` wrapper to access `Env` methods from `EnvUnowned<'local>`.

@@ -605,4 +605,71 @@ mod tests {
         assert!(!chunks.is_empty());
         assert_eq!(chunks[0].content, plain);
     }
+
+    #[test]
+    fn chunks_content_uses_formatted_content_for_djot_output_format() {
+        // Djot goes through the same != Plain branch as Markdown.
+        // Verify the branch is not accidentally Markdown-only.
+        let plain = "row one data\nrow two data";
+        let djot = "{row one | data}\n{row two | data}"; // synthetic djot-like formatting
+
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Djot,
+            chunking: Some(crate::core::config::ChunkingConfig {
+                max_characters: 2000,
+                overlap: 0,
+                trim: true,
+                chunker_type: crate::chunking::ChunkerType::Text,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        let mut result = make_result_with_formatted(plain, djot);
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated");
+        assert!(!chunks.is_empty());
+        // Chunk content must come from the djot formatted string, not plain text
+        let all_content: String = chunks.iter().map(|c| c.content.as_str()).collect::<Vec<_>>().join("\n");
+        assert!(
+            all_content.contains('{'),
+            "chunk content must use djot formatted_content, got: {:?}",
+            all_content
+        );
+        assert!(
+            !all_content.starts_with("row one data\nrow two"),
+            "chunk content must not be plain text, got: {:?}",
+            all_content
+        );
+    }
+
+    #[test]
+    fn chunk_page_metadata_is_none_for_non_plain_output_format() {
+        // Known limitation (#1074): when output_format != Plain, page boundaries computed
+        // against plain-text offsets are not valid for the formatted string and are omitted.
+        // This test documents the expected behaviour so future changes don't silently regress it.
+        let plain = "Page one content\n\nPage two content";
+        let markdown = "# Page one\n\nPage one content\n\n# Page two\n\nPage two content";
+
+        let config = markdown_chunking_config();
+        let mut result = make_result_with_formatted(plain, markdown);
+
+        execute_chunking(&mut result, &config).unwrap();
+
+        let chunks = result.chunks.expect("chunks must be populated");
+        assert!(!chunks.is_empty());
+        for chunk in &chunks {
+            assert!(
+                chunk.metadata.first_page.is_none(),
+                "first_page must be None for non-plain output_format (tracked in #1074), got: {:?}",
+                chunk.metadata.first_page
+            );
+            assert!(
+                chunk.metadata.last_page.is_none(),
+                "last_page must be None for non-plain output_format (tracked in #1074), got: {:?}",
+                chunk.metadata.last_page
+            );
+        }
+    }
 }

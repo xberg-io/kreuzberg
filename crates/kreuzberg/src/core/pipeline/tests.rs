@@ -896,6 +896,63 @@ async fn test_chunking_populates_page_numbers_for_pdf() {
     );
 }
 
+#[tokio::test]
+#[serial]
+#[cfg(feature = "chunking")]
+async fn test_pipeline_chunks_content_matches_output_format_markdown() {
+    // Integration-level proof for #1073: run_pipeline with output_format=Markdown must
+    // produce chunks whose content contains markdown syntax, not plain text.
+    // Exercises the chunker_only_markdown=false path and apply_output_format interaction.
+    use crate::core::config::{ChunkerType, ChunkingConfig};
+    use crate::types::internal::ElementKind;
+
+    let mut doc = InternalDocument::new("plain");
+    doc.mime_type = "text/plain".to_string();
+    // Heading + body — render_markdown will produce "# Section\n\nBody text …"
+    doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Section", 0));
+    doc.push_element(InternalElement::text(
+        ElementKind::Paragraph,
+        "Body text for the section. ".repeat(10),
+        0,
+    ));
+
+    let config = ExtractionConfig {
+        output_format: OutputFormat::Markdown,
+        chunking: Some(ChunkingConfig {
+            max_characters: 200,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Markdown,
+            ..Default::default()
+        }),
+        postprocessor: Some(crate::core::config::PostProcessorConfig {
+            enabled: false,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let result = run_pipeline(doc, &config).await.unwrap();
+
+    // Top-level content must be markdown
+    assert_eq!(result.metadata.output_format, Some("markdown".to_string()));
+    assert!(
+        result.content.contains('#'),
+        "top-level content must contain markdown heading, got: {:?}",
+        &result.content[..result.content.len().min(120)]
+    );
+
+    // Chunks must also carry markdown content (#1073)
+    let chunks = result.chunks.expect("chunks must be produced");
+    assert!(!chunks.is_empty(), "at least one chunk must be produced");
+    let all_chunk_content: String = chunks.iter().map(|c| c.content.as_str()).collect::<Vec<_>>().join("\n");
+    assert!(
+        all_chunk_content.contains('#'),
+        "chunks[].content must contain markdown syntax, got: {:?}",
+        &all_chunk_content[..all_chunk_content.len().min(200)]
+    );
+}
+
 #[test]
 fn test_append_ocr_text_for_pptx_images() {
     use crate::types::ExtractedImage;
