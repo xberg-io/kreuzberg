@@ -111,7 +111,7 @@ A single image can carry multiple QR codes — the decoder finds every QR in the
 
 ## Related
 
-- [`ExtractedImage`](../reference/types.md#extractedimage) — type reference
+- [`ExtractedImage`](../reference/types.md) — type reference
 - [VLM Image Captions](image-captions.md) — sibling per-image enrichment
-- [Configuration Reference](../reference/configuration.md#qr_codes) — config field reference
+- [Configuration Reference](../reference/configuration.md#extractionconfig) — config field reference
 - [rqrr](https://docs.rs/rqrr/) — upstream pure-Rust decoder

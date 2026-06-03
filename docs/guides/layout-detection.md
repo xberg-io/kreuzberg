@@ -139,7 +139,7 @@ The RT-DETR v2 model detects 17 classes. Each `LayoutRegion.class_name` is one o
 
 `caption`, `footnote`, `formula`, `list_item`, `page_footer`, `page_header`, `picture`, `section_header`, `table`, `text`, `title`, `document_index`, `code`, `checkbox_selected`, `checkbox_unselected`, `form`, `key_value_region`.
 
-See [`LayoutRegion`](../reference/types.md#layoutregion) in the types reference for the full field shape.
+See [`LayoutRegion`](../reference/types.md) in the types reference for the full field shape.
 
 ## Accessing Layout Regions
 

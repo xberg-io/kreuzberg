@@ -68,7 +68,7 @@ You register a plugin once. From that point on, the pipeline uses it wherever th
 
 A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file format. It declares supported MIME types and provides async methods to extract from file paths or raw bytes.
 
-See [`DocumentExtractor`](../reference/types.md#documentextractor) for the trait signature.
+See [`DocumentExtractor`](../reference/types.md) for the trait signature.
 
 Kreuzberg ships with built-in extractors for PDF, Excel, images (routed to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
 
@@ -89,7 +89,7 @@ Now when the pipeline encounters `application/pdf`, it selects `BetterPDFExtract
 
 An `OcrBackend` performs optical character recognition on image data. It declares supported languages and provides async methods to process image bytes or files.
 
-See [`OcrBackend`](../reference/types.md#ocrbackend) for the trait signature.
+See [`OcrBackend`](../reference/types.md) for the trait signature.
 
 Three backends ship out of the box:
 
@@ -107,7 +107,7 @@ You can register your own OCR backend (for example, a cloud-based API, a custom 
 
 A `PostProcessor` transforms extraction results after the main extraction and OCR stages are complete. Each processor declares a processing stage that determines its execution order.
 
-See [`PostProcessor`](../reference/types.md#postprocessor) for the trait signature.
+See [`PostProcessor`](../reference/types.md) for the trait signature.
 
 The three stages execute in fixed order:
 
@@ -125,7 +125,7 @@ The three stages execute in fixed order:
 
 A `Validator` inspects extraction results and can reject them if they don't meet requirements. Unlike post-processors, validator errors stop the pipeline immediately — they're a hard gate.
 
-See [`Validator`](../reference/types.md#validator) for the trait signature.
+See [`Validator`](../reference/types.md) for the trait signature.
 
 Two common validator patterns:
 
@@ -195,7 +195,7 @@ stateDiagram-v2
     Active --> [*]: shutdown()
 ```
 
-See [`Plugin`](../reference/types.md#plugin) for the base trait signature.
+See [`Plugin`](../reference/types.md) for the base trait signature.
 
 Key behaviors: `initialize()` is called lazily the first time the plugin is used, not at registration. This avoids startup overhead for plugins that may never be invoked. `shutdown()` runs when the plugin is unregistered or on process exit. Both have default no-op implementations — override only if your plugin needs setup or cleanup.
 
