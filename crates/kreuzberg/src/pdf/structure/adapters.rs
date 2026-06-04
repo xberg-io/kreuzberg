@@ -45,9 +45,12 @@ pub(crate) fn ocr_doc_to_paragraphs(
             let lines: Vec<types::PdfLine> = text_lines
                 .iter()
                 .enumerate()
-                .filter(|(_, line)| !line.trim().is_empty())
-                .map(|(i, line)| {
-                    let line_y = base_y - (i as f32 * line_height);
+                .filter_map(|(original_idx, line)| {
+                    if line.trim().is_empty() {
+                        return None;
+                    }
+                    // Use original_idx to preserve correct vertical spacing even when some lines are blank
+                    let line_y = base_y - (original_idx as f32 * line_height);
                     let (x, width) = if let Some((left, _, right, _)) = block_bbox {
                         (left, right - left)
                     } else {
@@ -66,13 +69,13 @@ pub(crate) fn ocr_doc_to_paragraphs(
                         baseline_y: line_y,
                         assigned_role: None,
                     };
-                    types::PdfLine {
+                    Some(types::PdfLine {
                         segments: vec![seg],
                         baseline_y: line_y,
                         dominant_font_size: default_font_size,
                         is_bold: false,
                         is_monospace: false,
-                    }
+                    })
                 })
                 .collect();
 
@@ -192,6 +195,65 @@ mod tests {
         // Should only have the real content paragraph
         assert_eq!(paragraphs.len(), 1, "Should filter out whitespace-only element");
         assert_eq!(paragraphs[0].text, "real content");
+    }
+
+    /// Test that blank lines in OCR elements don't affect vertical positioning.
+    /// When text contains blank lines (e.g., "A\n\nC"), the lines array should still
+    /// have correct y-positions (0 for A, 2*line_height for C, not 1*line_height).
+    /// This ensures correct sorting order when multiple paragraphs are interleaved.
+    #[test]
+    fn test_ocr_doc_blank_lines_preserve_vertical_spacing() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "Line1\n\nLine3",  // blank line in middle
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 90.0,  // 80 pixel height for 3 lines = ~26.67 per line
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+        assert_eq!(paragraphs.len(), 1);
+        let para = &paragraphs[0];
+
+        // Text should preserve the blank line
+        assert_eq!(para.text, "Line1\n\nLine3");
+
+        // Lines array should have only 2 non-blank lines
+        assert_eq!(para.lines.len(), 2);
+
+        // Check vertical spacing: should be at correct y-positions
+        let line_height = 80.0 / 3.0;  // total_height / num_lines
+        let base_y = 90.0 - 10.0;  // pdf_top = page_h - y0; but y0 is 10, page_h is 1000, so pdf_top = 990
+
+        // Wait, let me recalculate: y0=10, y1=90, page_h=1000
+        // pdf_bottom = 1000 - 90 = 910
+        // pdf_top = 1000 - 10 = 990
+        // total_height = 990 - 910 = 80
+        // line_height = 80 / 3 = 26.67
+        let expected_line_height = 80.0 / 3.0;
+
+        // Line1 at index 0: line_y = base_y - (0 * line_height) = 990 - 0 = 990
+        // Line3 at index 2: line_y = base_y - (2 * line_height) = 990 - 53.33 = 936.67
+        // The y-positions should reflect the original indices (0, 2), not filtered indices (0, 1)
+        assert!(
+            (para.lines[0].baseline_y - 990.0).abs() < 0.1,
+            "Line1 should be at y=990, got {}",
+            para.lines[0].baseline_y
+        );
+        assert!(
+            (para.lines[1].baseline_y - (990.0 - 2.0 * expected_line_height)).abs() < 0.1,
+            "Line3 should be at y={}, got {}",
+            990.0 - 2.0 * expected_line_height,
+            para.lines[1].baseline_y
+        );
     }
 
     /// Test that OCR elements with content followed by blanks preserve content.
