@@ -30,8 +30,6 @@ ignored = [
     # symphonia is optional behind the `transcription` feature; cargo-machete cannot
     # resolve optional dep usage through feature-gated cfg blocks.
     "symphonia",
-    # lofty is optional behind the `transcription` feature; same resolution limit.
-    "lofty",
 ]
 
 [lib]

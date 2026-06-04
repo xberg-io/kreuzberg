@@ -11,7 +11,9 @@ use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::transcription::decode::{PcmAudio, decode_audio_to_pcm};
+use crate::transcription::tags::AudioTags;
 use crate::types::internal::InternalDocument;
+use crate::types::metadata::{AudioMetadata, FormatMetadata};
 use crate::{KreuzbergError, Result};
 use async_trait::async_trait;
 use tokio::task;
@@ -75,14 +77,13 @@ impl DocumentExtractor for TranscriptionExtractor {
         // Decode PCM and read audio tags on the blocking pool in one pass.
         let bytes_owned = content.to_vec();
         let max_bytes_for_decode = tcfg.max_bytes;
-        let (pcm, tags): (PcmAudio, crate::transcription::tags::AudioTags) =
-            task::spawn_blocking(move || {
-                let pcm = decode_audio_to_pcm(&bytes_owned, max_bytes_for_decode)?;
-                let tags = crate::transcription::tags::read_audio_tags(&bytes_owned);
-                Ok::<_, KreuzbergError>((pcm, tags))
-            })
-            .await
-            .map_err(|e| KreuzbergError::transcription_with_source("Decoder task panicked", e))??;
+        let (pcm, tags): (PcmAudio, crate::transcription::tags::AudioTags) = task::spawn_blocking(move || {
+            let pcm = decode_audio_to_pcm(&bytes_owned, max_bytes_for_decode)?;
+            let tags = crate::transcription::tags::read_audio_tags(&bytes_owned);
+            Ok::<_, KreuzbergError>((pcm, tags))
+        })
+        .await
+        .map_err(|e| KreuzbergError::transcription_with_source("Decoder task panicked", e))??;
 
         // Duration limit (after we know the real duration).
         if let Some(max_dur) = tcfg.max_duration_ms
@@ -94,10 +95,9 @@ impl DocumentExtractor for TranscriptionExtractor {
             )));
         }
 
-        // Whisper ONNX inference is wired in the follow-up PR.
-        // Tags and PCM metadata are already populated above — the follow-up PR replaces
-        // this Err with the inference call and moves the doc construction to Ok(doc).
-        let _ = (pcm, tags);
+        // Build the document with metadata now so the follow-up PR only needs to
+        // replace this Err with the inference call and return Ok(_doc).
+        let _doc = build_audio_document(tags, &pcm, mime_type);
         Err(KreuzbergError::transcription(
             "Whisper inference not yet implemented — pending follow-up PR",
         ))
@@ -159,12 +159,39 @@ impl SyncExtractor for TranscriptionExtractor {
             )));
         }
 
-        // Whisper inference is wired in the follow-up PR.
-        let _ = (pcm, tags);
+        // Build the document with metadata now so the follow-up PR only needs to
+        // replace this Err with the inference call and return Ok(_doc).
+        let _doc = build_audio_document(tags, &pcm, mime_type);
         Err(KreuzbergError::transcription(
             "Whisper inference not yet implemented — pending follow-up PR",
         ))
     }
+}
+
+/// Construct an [`InternalDocument`] with metadata derived from audio tags and decoded PCM.
+///
+/// Populates the common [`Metadata`] fields (title, authors, created_at, language) from tag data
+/// and attaches an [`AudioMetadata`] carrying codec/container/sample-rate/channel/bitrate info.
+/// The transcript content (`doc.pre_rendered_content`) is intentionally left empty here;
+/// the follow-up PR fills it in after Whisper inference and returns `Ok(doc)` instead of `Err`.
+fn build_audio_document(tags: AudioTags, pcm: &PcmAudio, mime_type: &str) -> InternalDocument {
+    let audio_meta = AudioMetadata {
+        duration_ms: tags.duration_ms.or(Some(pcm.duration_ms)),
+        codec: tags.container.clone(),
+        container: tags.container,
+        sample_rate_hz: tags.sample_rate_hz.or(Some(pcm.sample_rate_hz)),
+        channels: tags.channels.or(Some(pcm.channels)),
+        bitrate: tags.bitrate,
+    };
+
+    let mut doc = InternalDocument::new("audio-transcript");
+    doc.mime_type = mime_type.to_string();
+    doc.metadata.title = tags.title;
+    doc.metadata.authors = tags.artist.map(|a| vec![a]);
+    doc.metadata.created_at = tags.year;
+    doc.metadata.language = tags.language;
+    doc.metadata.format = Some(FormatMetadata::Audio(audio_meta));
+    doc
 }
 
 #[cfg(test)]
@@ -294,6 +321,107 @@ mod tests {
         assert!(
             msg.contains("not yet implemented") || msg.contains("follow-up"),
             "unexpected error message: {msg}"
+        );
+    }
+
+    // ── build_audio_document unit tests ──────────────────────────────────────
+
+    fn make_pcm(duration_ms: u64) -> PcmAudio {
+        PcmAudio {
+            samples: vec![],
+            sample_rate_hz: 16_000,
+            channels: 1,
+            duration_ms,
+        }
+    }
+
+    #[test]
+    fn test_build_audio_document_populates_common_metadata() {
+        let tags = AudioTags {
+            title: Some("My Song".to_string()),
+            artist: Some("Test Artist".to_string()),
+            year: Some("2023".to_string()),
+            language: Some("eng".to_string()),
+            ..Default::default()
+        };
+        let pcm = make_pcm(90_000);
+        let doc = build_audio_document(tags, &pcm, "audio/mpeg");
+
+        assert_eq!(doc.metadata.title.as_deref(), Some("My Song"));
+        assert_eq!(doc.metadata.authors.as_deref(), Some(&["Test Artist".to_string()][..]));
+        assert_eq!(doc.metadata.created_at.as_deref(), Some("2023"));
+        assert_eq!(doc.metadata.language.as_deref(), Some("eng"));
+        assert_eq!(doc.mime_type, "audio/mpeg");
+    }
+
+    #[test]
+    fn test_build_audio_document_populates_audio_format_metadata() {
+        use crate::types::metadata::FormatMetadata;
+
+        let tags = AudioTags {
+            duration_ms: Some(30_000),
+            sample_rate_hz: Some(44_100),
+            channels: Some(2),
+            bitrate: Some(320),
+            container: Some("mp3".to_string()),
+            ..Default::default()
+        };
+        let pcm = make_pcm(30_000);
+        let doc = build_audio_document(tags, &pcm, "audio/mpeg");
+
+        let Some(FormatMetadata::Audio(ref audio)) = doc.metadata.format else {
+            panic!("expected FormatMetadata::Audio, got {:?}", doc.metadata.format);
+        };
+        assert_eq!(audio.duration_ms, Some(30_000));
+        assert_eq!(audio.sample_rate_hz, Some(44_100));
+        assert_eq!(audio.channels, Some(2));
+        assert_eq!(audio.bitrate, Some(320));
+        assert_eq!(audio.container.as_deref(), Some("mp3"));
+    }
+
+    #[test]
+    fn test_build_audio_document_falls_back_to_pcm_properties() {
+        use crate::types::metadata::FormatMetadata;
+
+        // Tags have no audio properties — should fall back to PCM values.
+        let tags = AudioTags::default();
+        let pcm = make_pcm(60_000);
+        let doc = build_audio_document(tags, &pcm, "audio/wav");
+
+        let Some(FormatMetadata::Audio(ref audio)) = doc.metadata.format else {
+            panic!("expected FormatMetadata::Audio");
+        };
+        assert_eq!(
+            audio.duration_ms,
+            Some(60_000),
+            "duration should fall back to PCM value"
+        );
+        assert_eq!(
+            audio.sample_rate_hz,
+            Some(16_000),
+            "sample_rate should fall back to PCM value"
+        );
+        assert_eq!(audio.channels, Some(1), "channels should fall back to PCM value");
+    }
+
+    #[test]
+    fn test_build_audio_document_empty_tags_no_common_metadata() {
+        let tags = AudioTags::default();
+        let pcm = make_pcm(0);
+        let doc = build_audio_document(tags, &pcm, "audio/flac");
+
+        assert!(doc.metadata.title.is_none(), "title should be absent for untagged file");
+        assert!(
+            doc.metadata.authors.is_none(),
+            "authors should be absent for untagged file"
+        );
+        assert!(
+            doc.metadata.created_at.is_none(),
+            "created_at should be absent for untagged file"
+        );
+        assert!(
+            doc.metadata.language.is_none(),
+            "language should be absent for untagged file"
         );
     }
 }
