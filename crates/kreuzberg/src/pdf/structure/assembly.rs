@@ -669,6 +669,7 @@ fn guess_furniture_layer(para: &PdfParagraph) -> ContentLayer {
 /// This is a heuristic: if Y-positions are within ~50 points of each other,
 /// consider them "visually consistent" (could be columns or wrapped text).
 /// If they diverge significantly, it indicates potential scrambling.
+#[cfg(test)]
 fn is_sort_visually_consistent<T>(elements: &[(f32, T)]) -> bool {
     if elements.len() <= 1 {
         return true;
