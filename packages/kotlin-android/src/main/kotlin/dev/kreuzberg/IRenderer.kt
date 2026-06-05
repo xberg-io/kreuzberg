@@ -45,16 +45,4 @@ interface IRenderer {
     fun version(): String
     fun initialize() {}
     fun shutdown() {}
-    /**
-     * Render an `InternalDocument` to the output format.
-     *
-     * **Returns:**
-     *
-     * The rendered output as a string.
-     *
-     * **Errors:**
-     *
-     * Returns an error if rendering fails.
-     */
-    fun render(doc: InternalDocument): String
 }

@@ -59,8 +59,8 @@ function makeExtractor(name: string, mimeType = "application/x-test"): object {
 		shutdown: (): void => {
 			/* no-op */
 		},
-		supported_mime_types: (): string[] => [mimeType],
-		extract_bytes: (_content: Uint8Array, _mimeType: string, _configJson: string): string =>
+		supportedMimeTypes: (): string[] => [mimeType],
+		extractBytes: (_content: Uint8Array, _mimeType: string, _configJson: string): string =>
 			JSON.stringify({
 				source_format: "plain",
 				mime_type: "text/plain",

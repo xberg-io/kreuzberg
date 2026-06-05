@@ -10199,6 +10199,27 @@ pub fn batch_extract_files_sync(
     .map_err(|e| e.to_string())
 }
 
+/// Synchronous wrapper for `batch_extract_bytes`.
+///
+/// Uses the global Tokio runtime for optimal performance.
+/// With the `tokio-runtime` feature, this blocks the current thread using the global
+/// Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
+/// that iterates through items and calls `extract_bytes_sync()`.
+pub fn batch_extract_bytes_sync(
+    items: Vec<BatchBytesItem>,
+    config: ExtractionConfig,
+) -> Result<Vec<ExtractionResult>, String> {
+    kreuzberg::batch_extract_bytes_sync(
+        items
+            .into_iter()
+            .map(kreuzberg::BatchBytesItem::from)
+            .collect::<Vec<_>>(),
+        &kreuzberg::ExtractionConfig::from(config),
+    )
+    .map(|v: Vec<_>| v.into_iter().map(ExtractionResult::from).collect::<Vec<_>>())
+    .map_err(|e| e.to_string())
+}
+
 /// Extract content from multiple files concurrently.
 ///
 /// This function processes multiple files in parallel, automatically managing
@@ -10236,6 +10257,45 @@ pub async fn batch_extract_files(
         items
             .into_iter()
             .map(kreuzberg::BatchFileItem::from)
+            .collect::<Vec<_>>(),
+        &kreuzberg::ExtractionConfig::from(config),
+    )
+    .await
+    .map(|v: Vec<_>| v.into_iter().map(ExtractionResult::from).collect::<Vec<_>>())
+    .map_err(|e| e.to_string())
+}
+
+/// Extract content from multiple byte arrays concurrently.
+///
+/// This function processes multiple byte arrays in parallel, automatically managing
+/// concurrency to prevent resource exhaustion. The concurrency limit can be
+/// configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+/// to `(num_cpus * 1.5).ceil()`.
+///
+/// Each item can optionally specify a `FileExtractionConfig` that overrides specific
+/// fields from the batch-level `config`. Pass `null` as the config to use
+/// the batch-level defaults for that item.
+///
+///   MIME type, and optional per-item configuration overrides.
+///
+/// - `config` - Batch-level extraction configuration
+///
+/// **Returns:**
+///
+/// A vector of `ExtractionResult` in the same order as the input items.
+///
+/// Simple usage with no per-item overrides:
+///
+///
+/// Per-item configuration overrides:
+pub async fn batch_extract_bytes(
+    items: Vec<BatchBytesItem>,
+    config: ExtractionConfig,
+) -> Result<Vec<ExtractionResult>, String> {
+    kreuzberg::batch_extract_bytes(
+        items
+            .into_iter()
+            .map(kreuzberg::BatchBytesItem::from)
             .collect::<Vec<_>>(),
         &kreuzberg::ExtractionConfig::from(config),
     )

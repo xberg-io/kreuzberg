@@ -58,47 +58,6 @@ interface IDocumentExtractor {
     fun initialize() {}
     fun shutdown() {}
     /**
-     * Extract content from a byte array.
-     *
-     * This is the core extraction method that processes in-memory document data.
-     *
-     * **Returns:**
-     *
-     * An `InternalDocument` containing the extracted elements, metadata, and tables.
-     * The pipeline will convert this into the public `ExtractionResult`.
-     *
-     * **Errors:**
-     *
-     * - `KreuzbergError.Parsing` - Document parsing failed
-     * - `KreuzbergError.Validation` - Invalid document structure
-     * - `KreuzbergError.Io` - I/O errors (these always bubble up)
-     * - `KreuzbergError.MissingDependency` - Required dependency not available
-     */
-    suspend fun extractBytes(
-        content: ByteArray,
-        mimeType: String,
-        config: ExtractionConfig,
-    ): InternalDocument
-    /**
-     * Extract content from a file.
-     *
-     * Default implementation reads the file and calls `extract_bytes`.
-     * Override for custom file handling, streaming, or memory optimizations.
-     *
-     * **Returns:**
-     *
-     * An `InternalDocument` containing the extracted elements, metadata, and tables.
-     *
-     * **Errors:**
-     *
-     * Same as `extract_bytes`, plus file I/O errors.
-     */
-    suspend fun extractFile(
-        path: java.nio.file.Path,
-        mimeType: String,
-        config: ExtractionConfig,
-    ): InternalDocument
-    /**
      * Get the list of MIME types supported by this extractor.
      *
      * Can include exact MIME types and prefix patterns:

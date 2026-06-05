@@ -9,9 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **chore(alef)**: pin to alef v0.23.7 + regenerate all bindings. Picks up 24 upstream codegen fixes since v0.23.6: pyo3 `exclude_functions` propagation to `api.py`/`__init__.py`/`.pyi`; e2e/python `BatchFileItem`/`BatchBytesItem` constructor emission via `element_type`; napi register accepts camelCase + snake_case method names; swift Codable value-struct ownership marshalling (`PatternMatch` no longer emits `isOwned`); swift `extractRegionWithVlm` RustBridge export via enum-param filter relaxation; extendr async function format-string parameters complete; java trait-bridge vtable wrap + constructor extracted to `initializeStubs()` helper (clears 7 checkstyle violations); java Panama FFM service initialization; dart FRB `Vec<String>→&[&str]` conversion for free functions; dart FRB handler-vs-class-field rewrite distinction; e2e/go double-free removal; e2e/wasm exclude_types + App-class fallback; e2e/ruby Magnus config exposure; e2e/swift harness binary path; e2e/napi excluded entrypoint skip; e2e/elixir harness syntax + App.config exclusion; e2e/csharp streaming aggregator locals; swift optional-parameter `= nil` defaults; php tail-optional check; sync-versions zig hash refresh.
+
 ### Fixed
 
-- **fix(dart)**: enable `batchExtractBytes` / `batchExtractBytesSync` in Dart FRB bridge. Removed `stub_methods` declaration that prevented FRB code generation for batch extraction functions. The hand-authored Dart wrapper in `kreuzberg.dart` calls all four batch methods (`batchExtractBytes`, `batchExtractBytesSync`, `batchExtractFiles`, `batchExtractFilesSync`) via the bridge, so all four must be included in the FRB-generated `frb_generated.dart`.
+- **fix(e2e)**: redirect `embed_texts` e2e fixture to `embed_texts_async` for all 12 languages that exclude the sync variant (python, ruby, php, elixir, dart, csharp, swift, go, java, zig, r, node). Adds `function = "<async>"` overrides under `[crates.e2e.calls.embed_texts.overrides.<lang>]` with per-language name mangling (snake_case, camelCase, PascalCase). Tests now `await embed_texts_async(...)` instead of calling the missing sync wrapper.
+
+- **fix(dart)**: enable `batchExtractBytes` / `batchExtractBytesSync` in Dart FRB bridge. Removed `stub_methods` declaration that prevented FRB code generation for batch extraction functions. The hand-authored Dart wrapper in `kreuzberg.dart` calls all four batch methods (`batchExtractBytes`, `batchExtractBytesSync`, `batchExtractFiles`, `batchExtractFilesSync`) via the bridge, so all four must be included in the FRB-generated bridge.
+
+- **fix(go)**: refresh bundled C header `packages/go/v5/include/kreuzberg.h` against canonical `crates/kreuzberg-ffi/include/kreuzberg.h`. The bundled copy was stale (predated `KREUZBERGLlmBackend`/`KREUZBERGTokenCounter` opaque-typedef additions) because `build.rs` skipped its post-cbindgen copy step when no Rust sources changed. Direct sync resolves cgo "could not determine what C.X refers to" errors.
+
+- **fix(ruby)**: refresh `packages/ruby/Gemfile.lock` against regenerated path-gem contents. Same recurring pattern as previous regen cycles — gemspec glob `lib/**/*` matches alef-regenerated files, invalidating frozen-mode lockfile at CI time.
 
 ### Changed
 

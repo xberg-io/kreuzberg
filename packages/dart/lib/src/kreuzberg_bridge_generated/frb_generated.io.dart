@@ -1051,6 +1051,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ArchiveEntry> dco_decode_list_archive_entry(dynamic raw);
 
   @protected
+  List<BatchBytesItem> dco_decode_list_batch_bytes_item(dynamic raw);
+
+  @protected
   List<BatchFileItem> dco_decode_list_batch_file_item(dynamic raw);
 
   @protected
@@ -2901,6 +2904,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ArchiveEntry> sse_decode_list_archive_entry(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<BatchBytesItem> sse_decode_list_batch_bytes_item(
     SseDeserializer deserializer,
   );
 
@@ -5406,6 +5414,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_archive_entry(
     List<ArchiveEntry> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_batch_bytes_item(
+    List<BatchBytesItem> self,
     SseSerializer serializer,
   );
 

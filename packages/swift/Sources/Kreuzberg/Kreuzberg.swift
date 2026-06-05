@@ -8808,7 +8808,7 @@ public func layoutClassFromJson(_ json: String) throws -> LayoutClass {
 /// let result = extract_file_sync("document.pdf", None, &config)?;
 /// println!("Content: {}", result.content);
 /// ```
-public func extractFileSync(path: String, mimeType: String?, config: ExtractionConfig) throws -> ExtractionResult {
+public func extractFileSync(path: String, mimeType: String? = nil, config: ExtractionConfig) throws -> ExtractionResult {
     return try RustBridge.extractFileSync(path, mimeType, config)
 }
 
@@ -9105,9 +9105,9 @@ public func getExtensionsForMime(mimeType: String) throws -> [String] {
 /// (rqrr does not expose per-grid confidence; a successful decode is treated
 /// as high-confidence by convention), and the pixel-space bounding box derived
 /// from the four corner points of the grid.
-public func detectQrCodes(imageBytes: [UInt8], formatHint: String?) -> [QrCode] {
+public func detectQrCodes(imageBytes: [UInt8], formatHint: String? = nil) -> [QrCode] {
     let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
-    return RustBridge.detectQrCodes(_rb_imageBytes, formatHint).map { ref in var item = try QrCode(ref); item.isOwned = false; return item }
+    return RustBridge.detectQrCodes(_rb_imageBytes, formatHint).map { ref in try QrCode(ref) }
 }
 
 /// List the names of all registered embedding backends.
@@ -9216,7 +9216,7 @@ public func classifyPages(result: ExtractionResult, config: PageClassificationCo
 ///
 /// `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
 /// CLI flag `kreuzberg warm --ner` delegates here.
-public func downloadModel(name: String, cacheDir: String?) throws -> String {
+public func downloadModel(name: String, cacheDir: String? = nil) throws -> String {
     return try RustBridge.downloadModel(name, cacheDir)
 }
 
@@ -9241,7 +9241,7 @@ public func redact(result: ExtractionResult, config: RedactionConfig) async thro
 }
 
 public func findAll(text: String) -> [PatternMatch] {
-    return RustBridge.findAll(text).map { ref in var item = try PatternMatch(ref); item.isOwned = false; return item }
+    return RustBridge.findAll(text).map { ref in try PatternMatch(ref) }
 }
 
 /// Scan `text` for every PII category in `categories` and return all matches
@@ -9252,7 +9252,7 @@ public func findAll(text: String) -> [PatternMatch] {
 /// they must be supplied by a NER backend through the redaction engine.
 public func scanText(text: String, categories: [PiiCategory]) throws -> [PatternMatch] {
     let _rb_categories: RustVec<RustString> = try ({ () throws -> RustVec<RustString> in let v = RustVec<RustString>(); for item in categories { let data = try JSONEncoder().encode(item); let json = String(data: data, encoding: .utf8) ?? "null"; v.push(value: RustString(json)) }; return v }())
-    return RustBridge.scanText(text, _rb_categories).map { ref in var item = try PatternMatch(ref); item.isOwned = false; return item }
+    return RustBridge.scanText(text, _rb_categories).map { ref in try PatternMatch(ref) }
 }
 
 /// Score and return the top-N sentences from `text`, joined in original order.
@@ -9261,7 +9261,7 @@ public func scanText(text: String, categories: [PiiCategory]) throws -> [Pattern
 /// pass `None` (or an unknown code) to fall back to English.
 /// `max_tokens` bounds the summary length by whitespace-separated tokens;
 /// `None` falls back to [`DEFAULT_MAX_TOKENS`].
-public func summarize(text: String, language: String?, maxTokens: UInt32?) -> String? {
+public func summarize(text: String, language: String? = nil, maxTokens: UInt32? = nil) -> String? {
     let _rb_json = RustBridge.summarize(text, language, maxTokens).toString()
     let _rb_data = _rb_json.data(using: .utf8) ?? Data()
     return (try? JSONDecoder().decode(String?.self, from: _rb_data)) ?? nil
@@ -9362,7 +9362,7 @@ public func compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions)
 /// .await?;
 /// println!("Extracted: {markdown}");
 /// ```
-public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String?) async throws -> String {
+public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String? = nil) async throws -> String {
     return try await Task.detached(priority: .userInitiated) {
         let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
         let _rb_regionKind = try regionKind.intoRust()
@@ -9388,7 +9388,7 @@ public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionK
 ///
 /// Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
 /// or rendered, or if `page_index` is out of range.
-public func renderPdfPageToPng(pdfBytes: [UInt8], pageIndex: UInt, dpi: Int32?, password: String?) throws -> [UInt8] {
+public func renderPdfPageToPng(pdfBytes: [UInt8], pageIndex: UInt, dpi: Int32? = nil, password: String? = nil) throws -> [UInt8] {
     let _rb_pdfBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in pdfBytes { v.push(value: b) }; return v }()
     return try RustBridge.renderPdfPageToPng(_rb_pdfBytes, pageIndex, dpi, password).map { $0 }
 }

@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.23.6"
+alef_version = "0.23.7"
 languages = [
   "python",
   "node",
@@ -1402,38 +1402,76 @@ args = [
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
-[crates.e2e.calls.embed_texts.overrides.csharp]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-nested_types = { embedding_model = "EmbeddingModelType" }
-
-[crates.e2e.calls.embed_texts.overrides.java]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-
-[crates.e2e.calls.embed_texts.overrides.go]
+# Python excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.python]
+function = "embed_texts_async"
+async = true
 result_is_simple = true
 result_is_array = true
 options_type = "EmbeddingConfig"
 
-# PHP extension only exposes embedTextsAsync; the embedTexts wrapper delegates to
-# KreuzbergApi::embedTexts which does not exist in the native extension.
-[crates.e2e.calls.embed_texts.overrides.php]
+# Ruby excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.ruby]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Elixir excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.elixir]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Go excludes sync embed_texts; redirect to async variant (EmbedTextsAsync in Go)
+[crates.e2e.calls.embed_texts.overrides.go]
+function = "EmbedTextsAsync"
+async = true
+result_is_simple = true
+result_is_array = true
+options_type = "EmbeddingConfig"
+
+# Java excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.java]
 function = "embedTextsAsync"
+async = true
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
-[crates.e2e.calls.embed_texts.overrides.dart]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-
+# Swift excludes sync embed_texts; redirect to async variant
 [crates.e2e.calls.embed_texts.overrides.swift]
+function = "embedTextsAsync"
+async = true
 options_type = "EmbeddingConfig"
 
-# Zig returns `[]u8` (JSON) for Vec<Vec<f32>>; assertions are rendered against
-# the parsed JSON value rather than struct fields.
+# Dart excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.dart]
+function = "embedTextsAsync"
+async = true
+result_is_simple = true
+options_type = "EmbeddingConfig"
+
+# Zig excludes sync embed_texts; redirect to async variant
 [crates.e2e.calls.embed_texts.overrides.zig]
+function = "embed_texts_async"
+async = true
 result_is_json_struct = true
+
+# R excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.r]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Csharp excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.csharp]
+function = "EmbedTextsAsync"
+async = true
+result_is_simple = true
+options_type = "EmbeddingConfig"
+nested_types = { embedding_model = "EmbeddingModelType" }
 
 # Node only exposes the async variant embedTextsAsync (NAPI-RS sync functions are
 # only generated for non-async functions; the suspend wrapper is the public API).
@@ -1443,6 +1481,13 @@ module = "@kreuzberg/node"
 async = true
 result_is_simple = true
 result_is_array = true
+
+# PHP extension only exposes embedTextsAsync; the embedTexts wrapper delegates to
+# KreuzbergApi::embedTexts which does not exist in the native extension.
+[crates.e2e.calls.embed_texts.overrides.php]
+function = "embedTextsAsync"
+result_is_simple = true
+options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"
