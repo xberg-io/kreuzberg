@@ -102,7 +102,7 @@ fn run_extractive(result: &mut ExtractionResult, max_tokens: Option<u32>) -> Res
     Ok(())
 }
 
-#[cfg(all(feature = "summarization-llm", not(target_os = "windows")))]
+#[cfg(feature = "summarization-llm")]
 async fn run_abstractive(
     result: &mut ExtractionResult,
     summarization_config: &crate::core::config::SummarizationConfig,
@@ -155,13 +155,13 @@ async fn run_abstractive(
     Ok(())
 }
 
-#[cfg(not(all(feature = "summarization-llm", not(target_os = "windows"))))]
+#[cfg(not(feature = "summarization-llm"))]
 async fn run_abstractive(
     _result: &mut ExtractionResult,
     _summarization_config: &crate::core::config::SummarizationConfig,
 ) -> Result<()> {
     Err(crate::KreuzbergError::validation(
-        "Abstractive summarisation requires the `summarization-llm` cargo feature on a non-Windows target".to_string(),
+        "Abstractive summarisation requires the `summarization-llm` cargo feature".to_string(),
     ))
 }
 

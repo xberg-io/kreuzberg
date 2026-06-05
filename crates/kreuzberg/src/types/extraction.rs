@@ -303,6 +303,7 @@ pub struct ExtractionResult {
     /// paragraph structure with bounding boxes and confidence scores. The layout
     /// classification step enriches these elements before final rendering.
     #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
     pub ocr_internal_document: Option<super::internal::InternalDocument>,
 }
 
@@ -763,6 +764,7 @@ pub struct ElementMetadata {
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct Element {
     /// Unique element identifier
+    #[cfg_attr(alef, alef(skip))]
     pub element_id: ElementId,
     /// Semantic type of this element
     pub element_type: ElementType,

@@ -218,6 +218,7 @@ pub enum RelationshipKind {
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct DocumentNode {
     /// Deterministic identifier (hash of content + position).
+    #[cfg_attr(alef, alef(skip))]
     pub id: NodeId,
 
     /// Node content — tagged enum, type-specific data only.
@@ -403,6 +404,7 @@ pub enum NodeContent {
     /// Structured metadata block (email headers, YAML frontmatter, etc.).
     MetadataBlock {
         #[cfg_attr(feature = "api", schema(value_type = Vec<[String; 2]>))]
+        #[cfg_attr(alef, alef(skip))]
         entries: Vec<(String, String)>,
     },
 }

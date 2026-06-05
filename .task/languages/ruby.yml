@@ -11,10 +11,17 @@ tasks:
         ignore_error: false
 
   upgrade:
-    desc: "Upgrade Ruby dependencies to latest including breaking changes (bundle update)"
+    desc: "Upgrade Ruby dependencies to latest including breaking changes (bundle update --all)"
     silent: false
     cmds:
       - cmd: |
           command -v bundle >/dev/null 2>&1 || { echo "Bundle not found, skipping Ruby upgrade"; exit 0; }
-          cd packages/ruby && bundle update
+          cd packages/ruby
+          prev_frozen="$(bundle config get frozen 2>/dev/null | awk '/Set for your local app/ {print $NF}')"
+          bundle config set --local frozen false
+          trap 'if [ -n "$prev_frozen" ] && [ "$prev_frozen" != "false" ]; then bundle config set --local frozen "$prev_frozen"; fi' EXIT
+          bundle update --all
+          if [ -n "$prev_frozen" ] && [ "$prev_frozen" != "false" ]; then
+            bundle config set --local frozen "$prev_frozen"
+          fi
         ignore_error: false

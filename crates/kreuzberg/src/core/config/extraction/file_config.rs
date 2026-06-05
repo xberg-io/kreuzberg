@@ -106,6 +106,7 @@ pub struct FileExtractionConfig {
     /// Override HTML conversion options for this file.
     #[cfg(feature = "html")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub html_options: Option<html_to_markdown_rs::ConversionOptions>,
 
     /// Override result format for this file.

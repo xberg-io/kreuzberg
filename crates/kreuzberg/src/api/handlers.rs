@@ -555,7 +555,7 @@ pub(crate) async fn embed_handler(JsonApi(_request): JsonApi<EmbedRequest>) -> R
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
-#[cfg(all(feature = "liter-llm", not(target_os = "windows"), not(target_arch = "wasm32")))]
+#[cfg(all(feature = "liter-llm", not(target_arch = "wasm32")))]
 #[cfg_attr(
     feature = "otel",
     tracing::instrument(name = "api.extract_structured", skip(state, multipart),)
@@ -737,7 +737,7 @@ pub(crate) async fn extract_structured_handler(
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
-#[cfg(any(not(feature = "liter-llm"), target_os = "windows", target_arch = "wasm32"))]
+#[cfg(any(not(feature = "liter-llm"), target_arch = "wasm32"))]
 pub(crate) async fn extract_structured_handler(
     State(_state): State<ApiState>,
     MultipartApi(_multipart): MultipartApi,

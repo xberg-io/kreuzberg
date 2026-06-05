@@ -2496,7 +2496,7 @@ extension FormatMetadataPatterns on FormatMetadata {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FormatMetadata_Pdf value)?  pdf,TResult Function( FormatMetadata_Docx value)?  docx,TResult Function( FormatMetadata_Excel value)?  excel,TResult Function( FormatMetadata_Email value)?  email,TResult Function( FormatMetadata_Pptx value)?  pptx,TResult Function( FormatMetadata_Archive value)?  archive,TResult Function( FormatMetadata_Image value)?  image,TResult Function( FormatMetadata_Xml value)?  xml,TResult Function( FormatMetadata_Text value)?  text,TResult Function( FormatMetadata_Html value)?  html,TResult Function( FormatMetadata_Ocr value)?  ocr,TResult Function( FormatMetadata_Csv value)?  csv,TResult Function( FormatMetadata_Bibtex value)?  bibtex,TResult Function( FormatMetadata_Citation value)?  citation,TResult Function( FormatMetadata_FictionBook value)?  fictionBook,TResult Function( FormatMetadata_Dbf value)?  dbf,TResult Function( FormatMetadata_Jats value)?  jats,TResult Function( FormatMetadata_Epub value)?  epub,TResult Function( FormatMetadata_Pst value)?  pst,TResult Function( FormatMetadata_Code value)?  code,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FormatMetadata_Pdf value)?  pdf,TResult Function( FormatMetadata_Docx value)?  docx,TResult Function( FormatMetadata_Excel value)?  excel,TResult Function( FormatMetadata_Email value)?  email,TResult Function( FormatMetadata_Pptx value)?  pptx,TResult Function( FormatMetadata_Archive value)?  archive,TResult Function( FormatMetadata_Image value)?  image,TResult Function( FormatMetadata_Xml value)?  xml,TResult Function( FormatMetadata_Text value)?  text,TResult Function( FormatMetadata_Html value)?  html,TResult Function( FormatMetadata_Ocr value)?  ocr,TResult Function( FormatMetadata_Csv value)?  csv,TResult Function( FormatMetadata_Bibtex value)?  bibtex,TResult Function( FormatMetadata_Citation value)?  citation,TResult Function( FormatMetadata_FictionBook value)?  fictionBook,TResult Function( FormatMetadata_Dbf value)?  dbf,TResult Function( FormatMetadata_Jats value)?  jats,TResult Function( FormatMetadata_Epub value)?  epub,TResult Function( FormatMetadata_Pst value)?  pst,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf() when pdf != null:
@@ -2518,8 +2518,7 @@ return fictionBook(_that);case FormatMetadata_Dbf() when dbf != null:
 return dbf(_that);case FormatMetadata_Jats() when jats != null:
 return jats(_that);case FormatMetadata_Epub() when epub != null:
 return epub(_that);case FormatMetadata_Pst() when pst != null:
-return pst(_that);case FormatMetadata_Code() when code != null:
-return code(_that);case _:
+return pst(_that);case _:
   return orElse();
 
 }
@@ -2537,7 +2536,7 @@ return code(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FormatMetadata_Pdf value)  pdf,required TResult Function( FormatMetadata_Docx value)  docx,required TResult Function( FormatMetadata_Excel value)  excel,required TResult Function( FormatMetadata_Email value)  email,required TResult Function( FormatMetadata_Pptx value)  pptx,required TResult Function( FormatMetadata_Archive value)  archive,required TResult Function( FormatMetadata_Image value)  image,required TResult Function( FormatMetadata_Xml value)  xml,required TResult Function( FormatMetadata_Text value)  text,required TResult Function( FormatMetadata_Html value)  html,required TResult Function( FormatMetadata_Ocr value)  ocr,required TResult Function( FormatMetadata_Csv value)  csv,required TResult Function( FormatMetadata_Bibtex value)  bibtex,required TResult Function( FormatMetadata_Citation value)  citation,required TResult Function( FormatMetadata_FictionBook value)  fictionBook,required TResult Function( FormatMetadata_Dbf value)  dbf,required TResult Function( FormatMetadata_Jats value)  jats,required TResult Function( FormatMetadata_Epub value)  epub,required TResult Function( FormatMetadata_Pst value)  pst,required TResult Function( FormatMetadata_Code value)  code,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FormatMetadata_Pdf value)  pdf,required TResult Function( FormatMetadata_Docx value)  docx,required TResult Function( FormatMetadata_Excel value)  excel,required TResult Function( FormatMetadata_Email value)  email,required TResult Function( FormatMetadata_Pptx value)  pptx,required TResult Function( FormatMetadata_Archive value)  archive,required TResult Function( FormatMetadata_Image value)  image,required TResult Function( FormatMetadata_Xml value)  xml,required TResult Function( FormatMetadata_Text value)  text,required TResult Function( FormatMetadata_Html value)  html,required TResult Function( FormatMetadata_Ocr value)  ocr,required TResult Function( FormatMetadata_Csv value)  csv,required TResult Function( FormatMetadata_Bibtex value)  bibtex,required TResult Function( FormatMetadata_Citation value)  citation,required TResult Function( FormatMetadata_FictionBook value)  fictionBook,required TResult Function( FormatMetadata_Dbf value)  dbf,required TResult Function( FormatMetadata_Jats value)  jats,required TResult Function( FormatMetadata_Epub value)  epub,required TResult Function( FormatMetadata_Pst value)  pst,}){
 final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf():
@@ -2559,8 +2558,7 @@ return fictionBook(_that);case FormatMetadata_Dbf():
 return dbf(_that);case FormatMetadata_Jats():
 return jats(_that);case FormatMetadata_Epub():
 return epub(_that);case FormatMetadata_Pst():
-return pst(_that);case FormatMetadata_Code():
-return code(_that);}
+return pst(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -2574,7 +2572,7 @@ return code(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FormatMetadata_Pdf value)?  pdf,TResult? Function( FormatMetadata_Docx value)?  docx,TResult? Function( FormatMetadata_Excel value)?  excel,TResult? Function( FormatMetadata_Email value)?  email,TResult? Function( FormatMetadata_Pptx value)?  pptx,TResult? Function( FormatMetadata_Archive value)?  archive,TResult? Function( FormatMetadata_Image value)?  image,TResult? Function( FormatMetadata_Xml value)?  xml,TResult? Function( FormatMetadata_Text value)?  text,TResult? Function( FormatMetadata_Html value)?  html,TResult? Function( FormatMetadata_Ocr value)?  ocr,TResult? Function( FormatMetadata_Csv value)?  csv,TResult? Function( FormatMetadata_Bibtex value)?  bibtex,TResult? Function( FormatMetadata_Citation value)?  citation,TResult? Function( FormatMetadata_FictionBook value)?  fictionBook,TResult? Function( FormatMetadata_Dbf value)?  dbf,TResult? Function( FormatMetadata_Jats value)?  jats,TResult? Function( FormatMetadata_Epub value)?  epub,TResult? Function( FormatMetadata_Pst value)?  pst,TResult? Function( FormatMetadata_Code value)?  code,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FormatMetadata_Pdf value)?  pdf,TResult? Function( FormatMetadata_Docx value)?  docx,TResult? Function( FormatMetadata_Excel value)?  excel,TResult? Function( FormatMetadata_Email value)?  email,TResult? Function( FormatMetadata_Pptx value)?  pptx,TResult? Function( FormatMetadata_Archive value)?  archive,TResult? Function( FormatMetadata_Image value)?  image,TResult? Function( FormatMetadata_Xml value)?  xml,TResult? Function( FormatMetadata_Text value)?  text,TResult? Function( FormatMetadata_Html value)?  html,TResult? Function( FormatMetadata_Ocr value)?  ocr,TResult? Function( FormatMetadata_Csv value)?  csv,TResult? Function( FormatMetadata_Bibtex value)?  bibtex,TResult? Function( FormatMetadata_Citation value)?  citation,TResult? Function( FormatMetadata_FictionBook value)?  fictionBook,TResult? Function( FormatMetadata_Dbf value)?  dbf,TResult? Function( FormatMetadata_Jats value)?  jats,TResult? Function( FormatMetadata_Epub value)?  epub,TResult? Function( FormatMetadata_Pst value)?  pst,}){
 final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf() when pdf != null:
@@ -2596,8 +2594,7 @@ return fictionBook(_that);case FormatMetadata_Dbf() when dbf != null:
 return dbf(_that);case FormatMetadata_Jats() when jats != null:
 return jats(_that);case FormatMetadata_Epub() when epub != null:
 return epub(_that);case FormatMetadata_Pst() when pst != null:
-return pst(_that);case FormatMetadata_Code() when code != null:
-return code(_that);case _:
+return pst(_that);case _:
   return null;
 
 }
@@ -2614,7 +2611,7 @@ return code(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PdfMetadata field0)?  pdf,TResult Function( DocxMetadata field0)?  docx,TResult Function( ExcelMetadata field0)?  excel,TResult Function( EmailMetadata field0)?  email,TResult Function( PptxMetadata field0)?  pptx,TResult Function( ArchiveMetadata field0)?  archive,TResult Function( ImageMetadata field0)?  image,TResult Function( XmlMetadata field0)?  xml,TResult Function( TextMetadata field0)?  text,TResult Function( HtmlMetadata field0)?  html,TResult Function( OcrMetadata field0)?  ocr,TResult Function( CsvMetadata field0)?  csv,TResult Function( BibtexMetadata field0)?  bibtex,TResult Function( CitationMetadata field0)?  citation,TResult Function( FictionBookMetadata field0)?  fictionBook,TResult Function( DbfMetadata field0)?  dbf,TResult Function( JatsMetadata field0)?  jats,TResult Function( EpubMetadata field0)?  epub,TResult Function( PstMetadata field0)?  pst,TResult Function( String field0)?  code,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PdfMetadata field0)?  pdf,TResult Function( DocxMetadata field0)?  docx,TResult Function( ExcelMetadata field0)?  excel,TResult Function( EmailMetadata field0)?  email,TResult Function( PptxMetadata field0)?  pptx,TResult Function( ArchiveMetadata field0)?  archive,TResult Function( ImageMetadata field0)?  image,TResult Function( XmlMetadata field0)?  xml,TResult Function( TextMetadata field0)?  text,TResult Function( HtmlMetadata field0)?  html,TResult Function( OcrMetadata field0)?  ocr,TResult Function( CsvMetadata field0)?  csv,TResult Function( BibtexMetadata field0)?  bibtex,TResult Function( CitationMetadata field0)?  citation,TResult Function( FictionBookMetadata field0)?  fictionBook,TResult Function( DbfMetadata field0)?  dbf,TResult Function( JatsMetadata field0)?  jats,TResult Function( EpubMetadata field0)?  epub,TResult Function( PstMetadata field0)?  pst,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf() when pdf != null:
 return pdf(_that.field0);case FormatMetadata_Docx() when docx != null:
@@ -2635,8 +2632,7 @@ return fictionBook(_that.field0);case FormatMetadata_Dbf() when dbf != null:
 return dbf(_that.field0);case FormatMetadata_Jats() when jats != null:
 return jats(_that.field0);case FormatMetadata_Epub() when epub != null:
 return epub(_that.field0);case FormatMetadata_Pst() when pst != null:
-return pst(_that.field0);case FormatMetadata_Code() when code != null:
-return code(_that.field0);case _:
+return pst(_that.field0);case _:
   return orElse();
 
 }
@@ -2654,7 +2650,7 @@ return code(_that.field0);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PdfMetadata field0)  pdf,required TResult Function( DocxMetadata field0)  docx,required TResult Function( ExcelMetadata field0)  excel,required TResult Function( EmailMetadata field0)  email,required TResult Function( PptxMetadata field0)  pptx,required TResult Function( ArchiveMetadata field0)  archive,required TResult Function( ImageMetadata field0)  image,required TResult Function( XmlMetadata field0)  xml,required TResult Function( TextMetadata field0)  text,required TResult Function( HtmlMetadata field0)  html,required TResult Function( OcrMetadata field0)  ocr,required TResult Function( CsvMetadata field0)  csv,required TResult Function( BibtexMetadata field0)  bibtex,required TResult Function( CitationMetadata field0)  citation,required TResult Function( FictionBookMetadata field0)  fictionBook,required TResult Function( DbfMetadata field0)  dbf,required TResult Function( JatsMetadata field0)  jats,required TResult Function( EpubMetadata field0)  epub,required TResult Function( PstMetadata field0)  pst,required TResult Function( String field0)  code,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PdfMetadata field0)  pdf,required TResult Function( DocxMetadata field0)  docx,required TResult Function( ExcelMetadata field0)  excel,required TResult Function( EmailMetadata field0)  email,required TResult Function( PptxMetadata field0)  pptx,required TResult Function( ArchiveMetadata field0)  archive,required TResult Function( ImageMetadata field0)  image,required TResult Function( XmlMetadata field0)  xml,required TResult Function( TextMetadata field0)  text,required TResult Function( HtmlMetadata field0)  html,required TResult Function( OcrMetadata field0)  ocr,required TResult Function( CsvMetadata field0)  csv,required TResult Function( BibtexMetadata field0)  bibtex,required TResult Function( CitationMetadata field0)  citation,required TResult Function( FictionBookMetadata field0)  fictionBook,required TResult Function( DbfMetadata field0)  dbf,required TResult Function( JatsMetadata field0)  jats,required TResult Function( EpubMetadata field0)  epub,required TResult Function( PstMetadata field0)  pst,}) {final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf():
 return pdf(_that.field0);case FormatMetadata_Docx():
@@ -2675,8 +2671,7 @@ return fictionBook(_that.field0);case FormatMetadata_Dbf():
 return dbf(_that.field0);case FormatMetadata_Jats():
 return jats(_that.field0);case FormatMetadata_Epub():
 return epub(_that.field0);case FormatMetadata_Pst():
-return pst(_that.field0);case FormatMetadata_Code():
-return code(_that.field0);}
+return pst(_that.field0);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -2690,7 +2685,7 @@ return code(_that.field0);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PdfMetadata field0)?  pdf,TResult? Function( DocxMetadata field0)?  docx,TResult? Function( ExcelMetadata field0)?  excel,TResult? Function( EmailMetadata field0)?  email,TResult? Function( PptxMetadata field0)?  pptx,TResult? Function( ArchiveMetadata field0)?  archive,TResult? Function( ImageMetadata field0)?  image,TResult? Function( XmlMetadata field0)?  xml,TResult? Function( TextMetadata field0)?  text,TResult? Function( HtmlMetadata field0)?  html,TResult? Function( OcrMetadata field0)?  ocr,TResult? Function( CsvMetadata field0)?  csv,TResult? Function( BibtexMetadata field0)?  bibtex,TResult? Function( CitationMetadata field0)?  citation,TResult? Function( FictionBookMetadata field0)?  fictionBook,TResult? Function( DbfMetadata field0)?  dbf,TResult? Function( JatsMetadata field0)?  jats,TResult? Function( EpubMetadata field0)?  epub,TResult? Function( PstMetadata field0)?  pst,TResult? Function( String field0)?  code,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PdfMetadata field0)?  pdf,TResult? Function( DocxMetadata field0)?  docx,TResult? Function( ExcelMetadata field0)?  excel,TResult? Function( EmailMetadata field0)?  email,TResult? Function( PptxMetadata field0)?  pptx,TResult? Function( ArchiveMetadata field0)?  archive,TResult? Function( ImageMetadata field0)?  image,TResult? Function( XmlMetadata field0)?  xml,TResult? Function( TextMetadata field0)?  text,TResult? Function( HtmlMetadata field0)?  html,TResult? Function( OcrMetadata field0)?  ocr,TResult? Function( CsvMetadata field0)?  csv,TResult? Function( BibtexMetadata field0)?  bibtex,TResult? Function( CitationMetadata field0)?  citation,TResult? Function( FictionBookMetadata field0)?  fictionBook,TResult? Function( DbfMetadata field0)?  dbf,TResult? Function( JatsMetadata field0)?  jats,TResult? Function( EpubMetadata field0)?  epub,TResult? Function( PstMetadata field0)?  pst,}) {final _that = this;
 switch (_that) {
 case FormatMetadata_Pdf() when pdf != null:
 return pdf(_that.field0);case FormatMetadata_Docx() when docx != null:
@@ -2711,8 +2706,7 @@ return fictionBook(_that.field0);case FormatMetadata_Dbf() when dbf != null:
 return dbf(_that.field0);case FormatMetadata_Jats() when jats != null:
 return jats(_that.field0);case FormatMetadata_Epub() when epub != null:
 return epub(_that.field0);case FormatMetadata_Pst() when pst != null:
-return pst(_that.field0);case FormatMetadata_Code() when code != null:
-return code(_that.field0);case _:
+return pst(_that.field0);case _:
   return null;
 
 }
@@ -3968,72 +3962,6 @@ class _$FormatMetadata_PstCopyWithImpl<$Res>
   return _then(FormatMetadata_Pst(
 field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
 as PstMetadata,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class FormatMetadata_Code extends FormatMetadata {
-  const FormatMetadata_Code({required this.field0}): super._();
-  
-
-@override final  String field0;
-
-/// Create a copy of FormatMetadata
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$FormatMetadata_CodeCopyWith<FormatMetadata_Code> get copyWith => _$FormatMetadata_CodeCopyWithImpl<FormatMetadata_Code>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Code&&(identical(other.field0, field0) || other.field0 == field0));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,field0);
-
-@override
-String toString() {
-  return 'FormatMetadata.code(field0: $field0)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $FormatMetadata_CodeCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
-  factory $FormatMetadata_CodeCopyWith(FormatMetadata_Code value, $Res Function(FormatMetadata_Code) _then) = _$FormatMetadata_CodeCopyWithImpl;
-@useResult
-$Res call({
- String field0
-});
-
-
-
-
-}
-/// @nodoc
-class _$FormatMetadata_CodeCopyWithImpl<$Res>
-    implements $FormatMetadata_CodeCopyWith<$Res> {
-  _$FormatMetadata_CodeCopyWithImpl(this._self, this._then);
-
-  final FormatMetadata_Code _self;
-  final $Res Function(FormatMetadata_Code) _then;
-
-/// Create a copy of FormatMetadata
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
-  return _then(FormatMetadata_Code(
-field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
-as String,
   ));
 }
 
@@ -5472,7 +5400,7 @@ return metadataBlock(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String text)?  title,TResult Function( PlatformInt64 level,  String text)?  heading,TResult Function( String text)?  paragraph,TResult Function( bool ordered)?  list,TResult Function( String text)?  listItem,TResult Function( TableGrid grid)?  table,TResult Function( String description,  PlatformInt64 imageIndex,  String src)?  image,TResult Function( String text,  String language)?  code,TResult Function()?  quote,TResult Function( String text)?  formula,TResult Function( String text)?  footnote,TResult Function( String label,  PlatformInt64 headingLevel,  String headingText)?  group,TResult Function()?  pageBreak,TResult Function( PlatformInt64 number,  String title)?  slide,TResult Function()?  definitionList,TResult Function( String term,  String definition)?  definitionItem,TResult Function( String key,  String text)?  citation,TResult Function( String kind,  String title)?  admonition,TResult Function( String format,  String content)?  rawBlock,TResult Function( List<List<String>> entries)?  metadataBlock,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String text)?  title,TResult Function( PlatformInt64 level,  String text)?  heading,TResult Function( String text)?  paragraph,TResult Function( bool ordered)?  list,TResult Function( String text)?  listItem,TResult Function( TableGrid grid)?  table,TResult Function( String description,  PlatformInt64 imageIndex,  String src)?  image,TResult Function( String text,  String language)?  code,TResult Function()?  quote,TResult Function( String text)?  formula,TResult Function( String text)?  footnote,TResult Function( String label,  PlatformInt64 headingLevel,  String headingText)?  group,TResult Function()?  pageBreak,TResult Function( PlatformInt64 number,  String title)?  slide,TResult Function()?  definitionList,TResult Function( String term,  String definition)?  definitionItem,TResult Function( String key,  String text)?  citation,TResult Function( String kind,  String title)?  admonition,TResult Function( String format,  String content)?  rawBlock,TResult Function()?  metadataBlock,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NodeContent_Title() when title != null:
 return title(_that.text);case NodeContent_Heading() when heading != null:
@@ -5494,7 +5422,7 @@ return definitionItem(_that.term,_that.definition);case NodeContent_Citation() w
 return citation(_that.key,_that.text);case NodeContent_Admonition() when admonition != null:
 return admonition(_that.kind,_that.title);case NodeContent_RawBlock() when rawBlock != null:
 return rawBlock(_that.format,_that.content);case NodeContent_MetadataBlock() when metadataBlock != null:
-return metadataBlock(_that.entries);case _:
+return metadataBlock();case _:
   return orElse();
 
 }
@@ -5512,7 +5440,7 @@ return metadataBlock(_that.entries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String text)  title,required TResult Function( PlatformInt64 level,  String text)  heading,required TResult Function( String text)  paragraph,required TResult Function( bool ordered)  list,required TResult Function( String text)  listItem,required TResult Function( TableGrid grid)  table,required TResult Function( String description,  PlatformInt64 imageIndex,  String src)  image,required TResult Function( String text,  String language)  code,required TResult Function()  quote,required TResult Function( String text)  formula,required TResult Function( String text)  footnote,required TResult Function( String label,  PlatformInt64 headingLevel,  String headingText)  group,required TResult Function()  pageBreak,required TResult Function( PlatformInt64 number,  String title)  slide,required TResult Function()  definitionList,required TResult Function( String term,  String definition)  definitionItem,required TResult Function( String key,  String text)  citation,required TResult Function( String kind,  String title)  admonition,required TResult Function( String format,  String content)  rawBlock,required TResult Function( List<List<String>> entries)  metadataBlock,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String text)  title,required TResult Function( PlatformInt64 level,  String text)  heading,required TResult Function( String text)  paragraph,required TResult Function( bool ordered)  list,required TResult Function( String text)  listItem,required TResult Function( TableGrid grid)  table,required TResult Function( String description,  PlatformInt64 imageIndex,  String src)  image,required TResult Function( String text,  String language)  code,required TResult Function()  quote,required TResult Function( String text)  formula,required TResult Function( String text)  footnote,required TResult Function( String label,  PlatformInt64 headingLevel,  String headingText)  group,required TResult Function()  pageBreak,required TResult Function( PlatformInt64 number,  String title)  slide,required TResult Function()  definitionList,required TResult Function( String term,  String definition)  definitionItem,required TResult Function( String key,  String text)  citation,required TResult Function( String kind,  String title)  admonition,required TResult Function( String format,  String content)  rawBlock,required TResult Function()  metadataBlock,}) {final _that = this;
 switch (_that) {
 case NodeContent_Title():
 return title(_that.text);case NodeContent_Heading():
@@ -5534,7 +5462,7 @@ return definitionItem(_that.term,_that.definition);case NodeContent_Citation():
 return citation(_that.key,_that.text);case NodeContent_Admonition():
 return admonition(_that.kind,_that.title);case NodeContent_RawBlock():
 return rawBlock(_that.format,_that.content);case NodeContent_MetadataBlock():
-return metadataBlock(_that.entries);}
+return metadataBlock();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -5548,7 +5476,7 @@ return metadataBlock(_that.entries);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String text)?  title,TResult? Function( PlatformInt64 level,  String text)?  heading,TResult? Function( String text)?  paragraph,TResult? Function( bool ordered)?  list,TResult? Function( String text)?  listItem,TResult? Function( TableGrid grid)?  table,TResult? Function( String description,  PlatformInt64 imageIndex,  String src)?  image,TResult? Function( String text,  String language)?  code,TResult? Function()?  quote,TResult? Function( String text)?  formula,TResult? Function( String text)?  footnote,TResult? Function( String label,  PlatformInt64 headingLevel,  String headingText)?  group,TResult? Function()?  pageBreak,TResult? Function( PlatformInt64 number,  String title)?  slide,TResult? Function()?  definitionList,TResult? Function( String term,  String definition)?  definitionItem,TResult? Function( String key,  String text)?  citation,TResult? Function( String kind,  String title)?  admonition,TResult? Function( String format,  String content)?  rawBlock,TResult? Function( List<List<String>> entries)?  metadataBlock,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String text)?  title,TResult? Function( PlatformInt64 level,  String text)?  heading,TResult? Function( String text)?  paragraph,TResult? Function( bool ordered)?  list,TResult? Function( String text)?  listItem,TResult? Function( TableGrid grid)?  table,TResult? Function( String description,  PlatformInt64 imageIndex,  String src)?  image,TResult? Function( String text,  String language)?  code,TResult? Function()?  quote,TResult? Function( String text)?  formula,TResult? Function( String text)?  footnote,TResult? Function( String label,  PlatformInt64 headingLevel,  String headingText)?  group,TResult? Function()?  pageBreak,TResult? Function( PlatformInt64 number,  String title)?  slide,TResult? Function()?  definitionList,TResult? Function( String term,  String definition)?  definitionItem,TResult? Function( String key,  String text)?  citation,TResult? Function( String kind,  String title)?  admonition,TResult? Function( String format,  String content)?  rawBlock,TResult? Function()?  metadataBlock,}) {final _that = this;
 switch (_that) {
 case NodeContent_Title() when title != null:
 return title(_that.text);case NodeContent_Heading() when heading != null:
@@ -5570,7 +5498,7 @@ return definitionItem(_that.term,_that.definition);case NodeContent_Citation() w
 return citation(_that.key,_that.text);case NodeContent_Admonition() when admonition != null:
 return admonition(_that.kind,_that.title);case NodeContent_RawBlock() when rawBlock != null:
 return rawBlock(_that.format,_that.content);case NodeContent_MetadataBlock() when metadataBlock != null:
-return metadataBlock(_that.entries);case _:
+return metadataBlock();case _:
   return null;
 
 }
@@ -6760,73 +6688,33 @@ as String,
 
 
 class NodeContent_MetadataBlock extends NodeContent {
-  const NodeContent_MetadataBlock({required final  List<List<String>> entries}): _entries = entries,super._();
+  const NodeContent_MetadataBlock(): super._();
   
 
- final  List<List<String>> _entries;
- List<List<String>> get entries {
-  if (_entries is EqualUnmodifiableListView) return _entries;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_entries);
-}
 
 
-/// Create a copy of NodeContent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$NodeContent_MetadataBlockCopyWith<NodeContent_MetadataBlock> get copyWith => _$NodeContent_MetadataBlockCopyWithImpl<NodeContent_MetadataBlock>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NodeContent_MetadataBlock&&const DeepCollectionEquality().equals(other._entries, _entries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NodeContent_MetadataBlock);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_entries));
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'NodeContent.metadataBlock(entries: $entries)';
+  return 'NodeContent.metadataBlock()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $NodeContent_MetadataBlockCopyWith<$Res> implements $NodeContentCopyWith<$Res> {
-  factory $NodeContent_MetadataBlockCopyWith(NodeContent_MetadataBlock value, $Res Function(NodeContent_MetadataBlock) _then) = _$NodeContent_MetadataBlockCopyWithImpl;
-@useResult
-$Res call({
- List<List<String>> entries
-});
 
 
-
-
-}
-/// @nodoc
-class _$NodeContent_MetadataBlockCopyWithImpl<$Res>
-    implements $NodeContent_MetadataBlockCopyWith<$Res> {
-  _$NodeContent_MetadataBlockCopyWithImpl(this._self, this._then);
-
-  final NodeContent_MetadataBlock _self;
-  final $Res Function(NodeContent_MetadataBlock) _then;
-
-/// Create a copy of NodeContent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? entries = null,}) {
-  return _then(NodeContent_MetadataBlock(
-entries: null == entries ? _self._entries : entries // ignore: cast_nullable_to_non_nullable
-as List<List<String>>,
-  ));
-}
-
-
-}
 
 /// @nodoc
 mixin _$OcrBoundingGeometry {
@@ -6936,11 +6824,11 @@ return quadrilateral(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)?  rectangle,TResult Function( String points)?  quadrilateral,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)?  rectangle,TResult Function()?  quadrilateral,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case OcrBoundingGeometry_Rectangle() when rectangle != null:
 return rectangle(_that.left,_that.top,_that.width,_that.height);case OcrBoundingGeometry_Quadrilateral() when quadrilateral != null:
-return quadrilateral(_that.points);case _:
+return quadrilateral();case _:
   return orElse();
 
 }
@@ -6958,11 +6846,11 @@ return quadrilateral(_that.points);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)  rectangle,required TResult Function( String points)  quadrilateral,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)  rectangle,required TResult Function()  quadrilateral,}) {final _that = this;
 switch (_that) {
 case OcrBoundingGeometry_Rectangle():
 return rectangle(_that.left,_that.top,_that.width,_that.height);case OcrBoundingGeometry_Quadrilateral():
-return quadrilateral(_that.points);}
+return quadrilateral();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -6976,11 +6864,11 @@ return quadrilateral(_that.points);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)?  rectangle,TResult? Function( String points)?  quadrilateral,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PlatformInt64 left,  PlatformInt64 top,  PlatformInt64 width,  PlatformInt64 height)?  rectangle,TResult? Function()?  quadrilateral,}) {final _that = this;
 switch (_that) {
 case OcrBoundingGeometry_Rectangle() when rectangle != null:
 return rectangle(_that.left,_that.top,_that.width,_that.height);case OcrBoundingGeometry_Quadrilateral() when quadrilateral != null:
-return quadrilateral(_that.points);case _:
+return quadrilateral();case _:
   return null;
 
 }
@@ -7068,68 +6956,33 @@ as PlatformInt64,
 
 
 class OcrBoundingGeometry_Quadrilateral extends OcrBoundingGeometry {
-  const OcrBoundingGeometry_Quadrilateral({required this.points}): super._();
+  const OcrBoundingGeometry_Quadrilateral(): super._();
   
 
-/// Four corner points as `[[x, y], ...]` in clockwise order
- final  String points;
 
-/// Create a copy of OcrBoundingGeometry
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$OcrBoundingGeometry_QuadrilateralCopyWith<OcrBoundingGeometry_Quadrilateral> get copyWith => _$OcrBoundingGeometry_QuadrilateralCopyWithImpl<OcrBoundingGeometry_Quadrilateral>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OcrBoundingGeometry_Quadrilateral&&(identical(other.points, points) || other.points == points));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OcrBoundingGeometry_Quadrilateral);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,points);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'OcrBoundingGeometry.quadrilateral(points: $points)';
+  return 'OcrBoundingGeometry.quadrilateral()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $OcrBoundingGeometry_QuadrilateralCopyWith<$Res> implements $OcrBoundingGeometryCopyWith<$Res> {
-  factory $OcrBoundingGeometry_QuadrilateralCopyWith(OcrBoundingGeometry_Quadrilateral value, $Res Function(OcrBoundingGeometry_Quadrilateral) _then) = _$OcrBoundingGeometry_QuadrilateralCopyWithImpl;
-@useResult
-$Res call({
- String points
-});
 
 
-
-
-}
-/// @nodoc
-class _$OcrBoundingGeometry_QuadrilateralCopyWithImpl<$Res>
-    implements $OcrBoundingGeometry_QuadrilateralCopyWith<$Res> {
-  _$OcrBoundingGeometry_QuadrilateralCopyWithImpl(this._self, this._then);
-
-  final OcrBoundingGeometry_Quadrilateral _self;
-  final $Res Function(OcrBoundingGeometry_Quadrilateral) _then;
-
-/// Create a copy of OcrBoundingGeometry
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? points = null,}) {
-  return _then(OcrBoundingGeometry_Quadrilateral(
-points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
 
 /// @nodoc
 mixin _$OutputFormat {

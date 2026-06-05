@@ -9,6 +9,9 @@ $(STATLIB):
 
 $(SHLIB): $(STATLIB)
 
+binary:
+	cd .. && R CMD INSTALL --build .
+
 clean:
 	rm -f $(SHLIB) $(STATLIB)
 	cargo clean --manifest-path ./rust/Cargo.toml

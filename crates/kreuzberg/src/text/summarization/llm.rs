@@ -31,6 +31,7 @@ const MAX_PROMPT_INPUT_CHARS: usize = 128 * 1024;
 ///
 /// Propagates any LLM client / request error returned by
 /// [`crate::llm::text_completion::complete_text`].
+#[cfg_attr(alef, alef(skip))]
 pub async fn summarize_with_llm(
     text: &str,
     llm_config: &LlmConfig,

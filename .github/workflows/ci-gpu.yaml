@@ -86,7 +86,7 @@ jobs:
           nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 
       - name: Download test binary
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8
         with:
           name: gpu-test-binary
 

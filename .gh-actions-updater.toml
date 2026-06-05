@@ -20,7 +20,10 @@ mode = "latest-tag"
 # but its `dist/index.js` ships only on the patch tag (v1.24.0). The float
 # resolves to a commit with no bundled JS, so the action exits in <1s with
 # `failure` and no log message. Pin to patch tags only.
-exclude = ["erlef/setup-beam"]
+#
+# rubygems/configure-rubygems-credentials: publisher ships only patch tags
+# (v1.0.0, v2.0.0). No floating major-only ref exists, so pinning to v2 fails.
+exclude = ["erlef/setup-beam", "rubygems/configure-rubygems-credentials"]
 include_prereleases = false
 preserve_major = true
 missing_ref = "warn"

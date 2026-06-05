@@ -71,7 +71,7 @@ pub mod diff;
 // TODO(wasm-llm): `liter-llm` stays in no-ORT/wasm target presets because the
 // dependency supports hosted HTTP providers on wasm. The runtime module remains
 // disabled until the wasm request/runtime integration is wired and tested.
-#[cfg(all(feature = "liter-llm", not(target_os = "windows"), not(target_arch = "wasm32")))]
+#[cfg(all(feature = "liter-llm", not(target_arch = "wasm32")))]
 pub mod llm;
 
 #[cfg(feature = "embedding-presets")]
@@ -165,11 +165,49 @@ pub use text::{ReductionLevel, TokenReductionConfig};
 
 #[cfg(all(
     feature = "ner-llm",
-    not(target_os = "windows"),
     not(target_arch = "wasm32"),
     not(all(target_os = "android", target_arch = "x86_64"))
 ))]
 pub use text::ner::llm::LlmBackend;
+
+// Stub for targets without ner-llm (Windows, Android x86_64, WASM), so alef-generated bindings compile.
+#[cfg(any(
+    all(not(feature = "ner-llm"), target_arch = "wasm32"),
+    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
+    all(not(feature = "ner-llm"), target_os = "windows")
+))]
+#[derive(Clone, Debug)]
+pub struct LlmBackend {
+    _config: LlmConfig,
+}
+
+#[cfg(any(
+    all(not(feature = "ner-llm"), target_arch = "wasm32"),
+    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
+    all(not(feature = "ner-llm"), target_os = "windows")
+))]
+impl LlmBackend {
+    pub fn new(config: LlmConfig) -> Self {
+        Self { _config: config }
+    }
+
+    pub async fn detect(&self, _text: &str, _categories: &[crate::EntityCategory]) -> Result<Vec<crate::Entity>> {
+        Err(crate::KreuzbergError::Other(
+            "ner-llm feature not available on this target".into(),
+        ))
+    }
+
+    pub async fn detect_with_custom(
+        &self,
+        _text: &str,
+        _categories: &[crate::EntityCategory],
+        _custom_labels: &[String],
+    ) -> Result<Vec<crate::Entity>> {
+        Err(crate::KreuzbergError::Other(
+            "ner-llm feature not available on this target".into(),
+        ))
+    }
+}
 
 // GlineBackend (GLiNER ONNX NER) and RegionKind (per-region VLM extraction) are
 // re-exported here so alef-generated bindings can refer to them as `kreuzberg::GlineBackend`
@@ -177,8 +215,68 @@ pub use text::ner::llm::LlmBackend;
 #[cfg(feature = "ner-onnx")]
 pub use text::ner::gline::GlineBackend;
 
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+// Stub for targets without ner-onnx (Android x86_64, Windows, WASM), so alef-generated bindings compile.
+#[cfg(any(
+    all(not(feature = "ner-onnx"), target_os = "windows"),
+    all(not(feature = "ner-onnx"), target_arch = "wasm32"),
+    all(not(feature = "ner-onnx"), all(target_os = "android", target_arch = "x86_64"))
+))]
+#[derive(Clone, Debug)]
+pub struct GlineBackend {
+    pub repo_id: String,
+    pub model_path: std::path::PathBuf,
+    pub tokenizer_path: std::path::PathBuf,
+}
+
+#[cfg(any(
+    all(not(feature = "ner-onnx"), target_os = "windows"),
+    all(not(feature = "ner-onnx"), target_arch = "wasm32"),
+    all(not(feature = "ner-onnx"), all(target_os = "android", target_arch = "x86_64"))
+))]
+impl GlineBackend {
+    pub fn new(_repo_id: Option<&str>) -> Result<Self> {
+        Err(crate::KreuzbergError::Other(
+            "ner-onnx feature not available on this target".into(),
+        ))
+    }
+
+    pub async fn detect(&self, _text: &str, _categories: &[crate::EntityCategory]) -> Result<Vec<crate::Entity>> {
+        Err(crate::KreuzbergError::Other(
+            "ner-onnx feature not available on this target".into(),
+        ))
+    }
+
+    pub async fn detect_with_custom(
+        &self,
+        _text: &str,
+        _categories: &[crate::EntityCategory],
+        _custom_labels: &[String],
+    ) -> Result<Vec<crate::Entity>> {
+        Err(crate::KreuzbergError::Other(
+            "ner-onnx feature not available on this target".into(),
+        ))
+    }
+}
+
+#[cfg(all(feature = "liter-llm", not(target_arch = "wasm32")))]
 pub use llm::region_extractor::RegionKind;
+
+// Stub for targets without liter-llm (WASM) so alef-generated FFI bindings compile.
+#[cfg(not(all(feature = "liter-llm", not(target_arch = "wasm32"))))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RegionKind {
+    Figure,
+    DenseTable,
+    ComplexLayout,
+    Caption,
+}
+
+#[cfg(not(all(feature = "liter-llm", not(target_arch = "wasm32"))))]
+impl RegionKind {
+    pub fn default_prompt(self) -> &'static str {
+        ""
+    }
+}
 
 #[cfg(feature = "redaction")]
 pub use text::redaction::strategy::TokenCounter;

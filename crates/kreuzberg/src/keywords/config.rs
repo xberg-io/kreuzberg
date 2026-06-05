@@ -73,6 +73,7 @@ pub struct KeywordConfig {
     /// (1, 2) = unigrams and bigrams
     /// (1, 3) = unigrams, bigrams, and trigrams (default)
     #[serde(default = "default_ngram_range")]
+    #[cfg_attr(alef, alef(skip))]
     pub ngram_range: (usize, usize),
 
     /// Language code for stopword filtering (e.g., "en", "de", "fr").

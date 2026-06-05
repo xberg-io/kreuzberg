@@ -80,6 +80,7 @@ pub struct CoreProperties {
 /// println!("Created: {:?}", core.created);
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub fn extract_core_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<CoreProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "docProps/core.xml", "core.xml")? {
         Some(content) => content,

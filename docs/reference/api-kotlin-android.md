@@ -776,76 +776,6 @@ fun redact(result: ExtractionResult, config: RedactionConfig)
 
 ---
 
-#### findAll()
-
-**Signature:**
-
-```kotlin
-fun findAll(text: String): List<PatternMatch>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### scanText()
-
-Scan `text` for every PII category in `categories` and return all matches
-in source-byte order.
-
-When `categories` is empty every supported regex-detectable category fires.
-Person / Organization / Location are *not* covered by the pattern engine —
-they must be supplied by a NER backend through the redaction engine.
-
-**Signature:**
-
-```kotlin
-fun scanText(text: String, categories: List<PiiCategory>): List<PatternMatch>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `categories` | `List<PiiCategory>` | Yes | The categories |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```kotlin
-fun applyStrategy(strategy: RedactionStrategy, original: String, category: PiiCategory, counter: TokenCounter): String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `String` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `String`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -891,41 +821,6 @@ fun tokenCount(text: String): Int
 | `text` | `String` | Yes | The text |
 
 **Returns:** `Int`
-
----
-
-#### summarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun summarizeWithLlm(text: String, llmConfig: LlmConfig, maxTokens: Int? = null): String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `maxTokens` | `Int?` | No | The max tokens |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
 
 ---
 
@@ -1022,118 +917,6 @@ fun extractRegionWithVlm(imageBytes: ByteArray, imageMime: String, regionKind: R
 
 ---
 
-#### extractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun extractRegionWithVlmUsage(imageBytes: ByteArray, imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String? = null): String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `imageBytes` | `ByteArray` | Yes | The image bytes |
-| `imageMime` | `String` | Yes | The image mime |
-| `regionKind` | `RegionKind` | Yes | The region kind |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `customPrompt` | `String?` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### completeWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun completeWithJsonSchema(llmConfig: LlmConfig, prompt: String, schemaName: String, schema: Any, source: String): String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `schemaName` | `String` | Yes | The schema name |
-| `schema` | `Any` | Yes | The schema |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### completeText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun completeText(llmConfig: LlmConfig, prompt: String, source: String): String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1189,31 +972,6 @@ fun detectMimeType(path: String, checkExists: Boolean): String
 | `checkExists` | `Boolean` | Yes | The check exists |
 
 **Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun embedTexts(texts: List<String>, config: EmbeddingConfig): List<List<Float>>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `List<String>` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
-
-**Returns:** `List<List<Float>>`
 **Errors:** Throws `Error`.
 
 ---
@@ -2681,60 +2439,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `String` | — | Repo id |
-| `modelPath` | `Path` | — | Model path |
-| `tokenizerPath` | `Path` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-@JvmStatic
-fun new(repoId: String? = null): GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun detect(text: String, categories: List<EntityCategory>): List<Entity>
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```kotlin
-@Throws(Error::class)
-fun detectWithCustom(text: String, categories: List<EntityCategory>, customLabels: List<String>): List<Entity>
-```
-
----
-
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -3301,6 +3005,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `clsModel` | `Path` | — | Path to the classification model directory. |
 | `recModel` | `Path` | — | Path to the recognition model directory. |
 | `dictFile` | `Path` | — | Path to the character dictionary file. |
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4758,17 +4468,6 @@ fun default(): SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byteStart` | `Long` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -5096,17 +4795,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 ```kotlin
 @JvmStatic
 fun new(): TokenCounter
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```kotlin
-fun nextToken(category: PiiCategory, original: String): String
 ```
 
 ---
@@ -6044,7 +5732,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `String` |
 
 ---
 

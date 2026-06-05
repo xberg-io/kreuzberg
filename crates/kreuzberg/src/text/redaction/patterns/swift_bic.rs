@@ -12,9 +12,12 @@ static RE_SWIFT: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"\b[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b").expect("swift regex compiles"));
 
 pub fn find_all(text: &str) -> Vec<PatternMatch> {
-    let upper = text.to_ascii_uppercase();
+    // Match directly on source text (no case-folding). Real SWIFT BICs are
+    // always written in uppercase in financial documents; case-folding the
+    // entire input caused false positives on any 8-letter lowercase English
+    // word (e.g. "launches", "codename").
     RE_SWIFT
-        .find_iter(&upper)
+        .find_iter(text)
         .map(|m| PatternMatch {
             start: m.start(),
             end: m.end(),

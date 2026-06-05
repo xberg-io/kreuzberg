@@ -48,6 +48,7 @@ pub struct DjotContent {
     /// Attributes mapped by element identifier (if present)
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     #[cfg_attr(feature = "api", schema(value_type = serde_json::Value))]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Vec<(String, Attributes)>,
 }
 
@@ -70,6 +71,7 @@ pub struct FormattedBlock {
 
     /// Element attributes (classes, IDs, key-value pairs)
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Option<Attributes>,
 
     /// Language identifier for code blocks
@@ -122,6 +124,7 @@ pub struct InlineElement {
 
     /// Element attributes
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Option<Attributes>,
 
     /// Additional metadata (e.g., href for links, src/alt for images)
@@ -189,6 +192,7 @@ pub struct DjotImage {
 
     /// Element attributes
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Option<Attributes>,
 }
 
@@ -208,6 +212,7 @@ pub struct DjotLink {
 
     /// Element attributes
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Option<Attributes>,
 }
 

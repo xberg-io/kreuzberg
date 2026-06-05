@@ -68,7 +68,11 @@ pub type Result<T> = std::result::Result<T, KreuzbergError>;
 #[derive(Debug, Error)]
 pub enum KreuzbergError {
     #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(
+        #[from]
+        #[cfg_attr(alef, alef(skip))]
+        std::io::Error,
+    ), // Excluded from bindings; IO errors bubble up via Result
 
     #[error("Parsing error: {message}")]
     Parsing {

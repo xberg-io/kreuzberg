@@ -119,6 +119,7 @@ pub struct ExtractionConfig {
     /// list formatting, code block styles, and preprocessing options.
     #[cfg(feature = "html")]
     #[serde(default)]
+    #[cfg_attr(alef, alef(skip))]
     pub html_options: Option<html_to_markdown_rs::ConversionOptions>,
 
     /// Styled HTML output configuration.
@@ -271,6 +272,7 @@ pub struct ExtractionConfig {
     /// (when `max_concurrent_extractions` is unset) the batch concurrency
     /// semaphore. See [`crate::core::config::ConcurrencyConfig`] for details.
     #[serde(default)]
+    #[cfg_attr(alef, alef(skip))]
     pub concurrency: Option<super::super::concurrency::ConcurrencyConfig>,
 
     /// Maximum recursion depth for archive extraction (default: 3).
@@ -341,6 +343,7 @@ pub struct ExtractionConfig {
     /// The field is excluded from serialization because `CancellationToken` is a
     /// runtime handle, not a configuration value.
     #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
     pub cancel_token: Option<crate::cancellation::CancellationToken>,
 }
 

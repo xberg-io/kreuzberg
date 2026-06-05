@@ -70,9 +70,9 @@ impl AsRef<[u8]> for FileBytes {
 pub(crate) fn open_file_bytes(path: &Path) -> Result<FileBytes> {
     #[cfg(not(target_arch = "wasm32"))]
     {
-        let metadata = std::fs::metadata(path).map_err(KreuzbergError::Io)?;
+        let metadata = std::fs::metadata(path).map_err(crate::KreuzbergError::from)?;
         if metadata.len() > MMAP_THRESHOLD_BYTES {
-            let file = std::fs::File::open(path).map_err(KreuzbergError::Io)?;
+            let file = std::fs::File::open(path).map_err(crate::KreuzbergError::from)?;
             // SAFETY: The file is opened read-only and we do not write to the
             // mapped region.  The `FileBytes` value owns the `Mmap` handle and
             // the mapping is live for exactly as long as the bytes are accessed.
@@ -80,14 +80,14 @@ pub(crate) fn open_file_bytes(path: &Path) -> Result<FileBytes> {
             // TOCTOU risk inherent to mmap on all platforms; it is acceptable
             // here because kreuzberg only reads user-supplied documents and
             // makes no correctness guarantees about files modified concurrently.
-            let mmap = unsafe { memmap2::Mmap::map(&file) }.map_err(KreuzbergError::Io)?;
+            let mmap = unsafe { memmap2::Mmap::map(&file) }.map_err(crate::KreuzbergError::from)?;
             return Ok(FileBytes {
                 inner: FileBytesInner::Mapped(mmap),
             });
         }
     }
     // Small file or WASM: regular heap read.
-    let bytes = std::fs::read(path).map_err(KreuzbergError::Io)?;
+    let bytes = std::fs::read(path).map_err(crate::KreuzbergError::from)?;
     Ok(FileBytes {
         inner: FileBytesInner::Heap(bytes),
     })
@@ -108,7 +108,9 @@ pub(crate) fn open_file_bytes(path: &Path) -> Result<FileBytes> {
 /// Returns `KreuzbergError::Io` for I/O errors (these always bubble up).
 #[cfg(feature = "tokio-runtime")]
 pub(crate) async fn read_file_async(path: impl AsRef<Path>) -> Result<Vec<u8>> {
-    tokio::fs::read(path.as_ref()).await.map_err(KreuzbergError::Io)
+    tokio::fs::read(path.as_ref())
+        .await
+        .map_err(crate::KreuzbergError::from)
 }
 
 /// Read a file synchronously.
@@ -126,7 +128,7 @@ pub(crate) async fn read_file_async(path: impl AsRef<Path>) -> Result<Vec<u8>> {
 /// Returns `KreuzbergError::Io` for I/O errors (these always bubble up).
 #[cfg(test)]
 pub(crate) fn read_file_sync(path: impl AsRef<Path>) -> Result<Vec<u8>> {
-    std::fs::read(path.as_ref()).map_err(KreuzbergError::Io)
+    std::fs::read(path.as_ref()).map_err(crate::KreuzbergError::from)
 }
 
 /// Check if a file exists.
@@ -209,10 +211,10 @@ fn traverse_directory_impl<F>(
 where
     F: Fn(&Path) -> bool,
 {
-    let entries = std::fs::read_dir(dir).map_err(KreuzbergError::Io)?;
+    let entries = std::fs::read_dir(dir).map_err(crate::KreuzbergError::from)?;
 
     for entry in entries {
-        let entry = entry.map_err(KreuzbergError::Io)?;
+        let entry = entry.map_err(crate::KreuzbergError::from)?;
         let path = entry.path();
 
         if path.is_file() {

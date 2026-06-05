@@ -177,7 +177,7 @@ pub async fn serve_with_config_and_limits(
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
-        .map_err(crate::error::KreuzbergError::Io)?;
+        .map_err(crate::KreuzbergError::from)?;
 
     axum::serve(listener, app)
         .await
@@ -244,7 +244,7 @@ pub async fn serve_with_server_config(extraction_config: ExtractionConfig, serve
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
-        .map_err(crate::error::KreuzbergError::Io)?;
+        .map_err(crate::KreuzbergError::from)?;
 
     axum::serve(listener, app)
         .await

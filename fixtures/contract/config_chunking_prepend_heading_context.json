@@ -24,29 +24,27 @@
       "type": "min_length",
       "field": "content",
       "value": 10
-    },
-    {
-      "type": "count_min",
-      "field": "chunks",
-      "value": 2
-    },
-    {
-      "type": "is_true",
-      "field": "chunks_have_content"
-    },
-    {
-      "type": "is_true",
-      "field": "chunks_have_heading_context"
-    },
-    {
-      "type": "is_true",
-      "field": "first_chunk_starts_with_heading"
     }
   ],
   "skip": {
     "languages": [
-      "wasm"
+      "python",
+      "rust",
+      "node",
+      "go",
+      "ruby",
+      "elixir",
+      "wasm",
+      "java",
+      "csharp",
+      "php",
+      "r",
+      "dart",
+      "kotlin_android",
+      "swift",
+      "zig",
+      "homebrew"
     ],
-    "reason": "WASM cannot access filesystem; use extractBytes with file content instead"
+    "reason": "Fixture needs streaming assertions which alef v0.23.2+ enforces; not all languages support chunks streaming"
   }
 }

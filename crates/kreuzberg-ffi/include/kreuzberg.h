@@ -631,14 +631,6 @@ typedef struct KREUZBERGFormatMetadata KREUZBERGFormatMetadata;
  */
 typedef struct KREUZBERGFormattedBlock KREUZBERGFormattedBlock;
 /**
- * kreuzberg-gliner-rs ONNX backend wrapper.
- *
- * Holds an initialised [`GLiNER<SpanMode>`] behind an `Arc<Mutex<...>>` so the
- * model can be safely shared across async tasks (inference is synchronous and
- * serialised internally by the mutex).
- */
-typedef struct KREUZBERGGlineBackend KREUZBERGGlineBackend;
-/**
  * Individual grid cell with position and span metadata.
  */
 typedef struct KREUZBERGGridCell KREUZBERGGridCell;
@@ -844,6 +836,10 @@ typedef struct KREUZBERGMetadata KREUZBERGMetadata;
  * Combined paths to all models needed for OCR (backward compatibility).
  */
 typedef struct KREUZBERGModelPaths KREUZBERGModelPaths;
+/**
+ * NER backend trait (stub for Android x86_64).
+ */
+typedef struct KREUZBERGNerBackend KREUZBERGNerBackend;
 /**
  * NER backend selector.
  */
@@ -1429,10 +1425,6 @@ typedef struct KREUZBERGRevisionKind KREUZBERGRevisionKind;
  * while still supporting legitimate documents.
  */
 typedef struct KREUZBERGSecurityLimits KREUZBERGSecurityLimits;
-/**
- * A text segment with its byte offset in the original document.
- */
-typedef struct KREUZBERGSegment KREUZBERGSegment;
 /**
  * API server configuration.
  *
@@ -6162,63 +6154,6 @@ int32_t kreuzberg_token_reduction_config_enable_semantic_clustering(const KREUZB
 KREUZBERGTokenReductionConfig *kreuzberg_token_reduction_config_default(void);
 
 /**
- * Free a `GlineBackend` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_gline_backend_free(KREUZBERGGlineBackend *ptr);
-
-/**
- * Get the `repo_id` field from a `GlineBackend`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-char *kreuzberg_gline_backend_repo_id(const KREUZBERGGlineBackend *ptr);
-
-/**
- * Get the `model_path` field from a `GlineBackend`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-char *kreuzberg_gline_backend_model_path(const KREUZBERGGlineBackend *ptr);
-
-/**
- * Get the `tokenizer_path` field from a `GlineBackend`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-char *kreuzberg_gline_backend_tokenizer_path(const KREUZBERGGlineBackend *ptr);
-
-/**
- * Build a backend for `repo_id` (or the default model if `None`).
- *
- * Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
- * After this returns, inference is available without further I/O.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-KREUZBERGGlineBackend *kreuzberg_gline_backend_new(const char *repo_id);
-
-/**
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_gline_backend_detect(const KREUZBERGGlineBackend *this_,
-                                     const char *text,
-                                     const char *categories);
-
-/**
- * Native zero-shot multi-label inference: passes the union of `categories`
- * (as label strings) and `custom_labels` to a single GLiNER inference call.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_gline_backend_detect_with_custom(const KREUZBERGGlineBackend *this_,
-                                                 const char *text,
-                                                 const char *categories,
-                                                 const char *custom_labels);
-
-/**
  * Free a `LlmBackend` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -6243,6 +6178,22 @@ char *kreuzberg_llm_backend_detect_with_custom(const KREUZBERGLlmBackend *this_,
                                                const char *text,
                                                const char *categories,
                                                const char *custom_labels);
+
+/**
+ * Create a `PatternMatch` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_pattern_match_free`.
+ */
+KREUZBERGPatternMatch *kreuzberg_pattern_match_from_json(const char *json);
+
+/**
+ * Serialize a `PatternMatch` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_pattern_match_to_json(const KREUZBERGPatternMatch *ptr);
 
 /**
  * Free a `PatternMatch` handle.
@@ -6287,16 +6238,6 @@ char *kreuzberg_pattern_match_text(const KREUZBERGPatternMatch *ptr);
 void kreuzberg_token_counter_free(KREUZBERGTokenCounter *ptr);
 
 KREUZBERGTokenCounter *kreuzberg_token_counter_new(void);
-
-/**
- * Allocate the next token for `category` and `original`. If the original
- * has been seen before in this category, the same token is reused.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_token_counter_next_token(KREUZBERGTokenCounter *this_,
-                                         const KREUZBERGPiiCategory *category,
-                                         const char *original);
 
 /**
  * Create a `PdfAnnotation` from a JSON string. Returns null on failure.
@@ -11836,27 +11777,6 @@ char *kreuzberg_detect_response_mime_type(const KREUZBERGDetectResponse *ptr);
 char *kreuzberg_detect_response_filename(const KREUZBERGDetectResponse *ptr);
 
 /**
- * Free a `Segment` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_segment_free(KREUZBERGSegment *ptr);
-
-/**
- * Get the `text` field from a `Segment`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-char *kreuzberg_segment_text(const KREUZBERGSegment *ptr);
-
-/**
- * Get the `byte_start` field from a `Segment`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-uintptr_t kreuzberg_segment_byte_start(const KREUZBERGSegment *ptr);
-
-/**
  * Create a `DiffOptions` from a JSON string. Returns null on failure.
  * # Safety
  * JSON string must be valid UTF-8 and null-terminated.
@@ -14580,14 +14500,6 @@ char *kreuzberg_redaction_strategy_to_json(const KREUZBERGRedactionStrategy *ptr
 char *kreuzberg_redaction_strategy_to_string(const KREUZBERGRedactionStrategy *ptr);
 
 /**
- * Create a `RedactionStrategy` from a JSON string. Returns null on failure.
- * # Safety
- * JSON string must be valid UTF-8 and null-terminated.
- * Returned handle must be freed with `kreuzberg_redaction_strategy_free`.
- */
-KREUZBERGRedactionStrategy *kreuzberg_redaction_strategy_from_json(const char *json);
-
-/**
  * Free a heap-allocated `PiiCategory` returned by a pointer-returning FFI function.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -14611,14 +14523,6 @@ char *kreuzberg_pii_category_to_json(const KREUZBERGPiiCategory *ptr);
  * The returned string must be freed with `kreuzberg_free_string`.
  */
 char *kreuzberg_pii_category_to_string(const KREUZBERGPiiCategory *ptr);
-
-/**
- * Create a `PiiCategory` from a JSON string. Returns null on failure.
- * # Safety
- * JSON string must be valid UTF-8 and null-terminated.
- * Returned handle must be freed with `kreuzberg_pii_category_free`.
- */
-KREUZBERGPiiCategory *kreuzberg_pii_category_from_json(const char *json);
 
 /**
  * Free a heap-allocated `RevisionKind` returned by a pointer-returning FFI function.
@@ -14719,6 +14623,21 @@ char *kreuzberg_uri_kind_to_json(const KREUZBERGUriKind *ptr);
  * The returned string must be freed with `kreuzberg_free_string`.
  */
 char *kreuzberg_uri_kind_to_string(const KREUZBERGUriKind *ptr);
+
+/**
+ * Create a `RegionKind` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_region_kind_free`.
+ */
+KREUZBERGRegionKind *kreuzberg_region_kind_from_json(const char *json);
+
+/**
+ * Free a heap-allocated `RegionKind` returned by a pointer-returning FFI function.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_region_kind_free(KREUZBERGRegionKind *ptr);
 
 /**
  * Free a heap-allocated `KeywordAlgorithm` returned by a pointer-returning FFI function.
@@ -15395,69 +15314,6 @@ int32_t kreuzberg_redact(KREUZBERGExtractionResult *result,
                          const KREUZBERGRedactionConfig *config);
 
 /**
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_find_all(const char *_text);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_find_all` on this
- * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
- * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_find_all`.
- */
-uintptr_t kreuzberg_find_all_len(const char *_text);
-
-/**
- * Scan `text` for every PII category in `categories` and return all matches
- * in source-byte order.
- *
- * When `categories` is empty every supported regex-detectable category fires.
- * Person / Organization / Location are *not* covered by the pattern engine â
- * they must be supplied by a NER backend through the redaction engine.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_scan_text(const char *_text,
-                          const char *_categories);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_scan_text` on this
- * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
- * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_scan_text`.
- */
-uintptr_t kreuzberg_scan_text_len(const char *_text,
-                                  const char *_categories);
-
-/**
- * Apply `strategy` to `original` for `category` and return the replacement token.
- *
- * The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
- * other strategies ignore it.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_apply_strategy(int32_t strategy,
-                               const char *original,
-                               const KREUZBERGPiiCategory *category,
-                               KREUZBERGTokenCounter *counter);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_apply_strategy` on this
- * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
- * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_apply_strategy`.
- */
-uintptr_t kreuzberg_apply_strategy_len(int32_t _strategy,
-                                       const char *_original,
-                                       const KREUZBERGPiiCategory *_category,
-                                       const KREUZBERGTokenCounter *_counter);
-
-/**
  * Score and return the top-N sentences from `text`, joined in original order.
  *
  * `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -15489,34 +15345,6 @@ uintptr_t kreuzberg_summarize_len(const char *_text,
  * freed with the appropriate free function.
  */
 uint32_t kreuzberg_token_count(const char *text);
-
-/**
- * Run abstractive summarisation against the configured LLM.
- *
- * `text` is the document content to summarise (already extracted by the
- * pipeline). `max_tokens` softly bounds the requested summary length in
- * natural-language tokens; `None` uses [`DEFAULT_MAX_TOKENS`].
- *
- * Returns the summary string and the (optional) usage record.
- * \note Propagates any LLM client / request error returned by
- * `complete_text`.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_summarize_with_llm(const char *_text,
-                                   const KREUZBERGLlmConfig *_llm_config,
-                                   uint32_t _max_tokens);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_summarize_with_llm` on
- * this thread. Returns 0 when the primary call returned null or failed before producing a string.
- * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_summarize_with_llm`.
- */
-uintptr_t kreuzberg_summarize_with_llm_len(const char *_text,
-                                           const KREUZBERGLlmConfig *_llm_config,
-                                           uint32_t _max_tokens);
 
 /**
  * Translate the extraction result in place.
@@ -15617,143 +15445,6 @@ uintptr_t kreuzberg_extract_region_with_vlm_len(const uint8_t *_image_bytes,
                                                 const char *_custom_prompt);
 
 /**
- * Same as [`extract_region_with_vlm`], but also returns the [`LlmUsage`] data captured
- * from the underlying VLM call.
- *
- * Callers that need to track token / cost data per call (for example the captioning
- * post-processor, which appends every call's usage to
- * `ExtractionResult::llm_usage` (crate::types::ExtractionResult::llm_usage)) should
- * prefer this variant. The plain [`extract_region_with_vlm`] is kept for callers that
- * only care about the markdown output (PDF region splicing).
- * \note Same as [`extract_region_with_vlm`].
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_extract_region_with_vlm_usage(const uint8_t *_image_bytes,
-                                              uintptr_t _image_bytes_len,
-                                              const char *_image_mime,
-                                              int32_t _region_kind,
-                                              const KREUZBERGLlmConfig *_llm_config,
-                                              const char *_custom_prompt);
-
-/**
- * Return the byte length of the C string most recently returned by
- * `kreuzberg_extract_region_with_vlm_usage` on this thread. Returns 0 when the primary call returned
- * null or failed before producing a string. Enables safe slice construction in Zig and Java FFM Panama
- * without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_extract_region_with_vlm_usage`.
- */
-uintptr_t kreuzberg_extract_region_with_vlm_usage_len(const uint8_t *_image_bytes,
-                                                      uintptr_t _image_bytes_len,
-                                                      const char *_image_mime,
-                                                      int32_t _region_kind,
-                                                      const KREUZBERGLlmConfig *_llm_config,
-                                                      const char *_custom_prompt);
-
-/**
- * Send a free-form prompt to the configured LLM with a JSON-schema response
- * constraint and return the parsed JSON value plus captured usage.
- *
- * This is the shared helper used by LLM-backed post-processors (page
- * classification, LLM-driven NER, etc.) that need structured output but do not
- * want to depend on [`StructuredExtractionConfig`]'s schema/prompt machinery.
- * \param llm_config â provider/model configuration.
- * \param prompt â fully-rendered user prompt (no Jinja substitution performed).
- * \param schema_name â name for the JSON schema (passed to providers that distinguish multiple
- * structured outputs).
- * \param schema â the JSON schema the LLM is required to obey.
- * \param source â label used for the returned [`LlmUsage`] entry.
- * \note Returns an error if the LLM client cannot be constructed, the request fails,
- * the response contains no content, or the response is not parseable JSON.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_complete_with_json_schema(const KREUZBERGLlmConfig *_llm_config,
-                                          const char *_prompt,
-                                          const char *_schema_name,
-                                          const char *_schema,
-                                          const char *_source);
-
-/**
- * Return the byte length of the C string most recently returned by
- * `kreuzberg_complete_with_json_schema` on this thread. Returns 0 when the primary call returned null
- * or failed before producing a string. Enables safe slice construction in Zig and Java FFM Panama
- * without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_complete_with_json_schema`.
- */
-uintptr_t kreuzberg_complete_with_json_schema_len(const KREUZBERGLlmConfig *_llm_config,
-                                                  const char *_prompt,
-                                                  const char *_schema_name,
-                                                  const char *_schema,
-                                                  const char *_source);
-
-/**
- * Send a single user prompt to the configured LLM and return the response text
- * along with the captured usage metadata.
- *
- * The `source` argument labels the [`LlmUsage`] entry that is returned so
- * callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
- * etc.). The helper performs a single non-streaming chat completion request.
- * \note Returns an error if the LLM client cannot be constructed, the request fails,
- * or the response does not contain assistant content.
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- */
-char *kreuzberg_complete_text(const KREUZBERGLlmConfig *_llm_config,
-                              const char *_prompt,
-                              const char *_source);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_complete_text` on this
- * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
- * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_complete_text`.
- */
-uintptr_t kreuzberg_complete_text_len(const KREUZBERGLlmConfig *_llm_config,
-                                      const char *_prompt,
-                                      const char *_source);
-
-/**
- * Generate embeddings asynchronously for a list of text strings.
- *
- * This is the async counterpart to [`embed_texts`]. It offloads the blocking
- * ONNX inference work to a dedicated blocking thread pool via Tokio's
- * `spawn_blocking`, keeping the async executor free.
- *
- * Returns one embedding vector per input text in the same order.
- * \param texts Vec of strings to embed (owned, sent to blocking thread)
- * \param config Embedding configuration specifying model, batch size, and normalization
- * \note - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
- * - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
- *   or the blocking inference task panics
- * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
- * freed with the appropriate free function.
- * \code
- * use kreuzberg::{embed_texts_async, EmbeddingConfig};
- *
- * let embeddings = embed_texts_async(
- *     vec!["Hello!".to_string()],
- *     &EmbeddingConfig::default(),
- * ).await?;
- * \endcode
- */
-char *kreuzberg_embed_texts_async(const char *texts,
-                                  const KREUZBERGEmbeddingConfig *config);
-
-/**
- * Return the byte length of the C string most recently returned by `kreuzberg_embed_texts_async` on
- * this thread. Returns 0 when the primary call returned null or failed before producing a string.
- * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_embed_texts_async`.
- */
-uintptr_t kreuzberg_embed_texts_async_len(const char *_texts,
-                                          const KREUZBERGEmbeddingConfig *_config);
-
-/**
  * Render a single PDF page to PNG bytes.
  *
  * Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -15798,24 +15489,21 @@ uintptr_t kreuzberg_detect_mime_type_len(const char *_path,
                                          int32_t _check_exists);
 
 /**
- * Embed a list of texts using the configured embedding model.
- *
- * Returns a 2D vector where each inner vector is the embedding for the corresponding text.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-char *kreuzberg_embed_texts(const char *texts,
-                            const KREUZBERGEmbeddingConfig *config);
+char *kreuzberg_embed_texts_async(const char *_texts,
+                                  const KREUZBERGEmbeddingConfig *_config);
 
 /**
- * Return the byte length of the C string most recently returned by `kreuzberg_embed_texts` on this
- * thread. Returns 0 when the primary call returned null or failed before producing a string. Enables
- * safe slice construction in Zig and Java FFM Panama without a NUL-scan.
+ * Return the byte length of the C string most recently returned by `kreuzberg_embed_texts_async` on
+ * this thread. Returns 0 when the primary call returned null or failed before producing a string.
+ * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
  * \note SAFETY: Pointer arguments are ignored and are present only to keep the companion ABI aligned
- * with `kreuzberg_embed_texts`.
+ * with `kreuzberg_embed_texts_async`.
  */
-uintptr_t kreuzberg_embed_texts_len(const char *_texts,
-                                    const KREUZBERGEmbeddingConfig *_config);
+uintptr_t kreuzberg_embed_texts_async_len(const char *__texts,
+                                          const KREUZBERGEmbeddingConfig *__config);
 
 /**
  * Get an embedding preset by name.

@@ -1706,51 +1706,7 @@ are at the `Metadata` level.
 
 ---
 
-### Document Structure
-
-#### DocumentExtractor
-
-Trait for document extractor plugins.
-
-Implement this trait to add support for new document formats or to override
-built-in extraction behavior with custom logic.
-
-### Return Type
-
-Extractors return `InternalDocument`, a flat intermediate representation.
-The pipeline converts this into the public `ExtractionResult` via the
-derivation step.
-
-### Priority System
-
-When multiple extractors support the same MIME type, the registry selects
-the extractor with the highest priority value. Use this to:
-
-- Override built-in extractors (priority > 50)
-- Provide fallback extractors (priority < 50)
-- Implement specialized extractors for specific use cases
-
-Default priority is 50.
-
-### Thread Safety
-
-Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
-
-*Opaque type — fields are not directly accessible.*
-
----
-
-#### DocumentRelationship
-
-A resolved relationship between two nodes in the document tree.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `source` | `u32` | — | Source node index (the referencing node). |
-| `target` | `u32` | — | Target node index (the referenced node). |
-| `kind` | `RelationshipKind` | — | Semantic kind of the relationship. |
-
----
+### Structured Data Types
 
 #### DocumentNode
 
@@ -1818,38 +1774,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### DocumentRevision
-
-A single tracked change embedded in a document.
-
-Populated by per-format extractors that understand change-tracking metadata
-(DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every
-extractor defaults to `ExtractionResult.revisions = None` until a
-format-specific implementation is added.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `revision_id` | `String` | — | Format-specific revision identifier. For DOCX this is the `w:id` attribute value on the change element (e.g. `"42"`). When the attribute is absent a synthetic fallback is generated (`"docx-ins-0"`, `"docx-del-3"`, …). |
-| `author` | `Option<String>` | `None` | Display name of the author who made this change, when available. |
-| `timestamp` | `Option<String>` | `None` | ISO-8601 timestamp of the change, when available. Stored as a plain string so this type remains FFI-friendly and unconditionally available without the `chrono` optional dep. DOCX populates this from the `w:date` attribute (e.g. `"2024-03-15T10:30:00Z"`). |
-| `kind` | `RevisionKind` | — | Semantic kind of this revision. |
-| `anchor` | `Option<RevisionAnchor>` | `None` | Best-effort document location for this revision. Resolution is format-dependent and may be `None` when the location cannot be determined (e.g. changes inside table cells before table-cell anchor support is added). |
-| `delta` | `RevisionDelta` | — | The content changes that make up this revision. |
-
----
-
-#### DocumentSummary
-
-Summary of an extracted document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Summary text (plain prose). |
-| `strategy` | `SummaryStrategy` | — | Strategy that produced this summary. |
-| `token_count` | `Option<u32>` | `None` | Approximate token count of the summary, when known. |
-
----
-
 #### TableDiff
 
 Cell-level changes for a pair of tables that share the same index.
@@ -1876,53 +1800,6 @@ the type in their own code.
 | `detection_bbox` | `BBox` | — | Detection bbox that this table corresponds to (for matching). |
 | `cells` | `Vec<Vec<String>>` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `String` | — | Rendered markdown table. |
-
----
-
-### OCR Types
-
-#### OcrPipelineStage
-
-A single backend stage in the OCR pipeline.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `backend` | `String` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `priority` | `u32` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `Option<String>` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `Option<TesseractConfig>` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `Option<serde_json::Value>` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `Option<LlmConfig>` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
-
----
-
-#### OcrBackend
-
-Trait for OCR backend plugins.
-
-Implement this trait to add custom OCR capabilities. OCR backends can be:
-
-- Native Rust implementations (like Tesseract)
-- FFI bridges to Python libraries (like EasyOCR, PaddleOCR)
-- Cloud-based OCR services (Google Vision, AWS Textract, etc.)
-
-### Thread Safety
-
-OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
-
-*Opaque type — fields are not directly accessible.*
-
----
-
-#### OcrRotation
-
-Rotation information for an OCR element.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `angle_degrees` | `f64` | — | Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). |
-| `confidence` | `Option<f64>` | `None` | Confidence score for the rotation detection. |
 
 ---
 
@@ -1966,6 +1843,22 @@ to represent a single file in a batch extraction job.
 |-------|------|---------|-------------|
 | `path` | `PathBuf` | — | Path to the file to extract from |
 | `config` | `Option<FileExtractionConfig>` | `None` | Per-file configuration overrides (None uses batch-level defaults) |
+
+---
+
+#### OcrPipelineStage
+
+A single backend stage in the OCR pipeline.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `backend` | `String` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
+| `priority` | `u32` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `language` | `Option<String>` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `Option<TesseractConfig>` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `Option<serde_json::Value>` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `Option<LlmConfig>` | `/* serde(default) */` | VLM config override for this pipeline stage. |
+| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
 
 ---
 
@@ -2064,6 +1957,56 @@ requires a multi-thread tokio runtime. Callers running inside a
 or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without
 `block_in_place`.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### DocumentExtractor
+
+Trait for document extractor plugins.
+
+Implement this trait to add support for new document formats or to override
+built-in extraction behavior with custom logic.
+
+### Return Type
+
+Extractors return `InternalDocument`, a flat intermediate representation.
+The pipeline converts this into the public `ExtractionResult` via the
+derivation step.
+
+### Priority System
+
+When multiple extractors support the same MIME type, the registry selects
+the extractor with the highest priority value. Use this to:
+
+- Override built-in extractors (priority > 50)
+- Provide fallback extractors (priority < 50)
+- Implement specialized extractors for specific use cases
+
+Default priority is 50.
+
+### Thread Safety
+
+Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### OcrBackend
+
+Trait for OCR backend plugins.
+
+Implement this trait to add custom OCR capabilities. OCR backends can be:
+
+- Native Rust implementations (like Tesseract)
+- FFI bridges to Python libraries (like EasyOCR, PaddleOCR)
+- Cloud-based OCR services (Google Vision, AWS Textract, etc.)
+
+### Thread Safety
+
+OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
 *Opaque type — fields are not directly accessible.*
 
@@ -2173,25 +2116,17 @@ Validators must be thread-safe (`Send + Sync`).
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repo_id` | `String` | — | Repo id |
-| `model_path` | `PathBuf` | — | Model path |
-| `tokenizer_path` | `PathBuf` | — | Tokenizer path |
-
----
-
 #### LlmBackend
 
 liter-llm-backed NER backend.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 *Opaque type — fields are not directly accessible.*
 
@@ -2340,6 +2275,18 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `String` | — | Footnote label |
 | `content` | `Vec<FormattedBlock>` | — | Footnote content blocks |
+
+---
+
+#### DocumentRelationship
+
+A resolved relationship between two nodes in the document tree.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `source` | `u32` | — | Source node index (the referencing node). |
+| `target` | `u32` | — | Target node index (the referenced node). |
+| `kind` | `RelationshipKind` | — | Semantic kind of the relationship. |
 
 ---
 
@@ -2553,6 +2500,17 @@ JATS contributor with role.
 
 ---
 
+#### OcrRotation
+
+Rotation information for an OCR element.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `angle_degrees` | `f64` | — | Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). |
+| `confidence` | `Option<f64>` | `None` | Confidence score for the rotation detection. |
+
+---
+
 #### PageStructure
 
 Unified page structure for documents.
@@ -2740,6 +2698,38 @@ reference it unconditionally, without requiring the `diff` Cargo feature.
 
 ---
 
+#### DocumentRevision
+
+A single tracked change embedded in a document.
+
+Populated by per-format extractors that understand change-tracking metadata
+(DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every
+extractor defaults to `ExtractionResult.revisions = None` until a
+format-specific implementation is added.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `revision_id` | `String` | — | Format-specific revision identifier. For DOCX this is the `w:id` attribute value on the change element (e.g. `"42"`). When the attribute is absent a synthetic fallback is generated (`"docx-ins-0"`, `"docx-del-3"`, …). |
+| `author` | `Option<String>` | `None` | Display name of the author who made this change, when available. |
+| `timestamp` | `Option<String>` | `None` | ISO-8601 timestamp of the change, when available. Stored as a plain string so this type remains FFI-friendly and unconditionally available without the `chrono` optional dep. DOCX populates this from the `w:date` attribute (e.g. `"2024-03-15T10:30:00Z"`). |
+| `kind` | `RevisionKind` | — | Semantic kind of this revision. |
+| `anchor` | `Option<RevisionAnchor>` | `None` | Best-effort document location for this revision. Resolution is format-dependent and may be `None` when the location cannot be determined (e.g. changes inside table cells before table-cell anchor support is added). |
+| `delta` | `RevisionDelta` | — | The content changes that make up this revision. |
+
+---
+
+#### DocumentSummary
+
+Summary of an extracted document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text` | `String` | — | Summary text (plain prose). |
+| `strategy` | `SummaryStrategy` | — | Strategy that produced this summary. |
+| `token_count` | `Option<u32>` | `None` | Approximate token count of the summary, when known. |
+
+---
+
 #### Translation
 
 Translation of the extracted content.
@@ -2783,17 +2773,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mime_type` | `String` | — | Detected MIME type |
 | `filename` | `Option<String>` | `None` | Original filename (if provided) |
-
----
-
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byte_start` | `usize` | — | Byte start |
 
 ---
 
@@ -3216,7 +3195,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | `jats` | Jats — Fields: `_0`: `JatsMetadata` |
 | `Epub` | `epub` | Epub format — Fields: `_0`: `EpubMetadata` |
 | `Pst` | `pst` | Pst — Fields: `_0`: `PstMetadata` |
-| `Code` | `code` | Code — Fields: `_0`: `String` |
 
 ---
 

@@ -6,7 +6,7 @@ license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
-categories = ["text-processing"]
+categories = []
 
 # `ahash` and `futures-util` are conditionally included but not directly used in PHP code.
 [package.metadata.cargo-machete]

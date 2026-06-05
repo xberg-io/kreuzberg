@@ -45,9 +45,12 @@ pub(crate) fn ocr_doc_to_paragraphs(
             let lines: Vec<types::PdfLine> = text_lines
                 .iter()
                 .enumerate()
-                .filter(|(_, line)| !line.trim().is_empty())
-                .map(|(i, line)| {
-                    let line_y = base_y - (i as f32 * line_height);
+                .filter_map(|(original_idx, line)| {
+                    if line.trim().is_empty() {
+                        return None;
+                    }
+                    // Use original_idx to preserve correct vertical spacing even when some lines are blank
+                    let line_y = base_y - (original_idx as f32 * line_height);
                     let (x, width) = if let Some((left, _, right, _)) = block_bbox {
                         (left, right - left)
                     } else {
@@ -66,13 +69,13 @@ pub(crate) fn ocr_doc_to_paragraphs(
                         baseline_y: line_y,
                         assigned_role: None,
                     };
-                    types::PdfLine {
+                    Some(types::PdfLine {
                         segments: vec![seg],
                         baseline_y: line_y,
                         dominant_font_size: default_font_size,
                         is_bold: false,
                         is_monospace: false,
-                    }
+                    })
                 })
                 .collect();
 
@@ -107,4 +110,227 @@ pub(crate) fn ocr_doc_to_paragraphs(
     );
 
     result
+}
+
+#[cfg(all(feature = "ocr", test))]
+mod tests {
+    use super::*;
+    use crate::types::extraction::BoundingBox;
+    use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+    use crate::types::ocr_elements::OcrElementLevel;
+
+    /// Test that OCR elements with mixed content and blank lines preserve all text.
+    #[test]
+    fn test_ocr_doc_preserves_mixed_content_with_blanks() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "line1\n\nline3",
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 70.0,
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+
+        assert_eq!(paragraphs.len(), 1, "Should have one paragraph");
+        let para = &paragraphs[0];
+
+        // Full text should be preserved including blank lines
+        assert_eq!(para.text, "line1\n\nline3", "Text should preserve blank lines");
+
+        // Word count should be 2 (line1, line3) - blanks don't contribute
+        assert_eq!(para.word_count, 2, "Word count should count only non-blank words");
+
+        // Lines array should have only non-blank lines
+        assert_eq!(para.lines.len(), 2, "Lines array should have only non-blank lines");
+
+        // Content should not be filtered out
+        assert!(!para.text.is_empty(), "Text should not be empty");
+    }
+
+    /// Test that whitespace-only OCR elements are filtered out (correct behavior).
+    #[test]
+    fn test_ocr_doc_filters_whitespace_only_elements() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem1 = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "   \n  \n  ",
+            0,
+        );
+        elem1.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 70.0,
+        });
+        doc.push_element(elem1);
+
+        let mut elem2 = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "real content",
+            0,
+        );
+        elem2.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 80.0,
+            x1: 100.0,
+            y1: 140.0,
+        });
+        doc.push_element(elem2);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+
+        // Should only have the real content paragraph
+        assert_eq!(paragraphs.len(), 1, "Should filter out whitespace-only element");
+        assert_eq!(paragraphs[0].text, "real content");
+    }
+
+    /// Test that whitespace-only lines within an element are preserved in text
+    /// but not created as separate paragraph lines. This is the key fix for TF1 loss.
+    #[test]
+    fn test_ocr_doc_whitespace_lines_text_preserved() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "Para1\n   \nPara2", // middle line is whitespace-only
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 70.0,
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+
+        assert_eq!(paragraphs.len(), 1, "Should have one paragraph");
+        let para = &paragraphs[0];
+
+        // Full text MUST be preserved including the whitespace line
+        assert_eq!(
+            para.text, "Para1\n   \nPara2",
+            "Text must preserve whitespace-only lines"
+        );
+
+        // Word count should be 2 (Para1, Para2) - whitespace line doesn't contribute
+        assert_eq!(para.word_count, 2, "Word count should only count non-blank words");
+
+        // Lines array should have 2 entries (skip whitespace-only line)
+        assert_eq!(para.lines.len(), 2, "Lines array should skip whitespace-only lines");
+
+        // Check that line positions are correct (respecting the blank line's y offset)
+        let line_height = (70.0 - 10.0) / 3.0; // 3 lines of text (including blank)
+        let para_1_y = 1000.0 - 10.0 - 0.0 * line_height;
+        let para_2_y = 1000.0 - 10.0 - 2.0 * line_height; // Uses original_idx of 2
+        assert!(
+            (para.lines[0].baseline_y - para_1_y).abs() < 0.1,
+            "Line 1 Y position incorrect"
+        );
+        assert!(
+            (para.lines[1].baseline_y - para_2_y).abs() < 0.1,
+            "Line 2 Y position incorrect"
+        );
+    }
+
+    /// Test that blank lines in OCR elements don't affect vertical positioning.
+    /// When text contains blank lines (e.g., "A\n\nC"), the lines array should still
+    /// have correct y-positions (0 for A, 2*line_height for C, not 1*line_height).
+    /// This ensures correct sorting order when multiple paragraphs are interleaved.
+    #[test]
+    fn test_ocr_doc_blank_lines_preserve_vertical_spacing() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "Line1\n\nLine3", // blank line in middle
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 90.0, // 80 pixel height for 3 lines = ~26.67 per line
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+        assert_eq!(paragraphs.len(), 1);
+        let para = &paragraphs[0];
+
+        // Text should preserve the blank line
+        assert_eq!(para.text, "Line1\n\nLine3");
+
+        // Lines array should have only 2 non-blank lines
+        assert_eq!(para.lines.len(), 2);
+
+        // y0=10, y1=90, page_h=1000
+        // pdf_bottom = 1000 - 90 = 910
+        // pdf_top = 1000 - 10 = 990
+        // total_height = 990 - 910 = 80
+        // line_height = 80 / 3 = 26.67
+        let expected_line_height = 80.0 / 3.0;
+
+        // Line1 at index 0: line_y = base_y - (0 * line_height) = 990 - 0 = 990
+        // Line3 at index 2: line_y = base_y - (2 * line_height) = 990 - 53.33 = 936.67
+        // The y-positions should reflect the original indices (0, 2), not filtered indices (0, 1)
+        assert!(
+            (para.lines[0].baseline_y - 990.0).abs() < 0.1,
+            "Line1 should be at y=990, got {}",
+            para.lines[0].baseline_y
+        );
+        assert!(
+            (para.lines[1].baseline_y - (990.0 - 2.0 * expected_line_height)).abs() < 0.1,
+            "Line3 should be at y={}, got {}",
+            990.0 - 2.0 * expected_line_height,
+            para.lines[1].baseline_y
+        );
+    }
+
+    /// Test that OCR elements with content followed by blanks preserve content.
+    #[test]
+    fn test_ocr_doc_preserves_content_before_blanks() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "important\n\n",
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 70.0,
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+
+        assert_eq!(paragraphs.len(), 1);
+        assert_eq!(paragraphs[0].text, "important\n\n");
+        assert_eq!(paragraphs[0].word_count, 1);
+        assert_eq!(
+            paragraphs[0].lines.len(),
+            1,
+            "Only the non-blank line should be in lines array"
+        );
+    }
 }

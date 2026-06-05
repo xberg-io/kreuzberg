@@ -46,17 +46,29 @@ package dev.kreuzberg
  */
 sealed class KreuzbergError(message: String) : Exception(message) {
     data class Io(val field0: String) : KreuzbergError("IO error: $field0")
-    data class Parsing(override val message: String) : KreuzbergError("Parsing error: {message}")
-    data class Ocr(override val message: String) : KreuzbergError("OCR error: {message}")
+    data class Parsing(
+        override val message: String,
+        val source: String?,
+    ) : KreuzbergError("Parsing error: {message}")
+    data class Ocr(
+        override val message: String,
+        val source: String?,
+    ) : KreuzbergError("OCR error: {message}")
     data class Validation(
         override val message: String,
+        val source: String?,
     ) : KreuzbergError("Validation error: {message}")
-    data class Cache(override val message: String) : KreuzbergError("Cache error: {message}")
+    data class Cache(
+        override val message: String,
+        val source: String?,
+    ) : KreuzbergError("Cache error: {message}")
     data class ImageProcessing(
         override val message: String,
+        val source: String?,
     ) : KreuzbergError("Image processing error: {message}")
     data class Serialization(
         override val message: String,
+        val source: String?,
     ) : KreuzbergError("Serialization error: {message}")
     data class MissingDependency(val field0: String) : KreuzbergError("Missing dependency: $field0")
     data class Plugin(
@@ -67,6 +79,7 @@ sealed class KreuzbergError(message: String) : Exception(message) {
     data class UnsupportedFormat(val field0: String) : KreuzbergError("Unsupported format: $field0")
     data class Embedding(
         override val message: String,
+        val source: String?,
     ) : KreuzbergError("Embedding error: {message}")
     data class Timeout(
         val elapsedMs: Long,
@@ -75,6 +88,7 @@ sealed class KreuzbergError(message: String) : Exception(message) {
     object Cancelled : KreuzbergError("Extraction cancelled")
     data class Security(
         override val message: String,
+        val source: String?,
     ) : KreuzbergError("Security violation: {message}")
     data class Other(val field0: String) : KreuzbergError("$field0")
 }

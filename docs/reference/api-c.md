@@ -750,76 +750,6 @@ void kreuzberg_redact(KreuzbergExtractionResult result, KreuzbergRedactionConfig
 
 ---
 
-#### kreuzberg_find_all()
-
-**Signature:**
-
-```c
-KreuzbergPatternMatch* kreuzberg_find_all(const char* text);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `const char*` | Yes | The text |
-
-**Returns:** `KreuzbergPatternMatch*`
-
----
-
-#### kreuzberg_scan_text()
-
-Scan `text` for every PII category in `categories` and return all matches
-in source-byte order.
-
-When `categories` is empty every supported regex-detectable category fires.
-Person / Organization / Location are *not* covered by the pattern engine —
-they must be supplied by a NER backend through the redaction engine.
-
-**Signature:**
-
-```c
-KreuzbergPatternMatch* kreuzberg_scan_text(const char* text, KreuzbergPiiCategory* categories);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `const char*` | Yes | The text |
-| `categories` | `KreuzbergPiiCategory*` | Yes | The categories |
-
-**Returns:** `KreuzbergPatternMatch*`
-
----
-
-#### kreuzberg_apply_strategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```c
-const char* kreuzberg_apply_strategy(KreuzbergRedactionStrategy strategy, const char* original, KreuzbergPiiCategory category, KreuzbergTokenCounter counter);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `KreuzbergRedactionStrategy` | Yes | The redaction strategy |
-| `original` | `const char*` | Yes | The original |
-| `category` | `KreuzbergPiiCategory` | Yes | The pii category |
-| `counter` | `KreuzbergTokenCounter` | Yes | The token counter |
-
-**Returns:** `const char*`
-
----
-
 #### kreuzberg_summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -865,40 +795,6 @@ uint32_t kreuzberg_token_count(const char* text);
 | `text` | `const char*` | Yes | The text |
 
 **Returns:** `uint32_t`
-
----
-
-#### kreuzberg_summarize_with_llm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `NULL` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```c
-const char* kreuzberg_summarize_with_llm(const char* text, KreuzbergLlmConfig llm_config, uint32_t max_tokens);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `const char*` | Yes | The text |
-| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
-| `max_tokens` | `uint32_t*` | No | The max tokens |
-
-**Returns:** `const char*`
-**Errors:** Returns `NULL` on error.
 
 ---
 
@@ -993,149 +889,6 @@ const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const 
 
 ---
 
-#### kreuzberg_extract_region_with_vlm_usage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```c
-const char* kreuzberg_extract_region_with_vlm_usage(const uint8_t* image_bytes, const char* image_mime, KreuzbergRegionKind region_kind, KreuzbergLlmConfig llm_config, const char* custom_prompt);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `image_bytes` | `const uint8_t*` | Yes | The image bytes |
-| `image_mime` | `const char*` | Yes | The image mime |
-| `region_kind` | `KreuzbergRegionKind` | Yes | The region kind |
-| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
-| `custom_prompt` | `const char**` | No | The custom prompt |
-
-**Returns:** `const char*`
-**Errors:** Returns `NULL` on error.
-
----
-
-#### kreuzberg_complete_with_json_schema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```c
-const char* kreuzberg_complete_with_json_schema(KreuzbergLlmConfig llm_config, const char* prompt, const char* schema_name, void* schema, const char* source);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
-| `prompt` | `const char*` | Yes | The prompt |
-| `schema_name` | `const char*` | Yes | The schema name |
-| `schema` | `void*` | Yes | The schema |
-| `source` | `const char*` | Yes | The source |
-
-**Returns:** `const char*`
-**Errors:** Returns `NULL` on error.
-
----
-
-#### kreuzberg_complete_text()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```c
-const char* kreuzberg_complete_text(KreuzbergLlmConfig llm_config, const char* prompt, const char* source);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
-| `prompt` | `const char*` | Yes | The prompt |
-| `source` | `const char*` | Yes | The source |
-
-**Returns:** `const char*`
-**Errors:** Returns `NULL` on error.
-
----
-
-#### kreuzberg_embed_texts_async()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```c
-float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `const char**` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `KreuzbergEmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `float**`
-**Errors:** Returns `NULL` on error.
-
----
-
 #### kreuzberg_render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
@@ -1193,24 +946,20 @@ const char* kreuzberg_detect_mime_type(const char* path, bool check_exists);
 
 ---
 
-#### kreuzberg_embed_texts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### kreuzberg_embed_texts_async()
 
 **Signature:**
 
 ```c
-float** kreuzberg_embed_texts(const char** texts, KreuzbergEmbeddingConfig config);
+float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `const char**` | Yes | The texts |
-| `config` | `KreuzbergEmbeddingConfig` | Yes | The configuration options |
+| `texts` | `const char**` | Yes | The  texts |
+| `config` | `KreuzbergEmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `float**`
 **Errors:** Returns `NULL` on error.
@@ -2670,56 +2419,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### KreuzbergGlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repo_id` | `const char*` | — | Repo id |
-| `model_path` | `const char*` | — | Model path |
-| `tokenizer_path` | `const char*` | — | Tokenizer path |
-
-### Methods
-
-#### kreuzberg_new()
-
-Build a backend for `repo_id` (or the default model if `NULL`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```c
-KreuzbergGlineBackend kreuzberg_new(const char* repo_id);
-```
-
-#### kreuzberg_detect()
-
-**Signature:**
-
-```c
-KreuzbergEntity* kreuzberg_detect(const char* text, KreuzbergEntityCategory* categories);
-```
-
-#### kreuzberg_detect_with_custom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```c
-KreuzbergEntity* kreuzberg_detect_with_custom(const char* text, KreuzbergEntityCategory* categories, const char** custom_labels);
-```
-
----
-
 #### KreuzbergGridCell
 
 Individual grid cell with position and span metadata.
@@ -3276,6 +2975,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `cls_model` | `const char*` | — | Path to the classification model directory. |
 | `rec_model` | `const char*` | — | Path to the recognition model directory. |
 | `dict_file` | `const char*` | — | Path to the character dictionary file. |
+
+---
+
+#### KreuzbergNerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4713,17 +4418,6 @@ KreuzbergSecurityLimits kreuzberg_default();
 
 ---
 
-#### KreuzbergSegment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `const char*` | — | Text |
-| `byte_start` | `uintptr_t` | — | Byte start |
-
----
-
 #### KreuzbergServerConfig
 
 API server configuration.
@@ -5048,17 +4742,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```c
 KreuzbergTokenCounter kreuzberg_new();
-```
-
-#### kreuzberg_next_token()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```c
-const char* kreuzberg_next_token(KreuzbergPiiCategory category, const char* original);
 ```
 
 ---
@@ -5990,7 +5673,6 @@ type-safe, clean metadata without nested optionals.
 | `KREUZBERG_JATS` | Jats — Fields: `0`: `KreuzbergJatsMetadata` |
 | `KREUZBERG_EPUB` | Epub format — Fields: `0`: `KreuzbergEpubMetadata` |
 | `KREUZBERG_PST` | Pst — Fields: `0`: `KreuzbergPstMetadata` |
-| `KREUZBERG_CODE` | Code — Fields: `0`: `const char*` |
 
 ---
 

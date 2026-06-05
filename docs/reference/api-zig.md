@@ -794,32 +794,6 @@ pub fn scan_text(text: [:0]const u8, categories: []const PiiCategory) []const Pa
 
 ---
 
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```zig
-pub fn apply_strategy(strategy: RedactionStrategy, original: [:0]const u8, category: PiiCategory, counter: TokenCounter) [:0]const u8
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `[:0]const u8` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `[:0]const u8`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -865,40 +839,6 @@ pub fn token_count(text: [:0]const u8) u32
 | `text` | `[:0]const u8` | Yes | The text |
 
 **Returns:** `u32`
-
----
-
-#### summarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```zig
-pub fn summarize_with_llm(text: [:0]const u8, llm_config: LlmConfig, max_tokens: ?u32) Error![:0]const u8
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `[:0]const u8` | Yes | The text |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `maxTokens` | `u32?` | No | The max tokens |
-
-**Returns:** `[:0]const u8`
-**Errors:** Throws `Error`.
 
 ---
 
@@ -993,149 +933,6 @@ pub fn extract_region_with_vlm(image_bytes: []const u8, image_mime: [:0]const u8
 
 ---
 
-#### extractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```zig
-pub fn extract_region_with_vlm_usage(image_bytes: []const u8, image_mime: [:0]const u8, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: ?[:0]const u8) Error![:0]const u8
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `imageBytes` | `[]const u8` | Yes | The image bytes |
-| `imageMime` | `[:0]const u8` | Yes | The image mime |
-| `regionKind` | `RegionKind` | Yes | The region kind |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `customPrompt` | `[:0]const u8?` | No | The custom prompt |
-
-**Returns:** `[:0]const u8`
-**Errors:** Throws `Error`.
-
----
-
-#### completeWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```zig
-pub fn complete_with_json_schema(llm_config: LlmConfig, prompt: [:0]const u8, schema_name: [:0]const u8, schema: [:0]const u8, source: [:0]const u8) Error![:0]const u8
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `[:0]const u8` | Yes | The prompt |
-| `schemaName` | `[:0]const u8` | Yes | The schema name |
-| `schema` | `[:0]const u8` | Yes | The schema |
-| `source` | `[:0]const u8` | Yes | The source |
-
-**Returns:** `[:0]const u8`
-**Errors:** Throws `Error`.
-
----
-
-#### completeText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```zig
-pub fn complete_text(llm_config: LlmConfig, prompt: [:0]const u8, source: [:0]const u8) Error![:0]const u8
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `[:0]const u8` | Yes | The prompt |
-| `source` | `[:0]const u8` | Yes | The source |
-
-**Returns:** `[:0]const u8`
-**Errors:** Throws `Error`.
-
----
-
-#### embedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```zig
-pub fn embed_texts_async(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `[]const [:0]const u8` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `[]const []const f32`
-**Errors:** Throws `Error`.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1193,24 +990,20 @@ pub fn detect_mime_type(path: [:0]const u8, check_exists: bool) Error![:0]const 
 
 ---
 
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embedTextsAsync()
 
 **Signature:**
 
 ```zig
-pub fn embed_texts(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
+pub fn embed_texts_async(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `[]const [:0]const u8` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `[]const [:0]const u8` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `[]const []const f32`
 **Errors:** Throws `Error`.
@@ -2670,56 +2463,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `[:0]const u8` | — | Repo id |
-| `modelPath` | `[:0]const u8` | — | Model path |
-| `tokenizerPath` | `[:0]const u8` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```zig
-pub fn new(repo_id: ?[:0]const u8) Error!GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```zig
-pub fn detect(self: *const GlineBackend, text: [:0]const u8, categories: []const EntityCategory) Error![]const Entity
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```zig
-pub fn detectWithCustom(self: *const GlineBackend, text: [:0]const u8, categories: []const EntityCategory, custom_labels: []const [:0]const u8) Error![]const Entity
-```
-
----
-
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -3276,6 +3019,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `clsModel` | `[:0]const u8` | — | Path to the classification model directory. |
 | `recModel` | `[:0]const u8` | — | Path to the recognition model directory. |
 | `dictFile` | `[:0]const u8` | — | Path to the character dictionary file. |
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4713,17 +4462,6 @@ pub fn default() SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `[:0]const u8` | — | Text |
-| `byteStart` | `u64` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -5048,17 +4786,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```zig
 pub fn new() TokenCounter
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```zig
-pub fn nextToken(self: *const TokenCounter, category: PiiCategory, original: [:0]const u8) [:0]const u8
 ```
 
 ---
@@ -5990,7 +5717,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `[:0]const u8` |
 
 ---
 

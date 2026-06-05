@@ -794,32 +794,6 @@ def scan_text(text: str, categories: list[PiiCategory]) -> list[PatternMatch]
 
 ---
 
-#### apply_strategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```python
-def apply_strategy(strategy: RedactionStrategy, original: str, category: PiiCategory, counter: TokenCounter) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `str` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `str`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -865,40 +839,6 @@ def token_count(text: str) -> int
 | `text` | `str` | Yes | The text |
 
 **Returns:** `int`
-
----
-
-#### summarize_with_llm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `None` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```python
-def summarize_with_llm(text: str, llm_config: LlmConfig, max_tokens: int = None) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `str` | Yes | The text |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `max_tokens` | `int \| None` | No | The max tokens |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
 
 ---
 
@@ -993,149 +933,6 @@ def extract_region_with_vlm(image_bytes: bytes, image_mime: str, region_kind: Re
 
 ---
 
-#### extract_region_with_vlm_usage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```python
-def extract_region_with_vlm_usage(image_bytes: bytes, image_mime: str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: str = None) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `image_bytes` | `bytes` | Yes | The image bytes |
-| `image_mime` | `str` | Yes | The image mime |
-| `region_kind` | `RegionKind` | Yes | The region kind |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `custom_prompt` | `str \| None` | No | The custom prompt |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### complete_with_json_schema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```python
-def complete_with_json_schema(llm_config: LlmConfig, prompt: str, schema_name: str, schema: dict[str, Any], source: str) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `str` | Yes | The prompt |
-| `schema_name` | `str` | Yes | The schema name |
-| `schema` | `dict[str, Any]` | Yes | The schema |
-| `source` | `str` | Yes | The source |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### complete_text()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```python
-def complete_text(llm_config: LlmConfig, prompt: str, source: str) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `str` | Yes | The prompt |
-| `source` | `str` | Yes | The source |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### embed_texts_async()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```python
-def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `list[str]` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `list[list[float]]`
-**Errors:** Raises `Error`.
-
----
-
 #### render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
@@ -1193,24 +990,20 @@ def detect_mime_type(path: str, check_exists: bool) -> str
 
 ---
 
-#### embed_texts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embed_texts_async()
 
 **Signature:**
 
 ```python
-def embed_texts(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
+def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `list[str]` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `list[str]` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `list[list[float]]`
 **Errors:** Raises `Error`.
@@ -2677,57 +2470,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repo_id` | `str` | — | Repo id |
-| `model_path` | `str` | — | Model path |
-| `tokenizer_path` | `str` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `None`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```python
-@staticmethod
-def new(repo_id: str) -> GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```python
-def detect(self, text: str, categories: list[EntityCategory]) -> list[Entity]
-```
-
-#### detect_with_custom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```python
-def detect_with_custom(self, text: str, categories: list[EntityCategory], custom_labels: list[str]) -> list[Entity]
-```
-
----
-
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -3292,6 +3034,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `cls_model` | `str` | — | Path to the classification model directory. |
 | `rec_model` | `str` | — | Path to the recognition model directory. |
 | `dict_file` | `str` | — | Path to the character dictionary file. |
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4741,17 +4489,6 @@ def default() -> SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `str` | — | Text |
-| `byte_start` | `int` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -5079,17 +4816,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 ```python
 @staticmethod
 def new() -> TokenCounter
-```
-
-#### next_token()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```python
-def next_token(self, category: PiiCategory, original: str) -> str
 ```
 
 ---
@@ -6026,7 +5752,6 @@ type-safe, clean metadata without nested optionals.
 | `JATS` | Jats — Fields: `0`: `JatsMetadata` |
 | `EPUB` | Epub format — Fields: `0`: `EpubMetadata` |
 | `PST` | Pst — Fields: `0`: `PstMetadata` |
-| `CODE` | Code — Fields: `0`: `str` |
 
 ---
 

@@ -34,7 +34,7 @@ jobs:
     name: Publish pub.dev
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v8.0.1
+      - uses: actions/download-artifact@v8
         with:
           name: dart-package-assembled
           path: packages/dart

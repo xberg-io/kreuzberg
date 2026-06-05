@@ -1,8 +1,11 @@
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.zip.ZipFile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library") version "8.13.0"
-    kotlin("android") version "2.3.21"
+    kotlin("android") version "2.2.0"
 }
 
 group = "dev.kreuzberg"
@@ -39,6 +42,9 @@ android {
 }
 
 kotlin {
+    // Set JVM target for compilation. gradle.properties enables auto-detection
+    // of host JDK installations so Gradle uses the available JDK version on the
+    // build machine, preventing provisioning failures when the target version is not installed.
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
     }

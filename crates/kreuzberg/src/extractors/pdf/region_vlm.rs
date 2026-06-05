@@ -9,7 +9,7 @@
 //! Only compiled when `liter-llm` + `layout-detection` are both enabled
 //! (not on Windows).
 
-#![cfg(all(feature = "liter-llm", feature = "layout-detection", not(target_os = "windows")))]
+#![cfg(all(feature = "liter-llm", feature = "layout-detection"))]
 
 use std::io::Cursor;
 

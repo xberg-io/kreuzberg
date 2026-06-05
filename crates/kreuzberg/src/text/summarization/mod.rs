@@ -15,5 +15,5 @@
 
 pub mod textrank;
 
-#[cfg(all(feature = "summarization-llm", not(target_os = "windows")))]
+#[cfg(feature = "summarization-llm")]
 pub mod llm;

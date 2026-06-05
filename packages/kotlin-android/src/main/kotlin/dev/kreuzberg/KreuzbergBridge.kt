@@ -109,16 +109,10 @@ object KreuzbergBridge {
     external fun nativeScanText(text: String, categories: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    external fun nativeApplyStrategy(strategy: String, original: String, category: String, counter: Long): String
-
-    @Throws(KreuzbergBridgeException::class)
     external fun nativeSummarize(text: String, language: String, maxTokens: Int): String?
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeTokenCount(text: String): Int
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeSummarizeWithLlm(text: String, llmConfig: String, maxTokens: Int): String
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeTranslateResult(result: String, config: String)
@@ -128,15 +122,6 @@ object KreuzbergBridge {
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeExtractRegionWithVlm(imageBytes: ByteArray, imageMime: String, regionKind: String, llmConfig: String, customPrompt: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeExtractRegionWithVlmUsage(imageBytes: ByteArray, imageMime: String, regionKind: String, llmConfig: String, customPrompt: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeCompleteWithJsonSchema(llmConfig: String, prompt: String, schemaName: String, schema: String, source: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeCompleteText(llmConfig: String, prompt: String, source: String): String
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeRenderPdfPageToPng(pdfBytes: ByteArray, pageIndex: Long, dpi: Int, password: String): ByteArray
@@ -159,9 +144,6 @@ object KreuzbergBridge {
     @Throws(KreuzbergBridgeException::class)
     external fun nativeLlmBackendDetectWithCustom(handle: Long, requestJson: String): String
     external fun nativeFreeLlmBackend(handle: Long)
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeTokenCounterNextToken(handle: Long, requestJson: String): String
-    external fun nativeFreeTokenCounter(handle: Long)
 
     // JNI trait-bridge external funs — implementations are Rust JNI shims.
 

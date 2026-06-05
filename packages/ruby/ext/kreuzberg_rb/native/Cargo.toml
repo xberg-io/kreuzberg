@@ -6,10 +6,10 @@ license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
-categories = ["text-processing"]
+categories = []
 
 [package.metadata.cargo-machete]
-ignored = ["tokio", "async-trait"]
+ignored = ["rb-sys"]
 
 [lib]
 name = "kreuzberg_rb"
@@ -20,6 +20,7 @@ crate-type = ["cdylib"]
 async-trait = "0.1"
 kreuzberg = { version = "5.0.0-rc.3", path = "../../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
 magnus = "0.8"
+rb-sys = ">=0.9, <0.9.128"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }

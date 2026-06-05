@@ -102,7 +102,7 @@ fn try_code_chunks(result: &ExtractionResult) -> Option<Vec<crate::types::extrac
     use crate::types::extraction::{Chunk, ChunkMetadata, ChunkType, HeadingContext, HeadingLevel};
 
     let code_chunks = match &result.metadata.format {
-        Some(crate::types::metadata::FormatMetadata::Code(pr)) if !pr.chunks.is_empty() => &pr.chunks,
+        Some(crate::types::metadata::FormatMetadata::Code(pr)) if !pr.0.chunks.is_empty() => &pr.0.chunks,
         _ => return None,
     };
 

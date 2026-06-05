@@ -636,8 +636,8 @@ pub fn derive_extraction_result(
     // that binding generators cannot resolve to a typed struct.
     #[cfg(feature = "tree-sitter")]
     let code_intelligence = match &doc.metadata.format {
-        Some(crate::types::metadata::FormatMetadata::Code(process_result)) => {
-            match serde_json::to_value(process_result) {
+        Some(crate::types::metadata::FormatMetadata::Code(code_metadata)) => {
+            match serde_json::to_value(&code_metadata.0) {
                 Ok(v) => Some(v),
                 Err(e) => {
                     tracing::warn!(error = %e, "failed to serialise code_intelligence; omitting field");

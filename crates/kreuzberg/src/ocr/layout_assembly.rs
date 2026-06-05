@@ -83,6 +83,13 @@ fn recognize_single_table(
         return None;
     }
 
+    // Validate cell grid sanity: if too many cells are empty or grid is malformed,
+    // fall back to skip table (category C: table garbling from low-confidence TATR).
+    if !is_cell_grid_valid(&cell_grid) {
+        tracing::debug!("TATR cell grid is invalid (too many empty cells or malformed); skipping table");
+        return None;
+    }
+
     // Collect OCR elements that overlap the table region (≥20% of element area)
     let table_elements: Vec<&OcrElement> = elements
         .iter()
@@ -240,4 +247,47 @@ fn element_center_f32(elem: &OcrElement) -> (f32, f32) {
 /// Check if a point (cx, cy) is inside a BBox (pixel coords: y increases downward).
 fn point_in_bbox(cx: f32, cy: f32, bbox: &BBox) -> bool {
     cx >= bbox.x1 && cx <= bbox.x2 && cy >= bbox.y1 && cy <= bbox.y2
+}
+
+/// Validate TATR cell grid sanity.
+///
+/// Detects malformed tables from low-confidence TATR output (category C).
+/// Returns false if:
+/// - More than 30% of cells are empty (indicates bad segmentation)
+/// - Grid has < 2 rows or < 2 columns (degenerate)
+fn is_cell_grid_valid(cell_grid: &[Vec<tatr::CellBBox>]) -> bool {
+    if cell_grid.len() < 2 {
+        return false; // Single row is not a table
+    }
+    if cell_grid[0].len() < 2 {
+        return false; // Single column is not a table
+    }
+
+    // Count how many cells are effectively empty (zero or near-zero area)
+    let mut empty_count = 0;
+    let total_count = cell_grid.len() * cell_grid[0].len();
+
+    for row in cell_grid {
+        for cell in row {
+            let width = (cell.x2 - cell.x1).abs();
+            let height = (cell.y2 - cell.y1).abs();
+            if width < 1.0 || height < 1.0 {
+                empty_count += 1;
+            }
+        }
+    }
+
+    let empty_ratio = empty_count as f32 / total_count as f32;
+    if empty_ratio > 0.3 {
+        tracing::debug!(
+            empty_count,
+            total_count,
+            empty_ratio,
+            "TATR cell grid has too many empty cells ({:.1}%)",
+            empty_ratio * 100.0
+        );
+        return false;
+    }
+
+    true
 }

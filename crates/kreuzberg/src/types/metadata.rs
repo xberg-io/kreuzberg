@@ -14,6 +14,16 @@ pub use crate::pdf::metadata::PdfMetadata;
 use super::formats::ImagePreprocessingMetadata;
 use super::page::PageStructure;
 
+/// Wrapper for tree-sitter language pack code metadata (internal, not exposed in bindings).
+///
+/// Hides the external tree_sitter_language_pack::ProcessResult type from FFI/binding
+/// surface while preserving tree-sitter code analysis results for Rust consumers.
+#[cfg(feature = "tree-sitter")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[doc(hidden)]
+#[cfg_attr(alef, alef(skip))]
+pub struct CodeMetadataInner(pub tree_sitter_language_pack::ProcessResult);
+
 /// Custom serialization and deserialization for AHashMap<Cow<'static, str>, Value>.
 ///
 /// serde doesn't natively support serializing Cow keys, so we convert to/from
@@ -86,8 +96,11 @@ pub enum FormatMetadata {
     #[cfg(feature = "office")]
     Epub(EpubMetadata),
     Pst(PstMetadata),
+    /// Code metadata (tree-sitter analysis results, not exposed in bindings).
     #[cfg(feature = "tree-sitter")]
-    Code(tree_sitter_language_pack::ProcessResult),
+    #[cfg_attr(alef, alef(skip))]
+    #[doc(hidden)]
+    Code(CodeMetadataInner),
 }
 
 impl Default for FormatMetadata {
@@ -539,11 +552,13 @@ pub struct TextMetadata {
     /// Markdown links as (text, url) tuples (for Markdown files)
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "api", schema(value_type = Option<Vec<[String; 2]>>))]
+    #[cfg_attr(alef, alef(skip))]
     pub links: Option<Vec<(String, String)>>,
 
     /// Code blocks as (language, code) tuples (for Markdown files)
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "api", schema(value_type = Option<Vec<[String; 2]>>))]
+    #[cfg_attr(alef, alef(skip))]
     pub code_blocks: Option<Vec<(String, String)>>,
 }
 
@@ -597,6 +612,7 @@ pub struct LinkMetadata {
     pub rel: Vec<String>,
     /// Additional attributes as key-value pairs
     #[cfg_attr(feature = "api", schema(value_type = Vec<[String; 2]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Vec<(String, String)>,
 }
 
@@ -633,11 +649,13 @@ pub struct ImageMetadataType {
     pub title: Option<String>,
     /// Image dimensions as (width, height) if available
     #[cfg_attr(feature = "api", schema(value_type = Option<[u32; 2]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub dimensions: Option<(u32, u32)>,
     /// Image type classification
     pub image_type: ImageType,
     /// Additional attributes as key-value pairs
     #[cfg_attr(feature = "api", schema(value_type = Vec<[String; 2]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub attributes: Vec<(String, String)>,
 }
 

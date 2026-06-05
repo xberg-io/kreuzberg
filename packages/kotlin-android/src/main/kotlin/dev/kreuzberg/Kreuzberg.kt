@@ -753,13 +753,6 @@ object Kreuzberg {
         withContext(Dispatchers.IO) { scanText(text, categories) }
 
     /**
-     * Apply `strategy` to `original` for `category` and return the replacement token.
-     *
-     * The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-     * other strategies ignore it.
-     */
-    fun applyStrategy(strategy: RedactionStrategy, original: String, category: PiiCategory, counter: TokenCounter): String = KreuzbergBridge.nativeApplyStrategy(mapper.writeValueAsString(strategy), original, mapper.writeValueAsString(category), counter.handle)
-    /**
      * Score and return the top-N sentences from `text`, joined in original order.
      *
      * `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -773,21 +766,6 @@ object Kreuzberg {
      * callers).
      */
     fun tokenCount(text: String): Int = KreuzbergBridge.nativeTokenCount(text)
-    /**
-     * Run abstractive summarisation against the configured LLM.
-     *
-     * `text` is the document content to summarise (already extracted by the
-     * pipeline). `max_tokens` softly bounds the requested summary length in
-     * natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-     *
-     * Returns the summary string and the (optional) usage record.
-     *
-     * **Errors:**
-     *
-     * Propagates any LLM client / request error returned by
-     * `complete_text`.
-     */
-    fun summarizeWithLlm(text: String, llmConfig: LlmConfig, maxTokens: Int? = null): String = KreuzbergBridge.nativeSummarizeWithLlm(text, mapper.writeValueAsString(llmConfig), maxTokens ?: 0)
     /**
      * Translate the extraction result in place.
      *
@@ -835,54 +813,6 @@ object Kreuzberg {
      *   be initialised.
      */
     fun extractRegionWithVlm(imageBytes: ByteArray, imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String? = null): String = KreuzbergBridge.nativeExtractRegionWithVlm(imageBytes, imageMime, mapper.writeValueAsString(regionKind), mapper.writeValueAsString(llmConfig), customPrompt ?: "")
-    /**
-     * Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-     * from the underlying VLM call.
-     *
-     * Callers that need to track token / cost data per call (for example the captioning
-     * post-processor, which appends every call's usage to
-     * `ExtractionResult.llm_usage`) should
-     * prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-     * only care about the markdown output (PDF region splicing).
-     *
-     * **Errors:**
-     *
-     * Same as `extract_region_with_vlm`.
-     */
-    fun extractRegionWithVlmUsage(imageBytes: ByteArray, imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String? = null): String = KreuzbergBridge.nativeExtractRegionWithVlmUsage(imageBytes, imageMime, mapper.writeValueAsString(regionKind), mapper.writeValueAsString(llmConfig), customPrompt ?: "")
-    /**
-     * Send a free-form prompt to the configured LLM with a JSON-schema response
-     * constraint and return the parsed JSON value plus captured usage.
-     *
-     * This is the shared helper used by LLM-backed post-processors (page
-     * classification, LLM-driven NER, etc.) that need structured output but do not
-     * want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-     *
-     *   distinguish multiple structured outputs).
-     *
-     * - `schema` — the JSON schema the LLM is required to obey.
-     * - `source` — label used for the returned `LlmUsage` entry.
-     *
-     * **Errors:**
-     *
-     * Returns an error if the LLM client cannot be constructed, the request fails,
-     * the response contains no content, or the response is not parseable JSON.
-     */
-    fun completeWithJsonSchema(llmConfig: LlmConfig, prompt: String, schemaName: String, schema: String, source: String): String = KreuzbergBridge.nativeCompleteWithJsonSchema(mapper.writeValueAsString(llmConfig), prompt, schemaName, schema, source)
-    /**
-     * Send a single user prompt to the configured LLM and return the response text
-     * along with the captured usage metadata.
-     *
-     * The `source` argument labels the `LlmUsage` entry that is returned so
-     * callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-     * etc.). The helper performs a single non-streaming chat completion request.
-     *
-     * **Errors:**
-     *
-     * Returns an error if the LLM client cannot be constructed, the request fails,
-     * or the response does not contain assistant content.
-     */
-    fun completeText(llmConfig: LlmConfig, prompt: String, source: String): String = KreuzbergBridge.nativeCompleteText(mapper.writeValueAsString(llmConfig), prompt, source)
     /**
      * Render a single PDF page to PNG bytes.
      *

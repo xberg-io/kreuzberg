@@ -640,7 +640,3 @@ abstract class Renderer {
   /// throws anyhow::Error on failure
   Future<String> render(InternalDocumentBridge doc);
 }
-
-
-/// Synchronous extractor trait stub — used by e2e test plugin_api stubs.
-abstract class SyncExtractor {}

@@ -28,7 +28,22 @@ public final class OcrBackendBridge implements AutoCloseable {
             OCR_BACKEND_BRIDGES = new ConcurrentHashMap<>();
 
     // C vtable: 14 fields (4 plugin methods + 8 trait methods + free_string + free_user_data)
-    private static final MemoryLayout VTABLE_LAYOUT = MemoryLayout.structLayout(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS);
+    private static final MemoryLayout VTABLE_LAYOUT = MemoryLayout.structLayout(
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS,
+            ValueLayout.ADDRESS
+    );
     private static final long VTABLE_SIZE = VTABLE_LAYOUT.byteSize();
 
     private final Arena arena;
@@ -39,163 +54,159 @@ public final class OcrBackendBridge implements AutoCloseable {
         this.impl = impl;
         this.arena = Arena.ofShared();
         this.vtable = arena.allocate(VTABLE_SIZE);
-
         try {
-            long offset = 0L;
-
-            var stubName = LINKER.upcallStub(LOOKUP.bind(this, "handleName",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubName);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubVersion = LINKER.upcallStub(LOOKUP.bind(this, "handleVersion",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubVersion);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubInitialize = LINKER.upcallStub(LOOKUP.bind(this, "handleInitialize",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubInitialize);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubShutdown = LINKER.upcallStub(LOOKUP.bind(this, "handleShutdown",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubShutdown);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubProcessImage = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessImage",
-                MethodType.methodType(
-                    int.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    long.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class
-                )),
-                FunctionDescriptor.of(
-                    ValueLayout.JAVA_INT,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.JAVA_LONG,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS
-                ),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubProcessImage);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubProcessImageFile = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessImageFile",
-                MethodType.methodType(
-                    int.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class
-                )),
-                FunctionDescriptor.of(
-                    ValueLayout.JAVA_INT,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS
-                ),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubProcessImageFile);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubSupportsLanguage = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsLanguage",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(
-                    ValueLayout.JAVA_INT,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS
-                ),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubSupportsLanguage);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubBackendType = LINKER.upcallStub(LOOKUP.bind(this, "handleBackendType",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubBackendType);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubSupportedLanguages = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportedLanguages",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubSupportedLanguages);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubSupportsTableDetection = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsTableDetection",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubSupportsTableDetection);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubSupportsDocumentProcessing = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsDocumentProcessing",
-                MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubSupportsDocumentProcessing);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubProcessDocument = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessDocument",
-                MethodType.methodType(
-                    int.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class,
-                    MemorySegment.class
-                )),
-                FunctionDescriptor.of(
-                    ValueLayout.JAVA_INT,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS,
-                    ValueLayout.ADDRESS
-                ),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubProcessDocument);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubFreeString = LINKER.upcallStub(LOOKUP.bind(this, "freeString",
-                MethodType.methodType(void.class, MemorySegment.class)),
-                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubFreeString);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-            var stubFreeUserData = LINKER.upcallStub(LOOKUP.bind(this, "freeUserData",
-                MethodType.methodType(void.class, MemorySegment.class)),
-                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
-                arena);
-            vtable.set(ValueLayout.ADDRESS, offset, stubFreeUserData);
-            offset += ValueLayout.ADDRESS.byteSize();
-
-
+            initializeStubs();
         } catch (ReflectiveOperationException e) {
             arena.close();
             throw new RuntimeException("Failed to create trait bridge stubs", e);
         }
+    }
+
+    private void initializeStubs() throws ReflectiveOperationException {
+        long offset = 0L;
+
+        var stubName = LINKER.upcallStub(LOOKUP.bind(this, "handleName",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubName);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubVersion = LINKER.upcallStub(LOOKUP.bind(this, "handleVersion",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubVersion);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubInitialize = LINKER.upcallStub(LOOKUP.bind(this, "handleInitialize",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubInitialize);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubShutdown = LINKER.upcallStub(LOOKUP.bind(this, "handleShutdown",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubShutdown);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubProcessImage = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessImage",
+            MethodType.methodType(
+                int.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                long.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class
+            )),
+            FunctionDescriptor.of(
+                ValueLayout.JAVA_INT,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.JAVA_LONG,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS
+            ),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubProcessImage);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubProcessImageFile = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessImageFile",
+            MethodType.methodType(
+                int.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class
+            )),
+            FunctionDescriptor.of(
+                ValueLayout.JAVA_INT,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS
+            ),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubProcessImageFile);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubSupportsLanguage = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsLanguage",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubSupportsLanguage);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubBackendType = LINKER.upcallStub(LOOKUP.bind(this, "handleBackendType",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubBackendType);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubSupportedLanguages = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportedLanguages",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubSupportedLanguages);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubSupportsTableDetection = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsTableDetection",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubSupportsTableDetection);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubSupportsDocumentProcessing = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportsDocumentProcessing",
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubSupportsDocumentProcessing);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubProcessDocument = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessDocument",
+            MethodType.methodType(
+                int.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class
+            )),
+            FunctionDescriptor.of(
+                ValueLayout.JAVA_INT,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS
+            ),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubProcessDocument);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubFreeString = LINKER.upcallStub(LOOKUP.bind(this, "freeString",
+            MethodType.methodType(void.class, MemorySegment.class)),
+            FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubFreeString);
+        offset += ValueLayout.ADDRESS.byteSize();
+
+        var stubFreeUserData = LINKER.upcallStub(LOOKUP.bind(this, "freeUserData",
+            MethodType.methodType(void.class, MemorySegment.class)),
+            FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
+            arena);
+        vtable.set(ValueLayout.ADDRESS, offset, stubFreeUserData);
+        offset += ValueLayout.ADDRESS.byteSize();
+
     }
 
     MemorySegment vtableSegment() { return vtable; }

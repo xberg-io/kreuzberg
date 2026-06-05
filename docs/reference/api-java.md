@@ -750,76 +750,6 @@ public static void redact(ExtractionResult result, RedactionConfig config) throw
 
 ---
 
-#### findAll()
-
-**Signature:**
-
-```java
-public static List<PatternMatch> findAll(String text)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### scanText()
-
-Scan `text` for every PII category in `categories` and return all matches
-in source-byte order.
-
-When `categories` is empty every supported regex-detectable category fires.
-Person / Organization / Location are *not* covered by the pattern engine —
-they must be supplied by a NER backend through the redaction engine.
-
-**Signature:**
-
-```java
-public static List<PatternMatch> scanText(String text, List<PiiCategory> categories)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `categories` | `List<PiiCategory>` | Yes | The categories |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```java
-public static String applyStrategy(RedactionStrategy strategy, String original, PiiCategory category, TokenCounter counter)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `String` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `String`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -865,40 +795,6 @@ public static int tokenCount(String text)
 | `text` | `String` | Yes | The text |
 
 **Returns:** `int`
-
----
-
-#### summarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```java
-public static String summarizeWithLlm(String text, LlmConfig llmConfig, int maxTokens) throws Error
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `maxTokens` | `Optional<Integer>` | No | The max tokens |
-
-**Returns:** `String`
-**Errors:** Throws `ErrorException`.
 
 ---
 
@@ -993,149 +889,6 @@ public static String extractRegionWithVlm(byte[] imageBytes, String imageMime, R
 
 ---
 
-#### extractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```java
-public static String extractRegionWithVlmUsage(byte[] imageBytes, String imageMime, RegionKind regionKind, LlmConfig llmConfig, String customPrompt) throws Error
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `imageBytes` | `byte[]` | Yes | The image bytes |
-| `imageMime` | `String` | Yes | The image mime |
-| `regionKind` | `RegionKind` | Yes | The region kind |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `customPrompt` | `Optional<String>` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Throws `ErrorException`.
-
----
-
-#### completeWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```java
-public static String completeWithJsonSchema(LlmConfig llmConfig, String prompt, String schemaName, Object schema, String source) throws Error
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `schemaName` | `String` | Yes | The schema name |
-| `schema` | `Object` | Yes | The schema |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Throws `ErrorException`.
-
----
-
-#### completeText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```java
-public static String completeText(LlmConfig llmConfig, String prompt, String source) throws Error
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Throws `ErrorException`.
-
----
-
-#### embedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```java
-public static List<List<Float>> embedTextsAsync(List<String> texts, EmbeddingConfig config) throws Error
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `List<String>` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `List<List<Float>>`
-**Errors:** Throws `ErrorException`.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1193,24 +946,20 @@ public static String detectMimeType(String path, boolean checkExists) throws Err
 
 ---
 
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embedTextsAsync()
 
 **Signature:**
 
 ```java
-public static List<List<Float>> embedTexts(List<String> texts, EmbeddingConfig config) throws Error
+public static List<List<Float>> embedTextsAsync(List<String> texts, EmbeddingConfig config) throws Error
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `List<String>` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `List<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `List<List<Float>>`
 **Errors:** Throws `ErrorException`.
@@ -2670,56 +2419,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `String` | — | Repo id |
-| `modelPath` | `String` | — | Model path |
-| `tokenizerPath` | `String` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```java
-public static GlineBackend new(String repoId) throws Error
-```
-
-#### detect()
-
-**Signature:**
-
-```java
-public List<Entity> detect(String text, List<EntityCategory> categories) throws Error
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```java
-public List<Entity> detectWithCustom(String text, List<EntityCategory> categories, List<String> customLabels) throws Error
-```
-
----
-
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -3276,6 +2975,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `clsModel` | `String` | — | Path to the classification model directory. |
 | `recModel` | `String` | — | Path to the recognition model directory. |
 | `dictFile` | `String` | — | Path to the character dictionary file. |
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4713,17 +4418,6 @@ public static SecurityLimits defaultOptions()
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byteStart` | `long` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -5048,17 +4742,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```java
 public static TokenCounter new()
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```java
-public String nextToken(PiiCategory category, String original)
 ```
 
 ---
@@ -5962,7 +5645,6 @@ type-safe, clean metadata without nested optionals.
 | `JATS` | Jats — Fields: `0`: `JatsMetadata` |
 | `EPUB` | Epub format — Fields: `0`: `EpubMetadata` |
 | `PST` | Pst — Fields: `0`: `PstMetadata` |
-| `CODE` | Code — Fields: `0`: `String` |
 
 ---
 

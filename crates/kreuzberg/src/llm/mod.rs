@@ -3,19 +3,19 @@
 //! This module provides VLM OCR, VLM embeddings, structured extraction,
 //! and per-region VLM extraction for diagrams and complex layouts.
 
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod client;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod prompts;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod region_extractor;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod structured;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod text_completion;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod usage;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod vlm_embeddings;
-#[cfg(all(feature = "liter-llm", not(target_os = "windows")))]
+#[cfg(feature = "liter-llm")]
 pub mod vlm_ocr;

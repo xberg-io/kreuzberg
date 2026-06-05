@@ -794,32 +794,6 @@ pub fn scan_text(text: &str, categories: Vec<PiiCategory>) -> Vec<PatternMatch>
 
 ---
 
-#### apply_strategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```rust
-pub fn apply_strategy(strategy: RedactionStrategy, original: &str, category: PiiCategory, counter: TokenCounter) -> String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `String` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `String`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -865,40 +839,6 @@ pub fn token_count(text: &str) -> u32
 | `text` | `String` | Yes | The text |
 
 **Returns:** `u32`
-
----
-
-#### summarize_with_llm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `None` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```rust
-pub async fn summarize_with_llm(text: &str, llm_config: LlmConfig, max_tokens: Option<u32>) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `max_tokens` | `Option<u32>` | No | The max tokens |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
 
 ---
 
@@ -993,149 +933,6 @@ pub async fn extract_region_with_vlm(image_bytes: &[u8], image_mime: &str, regio
 
 ---
 
-#### extract_region_with_vlm_usage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```rust
-pub async fn extract_region_with_vlm_usage(image_bytes: &[u8], image_mime: &str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: Option<String>) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `image_bytes` | `Vec<u8>` | Yes | The image bytes |
-| `image_mime` | `String` | Yes | The image mime |
-| `region_kind` | `RegionKind` | Yes | The region kind |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `custom_prompt` | `Option<String>` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### complete_with_json_schema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```rust
-pub async fn complete_with_json_schema(llm_config: LlmConfig, prompt: &str, schema_name: &str, schema: serde_json::Value, source: &str) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `schema_name` | `String` | Yes | The schema name |
-| `schema` | `serde_json::Value` | Yes | The schema |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### complete_text()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```rust
-pub async fn complete_text(llm_config: LlmConfig, prompt: &str, source: &str) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### embed_texts_async()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```rust
-pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `Vec<String>` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `Vec<Vec<f32>>`
-**Errors:** Returns `Err(Error)`.
-
----
-
 #### render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
@@ -1211,6 +1008,26 @@ pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Ve
 |------|------|----------|-------------|
 | `texts` | `Vec<String>` | Yes | The texts |
 | `config` | `EmbeddingConfig` | Yes | The configuration options |
+
+**Returns:** `Vec<Vec<f32>>`
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```rust
+pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Vec<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `Vec<Vec<f32>>`
 **Errors:** Returns `Err(Error)`.
@@ -2670,56 +2487,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repo_id` | `String` | — | Repo id |
-| `model_path` | `PathBuf` | — | Model path |
-| `tokenizer_path` | `PathBuf` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `None`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```rust
-pub fn new(repo_id: Option<String>) -> GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```rust
-pub fn detect(&self, text: &str, categories: Vec<EntityCategory>) -> Vec<Entity>
-```
-
-#### detect_with_custom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```rust
-pub fn detect_with_custom(&self, text: &str, categories: Vec<EntityCategory>, custom_labels: Vec<String>) -> Vec<Entity>
-```
-
----
-
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -3276,6 +3043,12 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `cls_model` | `PathBuf` | — | Path to the classification model directory. |
 | `rec_model` | `PathBuf` | — | Path to the recognition model directory. |
 | `dict_file` | `PathBuf` | — | Path to the character dictionary file. |
+
+---
+
+#### NerBackend
+
+NER backend trait (stub for Android x86_64).
 
 ---
 
@@ -4713,17 +4486,6 @@ pub fn default() -> SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byte_start` | `usize` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -5048,17 +4810,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```rust
 pub fn new() -> TokenCounter
-```
-
-#### next_token()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```rust
-pub fn next_token(&self, category: PiiCategory, original: &str) -> String
 ```
 
 ---
@@ -5990,7 +5741,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `String` |
 
 ---
 

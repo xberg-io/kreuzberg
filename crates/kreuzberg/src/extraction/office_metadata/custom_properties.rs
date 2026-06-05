@@ -49,6 +49,7 @@ pub type CustomProperties = HashMap<String, Value>;
 /// }
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub fn extract_custom_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<CustomProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "docProps/custom.xml", "custom.xml")? {
         Some(content) => content,

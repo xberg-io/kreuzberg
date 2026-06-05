@@ -39,6 +39,7 @@ pub enum OcrBoundingGeometry {
     Quadrilateral {
         /// Four corner points as `[[x, y], ...]` in clockwise order
         #[cfg_attr(feature = "api", schema(value_type = [[u32; 2]; 4]))]
+        #[cfg_attr(alef, alef(skip))]
         points: [(u32, u32); 4],
     },
 }

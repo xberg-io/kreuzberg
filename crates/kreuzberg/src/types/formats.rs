@@ -87,9 +87,11 @@ pub struct TextExtractionResult {
     pub headers: Option<Vec<String>>,
     /// Markdown links as (text, URL) tuples (Markdown files only)
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub links: Option<Vec<(String, String)>>,
     /// Code blocks as (language, code) tuples (Markdown files only)
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(alef, alef(skip))]
     pub code_blocks: Option<Vec<(String, String)>>,
 }
 
@@ -121,6 +123,7 @@ pub struct PptxExtractionResult {
     pub document: Option<DocumentStructure>,
     /// Hyperlinks discovered in slides as (url, optional_label) pairs.
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[cfg_attr(alef, alef(skip))]
     pub hyperlinks: Vec<(String, Option<String>)>,
     /// Office metadata extracted from docProps/core.xml and docProps/app.xml.
     ///
@@ -213,6 +216,7 @@ pub struct OcrExtractionResult {
     /// Carries paragraph structure, bounding boxes, and confidence scores
     /// that the flattened `content` string discards.
     #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
     pub internal_document: Option<super::internal::InternalDocument>,
 }
 
@@ -419,9 +423,11 @@ impl Default for TesseractConfig {
 pub struct ImagePreprocessingMetadata {
     /// Original image dimensions (width, height) in pixels
     #[cfg_attr(feature = "api", schema(value_type = [u64; 2]))]
+    #[cfg_attr(alef, alef(skip))]
     pub original_dimensions: (usize, usize),
     /// Original image DPI (horizontal, vertical)
     #[cfg_attr(feature = "api", schema(value_type = [f64; 2]))]
+    #[cfg_attr(alef, alef(skip))]
     pub original_dpi: (f64, f64),
     /// Target DPI from configuration
     pub target_dpi: i32,
@@ -433,6 +439,7 @@ pub struct ImagePreprocessingMetadata {
     pub final_dpi: i32,
     /// New dimensions after resizing (if resized)
     #[cfg_attr(feature = "api", schema(value_type = Option<[u64; 2]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub new_dimensions: Option<(usize, usize)>,
     /// Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
     pub resample_method: String,

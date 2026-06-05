@@ -20,16 +20,11 @@
 pub mod backend;
 #[cfg(feature = "ner-onnx")]
 pub mod gline;
-#[cfg(all(
-    feature = "ner-llm",
-    not(target_os = "windows"),
-    not(all(target_os = "android", target_arch = "x86_64"))
-))]
+#[cfg(all(feature = "ner-llm", not(all(target_os = "android", target_arch = "x86_64"))))]
 pub mod llm;
 
 pub use backend::NerBackend;
 
-#[cfg(feature = "ner-onnx")]
 use std::path::PathBuf;
 
 /// Eagerly download a NER model into the kreuzberg cache.
@@ -41,14 +36,31 @@ pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> crate::Result<P
     gline::download_model(name, cache_dir)
 }
 
+#[cfg(not(feature = "ner-onnx"))]
+pub fn download_model(_name: &str, _cache_dir: Option<PathBuf>) -> crate::Result<PathBuf> {
+    Err(crate::KreuzbergError::Other(
+        "ner-onnx feature not available on this target".into(),
+    ))
+}
+
 /// Pinned default NER model identifier.
 #[cfg(feature = "ner-onnx")]
 pub fn default_model_name() -> &'static str {
     gline::DEFAULT_MODEL_REPO
 }
 
+#[cfg(not(feature = "ner-onnx"))]
+pub fn default_model_name() -> &'static str {
+    "gliner-stub"
+}
+
 /// All NER models kreuzberg knows about (used by `--all-ner-models`).
 #[cfg(feature = "ner-onnx")]
 pub fn known_models() -> &'static [&'static str] {
     gline::KNOWN_MODELS
+}
+
+#[cfg(not(feature = "ner-onnx"))]
+pub fn known_models() -> &'static [&'static str] {
+    &[]
 }

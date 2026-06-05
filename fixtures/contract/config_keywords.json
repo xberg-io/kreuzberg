@@ -7,6 +7,7 @@
     "keywords"
   ],
   "call": "extract_file_sync",
+  "assertion_recipes": ["keywords"],
   "input": {
     "path": "pdf/fake_memo.pdf",
     "config": {

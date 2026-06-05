@@ -1616,7 +1616,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | `jats` | Jats — Fields: `_0`: `JatsMetadata` |
 | `Epub` | `epub` | Epub format — Fields: `_0`: `EpubMetadata` |
 | `Pst` | `pst` | Pst — Fields: `_0`: `PstMetadata` |
-| `Code` | `code` | Code — Fields: `_0`: `String` |
 
 ---
 

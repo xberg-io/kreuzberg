@@ -83,6 +83,7 @@ pub struct PageInfo {
     /// Dimensions in points (PDF) or pixels (images): (width, height)
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "api", schema(value_type = Option<[f64; 2]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub dimensions: Option<(f64, f64)>,
 
     /// Number of images on this page
@@ -274,6 +275,7 @@ pub struct HierarchicalBlock {
     /// Contains coordinates as (left, top, right, bottom) in PDF units.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "api", schema(value_type = Option<[f32; 4]>))]
+    #[cfg_attr(alef, alef(skip))]
     pub bbox: Option<(f32, f32, f32, f32)>,
 }
 

@@ -572,7 +572,7 @@ fn test_format_metadata_code_variant_serialization() {
         ..kreuzberg::ProcessResult::default()
     };
 
-    let metadata = FormatMetadata::Code(result);
+    let metadata = FormatMetadata::Code(kreuzberg::CodeMetadataInner(result));
     let json = serde_json::to_value(&metadata).expect("Failed to serialize FormatMetadata::Code");
 
     // Verify the tagged union format

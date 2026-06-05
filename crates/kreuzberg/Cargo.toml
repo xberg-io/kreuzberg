@@ -23,7 +23,8 @@ ignored = [
     # cargo-machete cannot resolve `dep:icu_provider` references in feature flag chains.
     "icu_provider",
     "serde_toon_format",
-    # optional deps only referenced via dep: in feature lists — cargo-machete false positive
+    # kreuzberg-gliner-rs exposes the `gliner` lib name; kreuzberg-orp exposes `orp`.
+    # cargo-machete checks for the package name but the source imports the lib name.
     "kreuzberg-gliner-rs",
     "kreuzberg-orp",
 ]
@@ -198,6 +199,9 @@ diff = ["dep:similar"]
 # `crates/kreuzberg/src/extractors/` for QR) and is wired through a built-in
 # post-processor under `crates/kreuzberg/src/plugins/processor/builtin/`.
 ner = [] # NER result types only; safe on every target.
+ner-llm-types = [
+    "ner",
+] # LlmBackend stub for targets without full ner-llm (Windows, Android x86_64, WASM).
 ner-llm = ["ner", "liter-llm"] # LLM-driven zero-shot NER (no ORT).
 ner-onnx = [
     # gline-rs ONNX backend (kreuzberg-gliner-rs fork) with HuggingFace model download.
@@ -413,7 +417,7 @@ libc = { workspace = true }
 # excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
 # to build on Windows MSVC.
 log = { workspace = true }
-lopdf = { version = "0.40.0", optional = true }
+lopdf = { version = "0.41.0", optional = true }
 mail-parser = { version = "0.11.3", optional = true }
 memchr = "2.8.1"
 memmap2 = { workspace = true }
@@ -496,9 +500,6 @@ zip = { version = ">=7.0.0", optional = true, default-features = false, features
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.3", optional = true }
-# liter-llm pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys. aws-lc-sys 0.40 fails to build on
-# Windows MSVC (stdalign feature detection treats `-WX` warnings as errors). Until upstream ships
-# a fix, restrict liter-llm to non-Windows targets so Windows FFI/CLI builds don't pull aws-lc-sys.
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 pprof = { version = "0.15.0", features = ["flamegraph"], optional = true }
 # Enable tokenizers `http` feature on native targets so model downloads work via hf-hub.
@@ -512,6 +513,8 @@ ureq = { version = "3.3", default-features = false, features = ["rustls", "json"
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.3", optional = true }
+# liter-llm: aws-lc-sys MSVC fix shipped in kreuzberg-dev/liter-llm; track via git patch.
+liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 # Enable tokenizers `http` feature on Windows so model downloads work via hf-hub.
 tokenizers = { version = "0.23", default-features = false, features = ["http", "fancy-regex"], optional = true }
 # Force ureq (transitive dep via hf-hub) to use native-tls on Windows

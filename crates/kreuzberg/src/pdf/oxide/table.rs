@@ -680,6 +680,7 @@ mod tests {
             artifact_type: None,
             char_widths: vec![],
             heading_level: None,
+            rotation_degrees: 0.0,
         }
     }
 

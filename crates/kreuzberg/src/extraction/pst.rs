@@ -65,10 +65,10 @@ pub(crate) fn extract_pst_messages(pst_data: &[u8]) -> Result<(Vec<EmailExtracti
         .prefix("kreuzberg_pst_")
         .suffix(".tmp")
         .tempfile()
-        .map_err(KreuzbergError::Io)?;
+        .map_err(crate::KreuzbergError::from)?;
 
-    temp_file.write_all(pst_data).map_err(KreuzbergError::Io)?;
-    temp_file.flush().map_err(KreuzbergError::Io)?;
+    temp_file.write_all(pst_data).map_err(crate::KreuzbergError::from)?;
+    temp_file.flush().map_err(crate::KreuzbergError::from)?;
 
     let (messages, warnings) = extract_from_path(temp_file.path())?;
     Ok((messages, warnings))

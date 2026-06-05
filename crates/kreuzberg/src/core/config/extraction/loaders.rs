@@ -67,7 +67,7 @@ impl ExtractionConfig {
     ///
     /// Searches for `kreuzberg.toml` in current directory and parent directories.
     pub fn discover() -> Result<Option<Self>> {
-        let mut current = std::env::current_dir().map_err(KreuzbergError::Io)?;
+        let mut current = std::env::current_dir().map_err(crate::KreuzbergError::from)?;
 
         loop {
             let kreuzberg_toml = current.join("kreuzberg.toml");

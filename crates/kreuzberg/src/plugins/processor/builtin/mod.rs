@@ -5,16 +5,16 @@
 //! wasm-target, android-target) compile out cleanly. Modules added by parallel
 //! work streams plug in here without touching one another's files.
 
-#[cfg(all(feature = "classification", not(target_os = "windows")))]
+#[cfg(feature = "classification")]
 pub mod classification;
 
 #[cfg(feature = "summarization")]
 pub mod summarization;
 
-#[cfg(all(feature = "translation", not(target_os = "windows")))]
+#[cfg(feature = "translation")]
 pub mod translation;
 
-#[cfg(all(feature = "captioning", not(target_os = "windows")))]
+#[cfg(feature = "captioning")]
 pub mod captioning;
 
 #[cfg(feature = "qr-codes")]
@@ -34,16 +34,16 @@ pub mod redaction;
 /// `register` function is gated by its feature flag so this aggregate stays
 /// safe to call on any target.
 pub fn register_builtin() -> crate::Result<()> {
-    #[cfg(all(feature = "classification", not(target_os = "windows")))]
+    #[cfg(feature = "classification")]
     classification::register()?;
 
     #[cfg(feature = "summarization")]
     summarization::register()?;
 
-    #[cfg(all(feature = "translation", not(target_os = "windows")))]
+    #[cfg(feature = "translation")]
     translation::register()?;
 
-    #[cfg(all(feature = "captioning", not(target_os = "windows")))]
+    #[cfg(feature = "captioning")]
     captioning::register()?;
 
     #[cfg(feature = "qr-codes")]

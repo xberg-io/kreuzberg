@@ -173,7 +173,7 @@ impl OcrBackend for TesseractWasmBackend {
     }
 
     async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
-        let bytes = std::fs::read(path).map_err(crate::KreuzbergError::Io)?;
+        let bytes = std::fs::read(path).map_err(crate::KreuzbergError::from)?;
         self.process_image(&bytes, config).await
     }
 

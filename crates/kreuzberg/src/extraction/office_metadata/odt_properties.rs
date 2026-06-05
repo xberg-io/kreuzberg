@@ -87,6 +87,7 @@ pub struct OdtProperties {
 /// println!("Created: {:?}", props.creation_date);
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub fn extract_odt_properties<R: Read + std::io::Seek>(archive: &mut ZipArchive<R>) -> Result<OdtProperties> {
     let xml_content = match super::read_zip_entry_to_string(archive, "meta.xml", "meta.xml")? {
         Some(content) => content,

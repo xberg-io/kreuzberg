@@ -31,6 +31,7 @@ use serde_json::Value;
 /// the response contains no content, or the response is not parseable JSON.
 // `stream` is pub(crate) in liter-llm, preventing struct literal initialisation.
 #[allow(clippy::field_reassign_with_default)]
+#[cfg_attr(alef, alef(skip))]
 pub async fn complete_with_json_schema(
     llm_config: &LlmConfig,
     prompt: &str,
