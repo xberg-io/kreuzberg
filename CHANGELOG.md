@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **pdf (#1077)**: non-JPEG embedded images extracted via pdf_oxide (Raw pixel data without self-describing headers, common in Acrobat Sign/Word PDFs) are now re-encoded to PNG bytes using the PDF-provided width/height/colorspace/bits metadata before storing in ExtractedImage. This makes the data always probeable/loadable by load_image_for_ocr, extract_image_metadata, VLM etc., eliminating "image dimension probe failed: The image format could not be determined" during image_ocr. JPEG images unchanged.
 
+- **pdf (#1078)**: very wide / extreme-aspect single-page vector-heavy PDFs (and similar) no longer cause hard `ParsingError` ("Failed to render page 0 for OCR") on the `force_ocr` path (including when using the `vlm` OCR backend) or mixed `force_ocr_pages`. The renderer now auto-selects a reduced but safe DPI for pages whose MediaBox would produce impractically large pixel buffers for the underlying rasterizer. Normal pages are unaffected. The same safeguard applies to the public `render_pdf_page_to_png` and layout-detection page rendering. Added regression test using a minimal PDF with extreme MediaBox. (Root cause: unconditional `RenderOptions::default()` + raw MediaBox scaling with no dimension guard, preserved across the pdfium → pdf_oxide migration.)
+
 - **ffi/windows**: expose `LlmBackend` via new `ner-llm-types` type-only feature for Windows FFI bindings so structured extraction compiles on Windows.
 
 - **ocr**: preserve vertical spacing in paragraph baselines when filtering blank lines from OCR elements. This fixes 1.6% TF1 loss for Tesseract and 3.6% for PaddleOCR on OCR-extracted documents.

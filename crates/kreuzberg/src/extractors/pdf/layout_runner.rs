@@ -41,8 +41,6 @@ pub(super) fn run_layout_for_pdf_pages(
     content: &[u8],
     layout_config: &LayoutDetectionConfig,
 ) -> Result<LayoutForMarkdownOutput> {
-    use pdf_oxide::rendering::RenderOptions;
-
     // --- 1. Open document and render all pages ---
     let doc = pdf_oxide::PdfDocument::from_bytes(content.to_vec()).map_err(|e| KreuzbergError::Parsing {
         message: format!("layout runner: failed to open PDF: {e}"),
@@ -58,8 +56,10 @@ pub(super) fn run_layout_for_pdf_pages(
         return Ok((Vec::new(), Vec::new(), Vec::new()));
     }
 
-    let render_opts = RenderOptions::default();
-
+    // Use the central safeguarded renderer (handles the same wide / extreme-dimension
+    // cases as the OCR force_ocr paths). We still compute the points dimensions here
+    // because the caller needs them for the returned tuple.
+    //
     // Collect (page_width_pts, page_height_pts, RgbImage) for every page.
     //
     // We decode each page to DynamicImage only long enough to call `.to_rgb8()`,
@@ -73,11 +73,12 @@ pub(super) fn run_layout_for_pdf_pages(
             .map(|(llx, lly, urx, ury)| ((urx - llx).abs(), (ury - lly).abs()))
             .unwrap_or((612.0, 792.0)); // Letter fallback
 
-        let rendered =
-            pdf_oxide::rendering::render_page(&doc, page_idx, &render_opts).map_err(|e| KreuzbergError::Parsing {
+        let rendered = crate::pdf::render::render_page_with_safeguards(&doc, page_idx, 150).map_err(|e| {
+            KreuzbergError::Parsing {
                 message: format!("layout runner: failed to render page {}: {e}", page_idx + 1),
                 source: None,
-            })?;
+            }
+        })?;
 
         // Decode to DynamicImage, convert to RGB immediately, then drop DynamicImage
         // so its pixel buffer is freed before processing the next page.

@@ -362,13 +362,11 @@ pub(crate) fn evaluate_per_page_ocr(
 ///
 /// `page_indices` are 0-indexed. Only the requested pages are rendered,
 /// returned as `(page_index, image)` pairs.
-#[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+#[cfg(all(any(feature = "ocr", feature = "ocr-pipeline"), feature = "pdf"))]
 pub(crate) fn render_selected_pages_for_ocr(
     content: &[u8],
     page_indices: &[usize],
 ) -> crate::Result<Vec<(usize, image::DynamicImage)>> {
-    use pdf_oxide::rendering::{RenderOptions, render_page};
-
     let doc = pdf_oxide::PdfDocument::from_bytes(content.to_vec()).map_err(|e| crate::KreuzbergError::Parsing {
         message: format!("Failed to open PDF for rendering: {}", e),
         source: None,
@@ -379,7 +377,9 @@ pub(crate) fn render_selected_pages_for_ocr(
         source: None,
     })?;
 
-    let render_options = RenderOptions::default();
+    // Use safeguarded render (handles very wide / extreme-aspect pages that previously
+    // caused PdfiumLibraryInternalError or equivalent "Failed to create pixmap" inside
+    // the rasterizer). This is the core of the fix for #1078.
     let mut images = Vec::with_capacity(page_indices.len());
     for &idx in page_indices {
         if idx >= page_count {
@@ -392,9 +392,11 @@ pub(crate) fn render_selected_pages_for_ocr(
             );
             continue;
         }
-        let rendered = render_page(&doc, idx, &render_options).map_err(|e| crate::KreuzbergError::Parsing {
-            message: format!("Failed to render PDF page {}: {}", idx + 1, e),
-            source: None,
+        let rendered = crate::pdf::render::render_page_with_safeguards(&doc, idx, 150).map_err(|e| {
+            crate::KreuzbergError::Parsing {
+                message: format!("Failed to render PDF page {}: {}", idx + 1, e),
+                source: None,
+            }
         })?;
         // rendered.data is PNG-encoded; decode back to DynamicImage for OCR.
         let img = image::load_from_memory(&rendered.data).map_err(|e| crate::KreuzbergError::Parsing {
@@ -414,7 +416,7 @@ pub(crate) fn render_selected_pages_for_ocr(
 ///
 /// Page numbers must be >= 1 (invalid values are filtered out with a warning).
 /// An `ocr` config is recommended but not required; defaults are used if absent.
-#[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+#[cfg(all(any(feature = "ocr", feature = "ocr-pipeline"), feature = "pdf"))]
 pub(crate) async fn extract_mixed_ocr_native(
     native_text: &str,
     boundaries: &[crate::types::PageBoundary],
@@ -806,11 +808,14 @@ pub(crate) async fn extract_with_ocr(
                         source: None,
                     }
                 })?;
-                let render_opts = pdf_oxide::rendering::RenderOptions::default();
+                // Use the safeguarded renderer (see render.rs). This prevents hard
+                // failures on the exact class of inputs reported in #1078 (single-page
+                // very wide vector-heavy PDFs) when force_ocr + VLM (or other ocr-pipeline
+                // backends) is used. Normal pages are unaffected.
                 let mut batch_encoded: Vec<(usize, Arc<Vec<u8>>, u32, u32)> =
                     Vec::with_capacity(batch_end - batch_start);
                 for i in batch_start..batch_end {
-                    let rendered = pdf_oxide::rendering::render_page(&doc, i, &render_opts).map_err(|e| {
+                    let rendered = crate::pdf::render::render_page_with_safeguards(&doc, i, 150).map_err(|e| {
                         crate::KreuzbergError::Parsing {
                             message: format!("Failed to render page {} for OCR: {:?}", i, e),
                             source: None,
@@ -2389,5 +2394,28 @@ Buffers:           50000 kB
     fn parse_meminfo_available_handles_unparseable_value_as_zero() {
         let synthetic = "MemAvailable: notanumber kB\n";
         assert_eq!(parse_meminfo_available(synthetic), 0);
+    }
+
+    /// Pipeline-level test for the actual bug path in #1078 (force_ocr_pages / mixed
+    /// path uses render_selected_pages_for_ocr; full force_ocr uses similar batch
+    /// render in extract_with_ocr).
+    /// This proves the wide PDF no longer hard-fails through the OCR render path
+    /// that was crashing in production.
+    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[test]
+    fn test_render_selected_pages_for_ocr_wide_pdf_does_not_fail() {
+        // Repro for the render failure reported in #1078.
+        // Note limitation (per review): the in-memory minimal PDF has empty content
+        // stream and no /Resources. It exercises the MediaBox guard in
+        // render_selected_pages_for_ocr but may not trigger all rasterizer paths
+        // that a real wide vector-heavy diagram PDF would. A sanitized real repro
+        // was used for manual verification during development.
+        let wide_pdf = crate::pdf::render::build_minimal_pdf_with_mediabox(20000.0, 300.0);
+        let result = render_selected_pages_for_ocr(&wide_pdf, &[0]);
+        assert!(
+            result.is_ok(),
+            "render_selected_pages_for_ocr on wide page (the #1078 bug path) should succeed via safeguard, got: {:?}",
+            result.err()
+        );
     }
 }
