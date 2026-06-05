@@ -163,28 +163,28 @@ max_supported_python = "3.14"
 
 [tool.mypy]
 packages = [ "kreuzberg" ]
-exclude = [ "examples", "benchmarks", "crates", "e2e/smoke", "test_apps" ]
+exclude = [ "benchmarks", "crates", "e2e/smoke", "examples", "test_apps" ]
+namespace_packages = true
 python_version = "3.10"
 disable_error_code = [ "import-untyped", "untyped-decorator" ]
 implicit_reexport = false
-show_error_codes = true
 strict = true
-namespace_packages = true
+show_error_codes = true
 
 [[tool.mypy.overrides]]
 module = [
-  "keybert",
-  "easyocr",
-  "torch",
-  "kreuzberg._internal_bindings",
   "docling.*",
-  "markitdown",
-  "unstructured.*",
+  "easyocr",
   "httpx",
+  "keybert",
+  "kreuzberg._internal_bindings",
+  "markitdown",
+  "torch",
+  "unstructured.*",
 ]
 ignore_missing_imports = true
-ignore_errors = true
 follow_imports = "skip"
+ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [ "numpy", "numpy.*" ]
@@ -192,31 +192,31 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = [ "tests.test_apps.python.*" ]
-ignore_errors = true
 follow_imports = "skip"
+ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [ "examples.python.*" ]
-ignore_errors = true
 follow_imports = "skip"
+ignore_errors = true
 
 [tool.pytest]
-ini_options.timeout = 300
 ini_options.testpaths = [ "packages/python/tests" ]
-ini_options.norecursedirs = [ "dist", "build", "*.egg" ]
+ini_options.norecursedirs = [ "*.egg", "build", "dist" ]
 ini_options.markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "integration: marks tests as integration tests (requires running services)",
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
-ini_options.asyncio_mode = "auto"
-ini_options.asyncio_default_fixture_loop_scope = "function"
 ini_options.filterwarnings = [
-  "ignore:Exception ignored in:pytest.PytestUnraisableExceptionWarning",
-  "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
   "ignore:ast.Num is deprecated and will be removed in Python 3.14:DeprecationWarning",
   "ignore:datetime.datetime.utcfromtimestamp() is deprecated:DeprecationWarning",
   "ignore:Deprecated call to `pkg_resources.declare_namespace('google')`:DeprecationWarning",
+  "ignore:Exception ignored in:pytest.PytestUnraisableExceptionWarning",
+  "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
 ]
+ini_options.asyncio_default_fixture_loop_scope = "function"
+ini_options.asyncio_mode = "auto"
+ini_options.timeout = 300
 
 [tool.coverage]
 run.branch = true

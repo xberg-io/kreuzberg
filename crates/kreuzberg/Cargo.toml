@@ -345,10 +345,9 @@ tempfile = { workspace = true, optional = true }
 text-splitter = { version = "0.31.0", features = ["markdown"], optional = true }
 thiserror = { workspace = true }
 tiff = { version = "0.11", optional = true }
-# Pinned to 0.22 — text-splitter 0.30.1 ChunkSizer impl + embeddings/add_special_tokens
-# break against tokenizers 0.23. Bump deliberately on the next minor with a coordinated
-# text-splitter upgrade. Tracked under issue #991 / 4.9.8 release.
-tokenizers = { version = "=0.22.2", optional = true, default-features = false, features = [
+# Keep aligned with text-splitter's optional tokenizers integration so ChunkSizer
+# is implemented for the same Tokenizer type used by Kreuzberg.
+tokenizers = { version = "0.23.1", optional = true, default-features = false, features = [
     "http",
     "fancy-regex",
 ] }

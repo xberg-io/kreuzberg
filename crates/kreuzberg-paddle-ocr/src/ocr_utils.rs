@@ -5,7 +5,7 @@ use crate::{
     ocr_result::{Point, TextBox},
 };
 use image::imageops;
-use imageproc::geometric_transformations::{Interpolation, Projection};
+use imageproc::geometric_transformations::{Border, Interpolation, Projection};
 use ndarray::{Array, Array4};
 
 pub struct OcrUtils;
@@ -154,9 +154,9 @@ impl OcrUtils {
         let mut part_img = image::RgbImage::new(img_crop_width, img_crop_height);
         imageproc::geometric_transformations::warp_into(
             &img_crop,
-            &projection,
+            projection,
             Interpolation::Nearest,
-            image::Rgb([255, 255, 255]),
+            Border::Constant(image::Rgb([255, 255, 255])),
             &mut part_img,
         );
 

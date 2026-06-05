@@ -85,14 +85,14 @@ include = [
 ]
 
 [tool.pytest]
-ini_options.asyncio_mode = "auto"
-ini_options.timeout = 60
-ini_options.timeout_method = "thread"
+ini_options.addopts = "--doctest-modules"
 ini_options.markers = [
+  "cli_features: marks tests that require CLI binary built with --features all (deselect with '-m \"not cli_features\"')",
+  "integration: marks tests as integration tests (requires running services)",
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "windows_slow: marks tests as too slow on Windows CI (deselect with '-m \"not windows_slow\"')",
-  "integration: marks tests as integration tests (requires running services)",
-  "cli_features: marks tests that require CLI binary built with --features all (deselect with '-m \"not cli_features\"')",
 ]
+ini_options.asyncio_mode = "auto"
+ini_options.timeout = 60
 ini_options.timeout_func_only = true
-ini_options.addopts = "--doctest-modules"
+ini_options.timeout_method = "thread"
