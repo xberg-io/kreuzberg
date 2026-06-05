@@ -66,6 +66,79 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-native-lib</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- Detect OS and architecture to determine native library name and RID -->
+                                <condition property="os.macos">
+                                    <os family="mac" />
+                                </condition>
+                                <condition property="os.windows">
+                                    <os family="windows" />
+                                </condition>
+                                <condition property="os.linux">
+                                    <and>
+                                        <os family="unix" />
+                                        <not>
+                                            <isset property="os.macos" />
+                                        </not>
+                                    </and>
+                                </condition>
+                                <!-- Default OS if conditions above fail -->
+                                <property name="os.detected" value="linux" />
+                                <condition property="os.detected" value="macos">
+                                    <isset property="os.macos" />
+                                </condition>
+                                <condition property="os.detected" value="windows">
+                                    <isset property="os.windows" />
+                                </condition>
+                                <!-- Detect architecture -->
+                                <condition property="arch.detected" value="arm64">
+                                    <or>
+                                        <matches string="${os.arch}" pattern="(aarch64|arm64)" />
+                                        <matches string="${sun.arch.abi}" pattern="aarch64" />
+                                    </or>
+                                </condition>
+                                <condition property="arch.detected" value="x86_64">
+                                    <or>
+                                        <matches string="${os.arch}" pattern="(x86_64|amd64)" />
+                                        <equals arg1="${arch.detected}" arg2="" />
+                                    </or>
+                                </condition>
+                                <!-- Build natives RID and library filename -->
+                                <property name="natives.rid" value="${os.detected}-${arch.detected}" />
+                                <condition property="native.lib.name" value="libkreuzberg_ffi.dylib">
+                                    <isset property="os.macos" />
+                                </condition>
+                                <condition property="native.lib.name" value="libkreuzberg_ffi.so">
+                                    <isset property="os.linux" />
+                                </condition>
+                                <condition property="native.lib.name" value="kreuzberg_ffi.dll">
+                                    <isset property="os.windows" />
+                                </condition>
+                                <!-- Define source and destination paths -->
+                                <property name="native.source" value="${project.basedir}/../../target/release/${native.lib.name}" />
+                                <property name="native.dest.dir" value="${project.basedir}/src/main/resources/natives/${natives.rid}" />
+                                <!-- Copy native library if it exists -->
+                                <available file="${native.source}" property="native.lib.exists" />
+                                <echo message="Copying native library from ${native.source} to ${native.dest.dir}" />
+                                <mkdir dir="${native.dest.dir}" />
+                                <copy file="${native.source}" todir="${native.dest.dir}" failonerror="false" verbose="false" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.6.1</version>

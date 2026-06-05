@@ -6,9 +6,8 @@ license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
-categories = ["text-processing"]
+categories = []
 repository = "https://github.com/kreuzberg-dev/kreuzberg"
-
 
 # `serde_json`, `ahash`, and `tokio` are emitted unconditionally above so the
 # manifest is stable across regens (and so the C FFI codegen can pull them in
@@ -40,7 +39,7 @@ kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.3", features = ["full",
 kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.3", features = ["android-target"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.3", features = ["pdf", "ocr", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate-types", "layout-types", "paddle-ocr-types", "embedding-presets", "redaction", "diff", "qr-codes", "summarization", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.3", features = ["pdf", "ocr", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate-types", "layout-types", "paddle-ocr-types", "embedding-presets", "ner", "ner-llm-types", "redaction", "diff", "qr-codes", "summarization", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
 
 
 [build-dependencies]

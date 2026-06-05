@@ -21,8 +21,7 @@ use kreuzberg_ffi::{
     kreuzberg_batch_extract_bytes, kreuzberg_batch_extract_bytes_sync, kreuzberg_batch_extract_files,
     kreuzberg_batch_extract_files_sync, kreuzberg_clear_document_extractor, kreuzberg_clear_embedding_backend,
     kreuzberg_clear_ocr_backend, kreuzberg_clear_post_processor, kreuzberg_clear_renderer, kreuzberg_clear_validator,
-    kreuzberg_detect_mime_type, kreuzberg_detect_mime_type_from_bytes, kreuzberg_embed_texts,
-    kreuzberg_embedding_config_free, kreuzberg_embedding_config_from_json, kreuzberg_embedding_preset_free,
+    kreuzberg_detect_mime_type, kreuzberg_detect_mime_type_from_bytes, kreuzberg_embedding_preset_free,
     kreuzberg_embedding_preset_to_json, kreuzberg_extract_bytes, kreuzberg_extract_bytes_sync, kreuzberg_extract_file,
     kreuzberg_extract_file_sync, kreuzberg_extraction_config_free, kreuzberg_extraction_config_from_json,
     kreuzberg_extraction_result_free, kreuzberg_extraction_result_to_json, kreuzberg_free_bytes, kreuzberg_free_string,
@@ -744,58 +743,10 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeGetExtensionsFor
 // Embedding Functions
 // ============================================================================
 
-#[unsafe(no_mangle)]
-pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeEmbedTextsImpl<'local>(
-    mut env: JNIEnv<'local>,
-    _class: JClass<'local>,
-    texts: JString<'local>,
-    config: JString<'local>,
-) -> jstring {
-    let texts_str = match jstring_to_string(&mut env, &texts) {
-        Ok(s) => s,
-        Err(e) => return throw_exception(&mut env, &e),
-    };
-
-    let config_str = match jstring_to_string(&mut env, &config) {
-        Ok(s) => s,
-        Err(e) => return throw_exception(&mut env, &e),
-    };
-
-    let texts_c = match CString::new(texts_str) {
-        Ok(cs) => cs,
-        Err(e) => return throw_exception(&mut env, &format!("Invalid texts: {}", e)),
-    };
-
-    let config_c = match CString::new(config_str) {
-        Ok(cs) => cs,
-        Err(e) => return throw_exception(&mut env, &format!("Invalid config: {}", e)),
-    };
-
-    // Parse the JSON config into a typed EmbeddingConfig handle before invoking
-    // embed_texts — the FFI takes a typed pointer, not a raw JSON string.
-    let config_ptr = unsafe { kreuzberg_embedding_config_from_json(config_c.as_ptr()) };
-    if config_ptr.is_null() {
-        return throw_exception(&mut env, "Failed to parse embedding config JSON");
-    }
-
-    // SAFETY: We have valid pointers from CString and the typed config handle.
-    let result_ptr = unsafe { kreuzberg_embed_texts(texts_c.as_ptr(), config_ptr) };
-
-    if result_ptr.is_null() {
-        unsafe {
-            kreuzberg_embedding_config_free(config_ptr);
-        }
-        throw_exception(&mut env, "Embed texts failed")
-    } else {
-        let jstr = cstring_ptr_to_jstring(&mut env, result_ptr);
-        // Clean up
-        unsafe {
-            kreuzberg_free_string(result_ptr);
-            kreuzberg_embedding_config_free(config_ptr);
-        }
-        jstr
-    }
-}
+// TODO: nativeEmbedTextsImpl removed — the sync embed_texts function is generic and
+// cannot be FFI-exported. Use the async variant (embed_texts_async) instead.
+// This was a placeholder that was never fully tested — prefer the Kotlin coroutines
+// API for async embedding operations.
 
 #[unsafe(no_mangle)]
 pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeListEmbeddingPresetsImpl<'local>(

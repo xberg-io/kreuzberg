@@ -750,76 +750,6 @@ public static async Task RedactAsync(ExtractionResult result, RedactionConfig co
 
 ---
 
-#### FindAll()
-
-**Signature:**
-
-```csharp
-public static List<PatternMatch> FindAll(string text)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `Text` | `string` | Yes | The text |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### ScanText()
-
-Scan `text` for every PII category in `categories` and return all matches
-in source-byte order.
-
-When `categories` is empty every supported regex-detectable category fires.
-Person / Organization / Location are *not* covered by the pattern engine —
-they must be supplied by a NER backend through the redaction engine.
-
-**Signature:**
-
-```csharp
-public static List<PatternMatch> ScanText(string text, List<PiiCategory> categories)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `Text` | `string` | Yes | The text |
-| `Categories` | `List<PiiCategory>` | Yes | The categories |
-
-**Returns:** `List<PatternMatch>`
-
----
-
-#### ApplyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```csharp
-public static string ApplyStrategy(RedactionStrategy strategy, string original, PiiCategory category, TokenCounter counter)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `Strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `Original` | `string` | Yes | The original |
-| `Category` | `PiiCategory` | Yes | The pii category |
-| `Counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `string`
-
----
-
 #### Summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -959,40 +889,6 @@ public static async Task<string> ExtractRegionWithVlmAsync(byte[] imageBytes, st
 
 ---
 
-#### EmbedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```csharp
-public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, EmbeddingConfig config)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `Texts` | `List<string>` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `Config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `List<List<float>>`
-**Errors:** Throws `Error`.
-
----
-
 #### RenderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1050,24 +946,20 @@ public static string DetectMimeType(string path, bool checkExists)
 
 ---
 
-#### EmbedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### EmbedTextsAsync()
 
 **Signature:**
 
 ```csharp
-public static List<List<float>> EmbedTexts(List<string> texts, EmbeddingConfig config)
+public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, EmbeddingConfig config)
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `Texts` | `List<string>` | Yes | The texts |
-| `Config` | `EmbeddingConfig` | Yes | The configuration options |
+| `Texts` | `List<string>` | Yes | The  texts |
+| `Config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `List<List<float>>`
 **Errors:** Throws `Error`.
@@ -2524,56 +2416,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `Language` | `string?` | `null` | Language identifier for code blocks |
 | `Code` | `string?` | `null` | Raw code content for code blocks |
 | `Children` | `List<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
-
----
-
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `RepoId` | `string` | — | Repo id |
-| `ModelPath` | `string` | — | Model path |
-| `TokenizerPath` | `string` | — | Tokenizer path |
-
-### Methods
-
-#### New()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```csharp
-public GlineBackend New(string repoId)
-```
-
-#### Detect()
-
-**Signature:**
-
-```csharp
-public async Task<List<Entity>> DetectAsync(string text, List<EntityCategory> categories)
-```
-
-#### DetectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```csharp
-public async Task<List<Entity>> DetectWithCustomAsync(string text, List<EntityCategory> categories, List<string> customLabels)
-```
 
 ---
 
@@ -4576,17 +4418,6 @@ public SecurityLimits CreateDefault()
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Text` | `string` | — | Text |
-| `ByteStart` | `nuint` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -4911,17 +4742,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```csharp
 public TokenCounter New()
-```
-
-#### NextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```csharp
-public string NextToken(PiiCategory category, string original)
 ```
 
 ---

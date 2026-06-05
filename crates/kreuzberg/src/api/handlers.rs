@@ -737,7 +737,7 @@ pub(crate) async fn extract_structured_handler(
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
-#[cfg(any(not(feature = "liter-llm"), target_os = "windows", target_arch = "wasm32"))]
+#[cfg(any(not(feature = "liter-llm"), target_arch = "wasm32"))]
 pub(crate) async fn extract_structured_handler(
     State(_state): State<ApiState>,
     MultipartApi(_multipart): MultipartApi,

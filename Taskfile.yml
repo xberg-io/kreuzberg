@@ -336,6 +336,11 @@ tasks:
       - alef e2e generate
       - git diff --exit-code e2e/
 
+  e2e:lang:
+    desc: "Run e2e tests for a specific language via LANG variable (e.g., task e2e:lang LANG=python)"
+    cmds:
+      - task: ${LANG:-rust}:e2e
+
   rust:e2e:
     desc: "Run Rust e2e tests via alef"
     cmds:

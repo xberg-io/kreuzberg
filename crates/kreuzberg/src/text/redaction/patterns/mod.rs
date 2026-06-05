@@ -26,7 +26,7 @@ pub mod swift_bic;
 use crate::types::redaction::PiiCategory;
 
 /// One detected PII span in the input text.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PatternMatch {
     /// Inclusive byte-offset start of the match in the source text.
     pub start: usize,

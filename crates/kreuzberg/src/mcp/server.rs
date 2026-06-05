@@ -666,7 +666,7 @@ async fn extract_structured_impl(
 }
 
 /// Structured extraction implementation when liter-llm feature is disabled.
-#[cfg(any(not(feature = "liter-llm"), target_os = "windows", target_arch = "wasm32"))]
+#[cfg(any(not(feature = "liter-llm"), target_arch = "wasm32"))]
 async fn extract_structured_impl(
     _mcp: &KreuzbergMcp,
     _params: super::params::ExtractStructuredParams,

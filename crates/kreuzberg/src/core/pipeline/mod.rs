@@ -214,7 +214,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
 
     // TODO(wasm-llm): keep wasm in the fallback branch until structured
     // extraction has an async wasm-compatible runtime path.
-    #[cfg(any(not(feature = "liter-llm"), target_os = "windows", target_arch = "wasm32"))]
+    #[cfg(any(not(feature = "liter-llm"), target_arch = "wasm32"))]
     if config.structured_extraction.is_some() {
         result.processing_warnings.push(crate::types::ProcessingWarning {
             source: std::borrow::Cow::Borrowed("structured_extraction"),

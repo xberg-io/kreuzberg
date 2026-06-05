@@ -194,12 +194,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  TokenCounter
-  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
-    dynamic raw,
-  );
-
-  @protected
   ValidatorDartImpl
   dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     dynamic raw,
@@ -674,9 +668,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PdfMetadata dco_decode_box_autoadd_pdf_metadata(dynamic raw);
-
-  @protected
-  PiiCategory dco_decode_box_autoadd_pii_category(dynamic raw);
 
   @protected
   PostProcessorConfig dco_decode_box_autoadd_post_processor_config(dynamic raw);
@@ -2006,12 +1997,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  TokenCounter
-  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   ValidatorDartImpl
   sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     SseDeserializer deserializer,
@@ -2478,9 +2463,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PdfMetadata sse_decode_box_autoadd_pdf_metadata(SseDeserializer deserializer);
-
-  @protected
-  PiiCategory sse_decode_box_autoadd_pii_category(SseDeserializer deserializer);
 
   @protected
   PostProcessorConfig sse_decode_box_autoadd_post_processor_config(
@@ -4137,13 +4119,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
-  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
-    TokenCounter self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
   sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
     ValidatorDartImpl self,
     SseSerializer serializer,
@@ -4847,12 +4822,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_pdf_metadata(
     PdfMetadata self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_pii_category(
-    PiiCategory self,
     SseSerializer serializer,
   );
 

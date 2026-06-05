@@ -794,32 +794,6 @@ function scanText(text: string, categories: Array<PiiCategory>): Array<PatternMa
 
 ---
 
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```typescript
-function applyStrategy(strategy: RedactionStrategy, original: string, category: PiiCategory, counter: TokenCounter): string
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `string` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `string`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -959,40 +933,6 @@ function extractRegionWithVlm(imageBytes: Buffer, imageMime: string, regionKind:
 
 ---
 
-#### embedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```typescript
-function embedTextsAsync(texts: Array<string>, config: EmbeddingConfig): Promise<Array<Array<number>>>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `Array<string>` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `Array<Array<number>>`
-**Errors:** Throws `Error` with a descriptive message.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1050,24 +990,20 @@ function detectMimeType(path: string, checkExists: boolean): string
 
 ---
 
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embedTextsAsync()
 
 **Signature:**
 
 ```typescript
-function embedTexts(texts: Array<string>, config: EmbeddingConfig): Array<Array<number>>
+function embedTextsAsync(texts: Array<string>, config: EmbeddingConfig): Promise<Array<Array<number>>>
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `Array<string>` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `Array<string>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `Array<Array<number>>`
 **Errors:** Throws `Error` with a descriptive message.
@@ -2524,56 +2460,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `language` | `string \| null` | `null` | Language identifier for code blocks |
 | `code` | `string \| null` | `null` | Raw code content for code blocks |
 | `children` | `Array<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
-
----
-
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `string` | — | Repo id |
-| `modelPath` | `string` | — | Model path |
-| `tokenizerPath` | `string` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```typescript
-static new(repoId: string): GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```typescript
-detect(text: string, categories: Array<EntityCategory>): Array<Entity>
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```typescript
-detectWithCustom(text: string, categories: Array<EntityCategory>, customLabels: Array<string>): Array<Entity>
-```
 
 ---
 
@@ -4576,17 +4462,6 @@ static default(): SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `string` | — | Text |
-| `byteStart` | `number` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -4911,17 +4786,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```typescript
 static new(): TokenCounter
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```typescript
-nextToken(category: PiiCategory, original: string): string
 ```
 
 ---

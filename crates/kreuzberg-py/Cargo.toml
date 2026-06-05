@@ -6,7 +6,7 @@ license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
-categories = ["text-processing"]
+categories = []
 
 # `pyo3-async-runtimes` and `serde_json` are emitted unconditionally above so
 # the manifest is stable across regens, but for umbrella crates with no

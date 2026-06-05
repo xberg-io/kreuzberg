@@ -170,10 +170,11 @@ pub use text::{ReductionLevel, TokenReductionConfig};
 ))]
 pub use text::ner::llm::LlmBackend;
 
-// Stub for targets without ner-llm (Android x86_64, WASM), so alef-generated bindings compile.
+// Stub for targets without ner-llm (Windows, Android x86_64, WASM), so alef-generated bindings compile.
 #[cfg(any(
     all(not(feature = "ner-llm"), target_arch = "wasm32"),
-    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64"))
+    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
+    all(not(feature = "ner-llm"), target_os = "windows")
 ))]
 #[derive(Clone, Debug)]
 pub struct LlmBackend {
@@ -182,7 +183,8 @@ pub struct LlmBackend {
 
 #[cfg(any(
     all(not(feature = "ner-llm"), target_arch = "wasm32"),
-    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64"))
+    all(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")),
+    all(not(feature = "ner-llm"), target_os = "windows")
 ))]
 impl LlmBackend {
     pub fn new(config: LlmConfig) -> Self {
@@ -261,7 +263,7 @@ pub use llm::region_extractor::RegionKind;
 
 // Stub for targets without liter-llm (WASM) so alef-generated FFI bindings compile.
 #[cfg(not(all(feature = "liter-llm", not(target_arch = "wasm32"))))]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RegionKind {
     Figure,
     DenseTable,

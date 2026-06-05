@@ -18,12 +18,12 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { extractBytesSync, listDocumentExtractors, listRenderers } from "kreuzberg";
+import { extractBytesSync, listDocumentExtractors, listRenderers } from "@kreuzberg/node";
 
 // The register/unregister/clear functions are exported by the native module but
 // not re-typed in the public TypeScript wrapper.  Import the native binding
 // directly so we can reach the full API surface without 'any' sprawl.
-import kreuzberg from "kreuzberg";
+import kreuzberg from "@kreuzberg/node";
 const native = kreuzberg as unknown as Record<string, (...args: unknown[]) => unknown>;
 
 function registerDocumentExtractor(obj: unknown): void {
@@ -59,8 +59,8 @@ function makeExtractor(name: string, mimeType = "application/x-test"): object {
 		shutdown: (): void => {
 			/* no-op */
 		},
-		supported_mime_types: (): string[] => [mimeType],
-		extract_bytes: (_content: Uint8Array, _mimeType: string, _configJson: string): string =>
+		supportedMimeTypes: (): string[] => [mimeType],
+		extractBytes: (_content: Uint8Array, _mimeType: string, _configJson: string): string =>
 			JSON.stringify({
 				source_format: "plain",
 				mime_type: "text/plain",

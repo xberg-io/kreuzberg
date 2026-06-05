@@ -1,4 +1,4 @@
-#' Create a ConversionOptions list for generated bindings
+#' Create an options list for generated bindings
 #'
 #' All parameters default to `NULL`, which means the Rust default is used.
 #' Pass named arguments to override individual settings.

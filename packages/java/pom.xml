@@ -29,7 +29,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/kreuzberg-dev/kreuzberg.git</connection>
-        <developerConnection>scm:git:ssh://github.com:kreuzberg-dev/kreuzberg.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/kreuzberg-dev/kreuzberg.git</developerConnection>
         <url>https://github.com/kreuzberg-dev/kreuzberg</url>
     </scm>
 
@@ -300,7 +300,7 @@
                     </rulesets>
                     <!--
                         CPD threshold raised above the default 100 tokens because alef-generated
-                        streaming method bodies (`crawlStream`, `batchCrawlStream`, etc.) share
+                        streaming method bodies (`streamItems`, `batchStreamItems`, etc.) share
                         an identical iterator-driving loop by design (per-stream-handle JNI
                         externs differ, the surrounding plumbing is the same). The shared block
                         is ~106 tokens — well within the default. 200 is the smallest threshold

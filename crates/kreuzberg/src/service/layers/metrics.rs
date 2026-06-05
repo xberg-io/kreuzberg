@@ -42,6 +42,7 @@ impl<S> Layer<S> for MetricsLayer {
 
 /// Middleware service that records extraction metrics.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct MetricsService<S> {
     inner: S,
 }

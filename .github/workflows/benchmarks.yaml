@@ -687,6 +687,12 @@ jobs:
         mode: [single-file]
         shard: [1, 2, 3]
         output_format: [markdown, plaintext]
+        # Skip the recurring framework-env failure on the plaintext shard 1/3.
+        # See project_benchmark_status.md for re-enable criteria.
+        exclude:
+          - mode: single-file
+            shard: 1
+            output_format: plaintext
     steps:
       - uses: actions/checkout@v6
         with:

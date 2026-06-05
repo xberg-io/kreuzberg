@@ -794,32 +794,6 @@ public static func scanText(text: String, categories: [PiiCategory]) -> [Pattern
 
 ---
 
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```swift
-public static func applyStrategy(strategy: RedactionStrategy, original: String, category: PiiCategory, counter: TokenCounter) -> String
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `String` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `String`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -959,40 +933,6 @@ public static func extractRegionWithVlm(imageBytes: Data, imageMime: String, reg
 
 ---
 
-#### embedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```swift
-public static func embedTextsAsync(texts: [String], config: EmbeddingConfig) throws -> [[Float]]
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `[String]` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `[[Float]]`
-**Errors:** Throws `Error`.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1050,24 +990,20 @@ public static func detectMimeType(path: String, checkExists: Bool) throws -> Str
 
 ---
 
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embedTextsAsync()
 
 **Signature:**
 
 ```swift
-public static func embedTexts(texts: [String], config: EmbeddingConfig) throws -> [[Float]]
+public static func embedTextsAsync(texts: [String], config: EmbeddingConfig) throws -> [[Float]]
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `[String]` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `[String]` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `[[Float]]`
 **Errors:** Throws `Error`.
@@ -2524,56 +2460,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `language` | `String?` | `null` | Language identifier for code blocks |
 | `code` | `String?` | `null` | Raw code content for code blocks |
 | `children` | `[FormattedBlock]` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
-
----
-
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `String` | — | Repo id |
-| `modelPath` | `URL` | — | Model path |
-| `tokenizerPath` | `URL` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```swift
-public static func new(repoId: String? = nil) throws -> GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```swift
-public func detect(text: String, categories: [EntityCategory]) throws -> [Entity]
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```swift
-public func detectWithCustom(text: String, categories: [EntityCategory], customLabels: [String]) throws -> [Entity]
-```
 
 ---
 
@@ -4576,17 +4462,6 @@ public static func default() -> SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byteStart` | `UInt64` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -4911,17 +4786,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```swift
 public static func new() -> TokenCounter
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```swift
-public func nextToken(category: PiiCategory, original: String) -> String
 ```
 
 ---

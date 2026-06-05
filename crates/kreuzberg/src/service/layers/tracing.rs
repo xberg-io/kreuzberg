@@ -43,6 +43,7 @@ impl<S> Layer<S> for TracingLayer {
 
 /// Middleware service that creates a span per extraction request.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct TracingService<S> {
     inner: S,
 }

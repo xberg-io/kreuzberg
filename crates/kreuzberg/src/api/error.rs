@@ -21,6 +21,7 @@ use super::types::ErrorResponse;
 /// Additionally, this extractor validates that the root JSON value is an object (not an array),
 /// which prevents serde from incorrectly deserializing JSON arrays into struct fields.
 #[derive(Debug, Clone, Copy, Default)]
+#[cfg_attr(alef, alef(skip))]
 pub struct JsonApi<T>(pub T);
 
 impl<T, S> FromRequest<S> for JsonApi<T>

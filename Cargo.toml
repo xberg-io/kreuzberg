@@ -74,7 +74,7 @@ once_cell = "1.21.4"
 
 ort = { version = "2.0.0-rc.12", default-features = false, features = ["std", "api-18"] }
 parking_lot = "0.12.5"
-pdf_oxide = { version = "0.3.59", default-features = false, features = [
+pdf_oxide = { version = "0.3.60", default-features = false, features = [
     "rendering",
     "legacy-crypto",
 ] }
@@ -99,7 +99,7 @@ tokio = { version = "1.52.3", features = [
 ] }
 toml = "1.1.2"
 tracing = "0.1"
-tree-sitter-language-pack = { version = "1.9.0-rc.17", default-features = false, features = ["serde"] }
+tree-sitter-language-pack = { version = "1.9.0-rc.18", default-features = false, features = ["serde"] }
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [

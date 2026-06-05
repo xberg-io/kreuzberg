@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.22.33"
+alef_version = "0.23.7"
 languages = [
   "python",
   "node",
@@ -203,6 +203,7 @@ exclude_types = [
 exclude_fields = ["FormatMetadata.Code"]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 reexported_types = [
   "ExtractionResult",
@@ -221,6 +222,7 @@ exclude_types = [
 ]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.node.extra_dependencies]
@@ -232,6 +234,7 @@ serde_with = "3"
 gem_name = "kreuzberg"
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.ruby.stubs]
@@ -259,6 +262,7 @@ exclude_types = [
 ]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.elixir]
@@ -272,6 +276,7 @@ exclude_functions = [
   "batch_extract_files",
   "batch_extract_bytes",
   "calculate_quality_score",
+  "embed_texts",
 ]
 exclude_types = [
   # Trait types cannot be FFI-bound
@@ -376,6 +381,9 @@ visitor_callbacks = false
 plugin_error_constructor = "kreuzberg::KreuzbergError::Plugin { message: msg, plugin_name: String::new() }"
 exclude_functions = [
   "calculate_quality_score",
+  "find_all",
+  "scan_text",
+  "embed_texts",
 ]
 
 # x86_64-linux-android (emulator) lacks a pyke ORT prebuilt. The C FFI cdylib is
@@ -391,9 +399,8 @@ features = ["android-target"]
 [[crates.ffi.target_dep_overrides]]
 cfg = 'target_os = "windows"'
 # Curated Windows feature set: excludes paddle-ocr, paddle-ocr-types, layout-detection,
-# layout-types, embeddings, embedding-presets. Default features pull in paddle-ocr et al,
-# which fail to link on Windows (no ORT bundle). Type-only features (layout-types,
-# paddle-ocr-types, embedding-presets) are included for compatibility with public APIs.
+# layout-types, embeddings, embedding-presets, ner-llm. Type-only features (layout-types,
+# paddle-ocr-types, embedding-presets, ner-llm-types) are included for compatibility with public APIs.
 features = [
   "pdf",
   "ocr",
@@ -411,6 +418,8 @@ features = [
   "layout-types",
   "paddle-ocr-types",
   "embedding-presets",
+  "ner",
+  "ner-llm-types",
   "redaction",
   "diff",
   "qr-codes",
@@ -428,6 +437,7 @@ module = "github.com/kreuzberg-dev/kreuzberg/v5"
 package_name = "kreuzberg"
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 exclude_types = [
   # Internal DTO used only at the FFI boundary (JSON-marshalled). Generated
@@ -452,6 +462,7 @@ exclude_types = [
 ]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.dart]
@@ -459,9 +470,9 @@ pubspec_name = "kreuzberg"
 lib_name = "kreuzberg"
 style = "frb"
 features = ["full"]
-stub_methods = ["batch_extract_bytes", "batch_extract_bytes_sync"]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 # x86_64-linux-android (emulator) and x86_64-apple-ios (deprecated intel iOS
@@ -485,6 +496,11 @@ namespace = "dev.kreuzberg"
 artifact_id = "kreuzberg-android"
 group_id = "dev.kreuzberg"
 abis = ["arm64-v8a", "x86_64"]
+exclude_types = [
+  # Internal DTO type used by plugin trait-bridges; marshalled as JSON strings at FFI boundary.
+  # Not exposed in the Kotlin Android interface — methods that would reference it use String instead.
+  "InternalDocument",
+]
 exclude_functions = [
   # embed_texts_async creates naming conflict with suspend wrapper of embed_texts.
   # Callers should use embedTextsAsync (suspend) from embed_texts instead.
@@ -503,6 +519,7 @@ exclude_types = [
 exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.csharp]
@@ -512,18 +529,21 @@ namespace = "Kreuzberg"
 project_file = "packages/csharp/Kreuzberg/Kreuzberg.csproj"
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.r]
 package_name = "kreuzberg"
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.zig]
 module_name = "kreuzberg"
 exclude_functions = [
   "calculate_quality_score",
+  "embed_texts",
 ]
 
 [crates.output]
@@ -559,6 +579,18 @@ types = [
   "kreuzberg::extraction::docx::parser::HeaderFooter",
   "kreuzberg::extraction::docx::parser::Note",
   "kreuzberg::extraction::hwp::model::Section",
+
+  # GlineBackend has a private Arc<Mutex<GLiNER<SpanMode>>> field and a pub
+  # fn new() constructor; alef v0.23.2 strict-construction validation cannot
+  # auto-generate From<JsGlineBackend>/From<GlineBackend> without all fields.
+  # The type is not a direct API parameter in any binding function — NER is
+  # invoked via detect_entities()/redact() which accept NerConfig/RedactionConfig.
+  "GlineBackend",
+
+  # Segment<'a> is an internal semantic-chunking type with a lifetime-bound
+  # &'a str field. Alef cannot generate a From impl for lifetime-parameterised
+  # types without a matching static constructor. Not part of the public API.
+  "kreuzberg::chunking::semantic::merge::Segment",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge
@@ -581,6 +613,27 @@ methods = [
   # Deprecated Rust-only aliases — excluded from bindings
   "LayoutDetection.class",
   "LayoutRegion.class",
+
+  # Generic impl methods — cannot be represented without monomorphization metadata
+  "ModelCache.new",
+  "MetricsLayer.layer",
+  "MultipartApi.from_request",
+
+  # next_token takes &PiiCategory (a reference) and &mut self; alef v0.23.2
+  # strict-construction validation cannot auto-delegate methods with borrowed
+  # params that differ from the opaque-handle receiver. Callers use apply_strategy
+  # (a free function) to consume a TokenCounter, making this method internal.
+  "TokenCounter.next_token",
+]
+
+functions = [
+  # apply_strategy takes &mut TokenCounter; alef v0.23.2 wraps TokenCounter in
+  # Arc<Mutex<T>> in binding types and generates &counter.inner instead of
+  # &mut *counter.inner.lock().unwrap(). The higher-level redact() function
+  # covers all practical use cases. Also: the Swift backend emits
+  # &category.0 (newtype syntax) for PiiCategory mapped to String.
+  # Excluded globally until upstream fixes &mut-through-Arc delegation.
+  "apply_strategy",
 ]
 
 [crates.lint.python]
@@ -1349,35 +1402,92 @@ args = [
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
 
-[crates.e2e.calls.embed_texts.overrides.csharp]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-nested_types = { embedding_model = "EmbeddingModelType" }
-
-[crates.e2e.calls.embed_texts.overrides.java]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-
-[crates.e2e.calls.embed_texts.overrides.go]
+# Python excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.python]
+function = "embed_texts_async"
+async = true
 result_is_simple = true
 result_is_array = true
 options_type = "EmbeddingConfig"
 
-[crates.e2e.calls.embed_texts.overrides.php]
+# Ruby excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.ruby]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Elixir excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.elixir]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Go excludes sync embed_texts; redirect to async variant (EmbedTextsAsync in Go)
+[crates.e2e.calls.embed_texts.overrides.go]
+function = "EmbedTextsAsync"
+async = true
+result_is_simple = true
+result_is_array = true
+options_type = "EmbeddingConfig"
+
+# Java excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.java]
+function = "embedTextsAsync"
+async = true
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
-[crates.e2e.calls.embed_texts.overrides.dart]
-result_is_simple = true
-options_type = "EmbeddingConfig"
-
+# Swift excludes sync embed_texts; redirect to async variant
 [crates.e2e.calls.embed_texts.overrides.swift]
+function = "embedTextsAsync"
+async = true
 options_type = "EmbeddingConfig"
 
-# Zig returns `[]u8` (JSON) for Vec<Vec<f32>>; assertions are rendered against
-# the parsed JSON value rather than struct fields.
+# Dart excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.dart]
+function = "embedTextsAsync"
+async = true
+result_is_simple = true
+options_type = "EmbeddingConfig"
+
+# Zig excludes sync embed_texts; redirect to async variant
 [crates.e2e.calls.embed_texts.overrides.zig]
+function = "embed_texts_async"
+async = true
 result_is_json_struct = true
+
+# R excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.r]
+function = "embed_texts_async"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# Csharp excludes sync embed_texts; redirect to async variant
+[crates.e2e.calls.embed_texts.overrides.csharp]
+function = "EmbedTextsAsync"
+async = true
+result_is_simple = true
+options_type = "EmbeddingConfig"
+nested_types = { embedding_model = "EmbeddingModelType" }
+
+# Node only exposes the async variant embedTextsAsync (NAPI-RS sync functions are
+# only generated for non-async functions; the suspend wrapper is the public API).
+[crates.e2e.calls.embed_texts.overrides.node]
+function = "embedTextsAsync"
+module = "@kreuzberg/node"
+async = true
+result_is_simple = true
+result_is_array = true
+
+# PHP extension only exposes embedTextsAsync; the embedTexts wrapper delegates to
+# KreuzbergApi::embedTexts which does not exist in the native extension.
+[crates.e2e.calls.embed_texts.overrides.php]
+function = "embedTextsAsync"
+result_is_simple = true
+options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"

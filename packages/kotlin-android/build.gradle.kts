@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     id("com.android.library") version "8.13.0"
-    kotlin("android") version "2.3.21"
+    kotlin("android") version "2.2.0"
     id("com.vanniktech.maven.publish") version "0.36.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.ben-manes.versions") version "0.52.0"
@@ -39,7 +39,6 @@ android {
 }
 
 kotlin {
-    jvmToolchain(21)
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
     }

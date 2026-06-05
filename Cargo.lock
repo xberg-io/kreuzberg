@@ -2092,9 +2092,9 @@ dependencies = [
 
 [[package]]
 name = "ext-php-rs"
-version = "0.15.14"
+version = "0.15.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aa41ae1aec13bbfdf3b19b25e1afc6214a97a905de1ebf8f93bba1ab5517ff1"
+checksum = "abe62f25cd053f5f95dc7bbf94e5b41818ea3cf39b36cc25de8ca6b4de68a0eb"
 dependencies = [
  "anyhow",
  "bitflags 2.12.1",
@@ -2143,9 +2143,9 @@ dependencies = [
 
 [[package]]
 name = "ext-php-rs-derive"
-version = "0.11.13"
+version = "0.11.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca2dfcb1ce3e57be18e436801c4038d58f361a4edc5a243b2f905fc2d51c07e7"
+checksum = "f57a075f878ad51bcc56745fb21efe601429a509204f8a385bbe526566597320"
 dependencies = [
  "convert_case",
  "darling 0.23.0",
@@ -4089,7 +4089,7 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 [[package]]
 name = "liter-llm"
 version = "1.4.0-rc.57"
-source = "git+https://github.com/kreuzberg-dev/liter-llm?branch=main#d747e37a3c8fb153d844cf788224f942a795417a"
+source = "git+https://github.com/kreuzberg-dev/liter-llm?branch=main#1c496ecdc925d42b0df150ea116fcae608a9717c"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -4126,9 +4126,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.31"
+version = "0.4.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "113b30b4cd05f7c06868fdb2854f66a7b9fece9a48425351cd532e810d74024f"
+checksum = "953f07c43838f8e6f9758cab68bf5bed85465e7587ebe0b823f1bcd81978ad3a"
 
 [[package]]
 name = "loop9"
@@ -4141,9 +4141,9 @@ dependencies = [
 
 [[package]]
 name = "lopdf"
-version = "0.40.0"
+version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73fdcbab5b237a03984f83b1394dc534e0b1960675c7f3ec4d04dccc9032b56d"
+checksum = "67513274c50a2b51e5f75d9e682fcf4ab064a8a9c9ae2c3c59309084882bb24d"
 dependencies = [
  "aes 0.8.4",
  "bitflags 2.12.1",
@@ -4159,7 +4159,6 @@ dependencies = [
  "log",
  "md-5 0.10.6",
  "nom 8.0.0",
- "nom_locate",
  "rand 0.10.1",
  "rangemap",
  "rayon",
@@ -4637,17 +4636,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nom_locate"
-version = "5.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b577e2d69827c4740cba2b52efaad1c4cc7c73042860b199710b3575c68438d"
-dependencies = [
- "bytecount",
- "memchr",
- "nom 8.0.0",
-]
-
-[[package]]
 name = "noop_proc_macro"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5093,9 +5081,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.59"
+version = "0.3.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "971e7e9cd5dafa2242fb48e9cea232a4c1f00d9310a87d18c27cb44786a3cd08"
+checksum = "9fe6f0b96883f92c6e958a14114a530263b893913a57d1783515982c0472dd16"
 dependencies = [
  "aes 0.9.1",
  "base64 0.22.1",
@@ -6951,9 +6939,9 @@ dependencies = [
 
 [[package]]
 name = "subsetter"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8178bfc97de4bc56fa2daa1c84bde1182943f3730414b0a362a1fefc72b7db4b"
+checksum = "2b474f1790ddab89b72ab193574e41b4f18de5c65e131043207e0197f2f6c64f"
 dependencies = [
  "kurbo",
  "rustc-hash",
@@ -7707,9 +7695,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.9.0-rc.17"
+version = "1.9.0-rc.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe2693bd710ee8df518a2bf74fe7d917b4530262de8184309881daeeb8980494"
+checksum = "8b4232502fd9cccf6adc5a1b84339deb77523302255c7f1cc071210ecdb093c1"
 dependencies = [
  "ahash",
  "cc",
@@ -8899,9 +8887,9 @@ checksum = "7a5a4b21e1a62b67a2970e6831bc091d7b87e119e7f9791aef9702e3bef04448"
 
 [[package]]
 name = "yoke"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abe8c5fda708d9ca3df187cae8bfb9ceda00dd96231bed36e445a1a48e66f9ca"
+checksum = "709fe23a0424b6a435d82152b1bd3fdfb0833487d5fa90d05d42762a9891fef5"
 dependencies = [
  "stable_deref_trait",
  "yoke-derive",

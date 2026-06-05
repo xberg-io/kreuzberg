@@ -109,9 +109,6 @@ object KreuzbergBridge {
     external fun nativeScanText(text: String, categories: String): String
 
     @Throws(KreuzbergBridgeException::class)
-    external fun nativeApplyStrategy(strategy: String, original: String, category: String, counter: Long): String
-
-    @Throws(KreuzbergBridgeException::class)
     external fun nativeSummarize(text: String, language: String, maxTokens: Int): String?
 
     @Throws(KreuzbergBridgeException::class)
@@ -147,9 +144,6 @@ object KreuzbergBridge {
     @Throws(KreuzbergBridgeException::class)
     external fun nativeLlmBackendDetectWithCustom(handle: Long, requestJson: String): String
     external fun nativeFreeLlmBackend(handle: Long)
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeTokenCounterNextToken(handle: Long, requestJson: String): String
-    external fun nativeFreeTokenCounter(handle: Long)
 
     // JNI trait-bridge external funs — implementations are Rust JNI shims.
 

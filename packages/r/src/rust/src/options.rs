@@ -4,12 +4,7 @@ use extendr_api::prelude::*;
 
 /// Helper: extract and convert a value from an R list by name.
 fn list_get(list: &List, key: &str) -> Option<Robj> {
-    let names = list.names().ok();
-    names
-        .iter()
-        .zip(list.iter())
-        .find(|(name, _)| name == key)
-        .map(|(_, val)| val)
+    list.iter().find(|(n, _)| *n == key).map(|(_, v)| v)
 }
 
 /// Decode a execution provider type enum from its string representation.
@@ -21,7 +16,7 @@ fn decode_execution_provider_type(val: Robj) -> std::result::Result<crate::Execu
         "CoreMl" => Ok(crate::ExecutionProviderType::CoreMl),
         "Cuda" => Ok(crate::ExecutionProviderType::Cuda),
         "TensorRt" => Ok(crate::ExecutionProviderType::TensorRt),
-        _ => Err(format!("execution_provider_type: unknown variant '{{}}'", s)),
+        _ => Err(format!("execution_provider_type: unknown variant '{}'", s)),
     }
 }
 

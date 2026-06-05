@@ -275,17 +275,6 @@ find_all <- function(text) .Call("wrap__find_all", text, PACKAGE = "kreuzberg")
 #' @return List of patternmatch object (list with class attribute).
 #' @export
 scan_text <- function(text, categories) .Call("wrap__scan_text", text, categories, PACKAGE = "kreuzberg")
-#' Apply `strategy` to `original` for `category` and return the replacement token
-#'
-#' The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
-#' other strategies ignore it.
-#' @param strategy RedactionStrategy object (list with class attribute).
-#' @param original Character string.
-#' @param category PiiCategory object (list with class attribute).
-#' @param counter TokenCounter object (list with class attribute).
-#' @return Character string.
-#' @export
-apply_strategy <- function(strategy, original, category, counter = TokenCounter$default()) .Call("wrap__apply_strategy", strategy, original, category, counter, PACKAGE = "kreuzberg")
 #' Score and return the top-N sentences from `text`, joined in original order
 #'
 #' `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -344,23 +333,6 @@ compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default
 #'   be initialised.
 #' @export
 extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
-#' Generate embeddings asynchronously for a list of text strings
-#'
-#' This is the async counterpart to [`embed_texts`]. It offloads the blocking
-#' ONNX inference work to a dedicated blocking thread pool via Tokio's
-#' `spawn_blocking`, keeping the async executor free.
-#'
-#' Returns one embedding vector per input text in the same order.
-#' @param texts Vec of strings to embed (owned, sent to blocking thread).
-#' @param config Embedding configuration specifying model, batch size, and normalization.
-#' @return List of list of numeric.
-#'
-#' @section Errors:
-#' - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
-#' - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
-#'   or the blocking inference task panics
-#' @export
-embed_texts_async <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 #' Render a single PDF page to PNG bytes
 #'
 #' Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -385,14 +357,12 @@ render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi = NULL, password =
 #' @return Character string.
 #' @export
 detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "kreuzberg")
-#' Embed a list of texts using the configured embedding model
-#'
-#' Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-#' @param texts List of character string.
-#' @param config EmbeddingConfig object (list with class attribute).
+#' embed_texts_async
+#' @param _texts List of character string.
+#' @param _config EmbeddingConfig object (list with class attribute).
 #' @return List of list of numeric.
 #' @export
-embed_texts <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts", texts, config, PACKAGE = "kreuzberg")
+embed_texts_async <- function(_texts, _config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", _texts, _config, PACKAGE = "kreuzberg")
 #' Get an embedding preset by name
 #'
 #' Returns `None` if no preset with the given name exists. Returns an owned
@@ -1721,34 +1691,6 @@ TokenReductionConfig$from_json <- function(json) {
 }
 #' @export
 `[[.TokenReductionConfig` <- `$.TokenReductionConfig`
-#' Kreuzberg-gliner-rs ONNX backend wrapper
-#'
-#' Holds an initialised [`GLiNER<SpanMode>`] behind an `Arc<Mutex<...>>` so the
-#' model can be safely shared across async tasks (inference is synchronous and
-#' serialised internally by the mutex).
-#' @field repo_id repo_id
-#' @field model_path model_path
-#' @field tokenizer_path tokenizer_path
-#' @export
-GlineBackend <- new.env(parent = emptyenv())
-GlineBackend$new <- function(repo_id) .Call("wrap__GlineBackend__new", repo_id, PACKAGE = "kreuzberg")
-GlineBackend$detect <- function(self, text, categories) .Call("wrap__GlineBackend__detect", self, text, categories, PACKAGE = "kreuzberg")
-GlineBackend$detect_with_custom <- function(self, text, categories, custom_labels) .Call("wrap__GlineBackend__detect_with_custom", self, text, categories, custom_labels, PACKAGE = "kreuzberg")
-#' @export
-`$.GlineBackend` <- function(self, name) {
-  func <- GlineBackend[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.GlineBackend` <- `$.GlineBackend`
-#' @export
-detect.GlineBackend <- function(x, ...) x$detect(...)
-#' @export
-detect_with_custom.GlineBackend <- function(x, ...) x$detect_with_custom(...)
 #' Liter-llm-backed NER backend
 #' @export
 LlmBackend <- new.env(parent = emptyenv())
@@ -3151,22 +3093,6 @@ DetectResponse <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DetectResponse` <- `$.DetectResponse`
-#' A text segment with its byte offset in the original document
-#' @field text text
-#' @field byte_start byte_start
-#' @export
-Segment <- new.env(parent = emptyenv())
-#' @export
-`$.Segment` <- function(self, name) {
-  func <- Segment[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.Segment` <- `$.Segment`
 #' Options controlling how two `ExtractionResult` values are compared
 #' @field include_metadata Include metadata changes in the diff. Default: `true`.
 #' @field include_embedded Include embedded-children changes in the diff. Default: `true`.

@@ -541,14 +541,6 @@ class KreuzbergBridge {
     return await rust_bridge.scanText(text: text, categories: categories);
   }
 
-  /// Apply `strategy` to `original` for `category` and return the replacement token.
-  ///
-  /// The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
-  /// other strategies ignore it.
-  static Future<String> applyStrategy(RedactionStrategy strategy, String original, PiiCategory category, TokenCounter counter) async {
-    return await rust_bridge.applyStrategy(strategy: strategy, original: original, category: category, counter: counter);
-  }
-
   /// Score and return the top-N sentences from `text`, joined in original order.
   ///
   /// `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -655,40 +647,6 @@ class KreuzbergBridge {
     return await rust_bridge.extractRegionWithVlm(imageBytes: imageBytes, imageMime: imageMime, regionKind: regionKind, llmConfig: llmConfig, customPrompt: customPrompt);
   }
 
-  /// Generate embeddings asynchronously for a list of text strings.
-  ///
-  /// This is the async counterpart to [`embed_texts`]. It offloads the blocking
-  /// ONNX inference work to a dedicated blocking thread pool via Tokio's
-  /// `spawn_blocking`, keeping the async executor free.
-  ///
-  /// Returns one embedding vector per input text in the same order.
-  ///
-  /// # Arguments
-  ///
-  /// * `texts` - Vec of strings to embed (owned, sent to blocking thread)
-  /// * `config` - Embedding configuration specifying model, batch size, and normalization
-  ///
-  /// # Errors
-  ///
-  /// - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
-  /// - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
-  ///   or the blocking inference task panics
-  ///
-  /// # Example
-  ///
-  /// ```rust,ignore
-  /// use kreuzberg::{embed_texts_async, EmbeddingConfig};
-  ///
-  /// let embeddings = embed_texts_async(
-  ///     vec!["Hello!".to_string()],
-  ///     &EmbeddingConfig::default(),
-  /// ).await?;
-  /// ```
-  /// throws anyhow::Error on failure
-  static Future<List<Float64List>> embedTextsAsync(List<String> texts, EmbeddingConfig config) async {
-    return await rust_bridge.embedTextsAsync(texts: texts, config: config);
-  }
-
   /// Render a single PDF page to PNG bytes.
   ///
   /// Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -719,12 +677,9 @@ class KreuzbergBridge {
     return await rust_bridge.detectMimeType(path: path, checkExists: checkExists);
   }
 
-  /// Embed a list of texts using the configured embedding model.
-  ///
-  /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
   /// throws anyhow::Error on failure
-  static Future<List<Float64List>> embedTexts(List<String> texts, EmbeddingConfig config) async {
-    return await rust_bridge.embedTexts(texts: texts, config: config);
+  static Future<List<Float64List>> embedTextsAsync(List<String> texts, EmbeddingConfig config) async {
+    return await rust_bridge.embedTextsAsync(texts: texts, config: config);
   }
 
   /// Get an embedding preset by name.

@@ -94,3 +94,57 @@ pub enum PiiCategory {
     /// from a category name alone.
     Custom(String),
 }
+
+impl Default for PiiCategory {
+    fn default() -> Self {
+        Self::Custom(String::new())
+    }
+}
+
+impl From<String> for PiiCategory {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "email" => Self::Email,
+            "phone" => Self::Phone,
+            "ssn" => Self::Ssn,
+            "credit_card" => Self::CreditCard,
+            "postal_code" => Self::PostalCode,
+            "ip_address" => Self::IpAddress,
+            "iban" => Self::Iban,
+            "swift_bic" => Self::SwiftBic,
+            "date_of_birth" => Self::DateOfBirth,
+            "person" => Self::Person,
+            "organization" => Self::Organization,
+            "location" => Self::Location,
+            other => Self::Custom(other.to_string()),
+        }
+    }
+}
+
+impl std::str::FromStr for PiiCategory {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from(s.to_string()))
+    }
+}
+
+impl From<String> for RedactionStrategy {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "mask" => Self::Mask,
+            "hash" => Self::Hash,
+            "token_replace" => Self::TokenReplace,
+            "drop" => Self::Drop,
+            _ => Self::Mask,
+        }
+    }
+}
+
+impl std::str::FromStr for RedactionStrategy {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from(s.to_string()))
+    }
+}

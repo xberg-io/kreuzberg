@@ -199,6 +199,9 @@ diff = ["dep:similar"]
 # `crates/kreuzberg/src/extractors/` for QR) and is wired through a built-in
 # post-processor under `crates/kreuzberg/src/plugins/processor/builtin/`.
 ner = [] # NER result types only; safe on every target.
+ner-llm-types = [
+    "ner",
+] # LlmBackend stub for targets without full ner-llm (Windows, Android x86_64, WASM).
 ner-llm = ["ner", "liter-llm"] # LLM-driven zero-shot NER (no ORT).
 ner-onnx = [
     # gline-rs ONNX backend (kreuzberg-gliner-rs fork) with HuggingFace model download.
@@ -414,7 +417,7 @@ libc = { workspace = true }
 # excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
 # to build on Windows MSVC.
 log = { workspace = true }
-lopdf = { version = "0.40.0", optional = true }
+lopdf = { version = "0.41.0", optional = true }
 mail-parser = { version = "0.11.3", optional = true }
 memchr = "2.8.1"
 memmap2 = { workspace = true }

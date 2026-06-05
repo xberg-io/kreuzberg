@@ -6,7 +6,6 @@ Description: High-performance document intelligence library
     Rust bindings generated with extendr.
 URL: https://github.com/kreuzberg-dev/kreuzberg
 BugReports: https://github.com/kreuzberg-dev/kreuzberg/issues
-
 License: Elastic-2.0
 Depends: R (>= 4.2)
 Imports: jsonlite

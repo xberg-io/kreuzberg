@@ -2129,7 +2129,38 @@ internal extension SecurityLimits {
 public typealias TokenReductionConfig = RustBridge.TokenReductionConfig
 
 /// One detected PII span in the input text.
-public typealias PatternMatch = RustBridge.PatternMatch
+public struct PatternMatch: Codable, Sendable, Hashable {
+    /// Inclusive byte-offset start of the match in the source text.
+    public let start: UInt
+    /// Exclusive byte-offset end of the match.
+    public let end: UInt
+    /// Category the match belongs to.
+    public let category: PiiCategory
+    /// Matched substring (owned copy — pattern engine returns owned data so the
+    /// caller can free the original text if needed before replacement).
+    public let text: String
+    public init(start: UInt, end: UInt, category: PiiCategory, text: String) {
+        self.start = start
+        self.end = end
+        self.category = category
+        self.text = text
+    }
+}
+
+// MARK: - Internal FFI conversions for PatternMatch
+internal extension PatternMatch {
+    init(_ rb: RustBridge.PatternMatchRef) throws {
+        self.start = rb.start()
+        self.end = rb.end()
+        self.category = try JSONDecoder().decode(PiiCategory.self, from: ((rb.category().toString()).data(using: .utf8) ?? Data("null".utf8)))
+        self.text = rb.text().toString()
+    }
+    func intoRust() throws -> RustBridge.PatternMatch {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.patternMatchFromJson(json)
+    }
+}
 
 /// A PDF annotation extracted from a document page.
 public struct PdfAnnotation: Codable, Sendable, Hashable {
@@ -5336,9 +5367,6 @@ internal extension DetectResponse {
     }
 }
 
-/// A text segment with its byte offset in the original document.
-public typealias Segment = RustBridge.Segment
-
 /// Options controlling how two `ExtractionResult` values are compared.
 public struct DiffOptions: Codable, Sendable, Hashable {
     /// Include metadata changes in the diff. Default: `true`.
@@ -7413,7 +7441,37 @@ extension UriKind {
 /// Each variant maps to a specific prompt optimised for that content type.
 /// The mapping is intentionally narrow — only region kinds for which VLM
 /// extraction provides a clear quality benefit over classical suppression.
-public typealias RegionKind = RustBridge.RegionKind
+public enum RegionKind: String, Codable, Sendable, Hashable {
+    /// A figure, diagram, chart, or image region.
+    ///
+    /// VLM prompt: describe the diagram / chart, including axis labels,
+    /// legend entries, and any embedded text.
+    case figure = "Figure"
+    /// A densely formatted or complex table that classical extraction garbles.
+    ///
+    /// VLM prompt: extract the table as GitHub-Flavoured Markdown.
+    case denseTable = "DenseTable"
+    /// A region whose layout the classical pipeline cannot handle (multi-column
+    /// insets, heavily annotated forms, mixed text+diagram).
+    ///
+    /// VLM prompt: extract all text and structure as markdown, preserving
+    /// reading order.
+    case complexLayout = "ComplexLayout"
+    /// A standalone image to be captioned (not extracted as figure markdown).
+    ///
+    /// VLM prompt: produce a single-sentence alt-text-style caption suitable
+    /// for accessibility tooling and downstream indexing. Used by the
+    /// captioning post-processor to populate
+    /// [`ExtractedImage::caption`](crate::types::ExtractedImage::caption).
+    case caption = "Caption"
+}
+extension RegionKind {
+    func intoRust() throws -> RustBridge.RegionKind {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.regionKindFromJson(json)
+    }
+}
 
 /// Keyword algorithm selection.
 public enum KeywordAlgorithm: String, Codable, Sendable, Hashable {
@@ -7742,14 +7800,14 @@ public func extractRegionWithVlm(_ imageBytes: [UInt8], _ imageMime: String, _ r
     return try await extractRegionWithVlm(imageBytes: imageBytes, imageMime: imageMime, regionKind: regionKind, llmConfig: config, customPrompt: customPrompt)
 }
 
-public func embedTextsAsync(_ texts: [String], _ configJson: String) async throws -> [[Float]] {
-    let config = try embeddingConfigFromJson(configJson)
-    return try await embedTextsAsync(texts: texts, config: config)
-}
-
 public func embedTexts(_ texts: [String], _ configJson: String) throws -> [[Float]] {
     let config = try embeddingConfigFromJson(configJson)
     return try embedTexts(texts: texts, config: config)
+}
+
+public func embedTextsAsync(_ texts: [String], _ configJson: String) async throws -> [[Float]] {
+    let config = try embeddingConfigFromJson(configJson)
+    return try await embedTextsAsync(texts: texts, config: config)
 }
 
 // MARK: - From-JSON Helpers
@@ -7961,6 +8019,11 @@ public func securityLimitsFromJson(_ json: String) throws -> SecurityLimits {
 
 public func tokenReductionConfigFromJson(_ json: String) throws -> TokenReductionConfig {
     return try RustBridge.tokenReductionConfigFromJson(json)
+}
+
+public func patternMatchFromJson(_ json: String) throws -> PatternMatch {
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(PatternMatch.self, from: data)
 }
 
 public func pdfAnnotationFromJson(_ json: String) throws -> PdfAnnotation {
@@ -8693,6 +8756,11 @@ public func uriKindFromJson(_ json: String) throws -> UriKind {
     return try JSONDecoder().decode(UriKind.self, from: data)
 }
 
+public func regionKindFromJson(_ json: String) throws -> RegionKind {
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(RegionKind.self, from: data)
+}
+
 public func keywordAlgorithmFromJson(_ json: String) throws -> KeywordAlgorithm {
     let data = json.data(using: .utf8) ?? Data()
     return try JSONDecoder().decode(KeywordAlgorithm.self, from: data)
@@ -8740,7 +8808,7 @@ public func layoutClassFromJson(_ json: String) throws -> LayoutClass {
 /// let result = extract_file_sync("document.pdf", None, &config)?;
 /// println!("Content: {}", result.content);
 /// ```
-public func extractFileSync(path: String, mimeType: String?, config: ExtractionConfig) throws -> ExtractionResult {
+public func extractFileSync(path: String, mimeType: String? = nil, config: ExtractionConfig) throws -> ExtractionResult {
     return try RustBridge.extractFileSync(path, mimeType, config)
 }
 
@@ -9037,9 +9105,9 @@ public func getExtensionsForMime(mimeType: String) throws -> [String] {
 /// (rqrr does not expose per-grid confidence; a successful decode is treated
 /// as high-confidence by convention), and the pixel-space bounding box derived
 /// from the four corner points of the grid.
-public func detectQrCodes(imageBytes: [UInt8], formatHint: String?) -> [QrCode] {
+public func detectQrCodes(imageBytes: [UInt8], formatHint: String? = nil) -> [QrCode] {
     let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
-    return RustBridge.detectQrCodes(_rb_imageBytes, formatHint).map { ref in var item = try QrCode(ref); item.isOwned = false; return item }
+    return RustBridge.detectQrCodes(_rb_imageBytes, formatHint).map { ref in try QrCode(ref) }
 }
 
 /// List the names of all registered embedding backends.
@@ -9148,7 +9216,7 @@ public func classifyPages(result: ExtractionResult, config: PageClassificationCo
 ///
 /// `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
 /// CLI flag `kreuzberg warm --ner` delegates here.
-public func downloadModel(name: String, cacheDir: String?) throws -> String {
+public func downloadModel(name: String, cacheDir: String? = nil) throws -> String {
     return try RustBridge.downloadModel(name, cacheDir)
 }
 
@@ -9173,7 +9241,7 @@ public func redact(result: ExtractionResult, config: RedactionConfig) async thro
 }
 
 public func findAll(text: String) -> [PatternMatch] {
-    return RustBridge.findAll(text).map { ref in var item = try RustBridge.PatternMatch(ptr: ref.ptr); item.isOwned = false; return item }
+    return RustBridge.findAll(text).map { ref in try PatternMatch(ref) }
 }
 
 /// Scan `text` for every PII category in `categories` and return all matches
@@ -9184,17 +9252,7 @@ public func findAll(text: String) -> [PatternMatch] {
 /// they must be supplied by a NER backend through the redaction engine.
 public func scanText(text: String, categories: [PiiCategory]) throws -> [PatternMatch] {
     let _rb_categories: RustVec<RustString> = try ({ () throws -> RustVec<RustString> in let v = RustVec<RustString>(); for item in categories { let data = try JSONEncoder().encode(item); let json = String(data: data, encoding: .utf8) ?? "null"; v.push(value: RustString(json)) }; return v }())
-    return RustBridge.scanText(text, _rb_categories).map { ref in var item = try RustBridge.PatternMatch(ptr: ref.ptr); item.isOwned = false; return item }
-}
-
-/// Apply `strategy` to `original` for `category` and return the replacement token.
-///
-/// The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
-/// other strategies ignore it.
-public func applyStrategy(strategy: RedactionStrategy, original: String, category: PiiCategory, counter: TokenCounter) throws -> String {
-    let _rb_strategy = try strategy.intoRust()
-    let _rb_category = try category.intoRust()
-    return RustBridge.applyStrategy(_rb_strategy, original, _rb_category, counter)
+    return RustBridge.scanText(text, _rb_categories).map { ref in try PatternMatch(ref) }
 }
 
 /// Score and return the top-N sentences from `text`, joined in original order.
@@ -9203,7 +9261,7 @@ public func applyStrategy(strategy: RedactionStrategy, original: String, categor
 /// pass `None` (or an unknown code) to fall back to English.
 /// `max_tokens` bounds the summary length by whitespace-separated tokens;
 /// `None` falls back to [`DEFAULT_MAX_TOKENS`].
-public func summarize(text: String, language: String?, maxTokens: UInt32?) -> String? {
+public func summarize(text: String, language: String? = nil, maxTokens: UInt32? = nil) -> String? {
     let _rb_json = RustBridge.summarize(text, language, maxTokens).toString()
     let _rb_data = _rb_json.data(using: .utf8) ?? Data()
     return (try? JSONDecoder().decode(String?.self, from: _rb_data)) ?? nil
@@ -9304,50 +9362,13 @@ public func compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions)
 /// .await?;
 /// println!("Extracted: {markdown}");
 /// ```
-public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String?) async throws -> String {
+public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String? = nil) async throws -> String {
     return try await Task.detached(priority: .userInitiated) {
         let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
+        let _rb_regionKind = try regionKind.intoRust()
         let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, RustString(imageMime), regionKind, _rb_llmConfig, customPrompt)
+        let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, RustString(imageMime), _rb_regionKind, _rb_llmConfig, customPrompt)
         return result
-    }.value
-}
-
-/// Generate embeddings asynchronously for a list of text strings.
-///
-/// This is the async counterpart to [`embed_texts`]. It offloads the blocking
-/// ONNX inference work to a dedicated blocking thread pool via Tokio's
-/// `spawn_blocking`, keeping the async executor free.
-///
-/// Returns one embedding vector per input text in the same order.
-///
-/// # Arguments
-///
-/// * `texts` - Vec of strings to embed (owned, sent to blocking thread)
-/// * `config` - Embedding configuration specifying model, batch size, and normalization
-///
-/// # Errors
-///
-/// - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
-/// - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
-///   or the blocking inference task panics
-///
-/// # Example
-///
-/// ```rust,ignore
-/// use kreuzberg::{embed_texts_async, EmbeddingConfig};
-///
-/// let embeddings = embed_texts_async(
-///     vec!["Hello!".to_string()],
-///     &EmbeddingConfig::default(),
-/// ).await?;
-/// ```
-public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Float]] {
-    return try await Task.detached(priority: .userInitiated) {
-        let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
-        let _rb_result = try RustBridge.embedTextsAsync(_rb_texts, config).toString()
-        let _rb_data = _rb_result.data(using: .utf8) ?? Data()
-        return try JSONDecoder().decode([[Float]].self, from: _rb_data)
     }.value
 }
 
@@ -9367,7 +9388,7 @@ public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async thro
 ///
 /// Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
 /// or rendered, or if `page_index` is out of range.
-public func renderPdfPageToPng(pdfBytes: [UInt8], pageIndex: UInt, dpi: Int32?, password: String?) throws -> [UInt8] {
+public func renderPdfPageToPng(pdfBytes: [UInt8], pageIndex: UInt, dpi: Int32? = nil, password: String? = nil) throws -> [UInt8] {
     let _rb_pdfBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in pdfBytes { v.push(value: b) }; return v }()
     return try RustBridge.renderPdfPageToPng(_rb_pdfBytes, pageIndex, dpi, password).map { $0 }
 }
@@ -9380,14 +9401,13 @@ public func detectMimeType(path: String, checkExists: Bool) throws -> String {
     return try RustBridge.detectMimeType(path, checkExists).toString()
 }
 
-/// Embed a list of texts using the configured embedding model.
-///
-/// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-public func embedTexts(texts: [String], config: EmbeddingConfig) throws -> [[Float]] {
-    let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
-    let _rb_json = try RustBridge.embedTexts(_rb_texts, config).toString()
-    let _rb_data = _rb_json.data(using: .utf8) ?? Data()
-    return try JSONDecoder().decode([[Float]].self, from: _rb_data)
+public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Float]] {
+    return try await Task.detached(priority: .userInitiated) {
+        let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
+        let _rb_result = try RustBridge.embedTextsAsync(_rb_texts, config).toString()
+        let _rb_data = _rb_result.data(using: .utf8) ?? Data()
+        return try JSONDecoder().decode([[Float]].self, from: _rb_data)
+    }.value
 }
 
 /// Get an embedding preset by name.
@@ -9607,8 +9627,6 @@ extension RustBridge.SecurityLimits: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
 extension RustBridge.TokenReductionConfig: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
-extension RustBridge.GlineBackend: @unchecked Sendable {}
-// swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
 extension RustBridge.LlmBackend: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
 extension RustBridge.PatternMatch: @unchecked Sendable {}
@@ -9798,8 +9816,6 @@ extension RustBridge.Translation: @unchecked Sendable {}
 extension RustBridge.ExtractedUri: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
 extension RustBridge.DetectResponse: @unchecked Sendable {}
-// swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
-extension RustBridge.Segment: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.
 extension RustBridge.DiffOptions: @unchecked Sendable {}
 // swift-bridge opaque type used across Task.detached boundaries — Rust type is Send + Sync.

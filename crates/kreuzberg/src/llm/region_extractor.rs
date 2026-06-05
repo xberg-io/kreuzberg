@@ -16,7 +16,7 @@ use crate::types::LlmUsage;
 /// Each variant maps to a specific prompt optimised for that content type.
 /// The mapping is intentionally narrow — only region kinds for which VLM
 /// extraction provides a clear quality benefit over classical suppression.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RegionKind {
     /// A figure, diagram, chart, or image region.
     ///
@@ -57,6 +57,23 @@ impl RegionKind {
             Self::DenseTable => REGION_DENSE_TABLE_TEMPLATE,
             Self::ComplexLayout => REGION_COMPLEX_LAYOUT_TEMPLATE,
             Self::Caption => REGION_CAPTION_TEMPLATE,
+        }
+    }
+}
+
+impl From<String> for RegionKind {
+    /// Converts a string variant name to a [`RegionKind`].
+    ///
+    /// Accepted values (case-sensitive): `"Figure"`, `"DenseTable"`,
+    /// `"ComplexLayout"`, `"Caption"`. Any other value maps to
+    /// [`RegionKind::Figure`] as the safe default.
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "Figure" => Self::Figure,
+            "DenseTable" => Self::DenseTable,
+            "ComplexLayout" => Self::ComplexLayout,
+            "Caption" => Self::Caption,
+            _ => Self::Figure,
         }
     }
 }

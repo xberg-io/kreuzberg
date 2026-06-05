@@ -190,7 +190,11 @@ fn patch_published_loader() {
 /// methods don't exist on plain function types. This rewrite strips the
 /// erroneous method calls, calling the handler directly as a function.
 ///
-/// Idempotent: when the broken pattern is absent the function is a no-op.
+/// Also fixes FRB 2.x bug where class declarations incorrectly include the
+/// `async` keyword (e.g. `class RustLibApiImpl implements RustLibApi async ...`).
+/// The `async` keyword is only valid on functions, not class declarations.
+///
+/// Idempotent: when the broken patterns are absent the function is a no-op.
 fn fix_handler_executor_calls() {
     let path = Path::new(FRB_GENERATED_DART);
     let Ok(source) = std::fs::read_to_string(path) else {
@@ -208,12 +212,16 @@ fn fix_handler_executor_calls() {
     // Collapse `return await` + `await handler(` → `return await handler(`.
     fixed = fixed.replace("await await handler", "await handler");
 
-    if fixed != source {
-        if let Err(err) = std::fs::write(path, &fixed) {
-            println!(
-                "cargo:warning=failed to fix handler executor calls in {}: {err}",
-                FRB_GENERATED_DART
-            );
-        }
+    // Fix FRB 2.x bug where class declarations have invalid `async` keyword.
+    // class RustLibApiImpl implements RustLibApi async { ... becomes class RustLibApiImpl implements RustLibApi { ...
+    fixed = fixed.replace(" implements RustLibApi async {", " implements RustLibApi {");
+
+    if fixed != source
+        && let Err(err) = std::fs::write(path, &fixed)
+    {
+        println!(
+            "cargo:warning=failed to fix handler executor calls in {}: {err}",
+            FRB_GENERATED_DART
+        );
     }
 }

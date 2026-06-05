@@ -45,3 +45,35 @@ pub enum EntityCategory {
     Url,
     Custom(String),
 }
+
+impl Default for EntityCategory {
+    fn default() -> Self {
+        Self::Custom(String::new())
+    }
+}
+
+impl From<String> for EntityCategory {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "person" => Self::Person,
+            "organization" => Self::Organization,
+            "location" => Self::Location,
+            "date" => Self::Date,
+            "time" => Self::Time,
+            "money" => Self::Money,
+            "percent" => Self::Percent,
+            "email" => Self::Email,
+            "phone" => Self::Phone,
+            "url" => Self::Url,
+            other => Self::Custom(other.to_string()),
+        }
+    }
+}
+
+impl std::str::FromStr for EntityCategory {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from(s.to_string()))
+    }
+}

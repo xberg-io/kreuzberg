@@ -197,6 +197,57 @@ mod tests {
         assert_eq!(paragraphs[0].text, "real content");
     }
 
+    /// Test that whitespace-only lines within an element are preserved in text
+    /// but not created as separate paragraph lines. This is the key fix for TF1 loss.
+    #[test]
+    fn test_ocr_doc_whitespace_lines_text_preserved() {
+        let mut doc = InternalDocument::new("test");
+        let mut elem = InternalElement::text(
+            ElementKind::OcrText {
+                level: OcrElementLevel::Line,
+            },
+            "Para1\n   \nPara2", // middle line is whitespace-only
+            0,
+        );
+        elem.bbox = Some(BoundingBox {
+            x0: 10.0,
+            y0: 10.0,
+            x1: 100.0,
+            y1: 70.0,
+        });
+        doc.push_element(elem);
+
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
+
+        assert_eq!(paragraphs.len(), 1, "Should have one paragraph");
+        let para = &paragraphs[0];
+
+        // Full text MUST be preserved including the whitespace line
+        assert_eq!(
+            para.text, "Para1\n   \nPara2",
+            "Text must preserve whitespace-only lines"
+        );
+
+        // Word count should be 2 (Para1, Para2) - whitespace line doesn't contribute
+        assert_eq!(para.word_count, 2, "Word count should only count non-blank words");
+
+        // Lines array should have 2 entries (skip whitespace-only line)
+        assert_eq!(para.lines.len(), 2, "Lines array should skip whitespace-only lines");
+
+        // Check that line positions are correct (respecting the blank line's y offset)
+        let line_height = (70.0 - 10.0) / 3.0; // 3 lines of text (including blank)
+        let para_1_y = 1000.0 - 10.0 - 0.0 * line_height;
+        let para_2_y = 1000.0 - 10.0 - 2.0 * line_height; // Uses original_idx of 2
+        assert!(
+            (para.lines[0].baseline_y - para_1_y).abs() < 0.1,
+            "Line 1 Y position incorrect"
+        );
+        assert!(
+            (para.lines[1].baseline_y - para_2_y).abs() < 0.1,
+            "Line 2 Y position incorrect"
+        );
+    }
+
     /// Test that blank lines in OCR elements don't affect vertical positioning.
     /// When text contains blank lines (e.g., "A\n\nC"), the lines array should still
     /// have correct y-positions (0 for A, 2*line_height for C, not 1*line_height).
@@ -229,11 +280,7 @@ mod tests {
         // Lines array should have only 2 non-blank lines
         assert_eq!(para.lines.len(), 2);
 
-        // Check vertical spacing: should be at correct y-positions
-        let _line_height = 80.0 / 3.0; // total_height / num_lines
-        let _base_y = 90.0 - 10.0; // pdf_top = page_h - y0; but y0 is 10, page_h is 1000, so pdf_top = 990
-
-        // Wait, let me recalculate: y0=10, y1=90, page_h=1000
+        // y0=10, y1=90, page_h=1000
         // pdf_bottom = 1000 - 90 = 910
         // pdf_top = 1000 - 10 = 990
         // total_height = 990 - 910 = 80

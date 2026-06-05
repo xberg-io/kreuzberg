@@ -677,33 +677,6 @@ def scan_text(text, categories)
 
 ---
 
-#### apply_strategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```elixir
-@spec apply_strategy(strategy, original, category, counter) :: {:ok, term()} | {:error, term()}
-def apply_strategy(strategy, original, category, counter)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `String.t()` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `String.t()`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -848,41 +821,6 @@ def extract_region_with_vlm(image_bytes, image_mime, region_kind, llm_config, cu
 
 ---
 
-#### embed_texts_async()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```elixir
-@spec embed_texts_async(texts, config) :: {:ok, term()} | {:error, term()}
-def embed_texts_async(texts, config)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `list(String.t())` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `list(list(float()))`
-**Errors:** Returns `{:error, reason}`
-
----
-
 #### render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
@@ -942,25 +880,21 @@ def detect_mime_type(path, check_exists)
 
 ---
 
-#### embed_texts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embed_texts_async()
 
 **Signature:**
 
 ```elixir
-@spec embed_texts(texts, config) :: {:ok, term()} | {:error, term()}
-def embed_texts(texts, config)
+@spec embed_texts_async(texts, config) :: {:ok, term()} | {:error, term()}
+def embed_texts_async(texts, config)
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `list(String.t())` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `list(String.t())` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `list(list(float()))`
 **Errors:** Returns `{:error, reason}`
@@ -2419,56 +2353,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `language` | `String.t() \| nil` | `nil` | Language identifier for code blocks |
 | `code` | `String.t() \| nil` | `nil` | Raw code content for code blocks |
 | `children` | `list(FormattedBlock)` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
-
----
-
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repo_id` | `String.t()` | — | Repo id |
-| `model_path` | `String.t()` | — | Model path |
-| `tokenizer_path` | `String.t()` | — | Tokenizer path |
-
-### Functions
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `nil`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```elixir
-def new(repo_id)
-```
-
-#### detect()
-
-**Signature:**
-
-```elixir
-def detect(text, categories)
-```
-
-#### detect_with_custom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```elixir
-def detect_with_custom(text, categories, custom_labels)
-```
 
 ---
 
@@ -4471,17 +4355,6 @@ def default()
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String.t()` | — | Text |
-| `byte_start` | `integer()` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -4806,17 +4679,6 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ```elixir
 def new()
-```
-
-#### next_token()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```elixir
-def next_token(category, original)
 ```
 
 ---

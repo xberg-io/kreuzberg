@@ -1,8 +1,11 @@
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.zip.ZipFile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library") version "8.13.0"
-    kotlin("android") version "2.3.21"
+    kotlin("android") version "2.2.0"
 }
 
 group = "dev.kreuzberg"
@@ -39,13 +42,9 @@ android {
 }
 
 kotlin {
-    // Pin the JDK toolchain used for compilation AND test execution. Without this,
-    // Gradle picks the host JDK; under JDK 25 (Temurin) the Android Gradle Plugin
-    // fails to parse the host version string and aborts with
-    // `What went wrong: 25.0.2`. `jvmToolchain(N)` makes Gradle provision the
-    // requested LTS JDK (downloading via toolchains if not present locally) so
-    // `./gradlew test` succeeds on hosts with newer JDKs installed.
-    jvmToolchain(17)
+    // Set JVM target for compilation. gradle.properties enables auto-detection
+    // of host JDK installations so Gradle uses the available JDK version on the
+    // build machine, preventing provisioning failures when the target version is not installed.
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
     }

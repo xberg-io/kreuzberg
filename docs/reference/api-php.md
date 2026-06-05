@@ -794,32 +794,6 @@ public static function scanText(string $text, array<PiiCategory> $categories): a
 
 ---
 
-#### applyStrategy()
-
-Apply `strategy` to `original` for `category` and return the replacement token.
-
-The optional `counter` is required for `RedactionStrategy::TokenReplace`;
-other strategies ignore it.
-
-**Signature:**
-
-```php
-public static function applyStrategy(RedactionStrategy $strategy, string $original, PiiCategory $category, TokenCounter $counter): string
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `strategy` | `RedactionStrategy` | Yes | The redaction strategy |
-| `original` | `string` | Yes | The original |
-| `category` | `PiiCategory` | Yes | The pii category |
-| `counter` | `TokenCounter` | Yes | The token counter |
-
-**Returns:** `string`
-
----
-
 #### summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
@@ -959,40 +933,6 @@ public static function extractRegionWithVlm(string $imageBytes, string $imageMim
 
 ---
 
-#### embedTextsAsync()
-
-Generate embeddings asynchronously for a list of text strings.
-
-This is the async counterpart to `embed_texts`. It offloads the blocking
-ONNX inference work to a dedicated blocking thread pool via Tokio's
-`spawn_blocking`, keeping the async executor free.
-
-Returns one embedding vector per input text in the same order.
-
-**Errors:**
-
-- `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
-- `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
-  or the blocking inference task panics
-
-**Signature:**
-
-```php
-public static function embedTextsAsync(array<string> $texts, EmbeddingConfig $config): array<array<float>>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `texts` | `array<string>` | Yes | Vec of strings to embed (owned, sent to blocking thread) |
-| `config` | `EmbeddingConfig` | Yes | Embedding configuration specifying model, batch size, and normalization |
-
-**Returns:** `array<array<float>>`
-**Errors:** Throws `Error`.
-
----
-
 #### renderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1050,24 +990,20 @@ public static function detectMimeType(string $path, bool $checkExists): string
 
 ---
 
-#### embedTexts()
-
-Embed a list of texts using the configured embedding model.
-
-Returns a 2D vector where each inner vector is the embedding for the corresponding text.
+#### embedTextsAsync()
 
 **Signature:**
 
 ```php
-public static function embedTexts(array<string> $texts, EmbeddingConfig $config): array<array<float>>
+public static function embedTextsAsync(array<string> $texts, EmbeddingConfig $config): array<array<float>>
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `texts` | `array<string>` | Yes | The texts |
-| `config` | `EmbeddingConfig` | Yes | The configuration options |
+| `texts` | `array<string>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `array<array<float>>`
 **Errors:** Throws `Error`.
@@ -2524,56 +2460,6 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `language` | `?string` | `null` | Language identifier for code blocks |
 | `code` | `?string` | `null` | Raw code content for code blocks |
 | `children` | `array<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
-
----
-
-#### GlineBackend
-
-kreuzberg-gliner-rs ONNX backend wrapper.
-
-Holds an initialised `GLiNER<SpanMode>` behind an `Arc<Mutex<...>>` so the
-model can be safely shared across async tasks (inference is synchronous and
-serialised internally by the mutex).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `repoId` | `string` | — | Repo id |
-| `modelPath` | `string` | — | Model path |
-| `tokenizerPath` | `string` | — | Tokenizer path |
-
-### Methods
-
-#### new()
-
-Build a backend for `repo_id` (or the default model if `null`).
-
-Downloads the ONNX weights and tokenizer via `hf-hub` on first call.
-After this returns, inference is available without further I/O.
-
-**Signature:**
-
-```php
-public static function new(string $repoId): GlineBackend
-```
-
-#### detect()
-
-**Signature:**
-
-```php
-public function detect(string $text, array<EntityCategory> $categories): array<Entity>
-```
-
-#### detectWithCustom()
-
-Native zero-shot multi-label inference: passes the union of `categories`
-(as label strings) and `custom_labels` to a single GLiNER inference call.
-
-**Signature:**
-
-```php
-public function detectWithCustom(string $text, array<EntityCategory> $categories, array<string> $customLabels): array<Entity>
-```
 
 ---
 
@@ -4576,17 +4462,6 @@ public static function default(): SecurityLimits
 
 ---
 
-#### Segment
-
-A text segment with its byte offset in the original document.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `string` | — | Text |
-| `byteStart` | `int` | — | Byte start |
-
----
-
 #### ServerConfig
 
 API server configuration.
@@ -4911,17 +4786,6 @@ Per-category running counter for `RedactionStrategy::TokenReplace`.
 
 ```php
 public static function new(): TokenCounter
-```
-
-#### nextToken()
-
-Allocate the next token for `category` and `original`. If the original
-has been seen before in this category, the same token is reused.
-
-**Signature:**
-
-```php
-public function nextToken(PiiCategory $category, string $original): string
 ```
 
 ---

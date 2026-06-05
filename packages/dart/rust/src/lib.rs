@@ -1503,18 +1503,6 @@ pub struct TokenReductionConfig {
     pub enable_semantic_clustering: bool,
 }
 
-/// kreuzberg-gliner-rs ONNX backend wrapper.
-///
-/// Holds an initialised [`GLiNER<SpanMode>`] behind an `Arc<Mutex<...>>` so the
-/// model can be safely shared across async tasks (inference is synchronous and
-/// serialised internally by the mutex).
-#[frb(mirror(GlineBackend))]
-pub struct GlineBackend {
-    pub repo_id: String,
-    pub model_path: String,
-    pub tokenizer_path: String,
-}
-
 /// liter-llm-backed NER backend.
 #[frb(opaque)]
 pub struct LlmBackend {
@@ -3453,13 +3441,6 @@ pub struct DetectResponse {
     pub filename: Option<String>,
 }
 
-/// A text segment with its byte offset in the original document.
-#[frb(mirror(Segment))]
-pub struct Segment {
-    pub text: String,
-    pub byte_start: i64,
-}
-
 /// Options controlling how two `ExtractionResult` values are compared.
 #[frb(mirror(DiffOptions))]
 pub struct DiffOptions {
@@ -3837,13 +3818,6 @@ impl TokenCounter {
     #[frb]
     pub fn new() -> TokenCounter {
         (|v| TokenCounter::from(v))(kreuzberg::TokenCounter::new())
-    }
-    #[frb]
-    pub fn next_token(&mut self, category: PiiCategory, original: String) -> String {
-        self.inner.next_token(
-            unsafe { ::std::mem::transmute::<&PiiCategory, &kreuzberg::PiiCategory>(&category) },
-            &original,
-        )
     }
 }
 
@@ -5598,16 +5572,6 @@ impl From<kreuzberg::TokenReductionConfig> for TokenReductionConfig {
     }
 }
 
-impl From<kreuzberg::GlineBackend> for GlineBackend {
-    fn from(v: kreuzberg::GlineBackend) -> Self {
-        GlineBackend {
-            repo_id: v.repo_id.into(),
-            model_path: v.model_path.to_string_lossy().into_owned(),
-            tokenizer_path: v.tokenizer_path.to_string_lossy().into_owned(),
-        }
-    }
-}
-
 impl From<kreuzberg::text::redaction::patterns::PatternMatch> for PatternMatch {
     fn from(v: kreuzberg::text::redaction::patterns::PatternMatch) -> Self {
         PatternMatch {
@@ -6847,15 +6811,6 @@ impl From<kreuzberg::api::DetectResponse> for DetectResponse {
         DetectResponse {
             mime_type: v.mime_type.into(),
             filename: v.filename.map(|s| s.into()),
-        }
-    }
-}
-
-impl From<kreuzberg::chunking::semantic::merge::Segment<'_>> for Segment {
-    fn from(v: kreuzberg::chunking::semantic::merge::Segment<'_>) -> Self {
-        Segment {
-            text: v.text.into(),
-            byte_start: v.byte_start as _,
         }
     }
 }
@@ -10254,7 +10209,15 @@ pub fn batch_extract_bytes_sync(
     items: Vec<BatchBytesItem>,
     config: ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>, String> {
-    ::std::unimplemented!("this method is listed in dart.stub_methods and cannot be bridged through FRB")
+    kreuzberg::batch_extract_bytes_sync(
+        items
+            .into_iter()
+            .map(kreuzberg::BatchBytesItem::from)
+            .collect::<Vec<_>>(),
+        &kreuzberg::ExtractionConfig::from(config),
+    )
+    .map(|v: Vec<_>| v.into_iter().map(ExtractionResult::from).collect::<Vec<_>>())
+    .map_err(|e| e.to_string())
 }
 
 /// Extract content from multiple files concurrently.
@@ -10329,7 +10292,16 @@ pub async fn batch_extract_bytes(
     items: Vec<BatchBytesItem>,
     config: ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>, String> {
-    ::std::unimplemented!("this method is listed in dart.stub_methods and cannot be bridged through FRB")
+    kreuzberg::batch_extract_bytes(
+        items
+            .into_iter()
+            .map(kreuzberg::BatchBytesItem::from)
+            .collect::<Vec<_>>(),
+        &kreuzberg::ExtractionConfig::from(config),
+    )
+    .await
+    .map(|v: Vec<_>| v.into_iter().map(ExtractionResult::from).collect::<Vec<_>>())
+    .map_err(|e| e.to_string())
 }
 
 /// Detect MIME type from raw file bytes.
@@ -10545,25 +10517,6 @@ pub fn scan_text(text: String, categories: Vec<PiiCategory>) -> Vec<PatternMatch
     )
 }
 
-/// Apply `strategy` to `original` for `category` and return the replacement token.
-///
-/// The optional `counter` is required for `RedactionStrategy.TokenReplace`;
-/// other strategies ignore it.
-pub fn apply_strategy(
-    strategy: RedactionStrategy,
-    original: String,
-    category: PiiCategory,
-    mut counter: TokenCounter,
-) -> String {
-    kreuzberg::text::redaction::strategy::apply_strategy(
-        unsafe { std::mem::transmute::<RedactionStrategy, kreuzberg::RedactionStrategy>(strategy) },
-        &original,
-        unsafe { std::mem::transmute::<&PiiCategory, &kreuzberg::PiiCategory>(&category) },
-        &mut counter.inner,
-    )
-    .to_string()
-}
-
 /// Score and return the top-N sentences from `text`, joined in original order.
 ///
 /// `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -10643,30 +10596,6 @@ pub async fn extract_region_with_vlm(
     .map_err(|e| e.to_string())
 }
 
-/// Generate embeddings asynchronously for a list of text strings.
-///
-/// This is the async counterpart to `embed_texts`. It offloads the blocking
-/// ONNX inference work to a dedicated blocking thread pool via Tokio's
-/// `spawn_blocking`, keeping the async executor free.
-///
-/// Returns one embedding vector per input text in the same order.
-///
-/// **Errors:**
-///
-/// - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed
-/// - `KreuzbergError.Embedding` if the preset name is unknown, model download fails,
-///   or the blocking inference task panics
-pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f64>>, String> {
-    kreuzberg::embed_texts_async(texts, &kreuzberg::EmbeddingConfig::from(config))
-        .await
-        .map(|v| {
-            v.into_iter()
-                .map(|row| row.into_iter().map(|x| x as f64).collect::<Vec<_>>())
-                .collect::<Vec<_>>()
-        })
-        .map_err(|e| e.to_string())
-}
-
 /// Render a single PDF page to PNG bytes.
 ///
 /// Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -10702,11 +10631,9 @@ pub fn detect_mime_type(path: String, check_exists: bool) -> Result<String, Stri
         .map_err(|e| e.to_string())
 }
 
-/// Embed a list of texts using the configured embedding model.
-///
-/// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
-pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f64>>, String> {
-    kreuzberg::embed_texts(texts, &kreuzberg::EmbeddingConfig::from(config))
+pub async fn embed_texts_async(_texts: Vec<String>, _config: EmbeddingConfig) -> Result<Vec<Vec<f64>>, String> {
+    kreuzberg::embed_texts_async(_texts, &kreuzberg::EmbeddingConfig::from(_config))
+        .await
         .map(|v| {
             v.into_iter()
                 .map(|row| row.into_iter().map(|x| x as f64).collect::<Vec<_>>())
@@ -11040,6 +10967,13 @@ pub fn create_security_limits_from_json(json: String) -> Result<SecurityLimits, 
 pub fn create_token_reduction_config_from_json(json: String) -> Result<TokenReductionConfig, String> {
     serde_json::from_str::<kreuzberg::TokenReductionConfig>(&json)
         .map(TokenReductionConfig::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_pattern_match_from_json(json: String) -> Result<PatternMatch, String> {
+    serde_json::from_str::<kreuzberg::text::redaction::patterns::PatternMatch>(&json)
+        .map(PatternMatch::from)
         .map_err(|e| e.to_string())
 }
 
