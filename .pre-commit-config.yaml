@@ -14,7 +14,7 @@ repos:
     stages:
     - commit-msg
 - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-  rev: v2.0.0
+  rev: v2.1.0
   hooks:
     # AI governance
     - id: ai-rulez-generate
