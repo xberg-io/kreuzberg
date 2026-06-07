@@ -426,7 +426,7 @@ enum CacheCommands {
     /// this ensures all models are present in the cache directory.
     ///
     /// Use --all-embeddings to also download all 4 embedding model presets,
-    /// or --embedding-model <preset> to download a specific one.
+    /// or `--embedding-model <preset>` to download a specific one.
     ///
     /// By default, only the core layout models (rtdetr + tatr) are downloaded.
     /// Use --all-table-models to also download SLANeXT variants (~730MB).

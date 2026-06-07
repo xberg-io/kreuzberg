@@ -298,7 +298,7 @@ pub struct ExtractionOverrides {
     #[arg(long, value_name = "PREFIX")]
     pub html_class_prefix: Option<String>,
 
-    /// Suppress the embedded <style> block in styled HTML output.
+    /// Suppress the embedded `<style>` block in styled HTML output.
     #[cfg(feature = "html")]
     #[arg(long)]
     pub html_no_embed_css: bool,

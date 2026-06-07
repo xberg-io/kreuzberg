@@ -98,9 +98,9 @@ repos:
       exclude: ^e2e/
     - id: cargo-deny
       args: ["check"]
-    # rustdoc-lint runs `cargo doc` with `-D missing-docs` workspace-wide.
-    # Re-enable once the doc backlog is cleared (tracking task #154).
-    # - id: rustdoc-lint
+    # rustdoc-lint runs `cargo doc` with `-D missing-docs -D rustdoc::broken_intra_doc_links`
+    # workspace-wide. Re-enabled after the doc-backlog cleanup (#154).
+    - id: rustdoc-lint
     - id: rust-max-lines
       args: ["--max=1000"]
       # Remediation backlog: existing files over the 1,000-LOC ceiling. New files
