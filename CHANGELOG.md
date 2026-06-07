@@ -9,7 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.5] - 2026-06-07
+
+### Changed
+
+- **alef**: bumped to `0.23.26`. Regen brings: extendr skips non-auto-delegatable methods rather than emitting `compile_error!` stubs (unblocks R compile after LlmBackend.detect / detect_with_custom); flat data enums emit `_ => Self::default()` catch-all (covers cfg-gated source variants like `FormatMetadata::Code`); napi-rs trait-bridge templates drop the broken `cancellation_token` / `dispose()` emission; napi-rs tokio-util features now config-driven via `[languages.node] tokio_util_features` (we use `["rt"]`).
+- **pre-commit-hooks**: autoupdate bumped to `v2.1.5`.
+
 ### Fixed
+
+- **core/wasm**: PDF OCR pipelines now cfg-fork on `feature = "tokio-runtime"` rather than `target_arch = "wasm32"`. The previous fork left `tokio::task::JoinSet` references active when `kreuzberg-wasm` was checked with the native host toolchain (which never sets `target_arch = "wasm32"`), producing `cannot find module or crate 'tokio' in this scope`.
+
+- **alef.toml**: exclude R from `batch_extract_files*`, `batch_extract_bytes*`, `detect_qr_codes`, `find_all`, and `scan_text`. extendr cannot emit `From<Vec<NamedStruct>>` for opaque types, `TryFrom<Robj>` for `Vec<EnumVariant>`, or `From<Result<Vec<T>>>` wrappers without manual list adapters; excluding these surfaces keeps the binding compiling pending a follow-up that adds list-based converters to alef.
 
 - **core/wasm**: `extract_with_ocr` and `extract_mixed_ocr_native` used `tokio::task::JoinSet` (requires multi-threaded runtime) and `rayon::par_iter` (requires OS threads) inside functions that compile under `wasm-target`. Both are now cfg-forked: native targets retain the concurrent JoinSet + rayon path; wasm32 uses sequential `iter()` + `await` to stay single-threaded and runtime-agnostic.
 

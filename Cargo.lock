@@ -506,7 +506,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3319,9 +3319,9 @@ dependencies = [
 
 [[package]]
 name = "imgref"
-version = "1.12.1"
+version = "1.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40fac9d56ed6437b198fddba683305e8e2d651aa42647f00f5ae542e7f5c94a2"
+checksum = "89194689a993ab15268672e99e7b0e19da2da3268ac682e8f02d29d4d1434cd7"
 
 [[package]]
 name = "indexmap"
@@ -3693,7 +3693,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3814,7 +3814,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-cli"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "anstyle",
  "anyhow",
@@ -3835,7 +3835,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "async-trait",
  "flutter_rust_bridge",
@@ -3847,7 +3847,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3878,7 +3878,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-jni"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "base64 0.22.1",
  "jni 0.22.4",
@@ -3887,7 +3887,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-node"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "async-trait",
  "kreuzberg",
@@ -3913,7 +3913,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3927,7 +3927,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-php"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "async-trait",
  "ext-php-rs",
@@ -3939,7 +3939,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-py"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "async-trait",
  "kreuzberg",
@@ -3952,7 +3952,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-swift"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3967,7 +3967,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "cc",
  "cmake",
@@ -3979,7 +3979,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-wasm"
-version = "5.0.0-rc.4"
+version = "5.0.0-rc.5"
 dependencies = [
  "async-trait",
  "futures",
@@ -7860,9 +7860,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.9.0-rc.22"
+version = "1.9.0-rc.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ffcae99546edf76f27e4630191bcd175fa443d3a594a5ec7493ba8f2346acff"
+checksum = "0f8b7262add101100c4d8651d55d890c061cb304833378e1cfa3a6da505a42e5"
 dependencies = [
  "ahash",
  "cc",

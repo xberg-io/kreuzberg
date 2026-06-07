@@ -3,7 +3,7 @@ default_install_hook_types:
 - commit-msg
 default_stages:
 - pre-commit
-exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|scripts/ci/|^e2e/|^packages/|^crates/kreuzberg-(py|node|ffi|php|wasm)/|^docs/reference/api-|\.cache/|\.venv/|rust-vendor/
+exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|scripts/ci/|^e2e/|^packages/|^crates/kreuzberg-(py|node|ffi|php|wasm)/|^docs/reference/api-|\.cache/|\.venv/|rust-vendor/|^tools/benchmark-harness/vendored/|^\.ai-rulez/domains/
 repos:
 - repo: https://github.com/Goldziher/gitfluff
   rev: v0.8.0
@@ -14,7 +14,7 @@ repos:
     stages:
     - commit-msg
 - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-  rev: v2.1.0
+  rev: v2.1.6
   hooks:
     # AI governance
     - id: ai-rulez-generate

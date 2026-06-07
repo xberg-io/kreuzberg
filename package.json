@@ -1,6 +1,6 @@
 {
   "name": "kreuzberg-root",
-  "version": "5.0.0-rc.4",
+  "version": "5.0.0-rc.5",
   "private": true,
   "scripts": {
     "typecheck": "pnpm -r --if-present run typecheck"
