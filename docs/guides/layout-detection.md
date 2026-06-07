@@ -239,4 +239,4 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 ## Related
 
 - [Configuration Reference](../reference/configuration.md#layoutdetectionconfig) — full field reference
-- [Element-Based Output](output-formats.md#element-based-output-v410) — using layout-aware results
+- [Element-Based Output](output-formats.md#element-based-output) — using layout-aware results

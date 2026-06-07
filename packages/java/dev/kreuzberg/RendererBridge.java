@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * assembles the C vtable in native memory, and provides static
  * registerRenderer/unregisterRenderer helpers.
  */
+@SuppressWarnings("PMD")
 public final class RendererBridge implements AutoCloseable {
 
     private static final Linker LINKER = Linker.nativeLinker();

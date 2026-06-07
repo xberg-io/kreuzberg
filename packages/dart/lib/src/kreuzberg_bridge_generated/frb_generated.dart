@@ -15,6 +15,9 @@ import 'frb_generated.io.dart'
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+/// Handler callback type for service methods.
+typedef BaseHandler = FutureOr<dynamic> Function(dynamic);
+
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @internal

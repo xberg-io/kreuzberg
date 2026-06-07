@@ -550,5 +550,5 @@ All extraction functions raise typed exceptions on failure. Catch specific excep
 - [Configuration](configuration.md) — all configuration options and file formats
 - [OCR Guide](ocr.md) — set up optical character recognition
 - [Advanced Features](advanced.md) — chunking, language detection, embeddings
-- [Element-Based Output](output-formats.md#element-based-output-v410) — structured element arrays for RAG
+- [Element-Based Output](output-formats.md#element-based-output) — structured element arrays for RAG
 - [Document Structure](output-formats.md#document-structure) — hierarchical tree output

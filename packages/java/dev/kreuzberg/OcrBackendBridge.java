@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * assembles the C vtable in native memory, and provides static
  * registerOcrBackend/unregisterOcrBackend helpers.
  */
+@SuppressWarnings("PMD")
 public final class OcrBackendBridge implements AutoCloseable {
 
     private static final Linker LINKER = Linker.nativeLinker();

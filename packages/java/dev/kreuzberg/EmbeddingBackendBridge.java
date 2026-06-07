@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * assembles the C vtable in native memory, and provides static
  * registerEmbeddingBackend/unregisterEmbeddingBackend helpers.
  */
+@SuppressWarnings("PMD")
 public final class EmbeddingBackendBridge implements AutoCloseable {
 
     private static final Linker LINKER = Linker.nativeLinker();

@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.5"
+version = "5.0.0-rc.6"
 edition = "2024"
 license = "Elastic-2.0"
 
@@ -13,16 +13,16 @@ ignored = ["kreuzberg"]
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+async-trait = "0.1"
 flutter_rust_bridge = "=2.12.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "sync"] }
-async-trait = "0.1"
-
 [target.'cfg(not(all(target_os = "android", target_arch = "x86_64")))'.dependencies]
 kreuzberg = { path = "../../../crates/kreuzberg", features = ["full"] }
 [target.'cfg(all(target_os = "android", target_arch = "x86_64"))'.dependencies]
 kreuzberg = { path = "../../../crates/kreuzberg", default-features = false, features = ["android-target"] }
+
 [lints.rust]
 # flutter_rust_bridge uses #[cfg(frb_expand)] internally during macro expansion.
 # Declare it as a known cfg so rustc does not emit unexpected_cfgs warnings.

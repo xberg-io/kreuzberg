@@ -60,10 +60,11 @@ repos:
       exclude: ^templates/
     - id: markdownlint-rumdl-strict
       # Strict 120-char hard limit (incl. code blocks + tables) is too aggressive
-      # for long-form guides/concepts/CLI docs with kubectl manifests, kreuzberg
-      # JSON config examples, and prose that legitimately exceeds the cap inside
+      # for long-form docs with kubectl manifests, kreuzberg JSON config
+      # examples, comparison tables, install matrices, audit notes, generated
+      # READMEs/templates, and prose that legitimately exceeds the cap inside
       # fenced blocks. Non-strict `rumdl-fmt` still runs over these files.
-      exclude: ^docs/(guides|concepts|cli)/
+      exclude: ^(docs/|audit-notes/|skills/|templates/|tools/|scripts/|docker/|\.ai-rulez/|\.github/|crates/[^/]+/(README|patches/README)\.md$|ATTRIBUTIONS\.md$|SECURITY\.md$|CONTRIBUTING\.md$|CHANGELOG\.md$|README\.md$)
     - id: textlint
       files: ^docs/.*\.md$
       exclude: ^docs/(reference/|api-|snippets/|migration/)

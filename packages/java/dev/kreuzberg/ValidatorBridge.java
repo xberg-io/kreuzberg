@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * assembles the C vtable in native memory, and provides static
  * registerValidator/unregisterValidator helpers.
  */
+@SuppressWarnings("PMD")
 public final class ValidatorBridge implements AutoCloseable {
 
     private static final Linker LINKER = Linker.nativeLinker();

@@ -134,6 +134,7 @@
     ".codex/agents/zig-specialist.toml",
     ".codex/commands/iterate.md",
     ".codex/commands/parallelize.md",
+    ".codex/config.toml",
     ".codex/skills/add-language-generator/SKILL.md",
     ".codex/skills/alef/SKILL.md",
     ".codex/skills/alef/references/adapters.md",

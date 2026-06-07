@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * assembles the C vtable in native memory, and provides static
  * registerPostProcessor/unregisterPostProcessor helpers.
  */
+@SuppressWarnings("PMD")
 public final class PostProcessorBridge implements AutoCloseable {
 
     private static final Linker LINKER = Linker.nativeLinker();

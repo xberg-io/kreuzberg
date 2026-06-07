@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **alef**: bumped to `0.23.28`. Regen brings four codegen fixes — Python null-arg `NameError`, Go missing-method trait emission, C# `EmbeddingConfig` null handling, Java FFI runtime path — plus PHP `Option<&str>` vs `&str` nullability distinction, Kotlin Android `Files.readAllBytes(...)` for byte arrays, and Swift `TypeRef::String | TypeRef::Path` RustString wrapping.
+- **alef**: bumped to `0.23.31`. Regen brings codegen fixes for Python null-arg `NameError`, Go missing-method trait emission, C# `EmbeddingConfig` null handling, Java FFI runtime path, PHP `Option<&str>` vs `&str` nullability distinction, Kotlin Android `Files.readAllBytes(...)` for byte arrays, Swift `TypeRef::String | TypeRef::Path` RustString wrapping, and a verify ordering bug that reported every alef-headered file stale immediately after a clean regen.
 - **pre-commit-hooks**: bumped to `v2.1.9` (palantir multi-platform sha + `check-executables-have-shebangs` `.rs` exclusion).
 - **rust**: replaced bare `unreachable!()` / `.unwrap()` patterns across the workspace with documented `SAFETY:` invariant comments where panic-free alternatives exist.
 

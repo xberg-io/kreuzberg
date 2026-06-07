@@ -31,9 +31,9 @@
         <dependency>
             <groupId>dev.kreuzberg</groupId>
             <artifactId>kreuzberg</artifactId>
-            <version>5.0.0-rc.5</version>
+            <version>5.0.0-rc.6</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../../packages/java/target/kreuzberg-5.0.0-rc.5.jar</systemPath>
+            <systemPath>${project.basedir}/../../packages/java/target/kreuzberg-5.0.0-rc.6.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -98,7 +98,10 @@
                                     <matches string="${os.name}" pattern="(?i).*win.*" />
                                 </condition>
                                 <condition property="os.name.detected" value="linux">
-                                    <equals arg1="${os.name.detected}" arg2="" />
+                                    <or>
+                                        <matches string="${os.name}" pattern="(?i).*linux.*" />
+                                        <matches string="${os.name}" pattern="(?i).*nux.*" />
+                                    </or>
                                 </condition>
                                 <!-- Detect architecture -->
                                 <condition property="arch.detected" value="arm64">
