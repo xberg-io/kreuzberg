@@ -380,6 +380,17 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <configuration>
+                            <!-- Skip CPD in publish profile: alef-generated code has
+                                 inherent boilerplate duplication (streaming method bodies).
+                                 CPD threshold validation runs in regular builds; skipping
+                                 prevents false-positive failures during release. -->
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
