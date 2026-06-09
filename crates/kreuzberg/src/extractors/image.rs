@@ -465,9 +465,18 @@ impl DocumentExtractor for ImageExtractor {
             qr_codes: None,
         };
 
-        // When disable_ocr is set (or ocr.enabled = false), skip OCR and return metadata only
+        // When disable_ocr is set (or ocr.enabled = false), skip OCR and return metadata only.
+        // The raw image bytes only land in `doc.images` if the caller actually wants them —
+        // i.e. captioning is configured or `images.extract_images` is set. Match the OCR
+        // paths below which gate on `needs_image_data()`; otherwise this branch leaks
+        // image bytes into every disable_ocr result.
         if config.effective_disable_ocr() {
-            let mut doc = build_image_internal_document(None, Some(extracted_image));
+            let attach_image = if config.needs_image_data() {
+                Some(extracted_image)
+            } else {
+                None
+            };
+            let mut doc = build_image_internal_document(None, attach_image);
             doc.metadata = Metadata {
                 format: Some(crate::types::FormatMetadata::Image(image_metadata)),
                 ..Default::default()
@@ -492,7 +501,7 @@ impl DocumentExtractor for ImageExtractor {
                     Ok(mut doc) => {
                         doc.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
                         doc.mime_type = mime_type.to_string();
-                        if config.captioning.is_some() {
+                        if config.needs_image_data() {
                             doc.images.push(extracted_image.clone());
                         }
                         return Ok(doc);
@@ -509,7 +518,7 @@ impl DocumentExtractor for ImageExtractor {
                 let mut doc = self.extract_with_ocr(content, mime_type, config).await?;
                 doc.metadata.format = Some(crate::types::FormatMetadata::Image(image_metadata));
                 doc.mime_type = mime_type.to_string();
-                if config.captioning.is_some() {
+                if config.needs_image_data() {
                     doc.images.push(extracted_image);
                 }
                 return Ok(doc);
