@@ -506,12 +506,11 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "ahash",
  "anyhow",
  "async-trait",
- "base64 0.22.1",
  "chrono",
  "clap",
  "dotenvy",
@@ -523,7 +522,6 @@ dependencies = [
  "pulldown-cmark 0.13.4",
  "rayon",
  "regex",
- "reqwest",
  "serde",
  "serde_json",
  "shellexpand",
@@ -3692,7 +3690,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "ahash",
  "anyhow",
@@ -3813,7 +3811,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-cli"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "anstyle",
  "anyhow",
@@ -3835,7 +3833,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "async-trait",
  "flutter_rust_bridge",
@@ -3847,7 +3845,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-ffi"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3878,7 +3876,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-jni"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "base64 0.22.1",
  "jni 0.22.4",
@@ -3887,7 +3885,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-node"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "async-trait",
  "kreuzberg",
@@ -3913,7 +3911,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3927,7 +3925,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-php"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "async-trait",
  "ext-php-rs",
@@ -3939,7 +3937,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-py"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "async-trait",
  "kreuzberg",
@@ -3952,7 +3950,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-swift"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3967,7 +3965,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "cc",
  "cmake",
@@ -3979,7 +3977,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-wasm"
-version = "5.0.0-rc.9"
+version = "5.0.0-rc.10"
 dependencies = [
  "async-trait",
  "futures",

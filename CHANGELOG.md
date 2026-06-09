@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.10] - 2026-06-09
+
+### Changed
+
+- **Bump alef pin to 0.23.58.** rc.9 shipped with alef 0.23.56, but the alef 0.23.56/0.23.57
+  crates.io artifacts predate the publish-fix consolidation; the corrected emitter content was
+  re-cut as 0.23.58 and is now on crates.io. The 0.23.58 regen propagates Java POM
+  `cpd.skip`/`pmd.skip` properties in the publish profile (so Maven Central
+  `maven-pmd-plugin:cpd-check` no longer blocks deploy), Ruby platform gemspec `spec.files`
+  enumeration of `.rb` wrappers (fixes `invalid gem structure` on RubyGems push), Zig `to_json`
+  NULL-guard variant inference via `_first_error(<ErrorSet>)` (compiles against user error sets
+  that don't declare `Serialization`), and napi `strip_typescript_annotations` opening-brace +
+  optional-param + overload-signature handling for `service.cjs`.
+
 ## [5.0.0-rc.9] - 2026-06-09
 
 ### Changed
