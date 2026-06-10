@@ -1205,6 +1205,8 @@ Aggregate statistics for a kreuzberg cache directory.
 
 #### CaptioningConfig
 
+**Since:** `v5.0.0-rc.3`
+
 Configuration for the VLM captioning post-processor.
 
 | Field | Type | Default | Description |
@@ -3072,6 +3074,8 @@ NER backend trait (stub for Android x86_64).
 
 #### NerConfig
 
+**Since:** `v5.0.0-rc.3`
+
 Configuration for the NER post-processor.
 
 | Field | Type | Default | Description |
@@ -3636,6 +3640,8 @@ Classification result for a single page.
 ---
 
 #### PageClassificationConfig
+
+**Since:** `v5.0.0-rc.3`
 
 Configuration for the page-classification post-processor.
 
@@ -4289,6 +4295,8 @@ the type in their own code.
 
 #### RedactionConfig
 
+**Since:** `v5.0.0-rc.3`
+
 Configuration for the redaction post-processor.
 
 | Field | Type | Default | Description |
@@ -4655,6 +4663,8 @@ returning structured data that conforms to the schema.
 
 #### SummarizationConfig
 
+**Since:** `v5.0.0-rc.3`
+
 Configuration for the summarisation post-processor.
 
 | Field | Type | Default | Description |
@@ -4969,6 +4979,8 @@ than duplicated here.
 ---
 
 #### TranslationConfig
+
+**Since:** `v5.0.0-rc.3`
 
 Configuration for the translation post-processor.
 

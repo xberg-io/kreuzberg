@@ -34,7 +34,7 @@ homepage = "https://kreuzberg.dev"
 
 [workspace.lints.rust]
 unsafe_code = "deny"
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(alef)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(alef)', 'cfg(feature, values("alef-meta"))'] }
 
 [workspace.lints.clippy]
 all = "warn"
