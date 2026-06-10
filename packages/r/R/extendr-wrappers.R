@@ -74,6 +74,61 @@ extract_file_sync <- function(path, mime_type = NULL, config = ExtractionConfig$
 #' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `batch_extract_files`
+#'
+#' Uses the global Tokio runtime for optimal performance.
+#' Only available with `tokio-runtime` (WASM has no filesystem).
+#' @param items List of batchfileitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
+#' @export
+batch_extract_files_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files_sync", items, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `batch_extract_bytes`
+#'
+#' Uses the global Tokio runtime for optimal performance.
+#' With the `tokio-runtime` feature, this blocks the current thread using the global
+#' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
+#' that iterates through items and calls `extract_bytes_sync()`.
+#' @param items List of batchbytesitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
+#' @export
+batch_extract_bytes_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
+#' Extract content from multiple files concurrently
+#'
+#' This function processes multiple files in parallel, automatically managing
+#' concurrency to prevent resource exhaustion. The concurrency limit can be
+#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
+#' to `(num_cpus * 1.5).ceil()`.
+#'
+#' Each file can optionally specify a [`FileExtractionConfig`] that overrides specific
+#' fields from the batch-level `config`. Pass `None` for a file to use the batch defaults.
+#' Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
+#' taken from the batch-level `config`.
+#' @param items Vector of `BatchFileItem` structs, each containing a path and optional per-file configuration overrides.
+#' @param config Batch-level extraction configuration (provides defaults and batch settings).
+#' @return A vector of `ExtractionResult` in the same order as the input items.
+#'
+#' @section Errors:
+#' Individual file errors are captured in the result metadata. System errors
+#' (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
+#' @export
+batch_extract_files <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
+#' Extract content from multiple byte arrays concurrently
+#'
+#' This function processes multiple byte arrays in parallel, automatically managing
+#' concurrency to prevent resource exhaustion. The concurrency limit can be
+#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
+#' to `(num_cpus * 1.5).ceil()`.
+#'
+#' Each item can optionally specify a [`FileExtractionConfig`] that overrides specific
+#' fields from the batch-level `config`. Pass `None` as the config to use
+#' the batch-level defaults for that item.
+#' @param items Vector of `BatchBytesItem` structs, each containing content bytes, MIME type, and optional per-item configuration overrides.
+#' @param config Batch-level extraction configuration.
+#' @return A vector of `ExtractionResult` in the same order as the input items.
+#' @export
+batch_extract_bytes <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
 #' Detect MIME type from raw file bytes
 #'
 #' Uses magic byte signatures to detect file type from content.
