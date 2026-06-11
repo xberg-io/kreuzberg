@@ -354,6 +354,31 @@ const char** kreuzberg_get_extensions_for_mime(const char* mime_type);
 
 ---
 
+#### kreuzberg_list_supported_formats()
+
+List all supported document formats.
+
+Returns every file extension Kreuzberg recognizes together with its
+corresponding MIME type, derived from the central format registry.
+Formats that have no registered file extension (such as source code,
+which is detected dynamically) are not included.
+
+The list is sorted alphabetically by file extension.
+
+**Returns:**
+
+A vector of `SupportedFormat` entries sorted by extension.
+
+**Signature:**
+
+```c
+KreuzbergSupportedFormat* kreuzberg_list_supported_formats();
+```
+
+**Returns:** `KreuzbergSupportedFormat*`
+
+---
+
 #### kreuzberg_detect_qr_codes()
 
 Detect QR codes in the bytes of an `ExtractedImage`.
@@ -718,6 +743,37 @@ void kreuzberg_classify_pages(KreuzbergExtractionResult result, KreuzbergPageCla
 
 ---
 
+#### kreuzberg_classify_text()
+
+Classify a single piece of text without requiring an `ExtractionResult`.
+
+Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+receiving documents off a queue) and wants a label list back without
+manufacturing extractor-side metadata.
+
+**Errors:**
+
+Same as `classify_pages`: a validation error when `config.labels` is empty,
+or any error returned by prompt rendering or the underlying LLM call.
+
+**Signature:**
+
+```c
+KreuzbergClassificationLabel* kreuzberg_classify_text(const char* text, KreuzbergPageClassificationConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text |
+| `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergClassificationLabel*`
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_download_model()
 
 Eagerly download a NER model into the kreuzberg cache.
@@ -929,6 +985,42 @@ const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const 
 | `custom_prompt` | `const char**` | No | The custom prompt |
 
 **Returns:** `const char*`
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_extract_keywords()
+
+Extract keywords from text using the specified algorithm.
+
+This is the unified entry point for keyword extraction. The algorithm
+used is determined by `config.algorithm`.
+
+**Returns:**
+
+A vector of keywords sorted by relevance (highest score first).
+
+**Errors:**
+
+Returns an error if:
+
+- The specified algorithm feature is not enabled
+- Keyword extraction fails
+
+**Signature:**
+
+```c
+KreuzbergKeyword* kreuzberg_extract_keywords(const char* text, KreuzbergKeywordConfig config);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `const char*` | Yes | The text to extract keywords from |
+| `config` | `KreuzbergKeywordConfig` | Yes | Keyword extraction configuration |
+
+**Returns:** `KreuzbergKeyword*`
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -2413,7 +2505,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 KreuzbergExtractionConfig kreuzberg_default();
 ```
 
-#### kreuzberg_needs_image_processing()
+#### kreuzberg_needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2425,6 +2517,27 @@ image decompression for text-only extraction workflows.
 ### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
+image I/O and processing when results won't be used.
+Returns `true` when image binary data should be extracted.
+
+True when `config.images.extract_images` is set **or** when captioning is
+configured — captioning requires image bytes regardless of whether the caller
+also requested `images` extraction.
+
+**Signature:**
+
+```c
+bool kreuzberg_needs_image_data();
+```
+
+#### kreuzberg_needs_image_processing()
+
+Returns `true` when any image processing is needed during extraction.
+
+### Optimization Impact
+
+For text-only extractions (no OCR, no image extraction, no captioning), skipping
+image decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
 
 **Signature:**
@@ -4680,9 +4793,10 @@ Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `const char*` | — | Short identifier (e.g. `"balanced"`, `"fast"`, `"quality"`). |
+| `name` | `const char*` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `const char*` | — | HuggingFace repository name for the model. |
 | `model_file` | `const char*` | — | Path to the ONNX model file within the repo. |
+| `additional_files` | `const char**` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `uintptr_t` | — | Maximum token sequence length the model supports. |
 | `description` | `const char*` | — | Human-readable description of the preset's intended use case. |
 
@@ -5688,7 +5802,7 @@ Since v5.0.0.
 | Value | Description |
 |-------|-------------|
 | `KREUZBERG_PRESET` | Use a preset cross-encoder model (recommended). — Fields: `name`: `const char*` |
-| `KREUZBERG_CUSTOM` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `const char*`, `max_length`: `int64_t` |
+| `KREUZBERG_CUSTOM` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `const char*`, `model_file`: `const char*`, `additional_files`: `const char**`, `max_length`: `int64_t` |
 | `KREUZBERG_LLM` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `KreuzbergLlmConfig` |
 | `KREUZBERG_PLUGIN` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `const char*` |
 

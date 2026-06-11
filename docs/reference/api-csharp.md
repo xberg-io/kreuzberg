@@ -354,6 +354,31 @@ public static List<string> GetExtensionsForMime(string mimeType)
 
 ---
 
+#### ListSupportedFormats()
+
+List all supported document formats.
+
+Returns every file extension Kreuzberg recognizes together with its
+corresponding MIME type, derived from the central format registry.
+Formats that have no registered file extension (such as source code,
+which is detected dynamically) are not included.
+
+The list is sorted alphabetically by file extension.
+
+**Returns:**
+
+A vector of `SupportedFormat` entries sorted by extension.
+
+**Signature:**
+
+```csharp
+public static List<SupportedFormat> ListSupportedFormats()
+```
+
+**Returns:** `List<SupportedFormat>`
+
+---
+
 #### DetectQrCodes()
 
 Detect QR codes in the bytes of an `ExtractedImage`.
@@ -613,6 +638,50 @@ public static void ClearRenderers()
 
 ---
 
+#### ClearRerankerBackends()
+
+Clear all reranker backends from the global registry.
+
+Calls `shutdown()` on every registered backend, then empties the registry.
+
+**Errors:**
+
+- Any error returned by a backend's `shutdown()` method. The first error
+  encountered stops processing of remaining backends.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static void ClearRerankerBackends()
+```
+
+**Returns:** `void`
+**Errors:** Throws `Error`.
+
+---
+
+#### ListRerankerBackends()
+
+List the names of all registered reranker backends.
+
+Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+bindings.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static List<string> ListRerankerBackends()
+```
+
+**Returns:** `List<string>`
+**Errors:** Throws `Error`.
+
+---
+
 #### ListValidators()
 
 List names of all registered validators.
@@ -670,6 +739,37 @@ public static async Task ClassifyPagesAsync(ExtractionResult result, PageClassif
 | `Config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `void`
+**Errors:** Throws `Error`.
+
+---
+
+#### ClassifyText()
+
+Classify a single piece of text without requiring an `ExtractionResult`.
+
+Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+receiving documents off a queue) and wants a label list back without
+manufacturing extractor-side metadata.
+
+**Errors:**
+
+Same as `classify_pages`: a validation error when `config.labels` is empty,
+or any error returned by prompt rendering or the underlying LLM call.
+
+**Signature:**
+
+```csharp
+public static async Task<List<ClassificationLabel>> ClassifyTextAsync(string text, PageClassificationConfig config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text |
+| `Config` | `PageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `List<ClassificationLabel>`
 **Errors:** Throws `Error`.
 
 ---
@@ -889,6 +989,42 @@ public static async Task<string> ExtractRegionWithVlmAsync(byte[] imageBytes, st
 
 ---
 
+#### ExtractKeywords()
+
+Extract keywords from text using the specified algorithm.
+
+This is the unified entry point for keyword extraction. The algorithm
+used is determined by `config.algorithm`.
+
+**Returns:**
+
+A vector of keywords sorted by relevance (highest score first).
+
+**Errors:**
+
+Returns an error if:
+
+- The specified algorithm feature is not enabled
+- Keyword extraction fails
+
+**Signature:**
+
+```csharp
+public static List<Keyword> ExtractKeywords(string text, KeywordConfig config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Text` | `string` | Yes | The text to extract keywords from |
+| `Config` | `KeywordConfig` | Yes | Keyword extraction configuration |
+
+**Returns:** `List<Keyword>`
+**Errors:** Throws `Error`.
+
+---
+
 #### RenderPdfPageToPng()
 
 Render a single PDF page to PNG bytes.
@@ -1003,6 +1139,108 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
 ```csharp
 public static List<string> ListEmbeddingPresets()
+```
+
+**Returns:** `List<string>`
+
+---
+
+#### Rerank()
+
+Rerank a list of documents by relevance to a query.
+
+Returns documents sorted descending by score. Applies `top_k` truncation if
+configured.
+
+**Errors:**
+
+- `KreuzbergError.Validation` if `query` is empty or blank.
+- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
+- `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static List<RerankedDocument> Rerank(string query, List<string> documents, RerankerConfig config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The query |
+| `Documents` | `List<string>` | Yes | The documents |
+| `Config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
+**Errors:** Throws `Error`.
+
+---
+
+#### RerankAsync()
+
+Stub for builds without the `reranker` feature.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static async Task<List<RerankedDocument>> RerankAsync(string query, List<string> documents, RerankerConfig config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The  query |
+| `Documents` | `List<string>` | Yes | The  documents |
+| `Config` | `RerankerConfig` | Yes | The reranker config |
+
+**Returns:** `List<RerankedDocument>`
+**Errors:** Throws `Error`.
+
+---
+
+#### GetRerankerPreset()
+
+Get a reranker preset by name.
+
+Returns `null` if no preset with the given name exists. Returns an owned
+clone so the value is safe to pass across FFI boundaries.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static RerankerPreset? GetRerankerPreset(string name)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### ListRerankerPresets()
+
+List the names of all available reranker presets.
+
+Returns owned `String`s so the values are safe to pass across FFI boundaries.
+
+Since v5.0.0.
+
+**Signature:**
+
+```csharp
+public static List<string> ListRerankerPresets()
 ```
 
 **Returns:** `List<string>`
@@ -2267,7 +2505,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 public ExtractionConfig CreateDefault()
 ```
 
-#### NeedsImageProcessing()
+#### NeedsImageData()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2279,6 +2517,27 @@ image decompression for text-only extraction workflows.
 ### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
+image I/O and processing when results won't be used.
+Returns `true` when image binary data should be extracted.
+
+True when `config.images.extract_images` is set **or** when captioning is
+configured — captioning requires image bytes regardless of whether the caller
+also requested `images` extraction.
+
+**Signature:**
+
+```csharp
+public bool NeedsImageData()
+```
+
+#### NeedsImageProcessing()
+
+Returns `true` when any image processing is needed during extraction.
+
+### Optimization Impact
+
+For text-only extractions (no OCR, no image extraction, no captioning), skipping
+image decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
 
 **Signature:**
@@ -4404,6 +4663,145 @@ public string Render(InternalDocument doc)
 
 ---
 
+#### RerankedDocument
+
+A single document returned by the reranker, with its position in the input and score.
+
+`index` maps back to the caller's original document list, so metadata arrays
+(e.g. IDs, paths) can be reordered without passing them through the reranker.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Index` | `nuint` | — | Position of this document in the original input `documents` slice. |
+| `Score` | `float` | — | Relevance score in `[0, 1]`. Higher means more relevant to the query. |
+| `Document` | `string` | — | The document text. |
+
+---
+
+#### RerankerBackend
+
+Trait for in-process reranker backend plugins.
+
+Cross-encoders score `(query, document)` pairs jointly and return a
+raw logit per document. The dispatcher in `rerank` applies
+sigmoid to convert logits to `[0, 1]` scores, sorts descending by score,
+and truncates to `top_k`.
+
+Async to match the convention used by `EmbeddingBackend`
+and other plugin traits. Host-language bridges wrap their synchronous
+host callables in `spawn_blocking` or the equivalent.
+
+### Thread safety
+
+Backends must be `Send + Sync + 'static`. They are stored in
+`Arc<dyn RerankerBackend>` and may be called concurrently from kreuzberg's
+dispatcher. If the backend's underlying model is not thread-safe, the
+backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
+
+### Contract
+
+- `rerank(query, documents)` MUST return exactly `documents.len()` scores.
+  The dispatcher validates this before sorting and returning to callers;
+  a non-conforming backend surfaces as a `KreuzbergError.Validation`, not
+  a panic.
+
+- Scores are raw logits in any range — callers must NOT assume `[0, 1]`.
+  The dispatcher applies sigmoid before sorting.
+
+- `rerank` may be called from any thread. Its future must be `Send`
+  (enforced by `async_trait` when `#[async_trait]` is used on non-WASM
+  targets).
+
+- `shutdown()` (inherited from `Plugin`) may be invoked
+  concurrently with an in-flight `rerank()` call. Implementations must
+  tolerate this — letting in-flight calls finish via the `Arc` reference
+  and only releasing shared state that isn't needed by `rerank`.
+
+### Runtime
+
+The synchronous `rerank` entry uses
+`tokio.task.block_in_place` to await the trait's async `rerank`, which
+requires a multi-thread tokio runtime. Callers running inside a
+`current_thread` runtime must use `rerank_async` instead.
+
+Since v5.0.0.
+
+### Methods
+
+#### Rerank()
+
+Score a list of documents against a query.
+
+Returns one raw logit per document in the same order as the input.
+The dispatcher applies sigmoid to convert to `[0, 1]` scores.
+
+**Errors:**
+
+Implementations should return `Plugin` for
+backend-specific failures. The dispatcher validates the returned length
+against `documents.len()` before sorting.
+
+**Signature:**
+
+```csharp
+public async Task<List<float>> RerankAsync(string query, List<string> documents)
+```
+
+---
+
+#### RerankerConfig
+
+Configuration for the reranking pipeline.
+
+Controls which model to use, how many results to return, and download/cache
+behavior for local ONNX models.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Model` | `RerankerModelType` | `RerankerModelType.Preset` | The reranker model to use (defaults to "balanced" preset if not specified). |
+| `TopK` | `nuint?` | `null` | Return at most this many documents. `null` returns all. Applied after sorting by score, so the highest-scoring documents are kept. |
+| `BatchSize` | `nuint` | `32` | Batch size for local ONNX cross-encoder inference. |
+| `ShowDownloadProgress` | `bool` | `false` | Show model download progress (local ONNX path only). |
+| `CacheDir` | `string?` | `null` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
+| `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `null` (auto-select per platform). |
+| `MaxRerankDurationSecs` | `ulong?` | `null` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
+
+### Methods
+
+#### CreateDefault()
+
+**Signature:**
+
+```csharp
+public RerankerConfig CreateDefault()
+```
+
+---
+
+#### RerankerPreset
+
+Metadata for a bundled reranker preset.
+
+All string fields are owned `String` for FFI compatibility — instances are
+safe to clone and pass across language boundaries.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Name` | `string` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
+| `ModelRepo` | `string` | — | HuggingFace repository name for the model. |
+| `ModelFile` | `string` | — | Path to the ONNX model file within the repo. |
+| `AdditionalFiles` | `List<string>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `MaxLength` | `nuint` | — | Maximum token sequence length the model supports. |
+| `Description` | `string` | — | Human-readable description of the preset's intended use case. |
+
+---
+
 #### RevisionDelta
 
 The content changes that make up a single revision.
@@ -5395,6 +5793,21 @@ Embedding model types supported by Kreuzberg.
 
 ---
 
+#### RerankerModelType
+
+Reranker model types supported by Kreuzberg.
+
+Since v5.0.0.
+
+| Value | Description |
+|-------|-------------|
+| `Preset` | Use a preset cross-encoder model (recommended). — Fields: `Name`: `string` |
+| `Custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `ModelId`: `string`, `ModelFile`: `string`, `AdditionalFiles`: `List<string>`, `MaxLength`: `long` |
+| `Llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `Llm`: `LlmConfig` |
+| `Plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `Name`: `string` |
+
+---
+
 #### WhisperModel
 
 Supported Whisper model sizes.
@@ -5782,7 +6195,6 @@ type-safe, clean metadata without nested optionals.
 | `Epub` | Metadata extracted from an EPUB e-book. — Fields: `0`: `EpubMetadata` |
 | `Pst` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `PstMetadata` |
 | `Audio` | Metadata extracted from an audio or video file. — Fields: `0`: `AudioMetadata` |
-| `Code` | Code metadata (tree-sitter analysis results). |
 
 ---
 
@@ -6131,6 +6543,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

@@ -1863,7 +1863,7 @@ Since v5.0.0.
 | Variant | Wire value | Description |
 |---------|------------|-------------|
 | `Preset` | `preset` | Use a preset cross-encoder model (recommended). — Fields: `name`: `String` |
-| `Custom` | `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String`, `max_length`: `i64` |
+| `Custom` | `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String`, `model_file`: `String`, `additional_files`: `Vec<String>`, `max_length`: `i64` |
 | `Llm` | `llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `LlmConfig` |
 | `Plugin` | `plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `String` |
 

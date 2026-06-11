@@ -3010,9 +3010,10 @@ Since v5.0.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `String` | — | Short identifier (e.g. `"balanced"`, `"fast"`, `"quality"`). |
+| `name` | `String` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `String` | — | HuggingFace repository name for the model. |
 | `model_file` | `String` | — | Path to the ONNX model file within the repo. |
+| `additional_files` | `Vec<String>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `usize` | — | Maximum token sequence length the model supports. |
 | `description` | `String` | — | Human-readable description of the preset's intended use case. |
 
@@ -3801,7 +3802,7 @@ Since v5.0.0.
 | Variant | Wire value | Description |
 |---------|------------|-------------|
 | `Preset` | `preset` | Use a preset cross-encoder model (recommended). — Fields: `name`: `String` |
-| `Custom` | `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String`, `max_length`: `i64` |
+| `Custom` | `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String`, `model_file`: `String`, `additional_files`: `Vec<String>`, `max_length`: `i64` |
 | `Llm` | `llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `LlmConfig` |
 | `Plugin` | `plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `String` |
 

@@ -190,12 +190,13 @@ fn patch_published_loader() {
 
 /// Rewrite FRB-emitted `handler.executeSync(SyncTask(...))` calls into
 /// `SyncTask(...).executeSync()` form, but ONLY inside methods whose
-/// signature contains a callback-function parameter type annotation.
+/// signature contains a callback parameter literally named `handler`.
 ///
 /// The check inspects the method/function signature (up to the opening brace)
-/// for the pattern `Function(`, which indicates a callback parameter. Methods
-/// without a callback parameter invoke the inherited base-class field — which
-/// IS callable as `.executeSync(task)` and must be left untouched.
+/// for both the parameter name `handler` and a callback type `Function(`.
+/// This avoids false positives: methods with other callback parameters
+/// (e.g., named `cb`) still use the inherited base-class field, which is
+/// properly callable as `.executeSync(task)` and must be left untouched.
 ///
 /// Idempotent: if no `handler.executeSync(` marker is present, exits early.
 #[allow(clippy::collapsible_if)]
@@ -255,7 +256,7 @@ fn fix_handler_executor_calls() {
         let block_text = lines[start..i].join("\n");
         // Extract signature: text from method start up to and including the opening brace.
         let signature_part = extract_signature(&block_text);
-        let rewritten = if signature_part.contains("Function(") {
+        let rewritten = if signature_part.contains("handler") && signature_part.contains("Function(") {
             rewrite_executor_to_task(&block_text)
         } else {
             block_text

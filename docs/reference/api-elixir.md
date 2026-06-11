@@ -216,6 +216,32 @@ def get_extensions_for_mime(mime_type)
 
 ---
 
+#### list_supported_formats()
+
+List all supported document formats.
+
+Returns every file extension Kreuzberg recognizes together with its
+corresponding MIME type, derived from the central format registry.
+Formats that have no registered file extension (such as source code,
+which is detected dynamically) are not included.
+
+The list is sorted alphabetically by file extension.
+
+**Returns:**
+
+A vector of `SupportedFormat` entries sorted by extension.
+
+**Signature:**
+
+```elixir
+@spec list_supported_formats() :: {:ok, term()} | {:error, term()}
+def list_supported_formats()
+```
+
+**Returns:** `list(SupportedFormat)`
+
+---
+
 #### detect_qr_codes()
 
 Detect QR codes in the bytes of an `ExtractedImage`.
@@ -487,6 +513,52 @@ def clear_renderers()
 
 ---
 
+#### clear_reranker_backends()
+
+Clear all reranker backends from the global registry.
+
+Calls `shutdown()` on every registered backend, then empties the registry.
+
+**Errors:**
+
+- Any error returned by a backend's `shutdown()` method. The first error
+  encountered stops processing of remaining backends.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec clear_reranker_backends() :: {:ok, term()} | {:error, term()}
+def clear_reranker_backends()
+```
+
+**Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### list_reranker_backends()
+
+List the names of all registered reranker backends.
+
+Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+bindings.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec list_reranker_backends() :: {:ok, term()} | {:error, term()}
+def list_reranker_backends()
+```
+
+**Returns:** `list(String.t())`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### list_validators()
 
 List names of all registered validators.
@@ -547,6 +619,38 @@ def classify_pages(result, config)
 | `config` | `PageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### classify_text()
+
+Classify a single piece of text without requiring an `ExtractionResult`.
+
+Use this when the caller already has plain text (e.g. a RAG ingest pipeline
+receiving documents off a queue) and wants a label list back without
+manufacturing extractor-side metadata.
+
+**Errors:**
+
+Same as `classify_pages`: a validation error when `config.labels` is empty,
+or any error returned by prompt rendering or the underlying LLM call.
+
+**Signature:**
+
+```elixir
+@spec classify_text(text, config) :: {:ok, term()} | {:error, term()}
+def classify_text(text, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String.t()` | Yes | The text |
+| `config` | `PageClassificationConfig` | Yes | The configuration options |
+
+**Returns:** `list(ClassificationLabel)`
 **Errors:** Returns `{:error, reason}`
 
 ---
@@ -823,6 +927,43 @@ def extract_region_with_vlm(image_bytes, image_mime, region_kind, llm_config, cu
 
 ---
 
+#### extract_keywords()
+
+Extract keywords from text using the specified algorithm.
+
+This is the unified entry point for keyword extraction. The algorithm
+used is determined by `config.algorithm`.
+
+**Returns:**
+
+A vector of keywords sorted by relevance (highest score first).
+
+**Errors:**
+
+Returns an error if:
+
+- The specified algorithm feature is not enabled
+- Keyword extraction fails
+
+**Signature:**
+
+```elixir
+@spec extract_keywords(text, config) :: {:ok, term()} | {:error, term()}
+def extract_keywords(text, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String.t()` | Yes | The text to extract keywords from |
+| `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
+
+**Returns:** `list(Keyword)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
@@ -942,6 +1083,112 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 ```elixir
 @spec list_embedding_presets() :: {:ok, term()} | {:error, term()}
 def list_embedding_presets()
+```
+
+**Returns:** `list(String.t())`
+
+---
+
+#### rerank()
+
+Rerank a list of documents by relevance to a query.
+
+Returns documents sorted descending by score. Applies `top_k` truncation if
+configured.
+
+**Errors:**
+
+- `KreuzbergError.Validation` if `query` is empty or blank.
+- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
+- `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec rerank(query, documents, config) :: {:ok, term()} | {:error, term()}
+def rerank(query, documents, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String.t()` | Yes | The query |
+| `documents` | `list(String.t())` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list(RerankedDocument)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### rerank_async()
+
+Stub for builds without the `reranker` feature.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec rerank_async(query, documents, config) :: {:ok, term()} | {:error, term()}
+def rerank_async(query, documents, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String.t()` | Yes | The  query |
+| `documents` | `list(String.t())` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
+
+**Returns:** `list(RerankedDocument)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### get_reranker_preset()
+
+Get a reranker preset by name.
+
+Returns `nil` if no preset with the given name exists. Returns an owned
+clone so the value is safe to pass across FFI boundaries.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec get_reranker_preset(name) :: {:ok, term()} | {:error, term()}
+def get_reranker_preset(name)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The name |
+
+**Returns:** `RerankerPreset | nil`
+
+---
+
+#### list_reranker_presets()
+
+List the names of all available reranker presets.
+
+Returns owned `String`s so the values are safe to pass across FFI boundaries.
+
+Since v5.0.0.
+
+**Signature:**
+
+```elixir
+@spec list_reranker_presets() :: {:ok, term()} | {:error, term()}
+def list_reranker_presets()
 ```
 
 **Returns:** `list(String.t())`
@@ -2206,7 +2453,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 def default()
 ```
 
-#### needs_image_processing()
+#### needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -2218,6 +2465,27 @@ image decompression for text-only extraction workflows.
 ### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
+image I/O and processing when results won't be used.
+Returns `true` when image binary data should be extracted.
+
+True when `config.images.extract_images` is set **or** when captioning is
+configured — captioning requires image bytes regardless of whether the caller
+also requested `images` extraction.
+
+**Signature:**
+
+```elixir
+def needs_image_data()
+```
+
+#### needs_image_processing()
+
+Returns `true` when any image processing is needed during extraction.
+
+### Optimization Impact
+
+For text-only extractions (no OCR, no image extraction, no captioning), skipping
+image decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
 
 **Signature:**
@@ -4343,6 +4611,145 @@ def render(doc)
 
 ---
 
+#### RerankedDocument
+
+A single document returned by the reranker, with its position in the input and score.
+
+`index` maps back to the caller's original document list, so metadata arrays
+(e.g. IDs, paths) can be reordered without passing them through the reranker.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `integer()` | — | Position of this document in the original input `documents` slice. |
+| `score` | `float()` | — | Relevance score in `[0, 1]`. Higher means more relevant to the query. |
+| `document` | `String.t()` | — | The document text. |
+
+---
+
+#### RerankerBackend
+
+Trait for in-process reranker backend plugins.
+
+Cross-encoders score `(query, document)` pairs jointly and return a
+raw logit per document. The dispatcher in `rerank` applies
+sigmoid to convert logits to `[0, 1]` scores, sorts descending by score,
+and truncates to `top_k`.
+
+Async to match the convention used by `EmbeddingBackend`
+and other plugin traits. Host-language bridges wrap their synchronous
+host callables in `spawn_blocking` or the equivalent.
+
+### Thread safety
+
+Backends must be `Send + Sync + 'static`. They are stored in
+`Arc<dyn RerankerBackend>` and may be called concurrently from kreuzberg's
+dispatcher. If the backend's underlying model is not thread-safe, the
+backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
+
+### Contract
+
+- `rerank(query, documents)` MUST return exactly `documents.len()` scores.
+  The dispatcher validates this before sorting and returning to callers;
+  a non-conforming backend surfaces as a `KreuzbergError.Validation`, not
+  a panic.
+
+- Scores are raw logits in any range — callers must NOT assume `[0, 1]`.
+  The dispatcher applies sigmoid before sorting.
+
+- `rerank` may be called from any thread. Its future must be `Send`
+  (enforced by `async_trait` when `#[async_trait]` is used on non-WASM
+  targets).
+
+- `shutdown()` (inherited from `Plugin`) may be invoked
+  concurrently with an in-flight `rerank()` call. Implementations must
+  tolerate this — letting in-flight calls finish via the `Arc` reference
+  and only releasing shared state that isn't needed by `rerank`.
+
+### Runtime
+
+The synchronous `rerank` entry uses
+`tokio.task.block_in_place` to await the trait's async `rerank`, which
+requires a multi-thread tokio runtime. Callers running inside a
+`current_thread` runtime must use `rerank_async` instead.
+
+Since v5.0.0.
+
+### Functions
+
+#### rerank()
+
+Score a list of documents against a query.
+
+Returns one raw logit per document in the same order as the input.
+The dispatcher applies sigmoid to convert to `[0, 1]` scores.
+
+**Errors:**
+
+Implementations should return `Plugin` for
+backend-specific failures. The dispatcher validates the returned length
+against `documents.len()` before sorting.
+
+**Signature:**
+
+```elixir
+def rerank(query, documents)
+```
+
+---
+
+#### RerankerConfig
+
+Configuration for the reranking pipeline.
+
+Controls which model to use, how many results to return, and download/cache
+behavior for local ONNX models.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `model` | `RerankerModelType` | `:preset` | The reranker model to use (defaults to "balanced" preset if not specified). |
+| `top_k` | `integer() \| nil` | `nil` | Return at most this many documents. `nil` returns all. Applied after sorting by score, so the highest-scoring documents are kept. |
+| `batch_size` | `integer()` | `32` | Batch size for local ONNX cross-encoder inference. |
+| `show_download_progress` | `boolean()` | `false` | Show model download progress (local ONNX path only). |
+| `cache_dir` | `String.t() \| nil` | `nil` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
+| `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `nil` (auto-select per platform). |
+| `max_rerank_duration_secs` | `integer() \| nil` | `nil` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
+
+### Functions
+
+#### default()
+
+**Signature:**
+
+```elixir
+def default()
+```
+
+---
+
+#### RerankerPreset
+
+Metadata for a bundled reranker preset.
+
+All string fields are owned `String` for FFI compatibility — instances are
+safe to clone and pass across language boundaries.
+
+Since v5.0.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `String.t()` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
+| `model_repo` | `String.t()` | — | HuggingFace repository name for the model. |
+| `model_file` | `String.t()` | — | Path to the ONNX model file within the repo. |
+| `additional_files` | `list(String.t())` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `max_length` | `integer()` | — | Maximum token sequence length the model supports. |
+| `description` | `String.t()` | — | Human-readable description of the preset's intended use case. |
+
+---
+
 #### RevisionDelta
 
 The content changes that make up a single revision.
@@ -5334,6 +5741,21 @@ Embedding model types supported by Kreuzberg.
 
 ---
 
+#### RerankerModelType
+
+Reranker model types supported by Kreuzberg.
+
+Since v5.0.0.
+
+| Value | Description |
+|-------|-------------|
+| `preset` | Use a preset cross-encoder model (recommended). — Fields: `name`: `String.t()` |
+| `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String.t()`, `model_file`: `String.t()`, `additional_files`: `list(String.t())`, `max_length`: `integer()` |
+| `llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `LlmConfig` |
+| `plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `String.t()` |
+
+---
+
 #### WhisperModel
 
 Supported Whisper model sizes.
@@ -5721,7 +6143,6 @@ type-safe, clean metadata without nested optionals.
 | `epub` | Metadata extracted from an EPUB e-book. — Fields: `0`: `EpubMetadata` |
 | `pst` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `PstMetadata` |
 | `audio` | Metadata extracted from an audio or video file. — Fields: `0`: `AudioMetadata` |
-| `code` | Code metadata (tree-sitter analysis results). |
 
 ---
 
@@ -6070,6 +6491,7 @@ and provides context for debugging.
 | `lock_poisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `unsupported_format` | The document's MIME type is not supported by any registered extractor. |
 | `embedding` | The embedding model or embedding pipeline returned an error. |
+| `reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
 | `transcription` | Audio/video transcription failed. |
 | `timeout` | The extraction operation exceeded the configured time limit. |
 | `cancelled` | The extraction was cancelled via a `CancellationToken`. |
