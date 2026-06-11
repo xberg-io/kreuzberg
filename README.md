@@ -87,11 +87,11 @@
   </a>
 </div>
 
-Extract text, metadata, and code intelligence from 92 file formats and 300+ programming languages at native speeds without needing a GPU.
+Extract text, metadata, and code intelligence from 92 file formats and 306 programming languages at native speeds without needing a GPU.
 
 ## Key Features
 
-- **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [300+ programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
+- **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [306 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly
 - **92 file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
@@ -255,7 +255,7 @@ To use embeddings functionality:
 
 **[Complete Format Reference →](https://docs.kreuzberg.dev/reference/formats/)**
 
-### Code Intelligence (300+ Languages)
+### Code Intelligence (306 Languages)
 
 | Feature                    | Description                                                   |
 | -------------------------- | ------------------------------------------------------------- |
@@ -396,7 +396,7 @@ Kreuzberg's Rust core with SIMD optimizations and parallelism delivers 10-100x f
 - **Emails** — MSG, EML, PST
 - **Archives** — ZIP, TAR, GZ, TGZ, 7Z
 - **Academic** — LaTeX, BibTeX, RIS
-- **Code** — 300+ programming languages via tree-sitter
+- **Code** — 306 programming languages via tree-sitter
 
 ### How do I get started?
 
