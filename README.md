@@ -87,14 +87,14 @@
   </a>
 </div>
 
-Extract text, metadata, and code intelligence from 90+ file formats and 300+ programming languages at native speeds without needing a GPU.
+Extract text, metadata, and code intelligence from 92 file formats and 300+ programming languages at native speeds without needing a GPU.
 
 ## Key Features
 
 - **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [300+ programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
-- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, and C
-- **90+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
+- **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly
+- **92 file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
 - **LLM intelligence** – VLM OCR (GPT-4o, Claude, Gemini, Ollama), structured JSON extraction with schema constraints, and provider-hosted embeddings via 143 LLM providers (including local engines: Ollama, LM Studio, vLLM, llama.cpp) through [liter-llm](https://github.com/kreuzberg-dev/liter-llm)
 - **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), VLM OCR (143 vision model providers including local engines), extensible via plugin API
 - **High performance** – Rust core with pure-Rust PDF, SIMD optimizations and full parallelism
@@ -347,7 +347,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 - [Kreuzberg Cloud](https://github.com/kreuzberg-dev/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/kreuzberg-dev/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/kreuzberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
-- [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 16 languages and 143 providers.
 - [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
 - [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces all per-language bindings.
 - [Discord](https://discord.gg/xt9WY3GnKR) — community, roadmap, announcements.
@@ -360,11 +360,11 @@ Elastic License 2.0 (ELv2) - see [LICENSE](LICENSE) for details. See [https://ww
 
 ### What is Kreuzberg?
 
-Kreuzberg is a polyglot document intelligence framework with a Rust core. It extracts text, metadata, and code intelligence from 90+ file formats and 300+ programming languages at native speeds without needing a GPU. It provides native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, and C.
+Kreuzberg is a polyglot document intelligence framework with a Rust core. It extracts text, metadata, and code intelligence from 90+ file formats and 300+ programming languages at native speeds without needing a GPU. It provides native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, C, and WebAssembly.
 
 ### How does Kreuzberg differ from other document extraction tools?
 
-- **Kreuzberg**: Rust core, 90+ formats, 300+ languages, polyglot bindings, code intelligence via tree-sitter, VLM OCR, native speeds, no GPU needed
+- **Kreuzberg**: Rust core, 92 formats, 300+ languages, polyglot bindings, code intelligence via tree-sitter, VLM OCR, native speeds, no GPU needed
 - **Apache Tika**: Java-based, broader format support, but slower, no code intelligence, no VLM OCR
 - **pdfplumber**: Python-only, PDF focus, slower, no code intelligence
 - **unstructured**: Python-based, good format coverage, but slower, requires more dependencies
@@ -375,8 +375,8 @@ Kreuzberg's Rust core with SIMD optimizations and parallelism delivers 10-100x f
 
 - **Code intelligence** — Extract functions, classes, imports, symbols, docstrings from 300+ languages via tree-sitter
 - **Extensible architecture** — Plugin system for custom OCR backends, validators, post-processors, document extractors, renderers
-- **Polyglot bindings** — Native bindings for 14+ languages (Rust, Python, Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, C)
-- **90+ file formats** — PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
+- **Polyglot bindings** — Native bindings for 16 languages (Rust, Python, Node.js, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, C, WebAssembly)
+- **92 file formats** — PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
 - **LLM intelligence** — VLM OCR (GPT-4o, Claude, Gemini, Ollama), structured JSON extraction, embeddings via 143 LLM providers
 - **OCR support** — Tesseract (all bindings including WASM for browsers), PaddleOCR, EasyOCR, VLM OCR, extensible via plugin API
 - **High performance** — Rust core with pure-Rust PDF, SIMD optimizations, full parallelism
@@ -387,7 +387,7 @@ Kreuzberg's Rust core with SIMD optimizations and parallelism delivers 10-100x f
 
 ### What file formats does Kreuzberg support?
 
-8 categories covering 90+ formats:
+8 categories covering 92 formats:
 
 - **Documents** — PDF, DOCX, DOC, ODT, RTF, Hangul
 - **Office** — XLSX, XLS, PPTX, PPT, ODS, iWork
