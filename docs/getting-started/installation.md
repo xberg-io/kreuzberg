@@ -251,9 +251,33 @@ Only relevant if building from source or enabling OCR:
 | Rust toolchain (`rustup`) | Building any native binding from source                                                |
 | C/C++ compiler            | Building native bindings (Xcode command-line tools / `build-essential` / MSVC)         |
 | Tesseract OCR             | Optional — `brew install tesseract` / `apt install tesseract-ocr`                      |
+| libheif (HEIC / HEIF / AVIF) | Optional — `brew install libheif` / `apt install libheif-dev` / `dnf install libheif-devel` |
 | PDFium                    | Auto-fetched during builds                                                             |
 
 The Wasm package (`@kreuzberg/wasm`) has **zero** system dependencies.
+
+### HEIF / HEIC / AVIF support { #heif--heic--avif-support }
+
+Pixel decoding for Apple HEIC photos, HEIF still images, AVIF, HEIC sequences
+(`.heics`), and AVCS requires the **`heic` Cargo feature** plus the system
+`libheif` library (with `libde265` for HEVC and `libaom` for AV1):
+
+- **macOS**: `brew install libheif`
+- **Debian / Ubuntu**: `apt install libheif-dev`
+- **Fedora**: `dnf install libheif-devel`
+- **Windows (vcpkg)**: `vcpkg install libheif[hevc,aom]:x64-windows`
+
+Enable the feature when building from source:
+
+```toml
+kreuzberg = { version = "5", features = ["heic", "ocr"] }
+```
+
+`heic` is included in the `full` aggregate feature. HEIC pixel decoding is
+**not available** on `wasm-target` or `android-target` (libheif is a C library
+with no working WASM/Android build story). EXIF metadata extraction from HEIC
+/ HEIF / AVIF works on **every** target via the pure-Rust `nom-exif`
+integration that ships with the OCR pipeline.
 
 ### GPU Acceleration
 

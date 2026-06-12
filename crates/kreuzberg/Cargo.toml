@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 authors.workspace = true
-description = "High-performance document intelligence library for Rust. Extract text, metadata, and structured data from PDFs, Office documents, images, and 90+ formats and 300+ programming languages via tree-sitter code intelligence with async/sync APIs."
+description = "High-performance document intelligence library for Rust. Extract text, metadata, and structured data from PDFs, Office documents, images, and 96 formats and 306 programming languages via tree-sitter code intelligence with async/sync APIs."
 license.workspace = true
 repository = "https://github.com/kreuzberg-dev/kreuzberg"
 homepage = "https://kreuzberg.dev"
@@ -18,7 +18,7 @@ ignored = [
     "liter-llm",
     "opentelemetry_sdk",
     "tracing-opentelemetry",
-    "kamadak-exif",
+    "nom-exif",
     # icu_provider is feature-gated and consumed transitively by language-detection;
     # cargo-machete cannot resolve `dep:icu_provider` references in feature flag chains.
     "icu_provider",
@@ -97,7 +97,7 @@ ocr = [
     "dep:image",
     "dep:tiff",
     "dep:fast_image_resize",
-    "dep:kamadak-exif",
+    "dep:nom-exif",
     "dep:hayro-jpeg2000",
     "dep:hayro-jbig2",
     "html",
@@ -108,9 +108,14 @@ ocr-wasm = [
     "ocr-pipeline",
     "dep:kreuzberg-tesseract",
     "dep:image",
+    "dep:nom-exif",
     "dep:hayro-jpeg2000",
     "dep:hayro-jbig2",
 ]
+# HEIF / HEIC / AVIF / HEICS / AVCS decoding via vendored libheif bindings.
+# Native-only — libheif is a C library with no working WASM/Android story.
+# Pulls in `nom-exif` so HEIC EXIF blocks are readable even without the full `ocr` feature.
+heic = ["dep:kreuzberg-libheif", "dep:image", "dep:nom-exif"]
 # PaddleOCR type definitions only — pure-Rust config structs, no ORT dependency.
 # Exposes PaddleOcrConfig, PaddleLanguage, ModelPaths. Safe on Android/WASM.
 paddle-ocr-types = []
@@ -387,6 +392,7 @@ full = [
     "classification",
     "captioning",
     "qr-codes",
+    "heic",
 ]
 # Server deployment preset — formats + analysis + services + OCR.
 server = ["formats", "analysis", "services", "ocr", "paddle-ocr", "layout-detection"]
@@ -446,9 +452,8 @@ indexmap = "2.14.0"
 infer = "0.19.0"
 itertools = { workspace = true, optional = true }
 jotdown = "0.10"
-kamadak-exif = { version = "0.6.1", optional = true }
-
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
+kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.10", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.10", optional = true }
 libc = { workspace = true }
@@ -467,6 +472,7 @@ mime_guess = "2.0"
 minijinja = { workspace = true, optional = true }
 moka = { version = "0.12", features = ["sync"], optional = true }
 ndarray = { version = "0.17", optional = true }
+nom-exif = { workspace = true, optional = true }
 num_cpus = { workspace = true }
 once_cell = { workspace = true }
 opentelemetry = { version = "0.32", features = ["trace"], optional = true }

@@ -1,10 +1,10 @@
 ---
-description: "Kreuzberg – Extract text, tables, and metadata from 90+ file formats with a Rust core and native bindings for 17 languages. No GPU required."
+description: "Kreuzberg – Extract text, tables, and metadata from 96 file formats with a Rust core and native bindings for 17 languages. No GPU required."
 ---
 
 # Kreuzberg
 
-Document intelligence with a Rust core and native bindings for 17 languages. Extract text, tables, and metadata from 90+ formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
+Document intelligence with a Rust core and native bindings for 17 languages. Extract text, tables, and metadata from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
 
 <div class="hero-badges" markdown>
 
@@ -39,7 +39,7 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 
 - :material-code-tags:{ .lg .middle } **Code Intelligence**
 
-  Extract functions, classes, imports, symbols, and docstrings from 300+ programming languages. Results in the **code_intelligence** field with semantic chunking.
+  Extract functions, classes, imports, symbols, and docstrings from 306 programming languages. Results in the **code_intelligence** field with semantic chunking.
 
 - :material-puzzle:{ .lg .middle } **Plugin System**
 

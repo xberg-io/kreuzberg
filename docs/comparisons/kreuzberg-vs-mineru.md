@@ -1,6 +1,6 @@
 # Kreuzberg vs MinerU
 
-MinerU is an open-source tool from OpenDataLab designed for high-quality PDF extraction, especially for scientific and academic documents. Kreuzberg is a Rust-based general-purpose extraction library covering 90+ formats. They overlap on PDF extraction but differ significantly in scope, licensing, and architecture.
+MinerU is an open-source tool from OpenDataLab designed for high-quality PDF extraction, especially for scientific and academic documents. Kreuzberg is a Rust-based general-purpose extraction library covering 96 formats. They overlap on PDF extraction but differ significantly in scope, licensing, and architecture.
 
 !!! Warning "License"
 
@@ -25,7 +25,7 @@ MinerU is an open-source tool from OpenDataLab designed for high-quality PDF ext
 
 The biggest difference is what each tool is designed to handle.
 
-- **Kreuzberg (90+ formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data, LaTeX, Typst, Jupyter notebooks, EPUB, and more. A general-purpose extraction library.
+- **Kreuzberg (96 formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data, LaTeX, Typst, Jupyter notebooks, EPUB, and more. A general-purpose extraction library.
 - **MinerU (PDF + images)** -- Handles PDFs and PNG/JPG images. Nothing else. It's a specialist tool, not a general-purpose library.
 
 If your pipeline processes only PDFs, both work. If you also need to handle Word docs, email files, or spreadsheets, Kreuzberg is the only option.

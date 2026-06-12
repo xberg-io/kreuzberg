@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.9"
+alef_version = "0.24.10"
 languages = [
   "python",
   "node",
@@ -2890,7 +2890,7 @@ function = "RerankAsync"
 async = true
 result_is_simple = true
 options_type = "RerankerConfig"
-nested_types = { model = "RerankerModelType", reranker_model = "RerankerModelType" }
+nested_types = { reranker_model = "RerankerModelType" }
 
 # Node only exposes the async variant rerankAsync (NAPI-RS sync functions are
 # only generated for non-async functions; the suspend wrapper is the public API).
@@ -2926,7 +2926,7 @@ nested_types = { reranker = "RerankerConfig", reranker_model = "RerankerModelTyp
 [crates.e2e.calls.rerank_async.overrides.csharp]
 result_is_simple = true
 options_type = "RerankerConfig"
-nested_types = { model = "RerankerModelType", reranker_model = "RerankerModelType" }
+nested_types = { reranker_model = "RerankerModelType" }
 
 [crates.e2e.calls.rerank_async.overrides.java]
 result_is_simple = true

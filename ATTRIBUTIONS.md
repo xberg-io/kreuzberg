@@ -279,6 +279,54 @@ The following test inputs were copied from the text-splitter repository to `/tes
 
 ---
 
-**Last Updated**: April 9, 2026
+## libheif-rs
+
+Safe Rust bindings around `libheif-sys` for decoding HEIF / HEIC / AVIF
+containers, vendored as the `kreuzberg-libheif` crate:
+
+- **Source**: <https://github.com/Cykooz/libheif-rs>
+- **License**: MIT
+- **Author(s)**: Kirill Kuzminykh (Cykooz) and contributors
+- **Vendored Version**: 2.7.0
+- **Location**: `crates/kreuzberg-libheif/`
+- **Purpose**: Decode HEIF-family containers (HEIC, HEIF, AVIF, HEICS, AVCS) to
+  interleaved RGBA pixels and expose EXIF / XMP metadata blocks for kreuzberg's
+  image-extraction and OCR pipeline.
+
+### Vendored Files / Scope
+
+- Full upstream `src/` tree (LibHeif, HeifContext, ImageHandle, Image, decoder,
+  encoder, color profile, regions, metadata, reader, security limits, track,
+  utils, and the optional `image`-crate integration module).
+- Vendored verbatim from upstream v2.7.0 so the public API mirrors `libheif-rs`
+  exactly; we continue to depend on upstream `libheif-sys` from crates.io for
+  the underlying C bindings.
+
+### Modifications
+
+- Workspace dependency alignment (`libc`, `image` pinned via the workspace).
+- Rust 2024 edition (upstream is 2021).
+- Replaced upstream `include_str!("../README.md")` doc shim with an inline
+  module-level vendoring header pointing at this file.
+- Workspace clippy / rust lints applied via `[lints] workspace = true`.
+
+### License Compatibility
+
+MIT is permissive and compatible with re-distribution alongside Kreuzberg's
+Elastic License 2.0 (ELv2) workspace. The upstream MIT license text is
+preserved verbatim at `crates/kreuzberg-libheif/LICENSE`.
+
+### System Library Requirement
+
+`libheif-rs` is a safe wrapper around the C library `libheif`, which in turn
+requires `libde265` (HEVC) and `libaom` (AV1). These must be available at build
+and runtime, or the `embedded-libheif` Cargo feature must be enabled. Pixel
+decoding is therefore native-only — the `heic` feature is excluded from
+kreuzberg's `wasm-target` and `android-target` aggregate features. EXIF
+extraction via `nom-exif` is pure Rust and works on every target.
+
+---
+
+**Last Updated**: June 12, 2026
 **Pandoc Version Used**: 3.8.3
 **Baseline Generation Date**: December 6, 2025

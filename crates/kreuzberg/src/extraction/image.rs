@@ -4,6 +4,10 @@
 //! including support for multi-frame TIFF files.
 
 use crate::error::{KreuzbergError, Result};
+use crate::extraction::exif::extract_exif_data;
+#[cfg(feature = "heic")]
+use crate::extraction::heif::decode_heic_to_png;
+use crate::extraction::heif::is_heif_container;
 use image::ImageReader;
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -355,12 +359,44 @@ pub(crate) fn load_image_for_ocr(image_bytes: &[u8]) -> Result<image::DynamicIma
 /// Extracts dimensions, format, and EXIF data from the image.
 /// Attempts to decode using the standard image crate first, then falls back to
 /// pure Rust JP2 box parsing for JPEG 2000 formats if the standard decoder fails.
+/// HEIF-family containers (HEIC/HEIF/AVIF/HEICS/AVCS) are decoded via libheif when
+/// the `heic` feature is enabled; EXIF is read from the original bytes either way.
 pub(crate) fn extract_image_metadata(bytes: &[u8]) -> Result<ExtractedImageMetadata> {
     // Check for JP2/J2K before attempting standard format detection
     if is_jp2(bytes) || (bytes.len() >= 2 && bytes[0] == 0xFF && bytes[1] == 0x4F) {
         // Try the fallback JP2 parser first for JPEG 2000 files
         if let Ok(metadata) = decode_jp2_metadata(bytes) {
             return Ok(metadata);
+        }
+    }
+
+    // HEIF-family containers: the `image` crate cannot decode HEVC/AV1. EXIF still
+    // works without the `heic` feature (nom-exif is pure Rust); dimensions require
+    // libheif so we surface a clear error when the feature is off.
+    if is_heif_container(bytes) {
+        let exif_data = extract_exif_data(bytes);
+        #[cfg(feature = "heic")]
+        {
+            let png = decode_heic_to_png(bytes)?;
+            let reader = ImageReader::new(Cursor::new(&png))
+                .with_guessed_format()
+                .map_err(|e| KreuzbergError::parsing(format!("Failed to re-read decoded HEIF PNG: {e}")))?;
+            let dims = reader
+                .into_dimensions()
+                .map_err(|e| KreuzbergError::parsing(format!("Failed to read HEIF dimensions: {e}")))?;
+            return Ok(ExtractedImageMetadata {
+                width: dims.0,
+                height: dims.1,
+                format: "HEIF".to_string(),
+                exif_data,
+            });
+        }
+        #[cfg(not(feature = "heic"))]
+        {
+            let _ = exif_data;
+            return Err(KreuzbergError::parsing(
+                "HEIF/HEIC/AVIF decoding requires the `heic` Cargo feature".to_string(),
+            ));
         }
     }
 
@@ -391,60 +427,6 @@ pub(crate) fn extract_image_metadata(bytes: &[u8]) -> Result<ExtractedImageMetad
             decode_err
         ))),
     }
-}
-
-/// Extract EXIF data from image bytes.
-///
-/// Returns a HashMap of EXIF tags and their values.
-/// If EXIF data is not available or cannot be parsed, returns an empty HashMap.
-/// Requires the `ocr` feature for kamadak-exif; returns empty map under `ocr-wasm`.
-#[cfg(feature = "ocr")]
-fn extract_exif_data(bytes: &[u8]) -> HashMap<String, String> {
-    use exif::{In, Reader, Tag};
-
-    let mut exif_map = HashMap::new();
-
-    let exif_reader = match Reader::new().read_from_container(&mut Cursor::new(bytes)) {
-        Ok(reader) => reader,
-        Err(_) => return exif_map,
-    };
-
-    let common_tags = [
-        (Tag::Make, "Make"),
-        (Tag::Model, "Model"),
-        (Tag::DateTime, "DateTime"),
-        (Tag::DateTimeOriginal, "DateTimeOriginal"),
-        (Tag::DateTimeDigitized, "DateTimeDigitized"),
-        (Tag::Software, "Software"),
-        (Tag::Orientation, "Orientation"),
-        (Tag::XResolution, "XResolution"),
-        (Tag::YResolution, "YResolution"),
-        (Tag::ResolutionUnit, "ResolutionUnit"),
-        (Tag::ExposureTime, "ExposureTime"),
-        (Tag::FNumber, "FNumber"),
-        (Tag::PhotographicSensitivity, "ISO"),
-        (Tag::FocalLength, "FocalLength"),
-        (Tag::Flash, "Flash"),
-        (Tag::WhiteBalance, "WhiteBalance"),
-        (Tag::GPSLatitude, "GPSLatitude"),
-        (Tag::GPSLongitude, "GPSLongitude"),
-        (Tag::GPSAltitude, "GPSAltitude"),
-    ];
-
-    for (tag, field_name) in common_tags {
-        if let Some(field) = exif_reader.get_field(tag, In::PRIMARY) {
-            exif_map.insert(field_name.to_string(), field.display_value().to_string());
-        }
-    }
-
-    exif_map
-}
-
-/// Stub EXIF extraction for `ocr-wasm` and `ocr-pipeline` without full `ocr`
-/// (kamadak-exif not compiled in those configurations).
-#[cfg(all(any(feature = "ocr-wasm", feature = "ocr-pipeline"), not(feature = "ocr")))]
-fn extract_exif_data(_bytes: &[u8]) -> HashMap<String, String> {
-    HashMap::new()
 }
 
 /// Result of OCR extraction from an image with optional page tracking.
@@ -785,6 +767,31 @@ mod tests {
         assert!(result.is_ok());
         let metadata = result.unwrap();
         assert!(metadata.exif_data.is_empty());
+    }
+
+    #[cfg(feature = "heic")]
+    #[test]
+    fn test_extract_image_metadata_handles_heic() {
+        const HEIC: &[u8] = include_bytes!("../../../../test_documents/images/test.heic");
+        const HEIF: &[u8] = include_bytes!("../../../../test_documents/images/test.heif");
+        const AVIF: &[u8] = include_bytes!("../../../../test_documents/images/test.avif");
+        for (label, bytes) in [("heic", HEIC), ("heif", HEIF), ("avif", AVIF)] {
+            let meta = extract_image_metadata(bytes).unwrap_or_else(|e| panic!("{label}: {e}"));
+            assert!(meta.width > 0, "{label}: width should be > 0");
+            assert!(meta.height > 0, "{label}: height should be > 0");
+            assert_eq!(meta.format, "HEIF", "{label}: unexpected format tag");
+        }
+    }
+
+    #[cfg(not(feature = "heic"))]
+    #[test]
+    fn test_extract_image_metadata_heic_without_feature_errors() {
+        // Minimal HEIC `ftyp` box — enough for the sniffer; decoding is skipped.
+        let mut heic_stub = Vec::from(&b"\x00\x00\x00\x18ftypheicheic"[..]);
+        heic_stub.extend_from_slice(&[0u8; 12]);
+        let err = extract_image_metadata(&heic_stub).expect_err("heic without feature should error");
+        let msg = err.to_string();
+        assert!(msg.contains("heic"), "expected `heic` mention in error: {msg}");
     }
 
     #[test]

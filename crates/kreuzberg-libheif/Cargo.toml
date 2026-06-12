@@ -1,0 +1,47 @@
+[package]
+name = "kreuzberg-libheif"
+version.workspace = true
+edition = "2024"
+rust-version.workspace = true
+authors.workspace = true
+description = "Safe libheif bindings for Kreuzberg — HEIF/HEIC/AVIF decoding (vendored from Cykooz/libheif-rs)"
+license = "MIT"
+repository.workspace = true
+homepage = "https://kreuzberg.dev"
+documentation = "https://docs.rs/kreuzberg-libheif"
+readme = "README.md"
+keywords = ["heic", "heif", "avif", "libheif", "kreuzberg"]
+categories = ["multimedia::images", "api-bindings"]
+exclude = ["tests/*", ".github/*"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lib]
+name = "kreuzberg_libheif"
+crate-type = ["lib"]
+
+[features]
+default = ["latest"]
+v1_17 = ["libheif-sys/v1_17"]
+v1_18 = ["v1_17", "libheif-sys/v1_18"]
+v1_19 = ["v1_18", "libheif-sys/v1_19"]
+v1_20 = ["v1_19", "libheif-sys/v1_20"]
+v1_21 = ["v1_20", "libheif-sys/v1_21"]
+latest = ["v1_21"]
+# Statically link libheif from source (still requires libde265 / libaom available).
+embedded-libheif = ["libheif-sys/embedded-libheif"]
+# Register libheif as a decoder for the `image` crate.
+image = ["dep:image"]
+
+[dependencies]
+cfg-if = "1.0"
+enumn = "0.1.14"
+four-cc = "0.4"
+image = { workspace = true, optional = true }
+libc = { workspace = true }
+libheif-sys = "5.2"
+
+[lints]
+workspace = true

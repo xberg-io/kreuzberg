@@ -12,6 +12,18 @@ pub mod hwp;
 #[cfg(any(feature = "ocr", feature = "ocr-wasm", feature = "ocr-pipeline"))]
 pub mod image;
 
+/// HEIF-family (HEIC, HEIF, AVIF) detection and decoding.
+///
+/// The detector (`is_heif_container`) is always compiled; the decoder
+/// (`decode_heic_to_png`) is gated by the `heic` feature.
+pub(crate) mod heif;
+
+/// EXIF metadata extraction via `nom-exif` (pure Rust).
+///
+/// Available under any of `ocr`, `ocr-wasm`, or `heic` so the same tag set
+/// reaches every target without re-implementing the bridge per surface.
+pub(crate) mod exif;
+
 /// Capacity estimation utilities for string pre-allocation.
 ///
 /// This module provides functions to estimate the capacity needed for string buffers

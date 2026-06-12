@@ -4,6 +4,7 @@ members = [
     "crates/kreuzberg-cli",
     "crates/kreuzberg-ffi",
     "crates/kreuzberg-jni",
+    "crates/kreuzberg-libheif",
     "crates/kreuzberg-node",
     "crates/kreuzberg-paddle-ocr",
     "crates/kreuzberg-php",
@@ -69,6 +70,7 @@ log = "0.4"
 lzma-rust2 = { version = "0.16.4" }
 memmap2 = "0.9"
 minijinja = "2"
+nom-exif = { version = "3.6", default-features = false }
 num_cpus = "1.17.0"
 once_cell = "1.21.4"
 

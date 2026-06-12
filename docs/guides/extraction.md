@@ -421,18 +421,48 @@ When a layout-detection model is active, it can independently classify regions a
 
 ## Supported Formats
 
-Kreuzberg supports 90+ file formats across 8 categories:
+Kreuzberg supports 96 file formats across 8 categories:
 
 | Category          | Extensions                                               | Notes                               |
 | ----------------- | -------------------------------------------------------- | ----------------------------------- |
 | **PDF**           | `.pdf`                                                   | Native text + OCR for scanned pages |
-| **Images**        | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp`        | Requires OCR backend                |
+| **Images**        | `.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`, `.webp`, `.heic`, `.heif`, `.avif` | OCR backend; HEIC/HEIF/AVIF need `heic` feature + libheif |
 | **Office**        | `.docx`, `.pptx`, `.xlsx`                                | Modern formats via native parsers   |
 | **Legacy Office** | `.doc`, `.ppt`                                           | Native OLE/CFB parsing              |
 | **Email**         | `.eml`, `.msg`                                           | Full support including attachments  |
 | **Web**           | `.html`, `.htm`                                          | Converted to Markdown with metadata |
 | **Text**          | `.md`, `.txt`, `.xml`, `.json`, `.yaml`, `.toml`, `.csv` | Direct extraction                   |
 | **Archives**      | `.zip`, `.tar`, `.tar.gz`, `.tar.bz2`                    | Recursive extraction                |
+
+### Image metadata and EXIF
+
+For every supported image format — JPEG, PNG, TIFF, WebP, BMP, GIF, JPEG 2000,
+HEIC, HEIF, AVIF — Kreuzberg returns an `ImageMetadata` block on
+`metadata.format` containing:
+
+- **`width`** / **`height`** in pixels
+- **`format`** — uppercase format tag (e.g. `JPEG`, `PNG`, `HEIF`)
+- **`exif`** — a key/value map of EXIF tags
+
+EXIF extraction is powered by the pure-Rust `nom-exif` integration and covers
+camera identity (Make, Model, LensModel, LensSpecification, Software),
+timestamps (DateTimeOriginal, CreateDate, OffsetTime, SubSecTime), full
+exposure parameters (ExposureTime, FNumber, ISO, ApertureValue,
+ShutterSpeedValue, ExposureProgram, ExposureMode, MeteringMode, Flash,
+SceneCaptureType), the complete GPS block (GPSLatitude, GPSLongitude,
+GPSAltitude, GPSTimeStamp, GPSDateStamp, GPSSpeed, GPSImgDirection,
+GPSMapDatum, GPSProcessingMethod), color space, thumbnail offsets, and
+provenance fields (Copyright, ImageDescription, ImageUniqueID).
+
+EXIF works on every target, including `wasm-target` and `android-target`,
+because `nom-exif` is pure Rust. HEIC / HEIF / AVIF pixel decoding requires
+the `heic` Cargo feature and the system `libheif` library, and is therefore
+**native-only** — see the [installation guide](../getting-started/installation.md#heif--heic--avif-support).
+
+When the `heic` feature is enabled, HEIC / HEIF / AVIF inputs are decoded to
+RGBA via `libheif`, re-encoded as PNG, and then flow through the standard
+OCR / layout pipeline. EXIF is read from the original HEIC bytes before the
+PNG re-encode so no metadata is lost.
 
 ## Page Tracking
 

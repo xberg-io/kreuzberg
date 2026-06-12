@@ -320,6 +320,29 @@ static FORMATS: &[FormatEntry] = &[
         mime_type: "image/x-jbig2",
         aliases: &[],
     },
+    // HEIF container family. Pixel decoding requires the `heic` Cargo feature
+    // (native-only — libheif is a C library with no working WASM/Android story);
+    // EXIF metadata still works without `heic` when `ocr` or `ocr-wasm` is on.
+    FormatEntry {
+        extensions: &["heic", "heics"],
+        mime_type: "image/heic",
+        aliases: &["image/heic-sequence"],
+    },
+    FormatEntry {
+        extensions: &["heif"],
+        mime_type: "image/heif",
+        aliases: &["image/heif-sequence"],
+    },
+    FormatEntry {
+        extensions: &["avif"],
+        mime_type: "image/avif",
+        aliases: &[],
+    },
+    FormatEntry {
+        extensions: &["avcs"],
+        mime_type: "image/avcs",
+        aliases: &[],
+    },
     FormatEntry {
         extensions: &["pnm"],
         mime_type: "image/x-portable-anymap",

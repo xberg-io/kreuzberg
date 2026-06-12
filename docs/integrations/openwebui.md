@@ -11,7 +11,7 @@ Open WebUI supports pluggable content extraction backends. Kreuzberg implements 
 3. Kreuzberg extracts the content — running OCR where needed and returns Markdown.
 4. Open WebUI stores the Markdown in its vector database for retrieval-augmented generation.
 
-Kreuzberg supports [90+ file formats](../reference/formats.md) and requires no GPU.
+Kreuzberg supports [96 file formats](../reference/formats.md) and requires no GPU.
 
 ## Prerequisites
 

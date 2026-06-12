@@ -30,7 +30,7 @@ If you need raw extraction speed without ML overhead, Kreuzberg is faster out of
 
 What each tool can ingest.
 
-- **Kreuzberg (90+ formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data (JSON/YAML/TOML), plus LaTeX, Typst, BibTeX, Jupyter notebooks, EPUB, OrgMode, and more.
+- **Kreuzberg (96 formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data (JSON/YAML/TOML), plus LaTeX, Typst, BibTeX, Jupyter notebooks, EPUB, OrgMode, and more.
 - **Docling (~38 extensions)** -- PDFs, DOCX, PPTX, XLSX, HTML, Markdown, AsciiDoc, CSV, images, and JATS (scientific article XML). Focused on the formats that benefit most from layout analysis.
 
 Docling covers the core document types well. Kreuzberg handles the long tail -- archives, email files, structured data, code, and niche markup formats.

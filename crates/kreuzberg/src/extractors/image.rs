@@ -424,6 +424,20 @@ impl DocumentExtractor for ImageExtractor {
         tracing::debug!(format = "image", size_bytes = content.len(), "extraction starting");
         let extraction_metadata = extract_image_metadata(content)?;
 
+        // HEIF-family containers are decoded to PNG once, up-front, so every downstream
+        // consumer (OCR, layout, image-kind classifier, attached `extracted_image.data`)
+        // sees a format the standard `image` crate can read. EXIF was already pulled from
+        // the original bytes above via `extract_image_metadata`.
+        #[cfg(feature = "heic")]
+        let owned_png;
+        #[cfg(feature = "heic")]
+        let (content, mime_type): (&[u8], &str) = if crate::extraction::heif::is_heif_container(content) {
+            owned_png = crate::extraction::heif::decode_heic_to_png(content)?;
+            (owned_png.as_slice(), "image/png")
+        } else {
+            (content, mime_type)
+        };
+
         let format_str = extraction_metadata.format;
         let image_metadata = crate::types::ImageMetadata {
             width: extraction_metadata.width,
@@ -565,6 +579,12 @@ impl DocumentExtractor for ImageExtractor {
             "image/x-portable-bitmap",
             "image/x-portable-graymap",
             "image/x-portable-pixmap",
+            "image/heic",
+            "image/heic-sequence",
+            "image/heif",
+            "image/heif-sequence",
+            "image/avif",
+            "image/avcs",
         ]
     }
 

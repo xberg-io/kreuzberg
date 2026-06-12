@@ -31,7 +31,7 @@ If your stack is already JVM-based, Tika integrates naturally. For everything el
 Both tools excel here, but in different ways.
 
 - **Tika** -- Detects **1500+ MIME types** and extracts text from hundreds of formats. It's built to handle practically anything you throw at it, including exotic formats like CAD files and scientific data. Two decades of format support.
-- **Kreuzberg** -- Extracts from **90+ formats** with a focus on high-quality output. Covers PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data, and niche markup formats like Typst and Djot.
+- **Kreuzberg** -- Extracts from **96 formats** with a focus on high-quality output. Covers PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data, and niche markup formats like Typst and Djot.
 
 Tika's format detection is unmatched in breadth. Kreuzberg focuses on extraction quality for the formats most document pipelines actually encounter.
 

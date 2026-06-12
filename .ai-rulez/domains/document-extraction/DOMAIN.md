@@ -9,4 +9,4 @@ description: Document extraction pipeline architecture
 - ExtractionResult contains: text content, metadata (page count, language, confidence), optional structured data (tables, images)
 - Async-first: all extraction paths are async, use spawn_blocking for CPU-bound work (OCR, image processing)
 - Memory limits: streaming for large files, configurable max file size, depth limits for nested archives
-- Format coverage: 91+ formats — PDF, DOCX, XLSX, PPTX, HTML, images, email (EML/MSG), archives, plain text
+- Format coverage: 96 formats — PDF, DOCX, XLSX, PPTX, HTML, images (incl. HEIC/HEIF/AVIF), email (EML/MSG), archives, plain text

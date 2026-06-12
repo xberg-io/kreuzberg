@@ -16,6 +16,8 @@ ignore = [
   "RUSTSEC-2026-0115", # imageproc unsound bounds check - transitive dep, not on user-input image path
   "RUSTSEC-2026-0116", # imageproc improper invariant check - transitive dep, not on user-input image path
   "RUSTSEC-2026-0117", # imageproc unsound bounds check - transitive dep, not on user-input image path
+  "RUSTSEC-2026-0176", # PyO3 OOB read in PyList/PyTuple nth/nth_back - pre-existing; track via pyo3 upgrade
+  "RUSTSEC-2026-0177", # PyO3 missing Sync bound on PyCFunction::new_closure - pre-existing; track via pyo3 upgrade
 ]
 
 [licenses]

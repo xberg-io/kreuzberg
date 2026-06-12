@@ -30,7 +30,7 @@ If you need a complete pipeline (extract, chunk, embed), Kreuzberg handles the f
 
 Both cover common formats, with different long-tail reach.
 
-- **Kreuzberg (90+ formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data (JSON/YAML/TOML), plus LaTeX, Typst, BibTeX, Jupyter notebooks, EPUB, OrgMode, and more.
+- **Kreuzberg (96 formats)** -- PDFs, Office docs, spreadsheets, HTML, images (via OCR), email, archives, source code, structured data (JSON/YAML/TOML), plus LaTeX, Typst, BibTeX, Jupyter notebooks, EPUB, OrgMode, and more.
 - **MarkItDown (~25 formats)** -- PDFs, DOCX, PPTX, XLSX, HTML, XML, CSV, JSON, EPUB, Jupyter notebooks, MSG email, images, and ZIP archives. Covers the essentials.
 
 MarkItDown handles the formats you'll encounter most often. Kreuzberg also handles the ones you won't expect -- until you do.
