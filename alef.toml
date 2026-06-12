@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.11"
+alef_version = "0.24.13"
 languages = [
   "python",
   "node",
@@ -578,6 +578,10 @@ exclude_functions = [
 
 [crates.r]
 package_name = "kreuzberg"
+# kreuzberg-libheif transitively links libheif via libheif-sys; R CMD INSTALL needs
+# the same `-lheif` so the dlopen at package load doesn't fail on `_heif_check_filetype`.
+extra_makevars_prelude = ["HEIF_LIBS = $(shell pkg-config --libs libheif 2>/dev/null || echo \"-lheif\")"]
+extra_pkg_libs = ["$(HEIF_LIBS)"]
 exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
