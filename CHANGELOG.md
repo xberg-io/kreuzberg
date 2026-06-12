@@ -99,6 +99,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **pdf: graphical-line table detector now emits `warn` on per-page extraction
+  failure instead of silently swallowing the error at `debug` level.**
+  `extract_tables_native` and `extract_tables_bordered` both caught
+  `pdf_oxide::extract_tables_with_config` errors at `tracing::debug!` and
+  continued, making failures invisible to operators at the default log level.
+  Upgraded to `tracing::warn!` to match the existing behaviour of the TATR and
+  SLANeXT inference paths.
+  ([#1097](https://github.com/kreuzberg-dev/kreuzberg/issues/1097))
+
 - **publish.yaml `trigger-pubdev` job: explicit `permissions: actions: write`.** Since the `a8f8597e45` migration to the `kreuzberg-dev-publisher` App-token, the `gh workflow run publish-pubdev.yaml` step has 403'd with "Resource not accessible by integration" — the App's installation token didn't carry `actions: write`. Adding job-level `permissions: { actions: write, contents: read }` covers the case where GITHUB_TOKEN is used as a fallback, and documents that the App's permissions also need `actions: write` configured on github.com.
 
 ### Changed
