@@ -527,17 +527,28 @@ pub(crate) fn build_comrak_ast<'a>(doc: &InternalDocument, arena: &'a comrak::Ar
 
         let parent = current_parent(&root, &container_stack);
 
-        // In comrak, List nodes can only contain Item/TaskItem children.
-        // If the current parent is a List and we're about to add a non-Item
-        // block node, redirect it to the last Item child of that List.
+        // List nodes can only contain Item/TaskItem children; redirect non-Item
+        // blocks to the last Item, synthesising one if none exists yet (#1096).
         let parent = if matches!(parent.data.borrow().value, NodeValue::List(..))
             && !matches!(elem_kind, ElementKind::ListItem { .. } | ElementKind::ListEnd)
         {
-            parent
+            let last_item = parent
                 .children()
                 .filter(|c| matches!(c.data.borrow().value, NodeValue::Item(..) | NodeValue::TaskItem(..)))
-                .last()
-                .unwrap_or(parent)
+                .last();
+            match last_item {
+                Some(item) => item,
+                None => {
+                    // No Item yet — synthesise one, mirroring the List's metadata.
+                    let list_meta = match parent.data.borrow().value {
+                        NodeValue::List(ref m) => *m,
+                        _ => unreachable!(),
+                    };
+                    let implicit_item = mk(arena, NodeValue::Item(list_meta));
+                    parent.append(implicit_item);
+                    implicit_item
+                }
+            }
         } else {
             parent
         };
@@ -1349,5 +1360,66 @@ mod tests {
             out
         );
         assert!(out.contains("Only text."), "paragraph must still render; got: {}", out);
+    }
+
+    // issue #1096: stray non-Item block before the first ListItem must not panic
+    #[test]
+    fn test_heading_directly_under_list_does_not_panic() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_heading(3, "1 (7)", None, None);
+        b.end_list();
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(out.contains("1 (7)"), "heading text must appear in output; got: {out}");
+    }
+
+    // issue #1096: Paragraph variant of the stray-block case
+    #[test]
+    fn test_paragraph_directly_under_list_does_not_panic() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_paragraph("Orphan paragraph.", vec![], None, None);
+        b.end_list();
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("Orphan paragraph."),
+            "paragraph text must appear in output; got: {out}"
+        );
+    }
+
+    // issue #1096: stray heading before first item, then a real item — both must appear
+    #[test]
+    fn test_heading_before_first_list_item_then_real_item() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(false);
+        b.push_heading(3, "Stray label", None, None);
+        b.push_list_item("Real item", false, vec![], None, None);
+        b.end_list();
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(out.contains("Stray label"), "stray heading must appear; got: {out}");
+        assert!(out.contains("Real item"), "real list item must appear; got: {out}");
+    }
+
+    // issue #1096: ordered list variant — implicit Item must inherit ordered list_meta
+    #[test]
+    fn test_ordered_list_with_stray_heading_does_not_panic() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_list(true);
+        b.push_heading(3, "Stray ordered label", None, None);
+        b.push_list_item("First ordered item", true, vec![], None, None);
+        b.end_list();
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("Stray ordered label"),
+            "stray heading must appear; got: {out}"
+        );
+        assert!(
+            out.contains("First ordered item"),
+            "ordered item must appear; got: {out}"
+        );
     }
 }

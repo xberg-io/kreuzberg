@@ -73,6 +73,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **rendering: fixed panic when a non-`Item` block element appears directly under
+  a `List` node before any `ListItem`.** The comrak AST builder now synthesises an
+  implicit `Item` wrapper instead of falling back onto the bare `List`, which violated
+  CommonMark's `List → Item-only` constraint and panicked in debug builds.
+  ([#1096](https://github.com/kreuzberg-dev/kreuzberg/issues/1096))
+
 - **reranker: `RerankError` migrated to `thiserror`.** Matches the rest
   of the library and `rust-conventions`.
 
