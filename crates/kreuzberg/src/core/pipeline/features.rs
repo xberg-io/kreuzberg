@@ -652,8 +652,6 @@ mod tests {
         }
     }
 
-    // --- Issue #1105: chunk page provenance for non-plain output formats ---
-
     #[test]
     fn chunk_page_provenance_present_for_markdown_output_with_pages() {
         // Two-page document: page text appears verbatim inside the markdown formatted string.
