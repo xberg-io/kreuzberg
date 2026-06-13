@@ -78,12 +78,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   implicit `Item` wrapper instead of falling back onto the bare `List`, which violated
   CommonMark's `List → Item-only` constraint and panicked in debug builds.
   ([#1096](https://github.com/kreuzberg-dev/kreuzberg/issues/1096))
-  
+
 - **pdf: `result.pages[*].isBlank` now reflects OCR content for scanned/rasterized PDFs.**
   When OCR (including VLM) wrote text into existing `PageContent` entries, `is_blank` was
   never recalculated — it retained the stale value from native text extraction, which is
   always `Some(true)` for pages with no text layer. All four write sites in the OCR
   page-assembly block now call `is_page_text_blank` after every content mutation.
+  ([#1095](https://github.com/kreuzberg-dev/kreuzberg/issues/1095))
+
+- **pdf: `metadata.pages.boundaries` now reflects `result.content` offsets after OCR.**
+  For scanned/rasterized PDFs with no embedded text layer, `PageBoundary` offsets were
+  computed against the empty native text, producing degenerate `byte_start == byte_end`
+  spans for every page. OCR wrote real content into `result.pages` but the stored
+  boundaries were never updated. The pipeline now runs `refresh_page_boundaries` before
+  chunking, re-deriving offsets against the fully rendered `result.content` string and
+  writing them back to `metadata.pages.boundaries`. This also normalises boundaries for
+  native PDFs: previously they pointed into the raw extractor string (not returned by the
+  API); they now consistently point into `result.content`.
   ([#1095](https://github.com/kreuzberg-dev/kreuzberg/issues/1095))
 
 - **reranker: `RerankError` migrated to `thiserror`.** Matches the rest

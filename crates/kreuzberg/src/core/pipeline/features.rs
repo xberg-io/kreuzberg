@@ -561,6 +561,118 @@ mod tests {
         assert!(result.metadata.pages.is_none());
     }
 
+    // refresh_page_boundaries must produce identical boundaries on a second call.
+    // recompute_boundaries_from_pages is deterministic given the same content and pages,
+    // so the written-back boundaries become the source truth and re-searching them yields
+    // the same offsets.
+    #[test]
+    fn refresh_page_boundaries_is_idempotent() {
+        let mut result = make_scanned_pdf_result(&[("First page", 1), ("Second page", 2)]);
+
+        refresh_page_boundaries(&mut result);
+        let after_first = result
+            .metadata
+            .pages
+            .as_ref()
+            .unwrap()
+            .boundaries
+            .as_ref()
+            .unwrap()
+            .iter()
+            .map(|b| (b.page_number, b.byte_start, b.byte_end))
+            .collect::<Vec<_>>();
+
+        refresh_page_boundaries(&mut result);
+        let after_second = result
+            .metadata
+            .pages
+            .as_ref()
+            .unwrap()
+            .boundaries
+            .as_ref()
+            .unwrap()
+            .iter()
+            .map(|b| (b.page_number, b.byte_start, b.byte_end))
+            .collect::<Vec<_>>();
+
+        assert_eq!(after_first, after_second, "refresh must be idempotent");
+    }
+
+    // Native PDFs: boundaries were computed against raw extractor text; after
+    // refresh they must point into result.content (render_plain output).
+    // Simulates trailing-space pages — the typical native PDF artifact that
+    // causes raw-extractor offsets to differ from result.content offsets.
+    #[test]
+    fn refresh_page_boundaries_normalises_native_pdf_offsets_to_result_content() {
+        let p1_raw = "First page content. "; // trailing space from raw extraction
+        let p2_raw = "Second page content. "; // trailing space from raw extraction
+
+        // result.content as render_plain produces it (each paragraph trimmed)
+        let p1_clean = "First page content.";
+        let p2_clean = "Second page content.";
+        let content = format!("{p1_clean}\n\n{p2_clean}");
+
+        // Simulate raw-extractor boundaries (offsets into raw text, not result.content)
+        let mut raw = String::new();
+        let b1_start = raw.len();
+        raw.push_str(p1_raw);
+        let b1_end = raw.len();
+        raw.push_str("\n\n");
+        let b2_start = raw.len();
+        raw.push_str(p2_raw);
+        let b2_end = raw.len();
+        // Verify that raw offsets indeed differ from result.content offsets
+        assert_ne!(
+            b1_end,
+            p1_clean.len(),
+            "raw extractor end must differ from render_plain end"
+        );
+
+        let stale_boundaries = vec![
+            PageBoundary {
+                byte_start: b1_start,
+                byte_end: b1_end,
+                page_number: 1,
+            },
+            PageBoundary {
+                byte_start: b2_start,
+                byte_end: b2_end,
+                page_number: 2,
+            },
+        ];
+        let page_structure = crate::types::PageStructure {
+            total_count: 2,
+            unit_type: crate::types::PageUnitType::Page,
+            boundaries: Some(stale_boundaries),
+            pages: None,
+        };
+        let mut result = ExtractionResult {
+            content,
+            pages: Some(vec![make_page(1, p1_raw), make_page(2, p2_raw)]),
+            metadata: crate::types::Metadata {
+                pages: Some(page_structure),
+                ..Default::default()
+            },
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+
+        refresh_page_boundaries(&mut result);
+
+        let updated = result.metadata.pages.as_ref().unwrap().boundaries.as_ref().unwrap();
+        assert_eq!(updated.len(), 2);
+        assert_eq!(
+            &result.content[updated[0].byte_start..updated[0].byte_end],
+            p1_clean,
+            "page 1 boundary must point to trimmed content in result.content"
+        );
+        assert_eq!(
+            &result.content[updated[1].byte_start..updated[1].byte_end],
+            p2_clean,
+            "page 2 boundary must point to trimmed content in result.content"
+        );
+    }
+
     // --- Issue #1073: chunk content must match output_format ---
 
     #[cfg(feature = "chunking")]
