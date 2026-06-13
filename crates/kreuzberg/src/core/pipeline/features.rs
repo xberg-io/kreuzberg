@@ -5,7 +5,6 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-#[cfg(feature = "chunking")]
 use crate::types::PageBoundary;
 use crate::types::{ExtractionResult, ProcessingWarning};
 use std::borrow::Cow;
@@ -23,7 +22,6 @@ use std::borrow::Cow;
 ///
 /// Pages whose content cannot be found are silently skipped (the chunker will
 /// still produce output, just without page-range metadata for those pages).
-#[cfg(feature = "chunking")]
 fn recompute_boundaries_from_pages(content: &str, pages: &[crate::types::PageContent]) -> Vec<PageBoundary> {
     let mut boundaries = Vec::with_capacity(pages.len());
     let mut search_offset = 0usize;
@@ -92,6 +90,32 @@ fn recompute_boundaries_from_pages(content: &str, pages: &[crate::types::PageCon
     boundaries
 }
 
+/// Recompute page boundaries and write them back to `result.metadata.pages.boundaries`.
+///
+/// Boundaries stored during extraction are computed against the raw native text.  For
+/// scanned/rasterized PDFs that text is empty (no embedded text layer), so every
+/// boundary is a degenerate zero-length span.  After OCR fills `result.pages` with
+/// real content this function re-derives boundaries against `result.content` (the
+/// fully rendered string) and stores them so the API response and chunker both see
+/// correct byte offsets.
+///
+/// No-op when `result.pages` is `None` or `result.metadata.pages` is `None`.
+pub(super) fn refresh_page_boundaries(result: &mut ExtractionResult) {
+    let pages = match result.pages.as_deref() {
+        Some(p) if !p.is_empty() => p,
+        _ => return,
+    };
+
+    let recomputed = recompute_boundaries_from_pages(&result.content, pages);
+    if recomputed.is_empty() {
+        return;
+    }
+
+    if let Some(ref mut page_structure) = result.metadata.pages {
+        page_structure.boundaries = Some(recomputed);
+    }
+}
+
 /// Map TSLP `CodeChunk`s directly to kreuzberg `Chunk`s, bypassing text-splitter.
 ///
 /// When the extraction result contains code intelligence with non-empty chunks,
@@ -144,19 +168,10 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
         let resolved_config = chunking_config.resolve_preset();
         let chunking_config = &resolved_config;
 
-        // Recompute page boundaries against `result.content` (rendered by `render_plain`)
-        // if per-page content is available.  The boundaries stored in
-        // `result.metadata.pages.boundaries` were computed against the raw extractor text
-        // and may have different byte offsets than the rendered content.
-        let recomputed_boundaries: Option<Vec<PageBoundary>> = result
-            .pages
-            .as_deref()
-            .map(|pages| recompute_boundaries_from_pages(&result.content, pages));
-
-        let page_boundaries: Option<&[PageBoundary]> = recomputed_boundaries
-            .as_deref()
-            .filter(|s| !s.is_empty())
-            .or_else(|| result.metadata.pages.as_ref().and_then(|ps| ps.boundaries.as_deref()));
+        // refresh_page_boundaries has already recomputed and stored correct offsets;
+        // use them directly for chunk page-range attribution.
+        let page_boundaries: Option<&[PageBoundary]> =
+            result.metadata.pages.as_ref().and_then(|ps| ps.boundaries.as_deref());
 
         // When a non-plain output format is requested, formatted_content holds the
         // pre-rendered output (markdown, HTML, etc.) that will become result.content after
@@ -326,7 +341,7 @@ pub(super) fn execute_token_reduction(result: &mut ExtractionResult, config: &Ex
     Ok(())
 }
 
-#[cfg(all(test, feature = "chunking"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::types::PageContent;
@@ -433,8 +448,122 @@ mod tests {
         assert_eq!(&content[boundaries[2].byte_start..boundaries[2].byte_end], p3_norm);
     }
 
+    // --- Issue #1095: degenerate page boundaries after OCR on scanned PDFs ---
+
+    fn make_scanned_pdf_result(ocr_pages: &[(&str, u32)]) -> ExtractionResult {
+        // Simulate what the pipeline produces for a scanned PDF:
+        // - result.content = concatenated OCR text
+        // - result.pages = per-page OCR content
+        // - result.metadata.pages.boundaries = stale degenerate offsets (byte_start == byte_end)
+        //   computed against the empty native text before OCR ran
+        let content = ocr_pages.iter().map(|(t, _)| *t).collect::<Vec<_>>().join("\n\n");
+
+        let pages: Vec<PageContent> = ocr_pages.iter().map(|(text, num)| make_page(*num, *text)).collect();
+
+        // Degenerate boundaries: every page has byte_start == byte_end (scanner artifact)
+        let stale_boundaries: Vec<PageBoundary> = ocr_pages
+            .iter()
+            .enumerate()
+            .map(|(i, (_, num))| PageBoundary {
+                page_number: *num,
+                byte_start: i * 2, // separator-only offsets from empty native text
+                byte_end: i * 2,
+            })
+            .collect();
+
+        let page_structure = crate::types::PageStructure {
+            total_count: ocr_pages.len() as u32,
+            unit_type: crate::types::PageUnitType::Page,
+            boundaries: Some(stale_boundaries),
+            pages: None,
+        };
+
+        ExtractionResult {
+            content,
+            pages: Some(pages),
+            metadata: crate::types::Metadata {
+                pages: Some(page_structure),
+                ..Default::default()
+            },
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn refresh_page_boundaries_fixes_degenerate_offsets_after_ocr() {
+        let mut result = make_scanned_pdf_result(&[
+            ("Investment and Subscription Agreement", 1),
+            ("dated 13.12.2021", 2),
+            ("entered into by and between", 3),
+        ]);
+
+        // Verify precondition: stale boundaries are degenerate (byte_start == byte_end)
+        let stale = result.metadata.pages.as_ref().unwrap().boundaries.as_ref().unwrap();
+        for b in stale {
+            assert_eq!(b.byte_start, b.byte_end, "stale boundary must be degenerate before fix");
+        }
+
+        refresh_page_boundaries(&mut result);
+
+        let updated = result.metadata.pages.as_ref().unwrap().boundaries.as_ref().unwrap();
+
+        assert_eq!(updated.len(), 3, "all pages must have a boundary");
+        for b in updated {
+            assert!(
+                b.byte_start < b.byte_end,
+                "boundary must be non-degenerate after refresh"
+            );
+        }
+        // Each boundary must point to its page content within result.content
+        assert_eq!(
+            &result.content[updated[0].byte_start..updated[0].byte_end],
+            "Investment and Subscription Agreement"
+        );
+        assert_eq!(
+            &result.content[updated[1].byte_start..updated[1].byte_end],
+            "dated 13.12.2021"
+        );
+        assert_eq!(
+            &result.content[updated[2].byte_start..updated[2].byte_end],
+            "entered into by and between"
+        );
+    }
+
+    #[test]
+    fn refresh_page_boundaries_no_op_when_pages_absent() {
+        let mut result = ExtractionResult {
+            content: "some content".to_string(),
+            pages: None,
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+        // Must not panic and metadata remains untouched
+        refresh_page_boundaries(&mut result);
+        assert!(result.metadata.pages.is_none());
+    }
+
+    #[test]
+    fn refresh_page_boundaries_no_op_when_metadata_pages_absent() {
+        let pages = vec![make_page(1, "some text")];
+        let mut result = ExtractionResult {
+            content: "some text".to_string(),
+            pages: Some(pages),
+            metadata: crate::types::Metadata {
+                pages: None,
+                ..Default::default()
+            },
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            ..Default::default()
+        };
+        // Has result.pages but no metadata.pages — must not panic
+        refresh_page_boundaries(&mut result);
+        assert!(result.metadata.pages.is_none());
+    }
+
     // --- Issue #1073: chunk content must match output_format ---
 
+    #[cfg(feature = "chunking")]
     fn make_result_with_formatted(plain: &str, formatted: &str) -> ExtractionResult {
         ExtractionResult {
             content: plain.to_string(),
@@ -444,6 +573,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "chunking")]
     fn markdown_chunking_config() -> crate::core::config::ExtractionConfig {
         crate::core::config::ExtractionConfig {
             output_format: crate::core::config::OutputFormat::Markdown,
@@ -458,6 +588,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "chunking")]
     #[test]
     fn chunks_content_is_markdown_when_output_format_is_markdown() {
         let plain = "SH-001 Luca Bianchi Common Germany 3500000\nSH-002 Jeni Doe Common Singapore 2800000";
@@ -493,6 +624,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "chunking")]
     #[test]
     fn chunks_content_is_plain_when_output_format_is_plain() {
         // output_format=Plain with markdown chunker: chunks must stay plain text even when
@@ -557,6 +689,7 @@ mod tests {
         assert_eq!(chunks[0].content, plain);
     }
 
+    #[cfg(feature = "chunking")]
     #[test]
     fn chunks_content_uses_formatted_content_for_djot_output_format() {
         // Djot goes through the same != Plain branch as Markdown.
@@ -595,6 +728,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "chunking")]
     #[test]
     fn chunk_page_metadata_is_none_for_non_plain_output_format() {
         // Known limitation (#1074): when output_format != Plain, page boundaries computed

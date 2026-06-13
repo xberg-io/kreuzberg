@@ -21,7 +21,7 @@ use crate::types::ExtractionResult;
 use crate::types::internal::InternalDocument;
 
 use execution::{execute_processors, execute_validators};
-use features::{execute_chunking, execute_language_detection, execute_token_reduction};
+use features::{execute_chunking, execute_language_detection, execute_token_reduction, refresh_page_boundaries};
 use initialization::{get_processors_from_cache, initialize_features, initialize_processor_cache};
 
 /// Run the post-processing pipeline on an `InternalDocument`.
@@ -175,6 +175,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
         .await?;
     }
 
+    refresh_page_boundaries(&mut result);
     execute_chunking(&mut result, config)?;
 
     // Clear temporary markdown if it was only stored for chunker heading context.
@@ -315,6 +316,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
     }
 
     // 2. Run synchronous post-processing
+    refresh_page_boundaries(&mut result);
     execute_chunking(&mut result, config)?;
 
     #[cfg(feature = "chunking")]
