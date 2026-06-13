@@ -418,6 +418,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and silently produce no provenance for that page.
   ([#1105](https://github.com/kreuzberg-dev/kreuzberg/issues/1105))
 
+- **`ocr_inline_images` now respects the configured OCR backend.** Previously,
+  enabling `PdfConfig.ocr_inline_images` always routed through a hardcoded
+  Tesseract path (`OcrProcessor`) regardless of the `OcrConfig.backend`,
+  `vlm_fallback`, or `pipeline` fields. The inline-image OCR loop now resolves
+  the backend through the `OcrBackend` registry — the same path used for
+  standalone image and full-page OCR — so `backend`, `vlm_fallback`, `pipeline`,
+  `backend_options`, and `output_format` all take effect for embedded PDF images.
+  As a side effect, inline-image OCR now benefits from the registered backend's
+  shared `OcrCache`; the previous path created a fresh `OcrProcessor` (and a cold
+  cache) on every extraction call.
+  ([#1088](https://github.com/kreuzberg-dev/kreuzberg/issues/1088))
+
 - **rendering: fixed panic when a non-`Item` block element appears directly under
   a `List` node before any `ListItem`.** The comrak AST builder now synthesises an
   implicit `Item` wrapper instead of falling back onto the bare `List`, which violated

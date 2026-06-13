@@ -201,7 +201,7 @@ impl PdfExtractor {
             pre_rendered_doc,
             _has_font_encoding_issues,
             pdf_annotations,
-            extracted_images,
+            mut extracted_images,
         ) = extract_all_from_oxide_document(
             content,
             config,
@@ -215,6 +215,53 @@ impl PdfExtractor {
             #[cfg(not(feature = "layout-detection"))]
             None,
         )?;
+
+        // --- Inline-image OCR ---
+        // Moved from extraction.rs (sync) to here (async) so we can resolve the
+        // configured backend through the OcrBackend registry instead of calling
+        // OcrProcessor directly, which previously hard-coded Tesseract regardless
+        // of OcrConfig.backend / vlm_fallback / pipeline. Fixes #1088.
+        // output_format is forwarded so backends that produce format-aware output
+        // (e.g. Markdown table rendering) behave consistently with the image extractor.
+        #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+        if config.pdf_options.as_ref().is_some_and(|p| p.ocr_inline_images)
+            && let Some(ref mut imgs) = extracted_images
+            && !imgs.is_empty()
+        {
+            let default_ocr_config;
+            let ocr_config = match config.ocr.as_ref() {
+                Some(c) => c,
+                None => {
+                    default_ocr_config = crate::core::config::OcrConfig::default();
+                    &default_ocr_config
+                }
+            };
+            crate::plugins::ensure_ocr_backends_initialized();
+            let backend = {
+                let registry = crate::plugins::registry::get_ocr_backend_registry();
+                registry.read().get(&ocr_config.backend)?
+            };
+            let mut ocr_config_with_format = ocr_config.clone();
+            ocr_config_with_format.output_format = Some(config.output_format.clone());
+            for img in imgs.iter_mut() {
+                if config.cancel_token.as_ref().is_some_and(|t| t.is_cancelled()) {
+                    break;
+                }
+                match backend.process_image(&img.data, &ocr_config_with_format).await {
+                    Ok(ocr_result) => {
+                        img.ocr_result = Some(Box::new(ocr_result));
+                    }
+                    Err(e) => {
+                        tracing::warn!(
+                            page = img.page_number,
+                            image_index = img.image_index,
+                            error = %e,
+                            "inline image OCR failed; image returned without OCR result"
+                        );
+                    }
+                }
+            }
+        }
 
         // --- OCR evaluation ---
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
@@ -2061,5 +2108,221 @@ mod tests {
             ocr::OcrGateOutcome::RunFallback,
             "all-pages-failing must produce RunFallback (Ocr), not RunFallbackOnPages (Mixed)"
         );
+    }
+
+    // ── #1088: ocr_inline_images must route through the configured OcrBackend ────────────────
+
+    /// Mock backend that records the OcrConfig it receives so tests can assert
+    /// that fields like output_format are forwarded correctly.
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    struct ConfigCapturingBackend {
+        name: &'static str,
+        sentinel: &'static str,
+        received_config: std::sync::Arc<std::sync::Mutex<Option<crate::core::config::OcrConfig>>>,
+    }
+
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    impl crate::plugins::Plugin for ConfigCapturingBackend {
+        fn name(&self) -> &str {
+            self.name
+        }
+        fn version(&self) -> String {
+            "0.0.0".to_string()
+        }
+        fn initialize(&self) -> crate::Result<()> {
+            Ok(())
+        }
+        fn shutdown(&self) -> crate::Result<()> {
+            Ok(())
+        }
+    }
+
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
+    #[async_trait::async_trait]
+    impl crate::plugins::OcrBackend for ConfigCapturingBackend {
+        fn backend_type(&self) -> crate::plugins::OcrBackendType {
+            crate::plugins::OcrBackendType::Custom
+        }
+        fn supports_language(&self, _: &str) -> bool {
+            true
+        }
+        async fn process_image(
+            &self,
+            _image_bytes: &[u8],
+            config: &crate::core::config::OcrConfig,
+        ) -> crate::Result<crate::types::ExtractionResult> {
+            *self.received_config.lock().unwrap() = Some(config.clone());
+            Ok(crate::types::ExtractionResult {
+                content: self.sentinel.to_string(),
+                mime_type: std::borrow::Cow::Borrowed("text/plain"),
+                ..Default::default()
+            })
+        }
+    }
+
+    /// Regression for #1088: ocr_inline_images must call the backend named in
+    /// OcrConfig.backend, not always Tesseract via OcrProcessor.
+    ///
+    /// Uses the existing register_mock_ocr_backend helper. The sentinel string
+    /// appearing in img.ocr_result.content proves which backend ran — no separate
+    /// AtomicBool needed.
+    ///
+    /// Fixture note: with_images.pdf is used here (not embedded_images_tables.pdf)
+    /// because pdf_oxide reliably extracts its single raster XObject. The existing
+    /// test_pdf_ocr_inline_images test is #[ignore] precisely because
+    /// embedded_images_tables.pdf does not surface images through the oxide path.
+    #[tokio::test]
+    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[serial]
+    async fn test_ocr_inline_images_uses_configured_backend() {
+        const BACKEND_NAME: &str = "mock-inline-ocr-routing-1088";
+        const SENTINEL: &str = "__inline_ocr_sentinel_1088__";
+        let _guard = register_mock_ocr_backend(BACKEND_NAME, SENTINEL);
+
+        let pdf_path = pdf_test_document("with_images.pdf");
+        assert!(pdf_path.exists(), "missing test fixture: {pdf_path:?}");
+        let content = std::fs::read(&pdf_path).expect("read fixture");
+
+        let config = crate::core::config::ExtractionConfig {
+            ocr: Some(crate::core::config::OcrConfig {
+                backend: BACKEND_NAME.to_string(),
+                ..Default::default()
+            }),
+            pdf_options: Some(crate::core::config::pdf::PdfConfig {
+                ocr_inline_images: true,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = PdfExtractor::new()
+            .extract_bytes(&content, "application/pdf", &config)
+            .await
+            .expect("extraction must not fail");
+
+        assert!(
+            !result.images.is_empty(),
+            "with_images.pdf must yield at least one embedded image; \
+             fixture may need replacing if pdf_oxide no longer extracts from it"
+        );
+
+        let images_with_ocr: Vec<_> = result.images.iter().filter(|img| img.ocr_result.is_some()).collect();
+
+        assert!(
+            !images_with_ocr.is_empty(),
+            "at least one image must have an ocr_result when ocr_inline_images=true"
+        );
+
+        for img in &images_with_ocr {
+            let content = img.ocr_result.as_ref().unwrap().content.as_str();
+            assert!(
+                content.contains(SENTINEL),
+                "ocr_result content '{content}' does not contain sentinel — \
+                 backend routing is still going through hardcoded Tesseract"
+            );
+        }
+    }
+
+    /// Verifies that the extraction-level output_format is forwarded to the backend
+    /// via OcrConfig.output_format. This mirrors the standalone image extractor
+    /// (image.rs) and allows backends that produce format-aware output (e.g. Markdown
+    /// table rendering) to behave correctly for inline PDF images.
+    #[tokio::test]
+    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[serial]
+    async fn test_ocr_inline_images_forwards_output_format() {
+        use std::sync::{Arc, Mutex};
+        const BACKEND_NAME: &str = "mock-inline-ocr-format-1088";
+        const SENTINEL: &str = "__format_sentinel_1088__";
+
+        let received_config = Arc::new(Mutex::new(None));
+        let backend = Arc::new(ConfigCapturingBackend {
+            name: BACKEND_NAME,
+            sentinel: SENTINEL,
+            received_config: Arc::clone(&received_config),
+        });
+        crate::plugins::register_ocr_backend(backend).unwrap();
+        let _guard = RegisteredOcrBackendGuard { name: BACKEND_NAME };
+
+        let pdf_path = pdf_test_document("with_images.pdf");
+        assert!(pdf_path.exists(), "missing test fixture: {pdf_path:?}");
+        let content = std::fs::read(&pdf_path).expect("read fixture");
+
+        let config = crate::core::config::ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ocr: Some(crate::core::config::OcrConfig {
+                backend: BACKEND_NAME.to_string(),
+                ..Default::default()
+            }),
+            pdf_options: Some(crate::core::config::pdf::PdfConfig {
+                ocr_inline_images: true,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = PdfExtractor::new()
+            .extract_bytes(&content, "application/pdf", &config)
+            .await
+            .expect("extraction must not fail");
+
+        if result.images.is_empty() {
+            panic!("with_images.pdf must yield images; fixture may need replacing");
+        }
+
+        let captured = received_config.lock().unwrap();
+        let captured_config = captured
+            .as_ref()
+            .expect("backend was never called — no images were processed");
+        assert_eq!(
+            captured_config.output_format,
+            Some(crate::core::config::OutputFormat::Markdown),
+            "output_format was not forwarded to the inline-image OCR backend"
+        );
+    }
+
+    /// When ocr_inline_images is false the mock backend must NOT be called even
+    /// though it is registered as the configured backend.
+    #[tokio::test]
+    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[serial]
+    async fn test_ocr_inline_images_disabled_does_not_call_backend() {
+        const BACKEND_NAME: &str = "mock-inline-ocr-disabled-1088";
+        let _guard = register_mock_ocr_backend(BACKEND_NAME, "should-never-appear");
+
+        let pdf_path = pdf_test_document("with_images.pdf");
+        assert!(pdf_path.exists(), "missing test fixture: {pdf_path:?}");
+        let content = std::fs::read(&pdf_path).expect("read fixture");
+
+        let config = crate::core::config::ExtractionConfig {
+            ocr: Some(crate::core::config::OcrConfig {
+                backend: BACKEND_NAME.to_string(),
+                ..Default::default()
+            }),
+            pdf_options: Some(crate::core::config::pdf::PdfConfig {
+                ocr_inline_images: false,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = PdfExtractor::new()
+            .extract_bytes(&content, "application/pdf", &config)
+            .await
+            .expect("extraction must not fail");
+
+        assert!(
+            !result.images.is_empty(),
+            "with_images.pdf must yield images; fixture may need replacing"
+        );
+        // Every image must have no ocr_result — the backend loop must not have run.
+        for img in &result.images {
+            assert!(
+                img.ocr_result.is_none(),
+                "img {} on page {:?} has ocr_result even though ocr_inline_images=false",
+                img.image_index,
+                img.page_number,
+            );
+        }
     }
 }

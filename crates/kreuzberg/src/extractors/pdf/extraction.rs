@@ -116,53 +116,13 @@ pub(crate) fn extract_all_from_oxide_document(
 
     let (images, image_positions) = if images_extraction_enabled || ocr_inline_images {
         let max_images = config.images.as_ref().and_then(|i| i.max_images_per_page);
-        #[cfg_attr(not(feature = "ocr"), allow(unused_mut))]
-        let mut extracted =
+        let extracted =
             crate::pdf::oxide::images::extract_images_with_data(&mut doc, max_images, config.cancel_token.as_ref())
                 .map_err(|e| crate::error::KreuzbergError::Parsing {
                     message: format!("pdf_oxide image extraction failed: {e}"),
                     source: None,
                 })?;
 
-        // Perform OCR on extracted images if enabled
-        if ocr_inline_images && !extracted.is_empty() {
-            #[cfg(feature = "ocr")]
-            {
-                let cache_dir = std::env::var("KREUZBERG_CACHE_DIR").ok().map(std::path::PathBuf::from);
-                let ocr_processor = crate::ocr::processor::OcrProcessor::new(cache_dir).map_err(|e| {
-                    crate::error::KreuzbergError::Parsing {
-                        message: format!("Failed to initialize OCR processor for inline images: {e}"),
-                        source: None,
-                    }
-                })?;
-
-                let tesseract_config = config
-                    .ocr
-                    .as_ref()
-                    .map(|o| o.tesseract_config.clone().unwrap_or_default())
-                    .unwrap_or_default();
-
-                for img in &mut extracted {
-                    if config.cancel_token.as_ref().is_some_and(|t| t.is_cancelled()) {
-                        break;
-                    }
-                    let internal_config: crate::ocr::types::TesseractConfig = (&tesseract_config).into();
-                    match ocr_processor.process_image(&img.data, &internal_config) {
-                        Ok(ocr_result) => {
-                            img.ocr_result = Some(Box::new(crate::types::ExtractionResult::from_ocr(ocr_result)));
-                        }
-                        Err(e) => {
-                            tracing::warn!(
-                                page = img.page_number,
-                                image_index = img.image_index,
-                                error = %e,
-                                "inline image OCR failed; image returned without OCR result"
-                            );
-                        }
-                    }
-                }
-            }
-        }
         // Derive positions from the capped set — no second decompression pass.
         let positions: Vec<(u32, u32)> = extracted
             .iter()
