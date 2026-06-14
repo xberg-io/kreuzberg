@@ -13,6 +13,7 @@ autoInstallPeers: true
 hoist: true
 overrides:
   glob: "10.5.0"
+minimumReleaseAge: 0
 minimumReleaseAgeExclude:
   - '@kreuzberg/node-darwin-arm64@5.0.0-rc.7'
   - '@kreuzberg/node-darwin-x64@5.0.0-rc.7'
