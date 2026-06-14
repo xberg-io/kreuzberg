@@ -167,6 +167,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DOCX→Markdown: hyperlinks inside bold (or italic) runs are no longer dropped.**
+  When a run carried both `bold=true` and a hyperlink URL, `build_inlines` in
+  `comrak_bridge` would silently skip the `Link` annotation because its byte range
+  coincided with the already-processed `Bold` range. The flat left-to-right pass is
+  replaced by a nested-annotation model: the outermost annotation for a given range
+  is processed first (Link before Bold so the link becomes the outer wrapper), and
+  all annotations fully contained within it are passed recursively into the node's
+  children. This fixes `**bold link**` dropping the URL and `Visit **docs** here`
+  dropping the link when only the inner word was bold.
+  ([#1086](https://github.com/kreuzberg-dev/kreuzberg/issues/1086))
+
 - **CI / publish: source-build libheif 1.23.0 to satisfy `libheif-sys 5.3 >= 1.21`.** Ubuntu Noble's
   apt ships `libheif 1.17.6` and Alpine 3.21 ships `libheif 1.19.5` — both rejected by `libheif-sys`
   with `Package 'libheif' has version '1.17.6', required version is '>= 1.21'`. Without a fix, every

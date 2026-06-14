@@ -229,9 +229,11 @@ enum ElementView<'a> {
 
 /// Build inline comrak nodes from text with byte-range annotations.
 ///
-/// Sorts annotations by (start, end), walks left-to-right, creates `Text`
-/// nodes for gaps and wraps annotated spans in the appropriate formatting
-/// node.  Overlapping inner annotations are skipped.
+/// Sorts annotations by start position, preferring wider spans first and `Link`
+/// before formatting annotations when ranges coincide.  Annotations fully
+/// contained within an outer annotation are nested recursively rather than
+/// skipped, so `Bold[0,5] + Link[0,5]` produces `[**text**](url)` instead of
+/// dropping the link.
 fn build_inlines<'a>(
     arena: &'a comrak::Arena<'a>,
     parent: &'a AstNode<'a>,
@@ -246,31 +248,45 @@ fn build_inlines<'a>(
     }
 
     let mut sorted: Vec<&TextAnnotation> = annotations.iter().collect();
-    sorted.sort_by_key(|a| (a.start, a.end));
+    // Sort by start ascending, then by span-width descending (wider spans are
+    // outer wrappers), then by kind priority so Link is the outermost node when
+    // ranges are equal (gives [**text**](url) rather than **[text](url)**).
+    sorted.sort_by_key(|a| {
+        let width = a.end.saturating_sub(a.start);
+        let priority: u8 = match &a.kind {
+            AnnotationKind::Link { .. } => 0,
+            _ => 1,
+        };
+        (a.start, std::cmp::Reverse(width), priority)
+    });
 
     let len = text.len() as u32;
     let mut pos: u32 = 0;
+    let mut i = 0;
 
-    for ann in &sorted {
+    while i < sorted.len() {
+        let ann = sorted[i];
         // Clamp to text length, then snap to valid UTF-8 char boundaries.
         // Annotation byte offsets can land inside multi-byte characters
         // (e.g. Cyrillic «»), which would panic on slice indexing.
         let start = text.ceil_char_boundary(ann.start.min(len) as usize) as u32;
         let end = text.floor_char_boundary(ann.end.min(len) as usize) as u32;
 
-        // Skip overlapping annotations.
+        // Already consumed as an inner annotation of a previous span.
         if start < pos {
             tracing::trace!(
                 ann_start = start,
                 ann_end = end,
                 current_pos = pos,
-                "skipping overlapping annotation"
+                "skipping annotation already consumed as inner"
             );
+            i += 1;
             continue;
         }
 
         // Skip degenerate annotations where boundary snapping collapsed the range.
         if start >= end {
+            i += 1;
             continue;
         }
 
@@ -284,8 +300,44 @@ fn build_inlines<'a>(
         }
 
         let span = &text[start as usize..end as usize];
-        append_annotated_span(arena, parent, span, &ann.kind);
+
+        // Collect annotations fully contained within [start, end) and translate
+        // their byte offsets to be relative to `start` for the recursive call.
+        let inner: Vec<TextAnnotation> = sorted[i + 1..]
+            .iter()
+            .filter_map(|ia| {
+                let is = text.ceil_char_boundary(ia.start.min(len) as usize) as u32;
+                let ie = text.floor_char_boundary(ia.end.min(len) as usize) as u32;
+                if is >= start && ie <= end && is < ie {
+                    Some(TextAnnotation {
+                        start: is - start,
+                        end: ie - start,
+                        kind: ia.kind.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        append_annotated_span(arena, parent, span, &ann.kind, &inner);
         pos = end;
+
+        // Advance past annotations whose start falls inside [start, end).
+        // This covers two cases: (a) annotations fully contained within the
+        // current span that were passed as `inner` to the recursive call, and
+        // (b) partially-overlapping annotations (start inside, end outside)
+        // that the inner filter rejected. Both are intentionally dropped — the
+        // partially-overlapping case has no unambiguous nesting semantics.
+        i += 1;
+        while i < sorted.len() {
+            let ns = text.ceil_char_boundary(sorted[i].start.min(len) as usize) as u32;
+            if ns < end {
+                i += 1;
+            } else {
+                break;
+            }
+        }
     }
 
     // Trailing text after last annotation.
@@ -300,10 +352,20 @@ fn build_inlines<'a>(
 /// Create a comrak inline wrapper node for the given annotation kind and
 /// append it to `parent`.
 ///
+/// `inner` contains annotations (with offsets relative to `span`) that are
+/// fully contained within this span and should be rendered as nested nodes
+/// rather than plain text.
+///
 /// Trims leading/trailing whitespace from emphasis/strong spans to avoid
 /// MD037 (spaces inside emphasis markers). Whitespace outside the markers
 /// is emitted as separate Text nodes.
-fn append_annotated_span<'a>(arena: &'a comrak::Arena<'a>, parent: &'a AstNode<'a>, span: &str, kind: &AnnotationKind) {
+fn append_annotated_span<'a>(
+    arena: &'a comrak::Arena<'a>,
+    parent: &'a AstNode<'a>,
+    span: &str,
+    kind: &AnnotationKind,
+    inner: &[TextAnnotation],
+) {
     // For inline formatting kinds, trim whitespace and emit it outside the markers.
     let (leading_ws, trimmed, trailing_ws) = if matches!(
         kind,
@@ -324,6 +386,33 @@ fn append_annotated_span<'a>(arena: &'a comrak::Arena<'a>, parent: &'a AstNode<'
         ("", span, "")
     };
 
+    // When leading whitespace was trimmed, shift inner annotation offsets so
+    // they remain correct relative to `trimmed` rather than `span`.
+    let leading_len = leading_ws.len() as u32;
+    let trimmed_len = trimmed.len() as u32;
+    let adjusted_inner: Vec<TextAnnotation>;
+    let inner_for_node: &[TextAnnotation] = if leading_len == 0 {
+        inner
+    } else {
+        adjusted_inner = inner
+            .iter()
+            .filter_map(|ia| {
+                let is = ia.start.saturating_sub(leading_len);
+                let ie = ia.end.saturating_sub(leading_len).min(trimmed_len);
+                if is < ie {
+                    Some(TextAnnotation {
+                        start: is,
+                        end: ie,
+                        kind: ia.kind.clone(),
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect();
+        &adjusted_inner
+    };
+
     // Emit leading whitespace outside the marker
     if !leading_ws.is_empty() {
         parent.append(mk_text(arena, leading_ws));
@@ -332,17 +421,20 @@ fn append_annotated_span<'a>(arena: &'a comrak::Arena<'a>, parent: &'a AstNode<'
     match kind {
         AnnotationKind::Bold => {
             let strong = mk(arena, NodeValue::Strong);
-            strong.append(mk_text(arena, trimmed));
+            build_inlines(arena, strong, trimmed, inner_for_node);
             parent.append(strong);
         }
         AnnotationKind::Italic => {
             let emph = mk(arena, NodeValue::Emph);
-            emph.append(mk_text(arena, trimmed));
+            build_inlines(arena, emph, trimmed, inner_for_node);
             parent.append(emph);
         }
         AnnotationKind::Code => {
-            // comrak panics on Code nodes with empty literal (index out of bounds
-            // in cm.rs when checking literal_bytes[0]). Skip empty code spans.
+            // CommonMark inline code spans are literals — formatting cannot be
+            // nested inside them. inner_for_node is intentionally ignored here.
+            //
+            // comrak also panics on Code nodes with empty literal (index out of
+            // bounds in cm.rs when checking literal_bytes[0]). Skip those too.
             if !trimmed.is_empty() {
                 let code = mk(
                     arena,
@@ -356,27 +448,27 @@ fn append_annotated_span<'a>(arena: &'a comrak::Arena<'a>, parent: &'a AstNode<'
         }
         AnnotationKind::Strikethrough => {
             let strike = mk(arena, NodeValue::Strikethrough);
-            strike.append(mk_text(arena, trimmed));
+            build_inlines(arena, strike, trimmed, inner_for_node);
             parent.append(strike);
         }
         AnnotationKind::Underline => {
             let underline = mk(arena, NodeValue::Underline);
-            underline.append(mk_text(arena, trimmed));
+            build_inlines(arena, underline, trimmed, inner_for_node);
             parent.append(underline);
         }
         AnnotationKind::Subscript => {
             let sub = mk(arena, NodeValue::Subscript);
-            sub.append(mk_text(arena, trimmed));
+            build_inlines(arena, sub, trimmed, inner_for_node);
             parent.append(sub);
         }
         AnnotationKind::Superscript => {
             let sup = mk(arena, NodeValue::Superscript);
-            sup.append(mk_text(arena, trimmed));
+            build_inlines(arena, sup, trimmed, inner_for_node);
             parent.append(sup);
         }
         AnnotationKind::Highlight => {
             let hl = mk(arena, NodeValue::Highlight);
-            hl.append(mk_text(arena, trimmed));
+            build_inlines(arena, hl, trimmed, inner_for_node);
             parent.append(hl);
         }
         AnnotationKind::Link { url, title } => {
@@ -387,7 +479,9 @@ fn append_annotated_span<'a>(arena: &'a comrak::Arena<'a>, parent: &'a AstNode<'
                     title: title.as_deref().unwrap_or("").to_string(),
                 })),
             );
-            link.append(mk_text(arena, trimmed));
+            // Link doesn't trim whitespace so inner offsets are already relative
+            // to trimmed (= span); use inner directly rather than inner_for_node.
+            build_inlines(arena, link, trimmed, inner);
             parent.append(link);
         }
         // Color, FontSize, Custom -- no comrak equivalent; emit as plain text.
@@ -1420,6 +1514,326 @@ mod tests {
         assert!(
             out.contains("First ordered item"),
             "ordered item must appear; got: {out}"
+        );
+    }
+
+    // ── #1086: overlapping annotations (bold + hyperlink same range) ─────────
+
+    #[test]
+    fn test_link_annotation() {
+        // Baseline: plain hyperlink with no formatting renders correctly.
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "click here",
+            vec![TextAnnotation {
+                start: 0,
+                end: 10,
+                kind: AnnotationKind::Link {
+                    url: "https://example.com".to_string(),
+                    title: None,
+                },
+            }],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[click here](https://example.com)"),
+            "plain link must render; got: {out}"
+        );
+    }
+
+    /// Regression for #1086: bold+hyperlink on the same byte range must produce
+    /// `[**text**](url)`, not `**text**` with the link silently dropped.
+    #[test]
+    fn test_bold_link_same_range() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "click",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Bold,
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[**click**](https://example.com)"),
+            "bold link must render as [**text**](url); got: {out}"
+        );
+    }
+
+    /// Italic + hyperlink same range → `[*text*](url)`.
+    #[test]
+    fn test_italic_link_same_range() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "click",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Italic,
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[*click*](https://example.com)"),
+            "italic link must render as [*text*](url); got: {out}"
+        );
+    }
+
+    /// Bold + italic + hyperlink same range → `[***text***](url)`.
+    #[test]
+    fn test_bold_italic_link_same_range() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "click",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Bold,
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Italic,
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[***click***](https://example.com)"),
+            "bold italic link must render as [***text***](url); got: {out}"
+        );
+    }
+
+    /// Formatting annotation contained within (but shorter than) the link span.
+    /// "Visit **docs** here" where the link covers the whole phrase.
+    #[test]
+    fn test_bold_contained_within_link_span() {
+        // text:  "Visit docs here"
+        //         0     6   10  15
+        // Bold:  [6, 10) → "docs"
+        // Link:  [0, 15) → whole phrase
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "Visit docs here",
+            vec![
+                TextAnnotation {
+                    start: 6,
+                    end: 10,
+                    kind: AnnotationKind::Bold,
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 15,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com/docs".to_string(),
+                        title: None,
+                    },
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[Visit **docs** here](https://example.com/docs)"),
+            "bold contained within link must nest; got: {out}"
+        );
+    }
+
+    /// Partial overlap: Link[0,7] + Bold[5,10] on "Hello world".
+    ///
+    /// The Bold annotation starts inside the Link span but ends outside it.
+    /// There is no unambiguous nesting semantics for this case, so the Bold is
+    /// intentionally dropped. This test documents that behavior so a future
+    /// refactor does not accidentally recurse infinitely trying to nest them.
+    #[test]
+    fn test_partial_overlap_annotation_is_dropped() {
+        let mut b = InternalDocumentBuilder::new("test");
+        // "Hello world" — Link covers "Hello w" [0,7], Bold covers "world" starting
+        // at index 6 and ending at 11 (past the link boundary).
+        b.push_paragraph(
+            "Hello world",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 7,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+                TextAnnotation {
+                    start: 6,
+                    end: 11,
+                    kind: AnnotationKind::Bold,
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        // The link covers "Hello w"; the partially-overlapping Bold is dropped.
+        assert!(
+            out.contains("[Hello w](https://example.com)"),
+            "partial-overlap Bold must be dropped; got: {out}"
+        );
+        // The trailing "orld" (after the link) renders as plain text.
+        assert!(
+            out.contains("orld"),
+            "text after partial overlap must still render; got: {out}"
+        );
+        // No stray bold markers should appear.
+        assert!(
+            !out.contains("**"),
+            "no bold markers expected for partial overlap; got: {out}"
+        );
+    }
+
+    /// Inline code contained within a link span: `[\`code\`](url)`.
+    ///
+    /// Code spans are CommonMark literals — formatting cannot nest inside them —
+    /// so inner_for_node is ignored for `AnnotationKind::Code`. This test verifies
+    /// that code-within-link still renders correctly despite that exception.
+    #[test]
+    fn test_code_within_link() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "code",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 4,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 4,
+                    kind: AnnotationKind::Code,
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[`code`](https://example.com)"),
+            "code within link must render as [`code`](url); got: {out}"
+        );
+    }
+
+    /// Strikethrough contained within a link span.
+    ///
+    /// `append_annotated_span` now recurses via `build_inlines` for Strikethrough.
+    /// Verify this produces `[~~text~~](url)` rather than dropping the strikethrough.
+    #[test]
+    fn test_strikethrough_within_link() {
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "dead",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 4,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+                TextAnnotation {
+                    start: 0,
+                    end: 4,
+                    kind: AnnotationKind::Strikethrough,
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(
+            out.contains("[~~dead~~](https://example.com)"),
+            "strikethrough within link must render as [~~text~~](url); got: {out}"
+        );
+    }
+
+    #[test]
+    fn test_non_overlapping_link_and_bold_unaffected() {
+        // "Hello world" — bold covers "Hello", link covers "world"
+        let mut b = InternalDocumentBuilder::new("test");
+        b.push_paragraph(
+            "Hello world",
+            vec![
+                TextAnnotation {
+                    start: 0,
+                    end: 5,
+                    kind: AnnotationKind::Bold,
+                },
+                TextAnnotation {
+                    start: 6,
+                    end: 11,
+                    kind: AnnotationKind::Link {
+                        url: "https://example.com".to_string(),
+                        title: None,
+                    },
+                },
+            ],
+            None,
+            None,
+        );
+        let doc = b.build();
+        let out = render(&doc);
+        assert!(out.contains("**Hello**"), "bold must still render; got: {out}");
+        assert!(
+            out.contains("[world](https://example.com)"),
+            "link must still render; got: {out}"
         );
     }
 }
