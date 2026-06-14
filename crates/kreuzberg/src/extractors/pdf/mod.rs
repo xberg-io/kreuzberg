@@ -2172,7 +2172,7 @@ mod tests {
     /// test_pdf_ocr_inline_images test is #[ignore] precisely because
     /// embedded_images_tables.pdf does not surface images through the oxide path.
     #[tokio::test]
-    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
     #[serial]
     async fn test_ocr_inline_images_uses_configured_backend() {
         const BACKEND_NAME: &str = "mock-inline-ocr-routing-1088";
@@ -2228,7 +2228,7 @@ mod tests {
     /// (image.rs) and allows backends that produce format-aware output (e.g. Markdown
     /// table rendering) to behave correctly for inline PDF images.
     #[tokio::test]
-    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
     #[serial]
     async fn test_ocr_inline_images_forwards_output_format() {
         use std::sync::{Arc, Mutex};
@@ -2284,7 +2284,7 @@ mod tests {
     /// When ocr_inline_images is false the mock backend must NOT be called even
     /// though it is registered as the configured backend.
     #[tokio::test]
-    #[cfg(all(feature = "pdf", any(feature = "ocr", feature = "ocr-pipeline")))]
+    #[cfg(all(feature = "pdf", feature = "ocr"))]
     #[serial]
     async fn test_ocr_inline_images_disabled_does_not_call_backend() {
         const BACKEND_NAME: &str = "mock-inline-ocr-disabled-1088";
