@@ -45,9 +45,11 @@ html = ["kreuzberg/html"]
 liter-llm = ["kreuzberg/liter-llm"]
 tree-sitter = ["kreuzberg/tree-sitter", "dep:tree-sitter-language-pack"]
 ner-onnx = ["kreuzberg/ner-onnx"]
+heic = ["kreuzberg/heic"]
 all = [
     "default",
     "api",
+    "heic",
     "html",
     "mcp",
     "mcp-http",

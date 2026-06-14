@@ -6,6 +6,8 @@ FROM rust:1.91-trixie AS builder
 WORKDIR /build
 
 # Install build dependencies
+# Debian Trixie ships libheif 1.20.x but libheif-sys 5.3 requires >= 1.21,
+# so we source-build libheif 1.23.0 after the apt step.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         cmake \
@@ -14,12 +16,28 @@ RUN apt-get update && \
         libssl-dev \
         libleptonica-dev \
         libtesseract-dev \
+        libde265-dev \
+        libaom-dev \
+        libx265-dev \
+        libdav1d-dev \
         clang \
         curl \
         file \
+        ca-certificates \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Source-build libheif 1.23.0 (Trixie ships 1.20.x, libheif-sys 5.3 needs >= 1.21)
+RUN cd /tmp && \
+    curl -fsSL -o libheif.tar.gz https://github.com/strukturag/libheif/releases/download/v1.23.0/libheif-1.23.0.tar.gz && \
+    tar -xzf libheif.tar.gz && \
+    cd libheif-1.23.0 && \
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=lib -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DBUILD_TESTING=OFF && \
+    cmake --build build -j"$(nproc)" && \
+    cmake --install build && \
+    ldconfig && \
+    cd / && rm -rf /tmp/libheif*
 
 # Set onnxruntime version (can be overridden via build-arg)
 ARG ONNXRUNTIME_VERSION=1.24.2
@@ -42,11 +60,12 @@ RUN mkdir -p /build/onnxruntime && \
 COPY Cargo.toml Cargo.lock ./
 COPY crates/kreuzberg/ crates/kreuzberg/
 COPY crates/kreuzberg-cli/ crates/kreuzberg-cli/
+COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
 COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
 COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
 
 # Remove workspace members that aren't included (Ruby, Node, Python, PHP, Elixir, tools, e2e)
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # Build release binary with server features (api + full format support)
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
@@ -89,9 +108,18 @@ RUN apt-get update && \
         tesseract-ocr-hin \
         fontconfig \
         libssl3 \
+        libde265-0 \
+        libaom3 \
+        libx265-215 \
+        libdav1d7 \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy source-built libheif 1.23.0 from builder
+COPY --from=builder /usr/local/lib/libheif* /usr/local/lib/
+COPY --from=builder /usr/local/lib/pkgconfig/libheif.pc /usr/local/lib/pkgconfig/libheif.pc
+RUN ldconfig
 
 # Copy ONNX Runtime libraries from builder
 COPY --from=builder /build/onnxruntime/lib/libonnxruntime.so* /usr/local/lib/

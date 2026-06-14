@@ -24,7 +24,7 @@ RUN apk add --no-cache \
     curl gcc g++ musl-dev cmake make pkgconf \
     openssl-dev openssl-libs-static \
     perl linux-headers git file && \
-    apk add --no-cache onnxruntime-dev \
+    apk add --no-cache onnxruntime-dev libheif-dev libde265-dev aom-dev x265-dev dav1d-dev \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main
 
@@ -44,11 +44,12 @@ ENV ORT_PREFER_DYNAMIC_LINK=1
 COPY Cargo.toml Cargo.lock ./
 COPY crates/kreuzberg/ crates/kreuzberg/
 COPY crates/kreuzberg-cli/ crates/kreuzberg-cli/
+COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
 COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
 COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
 
 # Remove workspace members that aren't included
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /\"crates\/kreuzberg-wasm\"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /\"crates\/kreuzberg-wasm\"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 RUN cargo build --release --package kreuzberg-cli --features all && \
     cp target/release/kreuzberg /build/kreuzberg && \
@@ -64,9 +65,14 @@ RUN file /build/kreuzberg && \
 # =============================================================================
 FROM alpine:3.21
 
-# Install runtime dependencies needed by dynamically linked binary
+# Install runtime dependencies needed by dynamically linked binary.
+# libheif 1.23 ships codec backends as separate "plugin" packages
+# (libheif-libde265, libheif-aom, libheif-dav1d, libheif-x265 — pulled in
+# explicitly so HEVC + AVIF decode works at runtime).
 RUN apk add --no-cache libstdc++ libgcc && \
-    apk add --no-cache onnxruntime \
+    apk add --no-cache \
+        onnxruntime \
+        libheif libheif-libde265 libheif-aom libheif-dav1d libheif-x265 \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main
 

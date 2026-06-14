@@ -21,10 +21,12 @@ WORKDIR /build
 # so tesseract C++ compilation works without glibc conflicts.
 # onnxruntime-dev from edge provides musl-native ORT for linking.
 RUN apk add --no-cache \
-    curl gcc g++ musl-dev cmake make pkgconf \
+    curl musl-dev cmake make pkgconf \
     openssl-dev openssl-libs-static \
     perl linux-headers git file patchelf && \
-    apk add --no-cache onnxruntime-dev libheif-dev libde265-dev aom-dev x265-dev dav1d-dev \
+    apk add --no-cache \
+        gcc g++ libstdc++ libstdc++-dev \
+        onnxruntime-dev libheif-dev libde265-dev aom-dev x265-dev dav1d-dev \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main
 
