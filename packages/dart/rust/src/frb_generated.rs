@@ -7579,6 +7579,13 @@ const _: fn() = || {
         let _: Option<crate::HeadingContext> = ChunkMetadata.heading_context;
         let _: Vec<i64> = ChunkMetadata.image_indices;
     }
+    match None::<crate::ChunkSizing>.unwrap() {
+        crate::ChunkSizing::Characters => {}
+        crate::ChunkSizing::Tokenizer { model, cache_dir } => {
+            let _: String = model;
+            let _: String = cache_dir;
+        }
+    }
     {
         let ChunkingConfig = None::<crate::ChunkingConfig>.unwrap();
         let _: i64 = ChunkingConfig.max_characters;
@@ -8087,6 +8094,12 @@ const _: fn() = || {
         let _: Vec<crate::FormattedBlock> = Footnote.content;
     }
     match None::<crate::FormatMetadata>.unwrap() {
+        crate::FormatMetadata::Pdf { field0 } => {
+            let _: crate::PdfMetadata = field0;
+        }
+        crate::FormatMetadata::Docx { field0 } => {
+            let _: crate::DocxMetadata = field0;
+        }
         crate::FormatMetadata::Excel { field0 } => {
             let _: crate::ExcelMetadata = field0;
         }
@@ -8117,9 +8130,31 @@ const _: fn() = || {
         crate::FormatMetadata::Csv { field0 } => {
             let _: crate::CsvMetadata = field0;
         }
+        crate::FormatMetadata::Bibtex { field0 } => {
+            let _: crate::BibtexMetadata = field0;
+        }
+        crate::FormatMetadata::Citation { field0 } => {
+            let _: crate::CitationMetadata = field0;
+        }
+        crate::FormatMetadata::FictionBook { field0 } => {
+            let _: crate::FictionBookMetadata = field0;
+        }
+        crate::FormatMetadata::Dbf { field0 } => {
+            let _: crate::DbfMetadata = field0;
+        }
+        crate::FormatMetadata::Jats { field0 } => {
+            let _: crate::JatsMetadata = field0;
+        }
+        crate::FormatMetadata::Epub { field0 } => {
+            let _: crate::EpubMetadata = field0;
+        }
         crate::FormatMetadata::Pst { field0 } => {
             let _: crate::PstMetadata = field0;
         }
+        crate::FormatMetadata::Audio { field0 } => {
+            let _: crate::AudioMetadata = field0;
+        }
+        crate::FormatMetadata::Code => {}
     }
     {
         let FormattedBlock = None::<crate::FormattedBlock>.unwrap();
@@ -8236,6 +8271,10 @@ const _: fn() = || {
         crate::ImageOutputFormat::Webp { quality } => {
             let _: i64 = quality;
         }
+        crate::ImageOutputFormat::Heif { quality } => {
+            let _: i64 = quality;
+        }
+        crate::ImageOutputFormat::Svg => {}
     }
     {
         let ImagePreprocessingConfig = None::<crate::ImagePreprocessingConfig>.unwrap();
@@ -10427,11 +10466,23 @@ impl SseDecode for crate::ChunkMetadata {
 impl SseDecode for crate::ChunkSizing {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut inner = <i32>::sse_decode(deserializer);
-        return match inner {
-            0 => crate::ChunkSizing::Characters,
-            _ => unreachable!("Invalid variant for ChunkSizing: {}", inner),
-        };
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                return crate::ChunkSizing::Characters;
+            }
+            1 => {
+                let mut var_model = <String>::sse_decode(deserializer);
+                let mut var_cacheDir = <String>::sse_decode(deserializer);
+                return crate::ChunkSizing::Tokenizer {
+                    model: var_model,
+                    cache_dir: var_cacheDir,
+                };
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
     }
 }
 
@@ -11691,48 +11742,87 @@ impl SseDecode for crate::FormatMetadata {
         let mut tag_ = <i32>::sse_decode(deserializer);
         match tag_ {
             0 => {
+                let mut var_field0 = <crate::PdfMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Pdf { field0: var_field0 };
+            }
+            1 => {
+                let mut var_field0 = <crate::DocxMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Docx { field0: var_field0 };
+            }
+            2 => {
                 let mut var_field0 = <crate::ExcelMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Excel { field0: var_field0 };
             }
-            1 => {
+            3 => {
                 let mut var_field0 = <crate::EmailMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Email { field0: var_field0 };
             }
-            2 => {
+            4 => {
                 let mut var_field0 = <crate::PptxMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Pptx { field0: var_field0 };
             }
-            3 => {
+            5 => {
                 let mut var_field0 = <crate::ArchiveMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Archive { field0: var_field0 };
             }
-            4 => {
+            6 => {
                 let mut var_field0 = <crate::ImageMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Image { field0: var_field0 };
             }
-            5 => {
+            7 => {
                 let mut var_field0 = <crate::XmlMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Xml { field0: var_field0 };
             }
-            6 => {
+            8 => {
                 let mut var_field0 = <crate::TextMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Text { field0: var_field0 };
             }
-            7 => {
+            9 => {
                 let mut var_field0 = <crate::HtmlMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Html { field0: var_field0 };
             }
-            8 => {
+            10 => {
                 let mut var_field0 = <crate::OcrMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Ocr { field0: var_field0 };
             }
-            9 => {
+            11 => {
                 let mut var_field0 = <crate::CsvMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Csv { field0: var_field0 };
             }
-            10 => {
+            12 => {
+                let mut var_field0 = <crate::BibtexMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Bibtex { field0: var_field0 };
+            }
+            13 => {
+                let mut var_field0 = <crate::CitationMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Citation { field0: var_field0 };
+            }
+            14 => {
+                let mut var_field0 = <crate::FictionBookMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::FictionBook { field0: var_field0 };
+            }
+            15 => {
+                let mut var_field0 = <crate::DbfMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Dbf { field0: var_field0 };
+            }
+            16 => {
+                let mut var_field0 = <crate::JatsMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Jats { field0: var_field0 };
+            }
+            17 => {
+                let mut var_field0 = <crate::EpubMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Epub { field0: var_field0 };
+            }
+            18 => {
                 let mut var_field0 = <crate::PstMetadata>::sse_decode(deserializer);
                 return crate::FormatMetadata::Pst { field0: var_field0 };
+            }
+            19 => {
+                let mut var_field0 = <crate::AudioMetadata>::sse_decode(deserializer);
+                return crate::FormatMetadata::Audio { field0: var_field0 };
+            }
+            20 => {
+                return crate::FormatMetadata::Code;
             }
             _ => {
                 unimplemented!("");
@@ -12045,6 +12135,13 @@ impl SseDecode for crate::ImageOutputFormat {
                 let mut var_quality = <i64>::sse_decode(deserializer);
                 return crate::ImageOutputFormat::Webp { quality: var_quality };
             }
+            4 => {
+                let mut var_quality = <i64>::sse_decode(deserializer);
+                return crate::ImageOutputFormat::Heif { quality: var_quality };
+            }
+            5 => {
+                return crate::ImageOutputFormat::Svg;
+            }
             _ => {
                 unimplemented!("");
             }
@@ -12206,6 +12303,8 @@ impl SseDecode for crate::KeywordAlgorithm {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
+            0 => crate::KeywordAlgorithm::Yake,
+            1 => crate::KeywordAlgorithm::Rake,
             _ => unreachable!("Invalid variant for KeywordAlgorithm: {}", inner),
         };
     }
@@ -17305,8 +17404,16 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::ChunkMetadata>> for cra
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ChunkSizing> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::ChunkSizing::Characters => 0.into_dart(),
-            _ => unreachable!(),
+            crate::ChunkSizing::Characters => [0.into_dart()].into_dart(),
+            crate::ChunkSizing::Tokenizer { model, cache_dir } => [
+                1.into_dart(),
+                model.into_into_dart().into_dart(),
+                cache_dir.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            _ => {
+                unimplemented!("");
+            }
         }
     }
 }
@@ -18529,19 +18636,37 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::Footnote>> for crate::F
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::FormatMetadata> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
-            crate::FormatMetadata::Excel { field0 } => [0.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Email { field0 } => [1.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Pptx { field0 } => [2.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Pdf { field0 } => [0.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Docx { field0 } => [1.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Excel { field0 } => [2.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Email { field0 } => [3.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Pptx { field0 } => [4.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
             crate::FormatMetadata::Archive { field0 } => {
-                [3.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+                [5.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::FormatMetadata::Image { field0 } => [4.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Xml { field0 } => [5.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Text { field0 } => [6.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Html { field0 } => [7.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Ocr { field0 } => [8.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Csv { field0 } => [9.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::FormatMetadata::Pst { field0 } => [10.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Image { field0 } => [6.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Xml { field0 } => [7.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Text { field0 } => [8.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Html { field0 } => [9.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Ocr { field0 } => [10.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Csv { field0 } => [11.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Bibtex { field0 } => {
+                [12.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::FormatMetadata::Citation { field0 } => {
+                [13.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::FormatMetadata::FictionBook { field0 } => {
+                [14.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::FormatMetadata::Dbf { field0 } => [15.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Jats { field0 } => [16.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Epub { field0 } => [17.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Pst { field0 } => [18.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::FormatMetadata::Audio { field0 } => {
+                [19.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::FormatMetadata::Code => [20.into_dart()].into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -18846,6 +18971,10 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageOutputFormat> {
             crate::ImageOutputFormat::Webp { quality } => {
                 [3.into_dart(), quality.into_into_dart().into_dart()].into_dart()
             }
+            crate::ImageOutputFormat::Heif { quality } => {
+                [4.into_dart(), quality.into_into_dart().into_dart()].into_dart()
+            }
+            crate::ImageOutputFormat::Svg => [5.into_dart()].into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -19023,6 +19152,8 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::Keyword>> for crate::Ke
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::KeywordAlgorithm> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self.0 {
+            crate::KeywordAlgorithm::Yake => 0.into_dart(),
+            crate::KeywordAlgorithm::Rake => 1.into_dart(),
             _ => unreachable!(),
         }
     }
@@ -22025,15 +22156,19 @@ impl SseEncode for crate::ChunkMetadata {
 impl SseEncode for crate::ChunkSizing {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(
-            match self {
-                crate::ChunkSizing::Characters => 0,
-                _ => {
-                    unimplemented!("");
-                }
-            },
-            serializer,
-        );
+        match self {
+            crate::ChunkSizing::Characters => {
+                <i32>::sse_encode(0, serializer);
+            }
+            crate::ChunkSizing::Tokenizer { model, cache_dir } => {
+                <i32>::sse_encode(1, serializer);
+                <String>::sse_encode(model, serializer);
+                <String>::sse_encode(cache_dir, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
     }
 }
 
@@ -22895,49 +23030,88 @@ impl SseEncode for crate::FormatMetadata {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         match self {
-            crate::FormatMetadata::Excel { field0 } => {
+            crate::FormatMetadata::Pdf { field0 } => {
                 <i32>::sse_encode(0, serializer);
+                <crate::PdfMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Docx { field0 } => {
+                <i32>::sse_encode(1, serializer);
+                <crate::DocxMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Excel { field0 } => {
+                <i32>::sse_encode(2, serializer);
                 <crate::ExcelMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Email { field0 } => {
-                <i32>::sse_encode(1, serializer);
+                <i32>::sse_encode(3, serializer);
                 <crate::EmailMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Pptx { field0 } => {
-                <i32>::sse_encode(2, serializer);
+                <i32>::sse_encode(4, serializer);
                 <crate::PptxMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Archive { field0 } => {
-                <i32>::sse_encode(3, serializer);
+                <i32>::sse_encode(5, serializer);
                 <crate::ArchiveMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Image { field0 } => {
-                <i32>::sse_encode(4, serializer);
+                <i32>::sse_encode(6, serializer);
                 <crate::ImageMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Xml { field0 } => {
-                <i32>::sse_encode(5, serializer);
+                <i32>::sse_encode(7, serializer);
                 <crate::XmlMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Text { field0 } => {
-                <i32>::sse_encode(6, serializer);
+                <i32>::sse_encode(8, serializer);
                 <crate::TextMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Html { field0 } => {
-                <i32>::sse_encode(7, serializer);
+                <i32>::sse_encode(9, serializer);
                 <crate::HtmlMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Ocr { field0 } => {
-                <i32>::sse_encode(8, serializer);
+                <i32>::sse_encode(10, serializer);
                 <crate::OcrMetadata>::sse_encode(field0, serializer);
             }
             crate::FormatMetadata::Csv { field0 } => {
-                <i32>::sse_encode(9, serializer);
+                <i32>::sse_encode(11, serializer);
                 <crate::CsvMetadata>::sse_encode(field0, serializer);
             }
+            crate::FormatMetadata::Bibtex { field0 } => {
+                <i32>::sse_encode(12, serializer);
+                <crate::BibtexMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Citation { field0 } => {
+                <i32>::sse_encode(13, serializer);
+                <crate::CitationMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::FictionBook { field0 } => {
+                <i32>::sse_encode(14, serializer);
+                <crate::FictionBookMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Dbf { field0 } => {
+                <i32>::sse_encode(15, serializer);
+                <crate::DbfMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Jats { field0 } => {
+                <i32>::sse_encode(16, serializer);
+                <crate::JatsMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Epub { field0 } => {
+                <i32>::sse_encode(17, serializer);
+                <crate::EpubMetadata>::sse_encode(field0, serializer);
+            }
             crate::FormatMetadata::Pst { field0 } => {
-                <i32>::sse_encode(10, serializer);
+                <i32>::sse_encode(18, serializer);
                 <crate::PstMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Audio { field0 } => {
+                <i32>::sse_encode(19, serializer);
+                <crate::AudioMetadata>::sse_encode(field0, serializer);
+            }
+            crate::FormatMetadata::Code => {
+                <i32>::sse_encode(20, serializer);
             }
             _ => {
                 unimplemented!("");
@@ -23165,6 +23339,13 @@ impl SseEncode for crate::ImageOutputFormat {
                 <i32>::sse_encode(3, serializer);
                 <i64>::sse_encode(quality, serializer);
             }
+            crate::ImageOutputFormat::Heif { quality } => {
+                <i32>::sse_encode(4, serializer);
+                <i64>::sse_encode(quality, serializer);
+            }
+            crate::ImageOutputFormat::Svg => {
+                <i32>::sse_encode(5, serializer);
+            }
             _ => {
                 unimplemented!("");
             }
@@ -23296,6 +23477,8 @@ impl SseEncode for crate::KeywordAlgorithm {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(
             match self {
+                crate::KeywordAlgorithm::Yake => 0,
+                crate::KeywordAlgorithm::Rake => 1,
                 _ => {
                     unimplemented!("");
                 }

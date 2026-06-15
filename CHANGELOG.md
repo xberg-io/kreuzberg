@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [5.0.0-rc.14] - 2026-06-15
+
+### Fixed
+
+- **Publish: unblock minimumReleaseAge supply-chain gate.** Sets `minimumReleaseAge: 0` in `pnpm-workspace.yaml` so first-party `@kreuzberg/*` platform packages are no longer rejected by pnpm's default 24h supply-chain delay during the publish workflow's Build Node bindings stage. Replaces the per-rc `minimumReleaseAgeExclude` allowlist that was lagging behind every release. Matches the policy used by sibling liter-llm repo.
+- **Publish: version drift in root manifests.** Bumped `package.json` (root) and `crates/kreuzberg-py/src/pyproject.toml` from rc.12 to rc.13/rc.14; previously missed by alef `sync-versions`. Filed alef issue for the PEP 440 PyPI manifest and root `package.json` coverage gap.
+- **Mobile/ARM build: dart binding crate now compiles when upstream variants are cfg-gated.** Bumps alef pin to v0.25.8 which (a) emits `_ => unreachable!(...)` catch-all arms in alef-generated `From<CoreType>` impls so non-exhaustive matches are exhaustive when binding crate doesn't enable upstream features (e.g. `svg`, `heic`), and (b) strips variant-level `#[cfg(...)]` attrs from the mirror enum body so flutter_rust_bridge's unconditional variant references in `frb_generated.rs` resolve correctly. Previously failed CI Mobile cargo check (4× Android/iOS targets) and Rust CI ubuntu-24.04-arm with `error[E0004]` and `error[E0599]` in `packages/dart/rust/src/lib.rs`.
+
 ## [5.0.0-rc.13] - 2026-06-14
 
 ### Added

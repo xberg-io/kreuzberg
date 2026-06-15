@@ -3186,10 +3186,7 @@ dependencies = [
 name = "kreuzberg-rb"
 version = "5.0.0-rc.13"
 dependencies = [
- "alloc-no-stdlib",
- "alloc-stdlib",
  "async-trait",
- "brotli-decompressor",
  "kreuzberg",
  "magnus",
  "rb-sys",

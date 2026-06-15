@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -2240,17 +2240,23 @@ class ChunkMetadata {
           imageIndices == other.imageIndices;
 }
 
-/// How chunk size is measured.
-///
-/// Defaults to `Characters` (Unicode character count). When using token-based sizing,
-/// chunks are sized by token count according to the specified tokenizer.
-///
-/// Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
-/// available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
-/// (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
-enum ChunkSizing {
+@freezed
+sealed class ChunkSizing with _$ChunkSizing {
+  const ChunkSizing._();
+
   /// Size measured in Unicode characters (default).
-  characters,
+  const factory ChunkSizing.characters() = ChunkSizing_Characters;
+
+  /// Size measured in tokens from a HuggingFace tokenizer.
+  const factory ChunkSizing.tokenizer({
+    /// HuggingFace model ID or path, e.g. "Xenova/gpt-4o", "bert-base-uncased".
+    required String model,
+
+    /// Optional cache directory override for tokenizer files.
+    /// Defaults to hf-hub's standard cache (`~/.cache/huggingface/`).
+    /// Can also be set via `KREUZBERG_TOKENIZER_CACHE_DIR` environment variable.
+    required String cacheDir,
+  }) = ChunkSizing_Tokenizer;
 }
 
 /// Semantic structural classification of a text chunk.
@@ -5681,6 +5687,14 @@ class Footnote {
 sealed class FormatMetadata with _$FormatMetadata {
   const FormatMetadata._();
 
+  /// Metadata extracted from a PDF document.
+  const factory FormatMetadata.pdf({required PdfMetadata field0}) =
+      FormatMetadata_Pdf;
+
+  /// Metadata extracted from a DOCX Word document.
+  const factory FormatMetadata.docx({required DocxMetadata field0}) =
+      FormatMetadata_Docx;
+
   /// Metadata extracted from an Excel spreadsheet.
   const factory FormatMetadata.excel({required ExcelMetadata field0}) =
       FormatMetadata_Excel;
@@ -5721,9 +5735,42 @@ sealed class FormatMetadata with _$FormatMetadata {
   const factory FormatMetadata.csv({required CsvMetadata field0}) =
       FormatMetadata_Csv;
 
+  /// Metadata extracted from a BibTeX bibliography file.
+  const factory FormatMetadata.bibtex({required BibtexMetadata field0}) =
+      FormatMetadata_Bibtex;
+
+  /// Metadata extracted from a citation file (RIS, PubMed, EndNote).
+  const factory FormatMetadata.citation({required CitationMetadata field0}) =
+      FormatMetadata_Citation;
+
+  /// Metadata extracted from a FictionBook (FB2) e-book.
+  const factory FormatMetadata.fictionBook({
+    required FictionBookMetadata field0,
+  }) = FormatMetadata_FictionBook;
+
+  /// Metadata extracted from a dBASE (DBF) database file.
+  const factory FormatMetadata.dbf({required DbfMetadata field0}) =
+      FormatMetadata_Dbf;
+
+  /// Metadata extracted from a JATS (Journal Article Tag Suite) XML file.
+  const factory FormatMetadata.jats({required JatsMetadata field0}) =
+      FormatMetadata_Jats;
+
+  /// Metadata extracted from an EPUB e-book.
+  const factory FormatMetadata.epub({required EpubMetadata field0}) =
+      FormatMetadata_Epub;
+
   /// Metadata extracted from an Outlook PST archive.
   const factory FormatMetadata.pst({required PstMetadata field0}) =
       FormatMetadata_Pst;
+
+  /// Metadata extracted from an audio or video file.
+  const factory FormatMetadata.audio({required AudioMetadata field0}) =
+      FormatMetadata_Audio;
+
+  /// Code (tree-sitter analyzable source). The structured analysis result is exposed
+  /// via `ExtractionResult::code_intelligence`; this variant only tags the format.
+  const factory FormatMetadata.code() = FormatMetadata_Code;
 }
 
 /// Block-level element in a Djot document.
@@ -6499,6 +6546,26 @@ sealed class ImageOutputFormat with _$ImageOutputFormat {
     /// WebP quality (1–100, default 80).
     required PlatformInt64 quality,
   }) = ImageOutputFormat_Webp;
+
+  /// Re-encode all extracted images as HEIF/HEIC at the given quality level.
+  ///
+  /// Requires the `heic` feature. `quality` must be in `1..=100`. Values
+  /// outside this range are clamped and a warning is emitted. 80 is a
+  /// reasonable default.
+  const factory ImageOutputFormat.heif({
+    /// HEIF quality (1–100, default 80).
+    required PlatformInt64 quality,
+  }) = ImageOutputFormat_Heif;
+
+  /// Output pure-vector SVG. Lossless. Raster sources are not re-encoded
+  /// (a warning is emitted and the image bytes are left untouched).
+  ///
+  /// When the source is already SVG, the bytes are passed through the
+  /// `usvg` sanitizer (strips external hrefs, JS event handlers, and
+  /// `foreignObject` elements) when [`SvgOptions::sanitize`] is `true`.
+  ///
+  /// Requires the `svg` feature.
+  const factory ImageOutputFormat.svg() = ImageOutputFormat_Svg;
 }
 
 /// Image preprocessing configuration for OCR.
@@ -6827,7 +6894,13 @@ class Keyword {
 }
 
 /// Keyword algorithm selection.
-enum KeywordAlgorithm {}
+enum KeywordAlgorithm {
+  /// YAKE (Yet Another Keyword Extractor) - statistical approach
+  yake,
+
+  /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
+  rake,
+}
 
 /// Keyword extraction configuration.
 class KeywordConfig {

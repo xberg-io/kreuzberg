@@ -762,6 +762,270 @@ as String,
 }
 
 /// @nodoc
+mixin _$ChunkSizing {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkSizing);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ChunkSizing()';
+}
+
+
+}
+
+/// @nodoc
+class $ChunkSizingCopyWith<$Res>  {
+$ChunkSizingCopyWith(ChunkSizing _, $Res Function(ChunkSizing) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ChunkSizing].
+extension ChunkSizingPatterns on ChunkSizing {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ChunkSizing_Characters value)?  characters,TResult Function( ChunkSizing_Tokenizer value)?  tokenizer,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ChunkSizing_Characters() when characters != null:
+return characters(_that);case ChunkSizing_Tokenizer() when tokenizer != null:
+return tokenizer(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ChunkSizing_Characters value)  characters,required TResult Function( ChunkSizing_Tokenizer value)  tokenizer,}){
+final _that = this;
+switch (_that) {
+case ChunkSizing_Characters():
+return characters(_that);case ChunkSizing_Tokenizer():
+return tokenizer(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ChunkSizing_Characters value)?  characters,TResult? Function( ChunkSizing_Tokenizer value)?  tokenizer,}){
+final _that = this;
+switch (_that) {
+case ChunkSizing_Characters() when characters != null:
+return characters(_that);case ChunkSizing_Tokenizer() when tokenizer != null:
+return tokenizer(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  characters,TResult Function( String model,  String cacheDir)?  tokenizer,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ChunkSizing_Characters() when characters != null:
+return characters();case ChunkSizing_Tokenizer() when tokenizer != null:
+return tokenizer(_that.model,_that.cacheDir);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  characters,required TResult Function( String model,  String cacheDir)  tokenizer,}) {final _that = this;
+switch (_that) {
+case ChunkSizing_Characters():
+return characters();case ChunkSizing_Tokenizer():
+return tokenizer(_that.model,_that.cacheDir);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  characters,TResult? Function( String model,  String cacheDir)?  tokenizer,}) {final _that = this;
+switch (_that) {
+case ChunkSizing_Characters() when characters != null:
+return characters();case ChunkSizing_Tokenizer() when tokenizer != null:
+return tokenizer(_that.model,_that.cacheDir);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class ChunkSizing_Characters extends ChunkSizing {
+  const ChunkSizing_Characters(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkSizing_Characters);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ChunkSizing.characters()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ChunkSizing_Tokenizer extends ChunkSizing {
+  const ChunkSizing_Tokenizer({required this.model, required this.cacheDir}): super._();
+  
+
+/// HuggingFace model ID or path, e.g. "Xenova/gpt-4o", "bert-base-uncased".
+ final  String model;
+/// Optional cache directory override for tokenizer files.
+/// Defaults to hf-hub's standard cache (`~/.cache/huggingface/`).
+/// Can also be set via `KREUZBERG_TOKENIZER_CACHE_DIR` environment variable.
+ final  String cacheDir;
+
+/// Create a copy of ChunkSizing
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkSizing_TokenizerCopyWith<ChunkSizing_Tokenizer> get copyWith => _$ChunkSizing_TokenizerCopyWithImpl<ChunkSizing_Tokenizer>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkSizing_Tokenizer&&(identical(other.model, model) || other.model == model)&&(identical(other.cacheDir, cacheDir) || other.cacheDir == cacheDir));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,model,cacheDir);
+
+@override
+String toString() {
+  return 'ChunkSizing.tokenizer(model: $model, cacheDir: $cacheDir)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkSizing_TokenizerCopyWith<$Res> implements $ChunkSizingCopyWith<$Res> {
+  factory $ChunkSizing_TokenizerCopyWith(ChunkSizing_Tokenizer value, $Res Function(ChunkSizing_Tokenizer) _then) = _$ChunkSizing_TokenizerCopyWithImpl;
+@useResult
+$Res call({
+ String model, String cacheDir
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkSizing_TokenizerCopyWithImpl<$Res>
+    implements $ChunkSizing_TokenizerCopyWith<$Res> {
+  _$ChunkSizing_TokenizerCopyWithImpl(this._self, this._then);
+
+  final ChunkSizing_Tokenizer _self;
+  final $Res Function(ChunkSizing_Tokenizer) _then;
+
+/// Create a copy of ChunkSizing
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? model = null,Object? cacheDir = null,}) {
+  return _then(ChunkSizing_Tokenizer(
+model: null == model ? _self.model : model // ignore: cast_nullable_to_non_nullable
+as String,cacheDir: null == cacheDir ? _self.cacheDir : cacheDir // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$DiffLine {
 
  String get field0;
@@ -2202,22 +2466,22 @@ as String,
 /// @nodoc
 mixin _$FormatMetadata {
 
- Object get field0;
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata&&const DeepCollectionEquality().equals(other.field0, field0));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(field0));
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'FormatMetadata(field0: $field0)';
+  return 'FormatMetadata()';
 }
 
 
@@ -2243,10 +2507,12 @@ extension FormatMetadataPatterns on FormatMetadata {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FormatMetadata_Excel value)?  excel,TResult Function( FormatMetadata_Email value)?  email,TResult Function( FormatMetadata_Pptx value)?  pptx,TResult Function( FormatMetadata_Archive value)?  archive,TResult Function( FormatMetadata_Image value)?  image,TResult Function( FormatMetadata_Xml value)?  xml,TResult Function( FormatMetadata_Text value)?  text,TResult Function( FormatMetadata_Html value)?  html,TResult Function( FormatMetadata_Ocr value)?  ocr,TResult Function( FormatMetadata_Csv value)?  csv,TResult Function( FormatMetadata_Pst value)?  pst,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( FormatMetadata_Pdf value)?  pdf,TResult Function( FormatMetadata_Docx value)?  docx,TResult Function( FormatMetadata_Excel value)?  excel,TResult Function( FormatMetadata_Email value)?  email,TResult Function( FormatMetadata_Pptx value)?  pptx,TResult Function( FormatMetadata_Archive value)?  archive,TResult Function( FormatMetadata_Image value)?  image,TResult Function( FormatMetadata_Xml value)?  xml,TResult Function( FormatMetadata_Text value)?  text,TResult Function( FormatMetadata_Html value)?  html,TResult Function( FormatMetadata_Ocr value)?  ocr,TResult Function( FormatMetadata_Csv value)?  csv,TResult Function( FormatMetadata_Bibtex value)?  bibtex,TResult Function( FormatMetadata_Citation value)?  citation,TResult Function( FormatMetadata_FictionBook value)?  fictionBook,TResult Function( FormatMetadata_Dbf value)?  dbf,TResult Function( FormatMetadata_Jats value)?  jats,TResult Function( FormatMetadata_Epub value)?  epub,TResult Function( FormatMetadata_Pst value)?  pst,TResult Function( FormatMetadata_Audio value)?  audio,TResult Function( FormatMetadata_Code value)?  code,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case FormatMetadata_Excel() when excel != null:
+case FormatMetadata_Pdf() when pdf != null:
+return pdf(_that);case FormatMetadata_Docx() when docx != null:
+return docx(_that);case FormatMetadata_Excel() when excel != null:
 return excel(_that);case FormatMetadata_Email() when email != null:
 return email(_that);case FormatMetadata_Pptx() when pptx != null:
 return pptx(_that);case FormatMetadata_Archive() when archive != null:
@@ -2256,8 +2522,16 @@ return xml(_that);case FormatMetadata_Text() when text != null:
 return text(_that);case FormatMetadata_Html() when html != null:
 return html(_that);case FormatMetadata_Ocr() when ocr != null:
 return ocr(_that);case FormatMetadata_Csv() when csv != null:
-return csv(_that);case FormatMetadata_Pst() when pst != null:
-return pst(_that);case _:
+return csv(_that);case FormatMetadata_Bibtex() when bibtex != null:
+return bibtex(_that);case FormatMetadata_Citation() when citation != null:
+return citation(_that);case FormatMetadata_FictionBook() when fictionBook != null:
+return fictionBook(_that);case FormatMetadata_Dbf() when dbf != null:
+return dbf(_that);case FormatMetadata_Jats() when jats != null:
+return jats(_that);case FormatMetadata_Epub() when epub != null:
+return epub(_that);case FormatMetadata_Pst() when pst != null:
+return pst(_that);case FormatMetadata_Audio() when audio != null:
+return audio(_that);case FormatMetadata_Code() when code != null:
+return code(_that);case _:
   return orElse();
 
 }
@@ -2275,10 +2549,12 @@ return pst(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FormatMetadata_Excel value)  excel,required TResult Function( FormatMetadata_Email value)  email,required TResult Function( FormatMetadata_Pptx value)  pptx,required TResult Function( FormatMetadata_Archive value)  archive,required TResult Function( FormatMetadata_Image value)  image,required TResult Function( FormatMetadata_Xml value)  xml,required TResult Function( FormatMetadata_Text value)  text,required TResult Function( FormatMetadata_Html value)  html,required TResult Function( FormatMetadata_Ocr value)  ocr,required TResult Function( FormatMetadata_Csv value)  csv,required TResult Function( FormatMetadata_Pst value)  pst,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( FormatMetadata_Pdf value)  pdf,required TResult Function( FormatMetadata_Docx value)  docx,required TResult Function( FormatMetadata_Excel value)  excel,required TResult Function( FormatMetadata_Email value)  email,required TResult Function( FormatMetadata_Pptx value)  pptx,required TResult Function( FormatMetadata_Archive value)  archive,required TResult Function( FormatMetadata_Image value)  image,required TResult Function( FormatMetadata_Xml value)  xml,required TResult Function( FormatMetadata_Text value)  text,required TResult Function( FormatMetadata_Html value)  html,required TResult Function( FormatMetadata_Ocr value)  ocr,required TResult Function( FormatMetadata_Csv value)  csv,required TResult Function( FormatMetadata_Bibtex value)  bibtex,required TResult Function( FormatMetadata_Citation value)  citation,required TResult Function( FormatMetadata_FictionBook value)  fictionBook,required TResult Function( FormatMetadata_Dbf value)  dbf,required TResult Function( FormatMetadata_Jats value)  jats,required TResult Function( FormatMetadata_Epub value)  epub,required TResult Function( FormatMetadata_Pst value)  pst,required TResult Function( FormatMetadata_Audio value)  audio,required TResult Function( FormatMetadata_Code value)  code,}){
 final _that = this;
 switch (_that) {
-case FormatMetadata_Excel():
+case FormatMetadata_Pdf():
+return pdf(_that);case FormatMetadata_Docx():
+return docx(_that);case FormatMetadata_Excel():
 return excel(_that);case FormatMetadata_Email():
 return email(_that);case FormatMetadata_Pptx():
 return pptx(_that);case FormatMetadata_Archive():
@@ -2288,8 +2564,16 @@ return xml(_that);case FormatMetadata_Text():
 return text(_that);case FormatMetadata_Html():
 return html(_that);case FormatMetadata_Ocr():
 return ocr(_that);case FormatMetadata_Csv():
-return csv(_that);case FormatMetadata_Pst():
-return pst(_that);}
+return csv(_that);case FormatMetadata_Bibtex():
+return bibtex(_that);case FormatMetadata_Citation():
+return citation(_that);case FormatMetadata_FictionBook():
+return fictionBook(_that);case FormatMetadata_Dbf():
+return dbf(_that);case FormatMetadata_Jats():
+return jats(_that);case FormatMetadata_Epub():
+return epub(_that);case FormatMetadata_Pst():
+return pst(_that);case FormatMetadata_Audio():
+return audio(_that);case FormatMetadata_Code():
+return code(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -2303,10 +2587,12 @@ return pst(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FormatMetadata_Excel value)?  excel,TResult? Function( FormatMetadata_Email value)?  email,TResult? Function( FormatMetadata_Pptx value)?  pptx,TResult? Function( FormatMetadata_Archive value)?  archive,TResult? Function( FormatMetadata_Image value)?  image,TResult? Function( FormatMetadata_Xml value)?  xml,TResult? Function( FormatMetadata_Text value)?  text,TResult? Function( FormatMetadata_Html value)?  html,TResult? Function( FormatMetadata_Ocr value)?  ocr,TResult? Function( FormatMetadata_Csv value)?  csv,TResult? Function( FormatMetadata_Pst value)?  pst,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( FormatMetadata_Pdf value)?  pdf,TResult? Function( FormatMetadata_Docx value)?  docx,TResult? Function( FormatMetadata_Excel value)?  excel,TResult? Function( FormatMetadata_Email value)?  email,TResult? Function( FormatMetadata_Pptx value)?  pptx,TResult? Function( FormatMetadata_Archive value)?  archive,TResult? Function( FormatMetadata_Image value)?  image,TResult? Function( FormatMetadata_Xml value)?  xml,TResult? Function( FormatMetadata_Text value)?  text,TResult? Function( FormatMetadata_Html value)?  html,TResult? Function( FormatMetadata_Ocr value)?  ocr,TResult? Function( FormatMetadata_Csv value)?  csv,TResult? Function( FormatMetadata_Bibtex value)?  bibtex,TResult? Function( FormatMetadata_Citation value)?  citation,TResult? Function( FormatMetadata_FictionBook value)?  fictionBook,TResult? Function( FormatMetadata_Dbf value)?  dbf,TResult? Function( FormatMetadata_Jats value)?  jats,TResult? Function( FormatMetadata_Epub value)?  epub,TResult? Function( FormatMetadata_Pst value)?  pst,TResult? Function( FormatMetadata_Audio value)?  audio,TResult? Function( FormatMetadata_Code value)?  code,}){
 final _that = this;
 switch (_that) {
-case FormatMetadata_Excel() when excel != null:
+case FormatMetadata_Pdf() when pdf != null:
+return pdf(_that);case FormatMetadata_Docx() when docx != null:
+return docx(_that);case FormatMetadata_Excel() when excel != null:
 return excel(_that);case FormatMetadata_Email() when email != null:
 return email(_that);case FormatMetadata_Pptx() when pptx != null:
 return pptx(_that);case FormatMetadata_Archive() when archive != null:
@@ -2316,8 +2602,16 @@ return xml(_that);case FormatMetadata_Text() when text != null:
 return text(_that);case FormatMetadata_Html() when html != null:
 return html(_that);case FormatMetadata_Ocr() when ocr != null:
 return ocr(_that);case FormatMetadata_Csv() when csv != null:
-return csv(_that);case FormatMetadata_Pst() when pst != null:
-return pst(_that);case _:
+return csv(_that);case FormatMetadata_Bibtex() when bibtex != null:
+return bibtex(_that);case FormatMetadata_Citation() when citation != null:
+return citation(_that);case FormatMetadata_FictionBook() when fictionBook != null:
+return fictionBook(_that);case FormatMetadata_Dbf() when dbf != null:
+return dbf(_that);case FormatMetadata_Jats() when jats != null:
+return jats(_that);case FormatMetadata_Epub() when epub != null:
+return epub(_that);case FormatMetadata_Pst() when pst != null:
+return pst(_that);case FormatMetadata_Audio() when audio != null:
+return audio(_that);case FormatMetadata_Code() when code != null:
+return code(_that);case _:
   return null;
 
 }
@@ -2334,9 +2628,11 @@ return pst(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( ExcelMetadata field0)?  excel,TResult Function( EmailMetadata field0)?  email,TResult Function( PptxMetadata field0)?  pptx,TResult Function( ArchiveMetadata field0)?  archive,TResult Function( ImageMetadata field0)?  image,TResult Function( XmlMetadata field0)?  xml,TResult Function( TextMetadata field0)?  text,TResult Function( HtmlMetadata field0)?  html,TResult Function( OcrMetadata field0)?  ocr,TResult Function( CsvMetadata field0)?  csv,TResult Function( PstMetadata field0)?  pst,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PdfMetadata field0)?  pdf,TResult Function( DocxMetadata field0)?  docx,TResult Function( ExcelMetadata field0)?  excel,TResult Function( EmailMetadata field0)?  email,TResult Function( PptxMetadata field0)?  pptx,TResult Function( ArchiveMetadata field0)?  archive,TResult Function( ImageMetadata field0)?  image,TResult Function( XmlMetadata field0)?  xml,TResult Function( TextMetadata field0)?  text,TResult Function( HtmlMetadata field0)?  html,TResult Function( OcrMetadata field0)?  ocr,TResult Function( CsvMetadata field0)?  csv,TResult Function( BibtexMetadata field0)?  bibtex,TResult Function( CitationMetadata field0)?  citation,TResult Function( FictionBookMetadata field0)?  fictionBook,TResult Function( DbfMetadata field0)?  dbf,TResult Function( JatsMetadata field0)?  jats,TResult Function( EpubMetadata field0)?  epub,TResult Function( PstMetadata field0)?  pst,TResult Function( AudioMetadata field0)?  audio,TResult Function()?  code,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case FormatMetadata_Excel() when excel != null:
+case FormatMetadata_Pdf() when pdf != null:
+return pdf(_that.field0);case FormatMetadata_Docx() when docx != null:
+return docx(_that.field0);case FormatMetadata_Excel() when excel != null:
 return excel(_that.field0);case FormatMetadata_Email() when email != null:
 return email(_that.field0);case FormatMetadata_Pptx() when pptx != null:
 return pptx(_that.field0);case FormatMetadata_Archive() when archive != null:
@@ -2346,8 +2642,16 @@ return xml(_that.field0);case FormatMetadata_Text() when text != null:
 return text(_that.field0);case FormatMetadata_Html() when html != null:
 return html(_that.field0);case FormatMetadata_Ocr() when ocr != null:
 return ocr(_that.field0);case FormatMetadata_Csv() when csv != null:
-return csv(_that.field0);case FormatMetadata_Pst() when pst != null:
-return pst(_that.field0);case _:
+return csv(_that.field0);case FormatMetadata_Bibtex() when bibtex != null:
+return bibtex(_that.field0);case FormatMetadata_Citation() when citation != null:
+return citation(_that.field0);case FormatMetadata_FictionBook() when fictionBook != null:
+return fictionBook(_that.field0);case FormatMetadata_Dbf() when dbf != null:
+return dbf(_that.field0);case FormatMetadata_Jats() when jats != null:
+return jats(_that.field0);case FormatMetadata_Epub() when epub != null:
+return epub(_that.field0);case FormatMetadata_Pst() when pst != null:
+return pst(_that.field0);case FormatMetadata_Audio() when audio != null:
+return audio(_that.field0);case FormatMetadata_Code() when code != null:
+return code();case _:
   return orElse();
 
 }
@@ -2365,9 +2669,11 @@ return pst(_that.field0);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( ExcelMetadata field0)  excel,required TResult Function( EmailMetadata field0)  email,required TResult Function( PptxMetadata field0)  pptx,required TResult Function( ArchiveMetadata field0)  archive,required TResult Function( ImageMetadata field0)  image,required TResult Function( XmlMetadata field0)  xml,required TResult Function( TextMetadata field0)  text,required TResult Function( HtmlMetadata field0)  html,required TResult Function( OcrMetadata field0)  ocr,required TResult Function( CsvMetadata field0)  csv,required TResult Function( PstMetadata field0)  pst,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PdfMetadata field0)  pdf,required TResult Function( DocxMetadata field0)  docx,required TResult Function( ExcelMetadata field0)  excel,required TResult Function( EmailMetadata field0)  email,required TResult Function( PptxMetadata field0)  pptx,required TResult Function( ArchiveMetadata field0)  archive,required TResult Function( ImageMetadata field0)  image,required TResult Function( XmlMetadata field0)  xml,required TResult Function( TextMetadata field0)  text,required TResult Function( HtmlMetadata field0)  html,required TResult Function( OcrMetadata field0)  ocr,required TResult Function( CsvMetadata field0)  csv,required TResult Function( BibtexMetadata field0)  bibtex,required TResult Function( CitationMetadata field0)  citation,required TResult Function( FictionBookMetadata field0)  fictionBook,required TResult Function( DbfMetadata field0)  dbf,required TResult Function( JatsMetadata field0)  jats,required TResult Function( EpubMetadata field0)  epub,required TResult Function( PstMetadata field0)  pst,required TResult Function( AudioMetadata field0)  audio,required TResult Function()  code,}) {final _that = this;
 switch (_that) {
-case FormatMetadata_Excel():
+case FormatMetadata_Pdf():
+return pdf(_that.field0);case FormatMetadata_Docx():
+return docx(_that.field0);case FormatMetadata_Excel():
 return excel(_that.field0);case FormatMetadata_Email():
 return email(_that.field0);case FormatMetadata_Pptx():
 return pptx(_that.field0);case FormatMetadata_Archive():
@@ -2377,8 +2683,16 @@ return xml(_that.field0);case FormatMetadata_Text():
 return text(_that.field0);case FormatMetadata_Html():
 return html(_that.field0);case FormatMetadata_Ocr():
 return ocr(_that.field0);case FormatMetadata_Csv():
-return csv(_that.field0);case FormatMetadata_Pst():
-return pst(_that.field0);}
+return csv(_that.field0);case FormatMetadata_Bibtex():
+return bibtex(_that.field0);case FormatMetadata_Citation():
+return citation(_that.field0);case FormatMetadata_FictionBook():
+return fictionBook(_that.field0);case FormatMetadata_Dbf():
+return dbf(_that.field0);case FormatMetadata_Jats():
+return jats(_that.field0);case FormatMetadata_Epub():
+return epub(_that.field0);case FormatMetadata_Pst():
+return pst(_that.field0);case FormatMetadata_Audio():
+return audio(_that.field0);case FormatMetadata_Code():
+return code();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -2392,9 +2706,11 @@ return pst(_that.field0);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( ExcelMetadata field0)?  excel,TResult? Function( EmailMetadata field0)?  email,TResult? Function( PptxMetadata field0)?  pptx,TResult? Function( ArchiveMetadata field0)?  archive,TResult? Function( ImageMetadata field0)?  image,TResult? Function( XmlMetadata field0)?  xml,TResult? Function( TextMetadata field0)?  text,TResult? Function( HtmlMetadata field0)?  html,TResult? Function( OcrMetadata field0)?  ocr,TResult? Function( CsvMetadata field0)?  csv,TResult? Function( PstMetadata field0)?  pst,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PdfMetadata field0)?  pdf,TResult? Function( DocxMetadata field0)?  docx,TResult? Function( ExcelMetadata field0)?  excel,TResult? Function( EmailMetadata field0)?  email,TResult? Function( PptxMetadata field0)?  pptx,TResult? Function( ArchiveMetadata field0)?  archive,TResult? Function( ImageMetadata field0)?  image,TResult? Function( XmlMetadata field0)?  xml,TResult? Function( TextMetadata field0)?  text,TResult? Function( HtmlMetadata field0)?  html,TResult? Function( OcrMetadata field0)?  ocr,TResult? Function( CsvMetadata field0)?  csv,TResult? Function( BibtexMetadata field0)?  bibtex,TResult? Function( CitationMetadata field0)?  citation,TResult? Function( FictionBookMetadata field0)?  fictionBook,TResult? Function( DbfMetadata field0)?  dbf,TResult? Function( JatsMetadata field0)?  jats,TResult? Function( EpubMetadata field0)?  epub,TResult? Function( PstMetadata field0)?  pst,TResult? Function( AudioMetadata field0)?  audio,TResult? Function()?  code,}) {final _that = this;
 switch (_that) {
-case FormatMetadata_Excel() when excel != null:
+case FormatMetadata_Pdf() when pdf != null:
+return pdf(_that.field0);case FormatMetadata_Docx() when docx != null:
+return docx(_that.field0);case FormatMetadata_Excel() when excel != null:
 return excel(_that.field0);case FormatMetadata_Email() when email != null:
 return email(_that.field0);case FormatMetadata_Pptx() when pptx != null:
 return pptx(_that.field0);case FormatMetadata_Archive() when archive != null:
@@ -2404,8 +2720,16 @@ return xml(_that.field0);case FormatMetadata_Text() when text != null:
 return text(_that.field0);case FormatMetadata_Html() when html != null:
 return html(_that.field0);case FormatMetadata_Ocr() when ocr != null:
 return ocr(_that.field0);case FormatMetadata_Csv() when csv != null:
-return csv(_that.field0);case FormatMetadata_Pst() when pst != null:
-return pst(_that.field0);case _:
+return csv(_that.field0);case FormatMetadata_Bibtex() when bibtex != null:
+return bibtex(_that.field0);case FormatMetadata_Citation() when citation != null:
+return citation(_that.field0);case FormatMetadata_FictionBook() when fictionBook != null:
+return fictionBook(_that.field0);case FormatMetadata_Dbf() when dbf != null:
+return dbf(_that.field0);case FormatMetadata_Jats() when jats != null:
+return jats(_that.field0);case FormatMetadata_Epub() when epub != null:
+return epub(_that.field0);case FormatMetadata_Pst() when pst != null:
+return pst(_that.field0);case FormatMetadata_Audio() when audio != null:
+return audio(_that.field0);case FormatMetadata_Code() when code != null:
+return code();case _:
   return null;
 
 }
@@ -2416,11 +2740,143 @@ return pst(_that.field0);case _:
 /// @nodoc
 
 
+class FormatMetadata_Pdf extends FormatMetadata {
+  const FormatMetadata_Pdf({required this.field0}): super._();
+  
+
+ final  PdfMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_PdfCopyWith<FormatMetadata_Pdf> get copyWith => _$FormatMetadata_PdfCopyWithImpl<FormatMetadata_Pdf>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Pdf&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.pdf(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_PdfCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_PdfCopyWith(FormatMetadata_Pdf value, $Res Function(FormatMetadata_Pdf) _then) = _$FormatMetadata_PdfCopyWithImpl;
+@useResult
+$Res call({
+ PdfMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_PdfCopyWithImpl<$Res>
+    implements $FormatMetadata_PdfCopyWith<$Res> {
+  _$FormatMetadata_PdfCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Pdf _self;
+  final $Res Function(FormatMetadata_Pdf) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Pdf(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as PdfMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Docx extends FormatMetadata {
+  const FormatMetadata_Docx({required this.field0}): super._();
+  
+
+ final  DocxMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_DocxCopyWith<FormatMetadata_Docx> get copyWith => _$FormatMetadata_DocxCopyWithImpl<FormatMetadata_Docx>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Docx&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.docx(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_DocxCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_DocxCopyWith(FormatMetadata_Docx value, $Res Function(FormatMetadata_Docx) _then) = _$FormatMetadata_DocxCopyWithImpl;
+@useResult
+$Res call({
+ DocxMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_DocxCopyWithImpl<$Res>
+    implements $FormatMetadata_DocxCopyWith<$Res> {
+  _$FormatMetadata_DocxCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Docx _self;
+  final $Res Function(FormatMetadata_Docx) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Docx(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as DocxMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class FormatMetadata_Excel extends FormatMetadata {
   const FormatMetadata_Excel({required this.field0}): super._();
   
 
-@override final  ExcelMetadata field0;
+ final  ExcelMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2486,7 +2942,7 @@ class FormatMetadata_Email extends FormatMetadata {
   const FormatMetadata_Email({required this.field0}): super._();
   
 
-@override final  EmailMetadata field0;
+ final  EmailMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2552,7 +3008,7 @@ class FormatMetadata_Pptx extends FormatMetadata {
   const FormatMetadata_Pptx({required this.field0}): super._();
   
 
-@override final  PptxMetadata field0;
+ final  PptxMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2618,7 +3074,7 @@ class FormatMetadata_Archive extends FormatMetadata {
   const FormatMetadata_Archive({required this.field0}): super._();
   
 
-@override final  ArchiveMetadata field0;
+ final  ArchiveMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2684,7 +3140,7 @@ class FormatMetadata_Image extends FormatMetadata {
   const FormatMetadata_Image({required this.field0}): super._();
   
 
-@override final  ImageMetadata field0;
+ final  ImageMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2750,7 +3206,7 @@ class FormatMetadata_Xml extends FormatMetadata {
   const FormatMetadata_Xml({required this.field0}): super._();
   
 
-@override final  XmlMetadata field0;
+ final  XmlMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2816,7 +3272,7 @@ class FormatMetadata_Text extends FormatMetadata {
   const FormatMetadata_Text({required this.field0}): super._();
   
 
-@override final  TextMetadata field0;
+ final  TextMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2882,7 +3338,7 @@ class FormatMetadata_Html extends FormatMetadata {
   const FormatMetadata_Html({required this.field0}): super._();
   
 
-@override final  HtmlMetadata field0;
+ final  HtmlMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -2948,7 +3404,7 @@ class FormatMetadata_Ocr extends FormatMetadata {
   const FormatMetadata_Ocr({required this.field0}): super._();
   
 
-@override final  OcrMetadata field0;
+ final  OcrMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -3014,7 +3470,7 @@ class FormatMetadata_Csv extends FormatMetadata {
   const FormatMetadata_Csv({required this.field0}): super._();
   
 
-@override final  CsvMetadata field0;
+ final  CsvMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -3076,11 +3532,407 @@ as CsvMetadata,
 /// @nodoc
 
 
+class FormatMetadata_Bibtex extends FormatMetadata {
+  const FormatMetadata_Bibtex({required this.field0}): super._();
+  
+
+ final  BibtexMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_BibtexCopyWith<FormatMetadata_Bibtex> get copyWith => _$FormatMetadata_BibtexCopyWithImpl<FormatMetadata_Bibtex>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Bibtex&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.bibtex(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_BibtexCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_BibtexCopyWith(FormatMetadata_Bibtex value, $Res Function(FormatMetadata_Bibtex) _then) = _$FormatMetadata_BibtexCopyWithImpl;
+@useResult
+$Res call({
+ BibtexMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_BibtexCopyWithImpl<$Res>
+    implements $FormatMetadata_BibtexCopyWith<$Res> {
+  _$FormatMetadata_BibtexCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Bibtex _self;
+  final $Res Function(FormatMetadata_Bibtex) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Bibtex(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as BibtexMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Citation extends FormatMetadata {
+  const FormatMetadata_Citation({required this.field0}): super._();
+  
+
+ final  CitationMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_CitationCopyWith<FormatMetadata_Citation> get copyWith => _$FormatMetadata_CitationCopyWithImpl<FormatMetadata_Citation>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Citation&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.citation(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_CitationCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_CitationCopyWith(FormatMetadata_Citation value, $Res Function(FormatMetadata_Citation) _then) = _$FormatMetadata_CitationCopyWithImpl;
+@useResult
+$Res call({
+ CitationMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_CitationCopyWithImpl<$Res>
+    implements $FormatMetadata_CitationCopyWith<$Res> {
+  _$FormatMetadata_CitationCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Citation _self;
+  final $Res Function(FormatMetadata_Citation) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Citation(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as CitationMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_FictionBook extends FormatMetadata {
+  const FormatMetadata_FictionBook({required this.field0}): super._();
+  
+
+ final  FictionBookMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_FictionBookCopyWith<FormatMetadata_FictionBook> get copyWith => _$FormatMetadata_FictionBookCopyWithImpl<FormatMetadata_FictionBook>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_FictionBook&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.fictionBook(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_FictionBookCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_FictionBookCopyWith(FormatMetadata_FictionBook value, $Res Function(FormatMetadata_FictionBook) _then) = _$FormatMetadata_FictionBookCopyWithImpl;
+@useResult
+$Res call({
+ FictionBookMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_FictionBookCopyWithImpl<$Res>
+    implements $FormatMetadata_FictionBookCopyWith<$Res> {
+  _$FormatMetadata_FictionBookCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_FictionBook _self;
+  final $Res Function(FormatMetadata_FictionBook) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_FictionBook(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as FictionBookMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Dbf extends FormatMetadata {
+  const FormatMetadata_Dbf({required this.field0}): super._();
+  
+
+ final  DbfMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_DbfCopyWith<FormatMetadata_Dbf> get copyWith => _$FormatMetadata_DbfCopyWithImpl<FormatMetadata_Dbf>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Dbf&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.dbf(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_DbfCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_DbfCopyWith(FormatMetadata_Dbf value, $Res Function(FormatMetadata_Dbf) _then) = _$FormatMetadata_DbfCopyWithImpl;
+@useResult
+$Res call({
+ DbfMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_DbfCopyWithImpl<$Res>
+    implements $FormatMetadata_DbfCopyWith<$Res> {
+  _$FormatMetadata_DbfCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Dbf _self;
+  final $Res Function(FormatMetadata_Dbf) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Dbf(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as DbfMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Jats extends FormatMetadata {
+  const FormatMetadata_Jats({required this.field0}): super._();
+  
+
+ final  JatsMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_JatsCopyWith<FormatMetadata_Jats> get copyWith => _$FormatMetadata_JatsCopyWithImpl<FormatMetadata_Jats>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Jats&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.jats(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_JatsCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_JatsCopyWith(FormatMetadata_Jats value, $Res Function(FormatMetadata_Jats) _then) = _$FormatMetadata_JatsCopyWithImpl;
+@useResult
+$Res call({
+ JatsMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_JatsCopyWithImpl<$Res>
+    implements $FormatMetadata_JatsCopyWith<$Res> {
+  _$FormatMetadata_JatsCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Jats _self;
+  final $Res Function(FormatMetadata_Jats) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Jats(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as JatsMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Epub extends FormatMetadata {
+  const FormatMetadata_Epub({required this.field0}): super._();
+  
+
+ final  EpubMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_EpubCopyWith<FormatMetadata_Epub> get copyWith => _$FormatMetadata_EpubCopyWithImpl<FormatMetadata_Epub>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Epub&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.epub(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_EpubCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_EpubCopyWith(FormatMetadata_Epub value, $Res Function(FormatMetadata_Epub) _then) = _$FormatMetadata_EpubCopyWithImpl;
+@useResult
+$Res call({
+ EpubMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_EpubCopyWithImpl<$Res>
+    implements $FormatMetadata_EpubCopyWith<$Res> {
+  _$FormatMetadata_EpubCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Epub _self;
+  final $Res Function(FormatMetadata_Epub) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Epub(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as EpubMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class FormatMetadata_Pst extends FormatMetadata {
   const FormatMetadata_Pst({required this.field0}): super._();
   
 
-@override final  PstMetadata field0;
+ final  PstMetadata field0;
 
 /// Create a copy of FormatMetadata
 /// with the given fields replaced by the non-null parameter values.
@@ -3140,6 +3992,104 @@ as PstMetadata,
 }
 
 /// @nodoc
+
+
+class FormatMetadata_Audio extends FormatMetadata {
+  const FormatMetadata_Audio({required this.field0}): super._();
+  
+
+ final  AudioMetadata field0;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FormatMetadata_AudioCopyWith<FormatMetadata_Audio> get copyWith => _$FormatMetadata_AudioCopyWithImpl<FormatMetadata_Audio>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Audio&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'FormatMetadata.audio(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FormatMetadata_AudioCopyWith<$Res> implements $FormatMetadataCopyWith<$Res> {
+  factory $FormatMetadata_AudioCopyWith(FormatMetadata_Audio value, $Res Function(FormatMetadata_Audio) _then) = _$FormatMetadata_AudioCopyWithImpl;
+@useResult
+$Res call({
+ AudioMetadata field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$FormatMetadata_AudioCopyWithImpl<$Res>
+    implements $FormatMetadata_AudioCopyWith<$Res> {
+  _$FormatMetadata_AudioCopyWithImpl(this._self, this._then);
+
+  final FormatMetadata_Audio _self;
+  final $Res Function(FormatMetadata_Audio) _then;
+
+/// Create a copy of FormatMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(FormatMetadata_Audio(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as AudioMetadata,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FormatMetadata_Code extends FormatMetadata {
+  const FormatMetadata_Code(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FormatMetadata_Code);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FormatMetadata.code()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$ImageOutputFormat {
 
 
@@ -3183,14 +4133,16 @@ extension ImageOutputFormatPatterns on ImageOutputFormat {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ImageOutputFormat_Native value)?  native,TResult Function( ImageOutputFormat_Png value)?  png,TResult Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult Function( ImageOutputFormat_Webp value)?  webp,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ImageOutputFormat_Native value)?  native,TResult Function( ImageOutputFormat_Png value)?  png,TResult Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult Function( ImageOutputFormat_Webp value)?  webp,TResult Function( ImageOutputFormat_Heif value)?  heif,TResult Function( ImageOutputFormat_Svg value)?  svg,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native(_that);case ImageOutputFormat_Png() when png != null:
 return png(_that);case ImageOutputFormat_Jpeg() when jpeg != null:
 return jpeg(_that);case ImageOutputFormat_Webp() when webp != null:
-return webp(_that);case _:
+return webp(_that);case ImageOutputFormat_Heif() when heif != null:
+return heif(_that);case ImageOutputFormat_Svg() when svg != null:
+return svg(_that);case _:
   return orElse();
 
 }
@@ -3208,14 +4160,16 @@ return webp(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ImageOutputFormat_Native value)  native,required TResult Function( ImageOutputFormat_Png value)  png,required TResult Function( ImageOutputFormat_Jpeg value)  jpeg,required TResult Function( ImageOutputFormat_Webp value)  webp,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ImageOutputFormat_Native value)  native,required TResult Function( ImageOutputFormat_Png value)  png,required TResult Function( ImageOutputFormat_Jpeg value)  jpeg,required TResult Function( ImageOutputFormat_Webp value)  webp,required TResult Function( ImageOutputFormat_Heif value)  heif,required TResult Function( ImageOutputFormat_Svg value)  svg,}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native():
 return native(_that);case ImageOutputFormat_Png():
 return png(_that);case ImageOutputFormat_Jpeg():
 return jpeg(_that);case ImageOutputFormat_Webp():
-return webp(_that);}
+return webp(_that);case ImageOutputFormat_Heif():
+return heif(_that);case ImageOutputFormat_Svg():
+return svg(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -3229,14 +4183,16 @@ return webp(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ImageOutputFormat_Native value)?  native,TResult? Function( ImageOutputFormat_Png value)?  png,TResult? Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult? Function( ImageOutputFormat_Webp value)?  webp,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ImageOutputFormat_Native value)?  native,TResult? Function( ImageOutputFormat_Png value)?  png,TResult? Function( ImageOutputFormat_Jpeg value)?  jpeg,TResult? Function( ImageOutputFormat_Webp value)?  webp,TResult? Function( ImageOutputFormat_Heif value)?  heif,TResult? Function( ImageOutputFormat_Svg value)?  svg,}){
 final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native(_that);case ImageOutputFormat_Png() when png != null:
 return png(_that);case ImageOutputFormat_Jpeg() when jpeg != null:
 return jpeg(_that);case ImageOutputFormat_Webp() when webp != null:
-return webp(_that);case _:
+return webp(_that);case ImageOutputFormat_Heif() when heif != null:
+return heif(_that);case ImageOutputFormat_Svg() when svg != null:
+return svg(_that);case _:
   return null;
 
 }
@@ -3253,13 +4209,15 @@ return webp(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  native,TResult Function()?  png,TResult Function( PlatformInt64 quality)?  jpeg,TResult Function( PlatformInt64 quality)?  webp,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  native,TResult Function()?  png,TResult Function( PlatformInt64 quality)?  jpeg,TResult Function( PlatformInt64 quality)?  webp,TResult Function( PlatformInt64 quality)?  heif,TResult Function()?  svg,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native();case ImageOutputFormat_Png() when png != null:
 return png();case ImageOutputFormat_Jpeg() when jpeg != null:
 return jpeg(_that.quality);case ImageOutputFormat_Webp() when webp != null:
-return webp(_that.quality);case _:
+return webp(_that.quality);case ImageOutputFormat_Heif() when heif != null:
+return heif(_that.quality);case ImageOutputFormat_Svg() when svg != null:
+return svg();case _:
   return orElse();
 
 }
@@ -3277,13 +4235,15 @@ return webp(_that.quality);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  native,required TResult Function()  png,required TResult Function( PlatformInt64 quality)  jpeg,required TResult Function( PlatformInt64 quality)  webp,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  native,required TResult Function()  png,required TResult Function( PlatformInt64 quality)  jpeg,required TResult Function( PlatformInt64 quality)  webp,required TResult Function( PlatformInt64 quality)  heif,required TResult Function()  svg,}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native():
 return native();case ImageOutputFormat_Png():
 return png();case ImageOutputFormat_Jpeg():
 return jpeg(_that.quality);case ImageOutputFormat_Webp():
-return webp(_that.quality);}
+return webp(_that.quality);case ImageOutputFormat_Heif():
+return heif(_that.quality);case ImageOutputFormat_Svg():
+return svg();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -3297,13 +4257,15 @@ return webp(_that.quality);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  native,TResult? Function()?  png,TResult? Function( PlatformInt64 quality)?  jpeg,TResult? Function( PlatformInt64 quality)?  webp,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  native,TResult? Function()?  png,TResult? Function( PlatformInt64 quality)?  jpeg,TResult? Function( PlatformInt64 quality)?  webp,TResult? Function( PlatformInt64 quality)?  heif,TResult? Function()?  svg,}) {final _that = this;
 switch (_that) {
 case ImageOutputFormat_Native() when native != null:
 return native();case ImageOutputFormat_Png() when png != null:
 return png();case ImageOutputFormat_Jpeg() when jpeg != null:
 return jpeg(_that.quality);case ImageOutputFormat_Webp() when webp != null:
-return webp(_that.quality);case _:
+return webp(_that.quality);case ImageOutputFormat_Heif() when heif != null:
+return heif(_that.quality);case ImageOutputFormat_Svg() when svg != null:
+return svg();case _:
   return null;
 
 }
@@ -3508,6 +4470,105 @@ as PlatformInt64,
 
 
 }
+
+/// @nodoc
+
+
+class ImageOutputFormat_Heif extends ImageOutputFormat {
+  const ImageOutputFormat_Heif({required this.quality}): super._();
+  
+
+/// HEIF quality (1–100, default 80).
+ final  PlatformInt64 quality;
+
+/// Create a copy of ImageOutputFormat
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ImageOutputFormat_HeifCopyWith<ImageOutputFormat_Heif> get copyWith => _$ImageOutputFormat_HeifCopyWithImpl<ImageOutputFormat_Heif>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageOutputFormat_Heif&&(identical(other.quality, quality) || other.quality == quality));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,quality);
+
+@override
+String toString() {
+  return 'ImageOutputFormat.heif(quality: $quality)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ImageOutputFormat_HeifCopyWith<$Res> implements $ImageOutputFormatCopyWith<$Res> {
+  factory $ImageOutputFormat_HeifCopyWith(ImageOutputFormat_Heif value, $Res Function(ImageOutputFormat_Heif) _then) = _$ImageOutputFormat_HeifCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 quality
+});
+
+
+
+
+}
+/// @nodoc
+class _$ImageOutputFormat_HeifCopyWithImpl<$Res>
+    implements $ImageOutputFormat_HeifCopyWith<$Res> {
+  _$ImageOutputFormat_HeifCopyWithImpl(this._self, this._then);
+
+  final ImageOutputFormat_Heif _self;
+  final $Res Function(ImageOutputFormat_Heif) _then;
+
+/// Create a copy of ImageOutputFormat
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? quality = null,}) {
+  return _then(ImageOutputFormat_Heif(
+quality: null == quality ? _self.quality : quality // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ImageOutputFormat_Svg extends ImageOutputFormat {
+  const ImageOutputFormat_Svg(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageOutputFormat_Svg);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ImageOutputFormat.svg()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 mixin _$KreuzbergError {

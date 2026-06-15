@@ -6,8 +6,6 @@
 import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:io';
-import 'dart:core' as _DartCore;
-import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -22,158 +20,64 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static final instance = RustLib._();
 
   RustLib._();
-  /// Resolve the prebuilt native library from environment variable,
-  /// package-relative location, or defer to flutter_rust_bridge's default loader.
-  /// Returns `null` to defer to flutter_rust_bridge's default loader.
+
+  /// Resolve the prebuilt native library from this package's own installed
+  /// location so the load works from any working directory and under hardened
+  /// runtimes. Returns `null` to defer to flutter_rust_bridge's default loader.
   ///
-  /// Checks in order:
-  /// 1. FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR environment variable
-  ///    (allows test harnesses to point to development build paths)
-  /// 2. Package-installed location with RID subdirectory (lib/src/native/<rid>/)
-  ///    (for published pub.dev packages with platform-specific bundled native libraries)
-  /// 3. Package-installed location (lib/src/kreuzberg_bridge_generated/)
-  ///    (legacy fallback for development or packages without per-platform binaries)
-  /// 4. Returns null (flutter_rust_bridge falls back to its default loader)
+  /// Published pub.dev packages stage natives under `lib/src/native/<rid>/`
+  /// (e.g. `macos-arm64`, `linux-x64`). For local FRB-dev builds the dylib is
+  /// emitted into `lib/src/kreuzberg_bridge_generated/`; that
+  /// path is searched as a fallback.
   static Future<ExternalLibrary?> _alefResolveExternalLibrary() async {
     try {
-      const candidates = <String>[
-        // macOS: framework bundle (preferred modern packaging)
-        'kreuzberg_dart.framework',
-        // macOS: bare dylib fallback
-        'libkreuzberg_dart.dylib',
-        // Linux
-        'libkreuzberg_dart.so',
-        // Windows
-        'kreuzberg_dart.dll',
+      final packageRoot = await Isolate.resolvePackageUri(
+        Uri.parse('package:kreuzberg/kreuzberg.dart'),
+      );
+      if (packageRoot == null) return null;
+      final libNames = _alefHostLibNames();
+      final searchDirs = <Uri>[
+        if (_alefHostRid() != null)
+          packageRoot.resolve('src/native/${_alefHostRid()}/'),
+        packageRoot.resolve('src/kreuzberg_bridge_generated/'),
       ];
-
-      // Helper to open a native library by absolute path.
-      // Normalizes path to absolute to avoid hardened-runtime "relative path rejected" errors.
-      ExternalLibrary? tryOpenAbsolute(String libPath) {
-        try {
-          final absPath = File(libPath).absolute.path;
-          return ExternalLibrary.open(absPath);
-        } catch (_) {
-          return null;
-        }
-      }
-
-      bool candidateExists(String libPath) {
-        return File(libPath).existsSync() || Directory(libPath).existsSync();
-      }
-
-      // Check FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR env var first.
-      // This allows test harnesses to override library location for development.
-      final envDir = Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
-      if (envDir != null && envDir.isNotEmpty) {
-        final libDir = Directory(envDir);
-        if (libDir.existsSync()) {
-          for (final candidate in candidates) {
-            final libPath = '$envDir/$candidate';
-            if (candidateExists(libPath)) {
-              final result = tryOpenAbsolute(libPath);
-              if (result != null) return result;
-            }
+      for (final dir in searchDirs) {
+        for (final name in libNames) {
+          final libPath = dir.resolve(name).toFilePath();
+          if (File(libPath).existsSync() || Directory(libPath).existsSync()) {
+            return ExternalLibrary.open(libPath);
           }
         }
-      }
-
-      // Compute RID (runtime identifier) from platform and architecture using Abi.current().
-      // This is more reliable than parsing Platform.version.
-      String? computeRid() {
-        final abi = Abi.current();
-        final os = Platform.operatingSystem;
-
-        // Map from (os, Abi) to RID string.
-        String? ridFromAbi() {
-          if (os == 'linux') {
-            if (abi == Abi.linuxX64) return 'linux-x64';
-            if (abi == Abi.linuxArm64) return 'linux-arm64';
-          } else if (os == 'macos') {
-            if (abi == Abi.macosX64) return 'macos-x64';
-            if (abi == Abi.macosArm64) return 'macos-arm64';
-          } else if (os == 'windows') {
-            if (abi == Abi.windowsX64) return 'windows-x64';
-            if (abi == Abi.windowsArm64) return 'windows-arm64';
-          }
-          return null;
-        }
-
-        return ridFromAbi();
-      }
-
-      final rid = computeRid();
-      if (rid != null) {
-        final packageRoot =
-            await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
-        if (packageRoot != null) {
-          final ridDir = packageRoot.resolve('src/native/$rid/');
-          for (final candidate in candidates) {
-            final libPath = ridDir.resolve(candidate).toFilePath();
-            if (candidateExists(libPath)) {
-              final result = tryOpenAbsolute(libPath);
-              if (result != null) return result;
-            }
-          }
-        }
-      }
-
-      // Check legacy package-installed location as fallback.
-      final packageRoot =
-          await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
-      if (packageRoot != null) {
-        final libDir = packageRoot.resolve('src/kreuzberg_bridge_generated/');
-        for (final candidate in candidates) {
-          final libPath = libDir.resolve(candidate).toFilePath();
-          if (candidateExists(libPath)) {
-            final result = tryOpenAbsolute(libPath);
-            if (result != null) return result;
-          }
-        }
-      }
-
-      // As a last resort, resolve the running test/script's package root via
-      // `Platform.script` and search standard RID-relative locations there.
-      // Critical on macOS: `Directory.current` under hardened-runtime `dart` is
-      // the dart binary's own bin dir (relative-path dlopen rejected), whereas
-      // `Platform.script` resolves to the running .dart file's absolute URI,
-      // from which we can walk up to find the package root (the dir containing
-      // `pubspec.yaml`) and look for the bundled native library at standard
-      // paths. This handles the case where `Isolate.resolvePackageUri`
-      // resolution did not yield the actual staging location (e.g., a path
-      // dependency in local development, or a test_app whose host package
-      // contains the native lib directly rather than via the bridged package).
-      try {
-        final scriptPath = Platform.script.toFilePath();
-        var dir = File(scriptPath).parent;
-        while (dir.parent.path != dir.path
-            && !File('${dir.path}/pubspec.yaml').existsSync()) {
-          dir = dir.parent;
-        }
-        if (File('${dir.path}/pubspec.yaml').existsSync()) {
-          final rid = computeRid();
-          final searchRoots = <String>[
-            if (rid != null) '${dir.path}/lib/src/native/$rid',
-            '${dir.path}/lib',
-            dir.path,
-          ];
-          for (final root in searchRoots) {
-            for (final candidate in candidates) {
-              final libPath = '$root/$candidate';
-              if (candidateExists(libPath)) {
-                final result = tryOpenAbsolute(libPath);
-                if (result != null) return result;
-              }
-            }
-          }
-        }
-      } catch (_) {
-        // fall through to default loader
       }
     } catch (_) {
       // Fall through to the default loader on any resolution failure.
     }
     return null;
+  }
+
+  /// Map the host platform to the pub.dev native staging RID. Returns `null`
+  /// for unrecognized host triples so the FRB-dev fallback path runs instead.
+  static String? _alefHostRid() {
+    final abi = Abi.current();
+    if (abi == Abi.macosArm64) return 'macos-arm64';
+    if (abi == Abi.macosX64) return 'macos-x64';
+    if (abi == Abi.linuxArm64) return 'linux-arm64';
+    if (abi == Abi.linuxX64) return 'linux-x64';
+    if (abi == Abi.windowsArm64) return 'windows-arm64';
+    if (abi == Abi.windowsX64) return 'windows-x64';
+    return null;
+  }
+
+  static List<String> _alefHostLibNames() {
+    // The Dart-binding Rust crate is `{stem}-dart` (per the cargo manifest
+    // template), which produces a cdylib named `lib{stem}_dart.{ext}` on Unix
+    // and `{stem}_dart.dll` on Windows. On macOS, pub.dev-published packages
+    // may ship the binary as a Framework bundle (preferred modern packaging)
+    // — list that first so the loader finds it before the bare dylib.
+    if (Platform.isMacOS)
+      return const ['kreuzberg_dart.framework', 'libkreuzberg_dart.dylib'];
+    if (Platform.isWindows) return const ['kreuzberg_dart.dll'];
+    return const ['libkreuzberg_dart.so'];
   }
 
   /// Initialize flutter_rust_bridge
@@ -11180,6 +11084,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  AudioMetadata dco_decode_box_autoadd_audio_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_audio_metadata(raw);
+  }
+
+  @protected
+  BibtexMetadata dco_decode_box_autoadd_bibtex_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_bibtex_metadata(raw);
+  }
+
+  @protected
   bool dco_decode_box_autoadd_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
@@ -11204,6 +11120,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CitationMetadata dco_decode_box_autoadd_citation_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_citation_metadata(raw);
+  }
+
+  @protected
   ContentFilterConfig dco_decode_box_autoadd_content_filter_config(
     dynamic raw,
   ) {
@@ -11221,6 +11143,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CsvMetadata dco_decode_box_autoadd_csv_metadata(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_csv_metadata(raw);
+  }
+
+  @protected
+  DbfMetadata dco_decode_box_autoadd_dbf_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_dbf_metadata(raw);
   }
 
   @protected
@@ -11254,6 +11182,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DocxMetadata dco_decode_box_autoadd_docx_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_docx_metadata(raw);
+  }
+
+  @protected
   EmailConfig dco_decode_box_autoadd_email_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_email_config(raw);
@@ -11275,6 +11209,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   EmbeddingPreset dco_decode_box_autoadd_embedding_preset(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_embedding_preset(raw);
+  }
+
+  @protected
+  EpubMetadata dco_decode_box_autoadd_epub_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_epub_metadata(raw);
   }
 
   @protected
@@ -11311,6 +11251,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   double dco_decode_box_autoadd_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
+  }
+
+  @protected
+  FictionBookMetadata dco_decode_box_autoadd_fiction_book_metadata(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_fiction_book_metadata(raw);
   }
 
   @protected
@@ -11390,6 +11338,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   dco_decode_box_autoadd_image_preprocessing_metadata(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_image_preprocessing_metadata(raw);
+  }
+
+  @protected
+  JatsMetadata dco_decode_box_autoadd_jats_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_jats_metadata(raw);
   }
 
   @protected
@@ -11508,6 +11462,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   PdfConfig dco_decode_box_autoadd_pdf_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_pdf_config(raw);
+  }
+
+  @protected
+  PdfMetadata dco_decode_box_autoadd_pdf_metadata(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_pdf_metadata(raw);
   }
 
   @protected
@@ -11743,7 +11703,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   ChunkSizing dco_decode_chunk_sizing(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return ChunkSizing.values[raw as int];
+    switch (raw[0]) {
+      case 0:
+        return ChunkSizing_Characters();
+      case 1:
+        return ChunkSizing_Tokenizer(
+          model: dco_decode_String(raw[1]),
+          cacheDir: dco_decode_String(raw[2]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   @protected
@@ -12681,49 +12651,87 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
+        return FormatMetadata_Pdf(
+          field0: dco_decode_box_autoadd_pdf_metadata(raw[1]),
+        );
+      case 1:
+        return FormatMetadata_Docx(
+          field0: dco_decode_box_autoadd_docx_metadata(raw[1]),
+        );
+      case 2:
         return FormatMetadata_Excel(
           field0: dco_decode_box_autoadd_excel_metadata(raw[1]),
         );
-      case 1:
+      case 3:
         return FormatMetadata_Email(
           field0: dco_decode_box_autoadd_email_metadata(raw[1]),
         );
-      case 2:
+      case 4:
         return FormatMetadata_Pptx(
           field0: dco_decode_box_autoadd_pptx_metadata(raw[1]),
         );
-      case 3:
+      case 5:
         return FormatMetadata_Archive(
           field0: dco_decode_box_autoadd_archive_metadata(raw[1]),
         );
-      case 4:
+      case 6:
         return FormatMetadata_Image(
           field0: dco_decode_box_autoadd_image_metadata(raw[1]),
         );
-      case 5:
+      case 7:
         return FormatMetadata_Xml(
           field0: dco_decode_box_autoadd_xml_metadata(raw[1]),
         );
-      case 6:
+      case 8:
         return FormatMetadata_Text(
           field0: dco_decode_box_autoadd_text_metadata(raw[1]),
         );
-      case 7:
+      case 9:
         return FormatMetadata_Html(
           field0: dco_decode_box_autoadd_html_metadata(raw[1]),
         );
-      case 8:
+      case 10:
         return FormatMetadata_Ocr(
           field0: dco_decode_box_autoadd_ocr_metadata(raw[1]),
         );
-      case 9:
+      case 11:
         return FormatMetadata_Csv(
           field0: dco_decode_box_autoadd_csv_metadata(raw[1]),
         );
-      case 10:
+      case 12:
+        return FormatMetadata_Bibtex(
+          field0: dco_decode_box_autoadd_bibtex_metadata(raw[1]),
+        );
+      case 13:
+        return FormatMetadata_Citation(
+          field0: dco_decode_box_autoadd_citation_metadata(raw[1]),
+        );
+      case 14:
+        return FormatMetadata_FictionBook(
+          field0: dco_decode_box_autoadd_fiction_book_metadata(raw[1]),
+        );
+      case 15:
+        return FormatMetadata_Dbf(
+          field0: dco_decode_box_autoadd_dbf_metadata(raw[1]),
+        );
+      case 16:
+        return FormatMetadata_Jats(
+          field0: dco_decode_box_autoadd_jats_metadata(raw[1]),
+        );
+      case 17:
+        return FormatMetadata_Epub(
+          field0: dco_decode_box_autoadd_epub_metadata(raw[1]),
+        );
+      case 18:
         return FormatMetadata_Pst(
           field0: dco_decode_box_autoadd_pst_metadata(raw[1]),
         );
+      case 19:
+        return FormatMetadata_Audio(
+          field0: dco_decode_box_autoadd_audio_metadata(raw[1]),
+        );
+      case 20:
+        return FormatMetadata_Code();
       default:
         throw Exception("unreachable");
     }
@@ -12953,6 +12961,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return ImageOutputFormat_Jpeg(quality: dco_decode_i_64(raw[1]));
       case 3:
         return ImageOutputFormat_Webp(quality: dco_decode_i_64(raw[1]));
+      case 4:
+        return ImageOutputFormat_Heif(quality: dco_decode_i_64(raw[1]));
+      case 5:
+        return ImageOutputFormat_Svg();
       default:
         throw Exception("unreachable");
     }
@@ -16704,6 +16716,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  AudioMetadata sse_decode_box_autoadd_audio_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_audio_metadata(deserializer));
+  }
+
+  @protected
+  BibtexMetadata sse_decode_box_autoadd_bibtex_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_bibtex_metadata(deserializer));
+  }
+
+  @protected
   bool sse_decode_box_autoadd_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_bool(deserializer));
@@ -16734,6 +16762,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CitationMetadata sse_decode_box_autoadd_citation_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_citation_metadata(deserializer));
+  }
+
+  @protected
   ContentFilterConfig sse_decode_box_autoadd_content_filter_config(
     SseDeserializer deserializer,
   ) {
@@ -16755,6 +16791,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_csv_metadata(deserializer));
+  }
+
+  @protected
+  DbfMetadata sse_decode_box_autoadd_dbf_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_dbf_metadata(deserializer));
   }
 
   @protected
@@ -16798,6 +16842,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  DocxMetadata sse_decode_box_autoadd_docx_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_docx_metadata(deserializer));
+  }
+
+  @protected
   EmailConfig sse_decode_box_autoadd_email_config(
     SseDeserializer deserializer,
   ) {
@@ -16827,6 +16879,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_embedding_preset(deserializer));
+  }
+
+  @protected
+  EpubMetadata sse_decode_box_autoadd_epub_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_epub_metadata(deserializer));
   }
 
   @protected
@@ -16873,6 +16933,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_f_64(deserializer));
+  }
+
+  @protected
+  FictionBookMetadata sse_decode_box_autoadd_fiction_book_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_fiction_book_metadata(deserializer));
   }
 
   @protected
@@ -16966,6 +17034,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_image_preprocessing_metadata(deserializer));
+  }
+
+  @protected
+  JatsMetadata sse_decode_box_autoadd_jats_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_jats_metadata(deserializer));
   }
 
   @protected
@@ -17100,6 +17176,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   PdfConfig sse_decode_box_autoadd_pdf_config(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_pdf_config(deserializer));
+  }
+
+  @protected
+  PdfMetadata sse_decode_box_autoadd_pdf_metadata(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_pdf_metadata(deserializer));
   }
 
   @protected
@@ -17378,8 +17462,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   ChunkSizing sse_decode_chunk_sizing(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var inner = sse_decode_i_32(deserializer);
-    return ChunkSizing.values[inner];
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        return ChunkSizing_Characters();
+      case 1:
+        var var_model = sse_decode_String(deserializer);
+        var var_cacheDir = sse_decode_String(deserializer);
+        return ChunkSizing_Tokenizer(model: var_model, cacheDir: var_cacheDir);
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
@@ -18577,38 +18671,69 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
+        var var_field0 = sse_decode_box_autoadd_pdf_metadata(deserializer);
+        return FormatMetadata_Pdf(field0: var_field0);
+      case 1:
+        var var_field0 = sse_decode_box_autoadd_docx_metadata(deserializer);
+        return FormatMetadata_Docx(field0: var_field0);
+      case 2:
         var var_field0 = sse_decode_box_autoadd_excel_metadata(deserializer);
         return FormatMetadata_Excel(field0: var_field0);
-      case 1:
+      case 3:
         var var_field0 = sse_decode_box_autoadd_email_metadata(deserializer);
         return FormatMetadata_Email(field0: var_field0);
-      case 2:
+      case 4:
         var var_field0 = sse_decode_box_autoadd_pptx_metadata(deserializer);
         return FormatMetadata_Pptx(field0: var_field0);
-      case 3:
+      case 5:
         var var_field0 = sse_decode_box_autoadd_archive_metadata(deserializer);
         return FormatMetadata_Archive(field0: var_field0);
-      case 4:
+      case 6:
         var var_field0 = sse_decode_box_autoadd_image_metadata(deserializer);
         return FormatMetadata_Image(field0: var_field0);
-      case 5:
+      case 7:
         var var_field0 = sse_decode_box_autoadd_xml_metadata(deserializer);
         return FormatMetadata_Xml(field0: var_field0);
-      case 6:
+      case 8:
         var var_field0 = sse_decode_box_autoadd_text_metadata(deserializer);
         return FormatMetadata_Text(field0: var_field0);
-      case 7:
+      case 9:
         var var_field0 = sse_decode_box_autoadd_html_metadata(deserializer);
         return FormatMetadata_Html(field0: var_field0);
-      case 8:
+      case 10:
         var var_field0 = sse_decode_box_autoadd_ocr_metadata(deserializer);
         return FormatMetadata_Ocr(field0: var_field0);
-      case 9:
+      case 11:
         var var_field0 = sse_decode_box_autoadd_csv_metadata(deserializer);
         return FormatMetadata_Csv(field0: var_field0);
-      case 10:
+      case 12:
+        var var_field0 = sse_decode_box_autoadd_bibtex_metadata(deserializer);
+        return FormatMetadata_Bibtex(field0: var_field0);
+      case 13:
+        var var_field0 = sse_decode_box_autoadd_citation_metadata(deserializer);
+        return FormatMetadata_Citation(field0: var_field0);
+      case 14:
+        var var_field0 = sse_decode_box_autoadd_fiction_book_metadata(
+          deserializer,
+        );
+        return FormatMetadata_FictionBook(field0: var_field0);
+      case 15:
+        var var_field0 = sse_decode_box_autoadd_dbf_metadata(deserializer);
+        return FormatMetadata_Dbf(field0: var_field0);
+      case 16:
+        var var_field0 = sse_decode_box_autoadd_jats_metadata(deserializer);
+        return FormatMetadata_Jats(field0: var_field0);
+      case 17:
+        var var_field0 = sse_decode_box_autoadd_epub_metadata(deserializer);
+        return FormatMetadata_Epub(field0: var_field0);
+      case 18:
         var var_field0 = sse_decode_box_autoadd_pst_metadata(deserializer);
         return FormatMetadata_Pst(field0: var_field0);
+      case 19:
+        var var_field0 = sse_decode_box_autoadd_audio_metadata(deserializer);
+        return FormatMetadata_Audio(field0: var_field0);
+      case 20:
+        return FormatMetadata_Code();
       default:
         throw UnimplementedError('');
     }
@@ -18887,6 +19012,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 3:
         var var_quality = sse_decode_i_64(deserializer);
         return ImageOutputFormat_Webp(quality: var_quality);
+      case 4:
+        var var_quality = sse_decode_i_64(deserializer);
+        return ImageOutputFormat_Heif(quality: var_quality);
+      case 5:
+        return ImageOutputFormat_Svg();
       default:
         throw UnimplementedError('');
     }
@@ -24268,6 +24398,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_audio_metadata(
+    AudioMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_audio_metadata(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_bibtex_metadata(
+    BibtexMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bibtex_metadata(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_bool(self, serializer);
@@ -24301,6 +24449,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_citation_metadata(
+    CitationMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_citation_metadata(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_content_filter_config(
     ContentFilterConfig self,
     SseSerializer serializer,
@@ -24325,6 +24482,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_csv_metadata(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_dbf_metadata(
+    DbfMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_dbf_metadata(self, serializer);
   }
 
   @protected
@@ -24373,6 +24539,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_docx_metadata(
+    DocxMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_docx_metadata(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_email_config(
     EmailConfig self,
     SseSerializer serializer,
@@ -24406,6 +24581,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_embedding_preset(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_epub_metadata(
+    EpubMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_epub_metadata(self, serializer);
   }
 
   @protected
@@ -24457,6 +24641,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_fiction_book_metadata(
+    FictionBookMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_fiction_book_metadata(self, serializer);
   }
 
   @protected
@@ -24565,6 +24758,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_image_preprocessing_metadata(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_jats_metadata(
+    JatsMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_jats_metadata(self, serializer);
   }
 
   @protected
@@ -24727,6 +24929,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_pdf_config(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_pdf_metadata(
+    PdfMetadata self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_pdf_metadata(self, serializer);
   }
 
   @protected
@@ -25010,7 +25221,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_chunk_sizing(ChunkSizing self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.index, serializer);
+    switch (self) {
+      case ChunkSizing_Characters():
+        sse_encode_i_32(0, serializer);
+      case ChunkSizing_Tokenizer(model: final model, cacheDir: final cacheDir):
+        sse_encode_i_32(1, serializer);
+        sse_encode_String(model, serializer);
+        sse_encode_String(cacheDir, serializer);
+    }
   }
 
   @protected
@@ -25843,39 +26061,68 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case FormatMetadata_Excel(field0: final field0):
+      case FormatMetadata_Pdf(field0: final field0):
         sse_encode_i_32(0, serializer);
+        sse_encode_box_autoadd_pdf_metadata(field0, serializer);
+      case FormatMetadata_Docx(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_box_autoadd_docx_metadata(field0, serializer);
+      case FormatMetadata_Excel(field0: final field0):
+        sse_encode_i_32(2, serializer);
         sse_encode_box_autoadd_excel_metadata(field0, serializer);
       case FormatMetadata_Email(field0: final field0):
-        sse_encode_i_32(1, serializer);
+        sse_encode_i_32(3, serializer);
         sse_encode_box_autoadd_email_metadata(field0, serializer);
       case FormatMetadata_Pptx(field0: final field0):
-        sse_encode_i_32(2, serializer);
+        sse_encode_i_32(4, serializer);
         sse_encode_box_autoadd_pptx_metadata(field0, serializer);
       case FormatMetadata_Archive(field0: final field0):
-        sse_encode_i_32(3, serializer);
+        sse_encode_i_32(5, serializer);
         sse_encode_box_autoadd_archive_metadata(field0, serializer);
       case FormatMetadata_Image(field0: final field0):
-        sse_encode_i_32(4, serializer);
+        sse_encode_i_32(6, serializer);
         sse_encode_box_autoadd_image_metadata(field0, serializer);
       case FormatMetadata_Xml(field0: final field0):
-        sse_encode_i_32(5, serializer);
+        sse_encode_i_32(7, serializer);
         sse_encode_box_autoadd_xml_metadata(field0, serializer);
       case FormatMetadata_Text(field0: final field0):
-        sse_encode_i_32(6, serializer);
+        sse_encode_i_32(8, serializer);
         sse_encode_box_autoadd_text_metadata(field0, serializer);
       case FormatMetadata_Html(field0: final field0):
-        sse_encode_i_32(7, serializer);
+        sse_encode_i_32(9, serializer);
         sse_encode_box_autoadd_html_metadata(field0, serializer);
       case FormatMetadata_Ocr(field0: final field0):
-        sse_encode_i_32(8, serializer);
+        sse_encode_i_32(10, serializer);
         sse_encode_box_autoadd_ocr_metadata(field0, serializer);
       case FormatMetadata_Csv(field0: final field0):
-        sse_encode_i_32(9, serializer);
+        sse_encode_i_32(11, serializer);
         sse_encode_box_autoadd_csv_metadata(field0, serializer);
+      case FormatMetadata_Bibtex(field0: final field0):
+        sse_encode_i_32(12, serializer);
+        sse_encode_box_autoadd_bibtex_metadata(field0, serializer);
+      case FormatMetadata_Citation(field0: final field0):
+        sse_encode_i_32(13, serializer);
+        sse_encode_box_autoadd_citation_metadata(field0, serializer);
+      case FormatMetadata_FictionBook(field0: final field0):
+        sse_encode_i_32(14, serializer);
+        sse_encode_box_autoadd_fiction_book_metadata(field0, serializer);
+      case FormatMetadata_Dbf(field0: final field0):
+        sse_encode_i_32(15, serializer);
+        sse_encode_box_autoadd_dbf_metadata(field0, serializer);
+      case FormatMetadata_Jats(field0: final field0):
+        sse_encode_i_32(16, serializer);
+        sse_encode_box_autoadd_jats_metadata(field0, serializer);
+      case FormatMetadata_Epub(field0: final field0):
+        sse_encode_i_32(17, serializer);
+        sse_encode_box_autoadd_epub_metadata(field0, serializer);
       case FormatMetadata_Pst(field0: final field0):
-        sse_encode_i_32(10, serializer);
+        sse_encode_i_32(18, serializer);
         sse_encode_box_autoadd_pst_metadata(field0, serializer);
+      case FormatMetadata_Audio(field0: final field0):
+        sse_encode_i_32(19, serializer);
+        sse_encode_box_autoadd_audio_metadata(field0, serializer);
+      case FormatMetadata_Code():
+        sse_encode_i_32(20, serializer);
     }
   }
 
@@ -26074,6 +26321,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case ImageOutputFormat_Webp(quality: final quality):
         sse_encode_i_32(3, serializer);
         sse_encode_i_64(quality, serializer);
+      case ImageOutputFormat_Heif(quality: final quality):
+        sse_encode_i_32(4, serializer);
+        sse_encode_i_64(quality, serializer);
+      case ImageOutputFormat_Svg():
+        sse_encode_i_32(5, serializer);
     }
   }
 
