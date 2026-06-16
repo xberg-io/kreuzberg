@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -527,6 +527,61 @@ Future<Uint8List> renderPdfPageToPng({
   dpi: dpi,
   password: password,
 );
+
+/// Decode arbitrary audio bytes (mp3, wav, m4a, webm, etc.) into 16 kHz mono f32 PCM.
+///
+/// This is a blocking CPU-heavy operation — callers should use
+/// `tokio.task.spawn_blocking` when on an async runtime.
+Future<PcmAudio> decodeAudioToPcm({
+  required List<int> bytes,
+  PlatformInt64? maxBytes,
+}) => RustLib.instance.api.crateDecodeAudioToPcm(
+  bytes: bytes,
+  maxBytes: maxBytes,
+);
+
+/// Resolve a Whisper model to on-disk ONNX paths, downloading from HF Hub if needed.
+///
+/// # Behaviour
+///
+/// 1. Compute `target_dir = {cache_root}/whisper/{model_size}/` (see module docs for
+///    the full resolution order).
+///
+/// 2. If every required file already exists locally, return the paths immediately.
+/// 3. If `allow_network` is `false` and the model is not cached, return
+///    `WhisperModelError.ModelMissing`.
+///
+/// 4. Acquire a cross-process advisory lock to serialise concurrent first-time
+///    downloads (a killed process never permanently wedges the lock).
+///
+/// 5. Download each file via `hf-hub` into `target_dir` under canonical local names.
+/// 6. When `verify_hash` is `true` emit a warning that the hash table is not yet
+///    populated and the check is a no-op. The check is tracked via a TODO comment
+///    for a follow-up work item (W3+).
+///
+/// 7. Return populated `WhisperModelPaths`.
+///
+/// **Errors:**
+///
+/// Returns `WhisperModelError` on I/O failures, download failures, or when the
+/// model is unavailable and `allow_network` is `false`.
+Future<WhisperModelPaths> ensureWhisperModel({
+  required WhisperModel model,
+  String? cacheDir,
+  required bool allowNetwork,
+  required bool verifyHash,
+}) => RustLib.instance.api.crateEnsureWhisperModel(
+  model: model,
+  cacheDir: cacheDir,
+  allowNetwork: allowNetwork,
+  verifyHash: verifyHash,
+);
+
+/// Attempt to read audio tags and properties from raw bytes.
+///
+/// Never panics or returns an error — failures produce `AudioTags.default()`.
+Future<AudioTags> readAudioTags({required List<int> bytes}) =>
+    RustLib.instance.api.crateReadAudioTags(bytes: bytes);
 
 /// Caption a single image from bytes.
 ///
@@ -1831,6 +1886,74 @@ class AudioMetadata {
           sampleRateHz == other.sampleRateHz &&
           channels == other.channels &&
           bitrate == other.bitrate;
+}
+
+/// Tag and audio-property data extracted from an audio/video file.
+class AudioTags {
+  final String? title;
+
+  /// Artist/performer — maps to `Metadata::authors` (wrapped in a Vec).
+  final String? artist;
+
+  /// Release year as a four-digit string (e.g. "2023") for `Metadata::created_at`.
+  final String? year;
+
+  /// ISO 639 language tag if present in the file (e.g. "eng", "deu").
+  final String? language;
+
+  /// Duration in milliseconds from the file's audio properties.
+  final PlatformInt64? durationMs;
+
+  /// Sample rate in Hz from the file's audio properties.
+  final PlatformInt64? sampleRateHz;
+
+  /// Channel count from the file's audio properties.
+  final PlatformInt64? channels;
+
+  /// Overall bitrate in kbps from the file's audio properties.
+  final PlatformInt64? bitrate;
+
+  /// Container format string derived from lofty's `FileType`.
+  final String? container;
+
+  const AudioTags({
+    this.title,
+    this.artist,
+    this.year,
+    this.language,
+    this.durationMs,
+    this.sampleRateHz,
+    this.channels,
+    this.bitrate,
+    this.container,
+  });
+
+  @override
+  int get hashCode =>
+      title.hashCode ^
+      artist.hashCode ^
+      year.hashCode ^
+      language.hashCode ^
+      durationMs.hashCode ^
+      sampleRateHz.hashCode ^
+      channels.hashCode ^
+      bitrate.hashCode ^
+      container.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AudioTags &&
+          runtimeType == other.runtimeType &&
+          title == other.title &&
+          artist == other.artist &&
+          year == other.year &&
+          language == other.language &&
+          durationMs == other.durationMs &&
+          sampleRateHz == other.sampleRateHz &&
+          channels == other.channels &&
+          bitrate == other.bitrate &&
+          container == other.container;
 }
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
@@ -9422,6 +9545,42 @@ class PatternMatch {
           text == other.text;
 }
 
+/// The canonical PCM format that all transcription engines receive.
+class PcmAudio {
+  final Float64List samples;
+
+  /// Always 16000 after resampling/normalization in this decoder.
+  final PlatformInt64 sampleRateHz;
+
+  /// Always 1 (mono) after our conversion.
+  final PlatformInt64 channels;
+  final PlatformInt64 durationMs;
+
+  const PcmAudio({
+    required this.samples,
+    required this.sampleRateHz,
+    required this.channels,
+    required this.durationMs,
+  });
+
+  @override
+  int get hashCode =>
+      samples.hashCode ^
+      sampleRateHz.hashCode ^
+      channels.hashCode ^
+      durationMs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PcmAudio &&
+          runtimeType == other.runtimeType &&
+          samples == other.samples &&
+          sampleRateHz == other.sampleRateHz &&
+          channels == other.channels &&
+          durationMs == other.durationMs;
+}
+
 /// A PDF annotation extracted from a document page.
 class PdfAnnotation {
   /// The type of annotation.
@@ -12217,6 +12376,60 @@ enum WhisperModel {
 
   /// ~1550 MB, best quality (large-v3). Use only when latency is acceptable.
   largeV3,
+}
+
+/// On-disk paths for all files needed to load a Whisper model in an ORT session.
+class WhisperModelPaths {
+  /// Encoder ONNX model: `onnx/encoder_model.onnx`.
+  final String encoder;
+
+  /// Decoder ONNX model (without KV-cache past): `onnx/decoder_model.onnx`.
+  /// For sharded variants (Small+) this is the merged decoder.
+  final String decoder;
+
+  /// Decoder ONNX model with KV-cache past: `onnx/decoder_with_past_model.onnx`.
+  /// For sharded variants (Small+) this points to the same merged decoder as `decoder`.
+  final String decoderWithPast;
+
+  /// `tokenizer.json` — vocabulary + BPE rules.
+  final String tokenizer;
+
+  /// `config.json` — model hyper-parameters.
+  final String config;
+
+  /// Number of mel filter banks expected by this model's audio pre-processor.
+  /// 80 for Tiny / Base / Small / Medium; 128 for LargeV3.
+  final PlatformInt64 nMels;
+
+  const WhisperModelPaths({
+    required this.encoder,
+    required this.decoder,
+    required this.decoderWithPast,
+    required this.tokenizer,
+    required this.config,
+    required this.nMels,
+  });
+
+  @override
+  int get hashCode =>
+      encoder.hashCode ^
+      decoder.hashCode ^
+      decoderWithPast.hashCode ^
+      tokenizer.hashCode ^
+      config.hashCode ^
+      nMels.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WhisperModelPaths &&
+          runtimeType == other.runtimeType &&
+          encoder == other.encoder &&
+          decoder == other.decoder &&
+          decoderWithPast == other.decoderWithPast &&
+          tokenizer == other.tokenizer &&
+          config == other.config &&
+          nMels == other.nMels;
 }
 
 /// Application properties from docProps/app.xml for XLSX

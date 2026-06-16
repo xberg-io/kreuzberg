@@ -7,16 +7,64 @@
 //! `crate::transcription`. This module is the thin "plugin" adapter that
 //! the registry expects.
 
+use std::collections::HashMap;
+use std::sync::{Arc, LazyLock, Mutex};
+
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::plugins::{DocumentExtractor, Plugin};
 use crate::transcription::decode::{PcmAudio, decode_audio_to_pcm};
+use crate::transcription::engine::WhisperEngine;
+use crate::transcription::model::{WhisperModelPaths, ensure_whisper_model};
 use crate::transcription::tags::AudioTags;
-use crate::types::internal::InternalDocument;
+use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::metadata::{AudioMetadata, FormatMetadata};
 use crate::{KreuzbergError, Result};
 use async_trait::async_trait;
 use tokio::task;
+
+// ---------------------------------------------------------------------------
+// Process-wide engine cache
+// ---------------------------------------------------------------------------
+
+/// Process-wide cache of loaded `WhisperEngine` instances, keyed by the
+/// canonical model paths (encoder|tokenizer). Mirrors the pattern in
+/// `crate::reranking::get_or_init_engine`.
+static ENGINES: LazyLock<Mutex<HashMap<String, Arc<WhisperEngine>>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+
+/// Semaphore that limits the number of concurrent Whisper inference calls.
+///
+/// The budget matches `resolve_thread_budget` — the same value used by the
+/// embedding and reranking semaphores so all ORT inference shares one
+/// per-process concurrency bound.
+static TRANSCRIPTION_SEMAPHORE: LazyLock<Arc<tokio::sync::Semaphore>> =
+    LazyLock::new(|| {
+        let budget = crate::core::config::concurrency::resolve_thread_budget(None);
+        Arc::new(tokio::sync::Semaphore::new(budget))
+    });
+
+/// Cache key for a loaded engine — stable across calls with identical model files.
+fn engine_cache_key(paths: &WhisperModelPaths) -> String {
+    format!("{}|{}", paths.encoder.display(), paths.tokenizer.display())
+}
+
+/// Return a cached `WhisperEngine` for `paths`, building and caching one on
+/// the first call for each distinct model.
+fn get_or_build_engine(paths: &WhisperModelPaths) -> Result<Arc<WhisperEngine>> {
+    let key = engine_cache_key(paths);
+    let mut map = ENGINES
+        .lock()
+        .map_err(|e| KreuzbergError::transcription(format!("engine cache poisoned: {e}")))?;
+    if let Some(engine) = map.get(&key) {
+        return Ok(Arc::clone(engine));
+    }
+    let engine = WhisperEngine::load(paths)
+        .map_err(|e| KreuzbergError::transcription(format!("whisper engine load failed: {e}")))?;
+    let arc = Arc::new(engine);
+    map.insert(key, Arc::clone(&arc));
+    Ok(arc)
+}
 
 /// The transcription extractor.
 ///
@@ -96,12 +144,44 @@ impl DocumentExtractor for TranscriptionExtractor {
             )));
         }
 
-        // Build the document with metadata now so the follow-up PR only needs to
-        // replace this Err with the inference call and return Ok(_doc).
-        let _doc = build_audio_document(tags, &pcm, mime_type);
-        Err(KreuzbergError::transcription(
-            "Whisper inference not yet implemented — pending follow-up PR",
-        ))
+        // Resolve model paths (downloads on first use if allow_network = true).
+        let paths = {
+            let model = tcfg.model;
+            let cache_dir = tcfg.model_cache_dir.clone();
+            let allow_network = tcfg.allow_network;
+            let verify_hash = tcfg.verify_hash;
+            task::spawn_blocking(move || {
+                ensure_whisper_model(model, cache_dir.as_deref(), allow_network, verify_hash)
+            })
+            .await
+            .map_err(|e| KreuzbergError::transcription(format!("model resolution task panicked: {e}")))?
+            .map_err(|e| KreuzbergError::transcription(format!("whisper model resolution failed: {e}")))?
+        };
+
+        let engine = get_or_build_engine(&paths)?;
+
+        let _permit = TRANSCRIPTION_SEMAPHORE
+            .acquire()
+            .await
+            .map_err(|e| KreuzbergError::transcription(format!("semaphore closed: {e}")))?;
+
+        let pcm_clone = pcm.clone();
+        let lang_clone = tcfg.language.clone();
+        let timestamps = tcfg.timestamps;
+        let engine_for_task = Arc::clone(&engine);
+
+        let transcript = task::spawn_blocking(move || {
+            engine_for_task.transcribe(&pcm_clone, lang_clone.as_deref(), timestamps)
+        })
+        .await
+        .map_err(|e| KreuzbergError::transcription(format!("whisper task panicked: {e}")))?
+        .map_err(|e| KreuzbergError::transcription(format!("whisper inference failed: {e}")))?;
+
+        let mut doc = build_audio_document(tags, &pcm, mime_type);
+        if !transcript.is_empty() {
+            doc.push_element(InternalElement::text(ElementKind::Paragraph, &transcript, 0));
+        }
+        Ok(doc)
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -160,12 +240,26 @@ impl SyncExtractor for TranscriptionExtractor {
             )));
         }
 
-        // Build the document with metadata now so the follow-up PR only needs to
-        // replace this Err with the inference call and return Ok(_doc).
-        let _doc = build_audio_document(tags, &pcm, mime_type);
-        Err(KreuzbergError::transcription(
-            "Whisper inference not yet implemented — pending follow-up PR",
-        ))
+        // Resolve model paths (downloads on first use if allow_network = true).
+        let paths = ensure_whisper_model(
+            tcfg.model,
+            tcfg.model_cache_dir.as_deref(),
+            tcfg.allow_network,
+            tcfg.verify_hash,
+        )
+        .map_err(|e| KreuzbergError::transcription(format!("whisper model resolution failed: {e}")))?;
+
+        let engine = get_or_build_engine(&paths)?;
+
+        let transcript = engine
+            .transcribe(&pcm, tcfg.language.as_deref(), tcfg.timestamps)
+            .map_err(|e| KreuzbergError::transcription(format!("whisper inference failed: {e}")))?;
+
+        let mut doc = build_audio_document(tags, &pcm, mime_type);
+        if !transcript.is_empty() {
+            doc.push_element(InternalElement::text(ElementKind::Paragraph, &transcript, 0));
+        }
+        Ok(doc)
     }
 }
 
@@ -173,8 +267,7 @@ impl SyncExtractor for TranscriptionExtractor {
 ///
 /// Populates the common [`Metadata`] fields (title, authors, created_at, language) from tag data
 /// and attaches an [`AudioMetadata`] carrying codec/container/sample-rate/channel/bitrate info.
-/// The transcript content (`doc.pre_rendered_content`) is intentionally left empty here;
-/// the follow-up PR fills it in after Whisper inference and returns `Ok(doc)` instead of `Err`.
+/// The caller pushes transcript text as a `Paragraph` element after Whisper inference.
 fn build_audio_document(tags: AudioTags, pcm: &PcmAudio, mime_type: &str) -> InternalDocument {
     let audio_meta = AudioMetadata {
         duration_ms: tags.duration_ms.or(Some(pcm.duration_ms)),
@@ -307,21 +400,6 @@ mod tests {
         assert!(
             msg.contains("exceed") || msg.contains("limit") || msg.contains("size"),
             "unexpected: {msg}"
-        );
-    }
-
-    #[tokio::test]
-    async fn test_async_stub_returns_inference_not_implemented_error() {
-        let ext = TranscriptionExtractor;
-        let cfg = config_with_transcription(TranscriptionConfig::default());
-        // Before Whisper inference is wired, the extractor must return an explicit error
-        // rather than silently returning an empty document.
-        let result = ext.extract_bytes(&[0u8; 64], "audio/mpeg", &cfg).await;
-        assert!(result.is_err(), "expected inference-not-implemented error");
-        let msg = result.unwrap_err().to_string();
-        assert!(
-            msg.contains("not yet implemented") || msg.contains("follow-up"),
-            "unexpected error message: {msg}"
         );
     }
 

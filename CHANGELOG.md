@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Whisper ONNX transcription for audio/video MIME types via the `transcription`
+  feature.** Models are auto-downloaded from `onnx-community/whisper-*` on first
+  use and cached under `{KREUZBERG_CACHE_DIR}/whisper/{size}/`. Supports Tiny
+  through LargeV3, optional language hints, 30-second chunked decode, and both
+  sync (`extract_bytes_sync`) and async (`extract_bytes`) API surfaces.
+  Engine instances are cached per process; concurrent inference is bounded by
+  the same thread-budget semaphore used by the embedding and reranking pipelines.
+
 ## [5.0.0-rc.16] - 2026-06-15
 
 ### Changed

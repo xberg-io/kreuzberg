@@ -499,6 +499,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AudioMetadata dco_decode_audio_metadata(dynamic raw);
 
   @protected
+  AudioTags dco_decode_audio_tags(dynamic raw);
+
+  @protected
   BBox dco_decode_b_box(dynamic raw);
 
   @protected
@@ -1743,6 +1746,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PatternMatch dco_decode_pattern_match(dynamic raw);
 
   @protected
+  PcmAudio dco_decode_pcm_audio(dynamic raw);
+
+  @protected
   PdfAnnotation dco_decode_pdf_annotation(dynamic raw);
 
   @protected
@@ -1958,6 +1964,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   WhisperModel dco_decode_whisper_model(dynamic raw);
+
+  @protected
+  WhisperModelPaths dco_decode_whisper_model_paths(dynamic raw);
 
   @protected
   XlsxAppProperties dco_decode_xlsx_app_properties(dynamic raw);
@@ -2301,6 +2310,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   AudioMetadata sse_decode_audio_metadata(SseDeserializer deserializer);
+
+  @protected
+  AudioTags sse_decode_audio_tags(SseDeserializer deserializer);
 
   @protected
   BBox sse_decode_b_box(SseDeserializer deserializer);
@@ -3903,6 +3915,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PatternMatch sse_decode_pattern_match(SseDeserializer deserializer);
 
   @protected
+  PcmAudio sse_decode_pcm_audio(SseDeserializer deserializer);
+
+  @protected
   PdfAnnotation sse_decode_pdf_annotation(SseDeserializer deserializer);
 
   @protected
@@ -4152,6 +4167,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   WhisperModel sse_decode_whisper_model(SseDeserializer deserializer);
+
+  @protected
+  WhisperModelPaths sse_decode_whisper_model_paths(
+    SseDeserializer deserializer,
+  );
 
   @protected
   XlsxAppProperties sse_decode_xlsx_app_properties(
@@ -4677,6 +4697,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_audio_metadata(AudioMetadata self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_audio_tags(AudioTags self, SseSerializer serializer);
 
   @protected
   void sse_encode_b_box(BBox self, SseSerializer serializer);
@@ -6731,6 +6754,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_pattern_match(PatternMatch self, SseSerializer serializer);
 
   @protected
+  void sse_encode_pcm_audio(PcmAudio self, SseSerializer serializer);
+
+  @protected
   void sse_encode_pdf_annotation(PdfAnnotation self, SseSerializer serializer);
 
   @protected
@@ -7065,6 +7091,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_whisper_model(WhisperModel self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_whisper_model_paths(
+    WhisperModelPaths self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_xlsx_app_properties(

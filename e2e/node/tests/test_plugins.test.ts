@@ -59,6 +59,9 @@ function makeExtractor(name: string, mimeType = "application/x-test"): object {
 		shutdown: (): void => {
 			/* no-op */
 		},
+		async dispose(): Promise<void> {
+			/* no-op */
+		},
 		supportedMimeTypes: (): string[] => [mimeType],
 		extractBytes: (_content: Uint8Array, _mimeType: string, _configJson: string): string =>
 			JSON.stringify({
@@ -80,6 +83,9 @@ function makeRenderer(name: string): object {
 			/* no-op */
 		},
 		shutdown: (): void => {
+			/* no-op */
+		},
+		async dispose(): Promise<void> {
 			/* no-op */
 		},
 		render: (_docJson: string): string => "rendered",
@@ -111,9 +117,13 @@ describe("plugins: document extractor registry", () => {
 		}).not.toThrow();
 	});
 
-	it("clear_then_list_extractor_empty: list is empty after clear", () => {
-		registerDocumentExtractor(makeExtractor("_test_ts_clear_a", "application/x-ts-clear-a"));
-		registerDocumentExtractor(makeExtractor("_test_ts_clear_b", "application/x-ts-clear-b"));
+	it("clear_then_list_extractor_empty: list is empty after clear", async () => {
+		const extA = makeExtractor("_test_ts_clear_a", "application/x-ts-clear-a") as any;
+		const extB = makeExtractor("_test_ts_clear_b", "application/x-ts-clear-b") as any;
+		registerDocumentExtractor(extA);
+		registerDocumentExtractor(extB);
+		await extA.dispose();
+		await extB.dispose();
 		clearDocumentExtractors();
 		const listed = listDocumentExtractors();
 		expect(listed).toEqual([]);
@@ -155,9 +165,13 @@ describe("plugins: renderer registry", () => {
 		}).not.toThrow();
 	});
 
-	it("clear_then_list_renderer_empty: list is empty after clear", () => {
-		registerRenderer(makeRenderer("_test_ts_renderer_clear_a"));
-		registerRenderer(makeRenderer("_test_ts_renderer_clear_b"));
+	it("clear_then_list_renderer_empty: list is empty after clear", async () => {
+		const rendA = makeRenderer("_test_ts_renderer_clear_a") as any;
+		const rendB = makeRenderer("_test_ts_renderer_clear_b") as any;
+		registerRenderer(rendA);
+		registerRenderer(rendB);
+		await rendA.dispose();
+		await rendB.dispose();
 		clearRenderers();
 		const listed = listRenderers();
 		expect(listed).toEqual([]);

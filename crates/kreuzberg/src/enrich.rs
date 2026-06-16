@@ -191,6 +191,18 @@ pub struct EnrichedResult {
 /// - [`crate::KreuzbergError::Other`] when `config.transcription` is `Some`:
 ///   the transcription backend is not yet implemented.
 pub async fn enrich(extraction: ExtractionResult, config: &EnrichmentConfig) -> crate::Result<EnrichedResult> {
+    // When none of the enrichment features are enabled, `config` is only
+    // read inside `#[cfg(...)]` branches that are all compiled out — silence
+    // the unused-variable warning so `-D warnings` builds (e.g. Live HF preset)
+    // stay green.
+    #[cfg(not(any(
+        feature = "transcription-types",
+        feature = "classification",
+        feature = "ner",
+        feature = "captioning",
+    )))]
+    let _ = config;
+
     // Transcription guard: config surface is present, backend is not.
     // Any `Some(...)` value is an explicit caller intent — surface the gap clearly.
     #[cfg(feature = "transcription-types")]

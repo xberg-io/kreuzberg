@@ -1,7 +1,14 @@
 CARGO_BUILD_ARGS = --release
 STATLIB = ./rust/target/release/libkreuzberg_r.a
 HEIF_LIBS = $(shell pkg-config --libs libheif 2>/dev/null || echo "-lheif")
-PKG_LIBS = -L./rust/target/release -lkreuzberg_r $(HEIF_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+# Add rpath so the R .so extension can locate transitively-linked ORT shared libraries
+# @loader_path (macOS) and $ORIGIN (Linux) resolve to the directory containing the .so
+RPATH_MACOS = -Wl,-rpath,@loader_path
+RPATH_LINUX = -Wl,-rpath,$$ORIGIN
+RPATH_FLAGS = $(if $(filter Darwin,$(shell uname)),$(RPATH_MACOS),$(RPATH_LINUX))
+
+PKG_LIBS = -L./rust/target/release -lkreuzberg_r $(HEIF_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(RPATH_FLAGS)
 
 all: $(SHLIB)
 

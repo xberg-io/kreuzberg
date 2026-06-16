@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -940515134;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1216565787;
 
 // Section: executor
 
@@ -6103,6 +6103,35 @@ fn wire__crate__create_year_range_from_json_impl(
         },
     )
 }
+fn wire__crate__decode_audio_to_pcm_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "decode_audio_to_pcm",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_max_bytes = <Option<i64>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::decode_audio_to_pcm(api_bytes, api_max_bytes)?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__default_model_name_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -6273,6 +6302,38 @@ fn wire__crate__embed_texts_async_impl(
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__ensure_whisper_model_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ensure_whisper_model",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model = <crate::WhisperModel>::sse_decode(&mut deserializer);
+            let api_cache_dir = <Option<String>>::sse_decode(&mut deserializer);
+            let api_allow_network = <bool>::sse_decode(&mut deserializer);
+            let api_verify_hash = <bool>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok =
+                        crate::ensure_whisper_model(api_model, api_cache_dir, api_allow_network, api_verify_hash)?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -6877,6 +6938,34 @@ fn wire__crate__list_validators_impl(
             move |context| {
                 transform_result_sse::<_, String>((move || {
                     let output_ok = crate::list_validators()?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__read_audio_tags_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "read_audio_tags",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Result::<_, ()>::Ok(crate::read_audio_tags(api_bytes))?;
                     Ok(output_ok)
                 })())
             }
@@ -7604,6 +7693,18 @@ const _: fn() = || {
         let _: Option<i64> = AudioMetadata.sample_rate_hz;
         let _: Option<i64> = AudioMetadata.channels;
         let _: Option<i64> = AudioMetadata.bitrate;
+    }
+    {
+        let AudioTags = None::<crate::AudioTags>.unwrap();
+        let _: Option<String> = AudioTags.title;
+        let _: Option<String> = AudioTags.artist;
+        let _: Option<String> = AudioTags.year;
+        let _: Option<String> = AudioTags.language;
+        let _: Option<i64> = AudioTags.duration_ms;
+        let _: Option<i64> = AudioTags.sample_rate_hz;
+        let _: Option<i64> = AudioTags.channels;
+        let _: Option<i64> = AudioTags.bitrate;
+        let _: Option<String> = AudioTags.container;
     }
     {
         let BBox = None::<crate::BBox>.unwrap();
@@ -8873,6 +8974,13 @@ const _: fn() = || {
         let _: String = PatternMatch.text;
     }
     {
+        let PcmAudio = None::<crate::PcmAudio>.unwrap();
+        let _: Vec<f64> = PcmAudio.samples;
+        let _: i64 = PcmAudio.sample_rate_hz;
+        let _: i64 = PcmAudio.channels;
+        let _: i64 = PcmAudio.duration_ms;
+    }
+    {
         let PdfAnnotation = None::<crate::PdfAnnotation>.unwrap();
         let _: crate::PdfAnnotationType = PdfAnnotation.annotation_type;
         let _: Option<String> = PdfAnnotation.content;
@@ -9305,6 +9413,15 @@ const _: fn() = || {
             let _: f64 = quality_threshold;
         }
         crate::VlmFallbackPolicy::Always => {}
+    }
+    {
+        let WhisperModelPaths = None::<crate::WhisperModelPaths>.unwrap();
+        let _: String = WhisperModelPaths.encoder;
+        let _: String = WhisperModelPaths.decoder;
+        let _: String = WhisperModelPaths.decoder_with_past;
+        let _: String = WhisperModelPaths.tokenizer;
+        let _: String = WhisperModelPaths.config;
+        let _: i64 = WhisperModelPaths.n_mels;
     }
     {
         let XlsxAppProperties = None::<crate::XlsxAppProperties>.unwrap();
@@ -10359,6 +10476,32 @@ impl SseDecode for crate::AudioMetadata {
             sample_rate_hz: var_sampleRateHz,
             channels: var_channels,
             bitrate: var_bitrate,
+        };
+    }
+}
+
+impl SseDecode for crate::AudioTags {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_title = <Option<String>>::sse_decode(deserializer);
+        let mut var_artist = <Option<String>>::sse_decode(deserializer);
+        let mut var_year = <Option<String>>::sse_decode(deserializer);
+        let mut var_language = <Option<String>>::sse_decode(deserializer);
+        let mut var_durationMs = <Option<i64>>::sse_decode(deserializer);
+        let mut var_sampleRateHz = <Option<i64>>::sse_decode(deserializer);
+        let mut var_channels = <Option<i64>>::sse_decode(deserializer);
+        let mut var_bitrate = <Option<i64>>::sse_decode(deserializer);
+        let mut var_container = <Option<String>>::sse_decode(deserializer);
+        return crate::AudioTags {
+            title: var_title,
+            artist: var_artist,
+            year: var_year,
+            language: var_language,
+            duration_ms: var_durationMs,
+            sample_rate_hz: var_sampleRateHz,
+            channels: var_channels,
+            bitrate: var_bitrate,
+            container: var_container,
         };
     }
 }
@@ -15314,6 +15457,22 @@ impl SseDecode for crate::PatternMatch {
     }
 }
 
+impl SseDecode for crate::PcmAudio {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_samples = <Vec<f64>>::sse_decode(deserializer);
+        let mut var_sampleRateHz = <i64>::sse_decode(deserializer);
+        let mut var_channels = <i64>::sse_decode(deserializer);
+        let mut var_durationMs = <i64>::sse_decode(deserializer);
+        return crate::PcmAudio {
+            samples: var_samples,
+            sample_rate_hz: var_sampleRateHz,
+            channels: var_channels,
+            duration_ms: var_durationMs,
+        };
+    }
+}
+
 impl SseDecode for crate::PdfAnnotation {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -16572,6 +16731,26 @@ impl SseDecode for crate::WhisperModel {
     }
 }
 
+impl SseDecode for crate::WhisperModelPaths {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_encoder = <String>::sse_decode(deserializer);
+        let mut var_decoder = <String>::sse_decode(deserializer);
+        let mut var_decoderWithPast = <String>::sse_decode(deserializer);
+        let mut var_tokenizer = <String>::sse_decode(deserializer);
+        let mut var_config = <String>::sse_decode(deserializer);
+        let mut var_nMels = <i64>::sse_decode(deserializer);
+        return crate::WhisperModelPaths {
+            encoder: var_encoder,
+            decoder: var_decoder,
+            decoder_with_past: var_decoderWithPast,
+            tokenizer: var_tokenizer,
+            config: var_config,
+            n_mels: var_nMels,
+        };
+    }
+}
+
 impl SseDecode for crate::XlsxAppProperties {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -16848,56 +17027,59 @@ fn pde_ffi_dispatcher_primary_impl(
         203 => wire__crate__create_xml_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
         204 => wire__crate__create_yake_params_from_json_impl(port, ptr, rust_vec_len, data_len),
         205 => wire__crate__create_year_range_from_json_impl(port, ptr, rust_vec_len, data_len),
-        206 => wire__crate__default_model_name_impl(port, ptr, rust_vec_len, data_len),
-        207 => wire__crate__detect_mime_type_impl(port, ptr, rust_vec_len, data_len),
-        208 => wire__crate__detect_mime_type_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        209 => wire__crate__detect_qr_codes_impl(port, ptr, rust_vec_len, data_len),
-        210 => wire__crate__download_model_impl(port, ptr, rust_vec_len, data_len),
-        211 => wire__crate__embed_texts_async_impl(port, ptr, rust_vec_len, data_len),
-        212 => wire__crate__extract_bytes_impl(port, ptr, rust_vec_len, data_len),
-        213 => wire__crate__extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
-        214 => wire__crate__extract_file_impl(port, ptr, rust_vec_len, data_len),
-        215 => wire__crate__extract_file_sync_impl(port, ptr, rust_vec_len, data_len),
-        216 => wire__crate__extract_keywords_impl(port, ptr, rust_vec_len, data_len),
-        217 => wire__crate__extract_region_with_vlm_impl(port, ptr, rust_vec_len, data_len),
-        218 => wire__crate__find_all_impl(port, ptr, rust_vec_len, data_len),
-        219 => wire__crate__get_embedding_preset_impl(port, ptr, rust_vec_len, data_len),
-        220 => wire__crate__get_extensions_for_mime_impl(port, ptr, rust_vec_len, data_len),
-        221 => wire__crate__get_reranker_preset_impl(port, ptr, rust_vec_len, data_len),
-        222 => wire__crate__known_models_impl(port, ptr, rust_vec_len, data_len),
-        223 => wire__crate__list_document_extractors_impl(port, ptr, rust_vec_len, data_len),
-        224 => wire__crate__list_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
-        225 => wire__crate__list_embedding_presets_impl(port, ptr, rust_vec_len, data_len),
-        226 => wire__crate__list_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
-        227 => wire__crate__list_post_processors_impl(port, ptr, rust_vec_len, data_len),
-        228 => wire__crate__list_renderers_impl(port, ptr, rust_vec_len, data_len),
-        229 => wire__crate__list_reranker_backends_impl(port, ptr, rust_vec_len, data_len),
-        230 => wire__crate__list_reranker_presets_impl(port, ptr, rust_vec_len, data_len),
-        231 => wire__crate__list_supported_formats_impl(port, ptr, rust_vec_len, data_len),
-        232 => wire__crate__list_validators_impl(port, ptr, rust_vec_len, data_len),
-        233 => wire__crate__redact_impl(port, ptr, rust_vec_len, data_len),
-        234 => wire__crate__register_builtin_impl(port, ptr, rust_vec_len, data_len),
-        235 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        236 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        237 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        238 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        239 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
-        240 => wire__crate__register_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
-        241 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
-        242 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
-        243 => wire__crate__rerank_impl(port, ptr, rust_vec_len, data_len),
-        244 => wire__crate__rerank_async_impl(port, ptr, rust_vec_len, data_len),
-        245 => wire__crate__scan_text_impl(port, ptr, rust_vec_len, data_len),
-        246 => wire__crate__summarize_impl(port, ptr, rust_vec_len, data_len),
-        247 => wire__crate__token_count_impl(port, ptr, rust_vec_len, data_len),
-        248 => wire__crate__translate_result_impl(port, ptr, rust_vec_len, data_len),
-        249 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        250 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        251 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        252 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        253 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
-        254 => wire__crate__unregister_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
-        255 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
+        206 => wire__crate__decode_audio_to_pcm_impl(port, ptr, rust_vec_len, data_len),
+        207 => wire__crate__default_model_name_impl(port, ptr, rust_vec_len, data_len),
+        208 => wire__crate__detect_mime_type_impl(port, ptr, rust_vec_len, data_len),
+        209 => wire__crate__detect_mime_type_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        210 => wire__crate__detect_qr_codes_impl(port, ptr, rust_vec_len, data_len),
+        211 => wire__crate__download_model_impl(port, ptr, rust_vec_len, data_len),
+        212 => wire__crate__embed_texts_async_impl(port, ptr, rust_vec_len, data_len),
+        213 => wire__crate__ensure_whisper_model_impl(port, ptr, rust_vec_len, data_len),
+        214 => wire__crate__extract_bytes_impl(port, ptr, rust_vec_len, data_len),
+        215 => wire__crate__extract_bytes_sync_impl(port, ptr, rust_vec_len, data_len),
+        216 => wire__crate__extract_file_impl(port, ptr, rust_vec_len, data_len),
+        217 => wire__crate__extract_file_sync_impl(port, ptr, rust_vec_len, data_len),
+        218 => wire__crate__extract_keywords_impl(port, ptr, rust_vec_len, data_len),
+        219 => wire__crate__extract_region_with_vlm_impl(port, ptr, rust_vec_len, data_len),
+        220 => wire__crate__find_all_impl(port, ptr, rust_vec_len, data_len),
+        221 => wire__crate__get_embedding_preset_impl(port, ptr, rust_vec_len, data_len),
+        222 => wire__crate__get_extensions_for_mime_impl(port, ptr, rust_vec_len, data_len),
+        223 => wire__crate__get_reranker_preset_impl(port, ptr, rust_vec_len, data_len),
+        224 => wire__crate__known_models_impl(port, ptr, rust_vec_len, data_len),
+        225 => wire__crate__list_document_extractors_impl(port, ptr, rust_vec_len, data_len),
+        226 => wire__crate__list_embedding_backends_impl(port, ptr, rust_vec_len, data_len),
+        227 => wire__crate__list_embedding_presets_impl(port, ptr, rust_vec_len, data_len),
+        228 => wire__crate__list_ocr_backends_impl(port, ptr, rust_vec_len, data_len),
+        229 => wire__crate__list_post_processors_impl(port, ptr, rust_vec_len, data_len),
+        230 => wire__crate__list_renderers_impl(port, ptr, rust_vec_len, data_len),
+        231 => wire__crate__list_reranker_backends_impl(port, ptr, rust_vec_len, data_len),
+        232 => wire__crate__list_reranker_presets_impl(port, ptr, rust_vec_len, data_len),
+        233 => wire__crate__list_supported_formats_impl(port, ptr, rust_vec_len, data_len),
+        234 => wire__crate__list_validators_impl(port, ptr, rust_vec_len, data_len),
+        235 => wire__crate__read_audio_tags_impl(port, ptr, rust_vec_len, data_len),
+        236 => wire__crate__redact_impl(port, ptr, rust_vec_len, data_len),
+        237 => wire__crate__register_builtin_impl(port, ptr, rust_vec_len, data_len),
+        238 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        239 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        240 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        241 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        242 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
+        243 => wire__crate__register_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
+        244 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
+        245 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
+        246 => wire__crate__rerank_impl(port, ptr, rust_vec_len, data_len),
+        247 => wire__crate__rerank_async_impl(port, ptr, rust_vec_len, data_len),
+        248 => wire__crate__scan_text_impl(port, ptr, rust_vec_len, data_len),
+        249 => wire__crate__summarize_impl(port, ptr, rust_vec_len, data_len),
+        250 => wire__crate__token_count_impl(port, ptr, rust_vec_len, data_len),
+        251 => wire__crate__translate_result_impl(port, ptr, rust_vec_len, data_len),
+        252 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        253 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        254 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        255 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        256 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
+        257 => wire__crate__unregister_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
+        258 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -17286,6 +17468,29 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::AudioMetadata> {
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::AudioMetadata> {}
 impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::AudioMetadata>> for crate::AudioMetadata {
     fn into_into_dart(self) -> FrbWrapper<crate::AudioMetadata> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::AudioTags> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.title.into_into_dart().into_dart(),
+            self.0.artist.into_into_dart().into_dart(),
+            self.0.year.into_into_dart().into_dart(),
+            self.0.language.into_into_dart().into_dart(),
+            self.0.duration_ms.into_into_dart().into_dart(),
+            self.0.sample_rate_hz.into_into_dart().into_dart(),
+            self.0.channels.into_into_dart().into_dart(),
+            self.0.bitrate.into_into_dart().into_dart(),
+            self.0.container.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::AudioTags> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::AudioTags>> for crate::AudioTags {
+    fn into_into_dart(self) -> FrbWrapper<crate::AudioTags> {
         self.into()
     }
 }
@@ -20326,6 +20531,24 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::PatternMatch>> for crat
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::PcmAudio> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.samples.into_into_dart().into_dart(),
+            self.0.sample_rate_hz.into_into_dart().into_dart(),
+            self.0.channels.into_into_dart().into_dart(),
+            self.0.duration_ms.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::PcmAudio> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::PcmAudio>> for crate::PcmAudio {
+    fn into_into_dart(self) -> FrbWrapper<crate::PcmAudio> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::PdfAnnotation> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -21586,6 +21809,26 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::WhisperModel>> for crat
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::WhisperModelPaths> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.encoder.into_into_dart().into_dart(),
+            self.0.decoder.into_into_dart().into_dart(),
+            self.0.decoder_with_past.into_into_dart().into_dart(),
+            self.0.tokenizer.into_into_dart().into_dart(),
+            self.0.config.into_into_dart().into_dart(),
+            self.0.n_mels.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::WhisperModelPaths> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::WhisperModelPaths>> for crate::WhisperModelPaths {
+    fn into_into_dart(self) -> FrbWrapper<crate::WhisperModelPaths> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::XlsxAppProperties> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -22112,6 +22355,21 @@ impl SseEncode for crate::AudioMetadata {
         <Option<i64>>::sse_encode(self.sample_rate_hz, serializer);
         <Option<i64>>::sse_encode(self.channels, serializer);
         <Option<i64>>::sse_encode(self.bitrate, serializer);
+    }
+}
+
+impl SseEncode for crate::AudioTags {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<String>>::sse_encode(self.title, serializer);
+        <Option<String>>::sse_encode(self.artist, serializer);
+        <Option<String>>::sse_encode(self.year, serializer);
+        <Option<String>>::sse_encode(self.language, serializer);
+        <Option<i64>>::sse_encode(self.duration_ms, serializer);
+        <Option<i64>>::sse_encode(self.sample_rate_hz, serializer);
+        <Option<i64>>::sse_encode(self.channels, serializer);
+        <Option<i64>>::sse_encode(self.bitrate, serializer);
+        <Option<String>>::sse_encode(self.container, serializer);
     }
 }
 
@@ -26000,6 +26258,16 @@ impl SseEncode for crate::PatternMatch {
     }
 }
 
+impl SseEncode for crate::PcmAudio {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<f64>>::sse_encode(self.samples, serializer);
+        <i64>::sse_encode(self.sample_rate_hz, serializer);
+        <i64>::sse_encode(self.channels, serializer);
+        <i64>::sse_encode(self.duration_ms, serializer);
+    }
+}
+
 impl SseEncode for crate::PdfAnnotation {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -26974,6 +27242,18 @@ impl SseEncode for crate::WhisperModel {
             },
             serializer,
         );
+    }
+}
+
+impl SseEncode for crate::WhisperModelPaths {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.encoder, serializer);
+        <String>::sse_encode(self.decoder, serializer);
+        <String>::sse_encode(self.decoder_with_past, serializer);
+        <String>::sse_encode(self.tokenizer, serializer);
+        <String>::sse_encode(self.config, serializer);
+        <i64>::sse_encode(self.n_mels, serializer);
     }
 }
 
