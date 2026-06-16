@@ -85,6 +85,14 @@ pub fn create_kreuzberg_adapter(
             args.push("--force-ocr".to_string());
             args.push("true".to_string());
         }
+        KreuzbergPipeline::CandleGlmOcr => {
+            args.push("--ocr".to_string());
+            args.push("true".to_string());
+            args.push("--ocr-backend".to_string());
+            args.push("candle-glm-ocr".to_string());
+            args.push("--force-ocr".to_string());
+            args.push("true".to_string());
+        }
     }
 
     // Forward-compat marker: always specify pdf-backend
