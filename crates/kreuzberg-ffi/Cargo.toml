@@ -25,7 +25,7 @@ crate-type = ["cdylib", "staticlib", "rlib"]
 
 [features]
 default = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"]
-full = ["kreuzberg/full"]
+full = []
 pdf = ["kreuzberg/pdf"]
 ocr = ["kreuzberg/ocr"]
 paddle-ocr = ["kreuzberg/paddle-ocr"]
