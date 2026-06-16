@@ -263,10 +263,7 @@ fn test_real_filled_form_pdf_widget_values_extracted() {
     let fixture_path =
         std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/interactive_form_with_values.pdf");
 
-    if !fixture_path.exists() {
-        eprintln!("SKIP: fixture not found at {}", fixture_path.display());
-        return;
-    }
+    assert!(fixture_path.exists(), "fixture not found at {}", fixture_path.display());
 
     let bytes = std::fs::read(&fixture_path).expect("read fixture");
     let config = ExtractionConfig::default();
