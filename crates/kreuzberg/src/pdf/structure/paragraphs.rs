@@ -39,6 +39,7 @@ pub(super) fn merge_continuation_paragraphs(paragraphs: &mut Vec<PdfParagraph>) 
         let should_merge = both_body && fonts_compatible && continuation_signal;
 
         if should_merge {
+            current.text.clear();
             current.lines.extend(next.lines);
         } else {
             paragraphs.push(current);
@@ -282,5 +283,38 @@ mod tests {
 
         let para_upper = make_body_paragraph("Furthermore", 12.0);
         assert!(!starts_with_lowercase_continuation(&para_upper));
+    }
+
+    #[test]
+    fn test_merge_clears_precomputed_text_on_heuristic_path() {
+        // Heuristic-path paragraphs have non-empty text. After merging, text must
+        // be cleared so assembly re-derives the full content from segments via
+        // join_line_texts_plain rather than returning only the first fragment.
+        let mut p1 = make_body_paragraph("een indicatie", 12.0);
+        p1.text = "een indicatie".to_string();
+        let mut p2 = make_body_paragraph("van toenemende merkbekendheid", 12.0);
+        p2.text = "van toenemende merkbekendheid".to_string();
+        let mut paragraphs = vec![p1, p2];
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(paragraphs.len(), 1, "lowercase continuation should merge");
+        assert!(
+            paragraphs[0].text.is_empty(),
+            "merged paragraph must clear pre-computed text so assembly joins from segments"
+        );
+        assert_eq!(paragraphs[0].lines.len(), 2, "both lines must be present after merge");
+    }
+
+    #[test]
+    fn test_merge_struct_tree_path_text_stays_empty() {
+        // Struct-tree paragraphs always have empty text — clearing is a no-op.
+        let mut paragraphs = vec![
+            make_body_paragraph("first sentence without terminator", 12.0),
+            make_body_paragraph("second continues here", 12.0),
+        ];
+        // text is already empty from make_body_paragraph
+        assert!(paragraphs[0].text.is_empty());
+        merge_continuation_paragraphs(&mut paragraphs);
+        assert_eq!(paragraphs.len(), 1);
+        assert!(paragraphs[0].text.is_empty());
     }
 }

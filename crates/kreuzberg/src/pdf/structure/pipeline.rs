@@ -294,6 +294,7 @@ fn process_single_page(
         );
         let page_segments = filter_segments_by_table_bboxes(page_segments, &table_bboxes);
         let mut paragraphs = blocks_to_paragraphs(page_segments, heading_map, &paragraph_gap_ys);
+        merge_continuation_paragraphs(&mut paragraphs);
         tracing::debug!(
             page = i,
             paragraphs = paragraphs.len(),
@@ -2461,6 +2462,87 @@ mod tests {
         // promoted.  The test verifies the fallback doesn't crash or produce bogus output.
         // (Documenting the expected behaviour: with k=1 forced, no heading is emitted.)
         let _ = title_entry; // May or may not be present depending on centroid convergence.
+    }
+
+    /// Segment with explicit font_size and baseline_y for heuristic-path tests.
+    fn seg_heuristic(text: &str, font_size: f32, baseline_y: f32) -> SegmentData {
+        SegmentData {
+            text: text.to_string(),
+            x: 10.0,
+            y: baseline_y,
+            width: 200.0,
+            height: font_size,
+            font_size,
+            is_bold: false,
+            is_italic: false,
+            is_monospace: false,
+            baseline_y,
+            assigned_role: None,
+        }
+    }
+
+    /// Heuristic path: two segments at different font sizes (triggering a split in
+    /// blocks_to_paragraphs) that are a sentence continuation should be re-joined
+    /// by merge_continuation_paragraphs.
+    #[test]
+    fn test_heuristic_path_merges_font_split_continuation() {
+        // Font difference 1.8pt > 1.5pt threshold → blocks_to_paragraphs splits.
+        // "een indicatie" (no terminator) + "van toenemende" (lowercase) → should merge.
+        // Font difference 1.8pt < 2.0pt merge threshold → merge is allowed.
+        let output = process_single_page(
+            PageInput {
+                page_index: 0,
+                struct_paragraphs: None,
+                heuristic_segments: vec![
+                    seg_heuristic("een indicatie", 12.0, 700.0),
+                    seg_heuristic("van toenemende merkbekendheid", 13.8, 680.0),
+                ],
+                page_hints: None,
+                table_bboxes: vec![],
+                hint_validations: vec![],
+                needs_classify: false,
+                paragraph_gap_ys: vec![],
+                include_headers: true,
+                include_footers: true,
+            },
+            &[],
+            None,
+        );
+        assert_eq!(
+            output.len(),
+            1,
+            "continuation paragraph split by font change should be merged on heuristic path"
+        );
+    }
+
+    /// Heuristic path: a sentence-terminating paragraph followed by an
+    /// uppercase-starting paragraph must NOT be merged.
+    #[test]
+    fn test_heuristic_path_does_not_merge_terminated_sentences() {
+        let output = process_single_page(
+            PageInput {
+                page_index: 0,
+                struct_paragraphs: None,
+                heuristic_segments: vec![
+                    seg_heuristic("The first sentence ends here.", 12.0, 700.0),
+                    seg_heuristic("New sentence starts uppercase.", 13.8, 680.0),
+                ],
+                page_hints: None,
+                table_bboxes: vec![],
+                hint_validations: vec![],
+                needs_classify: false,
+                paragraph_gap_ys: vec![],
+                include_headers: true,
+                include_footers: true,
+            },
+            &[],
+            None,
+        );
+        assert_eq!(
+            output.len(),
+            2,
+            "terminated sentence followed by uppercase must not be merged"
+        );
     }
 
     /// Verify that non-contiguous index ranges across pages are handled correctly.
