@@ -1855,7 +1855,7 @@ Configuration for the VLM captioning post-processor.
 |-------|------|---------|-------------|
 | `Llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
 | `Prompt` | `string?` | `null` | Optional custom caption prompt. `null` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `MinImageArea` | `uint` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `MinImageArea` | `uint` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -1903,7 +1903,7 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `Content` | `string` | — | The text content of this chunk. |
-| `ChunkType` | `ChunkType` | language default | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `ChunkType` | `ChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
 | `Embedding` | `List<float>?` | `null` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `Metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
@@ -1922,8 +1922,8 @@ Metadata about a chunk's position in the original document.
 | `TotalChunks` | `nuint` | — | Total number of chunks in the document. |
 | `FirstPage` | `uint?` | `null` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `LastPage` | `uint?` | `null` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `HeadingContext` | `HeadingContext?` | language default | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
-| `ImageIndices` | `List<uint>` | language default | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+| `HeadingContext` | `HeadingContext?` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `ImageIndices` | `List<uint>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
@@ -2452,12 +2452,12 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `Content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `Parent` | `uint?` | `null` | Parent node index (`null` = root-level node). |
-| `Children` | `List<uint>` | language default | Child node indices in reading order. |
-| `ContentLayer` | `ContentLayer` | language default | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
+| `Children` | `List<uint>` | `/* serde(default) */` | Child node indices in reading order. |
+| `ContentLayer` | `ContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
 | `Page` | `uint?` | `null` | Page number where this node starts (1-indexed). |
 | `PageEnd` | `uint?` | `null` | Page number where this node ends (for multi-page tables/sections). |
 | `Bbox` | `BoundingBox?` | `null` | Bounding box in document coordinates. |
-| `Annotations` | `List<TextAnnotation>` | language default | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `Annotations` | `List<TextAnnotation>` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `Attributes` | `Dictionary<string, string>?` | `null` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
@@ -3009,7 +3009,7 @@ extracted content and metadata.
 |-------|------|---------|-------------|
 | `Sheets` | `List<ExcelSheet>` | — | All sheets in the workbook |
 | `Metadata` | `Dictionary<string, string>` | — | Workbook-level metadata (author, creation date, etc.) |
-| `Revisions` | `List<DocumentRevision>?` | language default | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `null`/empty for v1 (per-cell log parsing is a follow-up). `null` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `Revisions` | `List<DocumentRevision>?` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `null`/empty for v1 (per-cell log parsing is a follow-up). `null` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
@@ -3351,7 +3351,7 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `InlineContent` | `List<InlineElement>` | — | Inline content within the block |
 | `Language` | `string?` | `null` | Language identifier for code blocks |
 | `Code` | `string?` | `null` | Raw code content for code blocks |
-| `Children` | `List<FormattedBlock>` | language default | Nested blocks for containers (blockquotes, list items, divs) |
+| `Children` | `List<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
@@ -3364,9 +3364,9 @@ Individual grid cell with position and span metadata.
 | `Content` | `string` | — | Cell text content. |
 | `Row` | `uint` | — | Zero-indexed row position. |
 | `Col` | `uint` | — | Zero-indexed column position. |
-| `RowSpan` | `uint` | language default | Number of rows this cell spans. |
-| `ColSpan` | `uint` | language default | Number of columns this cell spans. |
-| `IsHeader` | `bool` | language default | Whether this is a header cell. |
+| `RowSpan` | `uint` | `/* serde(default) */` | Number of rows this cell spans. |
+| `ColSpan` | `uint` | `/* serde(default) */` | Number of columns this cell spans. |
+| `IsHeader` | `bool` | `/* serde(default) */` | Whether this is a header cell. |
 | `Bbox` | `BoundingBox?` | `null` | Bounding box for this cell (if available). |
 
 ---
@@ -4377,7 +4377,7 @@ including recognized text and detected tables.
 | `MimeType` | `string` | — | Original MIME type of the processed image |
 | `Metadata` | `Dictionary<string, object>` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `Tables` | `List<OcrTable>` | — | Tables detected and extracted via OCR |
-| `OcrElements` | `List<OcrElement>?` | language default | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `OcrElements` | `List<OcrElement>?` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 
 ---
 
@@ -4409,7 +4409,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `Stages` | `List<OcrPipelineStage>` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `QualityThresholds` | `OcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `QualityThresholds` | `OcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -4420,12 +4420,12 @@ A single backend stage in the OCR pipeline.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `Backend` | `string` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `Priority` | `uint` | language default | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `Language` | `string?` | language default | Language override for this stage (None = use parent OcrConfig.language). |
-| `TesseractConfig` | `TesseractConfig?` | language default | Tesseract-specific config override for this stage. |
-| `PaddleOcrConfig` | `object?` | language default | PaddleOCR-specific config for this stage. |
-| `VlmConfig` | `LlmConfig?` | language default | VLM config override for this pipeline stage. |
-| `BackendOptions` | `object?` | language default | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `Priority` | `uint` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `Language` | `string?` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `TesseractConfig` | `TesseractConfig?` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
+| `PaddleOcrConfig` | `object?` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
+| `VlmConfig` | `LlmConfig?` | `/* serde(default) */` | VLM config override for this pipeline stage. |
+| `BackendOptions` | `object?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -4497,7 +4497,7 @@ Represents a table structure recognized during OCR processing.
 | `Cells` | `List<List<string>>` | — | Table cells as a 2D vector (rows × columns) |
 | `Markdown` | `string` | — | Markdown representation of the table |
 | `PageNumber` | `uint` | — | Page number where the table was found (1-indexed) |
-| `BoundingBox` | `OcrTableBoundingBox?` | language default | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `BoundingBox` | `OcrTableBoundingBox?` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
@@ -4870,7 +4870,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `PromptTemplate` | `string?` | `null` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `null` lets the backend pick a sensible default. |
 | `Labels` | `List<string>` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `MultiLabel` | `bool` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `MultiLabel` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `Llm` | `LlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -4933,8 +4933,8 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `PageNumber` | `uint` | — | Page number (1-indexed) |
 | `Content` | `string` | — | Text content for this page |
-| `Tables` | `List<Table>` | language default | Tables found on this page (uses Arc for memory efficiency) Serializes as List<Table> for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
-| `ImageIndices` | `List<uint>` | language default | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `Tables` | `List<Table>` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as List<Table> for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
+| `ImageIndices` | `List<uint>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
 | `Hierarchy` | `PageHierarchy?` | `null` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `IsBlank` | `bool?` | `null` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
 | `LayoutRegions` | `List<LayoutRegion>?` | `null` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
@@ -4954,7 +4954,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `BlockCount` | `uint` | — | Number of hierarchy blocks on this page |
-| `Blocks` | `List<HierarchicalBlock>` | language default | Hierarchical blocks with heading levels |
+| `Blocks` | `List<HierarchicalBlock>` | `/* serde(default) */` | Hierarchical blocks with heading levels |
 
 ---
 
@@ -4973,7 +4973,7 @@ and visibility state (for presentations).
 | `TableCount` | `uint?` | `null` | Number of tables on this page |
 | `Hidden` | `bool?` | `null` | Whether this page is hidden (e.g., in presentations) |
 | `IsBlank` | `bool?` | `null` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
-| `HasVectorGraphics` | `bool` | language default | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `null` for other document types. |
+| `HasVectorGraphics` | `bool` | `/* serde(default) */` | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `null` for other document types. |
 
 ---
 
@@ -5525,8 +5525,8 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `PageStructure` | `PageStructure?` | `null` | Slide structure with boundaries (when page tracking is enabled) |
 | `PageContents` | `List<PageContent>?` | `null` | Per-slide content (when page tracking is enabled) |
 | `Document` | `DocumentStructure?` | `null` | Structured document representation |
-| `OfficeMetadata` | `Dictionary<string, string>` | language default | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `Revisions` | `List<DocumentRevision>?` | language default | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `null` when no comment XML parts exist. |
+| `OfficeMetadata` | `Dictionary<string, string>` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
+| `Revisions` | `List<DocumentRevision>?` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `null` when no comment XML parts exist. |
 
 ---
 
@@ -5727,7 +5727,7 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 |-------|------|---------|-------------|
 | `Label` | `string` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `Pattern` | `string` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
-| `CaseSensitive` | `bool` | language default | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+| `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
 ##### Methods
 
@@ -5786,7 +5786,7 @@ metacharacters themselves). Case-insensitive by default — set
 |-------|------|---------|-------------|
 | `Label` | `string` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `Value` | `string` | — | Literal value to match. Regex metacharacters are escaped automatically. |
-| `CaseSensitive` | `bool` | language default | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+| `CaseSensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
 ##### Methods
 
@@ -6055,7 +6055,7 @@ Since v5.0.
 | `Name` | `string` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `ModelRepo` | `string` | — | HuggingFace repository name for the model. |
 | `ModelFile` | `string` | — | Path to the ONNX model file within the repo. |
-| `AdditionalFiles` | `List<string>` | language default | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `AdditionalFiles` | `List<string>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `MaxLength` | `nuint` | — | Maximum token sequence length the model supports. |
 | `Description` | `string` | — | Human-readable description of the preset's intended use case. |
 
@@ -6298,10 +6298,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `Schema` | `object` | — | JSON Schema defining the desired output structure. |
-| `SchemaName` | `string` | language default | Schema name passed to the LLM's structured output mode. |
-| `SchemaDescription` | `string?` | language default | Optional schema description for the LLM. |
-| `Strict` | `bool` | language default | Enable strict mode — output must exactly match the schema. |
-| `Prompt` | `string?` | language default | Custom Jinja2 extraction prompt template. When `null`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `SchemaName` | `string` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
+| `SchemaDescription` | `string?` | `/* serde(default) */` | Optional schema description for the LLM. |
+| `Strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
+| `Prompt` | `string?` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `null`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `Llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -6698,7 +6698,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `TargetLang` | `string` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `SourceLang` | `string?` | `null` | Optional explicit source language. `null` asks the backend to auto-detect. |
-| `PreserveMarkup` | `bool` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `PreserveMarkup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `Llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -7008,7 +7008,7 @@ Year range for bibliographic metadata.
 |-------|------|---------|-------------|
 | `Min` | `uint?` | `null` | Earliest (minimum) year in the range. |
 | `Max` | `uint?` | `null` | Latest (maximum) year in the range. |
-| `Years` | `List<uint>` | language default | All individual years present in the collection. |
+| `Years` | `List<uint>` | `/* serde(default) */` | All individual years present in the collection. |
 
 ---
 

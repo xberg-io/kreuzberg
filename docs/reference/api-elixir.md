@@ -37,7 +37,7 @@ def extract_bytes(content, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = extract_bytes(<<100, 97, 116, 97>>, "value", %{})
+{:ok, result} = extract_bytes(<<100, 97, 116, 97>>, "value", %{{}})
 ```
 
 **Parameters:**
@@ -86,7 +86,7 @@ def extract_file(path, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = extract_file("value", "value", %{})
+{:ok, result} = extract_file("value", "value", %{{}})
 ```
 
 **Parameters:**
@@ -126,7 +126,7 @@ def extract_file_sync(path, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = extract_file_sync("value", "value", %{})
+{:ok, result} = extract_file_sync("value", "value", %{{}})
 ```
 
 **Parameters:**
@@ -163,7 +163,7 @@ def extract_bytes_sync(content, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = extract_bytes_sync(<<100, 97, 116, 97>>, "value", %{})
+{:ok, result} = extract_bytes_sync(<<100, 97, 116, 97>>, "value", %{{}})
 ```
 
 **Parameters:**
@@ -197,7 +197,7 @@ def batch_extract_files_sync(items, config)
 **Example:**
 
 ```elixir
-{:ok, result} = batch_extract_files_sync([], %{})
+{:ok, result} = batch_extract_files_sync([], %{{}})
 ```
 
 **Parameters:**
@@ -232,7 +232,7 @@ def batch_extract_bytes_sync(items, config)
 **Example:**
 
 ```elixir
-{:ok, result} = batch_extract_bytes_sync([], %{})
+{:ok, result} = batch_extract_bytes_sync([], %{{}})
 ```
 
 **Parameters:**
@@ -289,7 +289,7 @@ def batch_extract_files(items, config)
 **Example:**
 
 ```elixir
-{:ok, result} = batch_extract_files([], %{})
+{:ok, result} = batch_extract_files([], %{{}})
 ```
 
 **Parameters:**
@@ -340,7 +340,7 @@ def batch_extract_bytes(items, config)
 **Example:**
 
 ```elixir
-{:ok, result} = batch_extract_bytes([], %{})
+{:ok, result} = batch_extract_bytes([], %{{}})
 ```
 
 **Parameters:**
@@ -949,7 +949,7 @@ def classify_pages(result, config)
 **Example:**
 
 ```elixir
-:ok = classify_pages(%{}, %{})
+:ok = classify_pages(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -988,7 +988,7 @@ def classify_text(text, config)
 **Example:**
 
 ```elixir
-{:ok, result} = classify_text("value", %{})
+{:ok, result} = classify_text("value", %{{}})
 ```
 
 **Parameters:**
@@ -1033,7 +1033,7 @@ def classify_document(pages, config)
 **Example:**
 
 ```elixir
-{:ok, result} = classify_document([], %{})
+{:ok, result} = classify_document([], %{{}})
 ```
 
 **Parameters:**
@@ -1139,7 +1139,7 @@ def redact(result, config)
 **Example:**
 
 ```elixir
-:ok = redact(%{}, %{})
+:ok = redact(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -1296,7 +1296,7 @@ def translate_result(result, config)
 **Example:**
 
 ```elixir
-:ok = translate_result(%{}, %{})
+:ok = translate_result(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -1329,7 +1329,7 @@ def compare(a, b, opts)
 **Example:**
 
 ```elixir
-{:ok, result} = compare(%{}, %{}, %{})
+{:ok, result} = compare(%{{}}, %{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -1372,7 +1372,7 @@ def extract_region_with_vlm(image_bytes, image_mime, region_kind, llm_config, cu
 **Example:**
 
 ```elixir
-{:ok, result} = extract_region_with_vlm(<<100, 97, 116, 97>>, "value", %{}, %{}, "value")
+{:ok, result} = extract_region_with_vlm(<<100, 97, 116, 97>>, "value", %{{}}, %{{}}, "value")
 ```
 
 **Parameters:**
@@ -1419,7 +1419,7 @@ def extract_keywords(text, config)
 **Example:**
 
 ```elixir
-{:ok, result} = extract_keywords("value", %{})
+{:ok, result} = extract_keywords("value", %{{}})
 ```
 
 **Parameters:**
@@ -1503,7 +1503,7 @@ def caption_image(image_bytes, llm_config, custom_prompt)
 **Example:**
 
 ```elixir
-{:ok, result} = caption_image(<<100, 97, 116, 97>>, %{}, "value")
+{:ok, result} = caption_image(<<100, 97, 116, 97>>, %{{}}, "value")
 ```
 
 **Parameters:**
@@ -1545,7 +1545,7 @@ def caption_image_file(path, llm_config, custom_prompt)
 **Example:**
 
 ```elixir
-{:ok, result} = caption_image_file("value", %{}, "value")
+{:ok, result} = caption_image_file("value", %{{}}, "value")
 ```
 
 **Parameters:**
@@ -1607,7 +1607,7 @@ def embed_texts_async(texts, config)
 **Example:**
 
 ```elixir
-{:ok, result} = embed_texts_async([], %{})
+{:ok, result} = embed_texts_async([], %{{}})
 ```
 
 **Parameters:**
@@ -1701,7 +1701,7 @@ def rerank(query, documents, config)
 **Example:**
 
 ```elixir
-{:ok, result} = rerank("value", [], %{})
+{:ok, result} = rerank("value", [], %{{}})
 ```
 
 **Parameters:**
@@ -1734,7 +1734,7 @@ def rerank_async(query, documents, config)
 **Example:**
 
 ```elixir
-{:ok, result} = rerank_async("value", [], %{})
+{:ok, result} = rerank_async("value", [], %{{}})
 ```
 
 **Parameters:**
@@ -1966,7 +1966,7 @@ Configuration for the VLM captioning post-processor.
 |-------|------|---------|-------------|
 | `llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `String.t() \| nil` | `nil` | Optional custom caption prompt. `nil` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `min_image_area` | `integer()` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `min_image_area` | `integer()` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -2014,7 +2014,7 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | The text content of this chunk. |
-| `chunk_type` | `ChunkType` | language default | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `chunk_type` | `ChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
 | `embedding` | `list(float()) \| nil` | `nil` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
@@ -2033,8 +2033,8 @@ Metadata about a chunk's position in the original document.
 | `total_chunks` | `integer()` | — | Total number of chunks in the document. |
 | `first_page` | `integer() \| nil` | `nil` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `integer() \| nil` | `nil` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `HeadingContext \| nil` | language default | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
-| `image_indices` | `list(integer())` | language default | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+| `heading_context` | `HeadingContext \| nil` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `image_indices` | `list(integer())` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
@@ -2404,7 +2404,7 @@ def extract_bytes(content, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.extract_bytes(<<100, 97, 116, 97>>, "value", %{})
+{:ok, result} = instance.extract_bytes(<<100, 97, 116, 97>>, "value", %{{}})
 ```
 
 **Parameters:**
@@ -2443,7 +2443,7 @@ def extract_file(path, mime_type, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.extract_file("value", "value", %{})
+{:ok, result} = instance.extract_file("value", "value", %{{}})
 ```
 
 **Parameters:**
@@ -2563,12 +2563,12 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `parent` | `integer() \| nil` | `nil` | Parent node index (`nil` = root-level node). |
-| `children` | `list(integer())` | language default | Child node indices in reading order. |
-| `content_layer` | `ContentLayer` | language default | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
+| `children` | `list(integer())` | `/* serde(default) */` | Child node indices in reading order. |
+| `content_layer` | `ContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
 | `page` | `integer() \| nil` | `nil` | Page number where this node starts (1-indexed). |
 | `page_end` | `integer() \| nil` | `nil` | Page number where this node ends (for multi-page tables/sections). |
 | `bbox` | `BoundingBox \| nil` | `nil` | Bounding box in document coordinates. |
-| `annotations` | `list(TextAnnotation)` | language default | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `annotations` | `list(TextAnnotation)` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `attributes` | `map() \| nil` | `nil` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
@@ -3120,7 +3120,7 @@ extracted content and metadata.
 |-------|------|---------|-------------|
 | `sheets` | `list(ExcelSheet)` | — | All sheets in the workbook |
 | `metadata` | `map()` | — | Workbook-level metadata (author, creation date, etc.) |
-| `revisions` | `list(DocumentRevision) \| nil` | language default | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `nil`/empty for v1 (per-cell log parsing is a follow-up). `nil` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `revisions` | `list(DocumentRevision) \| nil` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `nil`/empty for v1 (per-cell log parsing is a follow-up). `nil` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
@@ -3367,7 +3367,7 @@ def from_ocr(ocr)
 **Example:**
 
 ```elixir
-{:ok, result} = ExtractionResult.from_ocr(%{})
+{:ok, result} = ExtractionResult.from_ocr(%{{}})
 ```
 
 **Parameters:**
@@ -3462,7 +3462,7 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `inline_content` | `list(InlineElement)` | — | Inline content within the block |
 | `language` | `String.t() \| nil` | `nil` | Language identifier for code blocks |
 | `code` | `String.t() \| nil` | `nil` | Raw code content for code blocks |
-| `children` | `list(FormattedBlock)` | language default | Nested blocks for containers (blockquotes, list items, divs) |
+| `children` | `list(FormattedBlock)` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
@@ -3475,9 +3475,9 @@ Individual grid cell with position and span metadata.
 | `content` | `String.t()` | — | Cell text content. |
 | `row` | `integer()` | — | Zero-indexed row position. |
 | `col` | `integer()` | — | Zero-indexed column position. |
-| `row_span` | `integer()` | language default | Number of rows this cell spans. |
-| `col_span` | `integer()` | language default | Number of columns this cell spans. |
-| `is_header` | `boolean()` | language default | Whether this is a header cell. |
+| `row_span` | `integer()` | `/* serde(default) */` | Number of rows this cell spans. |
+| `col_span` | `integer()` | `/* serde(default) */` | Number of columns this cell spans. |
+| `is_header` | `boolean()` | `/* serde(default) */` | Whether this is a header cell. |
 | `bbox` | `BoundingBox \| nil` | `nil` | Bounding box for this cell (if available). |
 
 ---
@@ -3962,7 +3962,7 @@ def new(config)
 **Example:**
 
 ```elixir
-{:ok, result} = LlmBackend.new(%{})
+{:ok, result} = LlmBackend.new(%{{}})
 ```
 
 **Parameters:**
@@ -4194,7 +4194,7 @@ def process_image(image_bytes, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.process_image(<<100, 97, 116, 97>>, %{})
+{:ok, result} = instance.process_image(<<100, 97, 116, 97>>, %{{}})
 ```
 
 **Parameters:**
@@ -4228,7 +4228,7 @@ def process_image_file(path, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.process_image_file("value", %{})
+{:ok, result} = instance.process_image_file("value", %{{}})
 ```
 
 **Parameters:**
@@ -4367,7 +4367,7 @@ def process_document(path, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.process_document("value", %{})
+{:ok, result} = instance.process_document("value", %{{}})
 ```
 
 **Parameters:**
@@ -4488,7 +4488,7 @@ including recognized text and detected tables.
 | `mime_type` | `String.t()` | — | Original MIME type of the processed image |
 | `metadata` | `map()` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `list(OcrTable)` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `list(OcrElement) \| nil` | language default | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `ocr_elements` | `list(OcrElement) \| nil` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 
 ---
 
@@ -4520,7 +4520,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `list(OcrPipelineStage)` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `OcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `quality_thresholds` | `OcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -4531,12 +4531,12 @@ A single backend stage in the OCR pipeline.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `backend` | `String.t()` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `priority` | `integer()` | language default | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `String.t() \| nil` | language default | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `TesseractConfig \| nil` | language default | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `term() \| nil` | language default | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `LlmConfig \| nil` | language default | VLM config override for this pipeline stage. |
-| `backend_options` | `term() \| nil` | language default | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `priority` | `integer()` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `language` | `String.t() \| nil` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `TesseractConfig \| nil` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `term() \| nil` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `LlmConfig \| nil` | `/* serde(default) */` | VLM config override for this pipeline stage. |
+| `backend_options` | `term() \| nil` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -4608,7 +4608,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `list(list(String.t()))` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `String.t()` | — | Markdown representation of the table |
 | `page_number` | `integer()` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `OcrTableBoundingBox \| nil` | language default | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `OcrTableBoundingBox \| nil` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
@@ -4981,7 +4981,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `prompt_template` | `String.t() \| nil` | `nil` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `nil` lets the backend pick a sensible default. |
 | `labels` | `list(String.t())` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `multi_label` | `boolean()` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `multi_label` | `boolean()` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `llm` | `LlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -5044,8 +5044,8 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `page_number` | `integer()` | — | Page number (1-indexed) |
 | `content` | `String.t()` | — | Text content for this page |
-| `tables` | `list(Table)` | language default | Tables found on this page (uses Arc for memory efficiency) Serializes as list(Table) for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
-| `image_indices` | `list(integer())` | language default | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `tables` | `list(Table)` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as list(Table) for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
+| `image_indices` | `list(integer())` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
 | `hierarchy` | `PageHierarchy \| nil` | `nil` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `is_blank` | `boolean() \| nil` | `nil` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
 | `layout_regions` | `list(LayoutRegion) \| nil` | `nil` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
@@ -5065,7 +5065,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `integer()` | — | Number of hierarchy blocks on this page |
-| `blocks` | `list(HierarchicalBlock)` | language default | Hierarchical blocks with heading levels |
+| `blocks` | `list(HierarchicalBlock)` | `/* serde(default) */` | Hierarchical blocks with heading levels |
 
 ---
 
@@ -5084,7 +5084,7 @@ and visibility state (for presentations).
 | `table_count` | `integer() \| nil` | `nil` | Number of tables on this page |
 | `hidden` | `boolean() \| nil` | `nil` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `boolean() \| nil` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
-| `has_vector_graphics` | `boolean()` | language default | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
+| `has_vector_graphics` | `boolean()` | `/* serde(default) */` | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
 
 ---
 
@@ -5437,7 +5437,7 @@ def process(result, config)
 **Example:**
 
 ```elixir
-:ok = instance.process(%{}, %{})
+:ok = instance.process(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -5495,7 +5495,7 @@ def should_process(result, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.should_process(%{}, %{})
+{:ok, result} = instance.should_process(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -5526,7 +5526,7 @@ def estimated_duration_ms(result)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.estimated_duration_ms(%{})
+{:ok, result} = instance.estimated_duration_ms(%{{}})
 ```
 
 **Parameters:**
@@ -5636,8 +5636,8 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `page_structure` | `PageStructure \| nil` | `nil` | Slide structure with boundaries (when page tracking is enabled) |
 | `page_contents` | `list(PageContent) \| nil` | `nil` | Per-slide content (when page tracking is enabled) |
 | `document` | `DocumentStructure \| nil` | `nil` | Structured document representation |
-| `office_metadata` | `map()` | language default | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `revisions` | `list(DocumentRevision) \| nil` | language default | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `nil` when no comment XML parts exist. |
+| `office_metadata` | `map()` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
+| `revisions` | `list(DocumentRevision) \| nil` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `nil` when no comment XML parts exist. |
 
 ---
 
@@ -5838,7 +5838,7 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 |-------|------|---------|-------------|
 | `label` | `String.t()` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `pattern` | `String.t()` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
-| `case_sensitive` | `boolean()` | language default | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+| `case_sensitive` | `boolean()` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
 ##### Functions
 
@@ -5897,7 +5897,7 @@ metacharacters themselves). Case-insensitive by default — set
 |-------|------|---------|-------------|
 | `label` | `String.t()` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `value` | `String.t()` | — | Literal value to match. Regex metacharacters are escaped automatically. |
-| `case_sensitive` | `boolean()` | language default | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+| `case_sensitive` | `boolean()` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
 ##### Functions
 
@@ -5993,7 +5993,7 @@ def render(doc)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.render(%{})
+{:ok, result} = instance.render(%{{}})
 ```
 
 **Parameters:**
@@ -6166,7 +6166,7 @@ Since v5.0.
 | `name` | `String.t()` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `String.t()` | — | HuggingFace repository name for the model. |
 | `model_file` | `String.t()` | — | Path to the ONNX model file within the repo. |
-| `additional_files` | `list(String.t())` | language default | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `additional_files` | `list(String.t())` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `integer()` | — | Maximum token sequence length the model supports. |
 | `description` | `String.t()` | — | Human-readable description of the preset's intended use case. |
 
@@ -6409,10 +6409,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `schema` | `term()` | — | JSON Schema defining the desired output structure. |
-| `schema_name` | `String.t()` | language default | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `String.t() \| nil` | language default | Optional schema description for the LLM. |
-| `strict` | `boolean()` | language default | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `String.t() \| nil` | language default | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `schema_name` | `String.t()` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `String.t() \| nil` | `/* serde(default) */` | Optional schema description for the LLM. |
+| `strict` | `boolean()` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `String.t() \| nil` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -6809,7 +6809,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `target_lang` | `String.t()` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `String.t() \| nil` | `nil` | Optional explicit source language. `nil` asks the backend to auto-detect. |
-| `preserve_markup` | `boolean()` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `preserve_markup` | `boolean()` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -6960,7 +6960,7 @@ def validate(result, config)
 **Example:**
 
 ```elixir
-:ok = instance.validate(%{}, %{})
+:ok = instance.validate(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -6994,7 +6994,7 @@ def should_validate(result, config)
 **Example:**
 
 ```elixir
-{:ok, result} = instance.should_validate(%{}, %{})
+{:ok, result} = instance.should_validate(%{{}}, %{{}})
 ```
 
 **Parameters:**
@@ -7119,7 +7119,7 @@ Year range for bibliographic metadata.
 |-------|------|---------|-------------|
 | `min` | `integer() \| nil` | `nil` | Earliest (minimum) year in the range. |
 | `max` | `integer() \| nil` | `nil` | Latest (maximum) year in the range. |
-| `years` | `list(integer())` | language default | All individual years present in the collection. |
+| `years` | `list(integer())` | `/* serde(default) */` | All individual years present in the collection. |
 
 ---
 

@@ -36,7 +36,7 @@ KreuzbergExtractionResult* kreuzberg_extract_bytes(const uint8_t* content, const
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_extract_bytes((const uint8_t *)"data", "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_extract_bytes((const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -84,7 +84,7 @@ KreuzbergExtractionResult* kreuzberg_extract_file(const char* path, const char* 
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_extract_file("value", "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_extract_file("value", "value", NULL);
 ```
 
 **Parameters:**
@@ -123,7 +123,7 @@ KreuzbergExtractionResult* kreuzberg_extract_file_sync(const char* path, const c
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_extract_file_sync("value", "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_extract_file_sync("value", "value", NULL);
 ```
 
 **Parameters:**
@@ -159,7 +159,7 @@ KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, 
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -1231,7 +1231,7 @@ KreuzbergExtractionDiff* kreuzberg_compare(KreuzbergExtractionResult a, Kreuzber
 **Example:**
 
 ```c
-KreuzbergExtractionDiff result = kreuzberg_compare(NULL, NULL, NULL);
+KreuzbergExtractionDiff *result = kreuzberg_compare(NULL, NULL, NULL);
 ```
 
 **Parameters:**
@@ -1855,7 +1855,7 @@ Configuration for the VLM captioning post-processor.
 |-------|------|---------|-------------|
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `const char**` | `NULL` | Optional custom caption prompt. `NULL` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `min_image_area` | `uint32_t` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `min_image_area` | `uint32_t` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -1903,7 +1903,7 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `const char*` | — | The text content of this chunk. |
-| `chunk_type` | `KreuzbergChunkType` | language default | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `chunk_type` | `KreuzbergChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
 | `embedding` | `float**` | `NULL` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `KreuzbergChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
@@ -1922,8 +1922,8 @@ Metadata about a chunk's position in the original document.
 | `total_chunks` | `uintptr_t` | — | Total number of chunks in the document. |
 | `first_page` | `uint32_t*` | `NULL` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `uint32_t*` | `NULL` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `KreuzbergHeadingContext*` | language default | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
-| `image_indices` | `uint32_t*` | language default | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+| `heading_context` | `KreuzbergHeadingContext*` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `image_indices` | `uint32_t*` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
@@ -1961,7 +1961,7 @@ KreuzbergChunkingConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergChunkingConfig result = kreuzberg_default();
+KreuzbergChunkingConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergChunkingConfig`
@@ -2036,7 +2036,7 @@ KreuzbergContentFilterConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergContentFilterConfig result = kreuzberg_default();
+KreuzbergContentFilterConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergContentFilterConfig`
@@ -2178,7 +2178,7 @@ KreuzbergDiffOptions kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergDiffOptions result = kreuzberg_default();
+KreuzbergDiffOptions *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergDiffOptions`
@@ -2293,7 +2293,7 @@ KreuzbergInternalDocument kreuzberg_extract_bytes(const uint8_t* content, const 
 **Example:**
 
 ```c
-KreuzbergInternalDocument result = kreuzberg_extract_bytes(instance, (const uint8_t *)"data", "value", NULL);
+KreuzbergInternalDocument *result = kreuzberg_extract_bytes(instance, (const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -2332,7 +2332,7 @@ KreuzbergInternalDocument kreuzberg_extract_file(const char* path, const char* m
 **Example:**
 
 ```c
-KreuzbergInternalDocument result = kreuzberg_extract_file(instance, "value", "value", NULL);
+KreuzbergInternalDocument *result = kreuzberg_extract_file(instance, "value", "value", NULL);
 ```
 
 **Parameters:**
@@ -2452,12 +2452,12 @@ for tree structure, and metadata like page number, bounding box, and content lay
 |-------|------|---------|-------------|
 | `content` | `KreuzbergNodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `parent` | `uint32_t*` | `NULL` | Parent node index (`NULL` = root-level node). |
-| `children` | `uint32_t*` | language default | Child node indices in reading order. |
-| `content_layer` | `KreuzbergContentLayer` | language default | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
+| `children` | `uint32_t*` | `/* serde(default) */` | Child node indices in reading order. |
+| `content_layer` | `KreuzbergContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
 | `page` | `uint32_t*` | `NULL` | Page number where this node starts (1-indexed). |
 | `page_end` | `uint32_t*` | `NULL` | Page number where this node ends (for multi-page tables/sections). |
 | `bbox` | `KreuzbergBoundingBox*` | `NULL` | Bounding box in document coordinates. |
-| `annotations` | `KreuzbergTextAnnotation*` | language default | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `annotations` | `KreuzbergTextAnnotation*` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `attributes` | `void**` | `NULL` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
@@ -2566,7 +2566,7 @@ KreuzbergDocumentStructure kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergDocumentStructure result = kreuzberg_default();
+KreuzbergDocumentStructure *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergDocumentStructure`
@@ -2896,7 +2896,7 @@ KreuzbergEmbeddingConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergEmbeddingConfig result = kreuzberg_default();
+KreuzbergEmbeddingConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergEmbeddingConfig`
@@ -3009,7 +3009,7 @@ extracted content and metadata.
 |-------|------|---------|-------------|
 | `sheets` | `KreuzbergExcelSheet*` | — | All sheets in the workbook |
 | `metadata` | `void*` | — | Workbook-level metadata (author, creation date, etc.) |
-| `revisions` | `KreuzbergDocumentRevision**` | language default | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `NULL`/empty for v1 (per-cell log parsing is a follow-up). `NULL` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `revisions` | `KreuzbergDocumentRevision**` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `NULL`/empty for v1 (per-cell log parsing is a follow-up). `NULL` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
@@ -3124,7 +3124,7 @@ KreuzbergExtractionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergExtractionConfig result = kreuzberg_default();
+KreuzbergExtractionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergExtractionConfig`
@@ -3256,7 +3256,7 @@ KreuzbergExtractionResult kreuzberg_from_ocr(KreuzbergOcrExtractionResult ocr);
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_from_ocr((KreuzbergOcrExtractionResult){0});
+KreuzbergExtractionResult *result = kreuzberg_from_ocr((KreuzbergOcrExtractionResult){0});
 ```
 
 **Parameters:**
@@ -3351,7 +3351,7 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `inline_content` | `KreuzbergInlineElement*` | — | Inline content within the block |
 | `language` | `const char**` | `NULL` | Language identifier for code blocks |
 | `code` | `const char**` | `NULL` | Raw code content for code blocks |
-| `children` | `KreuzbergFormattedBlock*` | language default | Nested blocks for containers (blockquotes, list items, divs) |
+| `children` | `KreuzbergFormattedBlock*` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
@@ -3364,9 +3364,9 @@ Individual grid cell with position and span metadata.
 | `content` | `const char*` | — | Cell text content. |
 | `row` | `uint32_t` | — | Zero-indexed row position. |
 | `col` | `uint32_t` | — | Zero-indexed column position. |
-| `row_span` | `uint32_t` | language default | Number of rows this cell spans. |
-| `col_span` | `uint32_t` | language default | Number of columns this cell spans. |
-| `is_header` | `bool` | language default | Whether this is a header cell. |
+| `row_span` | `uint32_t` | `/* serde(default) */` | Number of rows this cell spans. |
+| `col_span` | `uint32_t` | `/* serde(default) */` | Number of columns this cell spans. |
+| `is_header` | `bool` | `/* serde(default) */` | Whether this is a header cell. |
 | `bbox` | `KreuzbergBoundingBox*` | `NULL` | Bounding box for this cell (if available). |
 
 ---
@@ -3451,7 +3451,7 @@ KreuzbergHierarchyConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergHierarchyConfig result = kreuzberg_default();
+KreuzbergHierarchyConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergHierarchyConfig`
@@ -3515,7 +3515,7 @@ KreuzbergHtmlOutputConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergHtmlOutputConfig result = kreuzberg_default();
+KreuzbergHtmlOutputConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergHtmlOutputConfig`
@@ -3557,7 +3557,7 @@ KreuzbergImageExtractionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergImageExtractionConfig result = kreuzberg_default();
+KreuzbergImageExtractionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergImageExtractionConfig`
@@ -3623,7 +3623,7 @@ KreuzbergImagePreprocessingConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergImagePreprocessingConfig result = kreuzberg_default();
+KreuzbergImagePreprocessingConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergImagePreprocessingConfig`
@@ -3717,7 +3717,7 @@ KreuzbergKeywordConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergKeywordConfig result = kreuzberg_default();
+KreuzbergKeywordConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergKeywordConfig`
@@ -3747,7 +3747,7 @@ KreuzbergLanguageDetectionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergLanguageDetectionConfig result = kreuzberg_default();
+KreuzbergLanguageDetectionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergLanguageDetectionConfig`
@@ -3794,7 +3794,7 @@ KreuzbergLayoutDetectionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergLayoutDetectionConfig result = kreuzberg_default();
+KreuzbergLayoutDetectionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergLayoutDetectionConfig`
@@ -3851,7 +3851,7 @@ KreuzbergLlmBackend kreuzberg_new(KreuzbergLlmConfig config);
 **Example:**
 
 ```c
-KreuzbergLlmBackend result = kreuzberg_new((KreuzbergLlmConfig){0});
+KreuzbergLlmBackend *result = kreuzberg_new((KreuzbergLlmConfig){0});
 ```
 
 **Parameters:**
@@ -4083,7 +4083,7 @@ KreuzbergExtractionResult kreuzberg_process_image(const uint8_t* image_bytes, Kr
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_process_image(instance, (const uint8_t *)"data", NULL);
+KreuzbergExtractionResult *result = kreuzberg_process_image(instance, (const uint8_t *)"data", NULL);
 ```
 
 **Parameters:**
@@ -4117,7 +4117,7 @@ KreuzbergExtractionResult kreuzberg_process_image_file(const char* path, Kreuzbe
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_process_image_file(instance, "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_process_image_file(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -4176,7 +4176,7 @@ KreuzbergOcrBackendType kreuzberg_backend_type();
 **Example:**
 
 ```c
-KreuzbergOcrBackendType result = kreuzberg_backend_type(instance);
+KreuzbergOcrBackendType *result = kreuzberg_backend_type(instance);
 ```
 
 **Returns:** `KreuzbergOcrBackendType`
@@ -4256,7 +4256,7 @@ KreuzbergExtractionResult kreuzberg_process_document(const char* path, Kreuzberg
 **Example:**
 
 ```c
-KreuzbergExtractionResult result = kreuzberg_process_document(instance, "value", NULL);
+KreuzbergExtractionResult *result = kreuzberg_process_document(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -4322,7 +4322,7 @@ KreuzbergOcrConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergOcrConfig result = kreuzberg_default();
+KreuzbergOcrConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergOcrConfig`
@@ -4377,7 +4377,7 @@ including recognized text and detected tables.
 | `mime_type` | `const char*` | — | Original MIME type of the processed image |
 | `metadata` | `void*` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `KreuzbergOcrTable*` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `KreuzbergOcrElement**` | language default | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `ocr_elements` | `KreuzbergOcrElement**` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 
 ---
 
@@ -4409,7 +4409,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `KreuzbergOcrPipelineStage*` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `KreuzbergOcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `quality_thresholds` | `KreuzbergOcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -4420,12 +4420,12 @@ A single backend stage in the OCR pipeline.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `backend` | `const char*` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `priority` | `uint32_t` | language default | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `const char**` | language default | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `KreuzbergTesseractConfig*` | language default | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `void**` | language default | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `KreuzbergLlmConfig*` | language default | VLM config override for this pipeline stage. |
-| `backend_options` | `void**` | language default | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `priority` | `uint32_t` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `language` | `const char**` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `KreuzbergTesseractConfig*` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `void**` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `KreuzbergLlmConfig*` | `/* serde(default) */` | VLM config override for this pipeline stage. |
+| `backend_options` | `void**` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -4468,7 +4468,7 @@ KreuzbergOcrQualityThresholds kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergOcrQualityThresholds result = kreuzberg_default();
+KreuzbergOcrQualityThresholds *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergOcrQualityThresholds`
@@ -4497,7 +4497,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `const char***` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `const char*` | — | Markdown representation of the table |
 | `page_number` | `uint32_t` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `KreuzbergOcrTableBoundingBox*` | language default | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `KreuzbergOcrTableBoundingBox*` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
@@ -4562,7 +4562,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_cache_dir(const char* path);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_cache_dir(instance, "value");
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_cache_dir(instance, "value");
 ```
 
 **Parameters:**
@@ -4586,7 +4586,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_table_detection(bool enable);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_table_detection(instance, true);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_table_detection(instance, true);
 ```
 
 **Parameters:**
@@ -4610,7 +4610,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_angle_cls(bool enable);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_angle_cls(instance, true);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_angle_cls(instance, true);
 ```
 
 **Parameters:**
@@ -4634,7 +4634,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_det_db_thresh(float threshold);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_det_db_thresh(instance, 0.5);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_thresh(instance, 0.5);
 ```
 
 **Parameters:**
@@ -4658,7 +4658,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_det_db_box_thresh(float threshold);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_det_db_box_thresh(instance, 0.5);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_box_thresh(instance, 0.5);
 ```
 
 **Parameters:**
@@ -4682,7 +4682,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_det_db_unclip_ratio(float ratio);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_det_db_unclip_ratio(instance, 0.5);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_unclip_ratio(instance, 0.5);
 ```
 
 **Parameters:**
@@ -4706,7 +4706,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_det_limit_side_len(uint32_t length);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_det_limit_side_len(instance, 42);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_limit_side_len(instance, 42);
 ```
 
 **Parameters:**
@@ -4730,7 +4730,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_rec_batch_num(uint32_t batch_size);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_rec_batch_num(instance, 42);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_rec_batch_num(instance, 42);
 ```
 
 **Parameters:**
@@ -4754,7 +4754,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_drop_score(float score);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_drop_score(instance, 0.5);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_drop_score(instance, 0.5);
 ```
 
 **Parameters:**
@@ -4778,7 +4778,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_padding(uint32_t padding);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_padding(instance, 42);
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_padding(instance, 42);
 ```
 
 **Parameters:**
@@ -4802,7 +4802,7 @@ KreuzbergPaddleOcrConfig kreuzberg_with_model_tier(const char* tier);
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_with_model_tier(instance, "value");
+KreuzbergPaddleOcrConfig *result = kreuzberg_with_model_tier(instance, "value");
 ```
 
 **Parameters:**
@@ -4826,7 +4826,7 @@ KreuzbergPaddleOcrConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig result = kreuzberg_default();
+KreuzbergPaddleOcrConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergPaddleOcrConfig`
@@ -4870,7 +4870,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `prompt_template` | `const char**` | `NULL` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `NULL` lets the backend pick a sensible default. |
 | `labels` | `const char**` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `multi_label` | `bool` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `multi_label` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -4904,7 +4904,7 @@ KreuzbergPageConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergPageConfig result = kreuzberg_default();
+KreuzbergPageConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergPageConfig`
@@ -4933,8 +4933,8 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `page_number` | `uint32_t` | — | Page number (1-indexed) |
 | `content` | `const char*` | — | Text content for this page |
-| `tables` | `KreuzbergTable*` | language default | Tables found on this page (uses Arc for memory efficiency) Serializes as const Table* for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
-| `image_indices` | `uint32_t*` | language default | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `tables` | `KreuzbergTable*` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as const Table* for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
+| `image_indices` | `uint32_t*` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
 | `hierarchy` | `KreuzbergPageHierarchy*` | `NULL` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `is_blank` | `bool*` | `NULL` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
 | `layout_regions` | `KreuzbergLayoutRegion**` | `NULL` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
@@ -4954,7 +4954,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `uint32_t` | — | Number of hierarchy blocks on this page |
-| `blocks` | `KreuzbergHierarchicalBlock*` | language default | Hierarchical blocks with heading levels |
+| `blocks` | `KreuzbergHierarchicalBlock*` | `/* serde(default) */` | Hierarchical blocks with heading levels |
 
 ---
 
@@ -4973,7 +4973,7 @@ and visibility state (for presentations).
 | `table_count` | `uint32_t*` | `NULL` | Number of tables on this page |
 | `hidden` | `bool*` | `NULL` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `bool*` | `NULL` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
-| `has_vector_graphics` | `bool` | language default | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `NULL` for other document types. |
+| `has_vector_graphics` | `bool` | `/* serde(default) */` | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `NULL` for other document types. |
 
 ---
 
@@ -5049,7 +5049,7 @@ KreuzbergPdfConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergPdfConfig result = kreuzberg_default();
+KreuzbergPdfConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergPdfConfig`
@@ -5359,7 +5359,7 @@ KreuzbergProcessingStage kreuzberg_processing_stage();
 **Example:**
 
 ```c
-KreuzbergProcessingStage result = kreuzberg_processing_stage(instance);
+KreuzbergProcessingStage *result = kreuzberg_processing_stage(instance);
 ```
 
 **Returns:** `KreuzbergProcessingStage`
@@ -5475,7 +5475,7 @@ KreuzbergPostProcessorConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergPostProcessorConfig result = kreuzberg_default();
+KreuzbergPostProcessorConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergPostProcessorConfig`
@@ -5525,8 +5525,8 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `page_structure` | `KreuzbergPageStructure*` | `NULL` | Slide structure with boundaries (when page tracking is enabled) |
 | `page_contents` | `KreuzbergPageContent**` | `NULL` | Per-slide content (when page tracking is enabled) |
 | `document` | `KreuzbergDocumentStructure*` | `NULL` | Structured document representation |
-| `office_metadata` | `void*` | language default | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `revisions` | `KreuzbergDocumentRevision**` | language default | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `NULL` when no comment XML parts exist. |
+| `office_metadata` | `void*` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
+| `revisions` | `KreuzbergDocumentRevision**` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `NULL` when no comment XML parts exist. |
 
 ---
 
@@ -5616,7 +5616,7 @@ KreuzbergRakeParams kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergRakeParams result = kreuzberg_default();
+KreuzbergRakeParams *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergRakeParams`
@@ -5668,7 +5668,7 @@ KreuzbergRedactionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergRedactionConfig result = kreuzberg_default();
+KreuzbergRedactionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergRedactionConfig`
@@ -5727,7 +5727,7 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 |-------|------|---------|-------------|
 | `label` | `const char*` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `pattern` | `const char*` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
-| `case_sensitive` | `bool` | language default | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
 ##### Methods
 
@@ -5744,7 +5744,7 @@ KreuzbergRedactionPattern kreuzberg_labeled(const char* label, const char* patte
 **Example:**
 
 ```c
-KreuzbergRedactionPattern result = kreuzberg_labeled("value", "value");
+KreuzbergRedactionPattern *result = kreuzberg_labeled("value", "value");
 ```
 
 **Parameters:**
@@ -5786,7 +5786,7 @@ metacharacters themselves). Case-insensitive by default — set
 |-------|------|---------|-------------|
 | `label` | `const char*` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `value` | `const char*` | — | Literal value to match. Regex metacharacters are escaped automatically. |
-| `case_sensitive` | `bool` | language default | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
 ##### Methods
 
@@ -5803,7 +5803,7 @@ KreuzbergRedactionTerm kreuzberg_literal(const char* value);
 **Example:**
 
 ```c
-KreuzbergRedactionTerm result = kreuzberg_literal("value");
+KreuzbergRedactionTerm *result = kreuzberg_literal("value");
 ```
 
 **Parameters:**
@@ -5827,7 +5827,7 @@ KreuzbergRedactionTerm kreuzberg_labeled(const char* label, const char* value);
 **Example:**
 
 ```c
-KreuzbergRedactionTerm result = kreuzberg_labeled("value", "value");
+KreuzbergRedactionTerm *result = kreuzberg_labeled("value", "value");
 ```
 
 **Parameters:**
@@ -6034,7 +6034,7 @@ KreuzbergRerankerConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergRerankerConfig result = kreuzberg_default();
+KreuzbergRerankerConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergRerankerConfig`
@@ -6055,7 +6055,7 @@ Since v5.0.
 | `name` | `const char*` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `const char*` | — | HuggingFace repository name for the model. |
 | `model_file` | `const char*` | — | Path to the ONNX model file within the repo. |
-| `additional_files` | `const char**` | language default | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `additional_files` | `const char**` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `uintptr_t` | — | Maximum token sequence length the model supports. |
 | `description` | `const char*` | — | Human-readable description of the preset's intended use case. |
 
@@ -6109,7 +6109,7 @@ KreuzbergSecurityLimits kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergSecurityLimits result = kreuzberg_default();
+KreuzbergSecurityLimits *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergSecurityLimits`
@@ -6152,7 +6152,7 @@ KreuzbergServerConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergServerConfig result = kreuzberg_default();
+KreuzbergServerConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergServerConfig`
@@ -6298,10 +6298,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `schema` | `void*` | — | JSON Schema defining the desired output structure. |
-| `schema_name` | `const char*` | language default | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `const char**` | language default | Optional schema description for the LLM. |
-| `strict` | `bool` | language default | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `const char**` | language default | Custom Jinja2 extraction prompt template. When `NULL`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `schema_name` | `const char*` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `const char**` | `/* serde(default) */` | Optional schema description for the LLM. |
+| `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `const char**` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `NULL`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -6360,7 +6360,7 @@ KreuzbergSvgOptions kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergSvgOptions result = kreuzberg_default();
+KreuzbergSvgOptions *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergSvgOptions`
@@ -6469,7 +6469,7 @@ KreuzbergTesseractConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTesseractConfig result = kreuzberg_default();
+KreuzbergTesseractConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTesseractConfig`
@@ -6543,7 +6543,7 @@ KreuzbergTokenCounter kreuzberg_new();
 **Example:**
 
 ```c
-KreuzbergTokenCounter result = kreuzberg_new();
+KreuzbergTokenCounter *result = kreuzberg_new();
 ```
 
 **Returns:** `KreuzbergTokenCounter`
@@ -6581,7 +6581,7 @@ KreuzbergTokenReductionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTokenReductionConfig result = kreuzberg_default();
+KreuzbergTokenReductionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTokenReductionConfig`
@@ -6610,7 +6610,7 @@ KreuzbergTokenReductionOptions kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTokenReductionOptions result = kreuzberg_default();
+KreuzbergTokenReductionOptions *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTokenReductionOptions`
@@ -6663,7 +6663,7 @@ KreuzbergTranscriptionConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTranscriptionConfig result = kreuzberg_default();
+KreuzbergTranscriptionConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTranscriptionConfig`
@@ -6698,7 +6698,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `target_lang` | `const char*` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `const char**` | `NULL` | Optional explicit source language. `NULL` asks the backend to auto-detect. |
-| `preserve_markup` | `bool` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `preserve_markup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -6743,7 +6743,7 @@ KreuzbergTreeSitterConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTreeSitterConfig result = kreuzberg_default();
+KreuzbergTreeSitterConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTreeSitterConfig`
@@ -6781,7 +6781,7 @@ KreuzbergTreeSitterProcessConfig kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergTreeSitterProcessConfig result = kreuzberg_default();
+KreuzbergTreeSitterProcessConfig *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergTreeSitterProcessConfig`
@@ -6993,7 +6993,7 @@ KreuzbergYakeParams kreuzberg_default();
 **Example:**
 
 ```c
-KreuzbergYakeParams result = kreuzberg_default();
+KreuzbergYakeParams *result = kreuzberg_default();
 ```
 
 **Returns:** `KreuzbergYakeParams`
@@ -7008,7 +7008,7 @@ Year range for bibliographic metadata.
 |-------|------|---------|-------------|
 | `min` | `uint32_t*` | `NULL` | Earliest (minimum) year in the range. |
 | `max` | `uint32_t*` | `NULL` | Latest (maximum) year in the range. |
-| `years` | `uint32_t*` | language default | All individual years present in the collection. |
+| `years` | `uint32_t*` | `/* serde(default) */` | All individual years present in the collection. |
 
 ---
 
