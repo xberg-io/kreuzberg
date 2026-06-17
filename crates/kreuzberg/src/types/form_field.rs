@@ -1,4 +1,4 @@
-//! PDF form (AcroForm / XFA) field extracted from a document.
+//! PDF form field extracted from a document (AcroForm only; XFA-only forms return empty).
 
 use serde::{Deserialize, Serialize};
 
@@ -60,7 +60,9 @@ pub struct PdfFormField {
     #[serde(default)]
     pub flags: u32,
 
-    /// 1-indexed page the field's widget appears on, if known.
+    /// 1-indexed page the field's widget appears on. Currently always `None` for
+    /// AcroForm fields; page assignment is a deferred enhancement requiring spatial
+    /// analysis of widget annotations per page.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page: Option<u32>,
 

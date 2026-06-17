@@ -108,6 +108,8 @@ sources = [
   "crates/kreuzberg/src/types/uri.rs",
   "crates/kreuzberg/src/types/djot.rs",
   "crates/kreuzberg/src/types/internal.rs",
+  "crates/kreuzberg/src/types/form_field.rs",
+  "crates/kreuzberg/src/types/formula.rs",
   # Config types (re-exported via `pub use core::config::*`)
   "crates/kreuzberg/src/core/config/mod.rs",
   "crates/kreuzberg/src/core/config/extraction/types.rs",
@@ -142,6 +144,11 @@ sources = [
   "crates/kreuzberg/src/embeddings/mod.rs",
   "crates/kreuzberg/src/language_detection/mod.rs",
   "crates/kreuzberg/src/cache/core.rs",
+  # Preset types and resolver (re-exported from lib.rs)
+  "crates/kreuzberg/src/presets/types.rs",
+  "crates/kreuzberg/src/presets/resolve.rs",
+  # Heuristics structured analysis (re-exported as module from lib.rs)
+  "crates/kreuzberg/src/heuristics/structured.rs",
   # Batch extraction functions (re-exported from lib.rs)
   "crates/kreuzberg/src/core/extractor/mod.rs",
   "crates/kreuzberg/src/core/extractor/sync.rs",

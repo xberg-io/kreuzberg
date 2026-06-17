@@ -2,7 +2,9 @@
 //!
 //! Maps pdf_oxide's `FormField` types to Kreuzberg's `PdfFormField` model,
 //! extracting field names, types, values, bounding boxes, and metadata.
-//! Supports both AcroForm and XFA-based forms.
+//!
+//! Currently supports **AcroForm only**. XFA-only forms (no AcroForm) return an
+//! empty vector. Mixed AcroForm+XFA documents extract from the AcroForm layer.
 
 use super::OxideDocument;
 use crate::types::{BoundingBox, PdfFormField, FormFieldType};
@@ -12,6 +14,9 @@ use crate::types::{BoundingBox, PdfFormField, FormFieldType};
 /// Calls `FormExtractor::extract_fields` to get all AcroForm fields from the document,
 /// then maps each field's type, value, and bounding box to Kreuzberg's types.
 ///
+/// This function has a fast-path: if the document has no AcroForm catalog entry,
+/// it returns an empty vector immediately without further processing.
+///
 /// # Arguments
 ///
 /// * `doc` - The opened PDF document
@@ -19,7 +24,7 @@ use crate::types::{BoundingBox, PdfFormField, FormFieldType};
 /// # Returns
 ///
 /// A `Vec<PdfFormField>` containing all successfully extracted form fields,
-/// or an empty vector if the document has no forms or extraction fails.
+/// or an empty vector if the document has no AcroForm or extraction fails.
 pub(crate) fn extract_form_fields(doc: &OxideDocument) -> Vec<PdfFormField> {
     match pdf_oxide::extractors::forms::FormExtractor::extract_fields(&doc.doc) {
         Ok(oxide_fields) => {
@@ -40,7 +45,7 @@ pub(crate) fn extract_form_fields(doc: &OxideDocument) -> Vec<PdfFormField> {
 /// Converts all field properties including type, value, bounds, and metadata.
 /// Type mapping and value extraction handle various field subtypes (text, checkbox, radio, choice, signature, button).
 fn map_form_field(oxide_field: pdf_oxide::extractors::forms::FormField) -> PdfFormField {
-    let field_type = map_field_type(&oxide_field.field_type);
+    let field_type = map_field_type(&oxide_field.field_type, oxide_field.flags);
     let value = map_field_value(&oxide_field.value);
     let default_value = oxide_field
         .default_value
@@ -75,14 +80,29 @@ fn map_form_field(oxide_field: pdf_oxide::extractors::forms::FormField) -> PdfFo
 /// - Choice (/Ch) is dropdown or list box
 /// - Signature (/Sig) is digital signature
 /// - Unknown for unrecognized types
-fn map_field_type(oxide_type: &pdf_oxide::extractors::forms::FieldType) -> FormFieldType {
-    use pdf_oxide::extractors::forms::FieldType;
+///
+/// For Button fields, further classifies using field flags per ISO 32000-1 §12.7.4.2:
+/// - PUSH_BUTTON (bit 16): returns `Button`
+/// - RADIO (bit 15): returns `Radio`
+/// - Neither: returns `Checkbox` (default button subtype)
+fn map_field_type(oxide_type: &pdf_oxide::extractors::forms::FieldType, flags: Option<u32>) -> FormFieldType {
+    use pdf_oxide::extractors::forms::{FieldType, field_flags};
     match oxide_type {
         FieldType::Button => {
-            // Further classification of button subtypes (checkbox, radio, push) happens
-            // via the field flags (PUSH_BUTTON, RADIO, etc.). For the basic type, we
-            // return Button and let downstream code inspect flags if needed.
-            FormFieldType::Button
+            // Classify button subtypes via field flags.
+            if let Some(f) = flags {
+                if f & field_flags::PUSH_BUTTON != 0 {
+                    FormFieldType::Button
+                } else if f & field_flags::RADIO != 0 {
+                    FormFieldType::Radio
+                } else {
+                    // Default button subtype is checkbox
+                    FormFieldType::Checkbox
+                }
+            } else {
+                // No flags available; default to checkbox
+                FormFieldType::Checkbox
+            }
         }
         FieldType::Text => FormFieldType::Text,
         FieldType::Choice => FormFieldType::Choice,
@@ -95,8 +115,8 @@ fn map_field_type(oxide_type: &pdf_oxide::extractors::forms::FieldType) -> FormF
 ///
 /// Handles:
 /// - Text: returned as-is
-/// - Boolean: converted to "true" / "false"
-/// - Name: value returned as-is (used for radio buttons, dropdown selections)
+/// - Boolean: converted to "true" or "false" (e.g., checkbox Boolean(true) → "true")
+/// - Name: value returned as-is (e.g., radio Name("Opt") → "Opt", dropdown selections)
 /// - Array: values joined with ", " (multi-select list boxes)
 /// - None: returns None
 fn map_field_value(oxide_value: &pdf_oxide::extractors::forms::FieldValue) -> Option<String> {
@@ -122,28 +142,48 @@ mod tests {
     use pdf_oxide::extractors::forms::{FieldType, FieldValue};
 
     #[test]
-    fn test_map_field_type_button() {
-        assert_eq!(map_field_type(&FieldType::Button), FormFieldType::Button);
+    fn test_map_field_type_button_push_button() {
+        use pdf_oxide::extractors::forms::field_flags;
+        let flags = field_flags::PUSH_BUTTON;
+        assert_eq!(map_field_type(&FieldType::Button, Some(flags)), FormFieldType::Button);
+    }
+
+    #[test]
+    fn test_map_field_type_button_radio() {
+        use pdf_oxide::extractors::forms::field_flags;
+        let flags = field_flags::RADIO;
+        assert_eq!(map_field_type(&FieldType::Button, Some(flags)), FormFieldType::Radio);
+    }
+
+    #[test]
+    fn test_map_field_type_button_checkbox_no_flags() {
+        assert_eq!(map_field_type(&FieldType::Button, None), FormFieldType::Checkbox);
+    }
+
+    #[test]
+    fn test_map_field_type_button_checkbox_default() {
+        // When a button field has no PUSH_BUTTON or RADIO flag, it defaults to checkbox.
+        assert_eq!(map_field_type(&FieldType::Button, Some(0)), FormFieldType::Checkbox);
     }
 
     #[test]
     fn test_map_field_type_text() {
-        assert_eq!(map_field_type(&FieldType::Text), FormFieldType::Text);
+        assert_eq!(map_field_type(&FieldType::Text, None), FormFieldType::Text);
     }
 
     #[test]
     fn test_map_field_type_choice() {
-        assert_eq!(map_field_type(&FieldType::Choice), FormFieldType::Choice);
+        assert_eq!(map_field_type(&FieldType::Choice, None), FormFieldType::Choice);
     }
 
     #[test]
     fn test_map_field_type_signature() {
-        assert_eq!(map_field_type(&FieldType::Signature), FormFieldType::Signature);
+        assert_eq!(map_field_type(&FieldType::Signature, None), FormFieldType::Signature);
     }
 
     #[test]
     fn test_map_field_type_unknown() {
-        assert_eq!(map_field_type(&FieldType::Unknown("custom".to_string())), FormFieldType::Unknown);
+        assert_eq!(map_field_type(&FieldType::Unknown("custom".to_string()), None), FormFieldType::Unknown);
     }
 
     #[test]
@@ -186,5 +226,50 @@ mod tests {
     fn test_map_field_value_none() {
         let value = FieldValue::None;
         assert_eq!(map_field_value(&value), None);
+    }
+
+    // === Button-specific field mapping tests ===
+
+    #[test]
+    fn test_checkbox_boolean_true_maps_to_true_string() {
+        let value = FieldValue::Boolean(true);
+        let mapped = map_field_value(&value).expect("Some");
+        assert_eq!(mapped, "true", "checkbox Boolean(true) should map to 'true'");
+    }
+
+    #[test]
+    fn test_radio_name_value_maps_as_is() {
+        let value = FieldValue::Name("Opt".to_string());
+        let mapped = map_field_value(&value).expect("Some");
+        assert_eq!(mapped, "Opt", "radio Name('Opt') should map to 'Opt'");
+    }
+
+    // === Type + value integration tests ===
+
+    #[test]
+    fn test_checkbox_field_classification_and_value() {
+        // Checkbox: Button field with no PUSH_BUTTON or RADIO flag, Boolean(true) value.
+        let field_type = map_field_type(&FieldType::Button, Some(0));
+        let value = map_field_value(&FieldValue::Boolean(true));
+        assert_eq!(field_type, FormFieldType::Checkbox);
+        assert_eq!(value, Some("true".to_string()));
+    }
+
+    #[test]
+    fn test_radio_field_classification_and_value() {
+        // Radio: Button field with RADIO flag, Name("Choice") value.
+        use pdf_oxide::extractors::forms::field_flags;
+        let field_type = map_field_type(&FieldType::Button, Some(field_flags::RADIO));
+        let value = map_field_value(&FieldValue::Name("Choice".to_string()));
+        assert_eq!(field_type, FormFieldType::Radio);
+        assert_eq!(value, Some("Choice".to_string()));
+    }
+
+    #[test]
+    fn test_push_button_field_classification() {
+        // Push button: Button field with PUSH_BUTTON flag.
+        use pdf_oxide::extractors::forms::field_flags;
+        let field_type = map_field_type(&FieldType::Button, Some(field_flags::PUSH_BUTTON));
+        assert_eq!(field_type, FormFieldType::Button);
     }
 }
