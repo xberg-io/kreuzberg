@@ -229,3 +229,34 @@ assert!(f1 >= 0.90, "Rust {} failed F1 gate: {:.2}% (need ≥90%)", model_name, 
 **Path-Forward**: **Phase 1C subtask** to scaffold 3 Python extraction scripts, integrate into benchmark harness as new `Pipeline` variants, and run on full corpus. Expected timeline: 4–5 days design/scaffolding, 1–2 hours baseline generation. No changes to Rust core until Phase 4–5 backend ports complete and Phase 6 benchmark gates can score against these baselines.
 
 **Deliverable**: Audit file only; no baseline generation performed.
+
+---
+
+## Scaffolding Complete ✓ (2026-06-17 23:59 UTC)
+
+**Phase 1C scaffolding deliverables in place**:
+
+1. **Directory**: `tools/benchmark-harness/python_baselines/`
+   - `README.md` — full setup + usage guide, hardware requirements, CI/CD integration notes
+   - `requirements.txt` — pinned `transformers>=4.46`, `torch>=2.4`, `paddlex`, `paddlepaddle`, `pillow`, `huggingface_hub`
+   - `deepseek_ocr_baseline.py` (~140 LOC) — AutoModel from `deepseek-ai/DeepSeek-OCR`, per-fixture extraction with timing/memory capture
+   - `hunyuan_ocr_baseline.py` (~140 LOC) — AutoModel from `tencent/Hunyuan-OCR`, FP16 for 24GB VRAM constraint
+   - `paddleocr_vl_baseline.py` (~200 LOC) — PaddleX + fallback PaddleOCR APIs, structured result formatting
+   - `run_all_baselines.sh` — wrapper to run all three (or subset via `MODELS=deepseek` env var)
+
+2. **Script entry points**:
+   - Each script: `--fixtures <dir>` + `--output <dir>` CLI args, argparse-driven
+   - Per-fixture error handling (continue on failure, summary at end)
+   - Exit codes: 0 (success), 1 (missing deps), 2 (processing failures)
+   - Outputs: `<fixture>.<model>.expected.txt`, `<fixture>.<model>.ms` per fixture
+   - Logging to stderr; JSON metadata in return dicts
+
+3. **Known blockers** (not yet tested; next PR will execute on GPU box):
+   - `deepseek-ai/DeepSeek-OCR` token signature may require `trust_remote_code=True` (handled)
+   - Hunyuan model loading may fail if VRAM <24GB (documented, FP16 fallback in script)
+   - PaddleX import may fail if only `paddleocr` installed (fallback included)
+   - No CI/CD wiring yet (placeholder in bash script comments)
+
+4. **Audit note update**: Added this section linking to files; Phase 1C ready for GPU execution.
+
+**Next step**: Run on GPU box per README instructions; commit baselines to `baselines/<model>/` subdirs.

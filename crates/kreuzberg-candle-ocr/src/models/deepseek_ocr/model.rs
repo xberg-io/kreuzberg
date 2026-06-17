@@ -1618,57 +1618,13 @@ impl InferenceModel for DeepseekOCRModel {
 
 #[cfg(test)]
 mod tests {
+    use candle_core::{DType, Device};
+
     use super::*;
 
-    #[test]
-    fn test_deepseek_config_deserialization() {
-        let json = r#"{
-            "language_config": {
-                "bos_token_id": 100256,
-                "eos_token_id": 100257,
-                "first_k_dense_replace": 21,
-                "hidden_size": 4096,
-                "intermediate_size": 14336,
-                "lm_head": true,
-                "max_position_embeddings": 4096,
-                "moe_intermediate_size": 1408,
-                "n_group": 8,
-                "n_routed_experts": 64,
-                "n_shared_experts": 2,
-                "num_attention_heads": 32,
-                "num_experts_per_tok": 6,
-                "num_hidden_layers": 30,
-                "num_key_value_heads": 8,
-                "qk_nope_head_dim": 128,
-                "qk_rope_head_dim": 64,
-                "rm_head": false,
-                "topk_group": 4,
-                "topk_method": "greedy",
-                "torch_dtype": "torch.float32",
-                "use_mla": true,
-                "v_head_dim": 128,
-                "vocab_size": 100264
-            },
-            "projector_config": {
-                "input_dim": 768,
-                "model_type": "linear",
-                "n_embed": 1280,
-                "projector_type": "linear"
-            },
-            "torch_dtype": "torch.float32",
-            "vision_config": {
-                "image_size": 1024,
-                "mlp_ratio": 4.0,
-                "width": {
-                    "sam_vit_b": {
-                        "downsample_channels": [96, 192, 384, 768],
-                        "global_attn_indexes": [2, 5, 8, 11],
-                        "heads": 12,
-                        "layers": 12,
-                        "width": 768
-                    }
-                }
-            },
+    /// Minimal JSON snippet for `DeepseekOCRConfig` round-trip testing.
+    const MINIMAL_CONFIG_JSON: &str = r#"{
+        "language_config": {
             "bos_token_id": 100256,
             "eos_token_id": 100257,
             "first_k_dense_replace": 21,
@@ -1689,27 +1645,313 @@ mod tests {
             "rm_head": false,
             "topk_group": 4,
             "topk_method": "greedy",
+            "torch_dtype": "torch.float32",
             "use_mla": true,
             "v_head_dim": 128,
             "vocab_size": 100264
-        }"#;
-        let cfg: DeepseekOCRConfig = serde_json::from_str(json).expect("config deserialize");
-        assert_eq!(cfg.vocab_size, 100264);
-        assert_eq!(cfg.hidden_size, 4096);
-        assert_eq!(cfg.eos_token_id, 100257);
+        },
+        "projector_config": {
+            "input_dim": 768,
+            "model_type": "linear",
+            "n_embed": 1280,
+            "projector_type": "linear"
+        },
+        "torch_dtype": "torch.float32",
+        "vision_config": {
+            "image_size": 1024,
+            "mlp_ratio": 4.0,
+            "width": {
+                "sam_vit_b": {
+                    "downsample_channels": [96, 192, 384, 768],
+                    "global_attn_indexes": [2, 5, 8, 11],
+                    "heads": 12,
+                    "layers": 12,
+                    "width": 768
+                }
+            }
+        },
+        "bos_token_id": 100256,
+        "eos_token_id": 100257,
+        "first_k_dense_replace": 21,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "lm_head": true,
+        "max_position_embeddings": 4096,
+        "moe_intermediate_size": 1408,
+        "n_group": 8,
+        "n_routed_experts": 64,
+        "n_shared_experts": 2,
+        "num_attention_heads": 32,
+        "num_experts_per_tok": 6,
+        "num_hidden_layers": 30,
+        "num_key_value_heads": 8,
+        "qk_nope_head_dim": 128,
+        "qk_rope_head_dim": 64,
+        "rm_head": false,
+        "topk_group": 4,
+        "topk_method": "greedy",
+        "use_mla": true,
+        "v_head_dim": 128,
+        "vocab_size": 100264
+    }"#;
+
+    // ──────────────────────────────────────────────────────────────
+    // E1-1: Config round-trip deserialization
+    // ──────────────────────────────────────────────────────────────
+
+    /// Deserializing a representative JSON snippet must succeed and produce
+    /// exact field values matching the source document.
+    #[test]
+    fn config_deserializes_with_exact_field_values() {
+        let cfg: DeepseekOCRConfig =
+            serde_json::from_str(MINIMAL_CONFIG_JSON).expect("config must deserialize");
+
+        assert_eq!(cfg.vocab_size, 100264, "vocab_size mismatch");
+        assert_eq!(cfg.hidden_size, 4096, "hidden_size mismatch");
+        assert_eq!(cfg.eos_token_id, 100257, "eos_token_id mismatch");
+        assert_eq!(cfg.bos_token_id, 100256, "bos_token_id mismatch");
+        assert_eq!(
+            cfg.projector_config.input_dim, 768,
+            "projector input_dim mismatch"
+        );
+        assert_eq!(
+            cfg.projector_config.n_embed, 1280,
+            "projector n_embed mismatch"
+        );
+        assert_eq!(
+            cfg.vision_config.image_size, 1024,
+            "vision image_size mismatch"
+        );
+        assert_eq!(
+            cfg.vision_config.width.sam_vit_b.global_attn_indexes,
+            vec![2usize, 5, 8, 11],
+            "global_attn_indexes mismatch"
+        );
+        // Language config sub-struct
+        assert_eq!(
+            cfg.language_config.hidden_size, 4096,
+            "language hidden_size mismatch"
+        );
+        assert_eq!(
+            cfg.language_config.n_routed_experts, 64,
+            "n_routed_experts mismatch"
+        );
+        assert_eq!(
+            cfg.language_config.topk_method, "greedy",
+            "topk_method mismatch"
+        );
     }
 
+    /// Fields with serde defaults must be populated correctly when absent from JSON.
     #[test]
-    fn test_deepseek_config_structure() {
-        // Verify config structure without needing a full model
-        assert_eq!(100257u32, 100257);
-        assert_eq!(100256u32, 100256);
+    fn config_serde_defaults_are_applied_when_fields_absent() {
+        // A minimal JSON without moe_layer_freq, routed_scaling_factor,
+        // scoring_func, norm_topk_prob — all have serde defaults.
+        let cfg: DeepseekOCRConfig =
+            serde_json::from_str(MINIMAL_CONFIG_JSON).expect("config must deserialize");
+
+        // moe_layer_freq defaults to 1
+        assert_eq!(
+            cfg.language_config.moe_layer_freq, 1,
+            "default moe_layer_freq should be 1"
+        );
+        // routed_scaling_factor defaults to 1.0
+        assert!(
+            (cfg.language_config.routed_scaling_factor - 1.0_f64).abs() < 1e-9,
+            "default routed_scaling_factor should be 1.0"
+        );
+        // scoring_func defaults to "softmax"
+        assert_eq!(
+            cfg.language_config.scoring_func, "softmax",
+            "default scoring_func should be 'softmax'"
+        );
+        // norm_topk_prob defaults to false
+        assert!(
+            !cfg.language_config.norm_topk_prob,
+            "default norm_topk_prob should be false"
+        );
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // E1-2: VisionModel enum — variant dispatch
+    // ──────────────────────────────────────────────────────────────
+
+    /// Both VisionModel variants must compile and be matchable at runtime.
+    /// Uses zero-weight VarBuilders to avoid any weight download.
     #[test]
-    fn test_vision_model_enum() {
-        // Verify VisionModel enum variants exist and are correct types
-        // This is a compile-time check that the enum is properly defined
-        let _: Result<()> = Ok(());
+    fn vision_model_enum_vit_and_qwen2_variants_are_dispatchable() {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        // Build a minimal VitModel — it lives under VisionModel::Vit.
+        // Tiny dimensions: image_size=28, patch_size=14 (2×2 patches), 1 layer, 2 heads.
+        let vit = VitModel::new(
+            vb.pp("vit"),
+            28,   // image_size
+            14,   // patch_size
+            3,    // num_channels
+            1,    // num_layers
+            16,   // hidden_size (must be divisible by num_heads)
+            2,    // num_heads (16/2 = 8 per head)
+            128,  // ffn_hidden_size
+            1e-5, // eps
+        )
+        .expect("VitModel must construct from zeros");
+
+        let vit_model = VisionModel::Vit(vit);
+        let is_vit = matches!(vit_model, VisionModel::Vit(_));
+        assert!(is_vit, "VisionModel::Vit variant must match");
+        let is_qwen2 = matches!(vit_model, VisionModel::Qwen2(_));
+        assert!(!is_qwen2, "VisionModel::Vit must not match Qwen2 arm");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // E1-3: SAM-style vision encoder — shape verification
+    // ──────────────────────────────────────────────────────────────
+
+    /// ImageEncoderViT with tiny dimensions must produce a tensor of the
+    /// expected shape on a synthetic zero-valued input.
+    ///
+    /// Setup (version 1):
+    ///   img_size=64, patch=16 → 4×4 patch grid
+    ///   embed_dim=16, depth=1, out_chans=256 (hardcoded for net_2)
+    ///   net_2: 256→512, stride 2 → 2×2
+    ///   net_3 (v1): 512→1024, stride 2 → 1×1
+    ///   Expected output: (1, 1024, 1, 1)
+    #[test]
+    fn image_encoder_vit_forward_produces_expected_output_shape() {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let encoder = ImageEncoderViT::new(
+            vb,
+            64,                   // img_size
+            16,                   // patch_size
+            3,                    // in_chans
+            16,                   // embed_dim (tiny)
+            1,                    // depth (one block, fast)
+            2,                    // num_heads (16/2 = 8 per head)
+            4.0,                  // mlp_ratio
+            256,                  // out_chans (must be 256 — hardcoded in net_2 input)
+            true,                 // qkv_bias
+            Activation::Gelu,     // act
+            true,                 // use_abs_pos
+            false,                // use_rel_pos (off avoids rel_pos buffers in tiny test)
+            0,                    // window_size (0 = global attention for all blocks)
+            vec![0usize],         // global_attn_indexes (block 0 is global)
+            1,                    // version (net_3 outputs 1024 channels)
+        )
+        .expect("ImageEncoderViT must construct from zeros");
+
+        // Input: (batch=1, channels=3, height=64, width=64)
+        let input = Tensor::zeros((1usize, 3usize, 64usize, 64usize), DType::F32, &dev)
+            .expect("synthetic input must allocate");
+
+        let output = encoder.forward(&input).expect("forward must succeed");
+
+        // With version=1: net_3 emits 1024 channels; 4-patch → stride-2 × stride-2 = 1×1 spatial.
+        let shape = output.dims().to_vec();
+        assert_eq!(
+            shape,
+            vec![1, 1024, 1, 1],
+            "ImageEncoderViT output shape mismatch: got {shape:?}"
+        );
+    }
+
+    /// Version 2 net_3 channel count (896) is selected when version=2.
+    #[test]
+    fn image_encoder_vit_version2_produces_896_output_channels() {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let encoder = ImageEncoderViT::new(
+            vb,
+            64,               // img_size
+            16,               // patch_size
+            3,                // in_chans
+            16,               // embed_dim
+            1,                // depth
+            2,                // num_heads
+            4.0,              // mlp_ratio
+            256,              // out_chans (must be 256 for net_2)
+            true,             // qkv_bias
+            Activation::Gelu, // act
+            true,             // use_abs_pos
+            false,            // use_rel_pos
+            0,                // window_size (global)
+            vec![0usize],     // global_attn_indexes
+            2,                // version → net_3 outputs 896
+        )
+        .expect("ImageEncoderViT v2 must construct");
+
+        let input = Tensor::zeros((1usize, 3usize, 64usize, 64usize), DType::F32, &dev)
+            .expect("input allocation");
+        let output = encoder.forward(&input).expect("v2 forward must succeed");
+
+        let shape = output.dims().to_vec();
+        assert_eq!(
+            shape,
+            vec![1, 896, 1, 1],
+            "version=2 net_3 must output 896 channels, got {shape:?}"
+        );
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // E1-4: Qwen2Decoder2Encoder — construction
+    // ──────────────────────────────────────────────────────────────
+
+    /// Qwen2Decoder2Encoder must construct from zero-weight VarBuilder without
+    /// panicking. Construction validates that the hardcoded Qwen2 config
+    /// (hidden_size=896, 24 layers, query embeddings at 144/256) is
+    /// architecturally consistent.
+    ///
+    /// Forward pass is deliberately omitted here: 24-layer Qwen2 on CPU
+    /// exceeds the <1 s unit-test budget. Forward is exercised by the
+    /// network-gated integration test in deepseek_ocr_integration.rs.
+    #[test]
+    fn qwen2_decoder2encoder_constructs_from_zeros() {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        // Constructor hard-wires: hidden_size=896, 24 layers, query_768 (144 tokens),
+        // query_1024 (256 tokens).  VarBuilder::zeros allocates all weight tensors
+        // with the correct shapes without reading any file.
+        let encoder = Qwen2Decoder2Encoder::new(vb);
+        assert!(
+            encoder.is_ok(),
+            "Qwen2Decoder2Encoder must construct without errors: {:?}",
+            encoder.err()
+        );
+    }
+
+    /// Qwen2Decoder2Encoder rejects sequence lengths other than 144 and 256.
+    ///
+    /// This verifies the guard at the top of `Qwen2Decoder2Encoder::forward`.
+    /// We use a zero-weight encoder and an intentionally-wrong token count to
+    /// confirm the error path is covered without a full forward pass.
+    #[test]
+    fn qwen2_decoder2encoder_forward_rejects_invalid_seq_len() {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let encoder =
+            Qwen2Decoder2Encoder::new(vb).expect("Qwen2Decoder2Encoder must construct");
+
+        // Input shape: (batch, channels, h, w) — after flatten_from(2) + transpose(1,2)
+        // we get (batch, h*w, channels).  Here h*w = 4 (2×2), which is not 144 or 256.
+        let bad_input = Tensor::zeros((1usize, 896usize, 2usize, 2usize), DType::F32, &dev)
+            .expect("bad input allocation");
+
+        let result = encoder.forward(&bad_input);
+        assert!(
+            result.is_err(),
+            "forward must reject seq_len=4 (not 144 or 256), but returned Ok"
+        );
+
+        let err_msg = format!("{:?}", result.unwrap_err());
+        assert!(
+            err_msg.contains("only support 144/256"),
+            "error message must describe the valid seq lengths, got: {err_msg}"
+        );
     }
 }

@@ -996,12 +996,233 @@ impl InferenceModel for PaddleOCRVLModel {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use candle_core::Device;
+    use candle_core::{Device, DType, Tensor};
+    use candle_nn::VarBuilder;
 
+    fn tiny_vision_config() -> PaddleOCRVLVisionConfig {
+        PaddleOCRVLVisionConfig {
+            attention_dropout: 0.0,
+            hidden_act: candle_nn::Activation::Gelu,
+            hidden_size: 16,
+            image_size: 28,
+            intermediate_size: 32,
+            layer_norm_eps: 1e-6,
+            num_attention_heads: 2,
+            num_channels: 3,
+            num_hidden_layers: 1,
+            pad_token_id: 0,
+            patch_size: 14,
+            spatial_merge_size: 1,
+            temporal_patch_size: 1,
+            tokens_per_second: 2,
+            torch_dtype: "float32".to_string(),
+        }
+    }
+
+    fn tiny_model_config() -> PaddleOCRVLConfig {
+        PaddleOCRVLConfig {
+            compression_ratio: 0.5,
+            head_dim: 8,
+            hidden_act: candle_nn::Activation::Silu,
+            hidden_dropout_prob: 0.0,
+            hidden_size: 16,
+            ignored_index: -100,
+            image_token_id: 100,
+            intermediate_size: 32,
+            max_position_embeddings: 128,
+            max_sequence_length: None,
+            num_attention_heads: 2,
+            num_hidden_layers: 1,
+            num_key_value_heads: 2,
+            pad_token_id: 0,
+            rms_norm_eps: 1e-6,
+            rope_scaling: PaddleOCRVLRopeScalingConfig {
+                // mrope_section entries must sum to head_dim / 2 (= 8 / 2 = 4).
+                mrope_section: vec![1, 1, 2],
+                rope_type: "mrope".to_string(),
+                scaling_type: "mrope".to_string(),
+            },
+            rope_theta: 10000.0,
+            sliding_window: None,
+            tie_word_embeddings: true,
+            torch_dtype: "float32".to_string(),
+            use_bias: false,
+            use_cache: false,
+            use_flash_attention: false,
+            video_token_id: 101,
+            vision_config: tiny_vision_config(),
+            vision_start_token_id: 102,
+            vision_end_token_id: Some(103),
+            vocab_size: 256,
+            weight_share_add_bias: false,
+            use_3d_rope: true,
+            rope_is_neox_style: true,
+        }
+    }
+
+    /// SigLIP vision encoder constructs and forward-passes on a synthetic input without error.
+    ///
+    /// Image size 28 × 28, patch_size 14 → 2 × 2 = 4 patches; hidden_size 16.
+    /// The encoder expects 3D input `(1, num_patches, hidden_size)` (batch dimension
+    /// inserted by `SiglipVisionEmbeddings::forward`).
+    /// Expected output shape: (1, 4, 16).
     #[test]
-    fn test_projector_forward() {
-        // Synthetic test: ensure projector forward doesn't panic with valid shapes
-        // (Actual loading requires full model weights)
-        // Placeholder for comprehensive unit test when weights available
+    fn siglip_encoder_forward_shape_matches_patch_grid() -> crate::error::Result<()> {
+        let dev = Device::Cpu;
+        let cfg = tiny_vision_config();
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let encoder = SiglipEncoder::new(vb, &cfg)?;
+
+        // SiglipVisionEmbeddings::forward unsqueezes to (1, num_patches, hidden_size).
+        let num_patches = 4usize;
+        let xs = Tensor::zeros((1, num_patches, cfg.hidden_size), DType::F32, &dev)
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?;
+
+        // grid_thw: [t=1, h=2, w=2] → 1 image of 2×2 spatial patches
+        let grid_thw = Tensor::new(&[[1u32, 2u32, 2u32]], &dev)
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?;
+
+        let out = encoder.forward(&xs, &grid_thw)?;
+
+        assert_eq!(
+            out.dims(),
+            &[1, num_patches, cfg.hidden_size],
+            "SigLIP encoder output should preserve (1, num_patches, hidden_size) shape"
+        );
+        Ok(())
+    }
+
+    /// ERNIE-4.5 text decoder constructs and forward-passes on synthetic token embeddings.
+    ///
+    /// Batch=1, seq_len=4, hidden_size=16. Expected output shape: (1, 4, 16).
+    #[test]
+    fn ernie4_5_decoder_forward_shape_matches_input_sequence() -> crate::error::Result<()> {
+        let dev = Device::Cpu;
+        let cfg = tiny_model_config();
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let mut decoder = Ernie4_5Model::new(vb, &cfg)?;
+
+        let batch = 1usize;
+        let seq_len = 4usize;
+        let inputs_embeds = Tensor::zeros((batch, seq_len, cfg.hidden_size), DType::F32, &dev)
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?;
+
+        let out = decoder.forward(&inputs_embeds, 0, None)?;
+
+        assert_eq!(
+            out.dims(),
+            &[batch, seq_len, cfg.hidden_size],
+            "ERNIE-4.5 decoder output should be (batch, seq_len, hidden_size)"
+        );
+        Ok(())
+    }
+
+    /// `get_rope_index` (text-only path) produces position_ids of shape (3, batch, seq_len)
+    /// and mrope_deltas of shape (1, batch) for a pure-text input without vision tokens.
+    #[test]
+    fn get_rope_index_text_only_path_returns_correct_shapes() -> crate::error::Result<()> {
+        let dev = Device::Cpu;
+        let cfg = tiny_model_config();
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+
+        let model = PaddleOCRVLModel::new(cfg.clone(), vb, vec![2])?;
+
+        let batch = 1usize;
+        let seq_len = 6usize;
+        // All tokens are plain text (no vision_start_token_id among them).
+        let input_ids = Tensor::arange(0u32, (batch * seq_len) as u32, &dev)
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?
+            .reshape((batch, seq_len))
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?;
+
+        let (position_ids, mrope_deltas) = model.get_rope_index(&input_ids, None, None, None, None)?;
+
+        assert_eq!(
+            position_ids.dims(),
+            &[3, batch, seq_len],
+            "text-only rope index should be (3, batch, seq_len)"
+        );
+        assert_eq!(
+            mrope_deltas.dims(),
+            &[batch, 1],
+            "text-only mrope_deltas should be (batch, 1)"
+        );
+
+        // The position IDs for text-only should form a simple [0..seq_len) range
+        // broadcast across all 3 rope sections.
+        let first_row = position_ids
+            .i((0usize, 0usize, ..))
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?
+            .to_vec1::<u32>()
+            .map_err(|e| crate::CandleOcrError::InferenceFailed(e.to_string()))?;
+        let expected: Vec<u32> = (0..seq_len as u32).collect();
+        assert_eq!(
+            first_row, expected,
+            "text-only rope position ids should be [0..seq_len)"
+        );
+        Ok(())
+    }
+
+    /// `PaddleOCRVLConfig` round-trips cleanly through serde JSON serialization/deserialization.
+    #[test]
+    fn paddleocr_vl_config_round_trips_through_serde_json() {
+        let cfg = tiny_model_config();
+        let json = serde_json::to_string(&cfg).expect("PaddleOCRVLConfig should serialize to JSON");
+        let decoded: PaddleOCRVLConfig =
+            serde_json::from_str(&json).expect("PaddleOCRVLConfig should deserialize from JSON");
+
+        assert_eq!(decoded.hidden_size, cfg.hidden_size, "hidden_size should survive serde round-trip");
+        assert_eq!(decoded.vocab_size, cfg.vocab_size, "vocab_size should survive serde round-trip");
+        assert_eq!(
+            decoded.vision_config.num_hidden_layers, cfg.vision_config.num_hidden_layers,
+            "vision_config.num_hidden_layers should survive serde round-trip"
+        );
+        assert_eq!(
+            decoded.rope_scaling.mrope_section, cfg.rope_scaling.mrope_section,
+            "mrope_section should survive serde round-trip"
+        );
+        assert_eq!(
+            decoded.use_3d_rope, cfg.use_3d_rope,
+            "use_3d_rope should survive serde round-trip"
+        );
+    }
+
+    /// `PaddleOCRVLPreprocessorConfig` round-trips cleanly through serde JSON.
+    #[test]
+    fn paddleocr_vl_preprocessor_config_round_trips_through_serde_json() {
+        use super::super::config::PaddleOCRVLPreprocessorConfig;
+
+        let cfg = PaddleOCRVLPreprocessorConfig {
+            do_convert_rgb: true,
+            do_normalize: true,
+            do_rescale: true,
+            do_resize: true,
+            image_mean: vec![0.485, 0.456, 0.406],
+            image_std: vec![0.229, 0.224, 0.225],
+            max_pixels: 2_822_400,
+            merge_size: 2,
+            min_pixels: 147_384,
+            patch_size: 14,
+            resample: 3,
+            rescale_factor: 1.0 / 255.0,
+            size: None,
+            temporal_patch_size: 1,
+        };
+
+        let json = serde_json::to_string(&cfg).expect("PaddleOCRVLPreprocessorConfig should serialize");
+        let decoded: PaddleOCRVLPreprocessorConfig =
+            serde_json::from_str(&json).expect("PaddleOCRVLPreprocessorConfig should deserialize");
+
+        assert_eq!(decoded.do_normalize, cfg.do_normalize);
+        assert_eq!(decoded.patch_size, cfg.patch_size, "patch_size should survive round-trip");
+        assert_eq!(decoded.merge_size, cfg.merge_size, "merge_size should survive round-trip");
+        assert_eq!(decoded.max_pixels, cfg.max_pixels, "max_pixels should survive round-trip");
+        assert_eq!(decoded.min_pixels, cfg.min_pixels, "min_pixels should survive round-trip");
+        assert_eq!(
+            decoded.image_mean, cfg.image_mean,
+            "image_mean should survive round-trip"
+        );
     }
 }

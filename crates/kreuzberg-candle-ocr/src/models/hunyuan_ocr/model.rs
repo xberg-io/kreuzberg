@@ -987,13 +987,106 @@ fn masked_scatter_dim0(base: &Tensor, image_embeds: &Tensor, mask: &Tensor) -> R
 #[cfg(test)]
 mod tests {
     use super::*;
-    use candle_core::Device;
+    use candle_core::{Device, DType, Tensor};
+    use candle_nn::Activation;
+
+    use crate::models::hunyuan_ocr::config::{
+        HunYuanVLConfig, HunYuanVLRopeScaling, HunYuanVLVisionConfig,
+    };
+
+    // -----------------------------------------------------------------------
+    // Minimal config helpers
+    // -----------------------------------------------------------------------
+
+    /// Build a minimal `HunYuanVLVisionConfig` suitable for CPU/synthetic tests.
+    fn tiny_vision_config() -> HunYuanVLVisionConfig {
+        HunYuanVLVisionConfig {
+            add_patchemb_bias: true,
+            attention_dropout: 0.0,
+            cat_extra_token: 0,
+            hidden_act: Activation::Gelu,
+            hidden_dropout: 0.0,
+            hidden_size: 16,
+            img_max_token_num: 4096,
+            intermediate_size: 32,
+            interpolate_mode: "bilinear".to_string(),
+            max_image_size: 32,
+            max_vit_seq_len: 4096,
+            num_attention_heads: 2,
+            num_channels: 3,
+            num_hidden_layers: 1,
+            out_hidden_size: 16,
+            patch_size: 16,
+            rms_norm_eps: 1e-6,
+            spatial_merge_size: 1,
+        }
+    }
+
+    /// Build a minimal `HunYuanVLConfig` that does not require real weights.
+    fn tiny_full_config() -> HunYuanVLConfig {
+        HunYuanVLConfig {
+            attention_bias: false,
+            attention_dropout: 0.0,
+            attention_head_dim: 16,
+            bos_token_id: 1,
+            eod_token_id: 2,
+            eos_token_id: 2,
+            head_dim: 16,
+            hidden_act: Activation::Silu,
+            hidden_size: 32,
+            image_start_token_id: 100,
+            image_end_token_id: 101,
+            image_token_id: 102,
+            image_newline_token_id: 103,
+            initializer_range: 0.02,
+            intermediate_size: 64,
+            max_position_embeddings: 512,
+            mlp_bias: false,
+            norm_type: "rms_norm".to_string(),
+            num_attention_heads: 2,
+            num_experts: 1,
+            num_hidden_layers: 1,
+            num_key_value_heads: 2,
+            org_vocab_size: 128,
+            pad_id: 0,
+            pad_token_id: 0,
+            pretraining_tp: 1,
+            rms_norm_eps: 1e-6,
+            rope_scaling: HunYuanVLRopeScaling {
+                alpha: 1.0,
+                beta_fast: 32,
+                beta_slow: 1,
+                factor: 1.0,
+                mscale: 1.0,
+                mscale_all_dim: 1.0,
+                type_field: "linear".to_string(),
+                // 4 sections, each occupies head_dim/4 = 4 dims (rope works on
+                // head_dim/2 = 8 halves; sections must sum to that).
+                xdrope_section: vec![2, 2, 2, 2],
+            },
+            rope_theta: 10000.0,
+            routed_scaling_factor: 1.0,
+            sep_token_id: 10,
+            text_end_id: 11,
+            text_start_id: 12,
+            tie_word_embeddings: false,
+            dtype: "float32".to_string(),
+            use_cache: true,
+            use_qk_norm: true,
+            use_cla: false,
+            vision_config: tiny_vision_config(),
+            vocab_size: 128,
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-1: existing — attention layer construction (renamed to follow convention)
+    // -----------------------------------------------------------------------
 
     #[test]
-    fn test_attention_layer_creation() -> Result<()> {
-        // Verify attention layer constructs without panicking.
+    fn should_construct_attention_layer_given_valid_dimensions() -> Result<()> {
         let dev = Device::Cpu;
-        let vb = VarBuilder::zeros(candle_core::DType::F32, &dev);
+        let vb = VarBuilder::zeros(DType::F32, &dev);
 
         let _attn = HunYuanVLAttention::new(
             vb,
@@ -1004,6 +1097,268 @@ mod tests {
             true, // attention_bias
             1e-6, // rms_norm_eps
         )?;
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-2: Config deserialization
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_deserialize_vision_config_from_json_when_all_fields_present() {
+        let json = r#"{
+            "add_patchemb_bias": true,
+            "attention_dropout": 0.0,
+            "cat_extra_token": 0,
+            "hidden_act": "gelu",
+            "hidden_dropout": 0.0,
+            "hidden_size": 1280,
+            "img_max_token_num": 16384,
+            "intermediate_size": 5120,
+            "interpolate_mode": "bilinear",
+            "max_image_size": 448,
+            "max_vit_seq_len": 16384,
+            "num_attention_heads": 16,
+            "num_channels": 3,
+            "num_hidden_layers": 32,
+            "out_hidden_size": 3584,
+            "patch_size": 14,
+            "rms_norm_eps": 1e-6,
+            "spatial_merge_size": 2
+        }"#;
+
+        let cfg: HunYuanVLVisionConfig =
+            serde_json::from_str(json).expect("HunYuanVLVisionConfig should deserialize from JSON");
+
+        assert_eq!(cfg.hidden_size, 1280, "hidden_size mismatch");
+        assert_eq!(cfg.num_hidden_layers, 32, "num_hidden_layers mismatch");
+        assert_eq!(cfg.patch_size, 14, "patch_size mismatch");
+        assert_eq!(cfg.out_hidden_size, 3584, "out_hidden_size mismatch");
+        assert_eq!(cfg.num_channels, 3, "num_channels must be 3 for RGB");
+        assert_eq!(
+            cfg.spatial_merge_size, 2,
+            "spatial_merge_size mismatch"
+        );
+        assert_eq!(
+            cfg.interpolate_mode, "bilinear",
+            "interpolate_mode mismatch"
+        );
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-3: Vision transformer construction with zero-weights
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_construct_vision_transformer_given_tiny_config_and_zero_weights() -> Result<()> {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_vision_config();
+
+        // Construction must succeed without panicking.
+        let _vit = HunYuanVisionTransformer::new(vb, &cfg)?;
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-4: Vision patch embedding forward produces expected shape
+    //
+    // patch_size=16, max_image_size=32 → position_edge = 32/16 = 2
+    // input pixels: (1, 3, 16, 16) → after conv → 1 patch of shape (1, hidden_size)
+    // With a 2×2 position grid, a single 1×1 grid must interpolate correctly.
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_produce_correct_output_shape_from_vision_patch_embed_given_single_patch() -> Result<()>
+    {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_vision_config();
+        // patch_size=16, hidden_size=16, num_channels=3
+        // pixel_values shape: (num_patches=1, num_channels * patch_size^2)
+        let embed = HunYuanVisionPatchEmbed::new(vb, &cfg)?;
+
+        let patch_pixels = cfg.num_channels * cfg.patch_size * cfg.patch_size; // 3*16*16 = 768
+        let pixel_values = Tensor::zeros((1, patch_pixels), DType::F32, &dev)?;
+        // grid_thw: (1, 3) — one image, T=1, H=1, W=1
+        let grid_thw = Tensor::from_vec(vec![1u32, 1u32, 1u32], (1, 3), &dev)?;
+
+        let output = embed.forward(&pixel_values, &grid_thw)?;
+
+        // Expected: (batch=1, num_patches=1, hidden_size=16)
+        let dims = output.dims();
+        assert_eq!(
+            dims,
+            &[1, 1, cfg.hidden_size],
+            "Vision patch embed output shape should be (1, 1, hidden_size=16); got {:?}",
+            dims
+        );
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-5: Text model construction with zero-weights
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_construct_text_model_given_tiny_config_and_zero_weights() -> Result<()> {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_full_config();
+
+        let _text_model = HunYuanVLTextModel::new(vb, &cfg)?;
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-6: Text model forward without position_ids (standard RoPE path)
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_produce_output_with_hidden_size_dim_when_text_model_forward_called_without_position_ids(
+    ) -> Result<()> {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_full_config();
+        let hidden_size = cfg.hidden_size;
+
+        let mut text_model = HunYuanVLTextModel::new(vb, &cfg)?;
+
+        // inputs_embeds: (batch=1, seq_len=3, hidden_size=32)
+        let inputs_embeds = Tensor::zeros((1, 3, hidden_size), DType::F32, &dev)?;
+        let output = text_model.forward(&inputs_embeds, None, 0)?;
+
+        let dims = output.dims();
+        assert_eq!(
+            dims,
+            &[1, 3, hidden_size],
+            "Text model output shape should be (batch=1, seq_len=3, hidden_size=32); got {:?}",
+            dims
+        );
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-7: XD-RoPE path — forward with position_ids accepted without panic
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_accept_position_ids_and_produce_output_when_text_model_forward_uses_xd_rope_path(
+    ) -> Result<()> {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_full_config();
+        let hidden_size = cfg.hidden_size;
+        let seq_len: usize = 4;
+
+        let mut text_model = HunYuanVLTextModel::new(vb, &cfg)?;
+
+        let inputs_embeds = Tensor::zeros((1, seq_len, hidden_size), DType::F32, &dev)?;
+
+        // position_ids shape: (1, 4, seq_len) — 4 XD-RoPE axes (t/h/w/text)
+        // values are simple sequential positions 0..seq_len for each axis.
+        let pos_row: Vec<u32> = (0..seq_len as u32).collect();
+        let pos_flat: Vec<u32> = pos_row.iter().cycle().take(4 * seq_len).cloned().collect();
+        let position_ids = Tensor::from_vec(pos_flat, (1, 4, seq_len), &dev)?;
+
+        let output = text_model.forward(&inputs_embeds, Some(&position_ids), 0)?;
+
+        // Output must be a tensor with the correct shape — the XD-RoPE path
+        // only applies to layer 0; subsequent layers fall through normally.
+        let dims = output.dims();
+        assert_eq!(
+            dims,
+            &[1, seq_len, hidden_size],
+            "Text model output shape should be (1, seq_len={}, hidden_size={}); got {:?}",
+            seq_len,
+            hidden_size,
+            dims
+        );
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-8: KV cache cleared between sequences
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_clear_kv_cache_when_clear_kv_cache_called_on_text_model() -> Result<()> {
+        let dev = Device::Cpu;
+        let vb = VarBuilder::zeros(DType::F32, &dev);
+        let cfg = tiny_full_config();
+        let hidden_size = cfg.hidden_size;
+
+        let mut text_model = HunYuanVLTextModel::new(vb, &cfg)?;
+
+        // Prime the KV cache with a sequence.
+        let inputs_embeds = Tensor::zeros((1, 2, hidden_size), DType::F32, &dev)?;
+        let _ = text_model.forward(&inputs_embeds, None, 0)?;
+
+        // Clearing must not panic.
+        text_model.clear_kv_cache();
+
+        // A second forward (offset=0 again) should succeed after cache is cleared.
+        let output = text_model.forward(&inputs_embeds, None, 0)?;
+        let dims = output.dims();
+        assert_eq!(
+            dims,
+            &[1, 2, hidden_size],
+            "Forward after KV-cache clear should produce (1, 2, hidden_size={}); got {:?}",
+            hidden_size,
+            dims
+        );
+
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
+    // E1-9: Causal mask lower-triangular shape assertion
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn should_produce_causal_mask_where_future_positions_are_neg_infinity() -> Result<()> {
+        let dev = Device::Cpu;
+        let batch = 1usize;
+        let seq_len = 3usize;
+
+        let mask = prepare_causal_attention_mask(batch, seq_len, &dev)?;
+
+        let dims = mask.dims();
+        assert_eq!(
+            dims,
+            &[batch, seq_len, seq_len],
+            "Causal mask shape should be (batch={}, seq_len={}, seq_len={}); got {:?}",
+            batch,
+            seq_len,
+            seq_len,
+            dims
+        );
+
+        let data = mask.to_vec3::<f32>()?;
+        // Position (0, 0, 1): query 0, key 1 — key is in future → NEG_INFINITY
+        assert!(
+            data[0][0][1].is_infinite() && data[0][0][1] < 0.0,
+            "Mask[0][0][1] should be -inf (future key), got {}",
+            data[0][0][1]
+        );
+        // Position (0, 1, 1): query 1, key 1 — same position → not masked
+        assert_eq!(
+            data[0][1][1], 0.0,
+            "Mask[0][1][1] should be 0.0 (not masked), got {}",
+            data[0][1][1]
+        );
+        // Position (0, 2, 0): query 2, key 0 — past → not masked
+        assert_eq!(
+            data[0][2][0], 0.0,
+            "Mask[0][2][0] should be 0.0 (past key), got {}",
+            data[0][2][0]
+        );
 
         Ok(())
     }

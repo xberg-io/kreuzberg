@@ -599,6 +599,9 @@ mod engine {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
+pub use engine::GlmOcrEngine;
+
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use super::engine;
@@ -635,6 +638,3 @@ mod tests {
         assert!(engine::GlmOcrEngine::detect_structured_markdown(text));
     }
 }
-
-#[cfg(not(target_arch = "wasm32"))]
-pub use engine::GlmOcrEngine;

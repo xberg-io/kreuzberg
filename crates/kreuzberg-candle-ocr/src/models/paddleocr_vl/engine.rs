@@ -351,4 +351,44 @@ mod tests {
         assert_eq!(PaddleOcrVlTask::Formula.to_string(), "formula");
         assert_eq!(PaddleOcrVlTask::Chart.to_string(), "chart");
     }
+
+    /// Each `PaddleOcrVlTask` variant serializes to the expected lowercase string
+    /// and deserializes back to the same variant (round-trip fidelity).
+    #[test]
+    fn paddle_ocr_vl_task_all_variants_serde_round_trip() {
+        let cases: &[(PaddleOcrVlTask, &str)] = &[
+            (PaddleOcrVlTask::Ocr, "\"ocr\""),
+            (PaddleOcrVlTask::Table, "\"table\""),
+            (PaddleOcrVlTask::Formula, "\"formula\""),
+            (PaddleOcrVlTask::Chart, "\"chart\""),
+        ];
+
+        for (variant, expected_json) in cases {
+            let serialized =
+                serde_json::to_string(variant).unwrap_or_else(|e| panic!("serialize {:?}: {e}", variant));
+            assert_eq!(
+                serialized, *expected_json,
+                "PaddleOcrVlTask::{:?} should serialize to {expected_json}",
+                variant
+            );
+
+            let decoded: PaddleOcrVlTask =
+                serde_json::from_str(&serialized).unwrap_or_else(|e| panic!("deserialize {:?}: {e}", variant));
+            assert_eq!(
+                decoded, *variant,
+                "PaddleOcrVlTask::{:?} should round-trip through serde",
+                variant
+            );
+        }
+    }
+
+    /// `PaddleOcrVlTask` derives `Default` and `Copy`; verify the default is `Ocr`.
+    #[test]
+    fn paddle_ocr_vl_task_default_is_ocr() {
+        assert_eq!(
+            PaddleOcrVlTask::default(),
+            PaddleOcrVlTask::Ocr,
+            "Default PaddleOcrVlTask should be Ocr"
+        );
+    }
 }

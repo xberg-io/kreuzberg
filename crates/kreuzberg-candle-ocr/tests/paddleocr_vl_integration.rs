@@ -51,8 +51,10 @@ fn paddleocr_vl_ocr_task_recognises_full_page_fixture() {
         panic!("failed to read fixture {}: {e}", fixture.display());
     });
 
-    let engine = PaddleOcrVlEngine::new(PaddleOcrVlTask::Ocr, Device::Cpu, DType::F32)
-        .expect("PaddleOcrVlEngine::new should succeed with weights cached in $HOME/.cache/huggingface");
+    // Model path resolved from env or HuggingFace cache; the original API required a local path.
+    let model_path = std::env::var("KREUZBERG_PADDLEOCR_VL_MODEL_PATH").unwrap_or_default();
+    let mut engine = PaddleOcrVlEngine::new(&model_path, PaddleOcrVlTask::Ocr, Device::Cpu, DType::F32)
+        .expect("PaddleOcrVlEngine::new should succeed when weights are present at model_path");
 
     let output = engine
         .process_image(&bytes)
