@@ -5,9 +5,9 @@ Model: paddlepaddle/paddleocr-v4 (vision-language variant) or paddlex SDK
 - Architecture: PP-VisionTransformer encoder + PP-Language (~600M params)
 - Output: Structured JSON or direct markdown
 
-Model size: ~700 MB – 2 GB (disk after download)
+Model size: ~700 MB - 2 GB (disk after download)
 Hardware: CPU feasible, CUDA optional for speedup
-Expected latency: GPU ~10–30s/page, CPU ~60–180s/page
+Expected latency: GPU ~10-30s/page, CPU ~60-180s/page
 
 Exit codes:
 - 0: All fixtures processed successfully
@@ -72,8 +72,8 @@ def _load_paddleocr_vl() -> Any:
         # VL variant: high performance, structured output
         model = OCR(use_angle_cls=True, lang="en", version="v4")
         return ("paddleocr", model)
-    except ImportError:
-        raise ImportError("Neither paddlex nor paddleocr available. Install: pip install paddlex paddlepaddle")
+    except ImportError as exc:
+        raise ImportError("Neither paddlex nor paddleocr available. Install: pip install paddlex paddlepaddle") from exc
 
 
 def extract_sync_paddlex(
@@ -156,9 +156,9 @@ def _format_paddlex_result(result: Any) -> str:
     # Extract text content in line order
     lines = []
     if hasattr(result, "text"):
-        return result.text
+        return str(result.text)
     if isinstance(result, dict) and "text" in result:
-        return result["text"]
+        return str(result["text"])
     if isinstance(result, list):
         # List of paragraphs/lines
         for item in result:
@@ -183,25 +183,19 @@ def _format_paddleocr_result(result: Any) -> str:
             for item in line_item:
                 if isinstance(item, (list, tuple)) and len(item) >= 2:
                     text_data = item[1]
-                    if isinstance(text_data, tuple):
-                        text = text_data[0]
-                    else:
-                        text = str(text_data)
+                    text = text_data[0] if isinstance(text_data, tuple) else str(text_data)
                     if text.strip():
                         lines.append(text)
         elif isinstance(line_item, tuple) and len(line_item) >= 2:
             text_data = line_item[1]
-            if isinstance(text_data, tuple):
-                text = text_data[0]
-            else:
-                text = str(text_data)
+            text = text_data[0] if isinstance(text_data, tuple) else str(text_data)
             if text.strip():
                 lines.append(text)
 
     return "\n".join(lines)
 
 
-def main():
+def main() -> None:
     """CLI entry point."""
     parser = argparse.ArgumentParser(description="Generate PaddleOCR-VL reference baselines for image fixtures.")
     parser.add_argument(
@@ -232,7 +226,7 @@ def main():
     log.info("PaddleOCR-VL Baseline Generation")
     log.info("=" * 70)
     log.info("Model: paddleocr-v4 (vision-language)")
-    log.info("Size: ~700 MB – 2 GB (disk)")
+    log.info("Size: ~700 MB - 2 GB (disk)")
     log.info(f"Device: {args.device}")
     log.info(f"Fixtures directory: {args.fixtures}")
     log.info(f"Output directory: {args.output}")
@@ -244,7 +238,7 @@ def main():
         sys.exit(1)
 
     # Load model
-    log.info("Loading PaddleOCR-VL model... (first run will download ~700MB–2GB)")
+    log.info("Loading PaddleOCR-VL model... (first run will download ~700MB-2GB)")
     try:
         backend, model = _load_paddleocr_vl()
         log.info(f"Model loaded successfully ({backend})")

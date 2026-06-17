@@ -6,12 +6,12 @@ hand-edited drift in the kreuzberg repo.
 
 ## 1. Kotlin — uncompilable references in `Kreuzberg.kt`
 
-**Files**
+### Kotlin files
 
 - `packages/kotlin/src/main/kotlin/dev/kreuzberg/kt/Kreuzberg.kt` (alef-generated)
 - `packages/java/src/main/java/dev/kreuzberg/Kreuzberg.java` (alef-generated, used as `Bridge`)
 
-**Symptom**
+### Kotlin symptom
 
 Kotlin calls Java methods that no longer exist or have wrong return types:
 
@@ -20,9 +20,9 @@ Kotlin calls Java methods that no longer exist or have wrong return types:
 | `Bridge.batchExtractFileSync` (L331)         | `batchExtractFilesSync` (L116)                | Stale singular name  |
 | `Bridge.batchExtractFile` (L381)             | `batchExtractFiles` (L165)                    | Stale singular name  |
 | `Bridge.listExtractors` (L451)               | `listDocumentExtractors` (L244)               | Old non-renamed name |
-| `Bridge.getEmbeddingPreset → String?` (L551) | `getEmbeddingPreset → EmbeddingPreset` (L353) | Wrong return type    |
+| `Bridge.getEmbeddingPreset → String?` (L551) | `getEmbeddingPreset → EmbeddingPreset` (L353) | Wrong type |
 
-**Root cause**
+### Kotlin root cause
 
 alef-backend-kotlin's identifier mapping for batch APIs and for `list_document_extractors`
 is out of sync with the Java backend after the latter was renamed. The `getEmbeddingPreset`
@@ -41,7 +41,7 @@ record, but Kotlin codegen still emits the `String?` skeleton from before that c
 
 ## 2. Swift — 0 free functions in `Kreuzberg.swift`
 
-**Files**
+### Swift files
 
 - `packages/swift/Sources/Kreuzberg/Kreuzberg.swift` (alef-generated, 1511 lines, 215 type
   re-exports, **zero `public func`**)
@@ -53,7 +53,7 @@ record, but Kotlin codegen still emits the `String?` skeleton from before that c
 
 - `packages/swift/Sources/RustBridgeC/RustBridgeC.h` — bare scaffold
 
-**Root cause**
+### Swift root cause
 
 `Sources/Kreuzberg/Kreuzberg.swift` is generated as a "facade" — it does
 `public typealias Foo = RustBridge.Foo` for every type and is supposed to also re-export
@@ -82,13 +82,13 @@ types) but is completely unusable: zero callable surface.
 
 ## 3. Ruby — 13-line `lib/kreuzberg.rb` is **correct** (no fix needed)
 
-**Files**
+### Ruby files
 
 - `packages/ruby/lib/kreuzberg.rb` (3 non-comment lines: `require 'kreuzberg_rb'`)
 - `packages/ruby/ext/kreuzberg_rb/src/lib.rs` — alef-generated, 13374 lines, **30
   `define_module_function` calls**, all canonical fns + plugin trait bridges.
 
-**Investigation**
+### Ruby investigation
 
 Magnus binds Rust functions directly onto the `Kreuzberg` Ruby module via
 `module.define_module_function("name", function!(rust_fn, arity))`. Once
@@ -119,14 +119,14 @@ counting lines in `kreuzberg.rb`.
 
 ## 4. R — `R/kreuzberg.R` 8-line stub is **almost** correct (alef bug + audit bug)
 
-**Files**
+### R files
 
 - `packages/r/R/kreuzberg.R` — 8 lines, only `useDynLib(...)` directive.
 - `packages/r/NAMESPACE` — single line: `useDynLib(kreuzberg, .registration = TRUE)`.
 - `packages/r/src/rust/src/lib.rs` — alef-generated, **90 `#[extendr]` attrs** and a final
   `extendr_module! { ... }` block listing all 27 canonical fn names (L13353-13374).
 
-**Investigation**
+### R investigation
 
 extendr-api's design: at _cargo build time_, the `extendr_module!` macro emits a sibling
 file `R/extendr-wrappers.R` containing R-side function declarations, plus auto-registers
@@ -153,7 +153,7 @@ the symbols via `useDynLib`. After running `rextendr::document()` (or `R CMD INS
 extendr's own format) and a complete `NAMESPACE` with `export(...)` per fn. Optionally
 add a `configure` script that runs `rextendr::document()` for upstream consistency.
 
-**Verification recipe**
+### R verification recipe
 
 ```sh
 cd packages/r
@@ -190,14 +190,14 @@ the documented happy path. **No change recommended.**
 
 ## Next-cycle action items (for alef v0.14.3 + alef v0.14.4)
 
-| #   | Backend                 | Action                                                                                              | Severity |
-| --- | ----------------------- | --------------------------------------------------------------------------------------------------- | -------- |
-| 1   | alef-backend-kotlin     | Fix rename mapping for `batch_extract_files[_sync]` and `list_document_extractors`.                 | Blocker  |
-| 2   | alef-backend-kotlin     | Propagate Java return types: `getEmbeddingPreset` must return `EmbeddingPreset?`.                   | Blocker  |
-| 3   | alef new crate template | Add `crates/kreuzberg-swift` swift-bridge crate (mirrors kreuzberg-php).                            | Blocker  |
-| 4   | alef-backend-swift      | Emit `public func` shims wrapping `RustBridge.<fn>` for all 27 fns + error translation.             | Blocker  |
-| 5   | alef-backend-extendr    | Emit `packages/r/R/extendr-wrappers.R` and complete `NAMESPACE` with `export(...)` lines.           | Blocker  |
-| 6   | cycle-4 audit script    | Replace line-count checks for Ruby/R with runtime ls("package:kreuzberg")/Kreuzberg.methods checks. | Quality  |
+| #   | Backend                 | Action                                                              | Severity |
+| --- | ----------------------- | ------------------------------------------------------------------- | -------- |
+| 1   | alef-backend-kotlin     | Fix rename: `batch_extract_files[_sync]`, `list_document_extractors`. | Blocker  |
+| 2   | alef-backend-kotlin     | Propagate Java return types: `getEmbeddingPreset` → `EmbeddingPreset?`. | Blocker  |
+| 3   | alef new crate template | Add `crates/kreuzberg-swift` swift-bridge crate (mirrors kreuzberg-php). | Blocker  |
+| 4   | alef-backend-swift      | Emit `public func` shims wrapping `RustBridge.<fn>` + error translation. | Blocker  |
+| 5   | alef-backend-extendr    | Emit `R/extendr-wrappers.R` and complete `NAMESPACE` with `export(...)`. | Blocker  |
+| 6   | cycle-4 audit script    | Replace line-count checks with runtime `ls("package:kreuzberg")`. | Quality  |
 
 No kreuzberg repo changes are needed for cycle 4. Working tree left clean for the
 sibling agent's regen pass.

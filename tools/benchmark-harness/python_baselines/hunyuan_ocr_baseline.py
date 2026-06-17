@@ -6,9 +6,9 @@ Model: tencent/Hunyuan-OCR (6.7B-param end-to-end VLM)
 - Decoder: Language model (6.7B params)
 - Output: Direct markdown OCR from image
 
-Model size: ~13–15 GB (disk after download)
-Hardware: CUDA 12+ required, ≥24 GB VRAM for full precision
-Expected latency: GPU ~60–120s/page
+Model size: ~13-15 GB (disk after download)
+Hardware: CUDA 12+ required, >=24 GB VRAM for full precision
+Expected latency: GPU ~60-120s/page
 
 Exit codes:
 - 0: All fixtures processed successfully
@@ -118,7 +118,7 @@ def extract_sync(
         }
 
 
-def main():
+def main() -> None:
     """CLI entry point."""
     parser = argparse.ArgumentParser(description="Generate Hunyuan-OCR reference baselines for image fixtures.")
     parser.add_argument(
@@ -148,8 +148,8 @@ def main():
     log.info("Hunyuan-OCR Baseline Generation")
     log.info("=" * 70)
     log.info("Model: tencent/Hunyuan-OCR")
-    log.info("Size: ~13–15 GB (disk)")
-    log.info("WARNING: Requires CUDA 12+, ≥24 GB VRAM")
+    log.info("Size: ~13-15 GB (disk)")
+    log.info("WARNING: Requires CUDA 12+, >=24 GB VRAM")
     log.info(f"Fixtures directory: {args.fixtures}")
     log.info(f"Output directory: {args.output}")
     log.info("=" * 70)
@@ -160,7 +160,7 @@ def main():
         sys.exit(1)
 
     # Load model and tokenizer
-    log.info("Loading Hunyuan-OCR model... (first run will download ~13–15 GB)")
+    log.info("Loading Hunyuan-OCR model... (first run will download ~13-15 GB)")
     try:
         model = AutoModel.from_pretrained(
             "tencent/Hunyuan-OCR",
