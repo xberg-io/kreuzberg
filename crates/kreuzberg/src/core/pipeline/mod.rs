@@ -5,7 +5,7 @@
 
 mod cache;
 mod execution;
-mod features;
+pub(crate) mod features;
 mod format;
 mod initialization;
 

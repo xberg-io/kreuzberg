@@ -24,7 +24,7 @@ use std::borrow::Cow;
 /// Pages whose content cannot be found are silently skipped (the chunker will
 /// still produce output, just without page-range metadata for those pages).
 #[cfg(feature = "chunking")]
-fn recompute_boundaries_from_pages(content: &str, pages: &[crate::types::PageContent]) -> Vec<PageBoundary> {
+pub(crate) fn recompute_boundaries_from_pages(content: &str, pages: &[crate::types::PageContent]) -> Vec<PageBoundary> {
     let mut boundaries = Vec::with_capacity(pages.len());
     let mut search_offset = 0usize;
 
@@ -449,6 +449,72 @@ mod tests {
         assert_eq!(&content[boundaries[0].byte_start..boundaries[0].byte_end], p1_norm);
         assert_eq!(&content[boundaries[1].byte_start..boundaries[1].byte_end], p2_norm);
         assert_eq!(&content[boundaries[2].byte_start..boundaries[2].byte_end], p3_norm);
+    }
+
+    // --- Issue #1110: page boundaries must be recomputed after OCR fills page_contents ---
+
+    // Regression test: after OCR writes new text into page_contents, the original
+    // boundaries (computed against empty native text) are stale.  The PDF extractor
+    // calls recompute_boundaries_from_pages with OCR-filled content so downstream
+    // consumers (chunker) receive valid byte offsets.
+    //
+    // This test simulates the recompute call with a synthetic InternalDocument:
+    // three pages whose native content was empty (scanned PDF) and whose content
+    // has been filled by OCR.  Boundaries must be non-empty and the byte ranges
+    // must resolve to substrings that actually appear in the combined OCR content.
+    #[test]
+    fn recompute_boundaries_after_ocr_fills_scanned_pdf() {
+        // Simulate OCR output per page (scanned PDF — native was empty).
+        let p1_ocr = "Invoice\n\nBill To: Acme Corp";
+        let p2_ocr = "Line items\n\nProduct A  $100.00";
+        let p3_ocr = "Total: $100.00";
+
+        let pages = vec![make_page(1, p1_ocr), make_page(2, p2_ocr), make_page(3, p3_ocr)];
+
+        // Combined content built the same way the PDF extractor does (join trimmed pages).
+        let combined: String = pages
+            .iter()
+            .filter(|p| !p.content.trim().is_empty())
+            .map(|p| p.content.trim())
+            .collect::<Vec<_>>()
+            .join("\n\n");
+
+        let boundaries = recompute_boundaries_from_pages(&combined, &pages);
+
+        // All three OCR-filled pages must produce boundaries.
+        assert_eq!(boundaries.len(), 3, "all OCR-filled pages should resolve to boundaries");
+
+        // Each boundary range must index a substring actually present in the combined content.
+        for b in &boundaries {
+            assert!(
+                b.byte_start <= b.byte_end,
+                "page {} boundary start ({}) must not exceed end ({})",
+                b.page_number,
+                b.byte_start,
+                b.byte_end
+            );
+            assert!(
+                b.byte_end <= combined.len(),
+                "page {} byte_end ({}) exceeds combined content length ({})",
+                b.page_number,
+                b.byte_end,
+                combined.len()
+            );
+        }
+
+        // Spot-check: page 1 range covers "Invoice".
+        let p1 = &boundaries[0];
+        assert!(
+            combined[p1.byte_start..p1.byte_end].contains("Invoice"),
+            "page 1 boundary should cover the OCR text starting with 'Invoice'"
+        );
+
+        // Page 3 range covers "Total".
+        let p3 = &boundaries[2];
+        assert!(
+            combined[p3.byte_start..p3.byte_end].contains("Total"),
+            "page 3 boundary should cover the OCR text containing 'Total'"
+        );
     }
 
     // --- Issue #1073: chunk content must match output_format ---

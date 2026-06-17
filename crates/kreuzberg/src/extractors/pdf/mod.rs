@@ -193,7 +193,7 @@ impl PdfExtractor {
 
         #[allow(unused_variables, unused_mut)]
         let (
-            pdf_metadata,
+            mut pdf_metadata,
             native_text,
             mut tables,
             page_contents,
@@ -516,6 +516,35 @@ impl PdfExtractor {
                     if let Some(ocr_text) = results_map.get(&page.page_number) {
                         page.content = crate::pdf::text::fix_pdf_control_chars(ocr_text).into_owned();
                         page.is_blank = Some(crate::extraction::blank_detection::is_page_text_blank(&page.content));
+                    }
+                }
+            }
+        }
+
+        // --- Recompute page boundaries after OCR fills page_contents (#1110) ---
+        // When OCR writes new text into page_contents, the original boundaries in
+        // pdf_metadata.page_structure (computed against native extraction) become
+        // invalid byte offsets into the OCR-filled content.  Recompute them here so
+        // downstream consumers (the chunker, result.metadata.pages) see valid offsets.
+        #[cfg(all(any(feature = "ocr", feature = "ocr-pipeline"), feature = "chunking"))]
+        if extraction_method.used_ocr() {
+            if let Some(ref pages) = page_contents {
+                if !pages.is_empty() {
+                    // Build combined content mirroring what render_plain produces from
+                    // page texts so recompute_boundaries_from_pages can locate each page.
+                    let combined: String = pages
+                        .iter()
+                        .filter(|p| !p.content.trim().is_empty())
+                        .map(|p| p.content.trim())
+                        .collect::<Vec<_>>()
+                        .join("\n\n");
+                    if let Some(ref mut page_structure) = pdf_metadata.page_structure {
+                        page_structure.boundaries = Some(
+                            crate::core::pipeline::features::recompute_boundaries_from_pages(
+                                &combined,
+                                pages,
+                            ),
+                        );
                     }
                 }
             }
