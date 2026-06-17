@@ -44,6 +44,8 @@ mod tests {
     use super::*;
     use crate::core::config::LlmConfig;
 
+    // Uses `axum` to stand up a stub server, which is only available under the `api` feature.
+    #[cfg(feature = "api")]
     #[tokio::test]
     async fn test_client_path_normalization_with_base_url() {
         use axum::{Router, routing::post};

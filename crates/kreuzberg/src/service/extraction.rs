@@ -105,6 +105,8 @@ mod tests {
         assert!(result.content.contains("hello"));
     }
 
+    // `ExtractionRequest::file_with_mime` is only compiled under the `mcp` feature.
+    #[cfg(feature = "mcp")]
     #[tokio::test]
     async fn extract_from_tempfile() {
         let mut svc = ExtractionService::new();
