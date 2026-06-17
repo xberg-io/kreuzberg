@@ -105,6 +105,12 @@ pub mod enrichment;
 #[cfg(feature = "heuristics")]
 pub mod heuristics;
 
+#[cfg(feature = "heuristics")]
+pub use heuristics::{
+    BoundaryReason, DocumentBoundary, MultidocInput, MultidocThresholds, PageSignals,
+    boundaries_from_extraction_result, detect_boundaries,
+};
+
 #[cfg(feature = "presets")]
 pub mod presets;
 

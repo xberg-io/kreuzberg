@@ -13,8 +13,64 @@
 //! 3. **Density shift** — adjacent pages differ by `> density_shift_threshold` AND
 //!    text excerpts share < 10 % common bigrams → weak boundary (0.5).
 //! 4. **No signal** → no boundary.
+//!
+//! # Entry points
+//!
+//! | Function | When to use |
+//! |----------|-------------|
+//! | [`detect_boundaries`] | Low-level: caller already has [`MultidocInput`] + [`PageSignals`] |
+//! | [`boundaries_from_extraction_result`] | High-level: derive signals from an [`ExtractionResult`] |
+//! | [`PageSignals::from_page_text`] | Helper: build signals from plain page text |
 
 use std::collections::HashSet;
+
+// ── Named constants for signal-derivation heuristics ─────────────────────────
+
+/// Characters taken from the start of each page for `text_excerpt`.
+const TEXT_EXCERPT_LEN: usize = 500;
+
+/// Number of leading lines inspected for letterhead-like detection.
+const LETTERHEAD_LINES_CHECKED: usize = 5;
+
+/// Minimum fraction of UPPERCASE characters in a line for it to count as
+/// "all-caps" (letterhead style).  0.7 means ≥ 70 % of ASCII letters are upper.
+const LETTERHEAD_CAPS_RATIO: f32 = 0.7;
+
+/// Number of leading non-empty lines that must satisfy the caps/short criterion
+/// for `starts_with_letterhead_like` to be `true`.
+const LETTERHEAD_QUALIFYING_LINES: usize = 2;
+
+/// Maximum character length of a "short" line for letterhead detection.
+/// Lines longer than this are not considered title-like regardless of
+/// capitalisation.
+const LETTERHEAD_SHORT_LINE_MAX: usize = 60;
+
+/// Maximum character offset (in the text) within which a "page 1" marker
+/// must appear to qualify as `has_page_number_one_marker`.  Prevents
+/// mid-document occurrences from triggering a false positive.
+///
+/// This is intentionally generous (2 000 chars) to handle documents with
+/// lengthy preambles before their page numbering.  Tighten as needed.
+const PAGE_ONE_MARKER_WINDOW: usize = 2_000;
+
+/// Signature-related keywords searched in the full page text (lowercased).
+const SIGNATURE_KEYWORDS: &[&str] = &[
+    "sincerely",
+    "regards",
+    "yours truly",
+    "yours faithfully",
+    "signed",
+    "signature",
+    "/s/",
+];
+
+/// Minimum character length of a line that may look like "Name  Date" at the
+/// end of a signature block (short lines near signature keywords).
+const SIGNATURE_SHORT_LINE_MIN: usize = 3;
+
+/// Maximum character length of a short line following a signature keyword,
+/// used to detect "Name / Date" pattern.
+const SIGNATURE_SHORT_LINE_MAX: usize = 80;
 
 /// Input signals for multi-document boundary detection.
 #[derive(Debug, Clone)]
@@ -92,6 +148,209 @@ impl Default for MultidocThresholds {
             bigram_overlap_min: 0.1,
         }
     }
+}
+
+impl PageSignals {
+    /// Derive signals from raw page text.
+    ///
+    /// Callers that already have structured per-page data (e.g. from a PDF extractor)
+    /// can set individual fields directly.  This constructor is for callers that only
+    /// have the plain-text content of a page (e.g. from [`crate::types::PageContent`]).
+    ///
+    /// # Arguments
+    ///
+    /// * `page_number` — 1-indexed page number.
+    /// * `text` — Full extracted text for the page.
+    /// * `layout_text_density` — Pre-computed text density in `[0.0, 1.0]`.  Pass `0.0`
+    ///   when unknown (disables density-shift detection for this page).
+    ///
+    /// # Heuristics
+    ///
+    /// All signal derivations are *conservative starting points*.  Each is documented
+    /// inline.  They err on the side of fewer false positives; tune thresholds via
+    /// [`MultidocThresholds`] rather than by changing these heuristics.
+    pub fn from_page_text(page_number: u32, text: &str, layout_text_density: f32) -> Self {
+        let text_excerpt = text.chars().take(TEXT_EXCERPT_LEN).collect::<String>();
+
+        Self {
+            page_number,
+            text_excerpt,
+            starts_with_letterhead_like: detect_letterhead(text),
+            has_page_number_one_marker: detect_page_one_marker(text),
+            has_signature_block: detect_signature_block(text),
+            layout_text_density,
+        }
+    }
+}
+
+/// Detect letterhead-like content at the top of a page.
+///
+/// A page "starts with letterhead" when at least [`LETTERHEAD_QUALIFYING_LINES`] of
+/// the first [`LETTERHEAD_LINES_CHECKED`] non-empty lines are *both* short (≤
+/// [`LETTERHEAD_SHORT_LINE_MAX`] characters) *and* predominantly uppercase
+/// (≥ [`LETTERHEAD_CAPS_RATIO`] of their ASCII letters).
+///
+/// This matches patterns like:
+/// ```text
+/// ACME CORPORATION
+/// Legal Department
+/// ```
+/// while rejecting long body paragraphs that happen to be ALL-CAPS.
+fn detect_letterhead(text: &str) -> bool {
+    let qualifying = text
+        .lines()
+        .filter(|l| !l.trim().is_empty())
+        .take(LETTERHEAD_LINES_CHECKED)
+        .filter(|line| {
+            let trimmed = line.trim();
+            if trimmed.len() > LETTERHEAD_SHORT_LINE_MAX {
+                return false;
+            }
+            let ascii_letters = trimmed.chars().filter(|c| c.is_ascii_alphabetic());
+            let total: usize = ascii_letters.clone().count();
+            if total == 0 {
+                return false;
+            }
+            let upper: usize = ascii_letters.filter(|c| c.is_ascii_uppercase()).count();
+            (upper as f32 / total as f32) >= LETTERHEAD_CAPS_RATIO
+        })
+        .count();
+
+    qualifying >= LETTERHEAD_QUALIFYING_LINES
+}
+
+/// Detect a "page 1" or "1 of N" marker within the first [`PAGE_ONE_MARKER_WINDOW`]
+/// characters of the page text.
+///
+/// Matching is case-insensitive.  Checks:
+/// - `"page 1"` (standalone via word-boundary-like suffix check: followed by
+///   non-digit or end-of-window)
+/// - `"1 of "` (common "1 of N" pattern, case-insensitive)
+fn detect_page_one_marker(text: &str) -> bool {
+    let window: String = text.chars().take(PAGE_ONE_MARKER_WINDOW).collect();
+    let lower = window.to_ascii_lowercase();
+
+    // "1 of N" pattern — e.g. "1 of 5", "1 of many"
+    if lower.contains("1 of ") {
+        return true;
+    }
+
+    // "page 1" followed by a non-digit character (or end of string) to avoid
+    // matching "page 10", "page 11", etc.
+    let mut search = lower.as_str();
+    while let Some(pos) = search.find("page 1") {
+        let after = &search[pos + "page 1".len()..];
+        let next_char = after.chars().next();
+        match next_char {
+            None => return true,
+            Some(c) if !c.is_ascii_digit() => return true,
+            _ => {}
+        }
+        // advance past this occurrence and keep looking
+        search = &search[pos + 1..];
+    }
+
+    false
+}
+
+/// Detect a signature block anywhere on the page.
+///
+/// Returns `true` when the lowercase text contains any of [`SIGNATURE_KEYWORDS`]
+/// **and** there is at least one short line (between [`SIGNATURE_SHORT_LINE_MIN`]
+/// and [`SIGNATURE_SHORT_LINE_MAX`] characters) near the end of the page, which
+/// is typical of "Signed by: Alice Smith  2024-01-15" closings.
+///
+/// The two-condition check reduces false positives on documents that merely
+/// mention "signature" in body prose without being a real closing block.
+fn detect_signature_block(text: &str) -> bool {
+    let lower = text.to_ascii_lowercase();
+
+    let has_keyword = SIGNATURE_KEYWORDS.iter().any(|kw| lower.contains(kw));
+    if !has_keyword {
+        return false;
+    }
+
+    // Require at least one short, non-empty trailing line typical of a closing.
+    text.lines()
+        .rev()
+        .take(10)
+        .any(|line| {
+            let len = line.trim().len();
+            (SIGNATURE_SHORT_LINE_MIN..=SIGNATURE_SHORT_LINE_MAX).contains(&len)
+        })
+}
+
+/// Derive document boundaries from an already-produced [`ExtractionResult`].
+///
+/// Builds a [`MultidocInput`] from `result.pages` (one [`PageSignals`] per
+/// [`crate::types::PageContent`] entry), then delegates to [`detect_boundaries`].
+///
+/// # Fallback behaviour
+///
+/// - If `result.pages` is `None` or empty the whole document is treated as a
+///   single document: returns `[Start(1), End(1)]`, matching the contract of
+///   [`detect_boundaries`] for a one-page input.
+///
+/// # Text density
+///
+/// [`crate::types::PageContent`] does not carry a pre-computed density score.
+/// This function approximates density as
+/// `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
+/// reasonable proxy for how text-dense a page is relative to itself.  Pass a
+/// custom [`MultidocInput`] to [`detect_boundaries`] directly when you need a
+/// higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
+///
+/// # Arguments
+///
+/// * `result` — Extraction result whose `pages` field will be used.
+/// * `thresholds` — Detection thresholds forwarded to [`detect_boundaries`].
+pub fn boundaries_from_extraction_result(
+    result: &crate::types::ExtractionResult,
+    thresholds: &MultidocThresholds,
+) -> Vec<DocumentBoundary> {
+    let pages = match result.pages.as_deref() {
+        None | Some([]) => {
+            // No per-page data — treat whole document as a single document.
+            return detect_boundaries(
+                &MultidocInput {
+                    page_count: 1,
+                    pages: vec![PageSignals {
+                        page_number: 1,
+                        text_excerpt: result.content.chars().take(TEXT_EXCERPT_LEN).collect(),
+                        starts_with_letterhead_like: false,
+                        has_page_number_one_marker: false,
+                        has_signature_block: false,
+                        layout_text_density: 0.0,
+                    }],
+                },
+                thresholds,
+            );
+        }
+        Some(pages) => pages,
+    };
+
+    let page_count = pages.len() as u32;
+    let signals: Vec<PageSignals> = pages
+        .iter()
+        .map(|page| {
+            let density = approximate_text_density(&page.content);
+            PageSignals::from_page_text(page.page_number, &page.content, density)
+        })
+        .collect();
+
+    detect_boundaries(&MultidocInput { page_count, pages: signals }, thresholds)
+}
+
+/// Approximate text density as the fraction of non-whitespace characters.
+///
+/// Returns a value in `[0.0, 1.0]`.  Returns `0.0` for empty strings.
+fn approximate_text_density(text: &str) -> f32 {
+    let total = text.chars().count();
+    if total == 0 {
+        return 0.0;
+    }
+    let non_ws = text.chars().filter(|c| !c.is_whitespace()).count();
+    (non_ws as f32 / total as f32).clamp(0.0, 1.0)
 }
 
 /// Detect document boundaries in a multi-document PDF.
@@ -243,6 +502,234 @@ mod tests {
             has_signature_block,
             layout_text_density,
         }
+    }
+
+    // ── PageSignals::from_page_text ───────────────────────────────────────────
+
+    #[test]
+    fn from_page_text_detects_letterhead() {
+        let text = "ACME CORPORATION\nLEGAL DEPT\nThis is body text about something.\n";
+        let signals = PageSignals::from_page_text(1, text, 0.5);
+        assert!(
+            signals.starts_with_letterhead_like,
+            "Expected letterhead detection for all-caps short lines"
+        );
+    }
+
+    #[test]
+    fn from_page_text_no_letterhead_for_long_lines() {
+        // Long lines should not trigger letterhead even if uppercase-heavy.
+        let long_line = "THIS IS A VERY LONG LINE THAT EXCEEDS THE MAXIMUM LETTERHEAD LENGTH THRESHOLD BY FAR";
+        let text = format!("{long_line}\n{long_line}\nBody text follows.");
+        let signals = PageSignals::from_page_text(1, &text, 0.5);
+        assert!(
+            !signals.starts_with_letterhead_like,
+            "Long ALL-CAPS lines should not trigger letterhead detection"
+        );
+    }
+
+    #[test]
+    fn from_page_text_detects_page_one_marker() {
+        let text = "Page 1 of 5\nThis is a document.";
+        let signals = PageSignals::from_page_text(2, text, 0.5);
+        assert!(
+            signals.has_page_number_one_marker,
+            "Expected page-one marker detection"
+        );
+    }
+
+    #[test]
+    fn from_page_text_page_one_marker_one_of_n() {
+        let text = "1 of 10\nDocument content here.";
+        let signals = PageSignals::from_page_text(3, text, 0.5);
+        assert!(
+            signals.has_page_number_one_marker,
+            "Expected '1 of N' marker detection"
+        );
+    }
+
+    #[test]
+    fn from_page_text_no_page_one_marker_for_page_10() {
+        // "page 10" must not match "page 1"
+        let text = "Page 10 of 20\nDocument body text.";
+        let signals = PageSignals::from_page_text(10, text, 0.5);
+        assert!(
+            !signals.has_page_number_one_marker,
+            "page 10 must not trigger page-one marker"
+        );
+    }
+
+    #[test]
+    fn from_page_text_detects_signature_block() {
+        let text = "Thank you for your business.\n\nSincerely,\nJohn Smith\n2024-01-15";
+        let signals = PageSignals::from_page_text(1, text, 0.5);
+        assert!(
+            signals.has_signature_block,
+            "Expected signature block detection"
+        );
+    }
+
+    #[test]
+    fn from_page_text_detects_signature_slash_s() {
+        let text = "Agreement is hereby acknowledged.\n\n/s/ Jane Doe\nChief Executive Officer";
+        let signals = PageSignals::from_page_text(1, text, 0.5);
+        assert!(
+            signals.has_signature_block,
+            "Expected /s/ signature detection"
+        );
+    }
+
+    #[test]
+    fn from_page_text_no_signature_for_body_prose() {
+        // Mentioning "signature" in a long paragraph should not trigger.
+        let text = "Please provide your signature on the form attached. This is a long line that \
+                    exceeds the short-line threshold so it should not be treated as a closing block \
+                    in the signature detection heuristic.";
+        let signals = PageSignals::from_page_text(1, text, 0.5);
+        // The keyword "signature" is present but there's no short trailing line — should be false.
+        assert!(
+            !signals.has_signature_block,
+            "Body prose mentioning 'signature' without short closing lines should not trigger"
+        );
+    }
+
+    #[test]
+    fn from_page_text_text_excerpt_truncated() {
+        let long_text: String = "x".repeat(1000);
+        let signals = PageSignals::from_page_text(1, &long_text, 0.5);
+        assert_eq!(
+            signals.text_excerpt.len(),
+            TEXT_EXCERPT_LEN,
+            "text_excerpt should be truncated to TEXT_EXCERPT_LEN"
+        );
+    }
+
+    // ── boundaries_from_extraction_result ────────────────────────────────────
+
+    fn make_extraction_result(pages: Vec<(&str, u32)>) -> crate::types::ExtractionResult {
+        use crate::types::PageContent;
+
+        crate::types::ExtractionResult {
+            content: pages.iter().map(|(t, _)| *t).collect::<Vec<_>>().join("\n"),
+            pages: Some(
+                pages
+                    .into_iter()
+                    .map(|(text, page_number)| PageContent {
+                        page_number,
+                        content: text.to_string(),
+                        tables: vec![],
+                        image_indices: vec![],
+                        hierarchy: None,
+                        is_blank: None,
+                        layout_regions: None,
+                        speaker_notes: None,
+                        section_name: None,
+                        sheet_name: None,
+                    })
+                    .collect(),
+            ),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn boundaries_from_result_three_pages_detects_second_doc() {
+        // Page 2 starts a new document (has a page-one marker).
+        let result = make_extraction_result(vec![
+            ("First document body text for page one.", 1),
+            (
+                "Page 1 of 3\nACME CORP\nSecond document header content.",
+                2,
+            ),
+            ("Continuation of second document.", 3),
+        ]);
+
+        let thresholds = MultidocThresholds::default();
+        let boundaries = boundaries_from_extraction_result(&result, &thresholds);
+
+        let page_2_boundary = boundaries.iter().find(|b| b.start_page == 2);
+        assert!(
+            page_2_boundary.is_some(),
+            "Expected a boundary at page 2 (new document starts)"
+        );
+        assert_eq!(
+            page_2_boundary.unwrap().reason,
+            BoundaryReason::PageOneMarker
+        );
+        assert!(
+            (page_2_boundary.unwrap().confidence - 0.9).abs() < f32::EPSILON,
+            "Page-one marker should have confidence 0.9"
+        );
+    }
+
+    #[test]
+    fn boundaries_from_result_single_page_returns_start_end() {
+        let result = make_extraction_result(vec![("Single page document.", 1)]);
+
+        let thresholds = MultidocThresholds::default();
+        let boundaries = boundaries_from_extraction_result(&result, &thresholds);
+
+        // Expect Start + End, no interior boundaries.
+        assert_eq!(boundaries.len(), 2);
+        assert_eq!(boundaries[0].reason, BoundaryReason::Start);
+        assert_eq!(boundaries[1].reason, BoundaryReason::End);
+    }
+
+    #[test]
+    fn boundaries_from_result_no_pages_returns_start_end() {
+        let result = crate::types::ExtractionResult {
+            content: "Whole document as one blob.".to_string(),
+            pages: None,
+            ..Default::default()
+        };
+
+        let thresholds = MultidocThresholds::default();
+        let boundaries = boundaries_from_extraction_result(&result, &thresholds);
+
+        // Fallback to single-document treatment.
+        assert_eq!(boundaries.len(), 2);
+        assert_eq!(boundaries[0].reason, BoundaryReason::Start);
+        assert_eq!(boundaries[1].reason, BoundaryReason::End);
+    }
+
+    #[test]
+    fn boundaries_from_result_empty_pages_returns_start_end() {
+        let result = crate::types::ExtractionResult {
+            content: "Document content.".to_string(),
+            pages: Some(vec![]),
+            ..Default::default()
+        };
+
+        let thresholds = MultidocThresholds::default();
+        let boundaries = boundaries_from_extraction_result(&result, &thresholds);
+
+        assert_eq!(boundaries.len(), 2);
+        assert_eq!(boundaries[0].reason, BoundaryReason::Start);
+        assert_eq!(boundaries[1].reason, BoundaryReason::End);
+    }
+
+    #[test]
+    fn boundaries_from_result_letterhead_after_signature_detected() {
+        let result = make_extraction_result(vec![
+            (
+                "Dear Customer,\n\nPlease review our offer.\n\nSincerely,\nAlice",
+                1,
+            ),
+            ("ACME CORP\nINVOICE DEPT\nNew document starts here.", 2),
+        ]);
+
+        let thresholds = MultidocThresholds::default();
+        let boundaries = boundaries_from_extraction_result(&result, &thresholds);
+
+        let page_2_boundary = boundaries.iter().find(|b| b.start_page == 2);
+        assert!(
+            page_2_boundary.is_some(),
+            "Expected boundary at page 2 (letterhead after signature)"
+        );
+        assert_eq!(
+            page_2_boundary.unwrap().reason,
+            BoundaryReason::LetterheadReset
+        );
     }
 
     #[test]

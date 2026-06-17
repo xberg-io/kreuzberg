@@ -36,7 +36,8 @@ pub use decision::{
 };
 pub use error::{HeuristicsError, Result};
 pub use multidoc::{
-    BoundaryReason, DocumentBoundary, MultidocInput, MultidocThresholds, PageSignals, detect_boundaries,
+    BoundaryReason, DocumentBoundary, MultidocInput, MultidocThresholds, PageSignals,
+    boundaries_from_extraction_result, detect_boundaries,
 };
 pub use structured::{StructuredCallMode, StructuredInput, StructuredThresholds, choose_call_mode};
 pub use thresholds::{calculate_chunk_plan, calculate_plan_from_overrides};
