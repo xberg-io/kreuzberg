@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-dart"
-version = "5.0.0-rc.19"
+version = "5.0.0-rc.22"
 edition = "2024"
 license = "Elastic-2.0"
 
@@ -48,6 +48,7 @@ tokio-runtime = ["kreuzberg/tokio-runtime"]
 transcription-types = ["kreuzberg/transcription-types"]
 tree-sitter = ["kreuzberg/tree-sitter"]
 xml = ["kreuzberg/xml"]
+android-target = ["kreuzberg/android-target", "api", "api-types", "auto-rotate-types", "chunking", "chunking-tokenizers", "diff", "embedding-presets", "enrichment", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ocr", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
 
 [dependencies]
 async-trait = "0.1"

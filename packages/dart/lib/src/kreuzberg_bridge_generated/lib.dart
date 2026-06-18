@@ -1474,9 +1474,31 @@ Future<EnrichOptions> createEnrichOptionsFromJson({required String json}) =>
 Future<EnrichResult> createEnrichResultFromJson({required String json}) =>
     RustLib.instance.api.crateCreateEnrichResultFromJson(json: json);
 
+Future<DocumentMetadata> createDocumentMetadataFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateDocumentMetadataFromJson(json: json);
+
+Future<UserChunkConfig> createUserChunkConfigFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateUserChunkConfigFromJson(json: json);
+
+Future<ConfidenceSignals> createConfidenceSignalsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateConfidenceSignalsFromJson(json: json);
+
+Future<ConfidenceWeights> createConfidenceWeightsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateConfidenceWeightsFromJson(json: json);
+
 Future<ExtractionConfidence> createExtractionConfidenceFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateExtractionConfidenceFromJson(json: json);
+
+Future<HeuristicsConfig> createHeuristicsConfigFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateHeuristicsConfigFromJson(json: json);
+
+Future<ChunkPlan> createChunkPlanFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateChunkPlanFromJson(json: json);
 
 Future<ChunkInfo> createChunkInfoFromJson({required String json}) =>
     RustLib.instance.api.crateCreateChunkInfoFromJson(json: json);
@@ -1497,6 +1519,16 @@ Future<DocumentBoundary> createDocumentBoundaryFromJson({
 Future<MultidocThresholds> createMultidocThresholdsFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateMultidocThresholdsFromJson(json: json);
+
+Future<StructuredInput> createStructuredInputFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateStructuredInputFromJson(json: json);
+
+Future<StructuredThresholds> createStructuredThresholdsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateStructuredThresholdsFromJson(json: json);
+
+Future<ResolvedPreset> createResolvedPresetFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateResolvedPresetFromJson(json: json);
 
 Future<PresetSample> createPresetSampleFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePresetSampleFromJson(json: json);

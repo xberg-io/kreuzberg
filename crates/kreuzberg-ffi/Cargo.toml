@@ -63,6 +63,7 @@ ner-onnx = ["kreuzberg/ner-onnx"]
 ner-llm = ["kreuzberg/ner-llm"]
 diff = ["kreuzberg/diff"]
 redaction = ["kreuzberg/redaction"]
+android-target = ["kreuzberg/android-target", "api", "api-types", "archives", "auto-rotate-types", "chunking", "diff", "email", "embedding-presets", "html", "keywords-rake", "keywords-yake", "language-detection", "layout-types", "liter-llm", "mcp", "ocr", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker-presets", "stopwords", "svg", "tokio-runtime", "transcription-types", "tree-sitter"]
 
 [dependencies]
 ahash = "0.8"
