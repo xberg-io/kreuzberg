@@ -93,9 +93,9 @@
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
 <div align="center">
-
-**If Kreuzberg saves you time, please [⭐ star it on GitHub](https://github.com/kreuzberg-dev/kreuzberg/stargazers) — every star helps more developers find this project.**
-
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
+    <img width="1515" height="647" alt="stars" src="https://github.com/user-attachments/assets/acae69af-bbd4-44f0-b13a-b6269cdd4042" />
+  </a>
 </div>
 
 ## Key Features
