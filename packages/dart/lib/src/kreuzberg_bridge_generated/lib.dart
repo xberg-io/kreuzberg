@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -444,6 +444,29 @@ Future<void> translateResult({
   required TranslationConfig config,
 }) => RustLib.instance.api.crateTranslateResult(result: result, config: config);
 
+/// Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
+///
+/// Delegates to `chunk_text` using the caller's config (defaulting to
+/// `ChunkerType.Markdown` when the config uses the default `Text` type, so that
+/// heading hierarchy is resolved).  After chunking, derives
+/// `ChunkMetadata.heading_path` from each chunk's `heading_context`.
+///
+///   underlying splitter; use `ChunkerType.Markdown` for documents with ATX
+///   headings.
+///
+/// **Returns:**
+///
+/// A `ChunkingResult` where every chunk's `heading_path` is populated from its
+/// `heading_context` (empty when the chunk is not under any heading).
+///
+/// **Errors:**
+///
+/// Propagates any error from the underlying chunker (e.g. invalid overlap).
+Future<ChunkingResult> chunkForRag({
+  required String text,
+  required ChunkingConfig config,
+}) => RustLib.instance.api.crateChunkForRag(text: text, config: config);
+
 /// Compare two extraction results and return a structured diff.
 ///
 /// The comparison is purely structural — no I/O, no side effects. All fields
@@ -519,6 +542,264 @@ Future<List<Keyword>> extractKeywords({
   required String text,
   required KeywordConfig config,
 }) => RustLib.instance.api.crateExtractKeywords(text: text, config: config);
+
+/// Analyze a document and determine the optimal chunking strategy.
+///
+/// Decision logic (in priority order):
+///
+/// 1. If user provides `disable_chunking` → no chunking
+/// 2. If user provides page_ranges → use user overrides
+/// 3. If chunking is not enabled → no chunking
+/// 4. If format doesn't support chunking → no chunking
+/// 5. If file is small (below both thresholds) and not force_chunking → no chunking
+/// 6. If PDF has a substantial text layer AND !force_ocr → no chunking
+///    *(only when `heuristics-pdf` feature is enabled; otherwise skipped)*
+///
+/// 7. Otherwise → chunk the document
+///
+/// **Errors:**
+///
+/// Returns an error only when the `heuristics-pdf` feature is active and
+/// the PDF text-layer analysis itself returns a hard error.  In all other
+/// cases the function returns a `ChunkingDecision`.
+Future<ChunkingDecision> analyzeDocument({
+  required DocumentMetadata metadata,
+  required HeuristicsConfig config,
+  Uint8List? documentBytes,
+}) => RustLib.instance.api.crateAnalyzeDocument(
+  metadata: metadata,
+  config: config,
+  documentBytes: documentBytes,
+);
+
+/// Analyze a document with user-specified chunk ranges.
+///
+/// Creates a chunk plan based on user-provided page ranges.
+Future<ChunkingDecision> analyzeWithUserChunks({
+  required List<PageRange> userRanges,
+  required PlatformInt64 totalPages,
+  required PlatformInt64 sizeBytes,
+  required HeuristicsConfig config,
+}) => RustLib.instance.api.crateAnalyzeWithUserChunks(
+  userRanges: userRanges,
+  totalPages: totalPages,
+  sizeBytes: sizeBytes,
+  config: config,
+);
+
+/// Score a `ConfidenceSignals` triple into an `ExtractionConfidence` using
+/// the supplied weights.
+///
+/// When `signals.ocr_aggregate` is `null`, the OCR weight folds into
+/// `text_coverage` so the weighted sum still totals 1.0.
+Future<ExtractionConfidence> scoreConfidence({
+  required ConfidenceSignals signals,
+  required ConfidenceWeights weights,
+}) => RustLib.instance.api.crateScoreConfidence(
+  signals: signals,
+  weights: weights,
+);
+
+/// Decision returned for pre-extraction rejection based on XLSX/PPTX-specific
+/// resource bounds. Returns `Some(reason)` to reject; `null` to proceed.
+///
+/// Callers must provide counts from a pre-extraction peek (e.g. parsing
+/// `xl/workbook.xml` for sheet count).
+Future<String?> checkFormatLimits({
+  required String mimeType,
+  PlatformInt64? sheetCount,
+  PlatformInt64? workbookCells,
+  PlatformInt64? embeddedCount,
+  required HeuristicsConfig config,
+}) => RustLib.instance.api.crateCheckFormatLimits(
+  mimeType: mimeType,
+  sheetCount: sheetCount,
+  workbookCells: workbookCells,
+  embeddedCount: embeddedCount,
+  config: config,
+);
+
+/// Derive document boundaries from an already-produced `ExtractionResult`.
+///
+/// Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
+/// `PageContent` entry), then delegates to `detect_boundaries`.
+///
+/// # Fallback behaviour
+///
+/// - If `result.pages` is `null` or empty the whole document is treated as a
+///   single document: returns `[Start(1), End(1)]`, matching the contract of
+///   `detect_boundaries` for a one-page input.
+///
+/// # Text density
+///
+/// `PageContent` does not carry a pre-computed density score.
+/// This function approximates density as
+/// `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
+/// reasonable proxy for how text-dense a page is relative to itself.  Pass a
+/// custom `MultidocInput` to `detect_boundaries` directly when you need a
+/// higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
+Future<List<DocumentBoundary>> boundariesFromExtractionResult({
+  required ExtractionResult result,
+  required MultidocThresholds thresholds,
+}) => RustLib.instance.api.crateBoundariesFromExtractionResult(
+  result: result,
+  thresholds: thresholds,
+);
+
+/// Detect document boundaries in a multi-document PDF.
+///
+/// Returns a list of detected boundaries, always including implicit boundaries
+/// at start (page 1) and end (page_count).  Boundaries are returned in ascending
+/// order of `start_page`.
+///
+/// **Returns:**
+///
+/// Ordered list of document boundaries.
+Future<List<DocumentBoundary>> detectBoundaries({
+  required MultidocInput input,
+  required MultidocThresholds thresholds,
+}) => RustLib.instance.api.crateDetectBoundaries(
+  input: input,
+  thresholds: thresholds,
+);
+
+/// Decide which call mode best fits this document.
+///
+/// Rules applied in order:
+///
+/// 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
+/// 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
+///    `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
+///    extraction produces text for scanned PDFs; the orchestrator's
+///    post-call confidence gate handles any vision escalation actually needed.
+///
+/// 3. DOCX / `text/html` / `text/*` / `application/json` / `application/xml` /
+///    `application/rtf` with `avg_chars_per_page > docx_text_min_density`
+///    → `StructuredCallMode.TextOnly`.
+///
+/// 4. Anything else → `StructuredCallMode.Skip`.
+///
+/// After rule selection two post-rule promotions apply (in order):
+///
+/// - `user_force_vision` promotes `TextOnly` → `TextPlusVision`
+///   (`Skip` stays `Skip` — caller meant to opt out).
+///
+/// - `enable_vision_fallback` promotes `TextOnly` →
+///   `TextOnlyWithVisionFallback` (does **not** upgrade `TextPlusVision` or
+///   `Skip`).
+Future<StructuredCallMode> chooseCallMode({
+  required StructuredInput input,
+  required StructuredThresholds t,
+}) => RustLib.instance.api.crateChooseCallMode(input: input, t: t);
+
+/// Calculate a chunking plan for a document.
+///
+/// **Returns:**
+///
+/// A `ChunkPlan` with optimal chunk boundaries.
+Future<ChunkPlan> calculateChunkPlan({
+  required PlatformInt64 pageCount,
+  required PlatformInt64 sizeBytes,
+  required bool needsOcr,
+  required HeuristicsConfig config,
+}) => RustLib.instance.api.crateCalculateChunkPlan(
+  pageCount: pageCount,
+  sizeBytes: sizeBytes,
+  needsOcr: needsOcr,
+  config: config,
+);
+
+/// Calculate a chunk plan from user-specified page ranges.
+///
+/// Validates and processes user overrides into a proper chunk plan.
+Future<ChunkPlan> calculatePlanFromOverrides({
+  required List<PageRange> userChunks,
+  required PlatformInt64 totalPages,
+  required PlatformInt64 sizeBytes,
+  required HeuristicsConfig config,
+}) => RustLib.instance.api.crateCalculatePlanFromOverrides(
+  userChunks: userChunks,
+  totalPages: totalPages,
+  sizeBytes: sizeBytes,
+  config: config,
+);
+
+/// Stable sha256 fingerprint of `raw`, formatted as `sha256:<hex>`.
+Future<String> fingerprint({required List<int> raw}) =>
+    RustLib.instance.api.crateFingerprint(raw: raw);
+
+/// Resolve `(preset, custom_schema_override, context)` into a `ResolvedPreset`.
+///
+/// - `custom_schema` overrides `preset.schema` when set.
+/// - `context` substitutes `{{key}}` tokens in `preset.context_template`; the
+///   rendered string is appended to `system_prompt` so the model sees it.
+Future<ResolvedPreset> resolve({
+  required Preset preset,
+  String? customSchema,
+  required Map<String, String> context,
+}) => RustLib.instance.api.crateResolve(
+  preset: preset,
+  customSchema: customSchema,
+  context: context,
+);
+
+/// Extract structured JSON from a document using JSON-encoded preset spec and options.
+///
+/// This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
+/// language-binding call paths.
+///
+///   `cache`).  Pass `"{}"` to use all defaults.
+///
+/// **Returns:**
+///
+/// JSON-serialised `StructuredOutput` on success.
+///
+/// **Errors:**
+///
+/// Returns `Validation` when either JSON argument is
+/// malformed.  All other failures from the underlying
+/// `extract_structured_sync` call are mapped onto `KreuzbergError`
+/// via `From<StructuredError>`.
+Future<String> extractStructuredJson({
+  required List<int> bytes,
+  required String mime,
+  required String presetSpecJson,
+  required String optionsJson,
+}) => RustLib.instance.api.crateExtractStructuredJson(
+  bytes: bytes,
+  mime: mime,
+  presetSpecJson: presetSpecJson,
+  optionsJson: optionsJson,
+);
+
+/// Split a multi-document PDF and extract structured JSON from each segment,
+/// returning a JSON array of `StructuredOutput` objects.
+///
+/// Non-PDF documents are passed through as a single-element array.
+///
+/// Same as `extract_structured_json`.
+///
+/// **Returns:**
+///
+/// JSON-serialised `List<``StructuredOutput``>` (a JSON array) on success.
+///
+/// **Errors:**
+///
+/// Returns `Validation` when either JSON argument is
+/// malformed.  All other failures from the underlying
+/// `split_and_extract_sync` call are mapped onto `KreuzbergError`
+/// via `From<StructuredError>`.
+Future<String> splitAndExtractJson({
+  required List<int> bytes,
+  required String mime,
+  required String presetSpecJson,
+  required String optionsJson,
+}) => RustLib.instance.api.crateSplitAndExtractJson(
+  bytes: bytes,
+  mime: mime,
+  presetSpecJson: presetSpecJson,
+  optionsJson: optionsJson,
+);
 
 /// Render a single PDF page to PNG bytes.
 ///
@@ -924,6 +1205,9 @@ Future<ElementMetadata> createElementMetadataFromJson({required String json}) =>
 Future<Element> createElementFromJson({required String json}) =>
     RustLib.instance.api.crateCreateElementFromJson(json: json);
 
+Future<PdfFormField> createPdfFormFieldFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePdfFormFieldFromJson(json: json);
+
 Future<ExcelWorkbook> createExcelWorkbookFromJson({required String json}) =>
     RustLib.instance.api.crateCreateExcelWorkbookFromJson(json: json);
 
@@ -974,6 +1258,9 @@ Future<ImagePreprocessingMetadata> createImagePreprocessingMetadataFromJson({
 }) => RustLib.instance.api.crateCreateImagePreprocessingMetadataFromJson(
   json: json,
 );
+
+Future<Formula> createFormulaFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateFormulaFromJson(json: json);
 
 Future<Metadata> createMetadataFromJson({required String json}) =>
     RustLib.instance.api.crateCreateMetadataFromJson(json: json);
@@ -1138,6 +1425,9 @@ Future<ExtractedUri> createExtractedUriFromJson({required String json}) =>
 Future<DetectResponse> createDetectResponseFromJson({required String json}) =>
     RustLib.instance.api.crateCreateDetectResponseFromJson(json: json);
 
+Future<ChunkingResult> createChunkingResultFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateChunkingResultFromJson(json: json);
+
 Future<DiffOptions> createDiffOptionsFromJson({required String json}) =>
     RustLib.instance.api.crateCreateDiffOptionsFromJson(json: json);
 
@@ -1177,6 +1467,45 @@ Future<KeywordConfig> createKeywordConfigFromJson({required String json}) =>
 
 Future<Keyword> createKeywordFromJson({required String json}) =>
     RustLib.instance.api.crateCreateKeywordFromJson(json: json);
+
+Future<EnrichOptions> createEnrichOptionsFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateEnrichOptionsFromJson(json: json);
+
+Future<EnrichResult> createEnrichResultFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateEnrichResultFromJson(json: json);
+
+Future<ExtractionConfidence> createExtractionConfidenceFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateExtractionConfidenceFromJson(json: json);
+
+Future<ChunkInfo> createChunkInfoFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateChunkInfoFromJson(json: json);
+
+Future<PageRange> createPageRangeFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePageRangeFromJson(json: json);
+
+Future<MultidocInput> createMultidocInputFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateMultidocInputFromJson(json: json);
+
+Future<PageSignals> createPageSignalsFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePageSignalsFromJson(json: json);
+
+Future<DocumentBoundary> createDocumentBoundaryFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateDocumentBoundaryFromJson(json: json);
+
+Future<MultidocThresholds> createMultidocThresholdsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateMultidocThresholdsFromJson(json: json);
+
+Future<PresetSample> createPresetSampleFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePresetSampleFromJson(json: json);
+
+Future<Preset> createPresetFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePresetFromJson(json: json);
+
+Future<PresetSummary> createPresetSummaryFromJson({required String json}) =>
+    RustLib.instance.api.crateCreatePresetSummaryFromJson(json: json);
 
 Future<PaddleOcrConfig> createPaddleOcrConfigFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePaddleOcrConfigFromJson(json: json);
@@ -1564,6 +1893,16 @@ abstract class LlmBackend implements RustOpaqueInterface {
       RustLib.instance.api.crateLlmBackendNew(config: config);
 }
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MetaSchema>>
+abstract class MetaSchema implements RustOpaqueInterface {
+  static Future<MetaSchema> compile({required String metaSchemaJson}) => RustLib
+      .instance
+      .api
+      .crateMetaSchemaCompile(metaSchemaJson: metaSchemaJson);
+
+  Future<Preset> parsePreset({required String path, required List<int> raw});
+}
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>
 abstract class OcrBackendDartImpl implements RustOpaqueInterface {
   ArcOcrBackend get field0;
@@ -1576,6 +1915,30 @@ abstract class PostProcessorDartImpl implements RustOpaqueInterface {
   ArcPostProcessor get field0;
 
   set field0(ArcPostProcessor field0);
+}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Registry>>
+abstract class Registry implements RustOpaqueInterface {
+  Future<PlatformInt64> extendFromDir({required String dir});
+
+  Future<Preset?> get_({required String id});
+
+  static Future<Registry> global() =>
+      RustLib.instance.api.crateRegistryGlobal();
+
+  Future<bool> isEmpty();
+
+  Future<PlatformInt64> len();
+
+  static Future<Registry> loadEmbedded() =>
+      RustLib.instance.api.crateRegistryLoadEmbedded();
+
+  Future<Uint8List?> sampleBytes({
+    required String presetId,
+    required String name,
+  });
+
+  Future<List<PresetSummary>> summaries();
 }
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>
@@ -2028,6 +2391,24 @@ enum BlockType {
   mathDisplay,
 }
 
+/// Reason for boundary detection.
+enum BoundaryReason {
+  /// Start of PDF.
+  start,
+
+  /// Page-one marker ("Page 1", "1 of N") detected.
+  pageOneMarker,
+
+  /// Letterhead reset after signature block.
+  letterheadReset,
+
+  /// Text density shift with low bigram overlap.
+  densityShift,
+
+  /// End of PDF.
+  end,
+}
+
 /// Bounding box coordinates for element positioning.
 class BoundingBox {
   /// Left x-coordinate
@@ -2106,6 +2487,24 @@ class CacheStats {
           availableSpaceMb == other.availableSpaceMb &&
           oldestFileAgeDays == other.oldestFileAgeDays &&
           newestFileAgeDays == other.newestFileAgeDays;
+}
+
+/// How a structured-extraction preset is dispatched to the model.
+///
+/// This is the preset-facing call mode (the `preferred_call_mode` field of a
+/// `Preset`). The richer runtime decision enum used by the
+/// structured pipeline — which adds `Skip` and `TextOnlyWithVisionFallback` —
+/// lives in `crate::heuristics::structured::StructuredCallMode`; this 3-variant
+/// type is the stable, serializable surface presets and bindings depend on.
+enum CallMode {
+  /// Use the extracted text only.
+  textOnly,
+
+  /// Use rasterized page images only.
+  visionOnly,
+
+  /// Provide both extracted text and page images to the model.
+  textPlusVision,
 }
 
 /// Configuration for the VLM captioning post-processor.
@@ -2228,6 +2627,37 @@ class Chunk {
           metadata == other.metadata;
 }
 
+/// Information about a single chunk.
+class ChunkInfo {
+  /// Zero-based chunk index.
+  final PlatformInt64 index;
+
+  /// Page range for this chunk.
+  final PageRange pages;
+
+  /// Estimated processing time for this chunk in milliseconds.
+  final PlatformInt64 estimatedTimeMs;
+
+  const ChunkInfo({
+    required this.index,
+    required this.pages,
+    required this.estimatedTimeMs,
+  });
+
+  @override
+  int get hashCode =>
+      index.hashCode ^ pages.hashCode ^ estimatedTimeMs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChunkInfo &&
+          runtimeType == other.runtimeType &&
+          index == other.index &&
+          pages == other.pages &&
+          estimatedTimeMs == other.estimatedTimeMs;
+}
+
 /// Metadata about a chunk's position in the original document.
 class ChunkMetadata {
   /// Byte offset where this chunk starts in the original text (UTF-8 valid boundary).
@@ -2263,6 +2693,14 @@ class ChunkMetadata {
   /// Only populated when `ChunkerType::Markdown` is used.
   final HeadingContext? headingContext;
 
+  /// Flattened heading trail from document root to this chunk's section.
+  ///
+  /// Each element is a heading's text, outermost first. Derived from
+  /// [`heading_context`](Self::heading_context) when present; empty otherwise.
+  /// Provides a binding-friendly, RAG-shaped breadcrumb without requiring
+  /// callers to walk the nested [`HeadingContext`] structure.
+  final List<String> headingPath;
+
   /// Indices into `ExtractionResult.images` for images on pages covered by this chunk.
   ///
   /// Contains zero-based indices into the top-level `images` collection for every
@@ -2279,6 +2717,7 @@ class ChunkMetadata {
     this.firstPage,
     this.lastPage,
     this.headingContext,
+    required this.headingPath,
     required this.imageIndices,
   });
 
@@ -2292,6 +2731,7 @@ class ChunkMetadata {
       firstPage.hashCode ^
       lastPage.hashCode ^
       headingContext.hashCode ^
+      headingPath.hashCode ^
       imageIndices.hashCode;
 
   @override
@@ -2307,7 +2747,53 @@ class ChunkMetadata {
           firstPage == other.firstPage &&
           lastPage == other.lastPage &&
           headingContext == other.headingContext &&
+          headingPath == other.headingPath &&
           imageIndices == other.imageIndices;
+}
+
+/// Complete chunking plan for a document.
+class ChunkPlan {
+  /// Total number of chunks.
+  final PlatformInt64 totalChunks;
+
+  /// Individual chunk information.
+  final List<ChunkInfo> chunks;
+
+  /// Estimated total processing time in milliseconds.
+  final PlatformInt64 totalEstimatedTimeMs;
+
+  /// Whether to use disk-based processing for large files.
+  final bool useDiskProcessing;
+
+  /// Reason for chunking.
+  final ChunkingReason reason;
+
+  const ChunkPlan({
+    required this.totalChunks,
+    required this.chunks,
+    required this.totalEstimatedTimeMs,
+    required this.useDiskProcessing,
+    required this.reason,
+  });
+
+  @override
+  int get hashCode =>
+      totalChunks.hashCode ^
+      chunks.hashCode ^
+      totalEstimatedTimeMs.hashCode ^
+      useDiskProcessing.hashCode ^
+      reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChunkPlan &&
+          runtimeType == other.runtimeType &&
+          totalChunks == other.totalChunks &&
+          chunks == other.chunks &&
+          totalEstimatedTimeMs == other.totalEstimatedTimeMs &&
+          useDiskProcessing == other.useDiskProcessing &&
+          reason == other.reason;
 }
 
 @freezed
@@ -2509,6 +2995,92 @@ class ChunkingConfig {
           topicThreshold == other.topicThreshold;
 }
 
+@freezed
+sealed class ChunkingDecision with _$ChunkingDecision {
+  const ChunkingDecision._();
+
+  /// Process without chunking (small file, text layer detected, etc.)
+  const factory ChunkingDecision.noChunking({
+    /// Reason why chunking is not needed.
+    required NoChunkingReason reason,
+  }) = ChunkingDecision_NoChunking;
+
+  /// Chunk according to plan.
+  const factory ChunkingDecision.chunk({required ChunkPlan field0}) =
+      ChunkingDecision_Chunk;
+
+  /// Use user-provided chunk overrides.
+  const factory ChunkingDecision.useOverrides({
+    /// User-specified page ranges.
+    required List<PageRange> userChunks,
+  }) = ChunkingDecision_UseOverrides;
+}
+
+@freezed
+sealed class ChunkingReason with _$ChunkingReason {
+  const ChunkingReason._();
+
+  /// File exceeds size threshold.
+  const factory ChunkingReason.largeFile({
+    /// Actual size in bytes.
+    required PlatformInt64 sizeBytes,
+
+    /// Threshold in bytes.
+    required PlatformInt64 thresholdBytes,
+  }) = ChunkingReason_LargeFile;
+
+  /// Document has many pages.
+  const factory ChunkingReason.manyPages({
+    /// Actual page count.
+    required PlatformInt64 pageCount,
+
+    /// Threshold page count.
+    required PlatformInt64 threshold,
+  }) = ChunkingReason_ManyPages;
+
+  /// PDF requires OCR and is large.
+  const factory ChunkingReason.ocrRequired({
+    /// Page count.
+    required PlatformInt64 pageCount,
+
+    /// Whether OCR is forced.
+    required bool forceOcr,
+  }) = ChunkingReason_OcrRequired;
+
+  /// Both size and page count exceed thresholds.
+  const factory ChunkingReason.largeAndManyPages({
+    /// Actual size in bytes.
+    required PlatformInt64 sizeBytes,
+
+    /// Actual page count.
+    required PlatformInt64 pageCount,
+  }) = ChunkingReason_LargeAndManyPages;
+}
+
+/// Result of a text chunking operation.
+///
+/// Contains the generated chunks and metadata about the chunking.
+class ChunkingResult {
+  /// List of text chunks
+  final List<Chunk> chunks;
+
+  /// Total number of chunks generated
+  final PlatformInt64 chunkCount;
+
+  const ChunkingResult({required this.chunks, required this.chunkCount});
+
+  @override
+  int get hashCode => chunks.hashCode ^ chunkCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChunkingResult &&
+          runtimeType == other.runtimeType &&
+          chunks == other.chunks &&
+          chunkCount == other.chunkCount;
+}
+
 /// Citation file metadata (RIS, PubMed, EndNote).
 class CitationMetadata {
   /// Total number of citation records in the file.
@@ -2596,6 +3168,74 @@ enum CodeContentMode {
 
   /// Emit function/class headings + docstrings (no code bodies).
   structure,
+}
+
+/// Input signals for confidence scoring.
+///
+/// Caller fills these from the extraction result and the LLM response.
+class ConfidenceSignals {
+  /// Fraction of pages with usable text in `[0, 1]`.
+  final double textCoverage;
+
+  /// Mean OCR per-element recognition confidence; `None` when OCR did not run.
+  final double? ocrAggregate;
+
+  /// Schema-validation result of the merged output.
+  final SchemaCompliance schemaCompliance;
+
+  const ConfidenceSignals({
+    required this.textCoverage,
+    this.ocrAggregate,
+    required this.schemaCompliance,
+  });
+
+  @override
+  int get hashCode =>
+      textCoverage.hashCode ^ ocrAggregate.hashCode ^ schemaCompliance.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConfidenceSignals &&
+          runtimeType == other.runtimeType &&
+          textCoverage == other.textCoverage &&
+          ocrAggregate == other.ocrAggregate &&
+          schemaCompliance == other.schemaCompliance;
+}
+
+/// Tunable weights for the confidence scoring formula.
+///
+/// Defaults picked by inspection; callers tune them via config.
+class ConfidenceWeights {
+  /// Weight assigned to `text_coverage`. Default 0.30.
+  final double textCoverage;
+
+  /// Weight assigned to `ocr_aggregate` when OCR ran.
+  ///
+  /// Default 0.30 — folds into `text_coverage` weight when OCR did not run.
+  final double ocrAggregate;
+
+  /// Weight assigned to `schema_compliance`. Default 0.40.
+  final double schemaCompliance;
+
+  const ConfidenceWeights({
+    required this.textCoverage,
+    required this.ocrAggregate,
+    required this.schemaCompliance,
+  });
+
+  @override
+  int get hashCode =>
+      textCoverage.hashCode ^ ocrAggregate.hashCode ^ schemaCompliance.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConfidenceWeights &&
+          runtimeType == other.runtimeType &&
+          textCoverage == other.textCoverage &&
+          ocrAggregate == other.ocrAggregate &&
+          schemaCompliance == other.schemaCompliance;
 }
 
 /// Cross-extractor content filtering configuration.
@@ -3189,6 +3829,96 @@ class DjotLink {
           url == other.url &&
           text == other.text &&
           title == other.title;
+}
+
+/// Detected document boundary within a PDF.
+class DocumentBoundary {
+  /// 1-indexed start page (inclusive).
+  final PlatformInt64 startPage;
+
+  /// 1-indexed end page (inclusive).
+  final PlatformInt64 endPage;
+
+  /// Confidence in this boundary, `[0.0, 1.0]`.
+  final double confidence;
+
+  /// Reason for the boundary detection.
+  final BoundaryReason reason;
+
+  const DocumentBoundary({
+    required this.startPage,
+    required this.endPage,
+    required this.confidence,
+    required this.reason,
+  });
+
+  @override
+  int get hashCode =>
+      startPage.hashCode ^
+      endPage.hashCode ^
+      confidence.hashCode ^
+      reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DocumentBoundary &&
+          runtimeType == other.runtimeType &&
+          startPage == other.startPage &&
+          endPage == other.endPage &&
+          confidence == other.confidence &&
+          reason == other.reason;
+}
+
+/// Metadata about a document for analysis.
+class DocumentMetadata {
+  /// MIME type of the document.
+  final String mimeType;
+
+  /// File size in bytes.
+  final PlatformInt64 sizeBytes;
+
+  /// Page count (if known, e.g., from previous analysis).
+  final PlatformInt64? pageCount;
+
+  /// Whether OCR is forced regardless of text layer.
+  final bool forceOcr;
+
+  /// User-provided chunk configuration overrides.
+  final UserChunkConfig? userChunkConfig;
+
+  /// Whether chunking is enabled for this job.
+  final bool chunkingEnabled;
+
+  const DocumentMetadata({
+    required this.mimeType,
+    required this.sizeBytes,
+    this.pageCount,
+    required this.forceOcr,
+    this.userChunkConfig,
+    required this.chunkingEnabled,
+  });
+
+  @override
+  int get hashCode =>
+      mimeType.hashCode ^
+      sizeBytes.hashCode ^
+      pageCount.hashCode ^
+      forceOcr.hashCode ^
+      userChunkConfig.hashCode ^
+      chunkingEnabled.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DocumentMetadata &&
+          runtimeType == other.runtimeType &&
+          mimeType == other.mimeType &&
+          sizeBytes == other.sizeBytes &&
+          pageCount == other.pageCount &&
+          forceOcr == other.forceOcr &&
+          userChunkConfig == other.userChunkConfig &&
+          chunkingEnabled == other.chunkingEnabled;
 }
 
 /// A single node in the document tree.
@@ -4270,6 +5000,134 @@ class EmbeddingPreset {
           description == other.description;
 }
 
+/// Which enrichment passes to run on a piece of text.
+///
+/// All fields default to `false` / empty so callers can opt in precisely.
+///
+/// # Examples
+///
+/// ```
+/// use kreuzberg::enrichment::EnrichOptions;
+///
+/// let opts = EnrichOptions {
+///     keywords: true,
+///     ..Default::default()
+/// };
+/// assert!(opts.keywords);
+/// assert!(!opts.entities);
+/// assert!(opts.labels.is_empty());
+/// ```
+class EnrichOptions {
+  /// Run keyword extraction on the input text.
+  ///
+  /// When `true`, the enrichment backend identifies the most salient terms
+  /// and returns them in [`EnrichResult::keywords`].
+  final bool keywords;
+
+  /// Run named-entity recognition (NER) on the input text.
+  ///
+  /// When `true`, the enrichment backend identifies named entities
+  /// (persons, organisations, locations, etc.) and returns them in
+  /// [`EnrichResult::entities`].
+  final bool entities;
+
+  /// Custom labels to pass through to the result without modification.
+  ///
+  /// These are caller-supplied tags that the enrichment pipeline
+  /// propagates verbatim into [`EnrichResult::labels`]. Useful for
+  /// attaching project- or document-level metadata to every enrichment
+  /// result.
+  final List<String> labels;
+
+  const EnrichOptions({
+    required this.keywords,
+    required this.entities,
+    required this.labels,
+  });
+
+  @override
+  int get hashCode => keywords.hashCode ^ entities.hashCode ^ labels.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EnrichOptions &&
+          runtimeType == other.runtimeType &&
+          keywords == other.keywords &&
+          entities == other.entities &&
+          labels == other.labels;
+}
+
+/// Structured output produced by a completed enrichment pass.
+///
+/// Fields are populated only when the corresponding [`EnrichOptions`] flag was set.
+///
+/// # Examples
+///
+/// ```
+/// use kreuzberg::enrichment::EnrichResult;
+///
+/// let result = EnrichResult::default();
+/// assert!(result.keywords.is_empty());
+/// assert!(result.entities.is_empty());
+/// assert!(result.labels.is_empty());
+/// ```
+class EnrichResult {
+  /// Salient terms extracted from the text.
+  ///
+  /// Populated when [`EnrichOptions::keywords`] was `true`. The ordering is
+  /// backend-defined (typically by descending relevance score).
+  final List<String> keywords;
+
+  /// Named entities found in the text.
+  ///
+  /// Populated when [`EnrichOptions::entities`] was `true`. Uses the shared
+  /// OSS entity schema ([`Entity`] / [`EntityCategory`](crate::types::entity::EntityCategory))
+  /// so consumers can pattern-match on entity categories without JSON gymnastics.
+  final List<Entity> entities;
+
+  /// Caller-supplied labels echoed from [`EnrichOptions::labels`].
+  final List<String> labels;
+
+  const EnrichResult({
+    required this.keywords,
+    required this.entities,
+    required this.labels,
+  });
+
+  @override
+  int get hashCode => keywords.hashCode ^ entities.hashCode ^ labels.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EnrichResult &&
+          runtimeType == other.runtimeType &&
+          keywords == other.keywords &&
+          entities == other.entities &&
+          labels == other.labels;
+}
+
+@freezed
+sealed class EnrichStatus with _$EnrichStatus {
+  const EnrichStatus._();
+
+  /// Job submitted; processing has not yet started or is in progress.
+  const factory EnrichStatus.pending() = EnrichStatus_Pending;
+
+  /// Processing completed successfully.
+  const factory EnrichStatus.completed({
+    /// The enrichment output.
+    required EnrichResult result,
+  }) = EnrichStatus_Completed;
+
+  /// Processing failed.
+  const factory EnrichStatus.failed({
+    /// Human-readable error message describing the failure reason.
+    required String error,
+  }) = EnrichStatus_Failed;
+}
+
 /// A single named entity detected in the extracted text.
 class Entity {
   /// Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.).
@@ -4753,6 +5611,48 @@ class ExtractedUri {
           label == other.label &&
           page == other.page &&
           kind == other.kind;
+}
+
+/// Combined confidence on `[0, 1]`.
+///
+/// When OCR did not run, the `ocr_aggregate` weight folds into `text_coverage`
+/// so the weighted sum still totals 1.0.
+class ExtractionConfidence {
+  /// Fraction of pages with a usable text layer.
+  final double textCoverage;
+
+  /// Mean OCR per-element recognition confidence when OCR ran; `None` when it did not.
+  final double? ocrAggregate;
+
+  /// Whether the merged output validates against the preset schema.
+  final SchemaCompliance schemaCompliance;
+
+  /// Weighted blend in `[0, 1]`.  The value compared against the fallback threshold.
+  final double combined;
+
+  const ExtractionConfidence({
+    required this.textCoverage,
+    this.ocrAggregate,
+    required this.schemaCompliance,
+    required this.combined,
+  });
+
+  @override
+  int get hashCode =>
+      textCoverage.hashCode ^
+      ocrAggregate.hashCode ^
+      schemaCompliance.hashCode ^
+      combined.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ExtractionConfidence &&
+          runtimeType == other.runtimeType &&
+          textCoverage == other.textCoverage &&
+          ocrAggregate == other.ocrAggregate &&
+          schemaCompliance == other.schemaCompliance &&
+          combined == other.combined;
 }
 
 /// Main extraction configuration.
@@ -5433,6 +6333,19 @@ class ExtractionResult {
   /// was replaced. `None` when redaction is not configured.
   final RedactionReport? redactionReport;
 
+  /// Mathematical formulas recognized in the document.
+  ///
+  /// Populated by the layout-guided formula pipeline when the
+  /// `layout-detection` feature is enabled and the document contains regions
+  /// classified as formulas. Empty otherwise.
+  final List<Formula> formulas;
+
+  /// Form fields extracted from a PDF's AcroForm or XFA structure.
+  ///
+  /// Populated by the PDF extractor when `PdfConfig::extract_form_fields` is
+  /// enabled (default) and the document is a fillable form. Empty otherwise.
+  final List<PdfFormField> formFields;
+
   /// Pre-rendered content in the requested output format.
   ///
   /// Populated during `derive_extraction_result` before tree derivation consumes
@@ -5469,6 +6382,8 @@ class ExtractionResult {
     this.translation,
     this.pageClassifications,
     this.redactionReport,
+    required this.formulas,
+    required this.formFields,
     this.formattedContent,
   });
 
@@ -5502,6 +6417,8 @@ class ExtractionResult {
       translation.hashCode ^
       pageClassifications.hashCode ^
       redactionReport.hashCode ^
+      formulas.hashCode ^
+      formFields.hashCode ^
       formattedContent.hashCode;
 
   @override
@@ -5537,6 +6454,8 @@ class ExtractionResult {
           translation == other.translation &&
           pageClassifications == other.pageClassifications &&
           redactionReport == other.redactionReport &&
+          formulas == other.formulas &&
+          formFields == other.formFields &&
           formattedContent == other.formattedContent;
 }
 
@@ -5774,6 +6693,33 @@ class Footnote {
           content == other.content;
 }
 
+/// Kind of a PDF form field.
+///
+/// Mirrors `pdf_oxide`'s widget field taxonomy without leaking the upstream
+/// type across the binding surface.
+enum FormFieldType {
+  /// Single- or multi-line text input.
+  text,
+
+  /// Checkbox (on/off toggle).
+  checkbox,
+
+  /// Radio-button group member.
+  radio,
+
+  /// Choice field (dropdown or list box).
+  choice,
+
+  /// Digital-signature field.
+  signature,
+
+  /// Push button.
+  button,
+
+  /// Field type that could not be classified.
+  unknown,
+}
+
 @freezed
 sealed class FormatMetadata with _$FormatMetadata {
   const FormatMetadata._();
@@ -5915,6 +6861,48 @@ class FormattedBlock {
           language == other.language &&
           code == other.code &&
           children == other.children;
+}
+
+/// A mathematical formula detected and recognized in a document.
+///
+/// Populated by the layout-guided formula pipeline: regions classified as
+/// `LayoutClass::Formula` are routed to the formula OCR task, which returns the
+/// LaTeX source for the region. The field is always present on
+/// [`ExtractionResult`](super::extraction::ExtractionResult) but only populated
+/// when the `layout-detection` feature is active and the document contains
+/// formula regions.
+class Formula {
+  /// LaTeX source of the recognized formula, without surrounding `$$` delimiters.
+  ///
+  /// This field contains the raw LaTeX code as produced by the OCR backend.
+  /// To render the formula in Markdown or other formats, wrap with `$$..$$` delimiters as needed.
+  final String latex;
+
+  /// Bounding box of the formula region on its page, in rendered-image pixel coordinates.
+  ///
+  /// The coordinates are in the space of the OCR-rendered page image at the OCR DPI
+  /// (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from
+  /// native PDF text extraction, which use PDF point coordinates.
+  final BoundingBox bbox;
+
+  /// 1-indexed page number the formula appears on in the document.
+  ///
+  /// This is set by the extraction pipeline based on which page the formula was found on.
+  final PlatformInt64 page;
+
+  const Formula({required this.latex, required this.bbox, required this.page});
+
+  @override
+  int get hashCode => latex.hashCode ^ bbox.hashCode ^ page.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Formula &&
+          runtimeType == other.runtimeType &&
+          latex == other.latex &&
+          bbox == other.bbox &&
+          page == other.page;
 }
 
 /// Individual grid cell with position and span metadata.
@@ -6060,6 +7048,131 @@ class HeadingLevel {
           runtimeType == other.runtimeType &&
           level == other.level &&
           text == other.text;
+}
+
+/// Configuration for document chunking and analysis heuristics.
+///
+/// Every threshold is a public field so callers can override any subset via
+/// struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..Default::default() }`.
+class HeuristicsConfig {
+  /// Enable PDF text-layer detection heuristics.
+  ///
+  /// When `true`, PDFs with a substantial text layer will skip chunking.
+  /// Default: `true`.
+  final bool enablePdfTextHeuristics;
+
+  /// Minimum fraction of pages that must have text to skip chunking.
+  ///
+  /// Range `0.0..=1.0`. Default: `0.7` (70 % of pages).
+  final double textLayerThreshold;
+
+  /// File size threshold in bytes for considering chunking.
+  ///
+  /// Files smaller than this are processed without chunking.
+  /// Default: 10 MiB (10 × 1 024 × 1 024).
+  final PlatformInt64 fileSizeThresholdBytes;
+
+  /// Page count threshold for considering chunking.
+  ///
+  /// Documents with fewer pages are processed without chunking.
+  /// Default: 50.
+  final PlatformInt64 pageCountThreshold;
+
+  /// Target number of pages per chunk for optimal parallel processing.
+  ///
+  /// Default: 10.
+  final PlatformInt64 targetPagesPerChunk;
+
+  /// Hard cap on pages per chunk.
+  ///
+  /// No chunk will exceed this limit. Must be ≥ `target_pages_per_chunk`.
+  /// Default: 25.
+  final PlatformInt64 maxPagesPerChunk;
+
+  /// File size threshold for disk-based processing.
+  ///
+  /// Files larger than this are buffered to disk to prevent OOM.
+  /// Default: 50 MiB (50 × 1 024 × 1 024).
+  final PlatformInt64 diskProcessingThresholdBytes;
+
+  /// Minimum characters per page to consider a page as having text.
+  ///
+  /// Default: 50.
+  final PlatformInt64 minCharsPerPage;
+
+  /// Maximum sheet count allowed in an XLSX workbook.
+  ///
+  /// Workbooks beyond this are rejected pre-extraction to avoid OOM /
+  /// abusive billing inflation. Default: 200.
+  final PlatformInt64 maxXlsxSheetCount;
+
+  /// Maximum cell count (sheets × rows × columns approximation) in an XLSX workbook.
+  ///
+  /// Default: 5 000 000 (≈ 200 sheets × 25 k cells).
+  final PlatformInt64 maxXlsxWorkbookCells;
+
+  /// Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX.
+  ///
+  /// Protects against zip-bomb-style nested-document abuse. Default: 50.
+  final PlatformInt64 maxPptxEmbeddedCount;
+
+  const HeuristicsConfig({
+    required this.enablePdfTextHeuristics,
+    required this.textLayerThreshold,
+    required this.fileSizeThresholdBytes,
+    required this.pageCountThreshold,
+    required this.targetPagesPerChunk,
+    required this.maxPagesPerChunk,
+    required this.diskProcessingThresholdBytes,
+    required this.minCharsPerPage,
+    required this.maxXlsxSheetCount,
+    required this.maxXlsxWorkbookCells,
+    required this.maxPptxEmbeddedCount,
+  });
+
+  @override
+  int get hashCode =>
+      enablePdfTextHeuristics.hashCode ^
+      textLayerThreshold.hashCode ^
+      fileSizeThresholdBytes.hashCode ^
+      pageCountThreshold.hashCode ^
+      targetPagesPerChunk.hashCode ^
+      maxPagesPerChunk.hashCode ^
+      diskProcessingThresholdBytes.hashCode ^
+      minCharsPerPage.hashCode ^
+      maxXlsxSheetCount.hashCode ^
+      maxXlsxWorkbookCells.hashCode ^
+      maxPptxEmbeddedCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HeuristicsConfig &&
+          runtimeType == other.runtimeType &&
+          enablePdfTextHeuristics == other.enablePdfTextHeuristics &&
+          textLayerThreshold == other.textLayerThreshold &&
+          fileSizeThresholdBytes == other.fileSizeThresholdBytes &&
+          pageCountThreshold == other.pageCountThreshold &&
+          targetPagesPerChunk == other.targetPagesPerChunk &&
+          maxPagesPerChunk == other.maxPagesPerChunk &&
+          diskProcessingThresholdBytes == other.diskProcessingThresholdBytes &&
+          minCharsPerPage == other.minCharsPerPage &&
+          maxXlsxSheetCount == other.maxXlsxSheetCount &&
+          maxXlsxWorkbookCells == other.maxXlsxWorkbookCells &&
+          maxPptxEmbeddedCount == other.maxPptxEmbeddedCount;
+}
+
+@freezed
+sealed class HeuristicsError with _$HeuristicsError {
+  const HeuristicsError._();
+
+  /// Invalid configuration value.
+  const factory HeuristicsError.configError({required String field0}) =
+      HeuristicsError_ConfigError;
+
+  /// PDF analysis step failed (only when `heuristics-pdf` feature is active).
+  const factory HeuristicsError.pdfAnalysisError({required String field0}) =
+      HeuristicsError_PdfAnalysisError;
 }
 
 /// A text block with hierarchy level assignment.
@@ -7171,7 +8284,7 @@ class LanguageDetectionConfig {
           detectMultiple == other.detectMultiple;
 }
 
-/// The 17 canonical document layout classes.
+/// The 18 canonical document layout classes.
 ///
 /// All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 /// to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
@@ -7181,6 +8294,9 @@ class LanguageDetectionConfig {
 enum LayoutClass {
   /// Figure or table caption text.
   caption,
+
+  /// Chart or graph visualization.
+  chart,
 
   /// Footnote or endnote text.
   footnote,
@@ -7285,11 +8401,20 @@ class LayoutDetectionConfig {
   /// is used for inference. Defaults to `None` (auto-select per platform).
   final AccelerationConfig? acceleration;
 
+  /// Route regions classified as charts to the chart-understanding OCR task.
+  ///
+  /// When `true`, layout regions detected as charts are sent to the VLM
+  /// chart task (data-series/axis recovery) instead of being treated as
+  /// generic image regions. Defaults to `false` — chart understanding is
+  /// opt-in and has no effect on standard text/table extraction scores.
+  final bool enableChartUnderstanding;
+
   const LayoutDetectionConfig({
     this.confidenceThreshold,
     required this.applyHeuristics,
     required this.tableModel,
     this.acceleration,
+    required this.enableChartUnderstanding,
   });
 
   @override
@@ -7297,7 +8422,8 @@ class LayoutDetectionConfig {
       confidenceThreshold.hashCode ^
       applyHeuristics.hashCode ^
       tableModel.hashCode ^
-      acceleration.hashCode;
+      acceleration.hashCode ^
+      enableChartUnderstanding.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -7307,7 +8433,8 @@ class LayoutDetectionConfig {
           confidenceThreshold == other.confidenceThreshold &&
           applyHeuristics == other.applyHeuristics &&
           tableModel == other.tableModel &&
-          acceleration == other.acceleration;
+          acceleration == other.acceleration &&
+          enableChartUnderstanding == other.enableChartUnderstanding;
 }
 
 /// A detected layout region on a page.
@@ -7568,6 +8695,54 @@ class LlmUsage {
           finishReason == other.finishReason;
 }
 
+@freezed
+sealed class LoadError with _$LoadError {
+  const LoadError._();
+
+  /// The file is not valid JSON.
+  const factory LoadError.parse({required String path}) = LoadError_Parse;
+
+  /// The file parses as JSON but does not validate against the meta-schema.
+  const factory LoadError.schemaValidation({
+    required String path,
+    required String errors,
+  }) = LoadError_SchemaValidation;
+
+  /// The file validates but cannot be deserialized into [`Preset`].
+  const factory LoadError.deserialize({required String path}) =
+      LoadError_Deserialize;
+
+  /// The preset's declared `id` does not match its file-system location.
+  const factory LoadError.idMismatch({
+    required String path,
+    required String declared,
+    required String expected,
+  }) = LoadError_IdMismatch;
+
+  /// The meta-schema itself failed to compile.
+  const factory LoadError.badMetaSchema({required String field0}) =
+      LoadError_BadMetaSchema;
+
+  /// A filesystem I/O error occurred while reading a preset directory.
+  const factory LoadError.io({required String field0}) = LoadError_Io;
+}
+
+/// How partial results from multiple model calls (e.g. per page batch) are combined.
+///
+/// Canonical home for the merge strategy referenced by presets and by the
+/// structured pipeline's post-processing. There is intentionally only one merge
+/// type across the crate — do not introduce a second.
+enum MergeMode {
+  /// Deep-merge JSON objects field by field (later calls fill missing fields).
+  objectMerge,
+
+  /// Concatenate top-level arrays across calls.
+  arrayConcat,
+
+  /// Keep the first non-empty result; ignore subsequent calls.
+  objectFirst,
+}
+
 /// Extraction result metadata.
 ///
 /// Contains common fields applicable to all formats, format-specific metadata
@@ -7773,6 +8948,58 @@ class ModelPaths {
           dictFile == other.dictFile;
 }
 
+/// Input signals for multi-document boundary detection.
+class MultidocInput {
+  /// Total number of pages in the PDF.
+  final PlatformInt64 pageCount;
+
+  /// Per-page signals extracted from the PDF.
+  final List<PageSignals> pages;
+
+  const MultidocInput({required this.pageCount, required this.pages});
+
+  @override
+  int get hashCode => pageCount.hashCode ^ pages.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MultidocInput &&
+          runtimeType == other.runtimeType &&
+          pageCount == other.pageCount &&
+          pages == other.pages;
+}
+
+/// Thresholds for multi-document boundary detection.
+///
+/// All fields are public; callers override any subset via struct-update syntax.
+class MultidocThresholds {
+  /// Text density difference threshold for `DensityShift` detection.
+  /// Default: 0.3.
+  final double densityShiftThreshold;
+
+  /// Minimum bigram-overlap ratio below which a density shift is promoted to
+  /// a `DensityShift` boundary.  Default: 0.1 (10 % overlap).
+  final double bigramOverlapMin;
+
+  const MultidocThresholds({
+    required this.densityShiftThreshold,
+    required this.bigramOverlapMin,
+  });
+
+  @override
+  int get hashCode =>
+      densityShiftThreshold.hashCode ^ bigramOverlapMin.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MultidocThresholds &&
+          runtimeType == other.runtimeType &&
+          densityShiftThreshold == other.densityShiftThreshold &&
+          bigramOverlapMin == other.bigramOverlapMin;
+}
+
 /// NER backend selector.
 enum NerBackendKind {
   /// gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from
@@ -7839,6 +9066,52 @@ class NerConfig {
           model == other.model &&
           llm == other.llm &&
           customLabels == other.customLabels;
+}
+
+@freezed
+sealed class NoChunkingReason with _$NoChunkingReason {
+  const NoChunkingReason._();
+
+  /// File is below size threshold.
+  const factory NoChunkingReason.smallFile({
+    /// Actual size in bytes.
+    required PlatformInt64 sizeBytes,
+
+    /// Threshold in bytes.
+    required PlatformInt64 thresholdBytes,
+  }) = NoChunkingReason_SmallFile;
+
+  /// Document has fewer pages than threshold.
+  const factory NoChunkingReason.fewPages({
+    /// Actual page count.
+    required PlatformInt64 pageCount,
+
+    /// Threshold page count.
+    required PlatformInt64 threshold,
+  }) = NoChunkingReason_FewPages;
+
+  /// PDF has substantial text layer (OCR not needed).
+  const factory NoChunkingReason.textLayerDetected({
+    /// Percentage of pages with text (0.0 to 1.0).
+    required double textCoverage,
+
+    /// Average characters per page.
+    required PlatformInt64 avgCharsPerPage,
+  }) = NoChunkingReason_TextLayerDetected;
+
+  /// Document format does not support chunking.
+  const factory NoChunkingReason.formatNotChunkable({
+    /// MIME type of the document.
+    required String mimeType,
+  }) = NoChunkingReason_FormatNotChunkable;
+
+  /// Chunking is disabled by configuration.
+  const factory NoChunkingReason.chunkingDisabled() =
+      NoChunkingReason_ChunkingDisabled;
+
+  /// Force OCR is disabled and text extraction is fast.
+  const factory NoChunkingReason.fastTextExtraction() =
+      NoChunkingReason_FastTextExtraction;
 }
 
 @freezed
@@ -9366,6 +10639,81 @@ class PageInfo {
           hasVectorGraphics == other.hasVectorGraphics;
 }
 
+/// Page range for a chunk (0-indexed, inclusive).
+class PageRange {
+  /// Start page (0-indexed, inclusive).
+  final PlatformInt64 start;
+
+  /// End page (0-indexed, inclusive).
+  final PlatformInt64 end;
+
+  const PageRange({required this.start, required this.end});
+
+  @override
+  int get hashCode => start.hashCode ^ end.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PageRange &&
+          runtimeType == other.runtimeType &&
+          start == other.start &&
+          end == other.end;
+}
+
+/// Per-page signals extracted from PDF content.
+class PageSignals {
+  /// 1-indexed page number.
+  final PlatformInt64 pageNumber;
+
+  /// First ~500 characters of extracted text.
+  final String textExcerpt;
+
+  /// `true` if page starts with letterhead-like content (ALL CAPS line in first 5 lines
+  /// or a logo-image bbox at top).
+  final bool startsWithLetterheadLike;
+
+  /// `true` if text contains "Page 1" or "1 of N" pattern.
+  final bool hasPageNumberOneMarker;
+
+  /// `true` if text contains signature indicators ("Sincerely", "Signed") or
+  /// a signature image bbox.
+  final bool hasSignatureBlock;
+
+  /// Text density: characters per page area, normalised to `[0.0, 1.0]`.
+  final double layoutTextDensity;
+
+  const PageSignals({
+    required this.pageNumber,
+    required this.textExcerpt,
+    required this.startsWithLetterheadLike,
+    required this.hasPageNumberOneMarker,
+    required this.hasSignatureBlock,
+    required this.layoutTextDensity,
+  });
+
+  @override
+  int get hashCode =>
+      pageNumber.hashCode ^
+      textExcerpt.hashCode ^
+      startsWithLetterheadLike.hashCode ^
+      hasPageNumberOneMarker.hashCode ^
+      hasSignatureBlock.hashCode ^
+      layoutTextDensity.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PageSignals &&
+          runtimeType == other.runtimeType &&
+          pageNumber == other.pageNumber &&
+          textExcerpt == other.textExcerpt &&
+          startsWithLetterheadLike == other.startsWithLetterheadLike &&
+          hasPageNumberOneMarker == other.hasPageNumberOneMarker &&
+          hasSignatureBlock == other.hasSignatureBlock &&
+          layoutTextDensity == other.layoutTextDensity;
+}
+
 /// Unified page structure for documents.
 ///
 /// Supports different page types (PDF pages, PPTX slides, Excel sheets)
@@ -9576,6 +10924,22 @@ class PdfConfig {
   /// the whole extraction). Default: `false`.
   final bool ocrInlineImages;
 
+  /// Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`.
+  ///
+  /// When `true` (default), reads the document's interactive form structure
+  /// (field names, types, values, widget geometry). Cheap and strictly
+  /// additive — non-form PDFs simply yield an empty list. Set to `false` to
+  /// skip the form pass entirely.
+  final bool extractFormFields;
+
+  /// Reorder extracted text by layout-detected reading order.
+  ///
+  /// When `true`, projects text spans onto layout-detected regions, performs
+  /// column detection, and emits spans in natural reading order (important
+  /// for multi-column academic PDFs). Requires the `layout-detection`
+  /// feature; has no effect without it. Defaults to `false`.
+  final bool readingOrder;
+
   const PdfConfig({
     required this.extractImages,
     required this.extractTables,
@@ -9587,6 +10951,8 @@ class PdfConfig {
     this.bottomMarginFraction,
     required this.allowSingleColumnTables,
     required this.ocrInlineImages,
+    required this.extractFormFields,
+    required this.readingOrder,
   });
 
   @override
@@ -9600,7 +10966,9 @@ class PdfConfig {
       topMarginFraction.hashCode ^
       bottomMarginFraction.hashCode ^
       allowSingleColumnTables.hashCode ^
-      ocrInlineImages.hashCode;
+      ocrInlineImages.hashCode ^
+      extractFormFields.hashCode ^
+      readingOrder.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -9616,7 +10984,94 @@ class PdfConfig {
           topMarginFraction == other.topMarginFraction &&
           bottomMarginFraction == other.bottomMarginFraction &&
           allowSingleColumnTables == other.allowSingleColumnTables &&
-          ocrInlineImages == other.ocrInlineImages;
+          ocrInlineImages == other.ocrInlineImages &&
+          extractFormFields == other.extractFormFields &&
+          readingOrder == other.readingOrder;
+}
+
+/// A form field extracted from a PDF's AcroForm or XFA structure.
+///
+/// Populated by the PDF extractor when [`PdfConfig::extract_form_fields`] is
+/// enabled and the document is a fillable form. Supports both AcroForm (standard)
+/// and XFA (XML Forms Architecture) layers. When both are present, AcroForm fields
+/// take priority (canonical fallback per PDF spec), and XFA-only fields are appended.
+/// The collection is empty for non-form PDFs and for non-PDF formats.
+///
+/// [`PdfConfig::extract_form_fields`]: crate::core::config::PdfConfig::extract_form_fields
+class PdfFormField {
+  /// Partial field name (the leaf name within the field hierarchy).
+  final String name;
+
+  /// Fully-qualified field name (dotted path from the form root).
+  final String fullName;
+
+  /// Classified field type.
+  final FormFieldType fieldType;
+
+  /// Current field value, if any.
+  final String? value;
+
+  /// Default field value, if any.
+  final String? defaultValue;
+
+  /// Raw field-flags bitmask (read-only, required, multiline, …).
+  final PlatformInt64 flags;
+
+  /// 1-indexed page the field's widget appears on. Currently always `None` for
+  /// AcroForm fields; page assignment is a deferred enhancement requiring spatial
+  /// analysis of widget annotations per page.
+  final PlatformInt64? page;
+
+  /// Widget bounding box on its page, if known.
+  final BoundingBox? bbox;
+
+  /// Maximum input length for text fields, if specified.
+  final PlatformInt64? maxLength;
+
+  /// Tooltip / alternate field description, if present.
+  final String? tooltip;
+
+  const PdfFormField({
+    required this.name,
+    required this.fullName,
+    required this.fieldType,
+    this.value,
+    this.defaultValue,
+    required this.flags,
+    this.page,
+    this.bbox,
+    this.maxLength,
+    this.tooltip,
+  });
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      fullName.hashCode ^
+      fieldType.hashCode ^
+      value.hashCode ^
+      defaultValue.hashCode ^
+      flags.hashCode ^
+      page.hashCode ^
+      bbox.hashCode ^
+      maxLength.hashCode ^
+      tooltip.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PdfFormField &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          fullName == other.fullName &&
+          fieldType == other.fieldType &&
+          value == other.value &&
+          defaultValue == other.defaultValue &&
+          flags == other.flags &&
+          page == other.page &&
+          bbox == other.bbox &&
+          maxLength == other.maxLength &&
+          tooltip == other.tooltip;
 }
 
 /// PDF-specific metadata.
@@ -10009,6 +11464,232 @@ class PptxMetadata {
           slideNames == other.slideNames &&
           imageCount == other.imageCount &&
           tableCount == other.tableCount;
+}
+
+/// A curated structured-extraction preset loaded from the embedded library.
+///
+/// Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
+/// validates against the meta-schema in `src/presets/preset.schema.json`.
+///
+/// The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+/// `extend_from_dir`. The embedded OSS library
+/// ships only the `generic_document` toy preset.
+class Preset {
+  /// Stable, URL-safe preset identifier (lowercase snake_case).
+  final String id;
+
+  /// Monotonic version string (e.g. `v1`).
+  final String version;
+
+  /// Human-readable schema name forwarded to the LLM as the response/tool name.
+  final String schemaName;
+
+  /// One-line preset description shown in the registry UI.
+  final String description;
+
+  /// Top-level category for grouping in the playground.
+  final PresetCategory category;
+
+  /// Free-form tags used for search/filtering. May be empty.
+  final List<String> tags;
+
+  /// JSON Schema (Draft 2020-12) describing the structured output shape.
+  final String schema;
+
+  /// Instruction primer sent to the model.
+  final String systemPrompt;
+
+  /// Optional mustache-style template merged with caller-supplied context.
+  final String? contextTemplate;
+
+  /// Strategy for merging per-batch outputs across paginated calls.
+  final MergeMode mergeMode;
+
+  /// Default call mode suggested for this preset; heuristics may override.
+  final CallMode preferredCallMode;
+
+  /// When true, the prompt asks the model to wrap each field as
+  /// `{value, page, bbox, confidence}` for downstream citation overlays.
+  final bool emitCitations;
+
+  /// Optional bundled sample (input file + reference output) for preview.
+  final PresetSample? sample;
+
+  /// Stable sha256 fingerprint of the canonical preset file contents.
+  ///
+  /// Populated at registry load — not present in the on-disk JSON files.
+  /// Used as a cache-invalidation token by the worker pipeline.
+  final String fingerprint;
+
+  const Preset({
+    required this.id,
+    required this.version,
+    required this.schemaName,
+    required this.description,
+    required this.category,
+    required this.tags,
+    required this.schema,
+    required this.systemPrompt,
+    this.contextTemplate,
+    required this.mergeMode,
+    required this.preferredCallMode,
+    required this.emitCitations,
+    this.sample,
+    required this.fingerprint,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      version.hashCode ^
+      schemaName.hashCode ^
+      description.hashCode ^
+      category.hashCode ^
+      tags.hashCode ^
+      schema.hashCode ^
+      systemPrompt.hashCode ^
+      contextTemplate.hashCode ^
+      mergeMode.hashCode ^
+      preferredCallMode.hashCode ^
+      emitCitations.hashCode ^
+      sample.hashCode ^
+      fingerprint.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Preset &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          version == other.version &&
+          schemaName == other.schemaName &&
+          description == other.description &&
+          category == other.category &&
+          tags == other.tags &&
+          schema == other.schema &&
+          systemPrompt == other.systemPrompt &&
+          contextTemplate == other.contextTemplate &&
+          mergeMode == other.mergeMode &&
+          preferredCallMode == other.preferredCallMode &&
+          emitCitations == other.emitCitations &&
+          sample == other.sample &&
+          fingerprint == other.fingerprint;
+}
+
+/// High-level category used to group presets in the registry UI.
+enum PresetCategory {
+  /// Invoices, receipts, statements, purchase orders, W-9.
+  finance,
+
+  /// Passports, drivers licenses, insurance cards.
+  identity,
+
+  /// Contracts, NDAs, agreements.
+  legal,
+
+  /// Bills of lading, customs declarations, packing lists.
+  logistics,
+
+  /// Clinical records, lab reports.
+  medical,
+
+  /// Pay stubs, resumes, employment offers.
+  hr,
+
+  /// Catch-all for documents that don't fit the other categories.
+  other,
+}
+
+/// Pointer to a sample input + its reference output bundled with the preset.
+class PresetSample {
+  /// Path to the sample input file, relative to the preset directory.
+  final String inputPath;
+
+  /// Path to the reference structured output, relative to the preset directory.
+  final String outputPath;
+
+  const PresetSample({required this.inputPath, required this.outputPath});
+
+  @override
+  int get hashCode => inputPath.hashCode ^ outputPath.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PresetSample &&
+          runtimeType == other.runtimeType &&
+          inputPath == other.inputPath &&
+          outputPath == other.outputPath;
+}
+
+/// Lightweight projection of [`Preset`] used by the registry list endpoint
+/// (omits the full schema and prompt to keep the payload small).
+class PresetSummary {
+  /// Preset identifier matching [`Preset::id`].
+  final String id;
+
+  /// Preset version matching [`Preset::version`].
+  final String version;
+
+  /// Schema name matching [`Preset::schema_name`].
+  final String schemaName;
+
+  /// One-line preset description.
+  final String description;
+
+  /// Top-level category.
+  final PresetCategory category;
+
+  /// Free-form tags.
+  final List<String> tags;
+
+  /// Default call mode.
+  final CallMode preferredCallMode;
+
+  /// Whether the preset prompts the model for citations.
+  final bool emitCitations;
+
+  /// Stable fingerprint matching [`Preset::fingerprint`].
+  final String fingerprint;
+
+  const PresetSummary({
+    required this.id,
+    required this.version,
+    required this.schemaName,
+    required this.description,
+    required this.category,
+    required this.tags,
+    required this.preferredCallMode,
+    required this.emitCitations,
+    required this.fingerprint,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      version.hashCode ^
+      schemaName.hashCode ^
+      description.hashCode ^
+      category.hashCode ^
+      tags.hashCode ^
+      preferredCallMode.hashCode ^
+      emitCitations.hashCode ^
+      fingerprint.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PresetSummary &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          version == other.version &&
+          schemaName == other.schemaName &&
+          description == other.description &&
+          category == other.category &&
+          tags == other.tags &&
+          preferredCallMode == other.preferredCallMode &&
+          emitCitations == other.emitCitations &&
+          fingerprint == other.fingerprint;
 }
 
 /// Processing stages for post-processors.
@@ -10788,6 +12469,82 @@ class RerankerPreset {
           description == other.description;
 }
 
+/// Errors produced while resolving a preset against caller overrides.
+enum ResolveError {
+  /// A custom schema override was supplied but is not a JSON object.
+  schemaNotObject,
+}
+
+/// A preset merged with caller-supplied overrides (custom schema, prompt suffix,
+/// context map). Output is what the pipeline orchestrator consumes.
+class ResolvedPreset {
+  /// Source preset identifier.
+  final String id;
+
+  /// Source preset version.
+  final String version;
+
+  /// Fingerprint of the source preset file, used as a cache token.
+  final String fingerprint;
+
+  /// Schema name forwarded to the LLM.
+  final String schemaName;
+
+  /// Effective JSON Schema (caller override or the preset's own).
+  final String schema;
+
+  /// System prompt with rendered context appended.
+  final String systemPrompt;
+
+  /// Merge strategy for paginated outputs.
+  final MergeMode mergeMode;
+
+  /// Preferred call mode.
+  final CallMode preferredCallMode;
+
+  /// Whether the prompt asks for per-field citations.
+  final bool emitCitations;
+
+  const ResolvedPreset({
+    required this.id,
+    required this.version,
+    required this.fingerprint,
+    required this.schemaName,
+    required this.schema,
+    required this.systemPrompt,
+    required this.mergeMode,
+    required this.preferredCallMode,
+    required this.emitCitations,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      version.hashCode ^
+      fingerprint.hashCode ^
+      schemaName.hashCode ^
+      schema.hashCode ^
+      systemPrompt.hashCode ^
+      mergeMode.hashCode ^
+      preferredCallMode.hashCode ^
+      emitCitations.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ResolvedPreset &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          version == other.version &&
+          fingerprint == other.fingerprint &&
+          schemaName == other.schemaName &&
+          schema == other.schema &&
+          systemPrompt == other.systemPrompt &&
+          mergeMode == other.mergeMode &&
+          preferredCallMode == other.preferredCallMode &&
+          emitCitations == other.emitCitations;
+}
+
 /// Result-shape selection for extraction results.
 ///
 /// Distinct from `OutputFormat` (which controls rendering — Plain, Markdown,
@@ -10885,6 +12642,21 @@ enum RevisionKind {
 
   /// A reviewer comment or annotation.
   comment,
+}
+
+/// Schema-validation outcome surfaced as one of three buckets.
+///
+/// Fold into the combined confidence score without leaking internal validation
+/// error types.
+enum SchemaCompliance {
+  /// Every batch validated against the schema.
+  allValid,
+
+  /// At least one batch validated; at least one did not.
+  partialValid,
+
+  /// No batch validated.
+  allInvalid,
 }
 
 /// Configuration for security limits across extractors.
@@ -11021,6 +12793,29 @@ class ServerConfig {
           corsOrigins == other.corsOrigins &&
           maxRequestBodyBytes == other.maxRequestBodyBytes &&
           maxMultipartFieldBytes == other.maxMultipartFieldBytes;
+}
+
+/// Outcome of the structured-extraction call-mode heuristic.
+///
+/// **Distinct from `crate::core::config::CallMode`** which has three variants
+/// and governs extraction-engine behaviour.  This enum governs whether and how
+/// an already-extracted document is sent to an LLM structured-extraction
+/// pipeline.
+enum StructuredCallMode {
+  /// Document is unsupported or not worth invoking the pipeline.
+  skip,
+
+  /// Send extracted text only; no vision model call.
+  textOnly,
+
+  /// Send page rasters only; no extracted text payload.
+  visionOnly,
+
+  /// Fuse extracted text with page rasters in a single multimodal call.
+  textPlusVision,
+
+  /// Try text-only first; escalate to vision on low confidence score.
+  textOnlyWithVisionFallback,
 }
 
 /// Structured data (Schema.org, microdata, RDFa) block.
@@ -11180,6 +12975,131 @@ class StructuredExtractionConfig {
           strict == other.strict &&
           prompt == other.prompt &&
           llm == other.llm;
+}
+
+/// Signals consumed by the call-mode heuristic.
+///
+/// All fields derive from a prior kreuzberg extraction — no double-work.
+/// This is a plain DTO; it intentionally has no dependency on internal
+/// kreuzberg extraction types so it can be constructed from any source.
+class StructuredInput {
+  /// MIME type, canonicalised to lowercase by the caller.
+  final String mimeType;
+
+  /// Number of pages in the document.
+  final PlatformInt64 pageCount;
+
+  /// Fraction of pages with a real text layer (0.0..=1.0).
+  final double textCoverage;
+
+  /// Average extracted characters per page.
+  final double avgCharsPerPage;
+
+  /// Count of embedded images (figures, photos, signatures) discovered.
+  final PlatformInt64 embeddedImageCount;
+
+  /// When `true`, promote the result to at least [`StructuredCallMode::TextPlusVision`].
+  final bool userForceVision;
+
+  const StructuredInput({
+    required this.mimeType,
+    required this.pageCount,
+    required this.textCoverage,
+    required this.avgCharsPerPage,
+    required this.embeddedImageCount,
+    required this.userForceVision,
+  });
+
+  @override
+  int get hashCode =>
+      mimeType.hashCode ^
+      pageCount.hashCode ^
+      textCoverage.hashCode ^
+      avgCharsPerPage.hashCode ^
+      embeddedImageCount.hashCode ^
+      userForceVision.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StructuredInput &&
+          runtimeType == other.runtimeType &&
+          mimeType == other.mimeType &&
+          pageCount == other.pageCount &&
+          textCoverage == other.textCoverage &&
+          avgCharsPerPage == other.avgCharsPerPage &&
+          embeddedImageCount == other.embeddedImageCount &&
+          userForceVision == other.userForceVision;
+}
+
+/// Thresholds for the structured-extraction call-mode heuristic.
+///
+/// All defaults are **conservative starting points**.  Deployments should
+/// measure their own document corpus and override via their own config;
+/// these values are chosen to be safe-by-default, not to be optimal for
+/// any particular workload.
+///
+/// Construct custom thresholds with struct-update syntax:
+/// ```rust
+/// use kreuzberg::heuristics::StructuredThresholds;
+/// let t = StructuredThresholds {
+///     enable_vision_fallback: true,
+///     ..StructuredThresholds::default()
+/// };
+/// ```
+class StructuredThresholds {
+  /// PDFs with `text_coverage` strictly below this are treated as scanned.
+  ///
+  /// **Conservative default: 0.10** — deployments override via their own
+  /// config after measuring their document corpus.
+  final double scanMaxCoverage;
+
+  /// PDFs with `text_coverage` at or above this AND zero embedded images
+  /// route to [`StructuredCallMode::TextOnly`].
+  ///
+  /// **Conservative default: 0.90** — deployments override via their own
+  /// config after measuring their document corpus.
+  final double digitalMinCoverage;
+
+  /// DOCX / HTML / text documents with `avg_chars_per_page` above this
+  /// route to [`StructuredCallMode::TextOnly`].
+  ///
+  /// **Conservative default: 200.0** — deployments override via their own
+  /// config after measuring their document corpus.
+  final double docxTextMinDensity;
+
+  /// When `true`, emit [`StructuredCallMode::TextOnlyWithVisionFallback`]
+  /// instead of [`StructuredCallMode::TextOnly`] so the orchestrator can
+  /// escalate to vision on low confidence.
+  ///
+  /// **Conservative default: `false`** — must be explicitly enabled per
+  /// deployment after bench validation; deployments override via their own
+  /// config.
+  final bool enableVisionFallback;
+
+  const StructuredThresholds({
+    required this.scanMaxCoverage,
+    required this.digitalMinCoverage,
+    required this.docxTextMinDensity,
+    required this.enableVisionFallback,
+  });
+
+  @override
+  int get hashCode =>
+      scanMaxCoverage.hashCode ^
+      digitalMinCoverage.hashCode ^
+      docxTextMinDensity.hashCode ^
+      enableVisionFallback.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StructuredThresholds &&
+          runtimeType == other.runtimeType &&
+          scanMaxCoverage == other.scanMaxCoverage &&
+          digitalMinCoverage == other.digitalMinCoverage &&
+          docxTextMinDensity == other.docxTextMinDensity &&
+          enableVisionFallback == other.enableVisionFallback;
 }
 
 /// Configuration for the summarisation post-processor.
@@ -12212,6 +14132,45 @@ enum UriKind {
 
   /// An email address (`mailto:` link or bare email).
   email,
+}
+
+/// User-provided chunk configuration.
+class UserChunkConfig {
+  /// User-specified page ranges (overrides automatic chunking).
+  final List<PageRange>? pageRanges;
+
+  /// User-specified pages per chunk (overrides automatic calculation).
+  final PlatformInt64? pagesPerChunk;
+
+  /// Force chunking even for small documents.
+  final bool forceChunking;
+
+  /// Disable chunking even for large documents.
+  final bool disableChunking;
+
+  const UserChunkConfig({
+    this.pageRanges,
+    this.pagesPerChunk,
+    required this.forceChunking,
+    required this.disableChunking,
+  });
+
+  @override
+  int get hashCode =>
+      pageRanges.hashCode ^
+      pagesPerChunk.hashCode ^
+      forceChunking.hashCode ^
+      disableChunking.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserChunkConfig &&
+          runtimeType == other.runtimeType &&
+          pageRanges == other.pageRanges &&
+          pagesPerChunk == other.pagesPerChunk &&
+          forceChunking == other.forceChunking &&
+          disableChunking == other.disableChunking;
 }
 
 @freezed

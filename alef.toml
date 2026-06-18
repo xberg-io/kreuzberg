@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.25.39"
+alef_version = "0.25.37"
 languages = [
   "python",
   "node",
@@ -108,6 +108,8 @@ sources = [
   "crates/kreuzberg/src/types/uri.rs",
   "crates/kreuzberg/src/types/djot.rs",
   "crates/kreuzberg/src/types/internal.rs",
+  "crates/kreuzberg/src/types/form_field.rs",
+  "crates/kreuzberg/src/types/formula.rs",
   # Config types (re-exported via `pub use core::config::*`)
   "crates/kreuzberg/src/core/config/mod.rs",
   "crates/kreuzberg/src/core/config/extraction/types.rs",
@@ -139,9 +141,20 @@ sources = [
   "crates/kreuzberg/src/rendering/mod.rs",
   "crates/kreuzberg/src/keywords/mod.rs",
   "crates/kreuzberg/src/chunking/mod.rs",
+  # RAG chunker composer (chunk_for_rag — re-exported from chunking/mod.rs)
+  "crates/kreuzberg/src/chunking/rag.rs",
   "crates/kreuzberg/src/embeddings/mod.rs",
   "crates/kreuzberg/src/language_detection/mod.rs",
   "crates/kreuzberg/src/cache/core.rs",
+  # Preset types and resolver (re-exported from lib.rs)
+  "crates/kreuzberg/src/presets/types.rs",
+  "crates/kreuzberg/src/presets/resolve.rs",
+  # Heuristics structured analysis (re-exported as module from lib.rs)
+  "crates/kreuzberg/src/heuristics/structured.rs",
+  # Structured-extraction JSON binding entry points (re-exported from lib.rs).
+  # Only the FFI-safe JSON-string bridge is exposed; the async engine,
+  # StructuredOptions (Arc<dyn VisionCallCache>) and liter-llm types stay internal.
+  "crates/kreuzberg/src/structured/bindings.rs",
   # Batch extraction functions (re-exported from lib.rs)
   "crates/kreuzberg/src/core/extractor/mod.rs",
   "crates/kreuzberg/src/core/extractor/sync.rs",
@@ -420,6 +433,11 @@ exclude_functions = [
   # Vec<&str> vs &[String] / texts_refs scope — codegen type mismatch
   "batch_reduce_tokens",
   "chunk_texts_batch",
+  # Structured-extraction engine requires native HTTP (liter-llm) + PDF
+  # rendering; the `structured` feature is excluded from `wasm-target`, so the
+  # JSON bridge entry points do not exist on wasm32.
+  "extract_structured_json",
+  "split_and_extract_json",
 ]
 features = ["wasm-target"]
 
@@ -601,11 +619,6 @@ exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
 ]
-# `heic` must not appear in `default = [...]` for the dart binding crate:
-# libheif-sys (via kreuzberg-libheif) has no cross-compile story for iOS or
-# Android NDK targets. The `heic` feature itself is preserved as a forwarding
-# entry so desktop callers can opt in via `--features heic`.
-excluded_default_features = ["heic"]
 
 # Android (any arch) and iOS: libheif-sys + ORT do not cross-compile to mobile
 # NDK/SDK targets. Use the `android-target` aggregate (pure-Rust base + excel +
@@ -765,11 +778,6 @@ exclude_functions = [
   "embed_texts_async",
   "rerank_async",
 ]
-# `heic` must not appear in `default = [...]` for the swift binding crate:
-# libheif-sys (via kreuzberg-libheif) has no cross-compile story for iOS or
-# Android NDK targets. The `heic` feature itself is preserved as a forwarding
-# entry so desktop callers can opt in via `--features heic`.
-excluded_default_features = ["heic"]
 
 # iOS: libheif-sys + ORT do not cross-compile to the iOS SDK, so the
 # swift-bridge cdylib drops `heic` along with the ORT-dependent features.
@@ -979,6 +987,16 @@ functions = [
   # enrich() takes &EnrichmentConfig and returns EnrichedResult — both
   # excluded above pending NerBackend trait_bridge and serde derives.
   "enrich",
+
+  # Structured-extraction typed entry points take `PresetSpec` (a boxed-preset
+  # tuple enum) and `StructuredOptions` (carries `Arc<dyn VisionCallCache>`),
+  # neither of which crosses FFI. The binding surface is the JSON-string bridge
+  # (`extract_structured_json` / `split_and_extract_json`); the async variants
+  # are unbindable regardless.
+  "extract_structured",
+  "extract_structured_sync",
+  "split_and_extract",
+  "split_and_extract_sync",
 ]
 
 [crates.lint.python]
@@ -3986,7 +4004,7 @@ path = "../../packages/zig"
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
 # https://github.com/kreuzberg-dev/kreuzberg/releases/download/v{version}/kreuzberg-zig-v{version}.tar.gz
-hash = "kreuzberg-5.0.0-rc.22-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "kreuzberg-5.0.0-rc.19-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements

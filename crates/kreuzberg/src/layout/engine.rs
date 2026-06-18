@@ -24,7 +24,7 @@ pub enum ModelBackend {
     YoloDocLayNet,
     /// RT-DETR v2 (17 classes, 640x640 input, NMS-free).
     RtDetr,
-    /// PP-DocLayout-V3 (8 classes, 960x960 input).
+    /// PP-DocLayout-V3 (25 classes, 800×800 input, PaddleDetection DETR).
     PpDocLayoutV3,
     /// Custom model from a local file path.
     Custom {

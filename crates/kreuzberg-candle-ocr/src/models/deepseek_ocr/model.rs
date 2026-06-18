@@ -1211,8 +1211,8 @@ impl Qwen2Decoder2Encoder {
                 "only support 144/256 seq_len, got {n_query}"
             )));
         };
-        let brach_query_imgs = param_img.unsqueeze(0)?.repeat((bs, 1, 1))?;
-        let x_combined = Tensor::cat(&[&xs, &brach_query_imgs], 1)?;
+        let branch_query_imgs = param_img.unsqueeze(0)?.repeat((bs, 1, 1))?;
+        let x_combined = Tensor::cat(&[&xs, &branch_query_imgs], 1)?;
         let device = xs.device();
         let token_type_ids = Tensor::cat(
             &[

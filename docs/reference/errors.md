@@ -50,3 +50,39 @@ and provides context for debugging.
 | `Other` | {0} | A catch-all for uncommon errors that do not fit another variant. |
 
 ---
+
+### HeuristicsError
+
+Errors that can occur during heuristics analysis.
+
+| Variant | Message | Description |
+|---------|---------|-------------|
+| `ConfigError` | Invalid heuristics configuration: {0} | Invalid configuration value. |
+| `PdfAnalysisError` | PDF analysis failed: {0} | PDF analysis step failed (only when `heuristics-pdf` feature is active). |
+
+---
+
+### LoadError
+
+Errors produced while loading or validating a preset file.
+
+| Variant | Message | Description |
+|---------|---------|-------------|
+| `Parse` | preset {path}: failed to parse JSON: {source} | The file is not valid JSON. |
+| `SchemaValidation` | preset {path}: failed meta-schema validation: {errors} | The file parses as JSON but does not validate against the meta-schema. |
+| `Deserialize` | preset {path}: failed to deserialize after validation: {source} | The file validates but cannot be deserialized into `Preset`. |
+| `IdMismatch` | preset {path}: id `{declared}` must match file path stem `{expected}` | The preset's declared `id` does not match its file-system location. |
+| `BadMetaSchema` | meta-schema is invalid: {0} | The meta-schema itself failed to compile. |
+| `Io` | I/O error reading preset directory: {0} | A filesystem I/O error occurred while reading a preset directory. |
+
+---
+
+### ResolveError
+
+Errors produced while resolving a preset against caller overrides.
+
+| Variant | Message | Description |
+|---------|---------|-------------|
+| `SchemaNotObject` | custom schema must be a JSON object | A custom schema override was supplied but is not a JSON object. |
+
+---

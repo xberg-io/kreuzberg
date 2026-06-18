@@ -108,6 +108,44 @@ fn default_schema_name() -> String {
     "extraction".to_string()
 }
 
+/// How a structured-extraction preset is dispatched to the model.
+///
+/// This is the preset-facing call mode (the `preferred_call_mode` field of a
+/// [`crate::presets::Preset`]). The richer runtime decision enum used by the
+/// structured pipeline — which adds `Skip` and `TextOnlyWithVisionFallback` —
+/// lives in `crate::heuristics::structured::StructuredCallMode`; this 3-variant
+/// type is the stable, serializable surface presets and bindings depend on.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum CallMode {
+    /// Use the extracted text only.
+    #[default]
+    TextOnly,
+    /// Use rasterized page images only.
+    VisionOnly,
+    /// Provide both extracted text and page images to the model.
+    TextPlusVision,
+}
+
+/// How partial results from multiple model calls (e.g. per page batch) are combined.
+///
+/// Canonical home for the merge strategy referenced by presets and by the
+/// structured pipeline's post-processing. There is intentionally only one merge
+/// type across the crate — do not introduce a second.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum MergeMode {
+    /// Deep-merge JSON objects field by field (later calls fill missing fields).
+    #[default]
+    ObjectMerge,
+    /// Concatenate top-level arrays across calls.
+    ArrayConcat,
+    /// Keep the first non-empty result; ignore subsequent calls.
+    ObjectFirst,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -151,5 +189,35 @@ mod tests {
         assert!(cfg.max_retries.is_none());
         assert!(cfg.temperature.is_none());
         assert!(cfg.max_tokens.is_none());
+    }
+
+    #[test]
+    fn test_call_mode_serde_round_trip() {
+        for (mode, wire) in [
+            (CallMode::TextOnly, "\"text_only\""),
+            (CallMode::VisionOnly, "\"vision_only\""),
+            (CallMode::TextPlusVision, "\"text_plus_vision\""),
+        ] {
+            let json = serde_json::to_string(&mode).expect("serialize");
+            assert_eq!(json, wire);
+            let decoded: CallMode = serde_json::from_str(&json).expect("deserialize");
+            assert_eq!(decoded, mode);
+        }
+        assert_eq!(CallMode::default(), CallMode::TextOnly);
+    }
+
+    #[test]
+    fn test_merge_mode_serde_round_trip() {
+        for (mode, wire) in [
+            (MergeMode::ObjectMerge, "\"object_merge\""),
+            (MergeMode::ArrayConcat, "\"array_concat\""),
+            (MergeMode::ObjectFirst, "\"object_first\""),
+        ] {
+            let json = serde_json::to_string(&mode).expect("serialize");
+            assert_eq!(json, wire);
+            let decoded: MergeMode = serde_json::from_str(&json).expect("deserialize");
+            assert_eq!(decoded, mode);
+        }
+        assert_eq!(MergeMode::default(), MergeMode::ObjectMerge);
     }
 }

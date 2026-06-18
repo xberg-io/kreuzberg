@@ -270,6 +270,7 @@ is enabled for PDF extraction.
 | `apply_heuristics` | `bool` | `True` | Whether to apply postprocessing heuristics (default: true). |
 | `table_model` | `TableModel` | `TableModel.TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `enable_chart_understanding` | `bool` | `False` | Route regions classified as charts to the chart-understanding OCR task. When `True`, layout regions detected as charts are sent to the VLM chart task (data-series/axis recovery) instead of being treated as generic image regions. Defaults to `False` — chart understanding is opt-in and has no effect on standard text/table extraction scores. |
 
 ---
 
@@ -426,6 +427,8 @@ PDF-specific configuration.
 | `bottom_margin_fraction` | `float \| None` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `bool` | `False` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `True`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `False` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `False`. |
+| `extract_form_fields` | `bool` | `True` | Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`. When `True` (default), reads the document's interactive form structure (field names, types, values, widget geometry). Cheap and strictly additive — non-form PDFs simply yield an empty list. Set to `False` to skip the form pass entirely. |
+| `reading_order` | `bool` | `False` | Reorder extracted text by layout-detected reading order. When `True`, projects text spans onto layout-detected regions, performs column detection, and emits spans in natural reading order (important for multi-column academic PDFs). Requires the `layout-detection` feature; has no effect without it. Defaults to `False`. |
 
 ---
 
@@ -885,6 +888,8 @@ This is the main result type returned by all extraction functions.
 | `translation` | `Translation \| None` | `None` | Translation of `content` produced by the translation post-processor. `None` when translation is not configured. |
 | `page_classifications` | `list\[PageClassification\] \| None` | `\[\]` | Per-page classifications produced by the page-classification post-processor. `None` when classification is not configured. |
 | `redaction_report` | `RedactionReport \| None` | `None` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `None` when redaction is not configured. |
+| `formulas` | `list\[Formula\]` | `\[\]` | Mathematical formulas recognized in the document. Populated by the layout-guided formula pipeline when the `layout-detection` feature is enabled and the document contains regions classified as formulas. Empty otherwise. |
+| `form_fields` | `list\[PdfFormField\]` | `\[\]` | Form fields extracted from a PDF's AcroForm or XFA structure. Populated by the PDF extractor when `PdfConfig.extract_form_fields` is enabled (default) and the document is a fillable form. Empty otherwise. |
 | `formatted_content` | `str \| None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 
 ---
@@ -1488,6 +1493,117 @@ Keyword extraction configuration.
 | `language` | `str \| None` | `None` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
 | `yake_params` | `YakeParams \| None` | `None` | YAKE-specific tuning parameters. |
 | `rake_params` | `RakeParams \| None` | `None` | RAKE-specific tuning parameters. |
+
+---
+
+### EnrichOptions
+
+Which enrichment passes to run on a piece of text.
+
+All fields default to `False` / empty so callers can opt in precisely.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `bool` | — | Run keyword extraction on the input text. When `True`, the enrichment backend identifies the most salient terms and returns them in `EnrichResult.keywords`. |
+| `entities` | `bool` | — | Run named-entity recognition (NER) on the input text. When `True`, the enrichment backend identifies named entities (persons, organisations, locations, etc.) and returns them in `EnrichResult.entities`. |
+| `labels` | `list\[str\]` | `\[\]` | Custom labels to pass through to the result without modification. These are caller-supplied tags that the enrichment pipeline propagates verbatim into `EnrichResult.labels`. Useful for attaching project- or document-level metadata to every enrichment result. |
+
+---
+
+### EnrichResult
+
+Structured output produced by a completed enrichment pass.
+
+Fields are populated only when the corresponding `EnrichOptions` flag was set.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `list\[str\]` | `\[\]` | Salient terms extracted from the text. Populated when `EnrichOptions.keywords` was `True`. The ordering is backend-defined (typically by descending relevance score). |
+| `entities` | `list\[Entity\]` | `\[\]` | Named entities found in the text. Populated when `EnrichOptions.entities` was `True`. Uses the shared OSS entity schema (`Entity` / `EntityCategory`) so consumers can pattern-match on entity categories without JSON gymnastics. |
+| `labels` | `list\[str\]` | `\[\]` | Caller-supplied labels echoed from `EnrichOptions.labels`. |
+
+---
+
+### UserChunkConfig
+
+User-provided chunk configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_ranges` | `list\[PageRange\] \| None` | `\[\]` | User-specified page ranges (overrides automatic chunking). |
+| `pages_per_chunk` | `int \| None` | `None` | User-specified pages per chunk (overrides automatic calculation). |
+| `force_chunking` | `bool` | — | Force chunking even for small documents. |
+| `disable_chunking` | `bool` | — | Disable chunking even for large documents. |
+
+---
+
+### ConfidenceWeights
+
+Tunable weights for the confidence scoring formula.
+
+Defaults picked by inspection; callers tune them via config.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `float` | `0.3` | Weight assigned to `text_coverage`. Default 0.30. |
+| `ocr_aggregate` | `float` | `0.3` | Weight assigned to `ocr_aggregate` when OCR ran. Default 0.30 — folds into `text_coverage` weight when OCR did not run. |
+| `schema_compliance` | `float` | `0.4` | Weight assigned to `schema_compliance`. Default 0.40. |
+
+---
+
+### HeuristicsConfig
+
+Configuration for document chunking and analysis heuristics.
+
+Every threshold is a public field so callers can override any subset via
+struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..the default constructor }`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enable_pdf_text_heuristics` | `bool` | `True` | Enable PDF text-layer detection heuristics. When `True`, PDFs with a substantial text layer will skip chunking. Default: `True`. |
+| `text_layer_threshold` | `float` | `0.7` | Minimum fraction of pages that must have text to skip chunking. Range `0.0..=1.0`. Default: `0.7` (70 % of pages). |
+| `file_size_threshold_bytes` | `int` | `10485760` | File size threshold in bytes for considering chunking. Files smaller than this are processed without chunking. Default: 10 MiB (10 × 1 024 × 1 024). |
+| `page_count_threshold` | `int` | `50` | Page count threshold for considering chunking. Documents with fewer pages are processed without chunking. Default: 50. |
+| `target_pages_per_chunk` | `int` | `10` | Target number of pages per chunk for optimal parallel processing. Default: 10. |
+| `max_pages_per_chunk` | `int` | `25` | Hard cap on pages per chunk. No chunk will exceed this limit. Must be ≥ `target_pages_per_chunk`. Default: 25. |
+| `disk_processing_threshold_bytes` | `int` | `52428800` | File size threshold for disk-based processing. Files larger than this are buffered to disk to prevent OOM. Default: 50 MiB (50 × 1 024 × 1 024). |
+| `min_chars_per_page` | `int` | `50` | Minimum characters per page to consider a page as having text. Default: 50. |
+| `max_xlsx_sheet_count` | `int` | `200` | Maximum sheet count allowed in an XLSX workbook. Workbooks beyond this are rejected pre-extraction to avoid OOM / abusive billing inflation. Default: 200. |
+| `max_xlsx_workbook_cells` | `int` | `5000000` | Maximum cell count (sheets × rows × columns approximation) in an XLSX workbook. Default: 5 000 000 (≈ 200 sheets × 25 k cells). |
+| `max_pptx_embedded_count` | `int` | `50` | Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX. Protects against zip-bomb-style nested-document abuse. Default: 50. |
+
+---
+
+### MultidocThresholds
+
+Thresholds for multi-document boundary detection.
+
+All fields are public; callers override any subset via struct-update syntax.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `density_shift_threshold` | `float` | `0.3` | Text density difference threshold for `DensityShift` detection. Default: 0.3. |
+| `bigram_overlap_min` | `float` | `0.1` | Minimum bigram-overlap ratio below which a density shift is promoted to a `DensityShift` boundary.  Default: 0.1 (10 % overlap). |
+
+---
+
+### StructuredThresholds
+
+Thresholds for the structured-extraction call-mode heuristic.
+
+All defaults are **conservative starting points**.  Deployments should
+measure their own document corpus and override via their own config;
+these values are chosen to be safe-by-default, not to be optimal for
+any particular workload.
+
+Construct custom thresholds with struct-update syntax:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `scan_max_coverage` | `float` | `0.1` | PDFs with `text_coverage` strictly below this are treated as scanned. **Conservative default: 0.10** — deployments override via their own config after measuring their document corpus. |
+| `digital_min_coverage` | `float` | `0.9` | PDFs with `text_coverage` at or above this AND zero embedded images route to `StructuredCallMode.TextOnly`. **Conservative default: 0.90** — deployments override via their own config after measuring their document corpus. |
+| `docx_text_min_density` | `float` | `200` | DOCX / HTML / text documents with `avg_chars_per_page` above this route to `StructuredCallMode.TextOnly`. **Conservative default: 200.0** — deployments override via their own config after measuring their document corpus. |
+| `enable_vision_fallback` | `bool` | `False` | When `True`, emit `StructuredCallMode.TextOnlyWithVisionFallback` instead of `StructuredCallMode.TextOnly` so the orchestrator can escalate to vision on low confidence. **Conservative default: `False`** — must be explicitly enabled per deployment after bench validation; deployments override via their own config. |
 
 ---
 

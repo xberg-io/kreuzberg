@@ -7,8 +7,8 @@ Model: deepseek-ai/DeepSeek-OCR (1B-param end-to-end VLM)
 - Output: Direct markdown OCR from image
 
 Model size: ~2.7 GB (disk after download)
-Hardware: CUDA 12+ recommended; CPU fallback slow (~5–10 min/page)
-Expected latency: GPU ~30–60s/page, CPU ~300–500s/page
+Hardware: CUDA 12+ recommended; CPU fallback slow (~5-10 min/page)
+Expected latency: GPU ~30-60s/page, CPU ~300-500s/page
 
 Exit codes:
 - 0: All fixtures processed successfully
@@ -118,7 +118,7 @@ def extract_sync(
         }
 
 
-def main():
+def main() -> None:
     """CLI entry point."""
     parser = argparse.ArgumentParser(description="Generate DeepSeek-OCR reference baselines for image fixtures.")
     parser.add_argument(

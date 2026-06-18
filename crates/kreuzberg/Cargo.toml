@@ -287,6 +287,12 @@ reranker = [
 stopwords = []
 quality = ["dep:unicode-normalization", "dep:chardetng", "stopwords"]
 
+# Cloud-upstreamed infrastructure (pure-Rust; see gap-closing plan). Generic overridable
+# defaults only — no domain knowledge. `heuristics` text-layer detection is gated separately
+# under `heuristics-pdf` (added when the pdf_oxide branch lands).
+enrichment = []
+heuristics = []
+
 keywords-yake = ["stopwords"]
 keywords-rake = ["dep:rake", "stopwords"]
 keywords = ["keywords-yake", "keywords-rake"]
@@ -312,6 +318,26 @@ ner-onnx = [
     "dep:hf-hub",
     "dep:tokenizers",
     "dep:sha2",
+    "tokio-runtime",
+]
+
+presets = [
+    "dep:include_dir",
+    "dep:jsonschema",
+    "dep:sha2",
+] # Preset format + registry + loader + resolver; pure-Rust.
+
+# LLM vision structured-extraction orchestrator: rasterize → token-aware batch → vision call →
+# schema-validate+merge → citation-fuse. Needs native http (liter-llm) + pdf rendering, so it is
+# excluded from no-ort-target/wasm-target and joins full/android-target/windows-target instead.
+# The module is additionally gated `#[cfg(not(target_arch = "wasm32"))]` in source.
+structured = [
+    "liter-llm",
+    "presets",
+    "heuristics",
+    "pdf",
+    "ocr-pipeline",
+    "dep:moka",
     "tokio-runtime",
 ]
 
@@ -371,6 +397,8 @@ no-ort-target = [
     "chunking-tokenizers",
     "quality",
     "keywords",
+    "enrichment",
+    "heuristics",
     "office",
     "iwork",
     "hwp",
@@ -383,6 +411,7 @@ no-ort-target = [
     "auto-rotate-types",
     "paddle-ocr-types",
     "ner",
+    "presets",
     "redaction",
     "summarization",
     "qr-codes",
@@ -403,6 +432,7 @@ android-target = [
     "api",
     "mcp",
     "liter-llm",
+    "structured",
     "hwpx",
     "diff",
 ]
@@ -434,6 +464,7 @@ windows-target = [
     "reranker-presets",
     "ner",
     "ner-llm-types",
+    "presets",
     "redaction",
     "diff",
     "qr-codes",
@@ -443,6 +474,7 @@ windows-target = [
     "api",
     "mcp",
     "liter-llm",
+    "structured",
     "quality",
 ]
 # Mobile deployment preset — formats + analysis + Tesseract OCR + code intelligence + API types.
@@ -487,12 +519,16 @@ full = [
     "reranker",
     "transcription",
     "chunking-tokenizers",
+    "enrichment",
+    "heuristics",
     "tree-sitter",
     "liter-llm",
     "tokio-runtime",
     "diff",
     "ner-llm",
     "ner-onnx",
+    "presets",
+    "structured",
     "redaction",
     "redaction-ml",
     "summarization",
@@ -557,10 +593,12 @@ image = { workspace = true, default-features = false, features = [
     "pnm",
     "rayon",
 ], optional = true }
+include_dir = { version = "0.7", optional = true }
 indexmap = "2.14.0"
 infer = "0.19.0"
 itertools = { workspace = true, optional = true }
 jotdown = "0.10"
+jsonschema = { version = "0.46", optional = true }
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
 kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.22", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }
@@ -740,7 +778,16 @@ tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "time"] }
 tokio-test = "0.4"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+wiremock = "0.6"
 zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = ["deflate-flate2"] }
+
+[[test]]
+name = "structured_pipeline"
+required-features = ["structured"]
+
+[[test]]
+name = "structured_live"
+required-features = ["structured"]
 
 [[bench]]
 name = "text_quality"

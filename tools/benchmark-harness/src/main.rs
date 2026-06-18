@@ -276,6 +276,25 @@ enum Commands {
         #[arg(long)]
         fix: bool,
     },
+
+    /// Compute field-level extraction quality (form-fields, formula, structured)
+    FieldQuality {
+        /// Directory containing fixture JSON files
+        #[arg(short, long)]
+        fixtures: PathBuf,
+
+        /// Extraction mode: form-fields, formula, or structured
+        #[arg(long, default_value = "form-fields")]
+        mode: String,
+
+        /// Dataset name for structured mode (cord, sroie, funsd, docile, vrdu)
+        #[arg(long)]
+        dataset: Option<String>,
+
+        /// Only run fixtures whose file stem contains this string
+        #[arg(long)]
+        filter: Option<String>,
+    },
 }
 
 #[tokio::main]
@@ -958,6 +977,36 @@ async fn main() -> Result<()> {
             }
 
             Ok(())
+        }
+
+        Commands::FieldQuality {
+            fixtures,
+            mode,
+            dataset,
+            filter,
+        } => {
+            use benchmark_harness::field_quality::{Args, Mode, run};
+
+            let parsed_mode = Mode::parse(&mode).ok_or_else(|| {
+                benchmark_harness::Error::Config(format!(
+                    "Invalid mode '{}': expected form-fields, formula, or structured",
+                    mode
+                ))
+            })?;
+
+            let args = Args {
+                fixtures,
+                mode: parsed_mode,
+                dataset,
+                filter,
+            };
+
+            run(args)
+                .await
+                // `{:#}` renders the full anyhow context chain (e.g. the
+                // underlying extraction / model-download error), not just the
+                // top-level "extraction failed for X" wrapper.
+                .map_err(|e| benchmark_harness::Error::Benchmark(format!("{e:#}")))
         }
 
         Commands::MeasureFrameworkSizes { output } => {

@@ -33,7 +33,11 @@ pub use batch::{batch_extract_bytes, batch_extract_files};
 #[cfg(feature = "tokio-runtime")]
 pub use sync::batch_extract_files_sync;
 
-#[cfg(test)]
+// The test module exercises the async extraction entry points and the batch/sync helpers
+// (`batch_extract_files`, `batch_extract_bytes`, `extract_file_sync`, `batch_extract_files_sync`),
+// all of which are only compiled under the `tokio-runtime` feature. Gate the module to match so
+// the crate's test build succeeds for feature sets without `tokio-runtime` (e.g. `heuristics`).
+#[cfg(all(test, feature = "tokio-runtime"))]
 mod tests {
     use super::*;
     use crate::core::config::{BatchBytesItem, BatchFileItem, ExtractionConfig};

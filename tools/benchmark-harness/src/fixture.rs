@@ -65,6 +65,20 @@ pub struct GroundTruth {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub markdown_file: Option<PathBuf>,
 
+    /// Path to a flat `{ "field_name": "value" }` JSON file for form-field quality scoring.
+    ///
+    /// Used by the `field-quality` subcommand `FormFields` mode.
+    /// Path is relative to the fixture file's directory.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fields_json: Option<PathBuf>,
+
+    /// Path to a `{ "formulas": ["latex1", ...] }` JSON file for formula quality scoring.
+    ///
+    /// Used by the `field-quality` subcommand `Formula` mode.
+    /// Path is relative to the fixture file's directory.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub formulas_json: Option<PathBuf>,
+
     /// Source of the ground truth ("pdf_text_layer", "markdown_file", "manual")
     pub source: String,
 }
@@ -761,6 +775,8 @@ mod tests {
             ground_truth: Some(GroundTruth {
                 text_file: Some(PathBuf::from("nonexistent_ground_truth.txt")),
                 markdown_file: None,
+                fields_json: None,
+                formulas_json: None,
                 source: "manual".to_string(),
             }),
         };
@@ -796,6 +812,8 @@ mod tests {
             ground_truth: Some(GroundTruth {
                 text_file: Some(PathBuf::from("ground_truth.txt")),
                 markdown_file: None,
+                fields_json: None,
+                formulas_json: None,
                 source: "manual".to_string(),
             }),
         };
@@ -835,6 +853,8 @@ mod tests {
             ground_truth: Some(GroundTruth {
                 text_file: Some(PathBuf::from("nonexistent.txt")),
                 markdown_file: None,
+                fields_json: None,
+                formulas_json: None,
                 source: "manual".to_string(),
             }),
         };

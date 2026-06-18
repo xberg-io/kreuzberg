@@ -5,10 +5,35 @@
 
 use crate::chunking::text_splitter::{Characters, ChunkCapacity, ChunkConfig};
 use crate::error::{KreuzbergError, Result};
-use crate::types::{Chunk, ChunkMetadata, PageBoundary};
+use crate::types::{Chunk, ChunkMetadata, HeadingContext, PageBoundary};
 
 use super::boundaries::calculate_page_range;
 use super::classifier::classify_chunk;
+
+/// Derive `heading_path` from a `HeadingContext`.
+///
+/// Returns the heading texts in outermost-first order (h1 → h2 → … → deepest).
+/// Returns an empty `Vec` when `heading_context` is `None`.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// use kreuzberg::types::{HeadingContext, HeadingLevel};
+/// let ctx = HeadingContext {
+///     headings: vec![
+///         HeadingLevel { level: 1, text: "Guide".to_string() },
+///         HeadingLevel { level: 2, text: "Setup".to_string() },
+///     ],
+/// };
+/// let path = heading_path_from_context(&Some(ctx));
+/// assert_eq!(path, vec!["Guide", "Setup"]);
+/// ```
+pub(crate) fn heading_path_from_context(heading_context: &Option<HeadingContext>) -> Vec<String> {
+    match heading_context {
+        Some(ctx) => ctx.headings.iter().map(|h| h.text.clone()).collect(),
+        None => Vec::new(),
+    }
+}
 
 /// Default chunk size used when a zero value is passed (mirrors `default_chunk_size()`).
 const DEFAULT_CHUNK_SIZE: usize = 1000;
@@ -104,6 +129,7 @@ where
                 first_page,
                 last_page,
                 heading_context: None,
+                heading_path: Vec::new(),
                 image_indices: Vec::new(),
             },
         });
@@ -115,6 +141,60 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{HeadingContext, HeadingLevel};
+
+    // ── heading_path_from_context ───────────────────────────────────────────
+
+    #[test]
+    fn heading_path_from_context_none_returns_empty() {
+        let path = heading_path_from_context(&None);
+        assert!(path.is_empty(), "None heading_context must produce empty path");
+    }
+
+    #[test]
+    fn heading_path_from_context_single_heading() {
+        let ctx = Some(HeadingContext {
+            headings: vec![HeadingLevel {
+                level: 1,
+                text: "Introduction".to_string(),
+            }],
+        });
+        let path = heading_path_from_context(&ctx);
+        assert_eq!(path, vec!["Introduction"]);
+    }
+
+    #[test]
+    fn heading_path_from_context_nested_headings_outermost_first() {
+        let ctx = Some(HeadingContext {
+            headings: vec![
+                HeadingLevel {
+                    level: 1,
+                    text: "Guide".to_string(),
+                },
+                HeadingLevel {
+                    level: 2,
+                    text: "Setup".to_string(),
+                },
+                HeadingLevel {
+                    level: 3,
+                    text: "Prerequisites".to_string(),
+                },
+            ],
+        });
+        let path = heading_path_from_context(&ctx);
+        assert_eq!(path, vec!["Guide", "Setup", "Prerequisites"]);
+        // Outermost (h1) is index 0, deepest (h3) is last.
+        assert_eq!(path[0], "Guide");
+        assert_eq!(path[2], "Prerequisites");
+    }
+
+    #[test]
+    fn heading_path_from_context_empty_headings_vec() {
+        // HeadingContext with zero headings should yield an empty path.
+        let ctx = Some(HeadingContext { headings: vec![] });
+        let path = heading_path_from_context(&ctx);
+        assert!(path.is_empty());
+    }
 
     #[test]
     fn test_build_chunk_config_valid() {

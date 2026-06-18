@@ -62,6 +62,7 @@ pub mod config;
 pub mod core;
 mod headings;
 pub mod processor;
+pub mod rag;
 pub mod semantic;
 mod text_splitter;
 #[cfg(feature = "chunking-tokenizers")]
@@ -74,6 +75,7 @@ pub use config::{ChunkSizing, ChunkerType, ChunkingConfig, ChunkingResult}; // C
 pub use core::chunk_text;
 pub(crate) use core::chunk_text_with_heading_source;
 pub use processor::ChunkingProcessor;
+pub use rag::chunk_for_rag;
 
 use crate::error::Result;
 

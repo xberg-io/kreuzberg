@@ -48,6 +48,7 @@ pub mod datasets;
 pub mod diagnostics;
 pub mod embed_benchmark;
 pub mod error;
+pub mod field_quality;
 pub mod fixture;
 pub mod groups;
 pub mod json_quality;

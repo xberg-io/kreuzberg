@@ -79,12 +79,18 @@ pub enum Pipeline {
     PdfOxide,
     /// pdf_oxide backend + layout detection
     PdfOxideLayout,
+    /// pdf_oxide backend + layout detection + reading-order reordering
+    PdfOxideReadingOrder,
     /// Candle-based TrOCR (force_ocr, plain text)
     CandleTrocr,
     /// Candle-based PaddleOCR-VL (force_ocr, end-to-end markdown)
     CandlePaddleocrVl,
     /// Candle-based GLM-OCR vision-language backend (force_ocr)
     CandleGlmOcr,
+    /// Candle-based GLM-OCR with layout detection + formula extraction
+    CandleGlmOcrLayout,
+    /// Candle-based GLM-OCR with layout detection + formula + chart understanding
+    CandleGlmOcrLayoutChart,
     /// Candle-based Hunyuan-OCR vision-language backend (force_ocr)
     CandleHunyuanOcr,
     /// Candle-based DeepSeek-OCR vision-language backend (force_ocr)
@@ -115,9 +121,12 @@ impl Pipeline {
             Pipeline::LayoutSlanetAuto => "layout+slanet-auto",
             Pipeline::PdfOxide => "pdf-oxide",
             Pipeline::PdfOxideLayout => "pdf-oxide+layout",
+            Pipeline::PdfOxideReadingOrder => "pdf-oxide+layout+reading-order",
             Pipeline::CandleTrocr => "candle-trocr",
             Pipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
             Pipeline::CandleGlmOcr => "candle-glm-ocr",
+            Pipeline::CandleGlmOcrLayout => "candle-glm-ocr+layout",
+            Pipeline::CandleGlmOcrLayoutChart => "candle-glm-ocr+layout+chart",
             Pipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
             Pipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
             Pipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
@@ -149,9 +158,20 @@ impl Pipeline {
             }
             "pdf-oxide" | "pdf_oxide" | "oxide" => Some(Pipeline::PdfOxide),
             "pdf-oxide+layout" | "pdf-oxide-layout" | "oxide+layout" | "oxide-layout" => Some(Pipeline::PdfOxideLayout),
+            "pdf-oxide+layout+reading-order"
+            | "pdf-oxide-layout-reading-order"
+            | "oxide+layout+reading-order"
+            | "oxide-layout-reading-order" => Some(Pipeline::PdfOxideReadingOrder),
             "candle-trocr" | "candle_trocr" | "trocr" => Some(Pipeline::CandleTrocr),
             "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Some(Pipeline::CandlePaddleocrVl),
             "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Some(Pipeline::CandleGlmOcr),
+            "candle-glm-ocr+layout" | "candle_glm_ocr_layout" | "glm-ocr+layout" | "glm-ocr-layout" => {
+                Some(Pipeline::CandleGlmOcrLayout)
+            }
+            "candle-glm-ocr+layout+chart"
+            | "candle_glm_ocr_layout_chart"
+            | "glm-ocr+layout+chart"
+            | "glm-ocr-layout-chart" => Some(Pipeline::CandleGlmOcrLayoutChart),
             "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Some(Pipeline::CandleHunyuanOcr),
             "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Some(Pipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {
@@ -368,6 +388,25 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         Pipeline::PdfOxideLayout => kreuzberg::ExtractionConfig {
             pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
             layout: Some(LayoutDetectionConfig::default()),
+            // Drive the layout-for-markdown path so the oxide extractor receives
+            // layout hints (heading/table/figure detection feeds the structure pipeline).
+            use_layout_for_markdown: true,
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PdfOxideReadingOrder => kreuzberg::ExtractionConfig {
+            pdf_options: Some(kreuzberg::PdfConfig {
+                reading_order: true,
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig::default()),
+            // Reading-order reordering requires layout hints; without this flag
+            // `maybe_run_layout_for_markdown` returns early and reading_order is a no-op.
+            use_layout_for_markdown: true,
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: "eng".to_string(),
@@ -435,6 +474,29 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "candle-glm-ocr".to_string(),
                 language: "en".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::CandleGlmOcrLayout => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "candle-glm-ocr".to_string(),
+                language: "en".to_string(),
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig::default()),
+            ..base
+        },
+        Pipeline::CandleGlmOcrLayoutChart => kreuzberg::ExtractionConfig {
+            force_ocr: true,
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "candle-glm-ocr".to_string(),
+                language: "en".to_string(),
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig {
+                enable_chart_understanding: true,
                 ..Default::default()
             }),
             ..base

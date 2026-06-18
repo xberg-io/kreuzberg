@@ -2,15 +2,28 @@
 	"document": "../../../../test_documents/pdf/nougat_040.pdf",
 	"file_type": "pdf",
 	"file_size": 476639,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"docling",
+		"markitdown",
+		"mineru",
+		"pdfminer",
+		"pdfplumber",
+		"pdftotext",
+		"pymupdf4llm",
+		"pypdf",
+		"tika",
+		"unstructured"
+	],
 	"metadata": {
-		"description": "Nougat benchmark PDF document",
+		"description": "Differential-privacy paper with rich display + inline LaTeX formulas",
 		"source": "nougat",
 		"size_category": "medium"
 	},
 	"ground_truth": {
 		"text_file": "../../../../test_documents/ground_truth/pdf/nougat_040.txt",
-		"source": "mistral-pixtral",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/nougat_040.md"
+		"markdown_file": "../../../../test_documents/ground_truth/pdf/nougat_040.md",
+		"formulas_json": "../../../../test_documents/ground_truth/pdf/nougat_040.formulas.json",
+		"source": "nougat"
 	}
 }

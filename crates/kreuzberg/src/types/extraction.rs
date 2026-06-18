@@ -275,6 +275,19 @@ pub struct ExtractionResult {
     #[serde(default)]
     pub summary: Option<super::summary::DocumentSummary>,
 
+    /// Confidence score computed by the heuristics pipeline.
+    ///
+    /// Populated when the `heuristics` feature is enabled and confidence
+    /// scoring has been performed.  Combines text-coverage, OCR aggregate
+    /// confidence, and schema-compliance into a single `[0, 1]` value.
+    ///
+    /// `None` when confidence scoring is not configured or the feature is
+    /// absent.
+    #[cfg(feature = "heuristics")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub extraction_confidence: Option<crate::heuristics::confidence::ExtractionConfidence>,
+
     /// Translation of `content` produced by the translation post-processor.
     ///
     /// `None` when translation is not configured.
@@ -298,6 +311,21 @@ pub struct ExtractionResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub redaction_report: Option<super::redaction::RedactionReport>,
+
+    /// Mathematical formulas recognized in the document.
+    ///
+    /// Populated by the layout-guided formula pipeline when the
+    /// `layout-detection` feature is enabled and the document contains regions
+    /// classified as formulas. Empty otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub formulas: Vec<super::formula::Formula>,
+
+    /// Form fields extracted from a PDF's AcroForm or XFA structure.
+    ///
+    /// Populated by the PDF extractor when `PdfConfig::extract_form_fields` is
+    /// enabled (default) and the document is a fillable form. Empty otherwise.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub form_fields: Vec<super::form_field::PdfFormField>,
 
     /// Pre-rendered content in the requested output format.
     ///
@@ -523,6 +551,15 @@ pub struct ChunkMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub heading_context: Option<HeadingContext>,
+
+    /// Flattened heading trail from document root to this chunk's section.
+    ///
+    /// Each element is a heading's text, outermost first. Derived from
+    /// [`heading_context`](Self::heading_context) when present; empty otherwise.
+    /// Provides a binding-friendly, RAG-shaped breadcrumb without requiring
+    /// callers to walk the nested [`HeadingContext`] structure.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub heading_path: Vec<String>,
 
     /// Indices into `ExtractionResult.images` for images on pages covered by this chunk.
     ///
@@ -829,5 +866,128 @@ impl super::tables::Table {
                 y1: b.bottom as f64,
             }),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── ChunkMetadata backward-compat ────────────────────────────────────────
+
+    #[test]
+    fn chunk_metadata_omitting_heading_path_deserializes_to_empty_vec() {
+        // heading_path has `#[serde(default)]` — stored JSON without the field
+        // must deserialize to an empty Vec, not an error.
+        let json = r#"{
+            "byte_start": 0,
+            "byte_end": 42,
+            "chunk_index": 0,
+            "total_chunks": 1
+        }"#;
+        let meta: ChunkMetadata = serde_json::from_str(json).unwrap();
+        assert!(
+            meta.heading_path.is_empty(),
+            "omitted heading_path must default to empty vec, got: {:?}",
+            meta.heading_path
+        );
+    }
+
+    // ── ExtractionResult backward-compat ────────────────────────────────────
+
+    #[test]
+    fn extraction_result_omitting_formulas_and_form_fields_defaults_to_empty() {
+        // Both `formulas` and `form_fields` use `#[serde(default)]` and
+        // `skip_serializing_if = "Vec::is_empty"`.  Old JSON that lacks these
+        // fields must deserialize cleanly to empty Vecs.
+        let json = r#"{
+            "content": "hello",
+            "mime_type": "text/plain",
+            "metadata": {},
+            "tables": []
+        }"#;
+        let result: ExtractionResult = serde_json::from_str(json).unwrap();
+        assert!(result.formulas.is_empty(), "omitted formulas must default to empty vec");
+        assert!(
+            result.form_fields.is_empty(),
+            "omitted form_fields must default to empty vec"
+        );
+    }
+
+    #[test]
+    fn extraction_result_formula_round_trip() {
+        use super::super::formula::Formula;
+
+        let formula = Formula {
+            latex: r"E = mc^2".to_string(),
+            bbox: BoundingBox {
+                x0: 10.0,
+                y0: 20.0,
+                x1: 100.0,
+                y1: 50.0,
+            },
+            page: 1,
+        };
+
+        let result = ExtractionResult {
+            content: "Physics document".to_string(),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            formulas: vec![formula],
+            ..Default::default()
+        };
+
+        let json = serde_json::to_string(&result).unwrap();
+        // formulas must be present in JSON when non-empty
+        assert!(json.contains("formulas"), "non-empty formulas must be serialized");
+
+        let deserialized: ExtractionResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.formulas.len(), 1);
+        assert_eq!(deserialized.formulas[0].latex, r"E = mc^2");
+        assert_eq!(deserialized.formulas[0].page, 1);
+        assert_eq!(deserialized.formulas[0].bbox.x0, 10.0);
+    }
+
+    #[test]
+    fn extraction_result_pdf_form_field_round_trip() {
+        use super::super::form_field::{FormFieldType, PdfFormField};
+
+        let field = PdfFormField {
+            name: "FirstName".to_string(),
+            full_name: "PersonalInfo.FirstName".to_string(),
+            field_type: FormFieldType::Text,
+            value: Some("Alice".to_string()),
+            default_value: None,
+            flags: 0,
+            page: Some(1),
+            bbox: Some(BoundingBox {
+                x0: 72.0,
+                y0: 300.0,
+                x1: 300.0,
+                y1: 320.0,
+            }),
+            max_length: Some(50),
+            tooltip: Some("Enter your first name".to_string()),
+        };
+
+        let result = ExtractionResult {
+            content: "Form document".to_string(),
+            mime_type: std::borrow::Cow::Borrowed("application/pdf"),
+            form_fields: vec![field],
+            ..Default::default()
+        };
+
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("form_fields"), "non-empty form_fields must be serialized");
+
+        let deserialized: ExtractionResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.form_fields.len(), 1);
+        assert_eq!(deserialized.form_fields[0].name, "FirstName");
+        assert_eq!(deserialized.form_fields[0].full_name, "PersonalInfo.FirstName");
+        assert_eq!(deserialized.form_fields[0].field_type, FormFieldType::Text);
+        assert_eq!(deserialized.form_fields[0].value.as_deref(), Some("Alice"));
+        assert_eq!(deserialized.form_fields[0].max_length, Some(50));
+        let bbox = deserialized.form_fields[0].bbox.unwrap();
+        assert_eq!(bbox.x0, 72.0);
+        assert_eq!(bbox.y1, 320.0);
     }
 }

@@ -39,6 +39,38 @@ pub(crate) fn extract_text_and_metadata(
     Ok((text, boundaries, page_contents, metadata))
 }
 
+/// Extract text spans with bounding boxes from a single page.
+///
+/// Returns `(text_spans)` where each span contains the text, x, y, width, and height
+/// in PDF coordinate space (points, y=0 at bottom of page).
+///
+/// This is used by reading-order reconstruction to project spans onto layout regions.
+#[cfg(feature = "layout-detection")]
+pub(crate) fn extract_spans_from_page(
+    doc: &mut pdf_oxide::PdfDocument,
+    page_index: usize,
+) -> Result<Vec<crate::extractors::pdf::reading_order::TextSpan>> {
+    use pdf_oxide::document::ReadingOrder;
+
+    let page_text_data = doc
+        .extract_page_text_with_options(page_index, ReadingOrder::ColumnAware)
+        .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to extract page text: {}", e)))?;
+
+    let spans = page_text_data
+        .spans
+        .iter()
+        .map(|span| crate::extractors::pdf::reading_order::TextSpan {
+            text: span.text.clone(),
+            x: span.bbox.x,
+            y: span.bbox.y,
+            width: span.bbox.width,
+            height: span.bbox.height,
+        })
+        .collect();
+
+    Ok(spans)
+}
+
 /// Extract text from a pdf_oxide document with optional page boundary tracking.
 ///
 /// Mirrors the signature and behaviour of `extract_text_from_pdf_document`.

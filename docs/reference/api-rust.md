@@ -1607,6 +1607,52 @@ translate_result(ExtractionResult::default(), TranslationConfig::default()).awai
 
 ---
 
+#### chunk_for_rag()
+
+Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
+
+Delegates to `chunk_text` using the caller's config (defaulting to
+`ChunkerType::Markdown` when the config uses the default `Text` type, so that
+heading hierarchy is resolved).  After chunking, derives
+`ChunkMetadata::heading_path` from each chunk's `heading_context`.
+
+  underlying splitter; use `ChunkerType::Markdown` for documents with ATX
+  headings.
+
+**Returns:**
+
+A `ChunkingResult` where every chunk's `heading_path` is populated from its
+`heading_context` (empty when the chunk is not under any heading).
+
+**Errors:**
+
+Propagates any error from the underlying chunker (e.g. invalid overlap).
+
+**Signature:**
+
+```rust
+pub fn chunk_for_rag(text: &str, config: ChunkingConfig) -> Result<ChunkingResult, Error>
+```
+
+**Example:**
+
+```rust
+let result = chunk_for_rag("value", ChunkingConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `String` | Yes | The text |
+| `config` | `ChunkingConfig` | Yes | The configuration options |
+
+**Returns:** `ChunkingResult`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### compare()
 
 Compare two extraction results and return a structured diff.
@@ -1792,6 +1838,498 @@ for keyword in keywords {
 | `config` | `KeywordConfig` | Yes | Keyword extraction configuration |
 
 **Returns:** `Vec<Keyword>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### analyze_document()
+
+Analyze a document and determine the optimal chunking strategy.
+
+Decision logic (in priority order):
+
+1. If user provides `disable_chunking` → no chunking
+2. If user provides page_ranges → use user overrides
+3. If chunking is not enabled → no chunking
+4. If format doesn't support chunking → no chunking
+5. If file is small (below both thresholds) and not force_chunking → no chunking
+6. If PDF has a substantial text layer AND !force_ocr → no chunking
+   *(only when `heuristics-pdf` feature is enabled; otherwise skipped)*
+
+7. Otherwise → chunk the document
+
+**Errors:**
+
+Returns an error only when the `heuristics-pdf` feature is active and
+the PDF text-layer analysis itself returns a hard error.  In all other
+cases the function returns a `ChunkingDecision`.
+
+**Signature:**
+
+```rust
+pub fn analyze_document(metadata: DocumentMetadata, config: HeuristicsConfig, document_bytes: Option<Vec<u8>>) -> Result<ChunkingDecision, Error>
+```
+
+**Example:**
+
+```rust
+let result = analyze_document(DocumentMetadata::default(), HeuristicsConfig::default(), b"data")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `metadata` | `DocumentMetadata` | Yes | The document metadata |
+| `config` | `HeuristicsConfig` | Yes | The configuration options |
+| `document_bytes` | `Option<Vec<u8>>` | No | The document bytes |
+
+**Returns:** `ChunkingDecision`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### analyze_with_user_chunks()
+
+Analyze a document with user-specified chunk ranges.
+
+Creates a chunk plan based on user-provided page ranges.
+
+**Signature:**
+
+```rust
+pub fn analyze_with_user_chunks(user_ranges: Vec<PageRange>, total_pages: u32, size_bytes: u64, config: HeuristicsConfig) -> ChunkingDecision
+```
+
+**Example:**
+
+```rust
+let result = analyze_with_user_chunks(vec![], 42, 42, HeuristicsConfig::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `user_ranges` | `Vec<PageRange>` | Yes | The user ranges |
+| `total_pages` | `u32` | Yes | The total pages |
+| `size_bytes` | `u64` | Yes | The size bytes |
+| `config` | `HeuristicsConfig` | Yes | The configuration options |
+
+**Returns:** `ChunkingDecision`
+
+---
+
+#### score_confidence()
+
+Score a `ConfidenceSignals` triple into an `ExtractionConfidence` using
+the supplied weights.
+
+When `signals.ocr_aggregate` is `None`, the OCR weight folds into
+`text_coverage` so the weighted sum still totals 1.0.
+
+**Signature:**
+
+```rust
+pub fn score_confidence(signals: ConfidenceSignals, weights: ConfidenceWeights) -> ExtractionConfidence
+```
+
+**Example:**
+
+```rust
+let result = score_confidence(ConfidenceSignals::default(), ConfidenceWeights::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `signals` | `ConfidenceSignals` | Yes | The confidence signals |
+| `weights` | `ConfidenceWeights` | Yes | The confidence weights |
+
+**Returns:** `ExtractionConfidence`
+
+---
+
+#### check_format_limits()
+
+Decision returned for pre-extraction rejection based on XLSX/PPTX-specific
+resource bounds. Returns `Some(reason)` to reject; `None` to proceed.
+
+Callers must provide counts from a pre-extraction peek (e.g. parsing
+`xl/workbook.xml` for sheet count).
+
+**Signature:**
+
+```rust
+pub fn check_format_limits(mime_type: &str, sheet_count: Option<u32>, workbook_cells: Option<u64>, embedded_count: Option<u32>, config: HeuristicsConfig) -> Option<String>
+```
+
+**Example:**
+
+```rust
+let result = check_format_limits("value", 42, 42, 42, HeuristicsConfig::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `mime_type` | `String` | Yes | The mime type |
+| `sheet_count` | `Option<u32>` | No | The sheet count |
+| `workbook_cells` | `Option<u64>` | No | The workbook cells |
+| `embedded_count` | `Option<u32>` | No | The embedded count |
+| `config` | `HeuristicsConfig` | Yes | The configuration options |
+
+**Returns:** `Option<String>`
+
+---
+
+#### boundaries_from_extraction_result()
+
+Derive document boundaries from an already-produced `ExtractionResult`.
+
+Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
+`PageContent` entry), then delegates to `detect_boundaries`.
+
+### Fallback behaviour
+
+- If `result.pages` is `None` or empty the whole document is treated as a
+  single document: returns `[Start(1), End(1)]`, matching the contract of
+  `detect_boundaries` for a one-page input.
+
+### Text density
+
+`PageContent` does not carry a pre-computed density score.
+This function approximates density as
+`non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
+reasonable proxy for how text-dense a page is relative to itself.  Pass a
+custom `MultidocInput` to `detect_boundaries` directly when you need a
+higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
+
+**Signature:**
+
+```rust
+pub fn boundaries_from_extraction_result(result: ExtractionResult, thresholds: MultidocThresholds) -> Vec<DocumentBoundary>
+```
+
+**Example:**
+
+```rust
+let result = boundaries_from_extraction_result(ExtractionResult::default(), MultidocThresholds::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `thresholds` | `MultidocThresholds` | Yes | The multidoc thresholds |
+
+**Returns:** `Vec<DocumentBoundary>`
+
+---
+
+#### detect_boundaries()
+
+Detect document boundaries in a multi-document PDF.
+
+Returns a list of detected boundaries, always including implicit boundaries
+at start (page 1) and end (page_count).  Boundaries are returned in ascending
+order of `start_page`.
+
+**Returns:**
+
+Ordered list of document boundaries.
+
+**Signature:**
+
+```rust
+pub fn detect_boundaries(input: MultidocInput, thresholds: MultidocThresholds) -> Vec<DocumentBoundary>
+```
+
+**Example:**
+
+```rust
+let result = detect_boundaries(MultidocInput::default(), MultidocThresholds::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `MultidocInput` | Yes | Page signals for the PDF |
+| `thresholds` | `MultidocThresholds` | Yes | Detection thresholds |
+
+**Returns:** `Vec<DocumentBoundary>`
+
+---
+
+#### choose_call_mode()
+
+Decide which call mode best fits this document.
+
+Rules applied in order:
+
+1. `image/*` → `StructuredCallMode::VisionOnly` (no text layer to start from).
+2. `application/pdf` → `StructuredCallMode::TextOnly` regardless of
+   `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
+   extraction produces text for scanned PDFs; the orchestrator's
+   post-call confidence gate handles any vision escalation actually needed.
+
+3. DOCX / `text/html` / `text/*` / `application/json` / `application/xml` /
+   `application/rtf` with `avg_chars_per_page > docx_text_min_density`
+   → `StructuredCallMode::TextOnly`.
+
+4. Anything else → `StructuredCallMode::Skip`.
+
+After rule selection two post-rule promotions apply (in order):
+
+- `user_force_vision` promotes `TextOnly` → `TextPlusVision`
+  (`Skip` stays `Skip` — caller meant to opt out).
+
+- `enable_vision_fallback` promotes `TextOnly` →
+  `TextOnlyWithVisionFallback` (does **not** upgrade `TextPlusVision` or
+  `Skip`).
+
+**Signature:**
+
+```rust
+pub fn choose_call_mode(input: StructuredInput, t: StructuredThresholds) -> StructuredCallMode
+```
+
+**Example:**
+
+```rust
+let result = choose_call_mode(StructuredInput::default(), StructuredThresholds::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `input` | `StructuredInput` | Yes | The input data |
+| `t` | `StructuredThresholds` | Yes | The structured thresholds |
+
+**Returns:** `StructuredCallMode`
+
+---
+
+#### calculate_chunk_plan()
+
+Calculate a chunking plan for a document.
+
+**Returns:**
+
+A `ChunkPlan` with optimal chunk boundaries.
+
+**Signature:**
+
+```rust
+pub fn calculate_chunk_plan(page_count: u32, size_bytes: u64, needs_ocr: bool, config: HeuristicsConfig) -> ChunkPlan
+```
+
+**Example:**
+
+```rust
+let result = calculate_chunk_plan(42, 42, true, HeuristicsConfig::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `page_count` | `u32` | Yes | Total number of pages in the document |
+| `size_bytes` | `u64` | Yes | File size in bytes |
+| `needs_ocr` | `bool` | Yes | Whether OCR will be required |
+| `config` | `HeuristicsConfig` | Yes | Heuristics configuration |
+
+**Returns:** `ChunkPlan`
+
+---
+
+#### calculate_plan_from_overrides()
+
+Calculate a chunk plan from user-specified page ranges.
+
+Validates and processes user overrides into a proper chunk plan.
+
+**Signature:**
+
+```rust
+pub fn calculate_plan_from_overrides(user_chunks: Vec<PageRange>, total_pages: u32, size_bytes: u64, config: HeuristicsConfig) -> ChunkPlan
+```
+
+**Example:**
+
+```rust
+let result = calculate_plan_from_overrides(vec![], 42, 42, HeuristicsConfig::default());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `user_chunks` | `Vec<PageRange>` | Yes | The user chunks |
+| `total_pages` | `u32` | Yes | The total pages |
+| `size_bytes` | `u64` | Yes | The size bytes |
+| `config` | `HeuristicsConfig` | Yes | The configuration options |
+
+**Returns:** `ChunkPlan`
+
+---
+
+#### fingerprint()
+
+Stable sha256 fingerprint of `raw`, formatted as `sha256:<hex>`.
+
+**Signature:**
+
+```rust
+pub fn fingerprint(raw: &[u8]) -> String
+```
+
+**Example:**
+
+```rust
+let result = fingerprint(b"data");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `raw` | `Vec<u8>` | Yes | The raw |
+
+**Returns:** `String`
+
+---
+
+#### resolve()
+
+Resolve `(preset, custom_schema_override, context)` into a `ResolvedPreset`.
+
+- `custom_schema` overrides `preset.schema` when set.
+- `context` substitutes `{{key}}` tokens in `preset.context_template`; the
+  rendered string is appended to `system_prompt` so the model sees it.
+
+**Signature:**
+
+```rust
+pub fn resolve(preset: Preset, custom_schema: Option<serde_json::Value>, context: HashMap<String, String>) -> Result<ResolvedPreset, ResolveError>
+```
+
+**Example:**
+
+```rust
+let result = resolve(Preset::default(), std::collections::HashMap::new(), std::collections::HashMap::new())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `preset` | `Preset` | Yes | The preset |
+| `custom_schema` | `Option<serde_json::Value>` | No | The custom schema |
+| `context` | `HashMap<String, String>` | Yes | The context |
+
+**Returns:** `ResolvedPreset`
+
+**Errors:** Returns `Err(ResolveError)`.
+
+---
+
+#### extract_structured_json()
+
+Extract structured JSON from a document using JSON-encoded preset spec and options.
+
+This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
+language-binding call paths.
+
+  `cache`).  Pass `"{}"` to use all defaults.
+
+**Returns:**
+
+JSON-serialised `StructuredOutput` on success.
+
+**Errors:**
+
+Returns `Validation` when either JSON argument is
+malformed.  All other failures from the underlying
+`extract_structured_sync` call are mapped onto `KreuzbergError`
+via `From<StructuredError>`.
+
+**Signature:**
+
+```rust
+pub fn extract_structured_json(bytes: &[u8], mime: &str, preset_spec_json: &str, options_json: &str) -> Result<String, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract_structured_json(b"data", "value", "value", "value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `bytes` | `Vec<u8>` | Yes | The bytes |
+| `mime` | `String` | Yes | The mime |
+| `preset_spec_json` | `String` | Yes | The preset spec json |
+| `options_json` | `String` | Yes | The options json |
+
+**Returns:** `String`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### split_and_extract_json()
+
+Split a multi-document PDF and extract structured JSON from each segment,
+returning a JSON array of `StructuredOutput` objects.
+
+Non-PDF documents are passed through as a single-element array.
+
+Same as `extract_structured_json`.
+
+**Returns:**
+
+JSON-serialised `Vec<``StructuredOutput``>` (a JSON array) on success.
+
+**Errors:**
+
+Returns `Validation` when either JSON argument is
+malformed.  All other failures from the underlying
+`split_and_extract_sync` call are mapped onto `KreuzbergError`
+via `From<StructuredError>`.
+
+**Signature:**
+
+```rust
+pub fn split_and_extract_json(bytes: &[u8], mime: &str, preset_spec_json: &str, options_json: &str) -> Result<String, Error>
+```
+
+**Example:**
+
+```rust
+let result = split_and_extract_json(b"data", "value", "value", "value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `bytes` | `Vec<u8>` | Yes | The bytes |
+| `mime` | `String` | Yes | The mime |
+| `preset_spec_json` | `String` | Yes | The preset spec json |
+| `options_json` | `String` | Yes | The options json |
+
+**Returns:** `String`
 
 **Errors:** Returns `Err(Error)`.
 
@@ -2610,6 +3148,18 @@ is configured), and metadata about its position in the document.
 
 ---
 
+#### ChunkInfo
+
+Information about a single chunk.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `u32` | — | Zero-based chunk index. |
+| `pages` | `PageRange` | — | Page range for this chunk. |
+| `estimated_time_ms` | `u64` | — | Estimated processing time for this chunk in milliseconds. |
+
+---
+
 #### ChunkMetadata
 
 Metadata about a chunk's position in the original document.
@@ -2624,7 +3174,42 @@ Metadata about a chunk's position in the original document.
 | `first_page` | `Option<u32>` | `None` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `Option<u32>` | `None` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
 | `heading_context` | `Option<HeadingContext>` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType::Markdown` is used. |
+| `heading_path` | `Vec<String>` | `/* serde(default) */` | Flattened heading trail from document root to this chunk's section. Each element is a heading's text, outermost first. Derived from `heading_context` when present; empty otherwise. Provides a binding-friendly, RAG-shaped breadcrumb without requiring callers to walk the nested `HeadingContext` structure. |
 | `image_indices` | `Vec<u32>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `\[first_page, last_page\]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+
+---
+
+#### ChunkPlan
+
+Complete chunking plan for a document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `total_chunks` | `u32` | — | Total number of chunks. |
+| `chunks` | `Vec<ChunkInfo>` | — | Individual chunk information. |
+| `total_estimated_time_ms` | `u64` | — | Estimated total processing time in milliseconds. |
+| `use_disk_processing` | `bool` | — | Whether to use disk-based processing for large files. |
+| `reason` | `ChunkingReason` | — | Reason for chunking. |
+
+##### Methods
+
+###### total_pages()
+
+Get the total number of pages across all chunks.
+
+**Signature:**
+
+```rust
+pub fn total_pages(&self) -> u32
+```
+
+**Example:**
+
+```rust
+let result = instance.total_pages();
+```
+
+**Returns:** `u32`
 
 ---
 
@@ -2669,6 +3254,19 @@ let result = ChunkingConfig::default();
 
 ---
 
+#### ChunkingResult
+
+Result of a text chunking operation.
+
+Contains the generated chunks and metadata about the chunking.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `chunks` | `Vec<Chunk>` | — | List of text chunks |
+| `chunk_count` | `usize` | — | Total number of chunks generated |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -2702,6 +3300,107 @@ A single label + confidence pair.
 |-------|------|---------|-------------|
 | `label` | `String` | — | Label name as configured in `PageClassificationConfig::labels`. |
 | `confidence` | `Option<f32>` | `None` | Backend-reported confidence in `\[0.0, 1.0\]`. `None` when the backend (e.g. an LLM prompt without explicit confidence schema) did not report one. |
+
+---
+
+#### ConfidenceSignals
+
+Input signals for confidence scoring.
+
+Caller fills these from the extraction result and the LLM response.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | — | Fraction of pages with usable text in `\[0, 1\]`. |
+| `ocr_aggregate` | `Option<f32>` | `None` | Mean OCR per-element recognition confidence; `None` when OCR did not run. |
+| `schema_compliance` | `SchemaCompliance` | — | Schema-validation result of the merged output. |
+
+##### Methods
+
+###### from_extraction_result()
+
+Build `ConfidenceSignals` from an `ExtractionResult`.
+
+- `result` — The extraction result whose `ocr_elements` are inspected.
+- `schema_compliance` — Caller-supplied schema validation outcome.
+- `text_coverage` — Caller-supplied fraction of pages with usable text
+  (e.g. 1.0 for native text formats, value from PDF analysis for PDFs).
+
+The `ocr_aggregate` is computed as the arithmetic mean of all
+`ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
+`None` or empty the field is set to `None`.
+
+**Signature:**
+
+```rust
+pub fn from_extraction_result(result: ExtractionResult, schema_compliance: SchemaCompliance, text_coverage: f32) -> ConfidenceSignals
+```
+
+**Example:**
+
+```rust
+let result = ConfidenceSignals::from_extraction_result(ExtractionResult::default(), SchemaCompliance::default(), 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `result` | `ExtractionResult` | Yes | The extraction result |
+| `schema_compliance` | `SchemaCompliance` | Yes | The schema compliance |
+| `text_coverage` | `f32` | Yes | The text coverage |
+
+**Returns:** `ConfidenceSignals`
+
+---
+
+#### ConfidenceWeights
+
+Tunable weights for the confidence scoring formula.
+
+Defaults picked by inspection; callers tune them via config.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | `0.3` | Weight assigned to `text_coverage`. Default 0.30. |
+| `ocr_aggregate` | `f32` | `0.3` | Weight assigned to `ocr_aggregate` when OCR ran. Default 0.30 — folds into `text_coverage` weight when OCR did not run. |
+| `schema_compliance` | `f32` | `0.4` | Weight assigned to `schema_compliance`. Default 0.40. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> ConfidenceWeights
+```
+
+**Example:**
+
+```rust
+let result = ConfidenceWeights::default();
+```
+
+**Returns:** `ConfidenceWeights`
+
+###### is_normalized()
+
+Validate that weights sum to approximately 1.0.
+
+**Signature:**
+
+```rust
+pub fn is_normalized(&self) -> bool
+```
+
+**Example:**
+
+```rust
+let result = instance.is_normalized();
+```
+
+**Returns:** `bool`
 
 ---
 
@@ -2940,6 +3639,19 @@ Link element in Djot.
 
 ---
 
+#### DocumentBoundary
+
+Detected document boundary within a PDF.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start_page` | `u32` | — | 1-indexed start page (inclusive). |
+| `end_page` | `u32` | — | 1-indexed end page (inclusive). |
+| `confidence` | `f32` | — | Confidence in this boundary, `\[0.0, 1.0\]`. |
+| `reason` | `BoundaryReason` | — | Reason for the boundary detection. |
+
+---
+
 #### DocumentExtractor
 
 Trait for document extractor plugins.
@@ -3142,6 +3854,21 @@ let result = instance.can_handle("value", "value");
 | `mime_type` | `String` | Yes | The  mime type |
 
 **Returns:** `bool`
+
+---
+
+#### DocumentMetadata
+
+Metadata about a document for analysis.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mime_type` | `String` | — | MIME type of the document. |
+| `size_bytes` | `u64` | — | File size in bytes. |
+| `page_count` | `Option<u32>` | `None` | Page count (if known, e.g., from previous analysis). |
+| `force_ocr` | `bool` | — | Whether OCR is forced regardless of text layer. |
+| `user_chunk_config` | `Option<UserChunkConfig>` | `None` | User-provided chunk configuration overrides. |
+| `chunking_enabled` | `bool` | — | Whether chunking is enabled for this job. |
 
 ---
 
@@ -3652,6 +4379,34 @@ are safe to clone and pass across language boundaries.
 
 ---
 
+#### EnrichOptions
+
+Which enrichment passes to run on a piece of text.
+
+All fields default to `false` / empty so callers can opt in precisely.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `bool` | — | Run keyword extraction on the input text. When `true`, the enrichment backend identifies the most salient terms and returns them in `EnrichResult::keywords`. |
+| `entities` | `bool` | — | Run named-entity recognition (NER) on the input text. When `true`, the enrichment backend identifies named entities (persons, organisations, locations, etc.) and returns them in `EnrichResult::entities`. |
+| `labels` | `Vec<String>` | `vec!\[\]` | Custom labels to pass through to the result without modification. These are caller-supplied tags that the enrichment pipeline propagates verbatim into `EnrichResult::labels`. Useful for attaching project- or document-level metadata to every enrichment result. |
+
+---
+
+#### EnrichResult
+
+Structured output produced by a completed enrichment pass.
+
+Fields are populated only when the corresponding `EnrichOptions` flag was set.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `Vec<String>` | `vec!\[\]` | Salient terms extracted from the text. Populated when `EnrichOptions::keywords` was `true`. The ordering is backend-defined (typically by descending relevance score). |
+| `entities` | `Vec<Entity>` | `vec!\[\]` | Named entities found in the text. Populated when `EnrichOptions::entities` was `true`. Uses the shared OSS entity schema (`Entity` / `EntityCategory`) so consumers can pattern-match on entity categories without JSON gymnastics. |
+| `labels` | `Vec<String>` | `vec!\[\]` | Caller-supplied labels echoed from `EnrichOptions::labels`. |
+
+---
+
 #### Entity
 
 A single named entity detected in the extracted text.
@@ -3784,6 +4539,22 @@ optional human-readable display text.
 | `label` | `Option<String>` | `None` | Optional display text / label for the link. |
 | `page` | `Option<u32>` | `None` | Optional page number where the URI was found (1-indexed). |
 | `kind` | `UriKind` | — | Semantic classification of the URI. |
+
+---
+
+#### ExtractionConfidence
+
+Combined confidence on `[0, 1]`.
+
+When OCR did not run, the `ocr_aggregate` weight folds into `text_coverage`
+so the weighted sum still totals 1.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | — | Fraction of pages with a usable text layer. |
+| `ocr_aggregate` | `Option<f32>` | `None` | Mean OCR per-element recognition confidence when OCR ran; `None` when it did not. |
+| `schema_compliance` | `SchemaCompliance` | — | Whether the merged output validates against the preset schema. |
+| `combined` | `f32` | — | Weighted blend in `\[0, 1\]`.  The value compared against the fallback threshold. |
 
 ---
 
@@ -3968,6 +4739,8 @@ This is the main result type returned by all extraction functions.
 | `translation` | `Option<Translation>` | `Default::default()` | Translation of `content` produced by the translation post-processor. `None` when translation is not configured. |
 | `page_classifications` | `Option<Vec<PageClassification>>` | `vec!\[\]` | Per-page classifications produced by the page-classification post-processor. `None` when classification is not configured. |
 | `redaction_report` | `Option<RedactionReport>` | `Default::default()` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `None` when redaction is not configured. |
+| `formulas` | `Vec<Formula>` | `vec!\[\]` | Mathematical formulas recognized in the document. Populated by the layout-guided formula pipeline when the `layout-detection` feature is enabled and the document contains regions classified as formulas. Empty otherwise. |
+| `form_fields` | `Vec<PdfFormField>` | `vec!\[\]` | Form fields extracted from a PDF's AcroForm or XFA structure. Populated by the PDF extractor when `PdfConfig::extract_form_fields` is enabled (default) and the document is a fillable form. Empty otherwise. |
 | `formatted_content` | `Option<String>` | `Default::default()` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `Option<String>` | `Default::default()` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 | `internal_document` | `Option<String>` | `Default::default()` | The original `InternalDocument` from the extractor, preserved before derivation. Stored by the pipeline before `derive_extraction_result` consumes the document, so that downstream transformation steps (element-based result format) can walk the extractor's native reading order instead of reassembling from per-page content. This is especially important for DOCX, which has no native page boundaries: the per-page reconstruction scrambles element order, but the flat element list in the `InternalDocument` is always in reading order. `None` for extraction paths that do not go through the async/sync pipeline (e.g., direct `ExtractionResult::from_ocr` construction). |
@@ -4088,6 +4861,25 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 ---
 
+#### Formula
+
+A mathematical formula detected and recognized in a document.
+
+Populated by the layout-guided formula pipeline: regions classified as
+`LayoutClass::Formula` are routed to the formula OCR task, which returns the
+LaTeX source for the region. The field is always present on
+`ExtractionResult` but only populated
+when the `layout-detection` feature is active and the document contains
+formula regions.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `latex` | `String` | — | LaTeX source of the recognized formula, without surrounding `$$` delimiters. This field contains the raw LaTeX code as produced by the OCR backend. To render the formula in Markdown or other formats, wrap with `$$..$$` delimiters as needed. |
+| `bbox` | `BoundingBox` | — | Bounding box of the formula region on its page, in rendered-image pixel coordinates. The coordinates are in the space of the OCR-rendered page image at the OCR DPI (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from native PDF text extraction, which use PDF point coordinates. |
+| `page` | `u32` | — | 1-indexed page number the formula appears on in the document. This is set by the extraction pipeline based on which page the formula was found on. |
+
+---
+
 #### GridCell
 
 Individual grid cell with position and span metadata.
@@ -4138,6 +4930,93 @@ A single heading in the hierarchy.
 |-------|------|---------|-------------|
 | `level` | `u8` | — | Heading depth (1 = h1, 2 = h2, etc.) |
 | `text` | `String` | — | The text content of the heading. |
+
+---
+
+#### HeuristicsConfig
+
+Configuration for document chunking and analysis heuristics.
+
+Every threshold is a public field so callers can override any subset via
+struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..the default constructor }`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enable_pdf_text_heuristics` | `bool` | `true` | Enable PDF text-layer detection heuristics. When `true`, PDFs with a substantial text layer will skip chunking. Default: `true`. |
+| `text_layer_threshold` | `f32` | `0.7` | Minimum fraction of pages that must have text to skip chunking. Range `0.0..=1.0`. Default: `0.7` (70 % of pages). |
+| `file_size_threshold_bytes` | `u64` | `10485760` | File size threshold in bytes for considering chunking. Files smaller than this are processed without chunking. Default: 10 MiB (10 × 1 024 × 1 024). |
+| `page_count_threshold` | `u32` | `50` | Page count threshold for considering chunking. Documents with fewer pages are processed without chunking. Default: 50. |
+| `target_pages_per_chunk` | `u32` | `10` | Target number of pages per chunk for optimal parallel processing. Default: 10. |
+| `max_pages_per_chunk` | `u32` | `25` | Hard cap on pages per chunk. No chunk will exceed this limit. Must be ≥ `target_pages_per_chunk`. Default: 25. |
+| `disk_processing_threshold_bytes` | `u64` | `52428800` | File size threshold for disk-based processing. Files larger than this are buffered to disk to prevent OOM. Default: 50 MiB (50 × 1 024 × 1 024). |
+| `min_chars_per_page` | `u32` | `50` | Minimum characters per page to consider a page as having text. Default: 50. |
+| `max_xlsx_sheet_count` | `u32` | `200` | Maximum sheet count allowed in an XLSX workbook. Workbooks beyond this are rejected pre-extraction to avoid OOM / abusive billing inflation. Default: 200. |
+| `max_xlsx_workbook_cells` | `u64` | `5000000` | Maximum cell count (sheets × rows × columns approximation) in an XLSX workbook. Default: 5 000 000 (≈ 200 sheets × 25 k cells). |
+| `max_pptx_embedded_count` | `u32` | `50` | Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX. Protects against zip-bomb-style nested-document abuse. Default: 50. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> HeuristicsConfig
+```
+
+**Example:**
+
+```rust
+let result = HeuristicsConfig::default();
+```
+
+**Returns:** `HeuristicsConfig`
+
+###### validate()
+
+Validate the configuration.
+
+**Errors:**
+
+Returns `HeuristicsError::ConfigError` when:
+
+- `target_pages_per_chunk` is 0
+- `max_pages_per_chunk` < `target_pages_per_chunk`
+- `file_size_threshold_bytes` is 0
+
+**Signature:**
+
+```rust
+pub fn validate(&self) -> Result<(), Error>
+```
+
+**Example:**
+
+```rust
+instance.validate()?;
+```
+
+**Returns:** No return value.
+
+**Errors:** Returns `Err(Error)`.
+
+###### test_config()
+
+Create a configuration suitable for unit tests (smaller thresholds).
+
+**Signature:**
+
+```rust
+pub fn test_config() -> HeuristicsConfig
+```
+
+**Example:**
+
+```rust
+let result = HeuristicsConfig::test_config();
+```
+
+**Returns:** `HeuristicsConfig`
 
 ---
 
@@ -4521,6 +5400,7 @@ is enabled for PDF extraction.
 | `apply_heuristics` | `bool` | `true` | Whether to apply postprocessing heuristics (default: true). |
 | `table_model` | `TableModel` | `TableModel::Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel::Tatr`. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `enable_chart_understanding` | `bool` | `false` | Route regions classified as charts to the chart-understanding OCR task. When `true`, layout regions detected as charts are sent to the VLM chart task (data-series/axis recovery) instead of being treated as generic image regions. Defaults to `false` — chart understanding is opt-in and has no effect on standard text/table extraction scores. |
 
 ##### Methods
 
@@ -4696,6 +5576,68 @@ within one extraction (e.g. VLM OCR + structured extraction).
 
 ---
 
+#### MetaSchema
+
+Compiled meta-schema validator over `preset.schema.json`.
+
+##### Methods
+
+###### compile()
+
+Compile the given JSON text as a Draft 2020-12 meta-schema.
+
+**Signature:**
+
+```rust
+pub fn compile(meta_schema_json: &str) -> Result<MetaSchema, LoadError>
+```
+
+**Example:**
+
+```rust
+let result = MetaSchema::compile("value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `meta_schema_json` | `String` | Yes | The meta schema json |
+
+**Returns:** `MetaSchema`
+
+**Errors:** Returns `Err(LoadError)`.
+
+###### parse_preset()
+
+Validate `raw` against the meta-schema and deserialize into a `Preset`,
+stamping the fingerprint over the canonical file bytes.
+
+**Signature:**
+
+```rust
+pub fn parse_preset(&self, path: &str, raw: &[u8]) -> Result<Preset, LoadError>
+```
+
+**Example:**
+
+```rust
+let result = instance.parse_preset("value", b"data")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | `String` | Yes | Path to the file |
+| `raw` | `Vec<u8>` | Yes | The raw |
+
+**Returns:** `Preset`
+
+**Errors:** Returns `Err(LoadError)`.
+
+---
+
 #### Metadata
 
 Extraction result metadata.
@@ -4761,6 +5703,48 @@ Combined paths to all models needed for OCR (backward compatibility).
 | `cls_model` | `PathBuf` | — | Path to the classification model directory. |
 | `rec_model` | `PathBuf` | — | Path to the recognition model directory. |
 | `dict_file` | `PathBuf` | — | Path to the character dictionary file. |
+
+---
+
+#### MultidocInput
+
+Input signals for multi-document boundary detection.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_count` | `u32` | — | Total number of pages in the PDF. |
+| `pages` | `Vec<PageSignals>` | — | Per-page signals extracted from the PDF. |
+
+---
+
+#### MultidocThresholds
+
+Thresholds for multi-document boundary detection.
+
+All fields are public; callers override any subset via struct-update syntax.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `density_shift_threshold` | `f32` | `0.3` | Text density difference threshold for `DensityShift` detection. Default: 0.3. |
+| `bigram_overlap_min` | `f32` | `0.1` | Minimum bigram-overlap ratio below which a density shift is promoted to a `DensityShift` boundary.  Default: 0.1 (10 % overlap). |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> MultidocThresholds
+```
+
+**Example:**
+
+```rust
+let result = MultidocThresholds::default();
+```
+
+**Returns:** `MultidocThresholds`
 
 ---
 
@@ -5755,6 +6739,92 @@ and visibility state (for presentations).
 
 ---
 
+#### PageRange
+
+Page range for a chunk (0-indexed, inclusive).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start` | `u32` | — | Start page (0-indexed, inclusive). |
+| `end` | `u32` | — | End page (0-indexed, inclusive). |
+
+##### Methods
+
+###### page_count()
+
+Get the number of pages in this range.
+
+**Signature:**
+
+```rust
+pub fn page_count(&self) -> u32
+```
+
+**Example:**
+
+```rust
+let result = instance.page_count();
+```
+
+**Returns:** `u32`
+
+---
+
+#### PageSignals
+
+Per-page signals extracted from PDF content.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_number` | `u32` | — | 1-indexed page number. |
+| `text_excerpt` | `String` | — | First ~500 characters of extracted text. |
+| `starts_with_letterhead_like` | `bool` | — | `true` if page starts with letterhead-like content (ALL CAPS line in first 5 lines or a logo-image bbox at top). |
+| `has_page_number_one_marker` | `bool` | — | `true` if text contains "Page 1" or "1 of N" pattern. |
+| `has_signature_block` | `bool` | — | `true` if text contains signature indicators ("Sincerely", "Signed") or a signature image bbox. |
+| `layout_text_density` | `f32` | — | Text density: characters per page area, normalised to `\[0.0, 1.0\]`. |
+
+##### Methods
+
+###### from_page_text()
+
+Derive signals from raw page text.
+
+Callers that already have structured per-page data (e.g. from a PDF extractor)
+can set individual fields directly.  This constructor is for callers that only
+have the plain-text content of a page (e.g. from `PageContent`).
+
+  when unknown (disables density-shift detection for this page).
+
+##### Heuristics
+
+All signal derivations are *conservative starting points*.  Each is documented
+inline.  They err on the side of fewer false positives; tune thresholds via
+`MultidocThresholds` rather than by changing these heuristics.
+
+**Signature:**
+
+```rust
+pub fn from_page_text(page_number: u32, text: &str, layout_text_density: f32) -> PageSignals
+```
+
+**Example:**
+
+```rust
+let result = PageSignals::from_page_text(42, "value", 0.5);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `page_number` | `u32` | Yes | The page number |
+| `text` | `String` | Yes | The text |
+| `layout_text_density` | `f32` | Yes | The layout text density |
+
+**Returns:** `PageSignals`
+
+---
+
 #### PageStructure
 
 Unified page structure for documents.
@@ -5813,6 +6883,8 @@ PDF-specific configuration.
 | `bottom_margin_fraction` | `Option<f32>` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig::default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
+| `extract_form_fields` | `bool` | `true` | Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`. When `true` (default), reads the document's interactive form structure (field names, types, values, widget geometry). Cheap and strictly additive — non-form PDFs simply yield an empty list. Set to `false` to skip the form pass entirely. |
+| `reading_order` | `bool` | `false` | Reorder extracted text by layout-detected reading order. When `true`, projects text spans onto layout-detected regions, performs column detection, and emits spans in natural reading order (important for multi-column academic PDFs). Requires the `layout-detection` feature; has no effect without it. Defaults to `false`. |
 
 ##### Methods
 
@@ -5831,6 +6903,33 @@ let result = PdfConfig::default();
 ```
 
 **Returns:** `PdfConfig`
+
+---
+
+#### PdfFormField
+
+A form field extracted from a PDF's AcroForm or XFA structure.
+
+Populated by the PDF extractor when `PdfConfig::extract_form_fields` is
+enabled and the document is a fillable form. Supports both AcroForm (standard)
+and XFA (XML Forms Architecture) layers. When both are present, AcroForm fields
+take priority (canonical fallback per PDF spec), and XFA-only fields are appended.
+The collection is empty for non-form PDFs and for non-PDF formats.
+
+`PdfConfig::extract_form_fields`: crate::core::config::PdfConfig::extract_form_fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `String` | — | Partial field name (the leaf name within the field hierarchy). |
+| `full_name` | `String` | — | Fully-qualified field name (dotted path from the form root). |
+| `field_type` | `FormFieldType` | — | Classified field type. |
+| `value` | `Option<String>` | `/* serde(default) */` | Current field value, if any. |
+| `default_value` | `Option<String>` | `/* serde(default) */` | Default field value, if any. |
+| `flags` | `u32` | `/* serde(default) */` | Raw field-flags bitmask (read-only, required, multiline, …). |
+| `page` | `Option<u32>` | `/* serde(default) */` | 1-indexed page the field's widget appears on. Currently always `None` for AcroForm fields; page assignment is a deferred enhancement requiring spatial analysis of widget annotations per page. |
+| `bbox` | `Option<BoundingBox>` | `/* serde(default) */` | Widget bounding box on its page, if known. |
+| `max_length` | `Option<u32>` | `/* serde(default) */` | Maximum input length for text fields, if specified. |
+| `tooltip` | `Option<String>` | `/* serde(default) */` | Tooltip / alternate field description, if present. |
 
 ---
 
@@ -6356,6 +7455,66 @@ Extracted from PPTX files containing slide counts and presentation details.
 
 ---
 
+#### Preset
+
+A curated structured-extraction preset loaded from the embedded library.
+
+Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
+validates against the meta-schema in `src/presets/preset.schema.json`.
+
+The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+`extend_from_dir`. The embedded OSS library
+ships only the `generic_document` toy preset.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Stable, URL-safe preset identifier (lowercase snake_case). |
+| `version` | `String` | — | Monotonic version string (e.g. `v1`). |
+| `schema_name` | `String` | — | Human-readable schema name forwarded to the LLM as the response/tool name. |
+| `description` | `String` | — | One-line preset description shown in the registry UI. |
+| `category` | `PresetCategory` | — | Top-level category for grouping in the playground. |
+| `tags` | `Vec<String>` | `/* serde(default) */` | Free-form tags used for search/filtering. May be empty. |
+| `schema` | `serde_json::Value` | — | JSON Schema (Draft 2020-12) describing the structured output shape. |
+| `system_prompt` | `String` | — | Instruction primer sent to the model. |
+| `context_template` | `Option<String>` | `/* serde(default) */` | Optional mustache-style template merged with caller-supplied context. |
+| `merge_mode` | `MergeMode` | — | Strategy for merging per-batch outputs across paginated calls. |
+| `preferred_call_mode` | `CallMode` | — | Default call mode suggested for this preset; heuristics may override. |
+| `emit_citations` | `bool` | — | When true, the prompt asks the model to wrap each field as `{value, page, bbox, confidence}` for downstream citation overlays. |
+| `sample` | `Option<PresetSample>` | `/* serde(default) */` | Optional bundled sample (input file + reference output) for preview. |
+| `fingerprint` | `String` | `/* serde(default) */` | Stable sha256 fingerprint of the canonical preset file contents. Populated at registry load — not present in the on-disk JSON files. Used as a cache-invalidation token by the worker pipeline. |
+
+---
+
+#### PresetSample
+
+Pointer to a sample input + its reference output bundled with the preset.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `input_path` | `String` | — | Path to the sample input file, relative to the preset directory. |
+| `output_path` | `String` | — | Path to the reference structured output, relative to the preset directory. |
+
+---
+
+#### PresetSummary
+
+Lightweight projection of `Preset` used by the registry list endpoint
+(omits the full schema and prompt to keep the payload small).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Preset identifier matching `Preset::id`. |
+| `version` | `String` | — | Preset version matching `Preset::version`. |
+| `schema_name` | `String` | — | Schema name matching `Preset::schema_name`. |
+| `description` | `String` | — | One-line preset description. |
+| `category` | `PresetCategory` | — | Top-level category. |
+| `tags` | `Vec<String>` | — | Free-form tags. |
+| `preferred_call_mode` | `CallMode` | — | Default call mode. |
+| `emit_citations` | `bool` | — | Whether the preset prompts the model for citations. |
+| `fingerprint` | `String` | — | Stable fingerprint matching `Preset::fingerprint`. |
+
+---
+
 #### ProcessingWarning
 
 A non-fatal warning from a processing pipeline stage.
@@ -6652,6 +7811,204 @@ let result = RedactionTerm::labeled("value", "value");
 
 ---
 
+#### Registry
+
+Sorted map of preset id → `Preset`.
+
+##### Methods
+
+###### load_embedded()
+
+Build the registry from preset files embedded at compile time under
+`src/presets/library/`. Validates every file against the meta-schema.
+
+**Signature:**
+
+```rust
+pub fn load_embedded() -> Result<Registry, LoadError>
+```
+
+**Example:**
+
+```rust
+let result = Registry::load_embedded()?;
+```
+
+**Returns:** `Registry`
+
+**Errors:** Returns `Err(LoadError)`.
+
+###### global()
+
+Return the global registry, loading it on first access.
+
+**Panics:**
+
+Panics if any embedded preset is malformed. The build-time validation
+test ensures this cannot happen for the embedded presets; a panic here
+indicates a build artifact problem, not a runtime error.
+
+**Signature:**
+
+```rust
+pub fn global() -> Registry
+```
+
+**Example:**
+
+```rust
+let result = Registry::global();
+```
+
+**Returns:** `Registry`
+
+###### get()
+
+Look up a preset by its identifier.
+
+**Signature:**
+
+```rust
+pub fn get(&self, id: &str) -> Option<Preset>
+```
+
+**Example:**
+
+```rust
+let result = instance.get("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `String` | Yes | The id |
+
+**Returns:** `Option<Preset>`
+
+###### summaries()
+
+Materialize a `PresetSummary` list for the public registry endpoint.
+
+**Signature:**
+
+```rust
+pub fn summaries(&self) -> Vec<PresetSummary>
+```
+
+**Example:**
+
+```rust
+let result = instance.summaries();
+```
+
+**Returns:** `Vec<PresetSummary>`
+
+###### len()
+
+Number of presets currently loaded.
+
+**Signature:**
+
+```rust
+pub fn len(&self) -> usize
+```
+
+**Example:**
+
+```rust
+let result = instance.len();
+```
+
+**Returns:** `usize`
+
+###### is_empty()
+
+Whether the registry contains zero presets.
+
+**Signature:**
+
+```rust
+pub fn is_empty(&self) -> bool
+```
+
+**Example:**
+
+```rust
+let result = instance.is_empty();
+```
+
+**Returns:** `bool`
+
+###### sample_bytes()
+
+Read raw sample bytes for `<preset_id>` from
+`library/<id>/samples/<name>`. Returns `None` when the file is absent.
+
+**Signature:**
+
+```rust
+pub fn sample_bytes(&self, preset_id: &str, name: &str) -> Option<Vec<u8>>
+```
+
+**Example:**
+
+```rust
+let result = instance.sample_bytes("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `preset_id` | `String` | Yes | The preset id |
+| `name` | `String` | Yes | The name |
+
+**Returns:** `Option<Vec<u8>>`
+
+###### extend_from_dir()
+
+Load additional preset files from a runtime directory and insert them
+into this registry.
+
+Reads every `*.json` file directly under `dir` (non-recursive),
+validates each against the meta-schema, and inserts it. Files that fail
+validation are rejected — the error is returned immediately and the
+registry is left in a partially-updated state. Existing entries with the
+same id are overwritten.
+
+Returns the number of presets successfully loaded from `dir`.
+
+##### Use case
+
+This is the injection point for downstream catalogs: kreuzberg-cloud
+calls this once at startup to add its 20+ curated presets on top of the
+single embedded OSS preset.
+
+**Signature:**
+
+```rust
+pub fn extend_from_dir(&self, dir: PathBuf) -> Result<usize, LoadError>
+```
+
+**Example:**
+
+```rust
+let result = instance.extend_from_dir("value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `dir` | `PathBuf` | Yes | The dir |
+
+**Returns:** `usize`
+
+**Errors:** Returns `Err(LoadError)`.
+
+---
+
 #### Renderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
@@ -6869,6 +8226,25 @@ Since v5.0.
 | `additional_files` | `Vec<String>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `usize` | — | Maximum token sequence length the model supports. |
 | `description` | `String` | — | Human-readable description of the preset's intended use case. |
+
+---
+
+#### ResolvedPreset
+
+A preset merged with caller-supplied overrides (custom schema, prompt suffix,
+context map). Output is what the pipeline orchestrator consumes.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Source preset identifier. |
+| `version` | `String` | — | Source preset version. |
+| `fingerprint` | `String` | — | Fingerprint of the source preset file, used as a cache token. |
+| `schema_name` | `String` | — | Schema name forwarded to the LLM. |
+| `schema` | `serde_json::Value` | — | Effective JSON Schema (caller override or the preset's own). |
+| `system_prompt` | `String` | — | System prompt with rendered context appended. |
+| `merge_mode` | `MergeMode` | — | Merge strategy for paginated outputs. |
+| `preferred_call_mode` | `CallMode` | — | Preferred call mode. |
+| `emit_citations` | `bool` | — | Whether the prompt asks for per-field citations. |
 
 ---
 
@@ -7136,6 +8512,63 @@ returning structured data that conforms to the schema.
 | `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
 | `prompt` | `Option<String>` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
+
+---
+
+#### StructuredInput
+
+Signals consumed by the call-mode heuristic.
+
+All fields derive from a prior kreuzberg extraction — no double-work.
+This is a plain DTO; it intentionally has no dependency on internal
+kreuzberg extraction types so it can be constructed from any source.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mime_type` | `String` | — | MIME type, canonicalised to lowercase by the caller. |
+| `page_count` | `u32` | — | Number of pages in the document. |
+| `text_coverage` | `f64` | — | Fraction of pages with a real text layer (0.0..=1.0). |
+| `avg_chars_per_page` | `f64` | — | Average extracted characters per page. |
+| `embedded_image_count` | `u32` | — | Count of embedded images (figures, photos, signatures) discovered. |
+| `user_force_vision` | `bool` | — | When `true`, promote the result to at least `StructuredCallMode::TextPlusVision`. |
+
+---
+
+#### StructuredThresholds
+
+Thresholds for the structured-extraction call-mode heuristic.
+
+All defaults are **conservative starting points**.  Deployments should
+measure their own document corpus and override via their own config;
+these values are chosen to be safe-by-default, not to be optimal for
+any particular workload.
+
+Construct custom thresholds with struct-update syntax:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `scan_max_coverage` | `f64` | `0.1` | PDFs with `text_coverage` strictly below this are treated as scanned. **Conservative default: 0.10** — deployments override via their own config after measuring their document corpus. |
+| `digital_min_coverage` | `f64` | `0.9` | PDFs with `text_coverage` at or above this AND zero embedded images route to `StructuredCallMode::TextOnly`. **Conservative default: 0.90** — deployments override via their own config after measuring their document corpus. |
+| `docx_text_min_density` | `f64` | `200` | DOCX / HTML / text documents with `avg_chars_per_page` above this route to `StructuredCallMode::TextOnly`. **Conservative default: 200.0** — deployments override via their own config after measuring their document corpus. |
+| `enable_vision_fallback` | `bool` | `false` | When `true`, emit `StructuredCallMode::TextOnlyWithVisionFallback` instead of `StructuredCallMode::TextOnly` so the orchestrator can escalate to vision on low confidence. **Conservative default: `false`** — must be explicitly enabled per deployment after bench validation; deployments override via their own config. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> StructuredThresholds
+```
+
+**Example:**
+
+```rust
+let result = StructuredThresholds::default();
+```
+
+**Returns:** `StructuredThresholds`
 
 ---
 
@@ -7625,6 +9058,19 @@ let result = TreeSitterProcessConfig::default();
 
 ---
 
+#### UserChunkConfig
+
+User-provided chunk configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_ranges` | `Option<Vec<PageRange>>` | `vec!\[\]` | User-specified page ranges (overrides automatic chunking). |
+| `pages_per_chunk` | `Option<u32>` | `Default::default()` | User-specified pages per chunk (overrides automatic calculation). |
+| `force_chunking` | `bool` | — | Force chunking even for small documents. |
+| `disable_chunking` | `bool` | — | Disable chunking even for large documents. |
+
+---
+
 #### Validator
 
 Trait for validator plugins.
@@ -7955,6 +9401,40 @@ YAML).
 | `SlanetPlus` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
 | `SlanetAuto` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
 | `Disabled` | Disable table structure model inference entirely; use heuristic path only. |
+
+---
+
+#### CallMode
+
+How a structured-extraction preset is dispatched to the model.
+
+This is the preset-facing call mode (the `preferred_call_mode` field of a
+`Preset`). The richer runtime decision enum used by the
+structured pipeline — which adds `Skip` and `TextOnlyWithVisionFallback` —
+lives in `crate::heuristics::structured::StructuredCallMode`; this 3-variant
+type is the stable, serializable surface presets and bindings depend on.
+
+| Value | Description |
+|-------|-------------|
+| `TextOnly` | Use the extracted text only. |
+| `VisionOnly` | Use rasterized page images only. |
+| `TextPlusVision` | Provide both extracted text and page images to the model. |
+
+---
+
+#### MergeMode
+
+How partial results from multiple model calls (e.g. per page batch) are combined.
+
+Canonical home for the merge strategy referenced by presets and by the
+structured pipeline's post-processing. There is intentionally only one merge
+type across the crate — do not introduce a second.
+
+| Value | Description |
+|-------|-------------|
+| `ObjectMerge` | Deep-merge JSON objects field by field (later calls fill missing fields). |
+| `ArrayConcat` | Concatenate top-level arrays across calls. |
+| `ObjectFirst` | Keep the first non-empty result; ignore subsequent calls. |
 
 ---
 
@@ -8433,6 +9913,25 @@ Supports the element types commonly found in Unstructured documents.
 
 ---
 
+#### FormFieldType
+
+Kind of a PDF form field.
+
+Mirrors `pdf_oxide`'s widget field taxonomy without leaking the upstream
+type across the binding surface.
+
+| Value | Description |
+|-------|-------------|
+| `Text` | Single- or multi-line text input. |
+| `Checkbox` | Checkbox (on/off toggle). |
+| `Radio` | Radio-button group member. |
+| `Choice` | Choice field (dropdown or list box). |
+| `Signature` | Digital-signature field. |
+| `Button` | Push button. |
+| `Unknown` | Field type that could not be classified. |
+
+---
+
 #### FormatMetadata
 
 Format-specific metadata (discriminated union).
@@ -8694,6 +10193,135 @@ Keyword algorithm selection.
 
 ---
 
+#### EnrichStatus
+
+Async lifecycle status for an enrichment job.
+
+Intended for use with any polling or event-driven pipeline that needs
+to track whether enrichment has completed, succeeded, or failed.
+
+### Serialisation
+
+Uses an internally-tagged `"status"` field with `snake_case` variants:
+
+```json
+{ "status": "pending" }
+{ "status": "completed", "result": { ... } }
+{ "status": "failed", "error": "text too large" }
+```
+
+| Value | Description |
+|-------|-------------|
+| `Pending` | Job submitted; processing has not yet started or is in progress. |
+| `Completed` | Processing completed successfully. — Fields: `result`: `EnrichResult` |
+| `Failed` | Processing failed. — Fields: `error`: `String` |
+
+---
+
+#### SchemaCompliance
+
+Schema-validation outcome surfaced as one of three buckets.
+
+Fold into the combined confidence score without leaking internal validation
+error types.
+
+| Value | Description |
+|-------|-------------|
+| `AllValid` | Every batch validated against the schema. |
+| `PartialValid` | At least one batch validated; at least one did not. |
+| `AllInvalid` | No batch validated. |
+
+---
+
+#### ChunkingDecision
+
+The chunking decision made by the analyzer.
+
+| Value | Description |
+|-------|-------------|
+| `NoChunking` | Process without chunking (small file, text layer detected, etc.) — Fields: `reason`: `NoChunkingReason` |
+| `Chunk` | Chunk according to plan. — Fields: `0`: `ChunkPlan` |
+| `UseOverrides` | Use user-provided chunk overrides. — Fields: `user_chunks`: `Vec<PageRange>` |
+
+---
+
+#### NoChunkingReason
+
+Reason for not chunking a document.
+
+| Value | Description |
+|-------|-------------|
+| `SmallFile` | File is below size threshold. — Fields: `size_bytes`: `u64`, `threshold_bytes`: `u64` |
+| `FewPages` | Document has fewer pages than threshold. — Fields: `page_count`: `u32`, `threshold`: `u32` |
+| `TextLayerDetected` | PDF has substantial text layer (OCR not needed). — Fields: `text_coverage`: `f32`, `avg_chars_per_page`: `u32` |
+| `FormatNotChunkable` | Document format does not support chunking. — Fields: `mime_type`: `String` |
+| `ChunkingDisabled` | Chunking is disabled by configuration. |
+| `FastTextExtraction` | Force OCR is disabled and text extraction is fast. |
+
+---
+
+#### ChunkingReason
+
+Reason for chunking a document.
+
+| Value | Description |
+|-------|-------------|
+| `LargeFile` | File exceeds size threshold. — Fields: `size_bytes`: `u64`, `threshold_bytes`: `u64` |
+| `ManyPages` | Document has many pages. — Fields: `page_count`: `u32`, `threshold`: `u32` |
+| `OcrRequired` | PDF requires OCR and is large. — Fields: `page_count`: `u32`, `force_ocr`: `bool` |
+| `LargeAndManyPages` | Both size and page count exceed thresholds. — Fields: `size_bytes`: `u64`, `page_count`: `u32` |
+
+---
+
+#### BoundaryReason
+
+Reason for boundary detection.
+
+| Value | Description |
+|-------|-------------|
+| `Start` | Start of PDF. |
+| `PageOneMarker` | Page-one marker ("Page 1", "1 of N") detected. |
+| `LetterheadReset` | Letterhead reset after signature block. |
+| `DensityShift` | Text density shift with low bigram overlap. |
+| `End` | End of PDF. |
+
+---
+
+#### StructuredCallMode
+
+Outcome of the structured-extraction call-mode heuristic.
+
+**Distinct from `crate::core::config::CallMode`** which has three variants
+and governs extraction-engine behaviour.  This enum governs whether and how
+an already-extracted document is sent to an LLM structured-extraction
+pipeline.
+
+| Value | Description |
+|-------|-------------|
+| `Skip` | Document is unsupported or not worth invoking the pipeline. |
+| `TextOnly` | Send extracted text only; no vision model call. |
+| `VisionOnly` | Send page rasters only; no extracted text payload. |
+| `TextPlusVision` | Fuse extracted text with page rasters in a single multimodal call. |
+| `TextOnlyWithVisionFallback` | Try text-only first; escalate to vision on low confidence score. |
+
+---
+
+#### PresetCategory
+
+High-level category used to group presets in the registry UI.
+
+| Value | Description |
+|-------|-------------|
+| `Finance` | Invoices, receipts, statements, purchase orders, W-9. |
+| `Identity` | Passports, drivers licenses, insurance cards. |
+| `Legal` | Contracts, NDAs, agreements. |
+| `Logistics` | Bills of lading, customs declarations, packing lists. |
+| `Medical` | Clinical records, lab reports. |
+| `Hr` | Pay stubs, resumes, employment offers. |
+| `Other` | Catch-all for documents that don't fit the other categories. |
+
+---
+
 #### PsmMode
 
 Page Segmentation Mode for Tesseract OCR.
@@ -8743,7 +10371,7 @@ Maps user-friendly language codes to paddle-ocr-rs language identifiers.
 
 #### LayoutClass
 
-The 17 canonical document layout classes.
+The 18 canonical document layout classes.
 
 All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
@@ -8754,6 +10382,7 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 | Value | Description |
 |-------|-------------|
 | `Caption` | Figure or table caption text. |
+| `Chart` | Chart or graph visualization. |
 | `Footnote` | Footnote or endnote text. |
 | `Formula` | Mathematical formula or equation. |
 | `ListItem` | A single item in a bulleted or numbered list. |
@@ -8817,5 +10446,41 @@ and provides context for debugging.
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |
 | `Security` | A security policy was violated (e.g. zip bomb, oversized archive). |
 | `Other` | A catch-all for uncommon errors that do not fit another variant. |
+
+---
+
+#### HeuristicsError
+
+Errors that can occur during heuristics analysis.
+
+| Variant | Description |
+|---------|-------------|
+| `ConfigError` | Invalid configuration value. |
+| `PdfAnalysisError` | PDF analysis step failed (only when `heuristics-pdf` feature is active). |
+
+---
+
+#### LoadError
+
+Errors produced while loading or validating a preset file.
+
+| Variant | Description |
+|---------|-------------|
+| `Parse` | The file is not valid JSON. |
+| `SchemaValidation` | The file parses as JSON but does not validate against the meta-schema. |
+| `Deserialize` | The file validates but cannot be deserialized into `Preset`. |
+| `IdMismatch` | The preset's declared `id` does not match its file-system location. |
+| `BadMetaSchema` | The meta-schema itself failed to compile. |
+| `Io` | A filesystem I/O error occurred while reading a preset directory. |
+
+---
+
+#### ResolveError
+
+Errors produced while resolving a preset against caller overrides.
+
+| Variant | Description |
+|---------|-------------|
+| `SchemaNotObject` | A custom schema override was supplied but is not a JSON object. |
 
 ---

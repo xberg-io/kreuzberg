@@ -29,13 +29,15 @@ fn variant_discriminant(v: TrocrVariant) -> u8 {
     }
 }
 
+/// Type alias for the engine pool mapping.
+type EnginePoolMap = AHashMap<(u8, DevicePreference), Arc<TrocrEngine>>;
+
 /// Process-wide engine pool keyed by `(variant_discriminant, device_preference)`.
 ///
 /// `TrocrEngine` initialisation downloads and parses safetensors weights from HF Hub
 /// and is expensive (~400 MB per variant). The pool ensures each
 /// `(variant, device)` combination is loaded at most once per process.
-static ENGINE_POOL: LazyLock<RwLock<AHashMap<(u8, DevicePreference), Arc<TrocrEngine>>>> =
-    LazyLock::new(|| RwLock::new(AHashMap::default()));
+static ENGINE_POOL: LazyLock<RwLock<EnginePoolMap>> = LazyLock::new(|| RwLock::new(AHashMap::default()));
 
 /// Return a cached engine for `(variant, preference)`, initialising one on first use.
 ///
@@ -299,5 +301,32 @@ mod tests {
         let backend = TrocrBackend::default_variant();
         assert!(backend.initialize().is_ok());
         assert!(backend.shutdown().is_ok());
+    }
+
+    #[test]
+    fn test_engine_pool_key_mapping() {
+        // Verify that variant_discriminant correctly maps variants to unique keys.
+        // This ensures that the pool's key function does not accidentally conflate
+        // different variants.
+        let base_printed = variant_discriminant(TrocrVariant::BasePrinted);
+        let large_printed = variant_discriminant(TrocrVariant::LargePrinted);
+        let base_handwritten = variant_discriminant(TrocrVariant::BaseHandwritten);
+        let large_handwritten = variant_discriminant(TrocrVariant::LargeHandwritten);
+
+        // All variants must have distinct discriminants
+        assert_eq!(base_printed, 0);
+        assert_eq!(large_printed, 1);
+        assert_eq!(base_handwritten, 2);
+        assert_eq!(large_handwritten, 3);
+
+        // Verify they are all unique
+        let discriminants = [base_printed, large_printed, base_handwritten, large_handwritten];
+        for (i, &d1) in discriminants.iter().enumerate() {
+            for (j, &d2) in discriminants.iter().enumerate() {
+                if i != j {
+                    assert_ne!(d1, d2, "Discriminants for variants {} and {} must be unique", i, j);
+                }
+            }
+        }
     }
 }

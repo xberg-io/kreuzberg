@@ -74,7 +74,7 @@ impl fmt::Display for BBox {
     }
 }
 
-/// The 17 canonical document layout classes.
+/// The 18 canonical document layout classes.
 ///
 /// All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 /// to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
@@ -87,6 +87,8 @@ pub enum LayoutClass {
     /// Figure or table caption text.
     #[default]
     Caption,
+    /// Chart or graph visualization.
+    Chart,
     /// Footnote or endnote text.
     Footnote,
     /// Mathematical formula or equation.
@@ -195,6 +197,7 @@ impl LayoutClass {
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Caption => "caption",
+            Self::Chart => "chart",
             Self::Footnote => "footnote",
             Self::Formula => "formula",
             Self::ListItem => "list_item",

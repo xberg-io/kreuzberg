@@ -37,7 +37,10 @@ fn map_class(class: LayoutClass) -> LayoutHintClass {
         LayoutClass::PageHeader => LayoutHintClass::PageHeader,
         LayoutClass::PageFooter => LayoutHintClass::PageFooter,
         LayoutClass::Table => LayoutHintClass::Table,
-        LayoutClass::Picture => LayoutHintClass::Picture,
+        // Charts are a refinement of Picture; map them identically so that the
+        // opt-in (glm-only) chart understanding introduces zero change to the
+        // layout-hint pipeline when disabled.
+        LayoutClass::Picture | LayoutClass::Chart => LayoutHintClass::Picture,
         LayoutClass::Text => LayoutHintClass::Text,
         _ => LayoutHintClass::Other,
     }

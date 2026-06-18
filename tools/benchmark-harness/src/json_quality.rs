@@ -2,10 +2,13 @@
 //!
 //! Provides metrics for evaluating JSON-schema-driven extraction:
 //! - **schema_validity_rate** — fraction of predictions passing JSON Schema validation
-//! - **field_precision_recall_f1** — leaf-level P/R/F1 between predicted and ground truth
-//! - **type_correctness_rate** — percentage of leaves with matching types
+//! - **field_precision_recall_f1** — leaf-level P/R/F1 between predicted and ground truth (strict)
+//! - **field_precision_recall_f1_normalized** — leaf-level P/R/F1 with case-fold + numeric-as-string tolerance
+//! - **type_correctness_rate** — percentage of leaves with matching JSON types
 //! - **numeric_match** — numeric leaves within tolerance (configurable per type)
 //! - **exact_match** — whole-record exact equality
+//! - **flatten_form_fields** — flatten `PdfFormField` slice to a `{name: value}` JSON object
+//! - **latex_token_f1** — bag-of-words F1 over normalized LaTeX token sets
 
 use serde_json::Value;
 
@@ -267,6 +270,228 @@ pub fn exact_match(predicted: &Value, ground_truth: &Value) -> bool {
     predicted == ground_truth
 }
 
+// ── Normalized helpers ────────────────────────────────────────────────────────
+
+/// Normalize a string for comparison: trim whitespace, lowercase, collapse runs of
+/// internal whitespace to a single space.
+fn normalize_string(s: &str) -> String {
+    s.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
+}
+
+/// Compare two leaf values with normalization:
+/// - Both `Value::Number` → `numeric_match`
+/// - Both `Value::String` → normalize (trim, case-fold, collapse whitespace) then compare;
+///   if both parse as `f64`, fall back to `numeric_match` so GT numbers stored as quoted
+///   strings (e.g. `"60.000"`) match their numeric counterparts.
+/// - Otherwise → strict `==`
+fn values_match_normalized(pred: &Value, gt: &Value, tol: &NumericTolerance) -> bool {
+    match (pred, gt) {
+        (Value::Number(_), Value::Number(_)) => numeric_match(pred, gt, tol),
+        (Value::String(p), Value::String(g)) => {
+            let pn = normalize_string(p);
+            let gn = normalize_string(g);
+            if pn == gn {
+                return true;
+            }
+            // Both parse as f64? Fall back to numeric tolerance.
+            if let (Ok(pf), Ok(gf)) = (pn.parse::<f64>(), gn.parse::<f64>()) {
+                let pred_num =
+                    Value::Number(serde_json::Number::from_f64(pf).unwrap_or_else(|| serde_json::Number::from(0)));
+                let gt_num =
+                    Value::Number(serde_json::Number::from_f64(gf).unwrap_or_else(|| serde_json::Number::from(0)));
+                return numeric_match(&pred_num, &gt_num, tol);
+            }
+            false
+        }
+        // One is a number, the other is a string representation of a number.
+        (Value::Number(n), Value::String(s)) | (Value::String(s), Value::Number(n)) => {
+            let sn = normalize_string(s);
+            if let (Some(nf), Ok(sf)) = (n.as_f64(), sn.parse::<f64>()) {
+                let a = Value::Number(serde_json::Number::from_f64(nf).unwrap_or_else(|| serde_json::Number::from(0)));
+                let b = Value::Number(serde_json::Number::from_f64(sf).unwrap_or_else(|| serde_json::Number::from(0)));
+                numeric_match(&a, &b, tol)
+            } else {
+                false
+            }
+        }
+        _ => pred == gt,
+    }
+}
+
+/// Compute field-level P/R/F1 between predicted and ground truth JSON, using
+/// normalized value comparison.
+///
+/// Path matching is identical to [`field_precision_recall_f1`]; a path-matched leaf
+/// counts as a true positive when [`values_match_normalized`] holds:
+/// - Both numeric → within tolerance
+/// - Both strings → normalize (trim, case-fold, collapse whitespace), then compare;
+///   if both parse as `f64`, fall back to numeric tolerance
+/// - Number vs quoted number string → numeric tolerance
+/// - Otherwise → strict equality
+///
+/// # Arguments
+/// * `predicted` - Predicted JSON object
+/// * `ground_truth` - Ground truth JSON object
+/// * `tol` - Numeric tolerance configuration
+///
+/// # Returns
+/// `Metrics { precision, recall, f1 }`
+pub fn field_precision_recall_f1_normalized(
+    predicted: &Value,
+    ground_truth: &Value,
+    tol: &NumericTolerance,
+) -> Metrics {
+    let pred_leaves: std::collections::HashMap<String, _> = collect_leaves(predicted, "").into_iter().collect();
+    let gt_leaves: std::collections::HashMap<String, _> = collect_leaves(ground_truth, "").into_iter().collect();
+
+    let mut tp = 0usize;
+    let mut fp = 0usize;
+    let mut fn_count = 0usize;
+
+    // True positives and false positives
+    for (path, pred_val) in &pred_leaves {
+        if let Some(gt_val) = gt_leaves.get(path) {
+            if values_match_normalized(pred_val, gt_val, tol) {
+                tp += 1;
+            } else {
+                fp += 1;
+            }
+        } else {
+            fp += 1;
+        }
+    }
+
+    // False negatives (paths only in GT)
+    for path in gt_leaves.keys() {
+        if !pred_leaves.contains_key(path) {
+            fn_count += 1;
+        }
+    }
+
+    let precision = if tp + fp == 0 {
+        0.0
+    } else {
+        tp as f64 / (tp + fp) as f64
+    };
+
+    let recall = if tp + fn_count == 0 {
+        0.0
+    } else {
+        tp as f64 / (tp + fn_count) as f64
+    };
+
+    let f1 = if precision + recall == 0.0 {
+        0.0
+    } else {
+        2.0 * (precision * recall) / (precision + recall)
+    };
+
+    Metrics { precision, recall, f1 }
+}
+
+/// Flatten a `PdfFormField` slice into a flat JSON object `{ full_name: value_string }`.
+///
+/// Key precedence: `full_name` (fallback to `name`).
+/// Value precedence: `value`, then `default_value`, then `""`.
+///
+/// The resulting object has one leaf per field and is suitable for feeding into
+/// [`collect_leaves`] / [`field_precision_recall_f1_normalized`].
+pub fn flatten_form_fields(fields: &[kreuzberg::PdfFormField]) -> Value {
+    let mut map = serde_json::Map::new();
+    for field in fields {
+        let key = if field.full_name.is_empty() {
+            field.name.clone()
+        } else {
+            field.full_name.clone()
+        };
+        let val = field
+            .value
+            .as_deref()
+            .or(field.default_value.as_deref())
+            .unwrap_or("")
+            .to_string();
+        map.insert(key, Value::String(val));
+    }
+    Value::Object(map)
+}
+
+// ── LaTeX token F1 ───────────────────────────────────────────────────────────
+
+/// Normalize a single LaTeX string for token-level comparison:
+/// strip surrounding `$` / `$$` delimiters, collapse whitespace.
+fn normalize_latex(s: &str) -> String {
+    let s = s.trim();
+    // Strip `$$...$$` then `$...$`
+    let s = s.strip_prefix("$$").and_then(|s| s.strip_suffix("$$")).unwrap_or(s);
+    let s = s.strip_prefix('$').and_then(|s| s.strip_suffix('$')).unwrap_or(s);
+    s.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// Tokenize a normalized LaTeX string on whitespace.
+fn tokenize_latex(s: &str) -> Vec<String> {
+    normalize_latex(s)
+        .split_whitespace()
+        .filter(|t| !t.is_empty())
+        .map(String::from)
+        .collect()
+}
+
+/// Compute bag-of-words multiset F1 between two sets of LaTeX formula strings.
+///
+/// Each formula is normalized (strip `$`/`$$`, collapse whitespace) and tokenized on
+/// whitespace. Precision and recall are computed over the concatenated token bags
+/// (all extracted formulas vs all GT formulas), using multiset intersection.
+///
+/// Returns `Metrics { precision, recall, f1 }`.
+pub fn latex_token_f1(extracted: &[String], gt: &[String]) -> Metrics {
+    let pred_tokens: Vec<String> = extracted.iter().flat_map(|s| tokenize_latex(s)).collect();
+    let gt_tokens: Vec<String> = gt.iter().flat_map(|s| tokenize_latex(s)).collect();
+
+    if pred_tokens.is_empty() && gt_tokens.is_empty() {
+        return Metrics {
+            precision: 1.0,
+            recall: 1.0,
+            f1: 1.0,
+        };
+    }
+    if pred_tokens.is_empty() || gt_tokens.is_empty() {
+        return Metrics {
+            precision: 0.0,
+            recall: 0.0,
+            f1: 0.0,
+        };
+    }
+
+    // Build multiset counts
+    let mut pred_counts: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
+    let mut gt_counts: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
+    for t in &pred_tokens {
+        *pred_counts.entry(t.as_str()).or_insert(0) += 1;
+    }
+    for t in &gt_tokens {
+        *gt_counts.entry(t.as_str()).or_insert(0) += 1;
+    }
+
+    // Multiset intersection: min(pred_count, gt_count) for each token
+    let intersection: usize = gt_counts
+        .iter()
+        .map(|(tok, &gc)| {
+            let pc = pred_counts.get(tok).copied().unwrap_or(0);
+            pc.min(gc)
+        })
+        .sum();
+
+    let precision = intersection as f64 / pred_tokens.len() as f64;
+    let recall = intersection as f64 / gt_tokens.len() as f64;
+    let f1 = if precision + recall == 0.0 {
+        0.0
+    } else {
+        2.0 * precision * recall / (precision + recall)
+    };
+
+    Metrics { precision, recall, f1 }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -479,5 +704,181 @@ mod tests {
         });
 
         assert!(!exact_match(&a, &b));
+    }
+
+    // ── Normalized field P/R/F1 tests ─────────────────────────────────────────
+
+    #[test]
+    fn test_normalized_string_case_fold() {
+        // "ALICE" vs "alice" — should match after normalization
+        let pred = json!({ "name": "ALICE" });
+        let gt = json!({ "name": "alice" });
+        let tol = NumericTolerance::default();
+        let m = field_precision_recall_f1_normalized(&pred, &gt, &tol);
+        assert_eq!(m.f1, 1.0, "case-folded strings must match");
+    }
+
+    #[test]
+    fn test_normalized_string_whitespace_collapse() {
+        let pred = json!({ "city": "  New   York  " });
+        let gt = json!({ "city": "New York" });
+        let tol = NumericTolerance::default();
+        let m = field_precision_recall_f1_normalized(&pred, &gt, &tol);
+        assert_eq!(m.f1, 1.0, "whitespace-collapsed strings must match");
+    }
+
+    #[test]
+    fn test_normalized_numeric_as_string() {
+        // GT stores number as quoted string "60.000", pred has JSON number 60.0
+        let pred = json!({ "amount": 60.0 });
+        let gt = json!({ "amount": "60.000" });
+        let tol = NumericTolerance::default();
+        let m = field_precision_recall_f1_normalized(&pred, &gt, &tol);
+        assert_eq!(m.f1, 1.0, "number vs quoted number string must match within tolerance");
+    }
+
+    #[test]
+    fn test_normalized_strict_fallback_for_non_numeric_strings() {
+        // "foo" vs "bar" — no numeric parse possible, must not match
+        let pred = json!({ "label": "foo" });
+        let gt = json!({ "label": "bar" });
+        let tol = NumericTolerance::default();
+        let m = field_precision_recall_f1_normalized(&pred, &gt, &tol);
+        assert!(m.f1 < 1.0, "non-matching strings must not produce f1=1");
+    }
+
+    #[test]
+    fn test_normalized_perfect_match_numbers() {
+        let pred = json!({ "total": 100.5, "count": 3 });
+        let gt = json!({ "total": 100.5, "count": 3 });
+        let tol = NumericTolerance::default();
+        let m = field_precision_recall_f1_normalized(&pred, &gt, &tol);
+        assert_eq!(m.f1, 1.0);
+    }
+
+    // ── flatten_form_fields tests ─────────────────────────────────────────────
+
+    #[test]
+    fn test_flatten_form_fields_uses_full_name_and_value() {
+        use kreuzberg::{FormFieldType, PdfFormField};
+        let fields = vec![PdfFormField {
+            name: "leaf".to_string(),
+            full_name: "root.leaf".to_string(),
+            field_type: FormFieldType::Text,
+            value: Some("hello".to_string()),
+            default_value: None,
+            flags: 0,
+            page: None,
+            bbox: None,
+            max_length: None,
+            tooltip: None,
+        }];
+        let flat = flatten_form_fields(&fields);
+        assert_eq!(flat["root.leaf"], Value::String("hello".to_string()));
+    }
+
+    #[test]
+    fn test_flatten_form_fields_falls_back_to_default_value() {
+        use kreuzberg::{FormFieldType, PdfFormField};
+        let fields = vec![PdfFormField {
+            name: "leaf".to_string(),
+            full_name: "root.leaf".to_string(),
+            field_type: FormFieldType::Text,
+            value: None,
+            default_value: Some("default_val".to_string()),
+            flags: 0,
+            page: None,
+            bbox: None,
+            max_length: None,
+            tooltip: None,
+        }];
+        let flat = flatten_form_fields(&fields);
+        assert_eq!(flat["root.leaf"], Value::String("default_val".to_string()));
+    }
+
+    #[test]
+    fn test_flatten_form_fields_empty_string_when_no_value() {
+        use kreuzberg::{FormFieldType, PdfFormField};
+        let fields = vec![PdfFormField {
+            name: "leaf".to_string(),
+            full_name: "root.leaf".to_string(),
+            field_type: FormFieldType::Checkbox,
+            value: None,
+            default_value: None,
+            flags: 0,
+            page: None,
+            bbox: None,
+            max_length: None,
+            tooltip: None,
+        }];
+        let flat = flatten_form_fields(&fields);
+        assert_eq!(flat["root.leaf"], Value::String(String::new()));
+    }
+
+    #[test]
+    fn test_flatten_form_fields_empty_full_name_falls_back_to_name() {
+        use kreuzberg::{FormFieldType, PdfFormField};
+        let fields = vec![PdfFormField {
+            name: "solo".to_string(),
+            full_name: String::new(),
+            field_type: FormFieldType::Text,
+            value: Some("v".to_string()),
+            default_value: None,
+            flags: 0,
+            page: None,
+            bbox: None,
+            max_length: None,
+            tooltip: None,
+        }];
+        let flat = flatten_form_fields(&fields);
+        assert_eq!(flat["solo"], Value::String("v".to_string()));
+    }
+
+    // ── latex_token_f1 tests ──────────────────────────────────────────────────
+
+    #[test]
+    fn test_latex_token_f1_perfect_match() {
+        let extracted = vec!["E = mc^2".to_string()];
+        let gt = vec!["E = mc^2".to_string()];
+        let m = latex_token_f1(&extracted, &gt);
+        assert_eq!(m.f1, 1.0);
+    }
+
+    #[test]
+    fn test_latex_token_f1_strips_dollar_delimiters() {
+        // Both have `$$` wrappers — tokens should be the same after stripping
+        let extracted = vec!["$$E = mc^2$$".to_string()];
+        let gt = vec!["E = mc^2".to_string()];
+        let m = latex_token_f1(&extracted, &gt);
+        assert_eq!(m.f1, 1.0, "dollar delimiters must be stripped before comparison");
+    }
+
+    #[test]
+    fn test_latex_token_f1_partial_overlap() {
+        let extracted = vec!["a b c".to_string()];
+        let gt = vec!["a b d".to_string()];
+        let m = latex_token_f1(&extracted, &gt);
+        // intersection = {a, b}, pred_len = 3, gt_len = 3
+        // precision = 2/3, recall = 2/3, f1 = 2/3
+        let expected_f1 = 2.0 / 3.0;
+        assert!(
+            (m.f1 - expected_f1).abs() < 1e-9,
+            "expected f1={:.4}, got {:.4}",
+            expected_f1,
+            m.f1
+        );
+    }
+
+    #[test]
+    fn test_latex_token_f1_both_empty() {
+        let m = latex_token_f1(&[], &[]);
+        assert_eq!(m.f1, 1.0, "vacuously empty must score 1.0");
+    }
+
+    #[test]
+    fn test_latex_token_f1_extracted_empty() {
+        let gt = vec!["x^2".to_string()];
+        let m = latex_token_f1(&[], &gt);
+        assert_eq!(m.f1, 0.0);
     }
 }

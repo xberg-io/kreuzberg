@@ -20,6 +20,7 @@ pub(crate) type PdfExtractionPhaseResult = (
     bool,                                             // has_font_encoding_issues (unicode map errors detected)
     Option<Vec<PdfAnnotation>>,                       // extracted annotations (when extract_annotations is enabled)
     Option<Vec<crate::types::ExtractedImage>>, // extracted images (when extract_images or ocr_inline_images is enabled)
+    Vec<crate::types::PdfFormField>,           // extracted form fields (when extract_form_fields is enabled)
 );
 
 /// Extract text, metadata, tables, and annotations from a PDF document using the pdf_oxide backend.
@@ -49,13 +50,35 @@ pub(crate) fn extract_all_from_oxide_document(
     let mut doc = crate::pdf::oxide::OxideDocument::open_bytes(content)?;
 
     // --- Text + metadata (single pass) ---
-    let (native_text, boundaries, page_contents, pdf_metadata) =
+    #[cfg_attr(not(feature = "layout-detection"), allow(unused_mut))]
+    let (mut native_text, boundaries, page_contents, pdf_metadata) =
         crate::pdf::oxide::text::extract_text_and_metadata(&mut doc, Some(config)).map_err(|e| {
             crate::error::KreuzbergError::Parsing {
                 message: format!("pdf_oxide text extraction failed: {e}"),
                 source: None,
             }
         })?;
+
+    // --- Reading-order reordering (layout-guided) ---
+    // When `reading_order` is enabled and layout hints are available, reorder text spans
+    // to natural reading order (top-to-bottom per column, left-to-right across columns).
+    #[cfg(feature = "layout-detection")]
+    if config.pdf_options.as_ref().is_some_and(|opts| opts.reading_order)
+        && let Some(hints) = layout_hints
+    {
+        native_text = match apply_reading_order_reordering(&mut doc, &native_text, hints) {
+            Ok(reordered) => reordered,
+            Err(e) => {
+                tracing::warn!(
+                    error = %e,
+                    "reading-order reordering failed; using native text extraction order"
+                );
+                native_text
+            }
+        };
+    }
+    #[cfg(not(feature = "layout-detection"))]
+    let _ = layout_hints; // Suppress unused variable warning
 
     // --- Tables ---
     // Three-tier detection, each tier running only on pages the previous left empty:
@@ -151,94 +174,125 @@ pub(crate) fn extract_all_from_oxide_document(
         )
         || ocr_inline_images;
 
-    let pre_rendered_doc =
-        if needs_structured && !config.force_ocr {
-            let k = config
-                .pdf_options
-                .as_ref()
-                .and_then(|opts| opts.hierarchy.as_ref())
-                .map(|h| h.k_clusters)
-                .unwrap_or(4);
+    let pre_rendered_doc = if needs_structured && !config.force_ocr {
+        let k = config
+            .pdf_options
+            .as_ref()
+            .and_then(|opts| opts.hierarchy.as_ref())
+            .map(|h| h.k_clusters)
+            .unwrap_or(4);
 
-            let (strip_repeating_text, include_headers, include_footers) = config
-                .content_filter
-                .as_ref()
-                .map(|cf| (cf.strip_repeating_text, cf.include_headers, cf.include_footers))
-                .unwrap_or((true, false, false));
+        let (strip_repeating_text, include_headers, include_footers) = config
+            .content_filter
+            .as_ref()
+            .map(|cf| (cf.strip_repeating_text, cf.include_headers, cf.include_footers))
+            .unwrap_or((true, false, false));
 
-            // Extract font-metric segments from oxide for heading detection.
-            // When the PDF has a reliable structure tree, segments carry pre-assigned
-            // heading roles (assigned_role) and the pipeline can skip font-size clustering.
-            let (segments, used_structure_tree) = crate::pdf::oxide::hierarchy::extract_all_segments(&mut doc)
-                .map_err(|e| crate::error::KreuzbergError::Parsing {
-                    message: format!("pdf_oxide hierarchy extraction failed: {e}"),
-                    source: None,
-                })?;
+        // Extract font-metric segments from oxide for heading detection.
+        // When the PDF has a reliable structure tree, segments carry pre-assigned
+        // heading roles (assigned_role) and the pipeline can skip font-size clustering.
+        #[cfg_attr(not(feature = "layout-detection"), allow(unused_mut))]
+        let (mut all_page_segments, used_structure_tree) = crate::pdf::oxide::hierarchy::extract_all_segments(&mut doc)
+            .map_err(|e| crate::error::KreuzbergError::Parsing {
+                message: format!("pdf_oxide hierarchy extraction failed: {e}"),
+                source: None,
+            })?;
 
-            let total_segs: usize = segments.iter().map(|s| s.len()).sum();
-            tracing::debug!(
-                total_segs,
-                k,
-                used_structure_tree,
-                "oxide structure: extracted segments for heading detection"
-            );
-
-            // Same gate as the oxide path: only inject placeholders when image extraction
-            // is explicitly enabled. Prevents base64 data from leaking into results when
-            // the caller sets extract_images=false (fixes #796).
-            let inject_placeholders =
-                images_extraction_enabled && config.images.as_ref().map(|c| c.inject_placeholders).unwrap_or(false);
-
-            match crate::pdf::structure::extract_document_structure_from_segments(
-                segments,
-                crate::pdf::structure::SegmentStructureConfig {
-                    k_clusters: k,
-                    tables: &tables,
-                    strip_repeating_text,
-                    include_headers,
-                    include_footers,
-                    used_structure_tree,
-                    image_positions: &image_positions,
-                    images: images.as_deref(),
-                    inject_placeholders,
-                    layout_hints,
-                    allow_single_column,
-                    cancel_token: config.cancel_token.as_ref(),
-                    #[cfg(feature = "layout-detection")]
-                    layout_images,
-                    #[cfg(feature = "layout-detection")]
-                    layout_results,
-                    #[cfg(feature = "layout-detection")]
-                    table_model: config.layout.as_ref().map(|l| l.table_model).unwrap_or_default(),
-                    #[cfg(feature = "layout-detection")]
-                    acceleration: config.acceleration.as_ref(),
-                },
-            ) {
-                Ok(structured_doc) if !structured_doc.elements.is_empty() => {
-                    tracing::debug!(
-                        elements = structured_doc.elements.len(),
-                        has_headings = structured_doc
-                            .elements
-                            .iter()
-                            .any(|e| matches!(e.kind, crate::types::internal::ElementKind::Heading { .. })),
-                        "oxide structure: render succeeded"
+        // Apply reading-order reordering to segments if enabled and layout hints available.
+        // This ensures block-level order (heading, paragraph, list, etc.) reflects
+        // column-major reading order in multi-column documents.
+        #[cfg(feature = "layout-detection")]
+        if config.pdf_options.as_ref().is_some_and(|opts| opts.reading_order)
+            && let Some(hints) = layout_hints
+        {
+            for (page_idx, page_hints) in hints.iter().enumerate() {
+                if page_idx < all_page_segments.len() && !page_hints.is_empty() {
+                    all_page_segments[page_idx] = crate::extractors::pdf::reading_order::reorder_segments_by_layout(
+                        all_page_segments[page_idx].clone(),
+                        page_hints,
                     );
-                    Some(structured_doc)
-                }
-                Ok(_) => {
-                    tracing::warn!("oxide structure: rendering produced empty output, falling back to plain text");
-                    None
-                }
-                Err(e) => {
-                    tracing::warn!("oxide structure: rendering failed: {:?}, falling back to plain text", e);
-                    None
+                    tracing::debug!(
+                        page = page_idx,
+                        segments = all_page_segments[page_idx].len(),
+                        "reading-order: segments reordered by layout"
+                    );
                 }
             }
-        } else {
-            None
-        };
+        }
+        #[cfg(not(feature = "layout-detection"))]
+        let _ = &layout_hints;
+
+        let total_segs: usize = all_page_segments.iter().map(|s| s.len()).sum();
+        tracing::debug!(
+            total_segs,
+            k,
+            used_structure_tree,
+            "oxide structure: extracted segments for heading detection"
+        );
+
+        // Same gate as the oxide path: only inject placeholders when image extraction
+        // is explicitly enabled. Prevents base64 data from leaking into results when
+        // the caller sets extract_images=false (fixes #796).
+        let inject_placeholders =
+            images_extraction_enabled && config.images.as_ref().map(|c| c.inject_placeholders).unwrap_or(false);
+
+        match crate::pdf::structure::extract_document_structure_from_segments(
+            all_page_segments,
+            crate::pdf::structure::SegmentStructureConfig {
+                k_clusters: k,
+                tables: &tables,
+                strip_repeating_text,
+                include_headers,
+                include_footers,
+                used_structure_tree,
+                image_positions: &image_positions,
+                images: images.as_deref(),
+                inject_placeholders,
+                layout_hints,
+                allow_single_column,
+                cancel_token: config.cancel_token.as_ref(),
+                #[cfg(feature = "layout-detection")]
+                layout_images,
+                #[cfg(feature = "layout-detection")]
+                layout_results,
+                #[cfg(feature = "layout-detection")]
+                table_model: config.layout.as_ref().map(|l| l.table_model).unwrap_or_default(),
+                #[cfg(feature = "layout-detection")]
+                acceleration: config.acceleration.as_ref(),
+            },
+        ) {
+            Ok(structured_doc) if !structured_doc.elements.is_empty() => {
+                tracing::debug!(
+                    elements = structured_doc.elements.len(),
+                    has_headings = structured_doc
+                        .elements
+                        .iter()
+                        .any(|e| matches!(e.kind, crate::types::internal::ElementKind::Heading { .. })),
+                    "oxide structure: render succeeded"
+                );
+                Some(structured_doc)
+            }
+            Ok(_) => {
+                tracing::warn!("oxide structure: rendering produced empty output, falling back to plain text");
+                None
+            }
+            Err(e) => {
+                tracing::warn!("oxide structure: rendering failed: {:?}, falling back to plain text", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
 
     let has_font_encoding_issues = false;
+
+    // --- Form fields (AcroForm / XFA) ---
+    let form_fields = if config.pdf_options.as_ref().is_none_or(|opts| opts.extract_form_fields) {
+        crate::pdf::oxide::forms::extract_form_fields(&mut doc)
+    } else {
+        Vec::new()
+    };
 
     Ok((
         pdf_metadata,
@@ -250,7 +304,86 @@ pub(crate) fn extract_all_from_oxide_document(
         has_font_encoding_issues,
         annotations,
         images,
+        form_fields,
     ))
+}
+
+/// Apply reading-order reordering using layout-detected regions.
+///
+/// Extracts text spans from each page, projects them onto layout regions,
+/// performs column detection, and rebuilds the text in natural reading order.
+///
+/// Returns the reordered text string, or an error if extraction/reordering fails.
+#[cfg(feature = "layout-detection")]
+fn apply_reading_order_reordering(
+    doc: &mut crate::pdf::oxide::OxideDocument,
+    native_text: &str,
+    layout_hints_per_page: &[Vec<crate::pdf::structure::types::LayoutHint>],
+) -> Result<String> {
+    use crate::extractors::pdf::reading_order;
+
+    let page_count = doc
+        .doc
+        .page_count()
+        .map_err(|e| crate::error::KreuzbergError::Parsing {
+            message: format!("reading-order reordering: failed to get page count: {e}"),
+            source: None,
+        })?;
+
+    if layout_hints_per_page.len() != page_count {
+        return Err(crate::error::KreuzbergError::Parsing {
+            message: format!(
+                "reading-order reordering: layout hints count ({}) != page count ({})",
+                layout_hints_per_page.len(),
+                page_count
+            ),
+            source: None,
+        });
+    }
+
+    let mut reordered_pages = Vec::with_capacity(page_count);
+
+    for (page_idx, hints) in layout_hints_per_page.iter().enumerate().take(page_count) {
+        // Extract spans for this page
+        let spans = crate::pdf::oxide::text::extract_spans_from_page(&mut doc.doc, page_idx).map_err(|e| {
+            crate::error::KreuzbergError::Parsing {
+                message: format!(
+                    "reading-order reordering: failed to extract spans from page {}: {e}",
+                    page_idx + 1
+                ),
+                source: None,
+            }
+        })?;
+
+        // Determine span emission order: reorder by layout when hints exist,
+        // otherwise keep the original extraction order. Every page must contribute
+        // text — skipping hint-free or span-empty pages would silently drop their
+        // content from the joined output.
+        let span_order: Vec<usize> = if hints.is_empty() {
+            (0..spans.len()).collect()
+        } else {
+            reading_order::reorder_spans_by_layout(&spans, hints)
+        };
+
+        // Rebuild page text in (possibly reordered) order.
+        let mut page_text = String::new();
+        for &span_idx in &span_order {
+            if span_idx < spans.len() {
+                page_text.push_str(&spans[span_idx].text);
+            }
+        }
+
+        reordered_pages.push(page_text);
+    }
+
+    if reordered_pages.is_empty() {
+        // No pages were reordered; return original text
+        return Ok(native_text.to_string());
+    }
+
+    // Reconstruct full text in reading order
+    let result = reordered_pages.join("\n\n");
+    Ok(result)
 }
 
 #[cfg(test)]

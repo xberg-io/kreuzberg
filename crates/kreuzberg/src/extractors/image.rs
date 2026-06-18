@@ -105,6 +105,10 @@ impl ImageExtractor {
         let ocr_content = ocr_result.content;
         let ocr_metadata = ocr_result.metadata;
         let ocr_elements = ocr_result.ocr_elements;
+        // Formulas recognized by paired-mode GLM-OCR (LayoutClass::Formula → LaTeX).
+        // Carry them onto the InternalDocument so derive_extraction_result surfaces
+        // them on ExtractionResult.formulas; otherwise the field is silently dropped.
+        let ocr_formulas = ocr_result.formulas;
 
         // Full OCR with TIFF multi-frame support (requires tiff crate)
         #[cfg(feature = "ocr")]
@@ -119,6 +123,7 @@ impl ImageExtractor {
             // Build InternalDocument from OCR text
             let mut doc = build_image_internal_document(Some(&ocr_extraction_result.content), None);
             doc.metadata = ocr_metadata;
+            doc.formulas = ocr_formulas;
             Self::mark_ocr_extraction(&mut doc);
 
             // Store OCR elements directly to avoid injecting raw word tokens into the
@@ -156,6 +161,7 @@ impl ImageExtractor {
             let _ = mime_type;
             let mut doc = build_image_internal_document(Some(&ocr_content), None);
             doc.metadata = ocr_metadata;
+            doc.formulas = ocr_formulas;
             Self::mark_ocr_extraction(&mut doc);
             doc.prebuilt_ocr_elements = ocr_elements;
             let text = ocr_content.trim().to_string();
@@ -265,12 +271,18 @@ impl ImageExtractor {
 
         // 5. Per-region OCR + formatting into InternalDocument
         let mut builder = InternalDocumentBuilder::new("image");
+        // Typed formulas (LaTeX + pixel-space bbox) accumulated from Formula regions,
+        // surfaced on ExtractionResult.formulas in addition to the rendered text element.
+        let mut formulas: Vec<crate::types::Formula> = Vec::new();
         let img_width = rgb.width();
         let img_height = rgb.height();
 
         for det in &detections {
-            // Skip picture regions (OCR on an embedded image is not useful)
-            if det.class_name == LayoutClass::Picture {
+            // Skip picture/chart regions: OCR on an embedded image is not useful, and
+            // charts should be handled by chart understanding backends (e.g., paired-mode GLM-OCR)
+            // which run their own layout detection and chart task dispatch.
+            // Chart is a refinement of Picture; treat it identically here.
+            if matches!(det.class_name, LayoutClass::Picture | LayoutClass::Chart) {
                 continue;
             }
 
@@ -326,6 +338,18 @@ impl ImageExtractor {
                     builder.push_code(&text, None, None, None);
                 }
                 LayoutClass::Formula => {
+                    // bbox is in rendered-image pixel space (det.bbox), matching the
+                    // documented coordinate space of Formula.bbox. Single image => page 1.
+                    formulas.push(crate::types::Formula {
+                        latex: text.clone(),
+                        bbox: crate::types::BoundingBox {
+                            x0: det.bbox.x1 as f64,
+                            y0: det.bbox.y1 as f64,
+                            x1: det.bbox.x2 as f64,
+                            y1: det.bbox.y2 as f64,
+                        },
+                        page: 1,
+                    });
                     let elem = InternalElement::text(ElementKind::Formula, &text, 0);
                     builder.push_element(elem);
                 }
@@ -350,6 +374,7 @@ impl ImageExtractor {
             output_format: Some("markdown".to_string()),
             ..Default::default()
         };
+        doc.formulas = formulas;
         Self::mark_ocr_extraction(&mut doc);
 
         Ok(doc)

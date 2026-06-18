@@ -67,6 +67,24 @@ pub struct PdfConfig {
     /// the whole extraction). Default: `false`.
     #[serde(default)]
     pub ocr_inline_images: bool,
+
+    /// Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`.
+    ///
+    /// When `true` (default), reads the document's interactive form structure
+    /// (field names, types, values, widget geometry). Cheap and strictly
+    /// additive — non-form PDFs simply yield an empty list. Set to `false` to
+    /// skip the form pass entirely.
+    #[serde(default = "default_true")]
+    pub extract_form_fields: bool,
+
+    /// Reorder extracted text by layout-detected reading order.
+    ///
+    /// When `true`, projects text spans onto layout-detected regions, performs
+    /// column detection, and emits spans in natural reading order (important
+    /// for multi-column academic PDFs). Requires the `layout-detection`
+    /// feature; has no effect without it. Defaults to `false`.
+    #[serde(default)]
+    pub reading_order: bool,
 }
 
 /// Hierarchy extraction configuration for PDF text structure analysis.
@@ -114,6 +132,8 @@ impl Default for PdfConfig {
             bottom_margin_fraction: None,
             allow_single_column_tables: false,
             ocr_inline_images: false,
+            extract_form_fields: true,
+            reading_order: false,
         }
     }
 }
@@ -185,8 +205,51 @@ mod tests {
             bottom_margin_fraction: Some(0.08),
             allow_single_column_tables: false,
             ocr_inline_images: false,
+            extract_form_fields: true,
+            reading_order: false,
         };
         assert_eq!(config.top_margin_fraction, Some(0.10));
         assert_eq!(config.bottom_margin_fraction, Some(0.08));
+    }
+
+    // ── backward-compat serde tests ──────────────────────────────────────────
+
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn pdf_config_omitting_extract_form_fields_defaults_to_true() {
+        use super::*;
+        // extract_form_fields uses `default_true` — stored configs that predate
+        // this field must deserialize to `true` (default-on, not false).
+        let json = r#"{"extract_tables": true, "extract_metadata": true}"#;
+        let config: PdfConfig = serde_json::from_str(json).unwrap();
+        assert!(
+            config.extract_form_fields,
+            "omitted extract_form_fields must default to true (default-on)"
+        );
+    }
+
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn pdf_config_omitting_reading_order_defaults_to_false() {
+        use super::*;
+        // reading_order uses `#[serde(default)]` (bool default = false).
+        let json = r#"{"extract_tables": true, "extract_metadata": true}"#;
+        let config: PdfConfig = serde_json::from_str(json).unwrap();
+        assert!(!config.reading_order, "omitted reading_order must default to false");
+    }
+
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn pdf_config_new_fields_round_trip() {
+        use super::*;
+        let config = PdfConfig {
+            extract_form_fields: false,
+            reading_order: true,
+            ..PdfConfig::default()
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        let deserialized: PdfConfig = serde_json::from_str(&json).unwrap();
+        assert!(!deserialized.extract_form_fields);
+        assert!(deserialized.reading_order);
     }
 }

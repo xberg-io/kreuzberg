@@ -31,9 +31,10 @@ pub(crate) fn apply_heuristics(
     // 1. Apply per-class confidence thresholds.
     detections.retain(|d| d.confidence >= class_threshold(d.class_name));
 
-    // 2. Remove full-page pictures (>90% of page area).
+    // 2. Remove full-page pictures (>90% of page area). Chart is a refinement
+    //    of Picture and is treated identically throughout this pass.
     detections.retain(|d| {
-        if d.class_name == LayoutClass::Picture {
+        if matches!(d.class_name, LayoutClass::Picture | LayoutClass::Chart) {
             d.bbox.page_coverage(page_width, page_height) < 0.9
         } else {
             true
@@ -44,8 +45,10 @@ pub(crate) fn apply_heuristics(
     //     If a Table or Picture covers <3% of page area AND has confidence <0.7,
     //     it is likely a false positive that would suppress body text.
     for d in detections.iter_mut() {
-        if matches!(d.class_name, LayoutClass::Table | LayoutClass::Picture)
-            && d.bbox.page_coverage(page_width, page_height) < 0.03
+        if matches!(
+            d.class_name,
+            LayoutClass::Table | LayoutClass::Picture | LayoutClass::Chart
+        ) && d.bbox.page_coverage(page_width, page_height) < 0.03
             && d.confidence < 0.7
         {
             d.class_name = LayoutClass::Text;
@@ -141,16 +144,22 @@ fn pick_removal(a: &LayoutDetection, b: &LayoutDetection, containment_a_of_b: f3
     // Text preferred over Table/Picture when Text has equal or higher confidence.
     // This prevents low-confidence Table/Picture detections from suppressing body text.
     if a.class_name == LayoutClass::Text
-        && matches!(b.class_name, LayoutClass::Table | LayoutClass::Picture)
+        && matches!(
+            b.class_name,
+            LayoutClass::Table | LayoutClass::Picture | LayoutClass::Chart
+        )
         && a.confidence >= b.confidence
     {
-        return 1; // remove Table/Picture, keep Text
+        return 1; // remove Table/Picture/Chart, keep Text
     }
     if b.class_name == LayoutClass::Text
-        && matches!(a.class_name, LayoutClass::Table | LayoutClass::Picture)
+        && matches!(
+            a.class_name,
+            LayoutClass::Table | LayoutClass::Picture | LayoutClass::Chart
+        )
         && b.confidence >= a.confidence
     {
-        return 0; // remove Table/Picture, keep Text
+        return 0; // remove Table/Picture/Chart, keep Text
     }
 
     // Default: keep higher confidence.

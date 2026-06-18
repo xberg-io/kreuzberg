@@ -1,0 +1,27 @@
+{
+  "document": "../../../../test_documents/charts/arxiv_2206_p3.pdf",
+  "file_type": "pdf",
+  "file_size": 362070,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "arXiv 2206.01062 page 3 — real embedded chart (fires layout chart class at ~0.90)",
+    "source": "manual",
+    "size_category": "medium"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/arxiv_2206_p3.md",
+    "source": "manual"
+  }
+}

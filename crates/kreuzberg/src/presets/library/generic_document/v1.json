@@ -1,0 +1,26 @@
+{
+  "id": "generic_document",
+  "version": "v1",
+  "schema_name": "generic_document",
+  "description": "Extract a title and one-sentence summary from any document. Synthetic toy preset shipped with the OSS library.",
+  "category": "other",
+  "tags": [],
+  "schema": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "The document title or a short descriptive heading."
+      },
+      "summary": {
+        "type": "string",
+        "description": "A single sentence capturing the main point of the document."
+      }
+    },
+    "required": ["title", "summary"]
+  },
+  "system_prompt": "Extract a title and one-sentence summary from the document.",
+  "merge_mode": "object_merge",
+  "preferred_call_mode": "text_only",
+  "emit_citations": false
+}

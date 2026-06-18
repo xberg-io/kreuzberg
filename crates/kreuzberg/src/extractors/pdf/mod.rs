@@ -10,6 +10,8 @@ mod layout_hints;
 mod layout_runner;
 mod ocr;
 mod pages;
+#[cfg(feature = "layout-detection")]
+pub(crate) mod reading_order;
 #[cfg(all(feature = "liter-llm", feature = "layout-detection"))]
 mod region_vlm;
 
@@ -45,6 +47,7 @@ async fn run_ocr_with_layout(
     Vec<crate::types::LlmUsage>,
     Vec<String>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
@@ -54,7 +57,7 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts, pipeline_rasters) =
+        let (text, _ocr_tables, ocr_elements, pipeline_doc, llm_usage, ocr_pts, pipeline_rasters, pipeline_formulas) =
             ocr::run_ocr_pipeline(
                 Some(content),
                 None,
@@ -73,19 +76,30 @@ async fn run_ocr_with_layout(
             llm_usage,
             ocr_pts,
             pipeline_rasters,
+            pipeline_formulas,
         ));
     }
 
-    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters) = extract_with_ocr(
-        Some(content),
-        None,
-        #[cfg(feature = "layout-detection")]
-        layout_detections.as_deref(),
-        config,
-        path,
-    )
-    .await?;
-    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters))
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas) =
+        extract_with_ocr(
+            Some(content),
+            None,
+            #[cfg(feature = "layout-detection")]
+            layout_detections.as_deref(),
+            config,
+            path,
+        )
+        .await?;
+    Ok((
+        text,
+        ocr_tables,
+        ocr_elements,
+        ocr_doc,
+        llm_usage,
+        ocr_pts,
+        ocr_rasters,
+        formulas,
+    ))
 }
 
 /// PDF document extractor using pdf_oxide.
@@ -202,6 +216,7 @@ impl PdfExtractor {
             _has_font_encoding_issues,
             pdf_annotations,
             mut extracted_images,
+            pdf_form_fields,
         ) = extract_all_from_oxide_document(
             content,
             config,
@@ -278,12 +293,14 @@ impl PdfExtractor {
         let mut ocr_results_map: Option<ahash::AHashMap<u32, String>> = None;
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         let mut ocr_page_rasters: Option<Vec<crate::types::ExtractedImage>> = None;
+        #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+        let mut ocr_formulas: Vec<crate::types::Formula> = Vec::new();
 
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         let (text, extraction_method) = if config.effective_disable_ocr() {
             (native_text, ExtractionMethod::Native)
         } else if config.force_ocr {
-            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs) =
+            let (ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs, formulas) =
                 run_ocr_with_layout(content, config, path).await?;
             ocr_tables = ocr_tbls;
             ocr_elements = ocr_elems;
@@ -291,17 +308,21 @@ impl PdfExtractor {
             ocr_llm_usage = llm_usage;
             ocr_page_texts = Some(ocr_pts);
             ocr_page_rasters = ocr_rstrs;
+            ocr_formulas = formulas;
             (ocr_text, ExtractionMethod::Ocr)
         } else if let Some(ref ocr_pages) = config.force_ocr_pages {
             if !ocr_pages.is_empty() {
                 if let Some(ref bounds) = boundaries {
                     if !bounds.is_empty() {
-                        let (mixed, results_map, mixed_llm_usage, mixed_rstrs) =
+                        let (mixed, results_map, mixed_llm_usage, mixed_rstrs, mixed_formulas) =
                             ocr::extract_mixed_ocr_native(&native_text, bounds, ocr_pages, content, config, path)
                                 .await?;
                         ocr_llm_usage = mixed_llm_usage;
                         ocr_results_map = Some(results_map);
                         ocr_page_rasters = mixed_rstrs;
+                        if !mixed_formulas.is_empty() {
+                            ocr_formulas = mixed_formulas;
+                        }
                         (mixed, ExtractionMethod::Mixed)
                     } else {
                         tracing::warn!("force_ocr_pages set but no page boundaries available; using native text");
@@ -388,13 +409,14 @@ impl PdfExtractor {
                         (native_text, ExtractionMethod::Native)
                     } else {
                         match run_ocr_with_layout(content, config, path).await {
-                            Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs)) => {
+                            Ok((ocr_text, ocr_tbls, ocr_elems, ocr_doc, llm_usage, ocr_pts, ocr_rstrs, formulas)) => {
                                 ocr_tables = ocr_tbls;
                                 ocr_elements = ocr_elems;
                                 ocr_internal_doc = ocr_doc;
                                 ocr_llm_usage = llm_usage;
                                 ocr_page_texts = Some(ocr_pts);
                                 ocr_page_rasters = ocr_rstrs;
+                                ocr_formulas = formulas;
                                 (ocr_text, ExtractionMethod::Ocr)
                             }
                             Err(e) => {
@@ -415,10 +437,13 @@ impl PdfExtractor {
                 ocr::OcrGateOutcome::RunFallbackOnPages(pages) => match boundaries.as_deref() {
                     Some(bounds) if !bounds.is_empty() => {
                         match ocr::extract_mixed_ocr_native(&native_text, bounds, &pages, content, config, path).await {
-                            Ok((mixed, results_map, mixed_llm_usage, mixed_rstrs)) => {
+                            Ok((mixed, results_map, mixed_llm_usage, mixed_rstrs, mixed_formulas)) => {
                                 ocr_llm_usage = mixed_llm_usage;
                                 ocr_results_map = Some(results_map);
                                 ocr_page_rasters = mixed_rstrs;
+                                if !mixed_formulas.is_empty() {
+                                    ocr_formulas = mixed_formulas;
+                                }
                                 (mixed, ExtractionMethod::Mixed)
                             }
                             Err(e) => {
@@ -609,6 +634,10 @@ impl PdfExtractor {
             std::borrow::Cow::Borrowed("extraction_method"),
             serde_json::Value::String(extraction_method.as_str().to_string()),
         );
+
+        // Transfer form fields directly to InternalDocument carrier field
+        // so derive_extraction_result can move them via std::mem::take
+        doc.form_fields = pdf_form_fields;
 
         // When using the structured doc, tables are already interleaved by the assembly pipeline.
         // Only add tables separately for the flat-text fallback path.
@@ -802,6 +831,13 @@ impl PdfExtractor {
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         if !ocr_elements.is_empty() {
             doc.prebuilt_ocr_elements = Some(ocr_elements);
+        }
+
+        // Carry formulas on the InternalDocument; derive_extraction_result moves
+        // them into ExtractionResult.formulas (mirrors form_fields/llm_usage).
+        #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
+        if !ocr_formulas.is_empty() {
+            doc.formulas = ocr_formulas;
         }
 
         // Attach LLM usage accumulated during OCR so derive_extraction_result can transfer it.
@@ -1473,7 +1509,7 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("per-page-ocr-mock-928").unwrap();
 
-        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts, _rasters) =
+        let (_text, _conf, _tables, _elems, _doc, _llm, page_texts, _rasters, _formulas) =
             result.expect("extract_with_ocr should succeed");
 
         assert_eq!(page_texts.len(), 2, "expected one entry per page");
@@ -2349,5 +2385,150 @@ mod tests {
                 img.page_number,
             );
         }
+    }
+
+    /// Tests form field extraction from a PDF.
+    /// Uses an existing test PDF rather than creating one programmatically.
+    /// This is a simple smoke test to verify that form field extraction works
+    /// and doesn't panic or crash the extraction pipeline.
+    /// TODO: Add a real fillable PDF fixture if one is available.
+    /// Path to the vendored fillable-form fixture (AcroForm with text, button,
+    /// and choice fields).
+    #[cfg(feature = "pdf")]
+    fn form_test_document() -> std::path::PathBuf {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../test_documents/vendored/pdfium-render/form-test.pdf")
+    }
+
+    /// End-to-end: a real AcroForm PDF yields populated, correctly-typed
+    /// `form_fields` on the extractor's `InternalDocument` carrier.
+    #[tokio::test]
+    #[cfg(feature = "pdf")]
+    async fn test_form_field_extraction_enabled() {
+        let content = std::fs::read(form_test_document()).expect("read form-test.pdf fixture");
+
+        let config = crate::core::config::ExtractionConfig {
+            pdf_options: Some(crate::core::config::pdf::PdfConfig {
+                extract_form_fields: true,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let internal_doc = PdfExtractor::new()
+            .extract_bytes(&content, "application/pdf", &config)
+            .await
+            .expect("extraction must not fail");
+
+        // The fixture is a rich AcroForm; extraction must surface many fields.
+        assert!(
+            !internal_doc.form_fields.is_empty(),
+            "AcroForm PDF must yield form fields, got none"
+        );
+        // Every field must carry a non-empty fully-qualified name.
+        assert!(
+            internal_doc.form_fields.iter().all(|f| !f.full_name.is_empty()),
+            "every extracted field must have a full_name"
+        );
+        // The fixture contains text fields; at least one must map to Text.
+        assert!(
+            internal_doc
+                .form_fields
+                .iter()
+                .any(|f| f.field_type == crate::types::FormFieldType::Text),
+            "fixture has text fields; at least one must map to FormFieldType::Text"
+        );
+    }
+
+    /// With `extract_form_fields = false`, the same AcroForm PDF yields no fields.
+    #[tokio::test]
+    #[cfg(feature = "pdf")]
+    async fn test_form_field_extraction_disabled() {
+        let content = std::fs::read(form_test_document()).expect("read form-test.pdf fixture");
+
+        let config = crate::core::config::ExtractionConfig {
+            pdf_options: Some(crate::core::config::pdf::PdfConfig {
+                extract_form_fields: false,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let internal_doc = PdfExtractor::new()
+            .extract_bytes(&content, "application/pdf", &config)
+            .await
+            .expect("extraction must not fail");
+
+        assert!(
+            internal_doc.form_fields.is_empty(),
+            "form fields must be empty when extract_form_fields is disabled"
+        );
+    }
+
+    /// Tests that form fields are properly extracted and carried through the pipeline
+    /// using the InternalDocument.form_fields carrier (not metadata.additional).
+    /// This test manually constructs an InternalDocument with form_fields to verify
+    /// the carrier pattern works end-to-end, without relying on a complex PDF fixture.
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn test_form_fields_carrier_via_internal_document() {
+        let mut doc = InternalDocument::new("pdf");
+        doc.mime_type = "application/pdf".to_string();
+
+        // Manually populate form_fields as the PDF extractor would
+        doc.form_fields = vec![crate::types::PdfFormField {
+            name: "full_name".to_string(),
+            full_name: "form.full_name".to_string(),
+            field_type: crate::types::FormFieldType::Text,
+            value: Some("Ada Lovelace".to_string()),
+            default_value: Some("Default Name".to_string()),
+            flags: 0,
+            page: None,
+            bbox: None,
+            max_length: None,
+            tooltip: None,
+        }];
+
+        // Verify form_fields are in the carrier
+        assert_eq!(doc.form_fields.len(), 1);
+        let field = &doc.form_fields[0];
+        assert_eq!(field.name, "full_name");
+        assert_eq!(field.value, Some("Ada Lovelace".to_string()));
+        assert_eq!(field.field_type, crate::types::FormFieldType::Text);
+
+        // Verify metadata.additional does NOT contain the old _pdf_form_fields key
+        assert!(
+            doc.metadata.additional.get("_pdf_form_fields").is_none(),
+            "metadata.additional should not contain _pdf_form_fields (leak check)"
+        );
+
+        // Convert to ExtractionResult through the pipeline to verify the carrier works
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
+
+        // Verify form_fields were transferred via std::mem::take
+        assert_eq!(result.form_fields.len(), 1);
+        assert_eq!(result.form_fields[0].name, "full_name");
+        assert_eq!(result.form_fields[0].value, Some("Ada Lovelace".to_string()));
+    }
+
+    /// Tests that with form_fields extraction disabled, the result contains no form fields.
+    #[test]
+    #[cfg(feature = "pdf")]
+    fn test_form_fields_disabled_no_leak() {
+        let mut doc = InternalDocument::new("pdf");
+        doc.mime_type = "application/pdf".to_string();
+
+        // Ensure form_fields is empty (simulating extract_form_fields=false)
+        assert!(doc.form_fields.is_empty());
+
+        // Verify metadata.additional does NOT contain _pdf_form_fields
+        assert!(doc.metadata.additional.get("_pdf_form_fields").is_none());
+
+        // Convert to ExtractionResult and verify form_fields is empty
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
+
+        assert!(result.form_fields.is_empty());
     }
 }

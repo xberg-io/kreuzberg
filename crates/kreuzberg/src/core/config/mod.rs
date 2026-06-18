@@ -43,7 +43,7 @@ pub use formats::OutputFormat;
 pub use html_output::{HtmlOutputConfig, HtmlTheme};
 #[cfg(feature = "layout-types")]
 pub use layout::{LayoutDetectionConfig, TableModel};
-pub use llm::{LlmConfig, StructuredExtractionConfig};
+pub use llm::{CallMode, LlmConfig, MergeMode, StructuredExtractionConfig};
 pub use ocr::{OcrConfig, OcrPipelineConfig, OcrPipelineStage, OcrQualityThresholds, VlmFallbackPolicy};
 pub use page::PageConfig;
 #[cfg(feature = "pdf")]

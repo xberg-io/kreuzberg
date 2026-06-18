@@ -1080,6 +1080,52 @@ mod tests {
         assert!(config.ocr.is_none());
     }
 
+    #[test]
+    fn test_ocr_backend_options_parsed_and_applied() {
+        let mut config = ExtractionConfig::default();
+        let backend_options_json = r#"{"task":"chart","layout_mode":"whole_page"}"#;
+        let overrides = ExtractionOverrides {
+            ocr: Some(true),
+            ocr_backend_options: Some(backend_options_json.to_string()),
+            ..default_overrides()
+        };
+
+        // Validate should pass (parsed_backend_options is called during validate)
+        assert!(overrides.validate().is_ok());
+
+        overrides.apply(&mut config);
+        let ocr = config.ocr.unwrap();
+
+        // Verify backend_options is present and contains the expected object
+        assert!(ocr.backend_options.is_some());
+        let opts = ocr.backend_options.unwrap();
+        assert!(opts.is_object());
+        assert_eq!(opts.get("task").and_then(|v| v.as_str()), Some("chart"));
+        assert_eq!(opts.get("layout_mode").and_then(|v| v.as_str()), Some("whole_page"));
+    }
+
+    #[test]
+    fn test_ocr_backend_options_invalid_json_fails_validation() {
+        let overrides = ExtractionOverrides {
+            ocr: Some(true),
+            ocr_backend_options: Some("not-valid-json".to_string()),
+            ..default_overrides()
+        };
+        // Validation should fail because JSON is not valid
+        assert!(overrides.validate().is_err());
+    }
+
+    #[test]
+    fn test_ocr_backend_options_not_object_fails_validation() {
+        let overrides = ExtractionOverrides {
+            ocr: Some(true),
+            ocr_backend_options: Some(r#"["array", "not", "object"]"#.to_string()),
+            ..default_overrides()
+        };
+        // Validation should fail because JSON is not an object
+        assert!(overrides.validate().is_err());
+    }
+
     // ── Chunking tests ───────────────────────────────────────────────
 
     #[test]
@@ -1656,5 +1702,37 @@ mod tests {
         assert!(config.acceleration.is_none());
         assert!(config.concurrency.is_none());
         assert!(!config.include_document_structure);
+    }
+
+    #[test]
+    fn test_ocr_backend_options_vlm_flow() {
+        // Test that --ocr-backend-options integrates with --vlm-model
+        let mut config = ExtractionConfig::default();
+        let backend_options_json = r#"{"task":"chart","layout_mode":"whole_page"}"#;
+        let overrides = ExtractionOverrides {
+            vlm_model: Some("openai/gpt-4o".to_string()),
+            ocr_backend_options: Some(backend_options_json.to_string()),
+            ..default_overrides()
+        };
+
+        // Validate should pass
+        assert!(overrides.validate().is_ok());
+
+        overrides.apply(&mut config);
+
+        // Verify OCR is configured with VLM backend and backend_options is set
+        let ocr = config.ocr.expect("OCR should be configured");
+        assert_eq!(ocr.backend, "vlm");
+
+        // Verify backend_options parsed and flowed into the config
+        let opts = ocr.backend_options.expect("backend_options should be Some");
+        assert!(opts.is_object());
+        assert_eq!(opts.get("task").and_then(|v| v.as_str()), Some("chart"));
+        assert_eq!(opts.get("layout_mode").and_then(|v| v.as_str()), Some("whole_page"));
+
+        // Verify VLM config is also set
+        assert!(ocr.vlm_config.is_some());
+        let vlm = ocr.vlm_config.unwrap();
+        assert_eq!(vlm.model, "openai/gpt-4o");
     }
 }

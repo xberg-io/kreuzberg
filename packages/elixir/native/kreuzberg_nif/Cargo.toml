@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg_nif"
-version = "5.0.0-rc.22"
+version = "5.0.0-rc.19"
 edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance document intelligence library"
@@ -19,17 +19,20 @@ name = "kreuzberg_nif"
 crate-type = ["cdylib"]
 
 [features]
-default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "heic", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker", "reranker-presets", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
 api = ["kreuzberg/api"]
 api-types = ["kreuzberg/api-types"]
 auto-rotate-types = ["kreuzberg/auto-rotate-types"]
 captioning = ["kreuzberg/captioning"]
+chunking = ["kreuzberg/chunking"]
 chunking-tokenizers = ["kreuzberg/chunking-tokenizers"]
 classification = ["kreuzberg/classification"]
 diff = ["kreuzberg/diff"]
 embedding-presets = ["kreuzberg/embedding-presets"]
 embeddings = ["kreuzberg/embeddings"]
+enrichment = ["kreuzberg/enrichment"]
 heic = ["kreuzberg/heic"]
+heuristics = ["kreuzberg/heuristics"]
 html = ["kreuzberg/html"]
 keywords-rake = ["kreuzberg/keywords-rake"]
 keywords-yake = ["kreuzberg/keywords-yake"]
@@ -42,10 +45,12 @@ ocr-wasm = ["kreuzberg/ocr-wasm"]
 office = ["kreuzberg/office"]
 paddle-ocr-types = ["kreuzberg/paddle-ocr-types"]
 pdf = ["kreuzberg/pdf"]
+presets = ["kreuzberg/presets"]
 quality = ["kreuzberg/quality"]
 redaction = ["kreuzberg/redaction"]
 reranker = ["kreuzberg/reranker"]
 reranker-presets = ["kreuzberg/reranker-presets"]
+structured = ["kreuzberg/structured"]
 svg = ["kreuzberg/svg"]
 tokio-runtime = ["kreuzberg/tokio-runtime"]
 transcription-types = ["kreuzberg/transcription-types"]
@@ -57,10 +62,10 @@ alloc-no-stdlib = "=2.0.4"
 alloc-stdlib = "=0.2.2"
 async-trait = "0.1"
 brotli-decompressor = "=5.0.1"
-kreuzberg = { version = "5.0.0-rc.22", path = "../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"] }
+kreuzberg = { version = "5.0.0-rc.19", path = "../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"] }
 rustler = "0.38"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "sync"] }
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("api", "api-types", "auto-rotate-types", "captioning", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "heic", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker", "reranker-presets", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"))'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"))'] }

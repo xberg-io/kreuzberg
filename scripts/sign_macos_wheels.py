@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Codesign native binaries inside macOS wheels."""
 
 from __future__ import annotations

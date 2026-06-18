@@ -42,7 +42,10 @@ pub mod error;
 /// Format-specific document extraction implementations and office metadata types.
 pub mod extraction;
 pub mod extractors;
-#[cfg(feature = "layout-detection")]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub mod model_cache;
 pub mod plugins;
 pub mod rendering;
@@ -98,6 +101,37 @@ pub mod stopwords;
 
 #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
 pub mod keywords;
+
+#[cfg(feature = "enrichment")]
+pub mod enrichment;
+
+#[cfg(feature = "heuristics")]
+pub mod heuristics;
+
+#[cfg(feature = "heuristics")]
+pub use heuristics::{
+    BoundaryReason, DocumentBoundary, MultidocInput, MultidocThresholds, PageSignals,
+    boundaries_from_extraction_result, detect_boundaries,
+};
+
+#[cfg(feature = "presets")]
+pub mod presets;
+
+// Native HTTP (liter-llm) + PDF rendering are required, so the structured orchestrator is excluded
+// on wasm32. Public entry points (`extract_structured`/`split_and_extract`) are re-exported here in
+// the orchestrator wave.
+#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
+pub mod structured;
+
+#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
+pub use structured::{
+    CacheKey, CitationEnvelope, CitationSource, CitedField, MokaVisionCache, PageImage, PresetSpec, StructuredError,
+    StructuredOptions, StructuredOutput, VisionCallCache, VisionConfig, extract_structured, extract_structured_sync,
+    split_and_extract, split_and_extract_sync,
+};
+
+#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
+pub use structured::bindings::{extract_structured_json, split_and_extract_json};
 
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod ocr;
@@ -169,16 +203,24 @@ pub use core::extractor::{batch_extract_files_sync, extract_file_sync};
 
 // ── Extraction config types ───────────────────────────────────────────────────
 pub use core::config::{
-    AccelerationConfig, BatchBytesItem, BatchFileItem, CaptioningConfig, ChunkSizing, ChunkerType, ChunkingConfig,
-    ContentFilterConfig, EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType, ExtractionConfig,
-    FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, NerBackendKind, NerConfig,
-    OcrConfig, OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig, RedactionConfig,
-    RedactionPattern, RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig,
+    AccelerationConfig, BatchBytesItem, BatchFileItem, CallMode, CaptioningConfig, ChunkSizing, ChunkerType,
+    ChunkingConfig, ContentFilterConfig, EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType,
+    ExtractionConfig, FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, MergeMode,
+    NerBackendKind, NerConfig, OcrConfig, OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig,
+    RedactionConfig, RedactionPattern, RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig,
     SummarizationConfig, TokenReductionOptions, TranslationConfig,
 };
 #[cfg(feature = "transcription-types")]
 pub use core::config::{TranscriptionConfig, WhisperModel};
 pub use extractors::security::SecurityLimits;
+
+// ── Presets — format + registry + resolver ───────────────────────────────────
+#[cfg(feature = "presets")]
+pub use presets::{
+    LoadError, Preset, PresetCategory, PresetSample, PresetSummary, Registry, ResolveError, ResolvedPreset, resolve,
+};
+// `CallMode` and `MergeMode` are re-exported unconditionally from `core::config` above —
+// they live in `core::config::llm` (always compiled), not behind the `presets` feature.
 
 #[cfg(feature = "quality")]
 pub use text::{ReductionLevel, TokenReductionConfig};

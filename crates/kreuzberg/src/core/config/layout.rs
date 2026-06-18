@@ -87,6 +87,15 @@ pub struct LayoutDetectionConfig {
     /// is used for inference. Defaults to `None` (auto-select per platform).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub acceleration: Option<super::acceleration::AccelerationConfig>,
+
+    /// Route regions classified as charts to the chart-understanding OCR task.
+    ///
+    /// When `true`, layout regions detected as charts are sent to the VLM
+    /// chart task (data-series/axis recovery) instead of being treated as
+    /// generic image regions. Defaults to `false` — chart understanding is
+    /// opt-in and has no effect on standard text/table extraction scores.
+    #[serde(default)]
+    pub enable_chart_understanding: bool,
 }
 
 impl Default for LayoutDetectionConfig {
@@ -96,6 +105,7 @@ impl Default for LayoutDetectionConfig {
             apply_heuristics: true,
             table_model: TableModel::default(),
             acceleration: None,
+            enable_chart_understanding: false,
         }
     }
 }
@@ -176,5 +186,30 @@ mod tests {
         assert_eq!(TableModel::Tatr.to_string(), "tatr");
         assert_eq!(TableModel::SlanetWired.to_string(), "slanet_wired");
         assert_eq!(TableModel::Disabled.to_string(), "disabled");
+    }
+
+    // ── backward-compat serde tests ──────────────────────────────────────────
+
+    #[test]
+    fn layout_detection_config_omitting_enable_chart_understanding_defaults_to_false() {
+        // enable_chart_understanding uses `#[serde(default)]`.
+        // Old stored configs that lack this field must deserialize to false.
+        let json = r#"{"apply_heuristics": true, "table_model": "tatr"}"#;
+        let config: LayoutDetectionConfig = serde_json::from_str(json).unwrap();
+        assert!(
+            !config.enable_chart_understanding,
+            "omitted enable_chart_understanding must default to false"
+        );
+    }
+
+    #[test]
+    fn layout_detection_config_enable_chart_understanding_round_trip() {
+        let config = LayoutDetectionConfig {
+            enable_chart_understanding: true,
+            ..LayoutDetectionConfig::default()
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        let deserialized: LayoutDetectionConfig = serde_json::from_str(&json).unwrap();
+        assert!(deserialized.enable_chart_understanding);
     }
 }

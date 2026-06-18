@@ -10,6 +10,7 @@ pub mod topic;
 
 use crate::chunking::boundaries::calculate_page_range;
 use crate::chunking::boundary_detection::detect_plain_text_boundaries;
+use crate::chunking::builder::heading_path_from_context;
 use crate::chunking::classifier::classify_chunk;
 use crate::chunking::config::{ChunkingConfig, ChunkingResult};
 use crate::chunking::headings::{build_heading_map, resolve_heading_context};
@@ -119,6 +120,7 @@ pub(crate) fn chunk_semantic(
             (None, None)
         };
 
+        let heading_path = heading_path_from_context(&heading_ctx);
         chunks.push(Chunk {
             content: mc.text,
             chunk_type,
@@ -132,6 +134,7 @@ pub(crate) fn chunk_semantic(
                 first_page,
                 last_page,
                 heading_context: heading_ctx,
+                heading_path,
                 image_indices: Vec::new(),
             },
         });

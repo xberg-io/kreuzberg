@@ -8,7 +8,6 @@ pub use crate::core::config::processing::{ChunkSizing, ChunkerType, ChunkingConf
 /// Result of a text chunking operation.
 ///
 /// Contains the generated chunks and metadata about the chunking.
-#[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChunkingResult {
     /// List of text chunks

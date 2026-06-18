@@ -357,6 +357,21 @@ token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzb
 #' @return Invisible NULL.
 #' @export
 translate_result <- function(result = ExtractionResult$default(), config) .Call("wrap__translate_result", result, config, PACKAGE = "kreuzberg")
+#' Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`
+#'
+#' Delegates to [`chunk_text`] using the caller's config (defaulting to
+#' `ChunkerType::Markdown` when the config uses the default `Text` type, so that
+#' heading hierarchy is resolved).  After chunking, derives
+#' [`ChunkMetadata::heading_path`] from each chunk's `heading_context`.
+#' @param text — Text to chunk. Markdown formatting enables heading-aware splitting.
+#' @param config — Chunking configuration.  The `chunker_type` field controls the underlying splitter; use `ChunkerType::Markdown` for documents with ATX headings.
+#' @return A [`ChunkingResult`] where every chunk's `heading_path` is populated from its
+#'   `heading_context` (empty when the chunk is not under any heading).
+#'
+#' @section Errors:
+#' Propagates any error from the underlying chunker (e.g. invalid overlap).
+#' @export
+chunk_for_rag <- function(text, config = ChunkingConfig$default()) .Call("wrap__chunk_for_rag", text, config, PACKAGE = "kreuzberg")
 #' Compare two extraction results and return a structured diff
 #'
 #' The comparison is purely structural — no I/O, no side effects. All fields
@@ -412,6 +427,193 @@ rerank_async <- function(query, documents, config = RerankerConfig$default()) .C
 #' - Keyword extraction fails
 #' @export
 extract_keywords <- function(text, config = KeywordConfig$default()) .Call("wrap__extract_keywords", text, config, PACKAGE = "kreuzberg")
+#' Analyze a document and determine the optimal chunking strategy
+#'
+#' Decision logic (in priority order):
+#'
+#' 1. If user provides `disable_chunking` → no chunking
+#' 2. If user provides page_ranges → use user overrides
+#' 3. If chunking is not enabled → no chunking
+#' 4. If format doesn't support chunking → no chunking
+#' 5. If file is small (below both thresholds) and not force_chunking → no chunking
+#' 6. If PDF has a substantial text layer AND !force_ocr → no chunking
+#'    *(only when `heuristics-pdf` feature is enabled; otherwise skipped)*
+#' 7. Otherwise → chunk the document
+#' @param metadata DocumentMetadata object (list with class attribute).
+#' @param config HeuristicsConfig object (list with class attribute).
+#' @param document_bytes Raw vector of bytes.
+#' @return ChunkingDecision object (list with class attribute).
+#'
+#' @section Errors:
+#' Returns an error only when the `heuristics-pdf` feature is active and
+#' the PDF text-layer analysis itself returns a hard error.  In all other
+#' cases the function returns a `ChunkingDecision`.
+#' @export
+analyze_document <- function(metadata, config = HeuristicsConfig$default(), document_bytes = NULL) .Call("wrap__analyze_document", metadata, config, document_bytes, PACKAGE = "kreuzberg")
+#' Analyze a document with user-specified chunk ranges
+#'
+#' Creates a chunk plan based on user-provided page ranges.
+#' @param user_ranges List of pagerange object (list with class attribute).
+#' @param total_pages Integer.
+#' @param size_bytes Integer.
+#' @param config HeuristicsConfig object (list with class attribute).
+#' @return ChunkingDecision object (list with class attribute).
+#' @export
+analyze_with_user_chunks <- function(user_ranges, total_pages, size_bytes, config = HeuristicsConfig$default()) .Call("wrap__analyze_with_user_chunks", user_ranges, total_pages, size_bytes, config, PACKAGE = "kreuzberg")
+#' Score a [`ConfidenceSignals`] triple into an [`ExtractionConfidence`] using
+#'
+#' the supplied weights.
+#'
+#' When `signals.ocr_aggregate` is `None`, the OCR weight folds into
+#' `text_coverage` so the weighted sum still totals 1.0.
+#' @param signals ConfidenceSignals object (list with class attribute).
+#' @param weights ConfidenceWeights object (list with class attribute).
+#' @return ExtractionConfidence object (list with class attribute).
+#' @export
+score_confidence <- function(signals, weights = ConfidenceWeights$default()) .Call("wrap__score_confidence", signals, weights, PACKAGE = "kreuzberg")
+#' Decision returned for pre-extraction rejection based on XLSX/PPTX-specific
+#'
+#' resource bounds. Returns `Some(reason)` to reject; `None` to proceed.
+#'
+#' Callers must provide counts from a pre-extraction peek (e.g. parsing
+#' `xl/workbook.xml` for sheet count).
+#' @param mime_type Character string.
+#' @param sheet_count Integer.
+#' @param workbook_cells Integer.
+#' @param embedded_count Integer.
+#' @param config HeuristicsConfig object (list with class attribute).
+#' @return Optional character string. Defaults to NULL.
+#' @export
+check_format_limits <- function(mime_type, sheet_count = NULL, workbook_cells = NULL, embedded_count = NULL, config = HeuristicsConfig$default()) .Call("wrap__check_format_limits", mime_type, sheet_count, workbook_cells, embedded_count, config, PACKAGE = "kreuzberg")
+#' Derive document boundaries from an already-produced [`ExtractionResult`]
+#'
+#' Builds a [`MultidocInput`] from `result.pages` (one [`PageSignals`] per
+#' `PageContent` entry), then delegates to [`detect_boundaries`].
+#'
+#' # Fallback behaviour
+#'
+#' - If `result.pages` is `None` or empty the whole document is treated as a
+#'   single document: returns `[Start(1), End(1)]`, matching the contract of
+#'   [`detect_boundaries`] for a one-page input.
+#'
+#' # Text density
+#'
+#' `PageContent` does not carry a pre-computed density score.
+#' This function approximates density as
+#' `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
+#' reasonable proxy for how text-dense a page is relative to itself.  Pass a
+#' custom [`MultidocInput`] to [`detect_boundaries`] directly when you need a
+#' higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
+#' @param result — Extraction result whose `pages` field will be used.
+#' @param thresholds — Detection thresholds forwarded to [`detect_boundaries`].
+#' @return List of documentboundary object (list with class attribute).
+#' @export
+boundaries_from_extraction_result <- function(result = ExtractionResult$default(), thresholds = MultidocThresholds$default()) .Call("wrap__boundaries_from_extraction_result", result, thresholds, PACKAGE = "kreuzberg")
+#' Detect document boundaries in a multi-document PDF
+#'
+#' Returns a list of detected boundaries, always including implicit boundaries
+#' at start (page 1) and end (page_count).  Boundaries are returned in ascending
+#' order of `start_page`.
+#' @param input Page signals for the PDF.
+#' @param thresholds Detection thresholds.
+#' @return Ordered list of document boundaries.
+#' @export
+detect_boundaries <- function(input, thresholds = MultidocThresholds$default()) .Call("wrap__detect_boundaries", input, thresholds, PACKAGE = "kreuzberg")
+#' Decide which call mode best fits this document
+#'
+#' Rules applied in order:
+#'
+#' 1. `image/*` → [`StructuredCallMode::VisionOnly`] (no text layer to start from).
+#' 2. `application/pdf` → [`StructuredCallMode::TextOnly`] regardless of
+#'    `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
+#'    extraction produces text for scanned PDFs; the orchestrator's
+#'    post-call confidence gate handles any vision escalation actually needed.
+#' 3. DOCX / `text/html` / `text/*` / `application/json` / `application/xml` /
+#'    `application/rtf` with `avg_chars_per_page > docx_text_min_density`
+#'    → [`StructuredCallMode::TextOnly`].
+#' 4. Anything else → [`StructuredCallMode::Skip`].
+#'
+#' After rule selection two post-rule promotions apply (in order):
+#'
+#' - `user_force_vision` promotes `TextOnly` → `TextPlusVision`
+#'   (`Skip` stays `Skip` — caller meant to opt out).
+#' - `enable_vision_fallback` promotes `TextOnly` →
+#'   `TextOnlyWithVisionFallback` (does **not** upgrade `TextPlusVision` or
+#'   `Skip`).
+#' @param input StructuredInput object (list with class attribute).
+#' @param t StructuredThresholds object (list with class attribute).
+#' @return StructuredCallMode object (list with class attribute).
+#' @export
+choose_call_mode <- function(input, t = StructuredThresholds$default()) .Call("wrap__choose_call_mode", input, t, PACKAGE = "kreuzberg")
+#' Calculate a chunking plan for a document
+#' @param page_count Total number of pages in the document.
+#' @param size_bytes File size in bytes.
+#' @param needs_ocr Whether OCR will be required.
+#' @param config Heuristics configuration.
+#' @return A [`ChunkPlan`] with optimal chunk boundaries.
+#' @export
+calculate_chunk_plan <- function(page_count, size_bytes, needs_ocr, config = HeuristicsConfig$default()) .Call("wrap__calculate_chunk_plan", page_count, size_bytes, needs_ocr, config, PACKAGE = "kreuzberg")
+#' Calculate a chunk plan from user-specified page ranges
+#'
+#' Validates and processes user overrides into a proper chunk plan.
+#' @param user_chunks List of pagerange object (list with class attribute).
+#' @param total_pages Integer.
+#' @param size_bytes Integer.
+#' @param config HeuristicsConfig object (list with class attribute).
+#' @return ChunkPlan object (list with class attribute).
+#' @export
+calculate_plan_from_overrides <- function(user_chunks, total_pages, size_bytes, config = HeuristicsConfig$default()) .Call("wrap__calculate_plan_from_overrides", user_chunks, total_pages, size_bytes, config, PACKAGE = "kreuzberg")
+#' Stable sha256 fingerprint of `raw`, formatted as `sha256:<hex>`
+#' @param raw Raw vector of bytes.
+#' @return Character string.
+#' @export
+fingerprint <- function(raw) .Call("wrap__fingerprint", raw, PACKAGE = "kreuzberg")
+#' Resolve `(preset, custom_schema_override, context)` into a [`ResolvedPreset`]
+#'
+#' - `custom_schema` overrides `preset.schema` when set.
+#' - `context` substitutes `{{key}}` tokens in `preset.context_template`; the
+#'   rendered string is appended to `system_prompt` so the model sees it.
+#' @param preset Preset object (list with class attribute).
+#' @param custom_schema JSON-serializable value.
+#' @param context Named list.
+#' @return ResolvedPreset object (list with class attribute).
+#' @export
+resolve <- function(preset, custom_schema = NULL, context) .Call("wrap__resolve", preset, custom_schema, context, PACKAGE = "kreuzberg")
+#' Extract structured JSON from a document using JSON-encoded preset spec and options
+#'
+#' This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
+#' language-binding call paths.
+#' @param bytes — raw document bytes.
+#' @param mime — MIME type string.
+#' @param preset_spec_json Character string.
+#' @param options_json — JSON string mirroring [`StructuredOptions`] fields (except `cache`).  Pass `"{}"` to use all defaults.
+#' @return JSON-serialised `StructuredOutput` on success.
+#'
+#' @section Errors:
+#' Returns `Validation` when either JSON argument is
+#' malformed.  All other failures from the underlying
+#' `extract_structured_sync` call are mapped onto `KreuzbergError`
+#' via [`From<StructuredError>`](super::StructuredError).
+#' @export
+extract_structured_json <- function(bytes, mime, preset_spec_json, options_json) .Call("wrap__extract_structured_json", bytes, mime, preset_spec_json, options_json, PACKAGE = "kreuzberg")
+#' Split a multi-document PDF and extract structured JSON from each segment,
+#'
+#' returning a JSON array of `StructuredOutput` objects.
+#'
+#' Non-PDF documents are passed through as a single-element array.
+#' @param bytes Raw vector of bytes.
+#' @param mime Character string.
+#' @param preset_spec_json Character string.
+#' @param options_json Character string.
+#' @return JSON-serialised `Vec<``StructuredOutput``>` (a JSON array) on success.
+#'
+#' @section Errors:
+#' Returns `Validation` when either JSON argument is
+#' malformed.  All other failures from the underlying
+#' `split_and_extract_sync` call are mapped onto `KreuzbergError`
+#' via [`From<StructuredError>`](super::StructuredError).
+#' @export
+split_and_extract_json <- function(bytes, mime, preset_spec_json, options_json) .Call("wrap__split_and_extract_json", bytes, mime, preset_spec_json, options_json, PACKAGE = "kreuzberg")
 #' Render a single PDF page to PNG bytes
 #'
 #' Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -1165,6 +1367,7 @@ HtmlOutputConfig$from_json <- function(json) {
 #' @field apply_heuristics Whether to apply postprocessing heuristics (default: true).
 #' @field table_model Table structure recognition model.
 #' @field acceleration Hardware acceleration for ONNX models (layout detection + table structure).
+#' @field enable_chart_understanding Route regions classified as charts to the chart-understanding OCR task.
 #' @export
 LayoutDetectionConfig <- new.env(parent = emptyenv())
 LayoutDetectionConfig$default <- function() .Call("wrap__LayoutDetectionConfig__default", PACKAGE = "kreuzberg")
@@ -1384,6 +1587,8 @@ PageConfig$from_json <- function(json) {
 #' @field bottom_margin_fraction Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers.
 #' @field allow_single_column_tables Allow single-column pseudo tables in extraction results.
 #' @field ocr_inline_images Perform OCR on inline images extracted from PDF pages and attach the recognized text to
+#' @field extract_form_fields Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`.
+#' @field reading_order Reorder extracted text by layout-detected reading order.
 #' @export
 PdfConfig <- new.env(parent = emptyenv())
 PdfConfig$default <- function() .Call("wrap__PdfConfig__default", PACKAGE = "kreuzberg")
@@ -2341,6 +2546,7 @@ HeadingLevel <- new.env(parent = emptyenv())
 #' @field first_page First page number this chunk spans (1-indexed).
 #' @field last_page Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks).
 #' @field heading_context Heading context when using Markdown chunker.
+#' @field heading_path Flattened heading trail from document root to this chunk's section.
 #' @field image_indices Indices into `ExtractionResult.images` for images on pages covered by this chunk.
 #' @export
 ChunkMetadata <- new.env(parent = emptyenv())
@@ -2415,6 +2621,38 @@ Element <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Element` <- `$.Element`
+#' A form field extracted from a PDF's AcroForm or XFA structure
+#'
+#' Populated by the PDF extractor when [`PdfConfig::extract_form_fields`] is
+#' enabled and the document is a fillable form. Supports both AcroForm (standard)
+#' and XFA (XML Forms Architecture) layers. When both are present, AcroForm fields
+#' take priority (canonical fallback per PDF spec), and XFA-only fields are appended.
+#' The collection is empty for non-form PDFs and for non-PDF formats.
+#'
+#' [`PdfConfig::extract_form_fields`]: crate::core::config::PdfConfig::extract_form_fields
+#' @field name Partial field name (the leaf name within the field hierarchy).
+#' @field full_name Fully-qualified field name (dotted path from the form root).
+#' @field field_type Classified field type.
+#' @field value Current field value, if any.
+#' @field default_value Default field value, if any.
+#' @field flags Raw field-flags bitmask (read-only, required, multiline, …).
+#' @field page 1-indexed page the field's widget appears on. Currently always `None` for AcroForm fields; page
+#' @field bbox Widget bounding box on its page, if known.
+#' @field max_length Maximum input length for text fields, if specified.
+#' @field tooltip Tooltip / alternate field description, if present.
+#' @export
+PdfFormField <- new.env(parent = emptyenv())
+#' @export
+`$.PdfFormField` <- function(self, name) {
+  func <- PdfFormField[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PdfFormField` <- `$.PdfFormField`
 #' XML extraction result
 #'
 #' Contains extracted text content from XML files along with
@@ -2573,6 +2811,30 @@ ImagePreprocessingMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ImagePreprocessingMetadata` <- `$.ImagePreprocessingMetadata`
+#' A mathematical formula detected and recognized in a document
+#'
+#' Populated by the layout-guided formula pipeline: regions classified as
+#' `LayoutClass::Formula` are routed to the formula OCR task, which returns the
+#' LaTeX source for the region. The field is always present on
+#' [`ExtractionResult`](super::extraction::ExtractionResult) but only populated
+#' when the `layout-detection` feature is active and the document contains
+#' formula regions.
+#' @field latex LaTeX source of the recognized formula, without surrounding `$$` delimiters.
+#' @field bbox Bounding box of the formula region on its page, in rendered-image pixel coordinates.
+#' @field page 1-indexed page number the formula appears on in the document.
+#' @export
+Formula <- new.env(parent = emptyenv())
+#' @export
+`$.Formula` <- function(self, name) {
+  func <- Formula[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Formula` <- `$.Formula`
 #' Extraction result metadata
 #'
 #' Contains common fields applicable to all formats, format-specific metadata
@@ -3650,6 +3912,457 @@ Keyword <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Keyword` <- `$.Keyword`
+#' Which enrichment passes to run on a piece of text
+#'
+#' All fields default to `false` / empty so callers can opt in precisely.
+#' @field keywords Run keyword extraction on the input text.
+#' @field entities Run named-entity recognition (NER) on the input text.
+#' @field labels Custom labels to pass through to the result without modification.
+#' @export
+EnrichOptions <- new.env(parent = emptyenv())
+#' @export
+`$.EnrichOptions` <- function(self, name) {
+  func <- EnrichOptions[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.EnrichOptions` <- `$.EnrichOptions`
+#' Metadata about a document for analysis
+#' @field mime_type MIME type of the document.
+#' @field size_bytes File size in bytes.
+#' @field page_count Page count (if known, e.g., from previous analysis).
+#' @field force_ocr Whether OCR is forced regardless of text layer.
+#' @field user_chunk_config User-provided chunk configuration overrides.
+#' @field chunking_enabled Whether chunking is enabled for this job.
+#' @export
+DocumentMetadata <- new.env(parent = emptyenv())
+#' @export
+`$.DocumentMetadata` <- function(self, name) {
+  func <- DocumentMetadata[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.DocumentMetadata` <- `$.DocumentMetadata`
+#' Input signals for confidence scoring
+#'
+#' Caller fills these from the extraction result and the LLM response.
+#' @field text_coverage Fraction of pages with usable text in `[0, 1]`.
+#' @field ocr_aggregate Mean OCR per-element recognition confidence; `None` when OCR did not run.
+#' @field schema_compliance Schema-validation result of the merged output.
+#' @export
+ConfidenceSignals <- new.env(parent = emptyenv())
+#' @export
+`$.ConfidenceSignals` <- function(self, name) {
+  func <- ConfidenceSignals[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ConfidenceSignals` <- `$.ConfidenceSignals`
+#' Tunable weights for the confidence scoring formula
+#'
+#' Defaults picked by inspection; callers tune them via config.
+#' @field text_coverage Weight assigned to `text_coverage`. Default 0.30.
+#' @field ocr_aggregate Weight assigned to `ocr_aggregate` when OCR ran.
+#' @field schema_compliance Weight assigned to `schema_compliance`. Default 0.40.
+#' @export
+ConfidenceWeights <- new.env(parent = emptyenv())
+ConfidenceWeights$default <- function() .Call("wrap__ConfidenceWeights__default", PACKAGE = "kreuzberg")
+ConfidenceWeights$is_normalized <- function(self) .Call("wrap__ConfidenceWeights__is_normalized", self, PACKAGE = "kreuzberg")
+ConfidenceWeights$from_json <- function(json) {
+  .Call("wrap__ConfidenceWeights__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.ConfidenceWeights` <- function(self, name) {
+  func <- ConfidenceWeights[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ConfidenceWeights` <- `$.ConfidenceWeights`
+#' @export
+is_normalized.ConfidenceWeights <- function(x, ...) x$is_normalized(...)
+#' Combined confidence on `[0, 1]`
+#'
+#' When OCR did not run, the `ocr_aggregate` weight folds into `text_coverage`
+#' so the weighted sum still totals 1.0.
+#' @field text_coverage Fraction of pages with a usable text layer.
+#' @field ocr_aggregate Mean OCR per-element recognition confidence when OCR ran; `None` when it did not.
+#' @field schema_compliance Whether the merged output validates against the preset schema.
+#' @field combined Weighted blend in `[0, 1]`.  The value compared against the fallback threshold.
+#' @export
+ExtractionConfidence <- new.env(parent = emptyenv())
+#' @export
+`$.ExtractionConfidence` <- function(self, name) {
+  func <- ExtractionConfidence[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ExtractionConfidence` <- `$.ExtractionConfidence`
+#' Configuration for document chunking and analysis heuristics
+#'
+#' Every threshold is a public field so callers can override any subset via
+#' struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..Default::default() }`.
+#' @field enable_pdf_text_heuristics Enable PDF text-layer detection heuristics.
+#' @field text_layer_threshold Minimum fraction of pages that must have text to skip chunking.
+#' @field file_size_threshold_bytes File size threshold in bytes for considering chunking.
+#' @field page_count_threshold Page count threshold for considering chunking.
+#' @field target_pages_per_chunk Target number of pages per chunk for optimal parallel processing.
+#' @field max_pages_per_chunk Hard cap on pages per chunk.
+#' @field disk_processing_threshold_bytes File size threshold for disk-based processing.
+#' @field min_chars_per_page Minimum characters per page to consider a page as having text.
+#' @field max_xlsx_sheet_count Maximum sheet count allowed in an XLSX workbook.
+#' @field max_xlsx_workbook_cells Maximum cell count (sheets × rows × columns approximation) in an XLSX workbook.
+#' @field max_pptx_embedded_count Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX.
+#' @export
+HeuristicsConfig <- new.env(parent = emptyenv())
+HeuristicsConfig$default <- function() .Call("wrap__HeuristicsConfig__default", PACKAGE = "kreuzberg")
+HeuristicsConfig$validate <- function(self) .Call("wrap__HeuristicsConfig__validate", self, PACKAGE = "kreuzberg")
+HeuristicsConfig$test_config <- function() .Call("wrap__HeuristicsConfig__test_config", PACKAGE = "kreuzberg")
+HeuristicsConfig$from_json <- function(json) {
+  .Call("wrap__HeuristicsConfig__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.HeuristicsConfig` <- function(self, name) {
+  func <- HeuristicsConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.HeuristicsConfig` <- `$.HeuristicsConfig`
+#' @export
+validate.HeuristicsConfig <- function(x, ...) x$validate(...)
+#' Information about a single chunk
+#' @field index Zero-based chunk index.
+#' @field pages Page range for this chunk.
+#' @field estimated_time_ms Estimated processing time for this chunk in milliseconds.
+#' @export
+ChunkInfo <- new.env(parent = emptyenv())
+#' @export
+`$.ChunkInfo` <- function(self, name) {
+  func <- ChunkInfo[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ChunkInfo` <- `$.ChunkInfo`
+#' Page range for a chunk (0-indexed, inclusive)
+#' @field start Start page (0-indexed, inclusive).
+#' @field end End page (0-indexed, inclusive).
+#' @export
+PageRange <- new.env(parent = emptyenv())
+PageRange$page_count <- function(self) .Call("wrap__PageRange__page_count", self, PACKAGE = "kreuzberg")
+#' @export
+`$.PageRange` <- function(self, name) {
+  func <- PageRange[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PageRange` <- `$.PageRange`
+#' @export
+page_count.PageRange <- function(x, ...) x$page_count(...)
+#' Per-page signals extracted from PDF content
+#' @field page_number 1-indexed page number.
+#' @field text_excerpt First ~500 characters of extracted text.
+#' @field starts_with_letterhead_like `true` if page starts with letterhead-like content (ALL CAPS line in first 5
+#' @field has_page_number_one_marker `true` if text contains "Page 1" or "1 of N" pattern.
+#' @field has_signature_block `true` if text contains signature indicators ("Sincerely", "Signed") or a signature image
+#' @field layout_text_density Text density: characters per page area, normalised to `[0.0, 1.0]`.
+#' @export
+PageSignals <- new.env(parent = emptyenv())
+PageSignals$from_page_text <- function(page_number, text, layout_text_density) .Call("wrap__PageSignals__from_page_text", page_number, text, layout_text_density, PACKAGE = "kreuzberg")
+#' @export
+`$.PageSignals` <- function(self, name) {
+  func <- PageSignals[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PageSignals` <- `$.PageSignals`
+#' Detected document boundary within a PDF
+#' @field start_page 1-indexed start page (inclusive).
+#' @field end_page 1-indexed end page (inclusive).
+#' @field confidence Confidence in this boundary, `[0.0, 1.0]`.
+#' @field reason Reason for the boundary detection.
+#' @export
+DocumentBoundary <- new.env(parent = emptyenv())
+#' @export
+`$.DocumentBoundary` <- function(self, name) {
+  func <- DocumentBoundary[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.DocumentBoundary` <- `$.DocumentBoundary`
+#' Thresholds for multi-document boundary detection
+#'
+#' All fields are public; callers override any subset via struct-update syntax.
+#' @field density_shift_threshold Text density difference threshold for `DensityShift` detection. Default: 0.3.
+#' @field bigram_overlap_min Minimum bigram-overlap ratio below which a density shift is promoted to a `DensityShift`
+#' @export
+MultidocThresholds <- new.env(parent = emptyenv())
+MultidocThresholds$default <- function() .Call("wrap__MultidocThresholds__default", PACKAGE = "kreuzberg")
+MultidocThresholds$from_json <- function(json) {
+  .Call("wrap__MultidocThresholds__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.MultidocThresholds` <- function(self, name) {
+  func <- MultidocThresholds[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.MultidocThresholds` <- `$.MultidocThresholds`
+#' Signals consumed by the call-mode heuristic
+#'
+#' All fields derive from a prior kreuzberg extraction — no double-work.
+#' This is a plain DTO; it intentionally has no dependency on internal
+#' kreuzberg extraction types so it can be constructed from any source.
+#' @field mime_type MIME type, canonicalised to lowercase by the caller.
+#' @field page_count Number of pages in the document.
+#' @field text_coverage Fraction of pages with a real text layer (0.0..=1.0).
+#' @field avg_chars_per_page Average extracted characters per page.
+#' @field embedded_image_count Count of embedded images (figures, photos, signatures) discovered.
+#' @field user_force_vision When `true`, promote the result to at least [`StructuredCallMode::TextPlusVision`].
+#' @export
+StructuredInput <- new.env(parent = emptyenv())
+#' @export
+`$.StructuredInput` <- function(self, name) {
+  func <- StructuredInput[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.StructuredInput` <- `$.StructuredInput`
+#' Thresholds for the structured-extraction call-mode heuristic
+#'
+#' All defaults are **conservative starting points**.  Deployments should
+#' measure their own document corpus and override via their own config;
+#' these values are chosen to be safe-by-default, not to be optimal for
+#' any particular workload.
+#'
+#' Construct custom thresholds with struct-update syntax:
+#' ```rust
+#' use kreuzberg::heuristics::StructuredThresholds;
+#' let t = StructuredThresholds {
+#'     enable_vision_fallback: true,
+#'     ..StructuredThresholds::default()
+#' };
+#' ```
+#' @field scan_max_coverage PDFs with `text_coverage` strictly below this are treated as scanned.
+#' @field digital_min_coverage PDFs with `text_coverage` at or above this AND zero embedded images route to
+#' @field docx_text_min_density DOCX / HTML / text documents with `avg_chars_per_page` above this route to
+#' @field enable_vision_fallback When `true`, emit [`StructuredCallMode::TextOnlyWithVisionFallback`] instead of
+#' @export
+StructuredThresholds <- new.env(parent = emptyenv())
+StructuredThresholds$default <- function() .Call("wrap__StructuredThresholds__default", PACKAGE = "kreuzberg")
+StructuredThresholds$from_json <- function(json) {
+  .Call("wrap__StructuredThresholds__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.StructuredThresholds` <- function(self, name) {
+  func <- StructuredThresholds[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.StructuredThresholds` <- `$.StructuredThresholds`
+#' Compiled meta-schema validator over `preset.schema.json`
+#' @export
+MetaSchema <- new.env(parent = emptyenv())
+MetaSchema$compile <- function(meta_schema_json) .Call("wrap__MetaSchema__compile", meta_schema_json, PACKAGE = "kreuzberg")
+MetaSchema$parse_preset <- function(self, path, raw) .Call("wrap__MetaSchema__parse_preset", self, path, raw, PACKAGE = "kreuzberg")
+#' @export
+`$.MetaSchema` <- function(self, name) {
+  func <- MetaSchema[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.MetaSchema` <- `$.MetaSchema`
+#' @export
+parse_preset.MetaSchema <- function(x, ...) x$parse_preset(...)
+#' Sorted map of preset id → [`Preset`]
+#' @export
+Registry <- new.env(parent = emptyenv())
+Registry$load_embedded <- function() .Call("wrap__Registry__load_embedded", PACKAGE = "kreuzberg")
+Registry$global <- function() .Call("wrap__Registry__global", PACKAGE = "kreuzberg")
+Registry$get <- function(self, id) .Call("wrap__Registry__get", self, id, PACKAGE = "kreuzberg")
+Registry$summaries <- function(self) .Call("wrap__Registry__summaries", self, PACKAGE = "kreuzberg")
+Registry$len <- function(self) .Call("wrap__Registry__len", self, PACKAGE = "kreuzberg")
+Registry$is_empty <- function(self) .Call("wrap__Registry__is_empty", self, PACKAGE = "kreuzberg")
+Registry$sample_bytes <- function(self, preset_id, name) .Call("wrap__Registry__sample_bytes", self, preset_id, name, PACKAGE = "kreuzberg")
+Registry$extend_from_dir <- function(self, dir) .Call("wrap__Registry__extend_from_dir", self, dir, PACKAGE = "kreuzberg")
+#' @export
+`$.Registry` <- function(self, name) {
+  func <- Registry[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Registry` <- `$.Registry`
+#' @export
+get.Registry <- function(x, ...) x$get(...)
+#' @export
+summaries.Registry <- function(x, ...) x$summaries(...)
+#' @export
+len.Registry <- function(x, ...) x$len(...)
+#' @export
+is_empty.Registry <- function(x, ...) x$is_empty(...)
+#' @export
+sample_bytes.Registry <- function(x, ...) x$sample_bytes(...)
+#' @export
+extend_from_dir.Registry <- function(x, ...) x$extend_from_dir(...)
+#' A preset merged with caller-supplied overrides (custom schema, prompt suffix,
+#'
+#' context map). Output is what the pipeline orchestrator consumes.
+#' @field id Source preset identifier.
+#' @field version Source preset version.
+#' @field fingerprint Fingerprint of the source preset file, used as a cache token.
+#' @field schema_name Schema name forwarded to the LLM.
+#' @field schema Effective JSON Schema (caller override or the preset's own).
+#' @field system_prompt System prompt with rendered context appended.
+#' @field merge_mode Merge strategy for paginated outputs.
+#' @field preferred_call_mode Preferred call mode.
+#' @field emit_citations Whether the prompt asks for per-field citations.
+#' @export
+ResolvedPreset <- new.env(parent = emptyenv())
+#' @export
+`$.ResolvedPreset` <- function(self, name) {
+  func <- ResolvedPreset[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ResolvedPreset` <- `$.ResolvedPreset`
+#' Pointer to a sample input + its reference output bundled with the preset
+#' @field input_path Path to the sample input file, relative to the preset directory.
+#' @field output_path Path to the reference structured output, relative to the preset directory.
+#' @export
+PresetSample <- new.env(parent = emptyenv())
+#' @export
+`$.PresetSample` <- function(self, name) {
+  func <- PresetSample[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PresetSample` <- `$.PresetSample`
+#' A curated structured-extraction preset loaded from the embedded library
+#'
+#' Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
+#' validates against the meta-schema in `src/presets/preset.schema.json`.
+#'
+#' The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+#' `extend_from_dir`. The embedded OSS library
+#' ships only the `generic_document` toy preset.
+#' @field id Stable, URL-safe preset identifier (lowercase snake_case).
+#' @field version Monotonic version string (e.g. `v1`).
+#' @field schema_name Human-readable schema name forwarded to the LLM as the response/tool name.
+#' @field description One-line preset description shown in the registry UI.
+#' @field category Top-level category for grouping in the playground.
+#' @field tags Free-form tags used for search/filtering. May be empty.
+#' @field schema JSON Schema (Draft 2020-12) describing the structured output shape.
+#' @field system_prompt Instruction primer sent to the model.
+#' @field context_template Optional mustache-style template merged with caller-supplied context.
+#' @field merge_mode Strategy for merging per-batch outputs across paginated calls.
+#' @field preferred_call_mode Default call mode suggested for this preset; heuristics may override.
+#' @field emit_citations When true, the prompt asks the model to wrap each field as `{value, page, bbox, confidence}`
+#' @field sample Optional bundled sample (input file + reference output) for preview.
+#' @field fingerprint Stable sha256 fingerprint of the canonical preset file contents.
+#' @export
+Preset <- new.env(parent = emptyenv())
+#' @export
+`$.Preset` <- function(self, name) {
+  func <- Preset[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Preset` <- `$.Preset`
+#' Lightweight projection of [`Preset`] used by the registry list endpoint
+#'
+#' (omits the full schema and prompt to keep the payload small).
+#' @field id Preset identifier matching [`Preset::id`].
+#' @field version Preset version matching [`Preset::version`].
+#' @field schema_name Schema name matching [`Preset::schema_name`].
+#' @field description One-line preset description.
+#' @field category Top-level category.
+#' @field tags Free-form tags.
+#' @field preferred_call_mode Default call mode.
+#' @field emit_citations Whether the preset prompts the model for citations.
+#' @field fingerprint Stable fingerprint matching [`Preset::fingerprint`].
+#' @export
+PresetSummary <- new.env(parent = emptyenv())
+#' @export
+`$.PresetSummary` <- function(self, name) {
+  func <- PresetSummary[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.PresetSummary` <- `$.PresetSummary`
 #' Configuration for PaddleOCR backend
 #'
 #' Configures PaddleOCR text detection and recognition with multi-language support.
@@ -4071,6 +4784,66 @@ DiffLine <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DiffLine` <- `$.DiffLine`
+#' Async lifecycle status for an enrichment job
+#'
+#' Intended for use with any polling or event-driven pipeline that needs
+#' to track whether enrichment has completed, succeeded, or failed.
+#'
+#' # Serialisation
+#'
+#' Uses an internally-tagged `"status"` field with `snake_case` variants:
+#'
+#' ```json
+#' { "status": "pending" }
+#' { "status": "completed", "result": { ... } }
+#' { "status": "failed", "error": "text too large" }
+#' ```
+#'
+#'
+#' ```
+#' use kreuzberg::enrichment::{EnrichStatus, EnrichResult};
+#'
+#' let s = EnrichStatus::Pending;
+#' let json = serde_json::to_value(&s).unwrap();
+#' assert_eq!(json["status"], "pending");
+#'
+#' let s = EnrichStatus::Completed { result: EnrichResult::default() };
+#' let json = serde_json::to_value(&s).unwrap();
+#' assert_eq!(json["status"], "completed");
+#' ```
+#' @field Pending Job submitted; processing has not yet started or is in progress.
+#' @field Completed Processing completed successfully.
+#' @field Failed Processing failed.
+#' @export
+EnrichStatus <- new.env(parent = emptyenv())
+#' @export
+`$.EnrichStatus` <- function(self, name) {
+  func <- EnrichStatus[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.EnrichStatus` <- `$.EnrichStatus`
+#' The chunking decision made by the analyzer
+#' @field NoChunking Process without chunking (small file, text layer detected, etc.)
+#' @field Chunk Chunk according to plan.
+#' @field UseOverrides Use user-provided chunk overrides.
+#' @export
+ChunkingDecision <- new.env(parent = emptyenv())
+#' @export
+`$.ChunkingDecision` <- function(self, name) {
+  func <- ChunkingDecision[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ChunkingDecision` <- `$.ChunkingDecision`
 #' Create a ExecutionProviderType enum value
 #'
 #' Returns the default ExecutionProviderType variant.
@@ -4092,6 +4865,20 @@ HtmlTheme  <- function() list() |> structure(class = "HtmlTheme")
 #' @return A TableModel enum value
 #' @export
 TableModel  <- function() list() |> structure(class = "TableModel")
+#' Create a CallMode enum value
+#'
+#' Returns the default CallMode variant.
+#'
+#' @return A CallMode enum value
+#' @export
+CallMode  <- function() list() |> structure(class = "CallMode")
+#' Create a MergeMode enum value
+#'
+#' Returns the default MergeMode variant.
+#'
+#' @return A MergeMode enum value
+#' @export
+MergeMode  <- function() list() |> structure(class = "MergeMode")
 #' Create a NerBackendKind enum value
 #'
 #' Returns the default NerBackendKind variant.
@@ -4218,6 +5005,13 @@ ResultFormat  <- function() list() |> structure(class = "ResultFormat")
 #' @return A ElementType enum value
 #' @export
 ElementType  <- function() list() |> structure(class = "ElementType")
+#' Create a FormFieldType enum value
+#'
+#' Returns the default FormFieldType variant.
+#'
+#' @return A FormFieldType enum value
+#' @export
+FormFieldType  <- function() list() |> structure(class = "FormFieldType")
 #' Create a TextDirection enum value
 #'
 #' Returns the default TextDirection variant.
@@ -4302,6 +5096,34 @@ RegionKind  <- function() list() |> structure(class = "RegionKind")
 #' @return A KeywordAlgorithm enum value
 #' @export
 KeywordAlgorithm  <- function() list() |> structure(class = "KeywordAlgorithm")
+#' Create a SchemaCompliance enum value
+#'
+#' Returns the default SchemaCompliance variant.
+#'
+#' @return A SchemaCompliance enum value
+#' @export
+SchemaCompliance  <- function() list() |> structure(class = "SchemaCompliance")
+#' Create a BoundaryReason enum value
+#'
+#' Returns the default BoundaryReason variant.
+#'
+#' @return A BoundaryReason enum value
+#' @export
+BoundaryReason  <- function() list() |> structure(class = "BoundaryReason")
+#' Create a StructuredCallMode enum value
+#'
+#' Returns the default StructuredCallMode variant.
+#'
+#' @return A StructuredCallMode enum value
+#' @export
+StructuredCallMode  <- function() list() |> structure(class = "StructuredCallMode")
+#' Create a PresetCategory enum value
+#'
+#' Returns the default PresetCategory variant.
+#'
+#' @return A PresetCategory enum value
+#' @export
+PresetCategory  <- function() list() |> structure(class = "PresetCategory")
 #' Create a PSMMode enum value
 #'
 #' Returns the default PSMMode variant.
@@ -4457,9 +5279,17 @@ detect <- function(x, ...) UseMethod("detect")
 #' @export
 detect_with_custom <- function(x, ...) UseMethod("detect_with_custom")
 #' @export
+extend_from_dir <- function(x, ...) UseMethod("extend_from_dir")
+#' @export
+get <- function(x, ...) UseMethod("get")
+#' @export
 is_empty <- function(x, ...) UseMethod("is_empty")
 #' @export
+is_normalized <- function(x, ...) UseMethod("is_normalized")
+#' @export
 is_origin_allowed <- function(x, ...) UseMethod("is_origin_allowed")
+#' @export
+len <- function(x, ...) UseMethod("len")
 #' @export
 listen_addr <- function(x, ...) UseMethod("listen_addr")
 #' @export
@@ -4470,6 +5300,16 @@ max_request_body_mb <- function(x, ...) UseMethod("max_request_body_mb")
 needs_image_data <- function(x, ...) UseMethod("needs_image_data")
 #' @export
 needs_image_processing <- function(x, ...) UseMethod("needs_image_processing")
+#' @export
+page_count <- function(x, ...) UseMethod("page_count")
+#' @export
+parse_preset <- function(x, ...) UseMethod("parse_preset")
+#' @export
+sample_bytes <- function(x, ...) UseMethod("sample_bytes")
+#' @export
+summaries <- function(x, ...) UseMethod("summaries")
+#' @export
+validate <- function(x, ...) UseMethod("validate")
 #' @export
 with_angle_cls <- function(x, ...) UseMethod("with_angle_cls")
 #' @export

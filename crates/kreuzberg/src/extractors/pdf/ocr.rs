@@ -429,6 +429,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     ahash::AHashMap<u32, String>,
     Vec<crate::types::LlmUsage>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     // Deduplicate and validate page numbers (must be >= 1)
     let ocr_set: std::collections::HashSet<u32> = ocr_page_numbers
@@ -445,7 +446,13 @@ pub(crate) async fn extract_mixed_ocr_native(
         .collect();
 
     if ocr_set.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
+        return Ok((
+            native_text.to_string(),
+            ahash::AHashMap::new(),
+            Vec::new(),
+            None,
+            Vec::new(),
+        ));
     }
 
     // Convert 1-indexed page numbers to 0-indexed for rendering (sorted + deduplicated)
@@ -454,7 +461,13 @@ pub(crate) async fn extract_mixed_ocr_native(
     let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
 
     if page_images.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None));
+        return Ok((
+            native_text.to_string(),
+            ahash::AHashMap::new(),
+            Vec::new(),
+            None,
+            Vec::new(),
+        ));
     }
 
     // OCR all selected pages concurrently using the same batched pipeline pattern
@@ -485,6 +498,7 @@ pub(crate) async fn extract_mixed_ocr_native(
     let total = page_images.len();
     let mut ocr_results: ahash::AHashMap<u32, String> = ahash::AHashMap::with_capacity(total);
     let mut accumulated_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
+    let mut accumulated_formulas: Vec<crate::types::Formula> = Vec::new();
     let mut captured_rasters: Vec<crate::types::ExtractedImage> = Vec::new();
 
     // Process in batches to bound peak memory (PNG buffers freed between batches)
@@ -555,6 +569,11 @@ pub(crate) async fn extract_mixed_ocr_native(
                 if let Some(usage) = extraction_result.llm_usage.take() {
                     accumulated_llm_usage.extend(usage);
                 }
+                // Accumulate formulas, renumbering to 1-indexed document page number.
+                for mut formula in std::mem::take(&mut extraction_result.formulas) {
+                    formula.page = (page_idx + 1) as u32;
+                    accumulated_formulas.push(formula);
+                }
                 ocr_results.insert((page_idx + 1) as u32, extraction_result.content); // 1-indexed
             }
         }
@@ -564,6 +583,11 @@ pub(crate) async fn extract_mixed_ocr_native(
                 let mut extraction_result = backend.process_image(data.as_slice(), &ocr_config_owned).await?;
                 if let Some(usage) = extraction_result.llm_usage.take() {
                     accumulated_llm_usage.extend(usage);
+                }
+                // Accumulate formulas, renumbering to 1-indexed document page number.
+                for mut formula in std::mem::take(&mut extraction_result.formulas) {
+                    formula.page = (*page_idx + 1) as u32;
+                    accumulated_formulas.push(formula);
                 }
                 ocr_results.insert((*page_idx + 1) as u32, extraction_result.content); // 1-indexed
             }
@@ -599,6 +623,7 @@ pub(crate) async fn extract_mixed_ocr_native(
         ocr_results,
         accumulated_llm_usage,
         if capture_rasters { Some(captured_rasters) } else { None },
+        accumulated_formulas,
     ))
 }
 
@@ -633,6 +658,7 @@ pub(crate) async fn extract_with_ocr(
     Vec<crate::types::LlmUsage>,
     Vec<String>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
     use image::ImageEncoder;
@@ -655,28 +681,38 @@ pub(crate) async fn extract_with_ocr(
         base_ocr_config
     };
 
+    let backend = {
+        let registry = get_ocr_backend_registry();
+        let registry = registry.read();
+        registry.get(&base_ocr_config.backend)?
+    };
+
     // When layout detections are available, ensure OCR produces elements
     // so the layout assembly module can use them for structured markdown.
+    // Also inject layout-specific backend configuration (e.g., enable_chart_understanding).
+    // Additionally, inject the chart flag for backends that emit structured markdown (e.g., paired-mode GLM-OCR)
+    // which internally run layout detection and need the chart understanding flag.
     #[cfg(feature = "layout-detection")]
     let layout_ocr_config;
     let ocr_config = {
         #[cfg(feature = "layout-detection")]
-        if layout_detections.is_some() {
-            layout_ocr_config = ensure_elements_enabled(base_ocr_config);
-            &layout_ocr_config
-        } else {
-            base_ocr_config
+        {
+            let should_inject = layout_detections.is_some() || backend.emits_structured_markdown();
+            if should_inject {
+                layout_ocr_config = {
+                    let mut cfg = ensure_elements_enabled(base_ocr_config);
+                    cfg = inject_layout_config_to_backend(&cfg, config);
+                    cfg
+                };
+                &layout_ocr_config
+            } else {
+                base_ocr_config
+            }
         }
         #[cfg(not(feature = "layout-detection"))]
         {
             base_ocr_config
         }
-    };
-
-    let backend = {
-        let registry = get_ocr_backend_registry();
-        let registry = registry.read();
-        registry.get(&ocr_config.backend)?
     };
 
     // If the backend supports direct document processing and we have a path,
@@ -703,6 +739,7 @@ pub(crate) async fn extract_with_ocr(
             .map(|v| v / 100.0);
         let ocr_elements = result.ocr_elements.unwrap_or_default();
         let llm_usage = result.llm_usage.unwrap_or_default();
+        let formulas = result.formulas;
         let page_texts = if let Some(pages) = result.pages {
             pages.into_iter().map(|p| p.content).collect()
         } else {
@@ -717,6 +754,7 @@ pub(crate) async fn extract_with_ocr(
             llm_usage,
             page_texts,
             None, // no per-page renders on document-level bypass
+            formulas,
         ));
     }
     let capture_rasters = config.images.as_ref().is_some_and(|c| c.include_page_rasters);
@@ -787,6 +825,7 @@ pub(crate) async fn extract_with_ocr(
     let mut collected_tables: Vec<crate::types::Table> = Vec::new();
     let mut all_ocr_elements: Vec<crate::types::OcrElement> = Vec::new();
     let mut accumulated_llm_usage: Vec<crate::types::LlmUsage> = Vec::new();
+    let mut accumulated_formulas: Vec<crate::types::Formula> = Vec::new();
     let mut conf_sum: f64 = 0.0;
     let mut conf_count: usize = 0;
 
@@ -954,6 +993,12 @@ pub(crate) async fn extract_with_ocr(
                     elem.page_number = (page_idx + 1) as u32;
                 }
                 all_ocr_elements.extend(elems.iter().cloned());
+            }
+
+            // Accumulate formulas from this page, renumbering page field to document page number.
+            for mut formula in ocr_result.formulas {
+                formula.page = (page_idx + 1) as u32;
+                accumulated_formulas.push(formula);
             }
 
             #[cfg(feature = "layout-detection")]
@@ -1139,6 +1184,7 @@ pub(crate) async fn extract_with_ocr(
         accumulated_llm_usage,
         page_texts,
         if capture_rasters { Some(captured_rasters) } else { None },
+        accumulated_formulas,
     ))
 }
 
@@ -1325,6 +1371,7 @@ pub(crate) async fn run_ocr_pipeline(
     Vec<crate::types::LlmUsage>,
     Vec<String>,
     Option<Vec<crate::types::ExtractedImage>>,
+    Vec<crate::types::Formula>,
 )> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
@@ -1365,6 +1412,7 @@ pub(crate) async fn run_ocr_pipeline(
         Option<crate::types::internal::InternalDocument>,
         Vec<String>,
         Option<Vec<crate::types::ExtractedImage>>,
+        Vec<crate::types::Formula>,
     )> = None;
 
     // Accumulate LLM usage from ALL attempted stages for accurate billing.
@@ -1418,6 +1466,7 @@ pub(crate) async fn run_ocr_pipeline(
                 stage_llm_usage,
                 stage_page_texts,
                 stage_rasters,
+                stage_formulas,
             )) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
@@ -1447,12 +1496,13 @@ pub(crate) async fn run_ocr_pipeline(
                         accumulated_usage,
                         stage_page_texts,
                         stage_rasters,
+                        stage_formulas,
                     ));
                 }
 
                 // Track best-so-far (without usage, which is in accumulated_usage)
                 match best_result {
-                    Some((_, best_score, _, _, _, _, _)) if score > best_score => {
+                    Some((_, best_score, _, _, _, _, _, _)) if score > best_score => {
                         best_result = Some((
                             text,
                             score,
@@ -1461,6 +1511,7 @@ pub(crate) async fn run_ocr_pipeline(
                             stage_doc,
                             stage_page_texts,
                             stage_rasters,
+                            stage_formulas,
                         ));
                     }
                     None => {
@@ -1472,6 +1523,7 @@ pub(crate) async fn run_ocr_pipeline(
                             stage_doc,
                             stage_page_texts,
                             stage_rasters,
+                            stage_formulas,
                         ));
                     }
                     _ => {}
@@ -1489,13 +1541,22 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Return best result (with warning) or error if all backends failed entirely
     match best_result {
-        Some((text, score, tables, elements, doc, page_texts, rasters)) => {
+        Some((text, score, tables, elements, doc, page_texts, rasters, formulas)) => {
             tracing::warn!(
                 score,
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, tables, elements, doc, accumulated_usage, page_texts, rasters))
+            Ok((
+                text,
+                tables,
+                elements,
+                doc,
+                accumulated_usage,
+                page_texts,
+                rasters,
+                formulas,
+            ))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),
@@ -1519,6 +1580,47 @@ fn ensure_elements_enabled(config: &crate::core::config::ocr::OcrConfig) -> crat
                 ..Default::default()
             });
         }
+    }
+    config
+}
+
+/// Inject layout-detection settings into OcrConfig backend options for paired-mode backends.
+///
+/// When layout detection is active and provides detections, certain backends (e.g., GLM-OCR)
+/// may need configuration injected from the layout-detection config. This function ensures
+/// that the `enable_chart_understanding` flag from `ExtractionConfig.layout` is propagated
+/// to the OCR backend via `backend_options` so per-region task dispatch can honor it.
+#[cfg(all(feature = "ocr", feature = "layout-detection"))]
+fn inject_layout_config_to_backend(
+    config: &crate::core::config::ocr::OcrConfig,
+    extraction_config: &ExtractionConfig,
+) -> crate::core::config::ocr::OcrConfig {
+    let mut config = config.clone();
+    if let Some(layout_cfg) = &extraction_config.layout {
+        // Prepare or merge backend_options JSON object
+        let mut opts = config.backend_options.take().unwrap_or_else(|| serde_json::json!({}));
+
+        // If backend_options is not an object, replace it with a new object
+        // (warn if we're discarding a non-null, non-object value).
+        if !opts.is_object() {
+            if !opts.is_null() {
+                tracing::warn!(
+                    backend_options = %opts,
+                    "backend_options was not a JSON object; replacing with new object to inject enable_chart_understanding"
+                );
+            }
+            opts = serde_json::json!({});
+        }
+
+        // Inject enable_chart_understanding into the object
+        if let Some(obj) = opts.as_object_mut() {
+            obj.insert(
+                "enable_chart_understanding".to_string(),
+                serde_json::Value::Bool(layout_cfg.enable_chart_understanding),
+            );
+        }
+
+        config.backend_options = Some(opts);
     }
     config
 }
@@ -2255,7 +2357,7 @@ mod tests {
 
         assert!(result.is_ok());
         assert!(called.load(Ordering::SeqCst), "process_document was not called");
-        let (_, _, _, _, _, llm_usage, _, _) = result.unwrap();
+        let (_, _, _, _, _, llm_usage, _, _, _) = result.unwrap();
         assert!(llm_usage.is_empty(), "No LLM usage expected for mock backend");
 
         // Clean up
@@ -2356,7 +2458,7 @@ mod tests {
 
         crate::plugins::unregister_ocr_backend("vlm-mock").unwrap();
 
-        let (_, _, _, _, _, llm_usage, _, _) = result.expect("extract_with_ocr should succeed");
+        let (_, _, _, _, _, llm_usage, _, _, _) = result.expect("extract_with_ocr should succeed");
         assert_eq!(
             llm_usage.len(),
             2,
@@ -2486,6 +2588,160 @@ Buffers:           50000 kB
             result.is_ok(),
             "render_selected_pages_for_ocr on wide page (the #1078 bug path) should succeed via safeguard, got: {:?}",
             result.err()
+        );
+    }
+
+    /// Verifies that formulas returned by a per-page OCR backend are accumulated and
+    /// renumbered to 1-indexed document page numbers by `extract_with_ocr`.
+    ///
+    /// This exercises the same `formula.page = (page_idx + 1) as u32` accumulation
+    /// logic that is now replicated in `extract_mixed_ocr_native` for the mixed-OCR
+    /// path. Since `extract_mixed_ocr_native` requires real PDF bytes for rendering,
+    /// this test uses `extract_with_ocr` with in-memory images to validate that the
+    /// accumulation pattern works correctly end-to-end.
+    #[cfg(feature = "ocr")]
+    #[tokio::test]
+    async fn test_formulas_accumulated_and_renumbered_per_page() {
+        use crate::core::config::OcrConfig;
+        use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
+        use crate::types::{BoundingBox, ExtractionResult};
+        use std::sync::Arc;
+
+        struct FormulaMockBackend;
+
+        #[async_trait::async_trait]
+        impl OcrBackend for FormulaMockBackend {
+            fn backend_type(&self) -> OcrBackendType {
+                OcrBackendType::Custom
+            }
+            fn supports_language(&self, _: &str) -> bool {
+                true
+            }
+            // Each page returns one formula. The page field is set to 0 (unset) here;
+            // extract_with_ocr must overwrite it with the 1-indexed document page number.
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+                Ok(ExtractionResult {
+                    content: "page text".to_string(),
+                    formulas: vec![crate::types::Formula {
+                        latex: "E = mc^2".to_string(),
+                        bbox: BoundingBox {
+                            x0: 0.0,
+                            y0: 0.0,
+                            x1: 100.0,
+                            y1: 50.0,
+                        },
+                        page: 0, // intentionally wrong; pipeline must renumber
+                    }],
+                    ..Default::default()
+                })
+            }
+            fn supports_document_processing(&self) -> bool {
+                false
+            }
+        }
+
+        impl Plugin for FormulaMockBackend {
+            fn name(&self) -> &str {
+                "formula-mock-mixed-ocr"
+            }
+            fn version(&self) -> String {
+                "1.0.0".to_string()
+            }
+            fn initialize(&self) -> crate::Result<()> {
+                Ok(())
+            }
+            fn shutdown(&self) -> crate::Result<()> {
+                Ok(())
+            }
+        }
+
+        let backend = Arc::new(FormulaMockBackend);
+        crate::plugins::register_ocr_backend(backend).unwrap();
+
+        // Provide two synthetic 1×1 images so extract_with_ocr processes two pages.
+        let tiny_image = {
+            use image::ImageEncoder;
+            use image::codecs::png::PngEncoder;
+            use std::io::Cursor;
+            let img = image::DynamicImage::new_rgb8(1, 1);
+            let rgb = img.to_rgb8();
+            let (w, h) = rgb.dimensions();
+            let mut buf = Cursor::new(Vec::new());
+            PngEncoder::new(&mut buf)
+                .write_image(&rgb, w, h, image::ColorType::Rgb8.into())
+                .unwrap();
+            image::load_from_memory(&buf.into_inner()).unwrap()
+        };
+        let images = vec![tiny_image.clone(), tiny_image];
+
+        let config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                backend: "formula-mock-mixed-ocr".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = extract_with_ocr(
+            None,
+            Some(&images),
+            #[cfg(feature = "layout-detection")]
+            None,
+            &config,
+            None,
+        )
+        .await;
+
+        crate::plugins::unregister_ocr_backend("formula-mock-mixed-ocr").unwrap();
+
+        let (_, _, _, _, _, _, _, _, formulas) = result.expect("extract_with_ocr should succeed");
+
+        assert_eq!(formulas.len(), 2, "one formula per page, got {}", formulas.len());
+
+        // Page numbers must be 1-indexed document pages, NOT the backend's placeholder 0.
+        let mut pages: Vec<u32> = formulas.iter().map(|f| f.page).collect();
+        pages.sort_unstable();
+        assert_eq!(
+            pages,
+            vec![1, 2],
+            "formula pages must be renumbered to 1-indexed doc pages"
+        );
+
+        // LaTeX content must be preserved.
+        assert!(
+            formulas.iter().all(|f| f.latex == "E = mc^2"),
+            "formula latex must be preserved through accumulation"
+        );
+    }
+
+    /// Test that inject_layout_config_to_backend handles non-object backend_options
+    /// by replacing with a fresh object instead of silently dropping the flag.
+    #[cfg(all(feature = "layout-detection", feature = "ocr"))]
+    #[test]
+    fn test_inject_layout_config_handles_non_object_backend_options() {
+        use crate::core::config::LayoutDetectionConfig;
+        let mut ocr_config = crate::core::config::OcrConfig::default();
+        // Set backend_options to a non-object value (e.g., a string)
+        ocr_config.backend_options = Some(serde_json::json!("invalid"));
+
+        let extraction_config = ExtractionConfig {
+            layout: Some(LayoutDetectionConfig {
+                enable_chart_understanding: true,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = inject_layout_config_to_backend(&ocr_config, &extraction_config);
+
+        // Should have replaced the string with an object containing enable_chart_understanding
+        assert!(result.backend_options.is_some());
+        let opts = result.backend_options.unwrap();
+        assert!(opts.is_object());
+        assert_eq!(
+            opts.get("enable_chart_understanding").and_then(|v| v.as_bool()),
+            Some(true),
+            "enable_chart_understanding should be injected into the new object"
         );
     }
 }

@@ -57,6 +57,8 @@ This is the main result type returned by all extraction functions.
 | `translation` | `Option<Translation>` | `Default::default()` | Translation of `content` produced by the translation post-processor. `None` when translation is not configured. |
 | `page_classifications` | `Vec<PageClassification>` | `vec!\[\]` | Per-page classifications produced by the page-classification post-processor. `None` when classification is not configured. |
 | `redaction_report` | `Option<RedactionReport>` | `Default::default()` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `None` when redaction is not configured. |
+| `formulas` | `Vec<Formula>` | `vec!\[\]` | Mathematical formulas recognized in the document. Populated by the layout-guided formula pipeline when the `layout-detection` feature is enabled and the document contains regions classified as formulas. Empty otherwise. |
+| `form_fields` | `Vec<PdfFormField>` | `vec!\[\]` | Form fields extracted from a PDF's AcroForm or XFA structure. Populated by the PDF extractor when `PdfConfig::extract_form_fields` is enabled (default) and the document is a fillable form. Empty otherwise. |
 | `formatted_content` | `Option<String>` | `Default::default()` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 
 ---
@@ -153,6 +155,33 @@ including recognized text and detected tables.
 | `metadata` | `HashMap<String, serde_json::Value>` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `Vec<OcrTable>` | — | Tables detected and extracted via OCR |
 | `ocr_elements` | `Vec<OcrElement>` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+
+---
+
+#### ChunkingResult
+
+Result of a text chunking operation.
+
+Contains the generated chunks and metadata about the chunking.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `chunks` | `Vec<Chunk>` | — | List of text chunks |
+| `chunk_count` | `usize` | — | Total number of chunks generated |
+
+---
+
+#### EnrichResult
+
+Structured output produced by a completed enrichment pass.
+
+Fields are populated only when the corresponding `EnrichOptions` flag was set.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `Vec<String>` | `vec!\[\]` | Salient terms extracted from the text. Populated when `EnrichOptions::keywords` was `true`. The ordering is backend-defined (typically by descending relevance score). |
+| `entities` | `Vec<Entity>` | `vec!\[\]` | Named entities found in the text. Populated when `EnrichOptions::entities` was `true`. Uses the shared OSS entity schema (`Entity` / `EntityCategory`) so consumers can pattern-match on entity categories without JSON gymnastics. |
+| `labels` | `Vec<String>` | `vec!\[\]` | Caller-supplied labels echoed from `EnrichOptions::labels`. |
 
 ---
 
@@ -447,6 +476,7 @@ is enabled for PDF extraction.
 | `apply_heuristics` | `bool` | `true` | Whether to apply postprocessing heuristics (default: true). |
 | `table_model` | `TableModel` | `TableModel::Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel::Tatr`. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
+| `enable_chart_understanding` | `bool` | `false` | Route regions classified as charts to the chart-understanding OCR task. When `true`, layout regions detected as charts are sent to the VLM chart task (data-series/axis recovery) instead of being treated as generic image regions. Defaults to `false` — chart understanding is opt-in and has no effect on standard text/table extraction scores. |
 
 ---
 
@@ -603,6 +633,8 @@ PDF-specific configuration.
 | `bottom_margin_fraction` | `Option<f32>` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig::default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
+| `extract_form_fields` | `bool` | `true` | Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`. When `true` (default), reads the document's interactive form structure (field names, types, values, widget geometry). Cheap and strictly additive — non-form PDFs simply yield an empty list. Set to `false` to skip the form pass entirely. |
+| `reading_order` | `bool` | `false` | Reorder extracted text by layout-detected reading order. When `true`, projects text spans onto layout-detected regions, performs column detection, and emits spans in natural reading order (important for multi-column academic PDFs). Requires the `layout-detection` feature; has no effect without it. Defaults to `false`. |
 
 ---
 
@@ -1313,6 +1345,103 @@ Keyword extraction configuration.
 
 ---
 
+#### EnrichOptions
+
+Which enrichment passes to run on a piece of text.
+
+All fields default to `False` / empty so callers can opt in precisely.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `keywords` | `bool` | — | Run keyword extraction on the input text. When `true`, the enrichment backend identifies the most salient terms and returns them in `EnrichResult::keywords`. |
+| `entities` | `bool` | — | Run named-entity recognition (NER) on the input text. When `true`, the enrichment backend identifies named entities (persons, organisations, locations, etc.) and returns them in `EnrichResult::entities`. |
+| `labels` | `Vec<String>` | `vec!\[\]` | Custom labels to pass through to the result without modification. These are caller-supplied tags that the enrichment pipeline propagates verbatim into `EnrichResult::labels`. Useful for attaching project- or document-level metadata to every enrichment result. |
+
+---
+
+#### UserChunkConfig
+
+User-provided chunk configuration.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_ranges` | `Vec<PageRange>` | `vec!\[\]` | User-specified page ranges (overrides automatic chunking). |
+| `pages_per_chunk` | `Option<u32>` | `Default::default()` | User-specified pages per chunk (overrides automatic calculation). |
+| `force_chunking` | `bool` | — | Force chunking even for small documents. |
+| `disable_chunking` | `bool` | — | Disable chunking even for large documents. |
+
+---
+
+#### ConfidenceWeights
+
+Tunable weights for the confidence scoring formula.
+
+Defaults picked by inspection; callers tune them via config.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | `0.3` | Weight assigned to `text_coverage`. Default 0.30. |
+| `ocr_aggregate` | `f32` | `0.3` | Weight assigned to `ocr_aggregate` when OCR ran. Default 0.30 — folds into `text_coverage` weight when OCR did not run. |
+| `schema_compliance` | `f32` | `0.4` | Weight assigned to `schema_compliance`. Default 0.40. |
+
+---
+
+#### HeuristicsConfig
+
+Configuration for document chunking and analysis heuristics.
+
+Every threshold is a public field so callers can override any subset via
+struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..the default constructor }`.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enable_pdf_text_heuristics` | `bool` | `true` | Enable PDF text-layer detection heuristics. When `true`, PDFs with a substantial text layer will skip chunking. Default: `true`. |
+| `text_layer_threshold` | `f32` | `0.7` | Minimum fraction of pages that must have text to skip chunking. Range `0.0..=1.0`. Default: `0.7` (70 % of pages). |
+| `file_size_threshold_bytes` | `u64` | `10485760` | File size threshold in bytes for considering chunking. Files smaller than this are processed without chunking. Default: 10 MiB (10 × 1 024 × 1 024). |
+| `page_count_threshold` | `u32` | `50` | Page count threshold for considering chunking. Documents with fewer pages are processed without chunking. Default: 50. |
+| `target_pages_per_chunk` | `u32` | `10` | Target number of pages per chunk for optimal parallel processing. Default: 10. |
+| `max_pages_per_chunk` | `u32` | `25` | Hard cap on pages per chunk. No chunk will exceed this limit. Must be ≥ `target_pages_per_chunk`. Default: 25. |
+| `disk_processing_threshold_bytes` | `u64` | `52428800` | File size threshold for disk-based processing. Files larger than this are buffered to disk to prevent OOM. Default: 50 MiB (50 × 1 024 × 1 024). |
+| `min_chars_per_page` | `u32` | `50` | Minimum characters per page to consider a page as having text. Default: 50. |
+| `max_xlsx_sheet_count` | `u32` | `200` | Maximum sheet count allowed in an XLSX workbook. Workbooks beyond this are rejected pre-extraction to avoid OOM / abusive billing inflation. Default: 200. |
+| `max_xlsx_workbook_cells` | `u64` | `5000000` | Maximum cell count (sheets × rows × columns approximation) in an XLSX workbook. Default: 5 000 000 (≈ 200 sheets × 25 k cells). |
+| `max_pptx_embedded_count` | `u32` | `50` | Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX. Protects against zip-bomb-style nested-document abuse. Default: 50. |
+
+---
+
+#### MultidocThresholds
+
+Thresholds for multi-document boundary detection.
+
+All fields are public; callers override any subset via struct-update syntax.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `density_shift_threshold` | `f32` | `0.3` | Text density difference threshold for `DensityShift` detection. Default: 0.3. |
+| `bigram_overlap_min` | `f32` | `0.1` | Minimum bigram-overlap ratio below which a density shift is promoted to a `DensityShift` boundary.  Default: 0.1 (10 % overlap). |
+
+---
+
+#### StructuredThresholds
+
+Thresholds for the structured-extraction call-mode heuristic.
+
+All defaults are **conservative starting points**.  Deployments should
+measure their own document corpus and override via their own config;
+these values are chosen to be safe-by-default, not to be optimal for
+any particular workload.
+
+Construct custom thresholds with struct-update syntax:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `scan_max_coverage` | `f64` | `0.1` | PDFs with `text_coverage` strictly below this are treated as scanned. **Conservative default: 0.10** — deployments override via their own config after measuring their document corpus. |
+| `digital_min_coverage` | `f64` | `0.9` | PDFs with `text_coverage` at or above this AND zero embedded images route to `StructuredCallMode::TextOnly`. **Conservative default: 0.90** — deployments override via their own config after measuring their document corpus. |
+| `docx_text_min_density` | `f64` | `200` | DOCX / HTML / text documents with `avg_chars_per_page` above this route to `StructuredCallMode::TextOnly`. **Conservative default: 200.0** — deployments override via their own config after measuring their document corpus. |
+| `enable_vision_fallback` | `bool` | `false` | When `true`, emit `StructuredCallMode::TextOnlyWithVisionFallback` instead of `StructuredCallMode::TextOnly` so the orchestrator can escalate to vision on low confidence. **Conservative default: `false`** — must be explicitly enabled per deployment after bench validation; deployments override via their own config. |
+
+---
+
 #### PaddleOcrConfig
 
 Configuration for PaddleOCR backend.
@@ -1379,6 +1508,7 @@ Metadata about a chunk's position in the original document.
 | `first_page` | `Option<u32>` | `None` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `Option<u32>` | `None` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
 | `heading_context` | `Option<HeadingContext>` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType::Markdown` is used. |
+| `heading_path` | `Vec<String>` | `/* serde(default) */` | Flattened heading trail from document root to this chunk's section. Each element is a heading's text, outermost first. Derived from `heading_context` when present; empty otherwise. Provides a binding-friendly, RAG-shaped breadcrumb without requiring callers to walk the nested `HeadingContext` structure. |
 | `image_indices` | `Vec<u32>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `\[first_page, last_page\]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
@@ -1790,6 +1920,21 @@ PCM decode properties. Available when the `transcription-types` feature is enabl
 | `sample_rate_hz` | `Option<u32>` | `Default::default()` | Sample rate in Hz after decode (always 16000 when resampled for Whisper). |
 | `channels` | `Option<u16>` | `Default::default()` | Number of audio channels (1 = mono, 2 = stereo). |
 | `bitrate` | `Option<u32>` | `Default::default()` | Audio bitrate in kbps from the source file tags/properties. |
+
+---
+
+#### DocumentMetadata
+
+Metadata about a document for analysis.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mime_type` | `String` | — | MIME type of the document. |
+| `size_bytes` | `u64` | — | File size in bytes. |
+| `page_count` | `Option<u32>` | `None` | Page count (if known, e.g., from previous analysis). |
+| `force_ocr` | `bool` | — | Whether OCR is forced regardless of text layer. |
+| `user_chunk_config` | `Option<UserChunkConfig>` | `None` | User-provided chunk configuration overrides. |
+| `chunking_enabled` | `bool` | — | Whether chunking is enabled for this job. |
 
 ---
 
@@ -2548,6 +2693,33 @@ unique identifier, and metadata for tracking origin and position.
 
 ---
 
+#### PdfFormField
+
+A form field extracted from a PDF's AcroForm or XFA structure.
+
+Populated by the PDF extractor when `PdfConfig.extract_form_fields` is
+enabled and the document is a fillable form. Supports both AcroForm (standard)
+and XFA (XML Forms Architecture) layers. When both are present, AcroForm fields
+take priority (canonical fallback per PDF spec), and XFA-only fields are appended.
+The collection is empty for non-form PDFs and for non-PDF formats.
+
+`PdfConfig.extract_form_fields`: crate.core.config.PdfConfig.extract_form_fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `String` | — | Partial field name (the leaf name within the field hierarchy). |
+| `full_name` | `String` | — | Fully-qualified field name (dotted path from the form root). |
+| `field_type` | `FormFieldType` | — | Classified field type. |
+| `value` | `Option<String>` | `/* serde(default) */` | Current field value, if any. |
+| `default_value` | `Option<String>` | `/* serde(default) */` | Default field value, if any. |
+| `flags` | `u32` | `/* serde(default) */` | Raw field-flags bitmask (read-only, required, multiline, …). |
+| `page` | `Option<u32>` | `/* serde(default) */` | 1-indexed page the field's widget appears on. Currently always `None` for AcroForm fields; page assignment is a deferred enhancement requiring spatial analysis of widget annotations per page. |
+| `bbox` | `Option<BoundingBox>` | `/* serde(default) */` | Widget bounding box on its page, if known. |
+| `max_length` | `Option<u32>` | `/* serde(default) */` | Maximum input length for text fields, if specified. |
+| `tooltip` | `Option<String>` | `/* serde(default) */` | Tooltip / alternate field description, if present. |
+
+---
+
 #### ExcelWorkbook
 
 Excel workbook representation.
@@ -2595,6 +2767,25 @@ Contains metadata and optionally the content of an email attachment.
 | `size` | `Option<usize>` | `None` | Size in bytes |
 | `is_image` | `bool` | — | Whether this attachment is an image |
 | `data` | `Option<Vec<u8>>` | `None` | Attachment data (if extracted). Uses `bytes::Bytes` for cheap cloning of large buffers. |
+
+---
+
+#### Formula
+
+A mathematical formula detected and recognized in a document.
+
+Populated by the layout-guided formula pipeline: regions classified as
+`LayoutClass.Formula` are routed to the formula OCR task, which returns the
+LaTeX source for the region. The field is always present on
+`ExtractionResult` but only populated
+when the `layout-detection` feature is active and the document contains
+formula regions.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `latex` | `String` | — | LaTeX source of the recognized formula, without surrounding `$$` delimiters. This field contains the raw LaTeX code as produced by the OCR backend. To render the formula in Markdown or other formats, wrap with `$$..$$` delimiters as needed. |
+| `bbox` | `BoundingBox` | — | Bounding box of the formula region on its page, in rendered-image pixel coordinates. The coordinates are in the space of the OCR-rendered page image at the OCR DPI (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from native PDF text extraction, which use PDF point coordinates. |
+| `page` | `u32` | — | 1-indexed page number the formula appears on in the document. This is set by the extraction pipeline based on which page the formula was found on. |
 
 ---
 
@@ -3043,6 +3234,226 @@ Extracted keyword with metadata.
 
 ---
 
+#### ConfidenceSignals
+
+Input signals for confidence scoring.
+
+Caller fills these from the extraction result and the LLM response.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | — | Fraction of pages with usable text in `\[0, 1\]`. |
+| `ocr_aggregate` | `Option<f32>` | `None` | Mean OCR per-element recognition confidence; `None` when OCR did not run. |
+| `schema_compliance` | `SchemaCompliance` | — | Schema-validation result of the merged output. |
+
+---
+
+#### ExtractionConfidence
+
+Combined confidence on `[0, 1]`.
+
+When OCR did not run, the `ocr_aggregate` weight folds into `text_coverage`
+so the weighted sum still totals 1.0.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `text_coverage` | `f32` | — | Fraction of pages with a usable text layer. |
+| `ocr_aggregate` | `Option<f32>` | `None` | Mean OCR per-element recognition confidence when OCR ran; `None` when it did not. |
+| `schema_compliance` | `SchemaCompliance` | — | Whether the merged output validates against the preset schema. |
+| `combined` | `f32` | — | Weighted blend in `\[0, 1\]`.  The value compared against the fallback threshold. |
+
+---
+
+#### ChunkPlan
+
+Complete chunking plan for a document.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `total_chunks` | `u32` | — | Total number of chunks. |
+| `chunks` | `Vec<ChunkInfo>` | — | Individual chunk information. |
+| `total_estimated_time_ms` | `u64` | — | Estimated total processing time in milliseconds. |
+| `use_disk_processing` | `bool` | — | Whether to use disk-based processing for large files. |
+| `reason` | `ChunkingReason` | — | Reason for chunking. |
+
+---
+
+#### ChunkInfo
+
+Information about a single chunk.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `index` | `u32` | — | Zero-based chunk index. |
+| `pages` | `PageRange` | — | Page range for this chunk. |
+| `estimated_time_ms` | `u64` | — | Estimated processing time for this chunk in milliseconds. |
+
+---
+
+#### PageRange
+
+Page range for a chunk (0-indexed, inclusive).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start` | `u32` | — | Start page (0-indexed, inclusive). |
+| `end` | `u32` | — | End page (0-indexed, inclusive). |
+
+---
+
+#### MultidocInput
+
+Input signals for multi-document boundary detection.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_count` | `u32` | — | Total number of pages in the PDF. |
+| `pages` | `Vec<PageSignals>` | — | Per-page signals extracted from the PDF. |
+
+---
+
+#### PageSignals
+
+Per-page signals extracted from PDF content.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page_number` | `u32` | — | 1-indexed page number. |
+| `text_excerpt` | `String` | — | First ~500 characters of extracted text. |
+| `starts_with_letterhead_like` | `bool` | — | `true` if page starts with letterhead-like content (ALL CAPS line in first 5 lines or a logo-image bbox at top). |
+| `has_page_number_one_marker` | `bool` | — | `true` if text contains "Page 1" or "1 of N" pattern. |
+| `has_signature_block` | `bool` | — | `true` if text contains signature indicators ("Sincerely", "Signed") or a signature image bbox. |
+| `layout_text_density` | `f32` | — | Text density: characters per page area, normalised to `\[0.0, 1.0\]`. |
+
+---
+
+#### DocumentBoundary
+
+Detected document boundary within a PDF.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `start_page` | `u32` | — | 1-indexed start page (inclusive). |
+| `end_page` | `u32` | — | 1-indexed end page (inclusive). |
+| `confidence` | `f32` | — | Confidence in this boundary, `\[0.0, 1.0\]`. |
+| `reason` | `BoundaryReason` | — | Reason for the boundary detection. |
+
+---
+
+#### StructuredInput
+
+Signals consumed by the call-mode heuristic.
+
+All fields derive from a prior kreuzberg extraction — no double-work.
+This is a plain DTO; it intentionally has no dependency on internal
+kreuzberg extraction types so it can be constructed from any source.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `mime_type` | `String` | — | MIME type, canonicalised to lowercase by the caller. |
+| `page_count` | `u32` | — | Number of pages in the document. |
+| `text_coverage` | `f64` | — | Fraction of pages with a real text layer (0.0..=1.0). |
+| `avg_chars_per_page` | `f64` | — | Average extracted characters per page. |
+| `embedded_image_count` | `u32` | — | Count of embedded images (figures, photos, signatures) discovered. |
+| `user_force_vision` | `bool` | — | When `true`, promote the result to at least `StructuredCallMode::TextPlusVision`. |
+
+---
+
+#### MetaSchema
+
+Compiled meta-schema validator over `preset.schema.json`.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### Registry
+
+Sorted map of preset id → `Preset`.
+
+*Opaque type — fields are not directly accessible.*
+
+---
+
+#### ResolvedPreset
+
+A preset merged with caller-supplied overrides (custom schema, prompt suffix,
+context map). Output is what the pipeline orchestrator consumes.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Source preset identifier. |
+| `version` | `String` | — | Source preset version. |
+| `fingerprint` | `String` | — | Fingerprint of the source preset file, used as a cache token. |
+| `schema_name` | `String` | — | Schema name forwarded to the LLM. |
+| `schema` | `serde_json::Value` | — | Effective JSON Schema (caller override or the preset's own). |
+| `system_prompt` | `String` | — | System prompt with rendered context appended. |
+| `merge_mode` | `MergeMode` | — | Merge strategy for paginated outputs. |
+| `preferred_call_mode` | `CallMode` | — | Preferred call mode. |
+| `emit_citations` | `bool` | — | Whether the prompt asks for per-field citations. |
+
+---
+
+#### PresetSample
+
+Pointer to a sample input + its reference output bundled with the preset.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `input_path` | `String` | — | Path to the sample input file, relative to the preset directory. |
+| `output_path` | `String` | — | Path to the reference structured output, relative to the preset directory. |
+
+---
+
+#### Preset
+
+A curated structured-extraction preset loaded from the embedded library.
+
+Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
+validates against the meta-schema in `src/presets/preset.schema.json`.
+
+The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+`extend_from_dir`. The embedded OSS library
+ships only the `generic_document` toy preset.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Stable, URL-safe preset identifier (lowercase snake_case). |
+| `version` | `String` | — | Monotonic version string (e.g. `v1`). |
+| `schema_name` | `String` | — | Human-readable schema name forwarded to the LLM as the response/tool name. |
+| `description` | `String` | — | One-line preset description shown in the registry UI. |
+| `category` | `PresetCategory` | — | Top-level category for grouping in the playground. |
+| `tags` | `Vec<String>` | `/* serde(default) */` | Free-form tags used for search/filtering. May be empty. |
+| `schema` | `serde_json::Value` | — | JSON Schema (Draft 2020-12) describing the structured output shape. |
+| `system_prompt` | `String` | — | Instruction primer sent to the model. |
+| `context_template` | `Option<String>` | `/* serde(default) */` | Optional mustache-style template merged with caller-supplied context. |
+| `merge_mode` | `MergeMode` | — | Strategy for merging per-batch outputs across paginated calls. |
+| `preferred_call_mode` | `CallMode` | — | Default call mode suggested for this preset; heuristics may override. |
+| `emit_citations` | `bool` | — | When true, the prompt asks the model to wrap each field as `{value, page, bbox, confidence}` for downstream citation overlays. |
+| `sample` | `Option<PresetSample>` | `/* serde(default) */` | Optional bundled sample (input file + reference output) for preview. |
+| `fingerprint` | `String` | `/* serde(default) */` | Stable sha256 fingerprint of the canonical preset file contents. Populated at registry load — not present in the on-disk JSON files. Used as a cache-invalidation token by the worker pipeline. |
+
+---
+
+#### PresetSummary
+
+Lightweight projection of `Preset` used by the registry list endpoint
+(omits the full schema and prompt to keep the payload small).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `String` | — | Preset identifier matching `Preset::id`. |
+| `version` | `String` | — | Preset version matching `Preset::version`. |
+| `schema_name` | `String` | — | Schema name matching `Preset::schema_name`. |
+| `description` | `String` | — | One-line preset description. |
+| `category` | `PresetCategory` | — | Top-level category. |
+| `tags` | `Vec<String>` | — | Free-form tags. |
+| `preferred_call_mode` | `CallMode` | — | Default call mode. |
+| `emit_citations` | `bool` | — | Whether the preset prompts the model for citations. |
+| `fingerprint` | `String` | — | Stable fingerprint matching `Preset::fingerprint`. |
+
+---
+
 #### ModelPaths
 
 Combined paths to all models needed for OCR (backward compatibility).
@@ -3142,6 +3553,38 @@ Types of block-level elements in Djot.
 
 ---
 
+#### BoundaryReason
+
+Reason for boundary detection.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Start` | `start` | Start of PDF. |
+| `PageOneMarker` | `page_one_marker` | Page-one marker ("Page 1", "1 of N") detected. |
+| `LetterheadReset` | `letterhead_reset` | Letterhead reset after signature block. |
+| `DensityShift` | `density_shift` | Text density shift with low bigram overlap. |
+| `End` | `end` | End of PDF. |
+
+---
+
+#### CallMode
+
+How a structured-extraction preset is dispatched to the model.
+
+This is the preset-facing call mode (the `preferred_call_mode` field of a
+`Preset`). The richer runtime decision enum used by the
+structured pipeline — which adds `Skip` and `TextOnlyWithVisionFallback` —
+lives in `crate::heuristics::structured::StructuredCallMode`; this 3-variant
+type is the stable, serializable surface presets and bindings depend on.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `TextOnly` | `text_only` | Use the extracted text only. |
+| `VisionOnly` | `vision_only` | Use rasterized page images only. |
+| `TextPlusVision` | `text_plus_vision` | Provide both extracted text and page images to the model. |
+
+---
+
 #### ChunkSizing
 
 How chunk size is measured.
@@ -3209,6 +3652,31 @@ Type of text chunker to use.
 | `Markdown` | `markdown` | Markdown-aware splitter that preserves heading and code-block boundaries. |
 | `Yaml` | `yaml` | YAML-aware splitter that creates one chunk per top-level key. |
 | `Semantic` | `semantic` | Topic-aware chunker that splits at embedding-based topic shifts. |
+
+---
+
+#### ChunkingDecision
+
+The chunking decision made by the analyzer.
+
+| Variant | Description |
+|---------|-------------|
+| `NoChunking` | Process without chunking (small file, text layer detected, etc.) — Fields: `reason`: `NoChunkingReason` |
+| `Chunk` | Chunk according to plan. — Fields: `_0`: `ChunkPlan` |
+| `UseOverrides` | Use user-provided chunk overrides. — Fields: `user_chunks`: `Vec<PageRange>` |
+
+---
+
+#### ChunkingReason
+
+Reason for chunking a document.
+
+| Variant | Description |
+|---------|-------------|
+| `LargeFile` | File exceeds size threshold. — Fields: `size_bytes`: `u64`, `threshold_bytes`: `u64` |
+| `ManyPages` | Document has many pages. — Fields: `page_count`: `u32`, `threshold`: `u32` |
+| `OcrRequired` | PDF requires OCR and is large. — Fields: `page_count`: `u32`, `force_ocr`: `bool` |
+| `LargeAndManyPages` | Both size and page count exceed thresholds. — Fields: `size_bytes`: `u64`, `page_count`: `u32` |
 
 ---
 
@@ -3294,6 +3762,31 @@ Embedding model types supported by Kreuzberg.
 
 ---
 
+#### EnrichStatus
+
+Async lifecycle status for an enrichment job.
+
+Intended for use with any polling or event-driven pipeline that needs
+to track whether enrichment has completed, succeeded, or failed.
+
+### Serialisation
+
+Uses an internally-tagged `"status"` field with `snake_case` variants:
+
+```json
+{ "status": "pending" }
+{ "status": "completed", "result": { ... } }
+{ "status": "failed", "error": "text too large" }
+```
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Pending` | `pending` | Job submitted; processing has not yet started or is in progress. |
+| `Completed` | `completed` | Processing completed successfully. — Fields: `result`: `EnrichResult` |
+| `Failed` | `failed` | Processing failed. — Fields: `error`: `String` |
+
+---
+
 #### EntityCategory
 
 Standard entity categories produced by built-in NER backends.
@@ -3343,6 +3836,25 @@ How the extracted text was produced.
 | `Native` | `native` | Text extracted directly from the document's native format (no OCR). |
 | `Ocr` | `ocr` | All text was obtained via OCR (e.g. scanned image-only PDF). |
 | `Mixed` | `mixed` | Text came from a combination of native extraction and OCR. |
+
+---
+
+#### FormFieldType
+
+Kind of a PDF form field.
+
+Mirrors `pdf_oxide`'s widget field taxonomy without leaking the upstream
+type across the binding surface.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Text` | `text` | Single- or multi-line text input. |
+| `Checkbox` | `checkbox` | Checkbox (on/off toggle). |
+| `Radio` | `radio` | Radio-button group member. |
+| `Choice` | `choice` | Choice field (dropdown or list box). |
+| `Signature` | `signature` | Digital-signature field. |
+| `Button` | `button` | Push button. |
+| `Unknown` | `unknown` | Field type that could not be classified. |
 
 ---
 
@@ -3494,7 +4006,7 @@ Keyword algorithm selection.
 
 #### LayoutClass
 
-The 17 canonical document layout classes.
+The 18 canonical document layout classes.
 
 All model backends (RT-DETR, YOLO, etc.) map their native class IDs
 to this shared set. Models with fewer classes (DocLayNet: 11, PubLayNet: 5)
@@ -3505,6 +4017,7 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 | Variant | Wire value | Description |
 |---------|------------|-------------|
 | `Caption` | `caption` | Figure or table caption text. |
+| `Chart` | `chart` | Chart or graph visualization. |
 | `Footnote` | `footnote` | Footnote or endnote text. |
 | `Formula` | `formula` | Mathematical formula or equation. |
 | `ListItem` | `list_item` | A single item in a bulleted or numbered list. |
@@ -3552,6 +4065,22 @@ Type of list detection.
 
 ---
 
+#### MergeMode
+
+How partial results from multiple model calls (e.g. per page batch) are combined.
+
+Canonical home for the merge strategy referenced by presets and by the
+structured pipeline's post-processing. There is intentionally only one merge
+type across the crate — do not introduce a second.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `ObjectMerge` | `object_merge` | Deep-merge JSON objects field by field (later calls fill missing fields). |
+| `ArrayConcat` | `array_concat` | Concatenate top-level arrays across calls. |
+| `ObjectFirst` | `object_first` | Keep the first non-empty result; ignore subsequent calls. |
+
+---
+
 #### NerBackendKind
 
 NER backend selector.
@@ -3560,6 +4089,21 @@ NER backend selector.
 |---------|------------|-------------|
 | `Onnx` | `onnx` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download::hf_download`. |
 | `Llm` | `llm` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
+
+---
+
+#### NoChunkingReason
+
+Reason for not chunking a document.
+
+| Variant | Description |
+|---------|-------------|
+| `SmallFile` | File is below size threshold. — Fields: `size_bytes`: `u64`, `threshold_bytes`: `u64` |
+| `FewPages` | Document has fewer pages than threshold. — Fields: `page_count`: `u32`, `threshold`: `u32` |
+| `TextLayerDetected` | PDF has substantial text layer (OCR not needed). — Fields: `text_coverage`: `f32`, `avg_chars_per_page`: `u32` |
+| `FormatNotChunkable` | Document format does not support chunking. — Fields: `mime_type`: `String` |
+| `ChunkingDisabled` | Chunking is disabled by configuration. |
+| `FastTextExtraction` | Force OCR is disabled and text extraction is fast. |
 
 ---
 
@@ -3760,6 +4304,22 @@ PII categories the pattern engine recognises.
 
 ---
 
+#### PresetCategory
+
+High-level category used to group presets in the registry UI.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Finance` | `finance` | Invoices, receipts, statements, purchase orders, W-9. |
+| `Identity` | `identity` | Passports, drivers licenses, insurance cards. |
+| `Legal` | `legal` | Contracts, NDAs, agreements. |
+| `Logistics` | `logistics` | Bills of lading, customs declarations, packing lists. |
+| `Medical` | `medical` | Clinical records, lab reports. |
+| `Hr` | `hr` | Pay stubs, resumes, employment offers. |
+| `Other` | `other` | Catch-all for documents that don't fit the other categories. |
+
+---
+
 #### ProcessingStage
 
 Processing stages for post-processors.
@@ -3889,6 +4449,40 @@ Semantic classification of a tracked change.
 | `Deletion` | `deletion` | Text or content was deleted. |
 | `FormatChange` | `format_change` | Run-level formatting (font, size, colour, …) was changed. |
 | `Comment` | `comment` | A reviewer comment or annotation. |
+
+---
+
+#### SchemaCompliance
+
+Schema-validation outcome surfaced as one of three buckets.
+
+Fold into the combined confidence score without leaking internal validation
+error types.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `AllValid` | `all_valid` | Every batch validated against the schema. |
+| `PartialValid` | `partial_valid` | At least one batch validated; at least one did not. |
+| `AllInvalid` | `all_invalid` | No batch validated. |
+
+---
+
+#### StructuredCallMode
+
+Outcome of the structured-extraction call-mode heuristic.
+
+**Distinct from `crate::core::config::CallMode`** which has three variants
+and governs extraction-engine behaviour.  This enum governs whether and how
+an already-extracted document is sent to an LLM structured-extraction
+pipeline.
+
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Skip` | `skip` | Document is unsupported or not worth invoking the pipeline. |
+| `TextOnly` | `text_only` | Send extracted text only; no vision model call. |
+| `VisionOnly` | `vision_only` | Send page rasters only; no extracted text payload. |
+| `TextPlusVision` | `text_plus_vision` | Fuse extracted text with page rasters in a single multimodal call. |
+| `TextOnlyWithVisionFallback` | `text_only_with_vision_fallback` | Try text-only first; escalate to vision on low confidence score. |
 
 ---
 

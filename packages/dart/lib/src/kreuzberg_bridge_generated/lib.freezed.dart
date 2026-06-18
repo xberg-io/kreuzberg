@@ -1026,6 +1026,840 @@ as String,
 }
 
 /// @nodoc
+mixin _$ChunkingDecision {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingDecision);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ChunkingDecision()';
+}
+
+
+}
+
+/// @nodoc
+class $ChunkingDecisionCopyWith<$Res>  {
+$ChunkingDecisionCopyWith(ChunkingDecision _, $Res Function(ChunkingDecision) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ChunkingDecision].
+extension ChunkingDecisionPatterns on ChunkingDecision {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ChunkingDecision_NoChunking value)?  noChunking,TResult Function( ChunkingDecision_Chunk value)?  chunk,TResult Function( ChunkingDecision_UseOverrides value)?  useOverrides,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking() when noChunking != null:
+return noChunking(_that);case ChunkingDecision_Chunk() when chunk != null:
+return chunk(_that);case ChunkingDecision_UseOverrides() when useOverrides != null:
+return useOverrides(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ChunkingDecision_NoChunking value)  noChunking,required TResult Function( ChunkingDecision_Chunk value)  chunk,required TResult Function( ChunkingDecision_UseOverrides value)  useOverrides,}){
+final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking():
+return noChunking(_that);case ChunkingDecision_Chunk():
+return chunk(_that);case ChunkingDecision_UseOverrides():
+return useOverrides(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ChunkingDecision_NoChunking value)?  noChunking,TResult? Function( ChunkingDecision_Chunk value)?  chunk,TResult? Function( ChunkingDecision_UseOverrides value)?  useOverrides,}){
+final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking() when noChunking != null:
+return noChunking(_that);case ChunkingDecision_Chunk() when chunk != null:
+return chunk(_that);case ChunkingDecision_UseOverrides() when useOverrides != null:
+return useOverrides(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( NoChunkingReason reason)?  noChunking,TResult Function( ChunkPlan field0)?  chunk,TResult Function( List<PageRange> userChunks)?  useOverrides,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking() when noChunking != null:
+return noChunking(_that.reason);case ChunkingDecision_Chunk() when chunk != null:
+return chunk(_that.field0);case ChunkingDecision_UseOverrides() when useOverrides != null:
+return useOverrides(_that.userChunks);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( NoChunkingReason reason)  noChunking,required TResult Function( ChunkPlan field0)  chunk,required TResult Function( List<PageRange> userChunks)  useOverrides,}) {final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking():
+return noChunking(_that.reason);case ChunkingDecision_Chunk():
+return chunk(_that.field0);case ChunkingDecision_UseOverrides():
+return useOverrides(_that.userChunks);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( NoChunkingReason reason)?  noChunking,TResult? Function( ChunkPlan field0)?  chunk,TResult? Function( List<PageRange> userChunks)?  useOverrides,}) {final _that = this;
+switch (_that) {
+case ChunkingDecision_NoChunking() when noChunking != null:
+return noChunking(_that.reason);case ChunkingDecision_Chunk() when chunk != null:
+return chunk(_that.field0);case ChunkingDecision_UseOverrides() when useOverrides != null:
+return useOverrides(_that.userChunks);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class ChunkingDecision_NoChunking extends ChunkingDecision {
+  const ChunkingDecision_NoChunking({required this.reason}): super._();
+  
+
+/// Reason why chunking is not needed.
+ final  NoChunkingReason reason;
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingDecision_NoChunkingCopyWith<ChunkingDecision_NoChunking> get copyWith => _$ChunkingDecision_NoChunkingCopyWithImpl<ChunkingDecision_NoChunking>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingDecision_NoChunking&&(identical(other.reason, reason) || other.reason == reason));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,reason);
+
+@override
+String toString() {
+  return 'ChunkingDecision.noChunking(reason: $reason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingDecision_NoChunkingCopyWith<$Res> implements $ChunkingDecisionCopyWith<$Res> {
+  factory $ChunkingDecision_NoChunkingCopyWith(ChunkingDecision_NoChunking value, $Res Function(ChunkingDecision_NoChunking) _then) = _$ChunkingDecision_NoChunkingCopyWithImpl;
+@useResult
+$Res call({
+ NoChunkingReason reason
+});
+
+
+$NoChunkingReasonCopyWith<$Res> get reason;
+
+}
+/// @nodoc
+class _$ChunkingDecision_NoChunkingCopyWithImpl<$Res>
+    implements $ChunkingDecision_NoChunkingCopyWith<$Res> {
+  _$ChunkingDecision_NoChunkingCopyWithImpl(this._self, this._then);
+
+  final ChunkingDecision_NoChunking _self;
+  final $Res Function(ChunkingDecision_NoChunking) _then;
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? reason = null,}) {
+  return _then(ChunkingDecision_NoChunking(
+reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as NoChunkingReason,
+  ));
+}
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NoChunkingReasonCopyWith<$Res> get reason {
+  
+  return $NoChunkingReasonCopyWith<$Res>(_self.reason, (value) {
+    return _then(_self.copyWith(reason: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class ChunkingDecision_Chunk extends ChunkingDecision {
+  const ChunkingDecision_Chunk({required this.field0}): super._();
+  
+
+ final  ChunkPlan field0;
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingDecision_ChunkCopyWith<ChunkingDecision_Chunk> get copyWith => _$ChunkingDecision_ChunkCopyWithImpl<ChunkingDecision_Chunk>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingDecision_Chunk&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'ChunkingDecision.chunk(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingDecision_ChunkCopyWith<$Res> implements $ChunkingDecisionCopyWith<$Res> {
+  factory $ChunkingDecision_ChunkCopyWith(ChunkingDecision_Chunk value, $Res Function(ChunkingDecision_Chunk) _then) = _$ChunkingDecision_ChunkCopyWithImpl;
+@useResult
+$Res call({
+ ChunkPlan field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingDecision_ChunkCopyWithImpl<$Res>
+    implements $ChunkingDecision_ChunkCopyWith<$Res> {
+  _$ChunkingDecision_ChunkCopyWithImpl(this._self, this._then);
+
+  final ChunkingDecision_Chunk _self;
+  final $Res Function(ChunkingDecision_Chunk) _then;
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(ChunkingDecision_Chunk(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as ChunkPlan,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ChunkingDecision_UseOverrides extends ChunkingDecision {
+  const ChunkingDecision_UseOverrides({required final  List<PageRange> userChunks}): _userChunks = userChunks,super._();
+  
+
+/// User-specified page ranges.
+ final  List<PageRange> _userChunks;
+/// User-specified page ranges.
+ List<PageRange> get userChunks {
+  if (_userChunks is EqualUnmodifiableListView) return _userChunks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_userChunks);
+}
+
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingDecision_UseOverridesCopyWith<ChunkingDecision_UseOverrides> get copyWith => _$ChunkingDecision_UseOverridesCopyWithImpl<ChunkingDecision_UseOverrides>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingDecision_UseOverrides&&const DeepCollectionEquality().equals(other._userChunks, _userChunks));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_userChunks));
+
+@override
+String toString() {
+  return 'ChunkingDecision.useOverrides(userChunks: $userChunks)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingDecision_UseOverridesCopyWith<$Res> implements $ChunkingDecisionCopyWith<$Res> {
+  factory $ChunkingDecision_UseOverridesCopyWith(ChunkingDecision_UseOverrides value, $Res Function(ChunkingDecision_UseOverrides) _then) = _$ChunkingDecision_UseOverridesCopyWithImpl;
+@useResult
+$Res call({
+ List<PageRange> userChunks
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingDecision_UseOverridesCopyWithImpl<$Res>
+    implements $ChunkingDecision_UseOverridesCopyWith<$Res> {
+  _$ChunkingDecision_UseOverridesCopyWithImpl(this._self, this._then);
+
+  final ChunkingDecision_UseOverrides _self;
+  final $Res Function(ChunkingDecision_UseOverrides) _then;
+
+/// Create a copy of ChunkingDecision
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? userChunks = null,}) {
+  return _then(ChunkingDecision_UseOverrides(
+userChunks: null == userChunks ? _self._userChunks : userChunks // ignore: cast_nullable_to_non_nullable
+as List<PageRange>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$ChunkingReason {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingReason);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ChunkingReason()';
+}
+
+
+}
+
+/// @nodoc
+class $ChunkingReasonCopyWith<$Res>  {
+$ChunkingReasonCopyWith(ChunkingReason _, $Res Function(ChunkingReason) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ChunkingReason].
+extension ChunkingReasonPatterns on ChunkingReason {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ChunkingReason_LargeFile value)?  largeFile,TResult Function( ChunkingReason_ManyPages value)?  manyPages,TResult Function( ChunkingReason_OcrRequired value)?  ocrRequired,TResult Function( ChunkingReason_LargeAndManyPages value)?  largeAndManyPages,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile() when largeFile != null:
+return largeFile(_that);case ChunkingReason_ManyPages() when manyPages != null:
+return manyPages(_that);case ChunkingReason_OcrRequired() when ocrRequired != null:
+return ocrRequired(_that);case ChunkingReason_LargeAndManyPages() when largeAndManyPages != null:
+return largeAndManyPages(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ChunkingReason_LargeFile value)  largeFile,required TResult Function( ChunkingReason_ManyPages value)  manyPages,required TResult Function( ChunkingReason_OcrRequired value)  ocrRequired,required TResult Function( ChunkingReason_LargeAndManyPages value)  largeAndManyPages,}){
+final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile():
+return largeFile(_that);case ChunkingReason_ManyPages():
+return manyPages(_that);case ChunkingReason_OcrRequired():
+return ocrRequired(_that);case ChunkingReason_LargeAndManyPages():
+return largeAndManyPages(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ChunkingReason_LargeFile value)?  largeFile,TResult? Function( ChunkingReason_ManyPages value)?  manyPages,TResult? Function( ChunkingReason_OcrRequired value)?  ocrRequired,TResult? Function( ChunkingReason_LargeAndManyPages value)?  largeAndManyPages,}){
+final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile() when largeFile != null:
+return largeFile(_that);case ChunkingReason_ManyPages() when manyPages != null:
+return manyPages(_that);case ChunkingReason_OcrRequired() when ocrRequired != null:
+return ocrRequired(_that);case ChunkingReason_LargeAndManyPages() when largeAndManyPages != null:
+return largeAndManyPages(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)?  largeFile,TResult Function( PlatformInt64 pageCount,  PlatformInt64 threshold)?  manyPages,TResult Function( PlatformInt64 pageCount,  bool forceOcr)?  ocrRequired,TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 pageCount)?  largeAndManyPages,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile() when largeFile != null:
+return largeFile(_that.sizeBytes,_that.thresholdBytes);case ChunkingReason_ManyPages() when manyPages != null:
+return manyPages(_that.pageCount,_that.threshold);case ChunkingReason_OcrRequired() when ocrRequired != null:
+return ocrRequired(_that.pageCount,_that.forceOcr);case ChunkingReason_LargeAndManyPages() when largeAndManyPages != null:
+return largeAndManyPages(_that.sizeBytes,_that.pageCount);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)  largeFile,required TResult Function( PlatformInt64 pageCount,  PlatformInt64 threshold)  manyPages,required TResult Function( PlatformInt64 pageCount,  bool forceOcr)  ocrRequired,required TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 pageCount)  largeAndManyPages,}) {final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile():
+return largeFile(_that.sizeBytes,_that.thresholdBytes);case ChunkingReason_ManyPages():
+return manyPages(_that.pageCount,_that.threshold);case ChunkingReason_OcrRequired():
+return ocrRequired(_that.pageCount,_that.forceOcr);case ChunkingReason_LargeAndManyPages():
+return largeAndManyPages(_that.sizeBytes,_that.pageCount);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)?  largeFile,TResult? Function( PlatformInt64 pageCount,  PlatformInt64 threshold)?  manyPages,TResult? Function( PlatformInt64 pageCount,  bool forceOcr)?  ocrRequired,TResult? Function( PlatformInt64 sizeBytes,  PlatformInt64 pageCount)?  largeAndManyPages,}) {final _that = this;
+switch (_that) {
+case ChunkingReason_LargeFile() when largeFile != null:
+return largeFile(_that.sizeBytes,_that.thresholdBytes);case ChunkingReason_ManyPages() when manyPages != null:
+return manyPages(_that.pageCount,_that.threshold);case ChunkingReason_OcrRequired() when ocrRequired != null:
+return ocrRequired(_that.pageCount,_that.forceOcr);case ChunkingReason_LargeAndManyPages() when largeAndManyPages != null:
+return largeAndManyPages(_that.sizeBytes,_that.pageCount);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class ChunkingReason_LargeFile extends ChunkingReason {
+  const ChunkingReason_LargeFile({required this.sizeBytes, required this.thresholdBytes}): super._();
+  
+
+/// Actual size in bytes.
+ final  PlatformInt64 sizeBytes;
+/// Threshold in bytes.
+ final  PlatformInt64 thresholdBytes;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingReason_LargeFileCopyWith<ChunkingReason_LargeFile> get copyWith => _$ChunkingReason_LargeFileCopyWithImpl<ChunkingReason_LargeFile>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingReason_LargeFile&&(identical(other.sizeBytes, sizeBytes) || other.sizeBytes == sizeBytes)&&(identical(other.thresholdBytes, thresholdBytes) || other.thresholdBytes == thresholdBytes));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,sizeBytes,thresholdBytes);
+
+@override
+String toString() {
+  return 'ChunkingReason.largeFile(sizeBytes: $sizeBytes, thresholdBytes: $thresholdBytes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingReason_LargeFileCopyWith<$Res> implements $ChunkingReasonCopyWith<$Res> {
+  factory $ChunkingReason_LargeFileCopyWith(ChunkingReason_LargeFile value, $Res Function(ChunkingReason_LargeFile) _then) = _$ChunkingReason_LargeFileCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 sizeBytes, PlatformInt64 thresholdBytes
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingReason_LargeFileCopyWithImpl<$Res>
+    implements $ChunkingReason_LargeFileCopyWith<$Res> {
+  _$ChunkingReason_LargeFileCopyWithImpl(this._self, this._then);
+
+  final ChunkingReason_LargeFile _self;
+  final $Res Function(ChunkingReason_LargeFile) _then;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? sizeBytes = null,Object? thresholdBytes = null,}) {
+  return _then(ChunkingReason_LargeFile(
+sizeBytes: null == sizeBytes ? _self.sizeBytes : sizeBytes // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,thresholdBytes: null == thresholdBytes ? _self.thresholdBytes : thresholdBytes // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ChunkingReason_ManyPages extends ChunkingReason {
+  const ChunkingReason_ManyPages({required this.pageCount, required this.threshold}): super._();
+  
+
+/// Actual page count.
+ final  PlatformInt64 pageCount;
+/// Threshold page count.
+ final  PlatformInt64 threshold;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingReason_ManyPagesCopyWith<ChunkingReason_ManyPages> get copyWith => _$ChunkingReason_ManyPagesCopyWithImpl<ChunkingReason_ManyPages>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingReason_ManyPages&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.threshold, threshold) || other.threshold == threshold));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,pageCount,threshold);
+
+@override
+String toString() {
+  return 'ChunkingReason.manyPages(pageCount: $pageCount, threshold: $threshold)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingReason_ManyPagesCopyWith<$Res> implements $ChunkingReasonCopyWith<$Res> {
+  factory $ChunkingReason_ManyPagesCopyWith(ChunkingReason_ManyPages value, $Res Function(ChunkingReason_ManyPages) _then) = _$ChunkingReason_ManyPagesCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 pageCount, PlatformInt64 threshold
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingReason_ManyPagesCopyWithImpl<$Res>
+    implements $ChunkingReason_ManyPagesCopyWith<$Res> {
+  _$ChunkingReason_ManyPagesCopyWithImpl(this._self, this._then);
+
+  final ChunkingReason_ManyPages _self;
+  final $Res Function(ChunkingReason_ManyPages) _then;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? pageCount = null,Object? threshold = null,}) {
+  return _then(ChunkingReason_ManyPages(
+pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,threshold: null == threshold ? _self.threshold : threshold // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ChunkingReason_OcrRequired extends ChunkingReason {
+  const ChunkingReason_OcrRequired({required this.pageCount, required this.forceOcr}): super._();
+  
+
+/// Page count.
+ final  PlatformInt64 pageCount;
+/// Whether OCR is forced.
+ final  bool forceOcr;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingReason_OcrRequiredCopyWith<ChunkingReason_OcrRequired> get copyWith => _$ChunkingReason_OcrRequiredCopyWithImpl<ChunkingReason_OcrRequired>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingReason_OcrRequired&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.forceOcr, forceOcr) || other.forceOcr == forceOcr));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,pageCount,forceOcr);
+
+@override
+String toString() {
+  return 'ChunkingReason.ocrRequired(pageCount: $pageCount, forceOcr: $forceOcr)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingReason_OcrRequiredCopyWith<$Res> implements $ChunkingReasonCopyWith<$Res> {
+  factory $ChunkingReason_OcrRequiredCopyWith(ChunkingReason_OcrRequired value, $Res Function(ChunkingReason_OcrRequired) _then) = _$ChunkingReason_OcrRequiredCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 pageCount, bool forceOcr
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingReason_OcrRequiredCopyWithImpl<$Res>
+    implements $ChunkingReason_OcrRequiredCopyWith<$Res> {
+  _$ChunkingReason_OcrRequiredCopyWithImpl(this._self, this._then);
+
+  final ChunkingReason_OcrRequired _self;
+  final $Res Function(ChunkingReason_OcrRequired) _then;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? pageCount = null,Object? forceOcr = null,}) {
+  return _then(ChunkingReason_OcrRequired(
+pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,forceOcr: null == forceOcr ? _self.forceOcr : forceOcr // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ChunkingReason_LargeAndManyPages extends ChunkingReason {
+  const ChunkingReason_LargeAndManyPages({required this.sizeBytes, required this.pageCount}): super._();
+  
+
+/// Actual size in bytes.
+ final  PlatformInt64 sizeBytes;
+/// Actual page count.
+ final  PlatformInt64 pageCount;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChunkingReason_LargeAndManyPagesCopyWith<ChunkingReason_LargeAndManyPages> get copyWith => _$ChunkingReason_LargeAndManyPagesCopyWithImpl<ChunkingReason_LargeAndManyPages>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChunkingReason_LargeAndManyPages&&(identical(other.sizeBytes, sizeBytes) || other.sizeBytes == sizeBytes)&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,sizeBytes,pageCount);
+
+@override
+String toString() {
+  return 'ChunkingReason.largeAndManyPages(sizeBytes: $sizeBytes, pageCount: $pageCount)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChunkingReason_LargeAndManyPagesCopyWith<$Res> implements $ChunkingReasonCopyWith<$Res> {
+  factory $ChunkingReason_LargeAndManyPagesCopyWith(ChunkingReason_LargeAndManyPages value, $Res Function(ChunkingReason_LargeAndManyPages) _then) = _$ChunkingReason_LargeAndManyPagesCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 sizeBytes, PlatformInt64 pageCount
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChunkingReason_LargeAndManyPagesCopyWithImpl<$Res>
+    implements $ChunkingReason_LargeAndManyPagesCopyWith<$Res> {
+  _$ChunkingReason_LargeAndManyPagesCopyWithImpl(this._self, this._then);
+
+  final ChunkingReason_LargeAndManyPages _self;
+  final $Res Function(ChunkingReason_LargeAndManyPages) _then;
+
+/// Create a copy of ChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? sizeBytes = null,Object? pageCount = null,}) {
+  return _then(ChunkingReason_LargeAndManyPages(
+sizeBytes: null == sizeBytes ? _self.sizeBytes : sizeBytes // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$DiffLine {
 
  String get field0;
@@ -1856,6 +2690,338 @@ class _$EmbeddingModelType_PluginCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? name = null,}) {
   return _then(EmbeddingModelType_Plugin(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$EnrichStatus {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnrichStatus);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EnrichStatus()';
+}
+
+
+}
+
+/// @nodoc
+class $EnrichStatusCopyWith<$Res>  {
+$EnrichStatusCopyWith(EnrichStatus _, $Res Function(EnrichStatus) __);
+}
+
+
+/// Adds pattern-matching-related methods to [EnrichStatus].
+extension EnrichStatusPatterns on EnrichStatus {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( EnrichStatus_Pending value)?  pending,TResult Function( EnrichStatus_Completed value)?  completed,TResult Function( EnrichStatus_Failed value)?  failed,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case EnrichStatus_Pending() when pending != null:
+return pending(_that);case EnrichStatus_Completed() when completed != null:
+return completed(_that);case EnrichStatus_Failed() when failed != null:
+return failed(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( EnrichStatus_Pending value)  pending,required TResult Function( EnrichStatus_Completed value)  completed,required TResult Function( EnrichStatus_Failed value)  failed,}){
+final _that = this;
+switch (_that) {
+case EnrichStatus_Pending():
+return pending(_that);case EnrichStatus_Completed():
+return completed(_that);case EnrichStatus_Failed():
+return failed(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( EnrichStatus_Pending value)?  pending,TResult? Function( EnrichStatus_Completed value)?  completed,TResult? Function( EnrichStatus_Failed value)?  failed,}){
+final _that = this;
+switch (_that) {
+case EnrichStatus_Pending() when pending != null:
+return pending(_that);case EnrichStatus_Completed() when completed != null:
+return completed(_that);case EnrichStatus_Failed() when failed != null:
+return failed(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  pending,TResult Function( EnrichResult result)?  completed,TResult Function( String error)?  failed,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case EnrichStatus_Pending() when pending != null:
+return pending();case EnrichStatus_Completed() when completed != null:
+return completed(_that.result);case EnrichStatus_Failed() when failed != null:
+return failed(_that.error);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  pending,required TResult Function( EnrichResult result)  completed,required TResult Function( String error)  failed,}) {final _that = this;
+switch (_that) {
+case EnrichStatus_Pending():
+return pending();case EnrichStatus_Completed():
+return completed(_that.result);case EnrichStatus_Failed():
+return failed(_that.error);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  pending,TResult? Function( EnrichResult result)?  completed,TResult? Function( String error)?  failed,}) {final _that = this;
+switch (_that) {
+case EnrichStatus_Pending() when pending != null:
+return pending();case EnrichStatus_Completed() when completed != null:
+return completed(_that.result);case EnrichStatus_Failed() when failed != null:
+return failed(_that.error);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class EnrichStatus_Pending extends EnrichStatus {
+  const EnrichStatus_Pending(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnrichStatus_Pending);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EnrichStatus.pending()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class EnrichStatus_Completed extends EnrichStatus {
+  const EnrichStatus_Completed({required this.result}): super._();
+  
+
+/// The enrichment output.
+ final  EnrichResult result;
+
+/// Create a copy of EnrichStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EnrichStatus_CompletedCopyWith<EnrichStatus_Completed> get copyWith => _$EnrichStatus_CompletedCopyWithImpl<EnrichStatus_Completed>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnrichStatus_Completed&&(identical(other.result, result) || other.result == result));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,result);
+
+@override
+String toString() {
+  return 'EnrichStatus.completed(result: $result)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EnrichStatus_CompletedCopyWith<$Res> implements $EnrichStatusCopyWith<$Res> {
+  factory $EnrichStatus_CompletedCopyWith(EnrichStatus_Completed value, $Res Function(EnrichStatus_Completed) _then) = _$EnrichStatus_CompletedCopyWithImpl;
+@useResult
+$Res call({
+ EnrichResult result
+});
+
+
+
+
+}
+/// @nodoc
+class _$EnrichStatus_CompletedCopyWithImpl<$Res>
+    implements $EnrichStatus_CompletedCopyWith<$Res> {
+  _$EnrichStatus_CompletedCopyWithImpl(this._self, this._then);
+
+  final EnrichStatus_Completed _self;
+  final $Res Function(EnrichStatus_Completed) _then;
+
+/// Create a copy of EnrichStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? result = null,}) {
+  return _then(EnrichStatus_Completed(
+result: null == result ? _self.result : result // ignore: cast_nullable_to_non_nullable
+as EnrichResult,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class EnrichStatus_Failed extends EnrichStatus {
+  const EnrichStatus_Failed({required this.error}): super._();
+  
+
+/// Human-readable error message describing the failure reason.
+ final  String error;
+
+/// Create a copy of EnrichStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EnrichStatus_FailedCopyWith<EnrichStatus_Failed> get copyWith => _$EnrichStatus_FailedCopyWithImpl<EnrichStatus_Failed>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnrichStatus_Failed&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'EnrichStatus.failed(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EnrichStatus_FailedCopyWith<$Res> implements $EnrichStatusCopyWith<$Res> {
+  factory $EnrichStatus_FailedCopyWith(EnrichStatus_Failed value, $Res Function(EnrichStatus_Failed) _then) = _$EnrichStatus_FailedCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class _$EnrichStatus_FailedCopyWithImpl<$Res>
+    implements $EnrichStatus_FailedCopyWith<$Res> {
+  _$EnrichStatus_FailedCopyWithImpl(this._self, this._then);
+
+  final EnrichStatus_Failed _self;
+  final $Res Function(EnrichStatus_Failed) _then;
+
+/// Create a copy of EnrichStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(EnrichStatus_Failed(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -4090,6 +5256,329 @@ String toString() {
 
 
 /// @nodoc
+mixin _$HeuristicsError {
+
+ String get field0;
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$HeuristicsErrorCopyWith<HeuristicsError> get copyWith => _$HeuristicsErrorCopyWithImpl<HeuristicsError>(this as HeuristicsError, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HeuristicsError&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'HeuristicsError(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $HeuristicsErrorCopyWith<$Res>  {
+  factory $HeuristicsErrorCopyWith(HeuristicsError value, $Res Function(HeuristicsError) _then) = _$HeuristicsErrorCopyWithImpl;
+@useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$HeuristicsErrorCopyWithImpl<$Res>
+    implements $HeuristicsErrorCopyWith<$Res> {
+  _$HeuristicsErrorCopyWithImpl(this._self, this._then);
+
+  final HeuristicsError _self;
+  final $Res Function(HeuristicsError) _then;
+
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? field0 = null,}) {
+  return _then(_self.copyWith(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [HeuristicsError].
+extension HeuristicsErrorPatterns on HeuristicsError {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( HeuristicsError_ConfigError value)?  configError,TResult Function( HeuristicsError_PdfAnalysisError value)?  pdfAnalysisError,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError() when configError != null:
+return configError(_that);case HeuristicsError_PdfAnalysisError() when pdfAnalysisError != null:
+return pdfAnalysisError(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( HeuristicsError_ConfigError value)  configError,required TResult Function( HeuristicsError_PdfAnalysisError value)  pdfAnalysisError,}){
+final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError():
+return configError(_that);case HeuristicsError_PdfAnalysisError():
+return pdfAnalysisError(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( HeuristicsError_ConfigError value)?  configError,TResult? Function( HeuristicsError_PdfAnalysisError value)?  pdfAnalysisError,}){
+final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError() when configError != null:
+return configError(_that);case HeuristicsError_PdfAnalysisError() when pdfAnalysisError != null:
+return pdfAnalysisError(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String field0)?  configError,TResult Function( String field0)?  pdfAnalysisError,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError() when configError != null:
+return configError(_that.field0);case HeuristicsError_PdfAnalysisError() when pdfAnalysisError != null:
+return pdfAnalysisError(_that.field0);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String field0)  configError,required TResult Function( String field0)  pdfAnalysisError,}) {final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError():
+return configError(_that.field0);case HeuristicsError_PdfAnalysisError():
+return pdfAnalysisError(_that.field0);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String field0)?  configError,TResult? Function( String field0)?  pdfAnalysisError,}) {final _that = this;
+switch (_that) {
+case HeuristicsError_ConfigError() when configError != null:
+return configError(_that.field0);case HeuristicsError_PdfAnalysisError() when pdfAnalysisError != null:
+return pdfAnalysisError(_that.field0);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class HeuristicsError_ConfigError extends HeuristicsError {
+  const HeuristicsError_ConfigError({required this.field0}): super._();
+  
+
+@override final  String field0;
+
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$HeuristicsError_ConfigErrorCopyWith<HeuristicsError_ConfigError> get copyWith => _$HeuristicsError_ConfigErrorCopyWithImpl<HeuristicsError_ConfigError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HeuristicsError_ConfigError&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'HeuristicsError.configError(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $HeuristicsError_ConfigErrorCopyWith<$Res> implements $HeuristicsErrorCopyWith<$Res> {
+  factory $HeuristicsError_ConfigErrorCopyWith(HeuristicsError_ConfigError value, $Res Function(HeuristicsError_ConfigError) _then) = _$HeuristicsError_ConfigErrorCopyWithImpl;
+@override @useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$HeuristicsError_ConfigErrorCopyWithImpl<$Res>
+    implements $HeuristicsError_ConfigErrorCopyWith<$Res> {
+  _$HeuristicsError_ConfigErrorCopyWithImpl(this._self, this._then);
+
+  final HeuristicsError_ConfigError _self;
+  final $Res Function(HeuristicsError_ConfigError) _then;
+
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(HeuristicsError_ConfigError(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class HeuristicsError_PdfAnalysisError extends HeuristicsError {
+  const HeuristicsError_PdfAnalysisError({required this.field0}): super._();
+  
+
+@override final  String field0;
+
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$HeuristicsError_PdfAnalysisErrorCopyWith<HeuristicsError_PdfAnalysisError> get copyWith => _$HeuristicsError_PdfAnalysisErrorCopyWithImpl<HeuristicsError_PdfAnalysisError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HeuristicsError_PdfAnalysisError&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'HeuristicsError.pdfAnalysisError(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $HeuristicsError_PdfAnalysisErrorCopyWith<$Res> implements $HeuristicsErrorCopyWith<$Res> {
+  factory $HeuristicsError_PdfAnalysisErrorCopyWith(HeuristicsError_PdfAnalysisError value, $Res Function(HeuristicsError_PdfAnalysisError) _then) = _$HeuristicsError_PdfAnalysisErrorCopyWithImpl;
+@override @useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$HeuristicsError_PdfAnalysisErrorCopyWithImpl<$Res>
+    implements $HeuristicsError_PdfAnalysisErrorCopyWith<$Res> {
+  _$HeuristicsError_PdfAnalysisErrorCopyWithImpl(this._self, this._then);
+
+  final HeuristicsError_PdfAnalysisError _self;
+  final $Res Function(HeuristicsError_PdfAnalysisError) _then;
+
+/// Create a copy of HeuristicsError
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(HeuristicsError_PdfAnalysisError(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$ImageOutputFormat {
 
 
@@ -5983,6 +7472,1117 @@ as String,
 
 
 }
+
+/// @nodoc
+mixin _$LoadError {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LoadError()';
+}
+
+
+}
+
+/// @nodoc
+class $LoadErrorCopyWith<$Res>  {
+$LoadErrorCopyWith(LoadError _, $Res Function(LoadError) __);
+}
+
+
+/// Adds pattern-matching-related methods to [LoadError].
+extension LoadErrorPatterns on LoadError {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( LoadError_Parse value)?  parse,TResult Function( LoadError_SchemaValidation value)?  schemaValidation,TResult Function( LoadError_Deserialize value)?  deserialize,TResult Function( LoadError_IdMismatch value)?  idMismatch,TResult Function( LoadError_BadMetaSchema value)?  badMetaSchema,TResult Function( LoadError_Io value)?  io,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case LoadError_Parse() when parse != null:
+return parse(_that);case LoadError_SchemaValidation() when schemaValidation != null:
+return schemaValidation(_that);case LoadError_Deserialize() when deserialize != null:
+return deserialize(_that);case LoadError_IdMismatch() when idMismatch != null:
+return idMismatch(_that);case LoadError_BadMetaSchema() when badMetaSchema != null:
+return badMetaSchema(_that);case LoadError_Io() when io != null:
+return io(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( LoadError_Parse value)  parse,required TResult Function( LoadError_SchemaValidation value)  schemaValidation,required TResult Function( LoadError_Deserialize value)  deserialize,required TResult Function( LoadError_IdMismatch value)  idMismatch,required TResult Function( LoadError_BadMetaSchema value)  badMetaSchema,required TResult Function( LoadError_Io value)  io,}){
+final _that = this;
+switch (_that) {
+case LoadError_Parse():
+return parse(_that);case LoadError_SchemaValidation():
+return schemaValidation(_that);case LoadError_Deserialize():
+return deserialize(_that);case LoadError_IdMismatch():
+return idMismatch(_that);case LoadError_BadMetaSchema():
+return badMetaSchema(_that);case LoadError_Io():
+return io(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( LoadError_Parse value)?  parse,TResult? Function( LoadError_SchemaValidation value)?  schemaValidation,TResult? Function( LoadError_Deserialize value)?  deserialize,TResult? Function( LoadError_IdMismatch value)?  idMismatch,TResult? Function( LoadError_BadMetaSchema value)?  badMetaSchema,TResult? Function( LoadError_Io value)?  io,}){
+final _that = this;
+switch (_that) {
+case LoadError_Parse() when parse != null:
+return parse(_that);case LoadError_SchemaValidation() when schemaValidation != null:
+return schemaValidation(_that);case LoadError_Deserialize() when deserialize != null:
+return deserialize(_that);case LoadError_IdMismatch() when idMismatch != null:
+return idMismatch(_that);case LoadError_BadMetaSchema() when badMetaSchema != null:
+return badMetaSchema(_that);case LoadError_Io() when io != null:
+return io(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String path)?  parse,TResult Function( String path,  String errors)?  schemaValidation,TResult Function( String path)?  deserialize,TResult Function( String path,  String declared,  String expected)?  idMismatch,TResult Function( String field0)?  badMetaSchema,TResult Function( String field0)?  io,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case LoadError_Parse() when parse != null:
+return parse(_that.path);case LoadError_SchemaValidation() when schemaValidation != null:
+return schemaValidation(_that.path,_that.errors);case LoadError_Deserialize() when deserialize != null:
+return deserialize(_that.path);case LoadError_IdMismatch() when idMismatch != null:
+return idMismatch(_that.path,_that.declared,_that.expected);case LoadError_BadMetaSchema() when badMetaSchema != null:
+return badMetaSchema(_that.field0);case LoadError_Io() when io != null:
+return io(_that.field0);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String path)  parse,required TResult Function( String path,  String errors)  schemaValidation,required TResult Function( String path)  deserialize,required TResult Function( String path,  String declared,  String expected)  idMismatch,required TResult Function( String field0)  badMetaSchema,required TResult Function( String field0)  io,}) {final _that = this;
+switch (_that) {
+case LoadError_Parse():
+return parse(_that.path);case LoadError_SchemaValidation():
+return schemaValidation(_that.path,_that.errors);case LoadError_Deserialize():
+return deserialize(_that.path);case LoadError_IdMismatch():
+return idMismatch(_that.path,_that.declared,_that.expected);case LoadError_BadMetaSchema():
+return badMetaSchema(_that.field0);case LoadError_Io():
+return io(_that.field0);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String path)?  parse,TResult? Function( String path,  String errors)?  schemaValidation,TResult? Function( String path)?  deserialize,TResult? Function( String path,  String declared,  String expected)?  idMismatch,TResult? Function( String field0)?  badMetaSchema,TResult? Function( String field0)?  io,}) {final _that = this;
+switch (_that) {
+case LoadError_Parse() when parse != null:
+return parse(_that.path);case LoadError_SchemaValidation() when schemaValidation != null:
+return schemaValidation(_that.path,_that.errors);case LoadError_Deserialize() when deserialize != null:
+return deserialize(_that.path);case LoadError_IdMismatch() when idMismatch != null:
+return idMismatch(_that.path,_that.declared,_that.expected);case LoadError_BadMetaSchema() when badMetaSchema != null:
+return badMetaSchema(_that.field0);case LoadError_Io() when io != null:
+return io(_that.field0);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class LoadError_Parse extends LoadError {
+  const LoadError_Parse({required this.path}): super._();
+  
+
+ final  String path;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_ParseCopyWith<LoadError_Parse> get copyWith => _$LoadError_ParseCopyWithImpl<LoadError_Parse>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_Parse&&(identical(other.path, path) || other.path == path));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,path);
+
+@override
+String toString() {
+  return 'LoadError.parse(path: $path)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_ParseCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_ParseCopyWith(LoadError_Parse value, $Res Function(LoadError_Parse) _then) = _$LoadError_ParseCopyWithImpl;
+@useResult
+$Res call({
+ String path
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_ParseCopyWithImpl<$Res>
+    implements $LoadError_ParseCopyWith<$Res> {
+  _$LoadError_ParseCopyWithImpl(this._self, this._then);
+
+  final LoadError_Parse _self;
+  final $Res Function(LoadError_Parse) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? path = null,}) {
+  return _then(LoadError_Parse(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class LoadError_SchemaValidation extends LoadError {
+  const LoadError_SchemaValidation({required this.path, required this.errors}): super._();
+  
+
+ final  String path;
+ final  String errors;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_SchemaValidationCopyWith<LoadError_SchemaValidation> get copyWith => _$LoadError_SchemaValidationCopyWithImpl<LoadError_SchemaValidation>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_SchemaValidation&&(identical(other.path, path) || other.path == path)&&(identical(other.errors, errors) || other.errors == errors));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,path,errors);
+
+@override
+String toString() {
+  return 'LoadError.schemaValidation(path: $path, errors: $errors)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_SchemaValidationCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_SchemaValidationCopyWith(LoadError_SchemaValidation value, $Res Function(LoadError_SchemaValidation) _then) = _$LoadError_SchemaValidationCopyWithImpl;
+@useResult
+$Res call({
+ String path, String errors
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_SchemaValidationCopyWithImpl<$Res>
+    implements $LoadError_SchemaValidationCopyWith<$Res> {
+  _$LoadError_SchemaValidationCopyWithImpl(this._self, this._then);
+
+  final LoadError_SchemaValidation _self;
+  final $Res Function(LoadError_SchemaValidation) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? path = null,Object? errors = null,}) {
+  return _then(LoadError_SchemaValidation(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,errors: null == errors ? _self.errors : errors // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class LoadError_Deserialize extends LoadError {
+  const LoadError_Deserialize({required this.path}): super._();
+  
+
+ final  String path;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_DeserializeCopyWith<LoadError_Deserialize> get copyWith => _$LoadError_DeserializeCopyWithImpl<LoadError_Deserialize>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_Deserialize&&(identical(other.path, path) || other.path == path));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,path);
+
+@override
+String toString() {
+  return 'LoadError.deserialize(path: $path)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_DeserializeCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_DeserializeCopyWith(LoadError_Deserialize value, $Res Function(LoadError_Deserialize) _then) = _$LoadError_DeserializeCopyWithImpl;
+@useResult
+$Res call({
+ String path
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_DeserializeCopyWithImpl<$Res>
+    implements $LoadError_DeserializeCopyWith<$Res> {
+  _$LoadError_DeserializeCopyWithImpl(this._self, this._then);
+
+  final LoadError_Deserialize _self;
+  final $Res Function(LoadError_Deserialize) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? path = null,}) {
+  return _then(LoadError_Deserialize(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class LoadError_IdMismatch extends LoadError {
+  const LoadError_IdMismatch({required this.path, required this.declared, required this.expected}): super._();
+  
+
+ final  String path;
+ final  String declared;
+ final  String expected;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_IdMismatchCopyWith<LoadError_IdMismatch> get copyWith => _$LoadError_IdMismatchCopyWithImpl<LoadError_IdMismatch>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_IdMismatch&&(identical(other.path, path) || other.path == path)&&(identical(other.declared, declared) || other.declared == declared)&&(identical(other.expected, expected) || other.expected == expected));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,path,declared,expected);
+
+@override
+String toString() {
+  return 'LoadError.idMismatch(path: $path, declared: $declared, expected: $expected)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_IdMismatchCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_IdMismatchCopyWith(LoadError_IdMismatch value, $Res Function(LoadError_IdMismatch) _then) = _$LoadError_IdMismatchCopyWithImpl;
+@useResult
+$Res call({
+ String path, String declared, String expected
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_IdMismatchCopyWithImpl<$Res>
+    implements $LoadError_IdMismatchCopyWith<$Res> {
+  _$LoadError_IdMismatchCopyWithImpl(this._self, this._then);
+
+  final LoadError_IdMismatch _self;
+  final $Res Function(LoadError_IdMismatch) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? path = null,Object? declared = null,Object? expected = null,}) {
+  return _then(LoadError_IdMismatch(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,declared: null == declared ? _self.declared : declared // ignore: cast_nullable_to_non_nullable
+as String,expected: null == expected ? _self.expected : expected // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class LoadError_BadMetaSchema extends LoadError {
+  const LoadError_BadMetaSchema({required this.field0}): super._();
+  
+
+ final  String field0;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_BadMetaSchemaCopyWith<LoadError_BadMetaSchema> get copyWith => _$LoadError_BadMetaSchemaCopyWithImpl<LoadError_BadMetaSchema>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_BadMetaSchema&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'LoadError.badMetaSchema(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_BadMetaSchemaCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_BadMetaSchemaCopyWith(LoadError_BadMetaSchema value, $Res Function(LoadError_BadMetaSchema) _then) = _$LoadError_BadMetaSchemaCopyWithImpl;
+@useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_BadMetaSchemaCopyWithImpl<$Res>
+    implements $LoadError_BadMetaSchemaCopyWith<$Res> {
+  _$LoadError_BadMetaSchemaCopyWithImpl(this._self, this._then);
+
+  final LoadError_BadMetaSchema _self;
+  final $Res Function(LoadError_BadMetaSchema) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(LoadError_BadMetaSchema(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class LoadError_Io extends LoadError {
+  const LoadError_Io({required this.field0}): super._();
+  
+
+ final  String field0;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LoadError_IoCopyWith<LoadError_Io> get copyWith => _$LoadError_IoCopyWithImpl<LoadError_Io>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoadError_Io&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'LoadError.io(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LoadError_IoCopyWith<$Res> implements $LoadErrorCopyWith<$Res> {
+  factory $LoadError_IoCopyWith(LoadError_Io value, $Res Function(LoadError_Io) _then) = _$LoadError_IoCopyWithImpl;
+@useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$LoadError_IoCopyWithImpl<$Res>
+    implements $LoadError_IoCopyWith<$Res> {
+  _$LoadError_IoCopyWithImpl(this._self, this._then);
+
+  final LoadError_Io _self;
+  final $Res Function(LoadError_Io) _then;
+
+/// Create a copy of LoadError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(LoadError_Io(
+field0: null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$NoChunkingReason {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'NoChunkingReason()';
+}
+
+
+}
+
+/// @nodoc
+class $NoChunkingReasonCopyWith<$Res>  {
+$NoChunkingReasonCopyWith(NoChunkingReason _, $Res Function(NoChunkingReason) __);
+}
+
+
+/// Adds pattern-matching-related methods to [NoChunkingReason].
+extension NoChunkingReasonPatterns on NoChunkingReason {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NoChunkingReason_SmallFile value)?  smallFile,TResult Function( NoChunkingReason_FewPages value)?  fewPages,TResult Function( NoChunkingReason_TextLayerDetected value)?  textLayerDetected,TResult Function( NoChunkingReason_FormatNotChunkable value)?  formatNotChunkable,TResult Function( NoChunkingReason_ChunkingDisabled value)?  chunkingDisabled,TResult Function( NoChunkingReason_FastTextExtraction value)?  fastTextExtraction,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile() when smallFile != null:
+return smallFile(_that);case NoChunkingReason_FewPages() when fewPages != null:
+return fewPages(_that);case NoChunkingReason_TextLayerDetected() when textLayerDetected != null:
+return textLayerDetected(_that);case NoChunkingReason_FormatNotChunkable() when formatNotChunkable != null:
+return formatNotChunkable(_that);case NoChunkingReason_ChunkingDisabled() when chunkingDisabled != null:
+return chunkingDisabled(_that);case NoChunkingReason_FastTextExtraction() when fastTextExtraction != null:
+return fastTextExtraction(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NoChunkingReason_SmallFile value)  smallFile,required TResult Function( NoChunkingReason_FewPages value)  fewPages,required TResult Function( NoChunkingReason_TextLayerDetected value)  textLayerDetected,required TResult Function( NoChunkingReason_FormatNotChunkable value)  formatNotChunkable,required TResult Function( NoChunkingReason_ChunkingDisabled value)  chunkingDisabled,required TResult Function( NoChunkingReason_FastTextExtraction value)  fastTextExtraction,}){
+final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile():
+return smallFile(_that);case NoChunkingReason_FewPages():
+return fewPages(_that);case NoChunkingReason_TextLayerDetected():
+return textLayerDetected(_that);case NoChunkingReason_FormatNotChunkable():
+return formatNotChunkable(_that);case NoChunkingReason_ChunkingDisabled():
+return chunkingDisabled(_that);case NoChunkingReason_FastTextExtraction():
+return fastTextExtraction(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NoChunkingReason_SmallFile value)?  smallFile,TResult? Function( NoChunkingReason_FewPages value)?  fewPages,TResult? Function( NoChunkingReason_TextLayerDetected value)?  textLayerDetected,TResult? Function( NoChunkingReason_FormatNotChunkable value)?  formatNotChunkable,TResult? Function( NoChunkingReason_ChunkingDisabled value)?  chunkingDisabled,TResult? Function( NoChunkingReason_FastTextExtraction value)?  fastTextExtraction,}){
+final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile() when smallFile != null:
+return smallFile(_that);case NoChunkingReason_FewPages() when fewPages != null:
+return fewPages(_that);case NoChunkingReason_TextLayerDetected() when textLayerDetected != null:
+return textLayerDetected(_that);case NoChunkingReason_FormatNotChunkable() when formatNotChunkable != null:
+return formatNotChunkable(_that);case NoChunkingReason_ChunkingDisabled() when chunkingDisabled != null:
+return chunkingDisabled(_that);case NoChunkingReason_FastTextExtraction() when fastTextExtraction != null:
+return fastTextExtraction(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)?  smallFile,TResult Function( PlatformInt64 pageCount,  PlatformInt64 threshold)?  fewPages,TResult Function( double textCoverage,  PlatformInt64 avgCharsPerPage)?  textLayerDetected,TResult Function( String mimeType)?  formatNotChunkable,TResult Function()?  chunkingDisabled,TResult Function()?  fastTextExtraction,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile() when smallFile != null:
+return smallFile(_that.sizeBytes,_that.thresholdBytes);case NoChunkingReason_FewPages() when fewPages != null:
+return fewPages(_that.pageCount,_that.threshold);case NoChunkingReason_TextLayerDetected() when textLayerDetected != null:
+return textLayerDetected(_that.textCoverage,_that.avgCharsPerPage);case NoChunkingReason_FormatNotChunkable() when formatNotChunkable != null:
+return formatNotChunkable(_that.mimeType);case NoChunkingReason_ChunkingDisabled() when chunkingDisabled != null:
+return chunkingDisabled();case NoChunkingReason_FastTextExtraction() when fastTextExtraction != null:
+return fastTextExtraction();case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)  smallFile,required TResult Function( PlatformInt64 pageCount,  PlatformInt64 threshold)  fewPages,required TResult Function( double textCoverage,  PlatformInt64 avgCharsPerPage)  textLayerDetected,required TResult Function( String mimeType)  formatNotChunkable,required TResult Function()  chunkingDisabled,required TResult Function()  fastTextExtraction,}) {final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile():
+return smallFile(_that.sizeBytes,_that.thresholdBytes);case NoChunkingReason_FewPages():
+return fewPages(_that.pageCount,_that.threshold);case NoChunkingReason_TextLayerDetected():
+return textLayerDetected(_that.textCoverage,_that.avgCharsPerPage);case NoChunkingReason_FormatNotChunkable():
+return formatNotChunkable(_that.mimeType);case NoChunkingReason_ChunkingDisabled():
+return chunkingDisabled();case NoChunkingReason_FastTextExtraction():
+return fastTextExtraction();}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( PlatformInt64 sizeBytes,  PlatformInt64 thresholdBytes)?  smallFile,TResult? Function( PlatformInt64 pageCount,  PlatformInt64 threshold)?  fewPages,TResult? Function( double textCoverage,  PlatformInt64 avgCharsPerPage)?  textLayerDetected,TResult? Function( String mimeType)?  formatNotChunkable,TResult? Function()?  chunkingDisabled,TResult? Function()?  fastTextExtraction,}) {final _that = this;
+switch (_that) {
+case NoChunkingReason_SmallFile() when smallFile != null:
+return smallFile(_that.sizeBytes,_that.thresholdBytes);case NoChunkingReason_FewPages() when fewPages != null:
+return fewPages(_that.pageCount,_that.threshold);case NoChunkingReason_TextLayerDetected() when textLayerDetected != null:
+return textLayerDetected(_that.textCoverage,_that.avgCharsPerPage);case NoChunkingReason_FormatNotChunkable() when formatNotChunkable != null:
+return formatNotChunkable(_that.mimeType);case NoChunkingReason_ChunkingDisabled() when chunkingDisabled != null:
+return chunkingDisabled();case NoChunkingReason_FastTextExtraction() when fastTextExtraction != null:
+return fastTextExtraction();case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class NoChunkingReason_SmallFile extends NoChunkingReason {
+  const NoChunkingReason_SmallFile({required this.sizeBytes, required this.thresholdBytes}): super._();
+  
+
+/// Actual size in bytes.
+ final  PlatformInt64 sizeBytes;
+/// Threshold in bytes.
+ final  PlatformInt64 thresholdBytes;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NoChunkingReason_SmallFileCopyWith<NoChunkingReason_SmallFile> get copyWith => _$NoChunkingReason_SmallFileCopyWithImpl<NoChunkingReason_SmallFile>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_SmallFile&&(identical(other.sizeBytes, sizeBytes) || other.sizeBytes == sizeBytes)&&(identical(other.thresholdBytes, thresholdBytes) || other.thresholdBytes == thresholdBytes));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,sizeBytes,thresholdBytes);
+
+@override
+String toString() {
+  return 'NoChunkingReason.smallFile(sizeBytes: $sizeBytes, thresholdBytes: $thresholdBytes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NoChunkingReason_SmallFileCopyWith<$Res> implements $NoChunkingReasonCopyWith<$Res> {
+  factory $NoChunkingReason_SmallFileCopyWith(NoChunkingReason_SmallFile value, $Res Function(NoChunkingReason_SmallFile) _then) = _$NoChunkingReason_SmallFileCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 sizeBytes, PlatformInt64 thresholdBytes
+});
+
+
+
+
+}
+/// @nodoc
+class _$NoChunkingReason_SmallFileCopyWithImpl<$Res>
+    implements $NoChunkingReason_SmallFileCopyWith<$Res> {
+  _$NoChunkingReason_SmallFileCopyWithImpl(this._self, this._then);
+
+  final NoChunkingReason_SmallFile _self;
+  final $Res Function(NoChunkingReason_SmallFile) _then;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? sizeBytes = null,Object? thresholdBytes = null,}) {
+  return _then(NoChunkingReason_SmallFile(
+sizeBytes: null == sizeBytes ? _self.sizeBytes : sizeBytes // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,thresholdBytes: null == thresholdBytes ? _self.thresholdBytes : thresholdBytes // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class NoChunkingReason_FewPages extends NoChunkingReason {
+  const NoChunkingReason_FewPages({required this.pageCount, required this.threshold}): super._();
+  
+
+/// Actual page count.
+ final  PlatformInt64 pageCount;
+/// Threshold page count.
+ final  PlatformInt64 threshold;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NoChunkingReason_FewPagesCopyWith<NoChunkingReason_FewPages> get copyWith => _$NoChunkingReason_FewPagesCopyWithImpl<NoChunkingReason_FewPages>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_FewPages&&(identical(other.pageCount, pageCount) || other.pageCount == pageCount)&&(identical(other.threshold, threshold) || other.threshold == threshold));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,pageCount,threshold);
+
+@override
+String toString() {
+  return 'NoChunkingReason.fewPages(pageCount: $pageCount, threshold: $threshold)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NoChunkingReason_FewPagesCopyWith<$Res> implements $NoChunkingReasonCopyWith<$Res> {
+  factory $NoChunkingReason_FewPagesCopyWith(NoChunkingReason_FewPages value, $Res Function(NoChunkingReason_FewPages) _then) = _$NoChunkingReason_FewPagesCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 pageCount, PlatformInt64 threshold
+});
+
+
+
+
+}
+/// @nodoc
+class _$NoChunkingReason_FewPagesCopyWithImpl<$Res>
+    implements $NoChunkingReason_FewPagesCopyWith<$Res> {
+  _$NoChunkingReason_FewPagesCopyWithImpl(this._self, this._then);
+
+  final NoChunkingReason_FewPages _self;
+  final $Res Function(NoChunkingReason_FewPages) _then;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? pageCount = null,Object? threshold = null,}) {
+  return _then(NoChunkingReason_FewPages(
+pageCount: null == pageCount ? _self.pageCount : pageCount // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,threshold: null == threshold ? _self.threshold : threshold // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class NoChunkingReason_TextLayerDetected extends NoChunkingReason {
+  const NoChunkingReason_TextLayerDetected({required this.textCoverage, required this.avgCharsPerPage}): super._();
+  
+
+/// Percentage of pages with text (0.0 to 1.0).
+ final  double textCoverage;
+/// Average characters per page.
+ final  PlatformInt64 avgCharsPerPage;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NoChunkingReason_TextLayerDetectedCopyWith<NoChunkingReason_TextLayerDetected> get copyWith => _$NoChunkingReason_TextLayerDetectedCopyWithImpl<NoChunkingReason_TextLayerDetected>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_TextLayerDetected&&(identical(other.textCoverage, textCoverage) || other.textCoverage == textCoverage)&&(identical(other.avgCharsPerPage, avgCharsPerPage) || other.avgCharsPerPage == avgCharsPerPage));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,textCoverage,avgCharsPerPage);
+
+@override
+String toString() {
+  return 'NoChunkingReason.textLayerDetected(textCoverage: $textCoverage, avgCharsPerPage: $avgCharsPerPage)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NoChunkingReason_TextLayerDetectedCopyWith<$Res> implements $NoChunkingReasonCopyWith<$Res> {
+  factory $NoChunkingReason_TextLayerDetectedCopyWith(NoChunkingReason_TextLayerDetected value, $Res Function(NoChunkingReason_TextLayerDetected) _then) = _$NoChunkingReason_TextLayerDetectedCopyWithImpl;
+@useResult
+$Res call({
+ double textCoverage, PlatformInt64 avgCharsPerPage
+});
+
+
+
+
+}
+/// @nodoc
+class _$NoChunkingReason_TextLayerDetectedCopyWithImpl<$Res>
+    implements $NoChunkingReason_TextLayerDetectedCopyWith<$Res> {
+  _$NoChunkingReason_TextLayerDetectedCopyWithImpl(this._self, this._then);
+
+  final NoChunkingReason_TextLayerDetected _self;
+  final $Res Function(NoChunkingReason_TextLayerDetected) _then;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? textCoverage = null,Object? avgCharsPerPage = null,}) {
+  return _then(NoChunkingReason_TextLayerDetected(
+textCoverage: null == textCoverage ? _self.textCoverage : textCoverage // ignore: cast_nullable_to_non_nullable
+as double,avgCharsPerPage: null == avgCharsPerPage ? _self.avgCharsPerPage : avgCharsPerPage // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class NoChunkingReason_FormatNotChunkable extends NoChunkingReason {
+  const NoChunkingReason_FormatNotChunkable({required this.mimeType}): super._();
+  
+
+/// MIME type of the document.
+ final  String mimeType;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NoChunkingReason_FormatNotChunkableCopyWith<NoChunkingReason_FormatNotChunkable> get copyWith => _$NoChunkingReason_FormatNotChunkableCopyWithImpl<NoChunkingReason_FormatNotChunkable>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_FormatNotChunkable&&(identical(other.mimeType, mimeType) || other.mimeType == mimeType));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,mimeType);
+
+@override
+String toString() {
+  return 'NoChunkingReason.formatNotChunkable(mimeType: $mimeType)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NoChunkingReason_FormatNotChunkableCopyWith<$Res> implements $NoChunkingReasonCopyWith<$Res> {
+  factory $NoChunkingReason_FormatNotChunkableCopyWith(NoChunkingReason_FormatNotChunkable value, $Res Function(NoChunkingReason_FormatNotChunkable) _then) = _$NoChunkingReason_FormatNotChunkableCopyWithImpl;
+@useResult
+$Res call({
+ String mimeType
+});
+
+
+
+
+}
+/// @nodoc
+class _$NoChunkingReason_FormatNotChunkableCopyWithImpl<$Res>
+    implements $NoChunkingReason_FormatNotChunkableCopyWith<$Res> {
+  _$NoChunkingReason_FormatNotChunkableCopyWithImpl(this._self, this._then);
+
+  final NoChunkingReason_FormatNotChunkable _self;
+  final $Res Function(NoChunkingReason_FormatNotChunkable) _then;
+
+/// Create a copy of NoChunkingReason
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? mimeType = null,}) {
+  return _then(NoChunkingReason_FormatNotChunkable(
+mimeType: null == mimeType ? _self.mimeType : mimeType // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class NoChunkingReason_ChunkingDisabled extends NoChunkingReason {
+  const NoChunkingReason_ChunkingDisabled(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_ChunkingDisabled);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'NoChunkingReason.chunkingDisabled()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class NoChunkingReason_FastTextExtraction extends NoChunkingReason {
+  const NoChunkingReason_FastTextExtraction(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoChunkingReason_FastTextExtraction);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'NoChunkingReason.fastTextExtraction()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 mixin _$NodeContent {

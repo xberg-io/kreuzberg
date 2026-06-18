@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Kreuzberg Python extraction wrapper for benchmark harness.
 
 Supports four modes:
@@ -17,6 +18,14 @@ import sys
 import time
 from typing import Any
 
+from kreuzberg import (
+    ExtractionConfig,
+    OcrConfig,
+    batch_extract_files_sync,
+    extract_file,
+    extract_file_sync,
+)
+
 
 def _get_peak_memory_bytes() -> int:
     """Get peak RSS memory in bytes for the current process.
@@ -30,15 +39,6 @@ def _get_peak_memory_bytes() -> int:
     return usage.ru_maxrss
 
 
-from kreuzberg import (
-    ExtractionConfig,
-    OcrConfig,
-    batch_extract_files_sync,
-    extract_file,
-    extract_file_sync,
-)
-
-
 def _determine_ocr_used(metadata: dict[str, Any], ocr_enabled: bool) -> bool:
     """Determine if OCR was actually used based on extraction result metadata.
 
@@ -48,9 +48,7 @@ def _determine_ocr_used(metadata: dict[str, Any], ocr_enabled: bool) -> bool:
     format_type = (metadata or {}).get("format_type", "")
     if format_type == "ocr":
         return True
-    if format_type in ("image", "pdf") and ocr_enabled:
-        return True
-    return False
+    return format_type in ("image", "pdf") and ocr_enabled
 
 
 def extract_sync(file_path: str, ocr_enabled: bool, *, force_ocr: bool = False) -> dict[str, Any]:

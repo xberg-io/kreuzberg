@@ -546,9 +546,12 @@ impl ModelManager {
     /// - All v2 unified rec models (server, mobile, en_mobile)
     /// - All per-script rec models for uncovered scripts
     pub fn ensure_all_models(&self) -> Result<(), KreuzbergError> {
-        // V2 shared models (both tiers)
-        self.ensure_shared_models("server")?;
-        self.ensure_v2_det_model("mobile")?; // cls is same for both tiers
+        // V2 detection models: server tier
+        self.ensure_v2_det_model("server")?;
+        // V2 detection models: mobile tier
+        self.ensure_v2_det_model("mobile")?;
+        // V2 classification model (shared across tiers)
+        self.ensure_v2_cls_model()?;
 
         // Document orientation model
         self.ensure_doc_ori_model()?;
@@ -1167,5 +1170,33 @@ mod tests {
 
         // Should succeed without downloading
         assert!(manager.ensure_all_models().is_ok());
+    }
+
+    #[test]
+    fn test_ensure_v2_det_model_tier_selection() {
+        let temp_dir = TempDir::new().unwrap();
+        let manager = ModelManager::new(temp_dir.path().to_path_buf());
+
+        let v2_dir = temp_dir.path().join("v2");
+
+        // Pre-populate both det tier models
+        for tier in &["server", "mobile"] {
+            let dir = v2_dir.join("det").join(tier);
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join("model.onnx"), "fake").unwrap();
+        }
+
+        // Verify server tier resolves to server path
+        let server_det = manager.ensure_v2_det_model("server").unwrap();
+        assert!(server_det.ends_with("server"), "Server det path should end with 'server', got {:?}", server_det);
+        assert!(server_det.join("model.onnx").exists());
+
+        // Verify mobile tier resolves to mobile path
+        let mobile_det = manager.ensure_v2_det_model("mobile").unwrap();
+        assert!(mobile_det.ends_with("mobile"), "Mobile det path should end with 'mobile', got {:?}", mobile_det);
+        assert!(mobile_det.join("model.onnx").exists());
+
+        // Verify server and mobile det paths are different
+        assert_ne!(server_det, mobile_det, "Server and mobile det model paths should differ");
     }
 }

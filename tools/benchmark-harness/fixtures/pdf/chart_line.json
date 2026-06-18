@@ -1,0 +1,27 @@
+{
+  "document": "../../../../test_documents/charts/chart_line.pdf",
+  "file_type": "pdf",
+  "file_size": 1259,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Line chart showing monthly sales trend data",
+    "source": "manual",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/chart_line.md",
+    "source": "manual"
+  }
+}
