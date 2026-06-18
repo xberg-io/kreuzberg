@@ -1,0 +1,27 @@
+{
+  "document": "../../../../test_documents/pdf/interactive_form.pdf",
+  "file_type": "pdf",
+  "file_size": 1441,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Interactive PDF form with Widget annotation field values (not flattened)",
+    "source": "manual",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "fields_json": "../../../../test_documents/ground_truth/pdf/interactive_form.fields.json",
+    "source": "manual"
+  }
+}

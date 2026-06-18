@@ -1,0 +1,27 @@
+{
+  "document": "../../../../test_documents/charts/chart_bar.pdf",
+  "file_type": "pdf",
+  "file_size": 1159,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Bar chart showing quarterly revenue performance",
+    "source": "manual",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "markdown_file": "../../../../test_documents/ground_truth/pdf/chart_bar.md",
+    "source": "manual"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "document": "../../../../test_documents/pdf/flattened_form.pdf",
+  "file_type": "pdf",
+  "file_size": 1115,
+  "expected_frameworks": [
+    "kreuzberg",
+    "docling",
+    "markitdown",
+    "mineru",
+    "pdfminer",
+    "pdfplumber",
+    "pdftotext",
+    "pymupdf4llm",
+    "pypdf",
+    "tika",
+    "unstructured"
+  ],
+  "metadata": {
+    "description": "Flattened PDF form where field value appears in both content stream and Widget annotation",
+    "source": "manual",
+    "size_category": "small"
+  },
+  "ground_truth": {
+    "fields_json": "../../../../test_documents/ground_truth/pdf/flattened_form.fields.json",
+    "source": "manual"
+  }
+}

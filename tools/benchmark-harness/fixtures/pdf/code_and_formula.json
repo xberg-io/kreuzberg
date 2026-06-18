@@ -23,6 +23,7 @@
 	"ground_truth": {
 		"text_file": "../../../../test_documents/ground_truth/pdf/code_and_formula.txt",
 		"source": "mistral-pixtral",
-		"markdown_file": "../../../../test_documents/ground_truth/pdf/code_and_formula.md"
+		"markdown_file": "../../../../test_documents/ground_truth/pdf/code_and_formula.md",
+		"formulas_json": "../../../../test_documents/ground_truth/pdf/code_and_formula.formulas.json"
 	}
 }
