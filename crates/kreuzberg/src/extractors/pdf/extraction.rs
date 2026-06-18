@@ -191,6 +191,7 @@ pub(crate) fn extract_all_from_oxide_document(
         // Extract font-metric segments from oxide for heading detection.
         // When the PDF has a reliable structure tree, segments carry pre-assigned
         // heading roles (assigned_role) and the pipeline can skip font-size clustering.
+        #[cfg_attr(not(feature = "layout-detection"), allow(unused_mut))]
         let (mut all_page_segments, used_structure_tree) = crate::pdf::oxide::hierarchy::extract_all_segments(&mut doc)
             .map_err(|e| crate::error::KreuzbergError::Parsing {
                 message: format!("pdf_oxide hierarchy extraction failed: {e}"),
