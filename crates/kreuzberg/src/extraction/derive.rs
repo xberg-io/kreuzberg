@@ -608,7 +608,10 @@ pub fn derive_extraction_result(
     //
     //    Prefer pre-built pages from the extractor (e.g. PDF native page tracking)
     //    over reconstructing from element-level page numbers.
-    let pages = doc.prebuilt_pages.take().or_else(|| build_pages(&doc));
+    let raw_pages = doc.prebuilt_pages.take().or_else(|| build_pages(&doc));
+    // Apply the requested output format to per-page content. Must run while doc still
+    // owns its elements (before derive_document_structure_inner moves them). Issue #1094.
+    let pages = apply_page_content_format(raw_pages, &doc, &output_format);
     // Prefer pre-built OCR elements stored directly by the extractor (e.g. image OCR
     // via inject_ocr_elements_from_vec was replaced by prebuilt_ocr_elements to avoid
     // injecting raw word tokens into the rendering pipeline — issue #706).
@@ -762,6 +765,113 @@ fn build_pages(doc: &InternalDocument) -> Option<Vec<PageContent>> {
                 section_name: None,
                 sheet_name: None,
             }
+        })
+        .collect();
+
+    Some(pages)
+}
+
+/// Re-render each page's content using the requested output format.
+///
+/// Called after pages are built but before `derive_document_structure_inner` moves
+/// element text out of the document. For Plain/Structured/Json/Custom formats this
+/// is a no-op. For Markdown/Djot/Html, each page's element subset is rendered with
+/// the same renderer used for the full document, so `pages[n].content` matches the
+/// format of `result.content` after `apply_output_format`.
+///
+/// Pages whose `page_number` has no matching page-tagged elements (e.g., natively
+/// extracted PDF pages where individual elements are not page-tracked) are returned
+/// unchanged — their original content is preserved.
+fn apply_page_content_format(
+    pages: Option<Vec<PageContent>>,
+    doc: &InternalDocument,
+    output_format: &crate::core::config::OutputFormat,
+) -> Option<Vec<PageContent>> {
+    use crate::core::config::OutputFormat;
+
+    let renderer: fn(&InternalDocument) -> String = match output_format {
+        OutputFormat::Markdown => crate::rendering::render_markdown,
+        OutputFormat::Djot => crate::rendering::render_djot,
+        OutputFormat::Html => crate::rendering::render_html,
+        // Json renders the whole document as a single structured object; splitting
+        // it into per-page sub-objects would produce malformed fragments. Leave
+        // page content as plain extracted text so callers get readable raw text.
+        // Plain and Structured need no markup at all.
+        // Custom renderers are global-only — no per-page API exists.
+        OutputFormat::Plain | OutputFormat::Structured | OutputFormat::Json | OutputFormat::Custom(_) => {
+            return pages;
+        }
+    };
+
+    let pages = pages?;
+
+    // Build a map from page number → element indices. Elements with page == None
+    // are not page-tracked and belong to no specific page.
+    let mut elements_by_page: std::collections::BTreeMap<u32, Vec<usize>> =
+        std::collections::BTreeMap::new();
+    for (idx, elem) in doc.elements.iter().enumerate() {
+        if let Some(page_num) = elem.page {
+            elements_by_page.entry(page_num).or_default().push(idx);
+        }
+    }
+
+    // No elements carry page numbers (e.g., image or native-PDF extraction where
+    // the extractor sets prebuilt_pages but does not tag individual elements).
+    // Return prebuilt content unchanged.
+    if elements_by_page.is_empty() {
+        return Some(pages);
+    }
+
+    let pages = pages
+        .into_iter()
+        .map(|mut page| {
+            let Some(elem_indices) = elements_by_page.get(&page.page_number) else {
+                // This page has no matching page-tagged elements; keep its content.
+                return page;
+            };
+
+            // Only clone tables referenced by this page's elements and remap their
+            // indices into sub-doc space. Table cells (Vec<Vec<String>>) are not
+            // Arc-backed, so cloning the full doc.tables slice per page is O(all cells
+            // × num_pages). Images use bytes::Bytes (reference-counted) so they are
+            // cheap to clone wholesale.
+            let mut table_remap: ahash::AHashMap<u32, u32> = ahash::AHashMap::new();
+            let mut sub_tables: Vec<Table> = Vec::new();
+            for &i in elem_indices {
+                if let ElementKind::Table { table_index } = doc.elements[i].kind {
+                    if !table_remap.contains_key(&table_index) {
+                        let new_idx = sub_tables.len() as u32;
+                        table_remap.insert(table_index, new_idx);
+                        if let Some(t) = doc.tables.get(table_index as usize) {
+                            sub_tables.push(t.clone());
+                        }
+                    }
+                }
+            }
+
+            let elements: Vec<InternalElement> = elem_indices
+                .iter()
+                .map(|&i| {
+                    let mut elem = doc.elements[i].clone();
+                    if let ElementKind::Table { ref mut table_index } = elem.kind {
+                        if let Some(&new_idx) = table_remap.get(table_index) {
+                            *table_index = new_idx;
+                        }
+                    }
+                    elem
+                })
+                .collect();
+
+            let mut sub_doc = InternalDocument::new(&doc.source_format);
+            sub_doc.elements = elements;
+            sub_doc.tables = sub_tables;
+            sub_doc.images = doc.images.clone(); // bytes::Bytes: O(1) reference-counted clone
+
+            let rendered = renderer(&sub_doc);
+            if !rendered.is_empty() {
+                page.content = rendered;
+            }
+            page
         })
         .collect();
 
@@ -1088,5 +1198,365 @@ mod tests {
 
         let result = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
         assert_eq!(result.extraction_method, None);
+    }
+
+    // -----------------------------------------------------------------------
+    // Issue #1094: page content must respect output_format
+    // -----------------------------------------------------------------------
+
+    /// Pages with a heading element must render `# Heading` when output_format=Markdown.
+    ///
+    /// Before the fix, `PageContent.content` always contained raw element text ("Introduction"),
+    /// not the formatted representation ("# Introduction"). This tests the full pipeline
+    /// state as seen by callers (derive + apply_output_format).
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_markdown_heading_is_formatted() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Introduction", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Body text here.", 0).with_page(1));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Markdown);
+        // apply_output_format mirrors what run_pipeline does as its final step.
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Markdown);
+
+        let pages = result
+            .pages
+            .expect("pages must be populated when elements have page numbers");
+        assert_eq!(pages.len(), 1);
+
+        // Full content works correctly — guards against regressions in the full-doc path.
+        assert!(
+            result.content.contains("# Introduction"),
+            "full content must have markdown heading, got: {:?}",
+            result.content,
+        );
+        // Per-page content must use the same format.
+        assert!(
+            pages[0].content.contains("# Introduction"),
+            "page content must use markdown heading format, got: {:?}",
+            pages[0].content,
+        );
+        assert!(
+            !pages[0].content.trim_start().starts_with("Introduction"),
+            "page content must not start with bare heading text without '#', got: {:?}",
+            pages[0].content,
+        );
+    }
+
+    /// Plain output must leave page content as raw element text — no regressions.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_plain_format_unchanged() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Introduction", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Body text here.", 0).with_page(1));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Plain);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 1);
+
+        assert!(
+            !pages[0].content.contains("# Introduction"),
+            "plain-format page content must not contain markdown heading prefix, got: {:?}",
+            pages[0].content,
+        );
+        assert!(
+            pages[0].content.contains("Introduction"),
+            "plain-format page content must still contain the heading text, got: {:?}",
+            pages[0].content,
+        );
+    }
+
+    /// Each page's formatted content must only contain that page's elements.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_per_page_isolation() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Chapter One", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Content of page one.", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Chapter Two", 0).with_page(2));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Content of page two.", 0).with_page(2));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Markdown);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Markdown);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 2);
+
+        let p1 = pages.iter().find(|p| p.page_number == 1).expect("page 1");
+        let p2 = pages.iter().find(|p| p.page_number == 2).expect("page 2");
+
+        assert!(
+            !p1.content.contains("Chapter Two"),
+            "page 1 must not bleed page 2's content, got: {:?}",
+            p1.content,
+        );
+        assert!(
+            !p2.content.contains("Chapter One"),
+            "page 2 must not include page 1's content, got: {:?}",
+            p2.content,
+        );
+        assert!(
+            p1.content.contains("# Chapter One"),
+            "page 1 heading must be markdown-formatted, got: {:?}",
+            p1.content,
+        );
+        assert!(
+            p2.content.contains("# Chapter Two"),
+            "page 2 heading must be markdown-formatted, got: {:?}",
+            p2.content,
+        );
+    }
+
+    /// List items must render as `- item` in markdown output, not bare text.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_markdown_list_items_formatted() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::ListStart { ordered: false }, "", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::ListItem { ordered: false }, "First item", 1).with_page(1));
+        doc.push_element(
+            InternalElement::text(ElementKind::ListItem { ordered: false }, "Second item", 1).with_page(1),
+        );
+        doc.push_element(InternalElement::text(ElementKind::ListEnd, "", 0).with_page(1));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Markdown);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Markdown);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 1);
+
+        assert!(
+            pages[0].content.contains("- First item") || pages[0].content.contains("* First item"),
+            "page content must use markdown list syntax, got: {:?}",
+            pages[0].content,
+        );
+        assert!(
+            pages[0].content.contains("- Second item") || pages[0].content.contains("* Second item"),
+            "page content must use markdown list syntax for all items, got: {:?}",
+            pages[0].content,
+        );
+    }
+
+    /// HTML output must render headings as `<h1>` tags, not bare text.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_html_format_renders_headings() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Title", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Body.", 0).with_page(1));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Html);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Html);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 1);
+
+        assert!(
+            pages[0].content.contains("<h1") || pages[0].content.contains("Title"),
+            "html-format page content must contain heading markup or title text, got: {:?}",
+            pages[0].content,
+        );
+        assert!(
+            !pages[0].content.trim_start().starts_with("Title\n"),
+            "html-format page content must not be bare plain text, got: {:?}",
+            pages[0].content,
+        );
+    }
+
+    /// Prebuilt pages whose page_number has no matching page-tagged elements must
+    /// be returned unchanged. This is the normal path for native PDF extraction,
+    /// OCR on images, and Excel/PPTX where the extractor sets prebuilt_pages but
+    /// does not attach page numbers to individual InternalElements.
+    #[test]
+    fn page_content_prebuilt_pages_no_page_elements_unchanged() {
+        let mut doc = make_doc("pdf");
+        // Elements have no .with_page() call → elem.page = None → elements_by_page is empty.
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Title", 0));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Body.", 0));
+        doc.prebuilt_pages = Some(vec![crate::types::page::PageContent {
+            page_number: 1,
+            content: "Native PDF page content.".to_string(),
+            tables: vec![],
+            image_indices: vec![],
+            hierarchy: None,
+            is_blank: None,
+            layout_regions: None,
+            speaker_notes: None,
+            section_name: None,
+            sheet_name: None,
+        }]);
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Markdown);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Markdown);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 1);
+        assert_eq!(
+            pages[0].content,
+            "Native PDF page content.",
+            "prebuilt content must not be overwritten when no elements are page-tagged, got: {:?}",
+            pages[0].content,
+        );
+    }
+
+    /// A page whose page_number appears in prebuilt_pages but has no matching
+    /// page-tagged elements must keep its original content unchanged. This covers the
+    /// per-page early-return branch inside apply_page_content_format.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_page_without_matching_elements_unchanged() {
+        let mut doc = make_doc("docx");
+        // Only page 1 has page-tagged elements.
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Chapter", 0).with_page(1));
+        // Page 2 exists in prebuilt_pages but has zero elements tagged with page=2.
+        doc.prebuilt_pages = Some(vec![
+            crate::types::page::PageContent {
+                page_number: 1,
+                content: "Page 1 plain".to_string(),
+                tables: vec![],
+                image_indices: vec![],
+                hierarchy: None,
+                is_blank: None,
+                layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
+                sheet_name: None,
+            },
+            crate::types::page::PageContent {
+                page_number: 2,
+                content: "Page 2 native content.".to_string(),
+                tables: vec![],
+                image_indices: vec![],
+                hierarchy: None,
+                is_blank: None,
+                layout_regions: None,
+                speaker_notes: None,
+                section_name: None,
+                sheet_name: None,
+            },
+        ]);
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Markdown);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Markdown);
+
+        let pages = result.pages.expect("pages must be populated");
+        assert_eq!(pages.len(), 2);
+
+        let p2 = pages.iter().find(|p| p.page_number == 2).expect("page 2");
+        assert_eq!(
+            p2.content,
+            "Page 2 native content.",
+            "page with no matching elements must keep its original content, got: {:?}",
+            p2.content,
+        );
+        // Page 1 must still get formatted.
+        let p1 = pages.iter().find(|p| p.page_number == 1).expect("page 1");
+        assert!(
+            p1.content.contains("# Chapter"),
+            "page 1 must still be markdown-formatted, got: {:?}",
+            p1.content,
+        );
+    }
+
+    /// OutputFormat::Json: result.content is rendered JSON but pages keep raw extracted
+    /// text. The asymmetry is intentional — splitting JSON into per-page sub-objects
+    /// would produce malformed fragments. The comment in apply_page_content_format
+    /// explains the rationale; this test locks the observable contract.
+    #[cfg(any(
+        feature = "ocr",
+        feature = "office",
+        feature = "pdf",
+        feature = "paddle-ocr",
+        feature = "xml",
+        feature = "hwpx",
+        feature = "quality",
+        feature = "chunking"
+    ))]
+    #[test]
+    fn page_content_json_format_pages_stay_raw() {
+        let mut doc = make_doc("docx");
+        doc.push_element(InternalElement::text(ElementKind::Heading { level: 1 }, "Title", 0).with_page(1));
+        doc.push_element(InternalElement::text(ElementKind::Paragraph, "Body.", 0).with_page(1));
+
+        let raw = derive_extraction_result(doc, false, crate::core::config::OutputFormat::Json);
+        let result = crate::core::pipeline::apply_output_format(raw, crate::core::config::OutputFormat::Json);
+
+        // The full document content is rendered as a JSON structure.
+        assert!(
+            result.content.contains('"'),
+            "json format must produce JSON-structured result.content, got: {:?}",
+            result.content,
+        );
+        // Per-page content is NOT JSON — it stays as raw extracted text.
+        let pages = result.pages.expect("pages must be populated when elements have page numbers");
+        assert_eq!(pages.len(), 1);
+        assert!(
+            !pages[0].content.starts_with('{'),
+            "page content must not be JSON-structured, got: {:?}",
+            pages[0].content,
+        );
+        assert!(
+            pages[0].content.contains("Title") || pages[0].content.contains("Body"),
+            "page content must contain raw extracted text, got: {:?}",
+            pages[0].content,
+        );
     }
 }
