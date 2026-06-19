@@ -7,6 +7,29 @@ use ahash::AHashSet;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
+/// Controls how markdown tables are handled when they exceed the chunk size limit.
+///
+/// Only applies when `chunker_type` is `Markdown`.
+///
+/// # Variants
+///
+/// * `Split` - Default behavior: tables are split at row boundaries like any
+///   other block element. Continuation chunks contain only data rows without
+///   the header, which can break downstream consumers that need column context.
+/// * `RepeatHeader` - Prepend the table header (header row + separator row) to
+///   every continuation chunk that contains data rows from the same table.
+///   Adds a small amount of duplicate text but ensures each chunk is
+///   self-contained for extraction, search, and LLM consumption.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TableChunkingMode {
+    /// Split tables at row boundaries (default). Continuation chunks have no header.
+    #[default]
+    Split,
+    /// Prepend the table header to every chunk that continues a split table.
+    RepeatHeader,
+}
+
 /// Type of text chunker to use.
 ///
 /// # Variants
@@ -190,6 +213,19 @@ pub struct ChunkingConfig {
     /// Range: `0.0..=1.0`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub topic_threshold: Option<f32>,
+
+    /// How to handle markdown tables that exceed the chunk size limit.
+    ///
+    /// Only applies when `chunker_type` is `Markdown`.
+    ///
+    /// * `Split` (default) — tables are split at row boundaries; continuation
+    ///   chunks do not repeat the header.
+    /// * `RepeatHeader` — the table header row and separator are prepended to
+    ///   every continuation chunk so each chunk is self-contained.
+    ///
+    /// Default: `Split`
+    #[serde(default)]
+    pub table_chunking: TableChunkingMode,
 }
 
 impl ChunkingConfig {
@@ -254,6 +290,7 @@ impl ChunkingConfig {
             sizing: self.sizing.clone(),
             prepend_heading_context: self.prepend_heading_context,
             topic_threshold: self.topic_threshold,
+            table_chunking: self.table_chunking,
         }
     }
 
@@ -279,6 +316,7 @@ impl Default for ChunkingConfig {
             sizing: ChunkSizing::default(),
             prepend_heading_context: false,
             topic_threshold: None,
+            table_chunking: TableChunkingMode::Split,
         }
     }
 }

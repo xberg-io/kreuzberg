@@ -12,7 +12,7 @@ use crate::error::Result;
 use crate::types::PageBoundary;
 
 use super::builder::{build_chunk_config, build_chunks};
-use super::config::{ChunkerType, ChunkingConfig, ChunkingResult};
+use super::config::{ChunkerType, ChunkingConfig, ChunkingResult, TableChunkingMode};
 use super::headings::{build_heading_map, resolve_heading_context};
 use super::validation::validate_utf8_boundaries;
 
@@ -153,6 +153,12 @@ pub(crate) fn chunk_text_with_heading_source(
         }
     }
 
+    // For Markdown chunker with RepeatHeader mode, prepend the table header to
+    // every continuation chunk so downstream consumers retain column context.
+    if config.chunker_type == ChunkerType::Markdown && config.table_chunking == TableChunkingMode::RepeatHeader {
+        inject_table_headers(&mut chunks);
+    }
+
     let chunk_count = chunks.len();
 
     Ok(ChunkingResult { chunks, chunk_count })
@@ -193,6 +199,73 @@ fn split_with_config<'a, S: ChunkSizer>(
             TextSplitter::new(config).chunks(text).collect()
         }
         ChunkerType::Markdown => MarkdownSplitter::new(config).chunks(text).collect(),
+    }
+}
+
+/// Prepend the table header to every chunk that is a continuation of a split table.
+///
+/// A "table header" is two consecutive lines where the first starts with `|` and
+/// the second is a separator (`|---…` or `|:--…`). A "continuation chunk" is one
+/// that starts with a `|`-prefixed line but does NOT already have a separator line
+/// within its first two lines — i.e. it is mid-table rows without a header.
+///
+/// Only called when `table_chunking == RepeatHeader` and `chunker_type == Markdown`.
+fn inject_table_headers(chunks: &mut [crate::types::Chunk]) {
+    // Extract the table header from a chunk: header row + separator row as a
+    // standalone string. Returns None if the chunk contains no complete table header.
+    fn extract_table_header(content: &str) -> Option<String> {
+        let mut lines = content.lines();
+        let first = lines.next()?.trim();
+        if !first.starts_with('|') {
+            return None;
+        }
+        let second = lines.next()?.trim();
+        if !is_table_separator(second) {
+            return None;
+        }
+        Some(format!("{first}\n{second}\n"))
+    }
+
+    // Return true if a line looks like a GFM table separator (`|---|`, `|:--|`, etc.)
+    fn is_table_separator(line: &str) -> bool {
+        if !line.starts_with('|') {
+            return false;
+        }
+        line.chars().all(|c| matches!(c, '|' | '-' | ':' | ' ' | '\t')) && line.contains('-')
+    }
+
+    // Return true if a chunk starts with table rows but has no header separator
+    // within the first two lines (i.e. it is a continuation, not a table start).
+    fn is_table_continuation(content: &str) -> bool {
+        let trimmed = content.trim_start();
+        if !trimmed.starts_with('|') {
+            return false;
+        }
+        let mut lines = trimmed.lines();
+        let first = lines.next().unwrap_or("").trim();
+        if !first.starts_with('|') {
+            return false;
+        }
+        let second = lines.next().unwrap_or("").trim();
+        // If the second line is a separator this chunk already has a header.
+        !is_table_separator(second)
+    }
+
+    let mut last_header: Option<String> = None;
+
+    for chunk in chunks.iter_mut() {
+        let content = &chunk.content;
+
+        if let Some(header) = extract_table_header(content) {
+            last_header = Some(header);
+        } else if is_table_continuation(content) {
+            if let Some(ref header) = last_header {
+                chunk.content = format!("{header}{}", chunk.content);
+            }
+        } else {
+            // Non-table chunk resets the header context.
+            last_header = None;
+        }
     }
 }
 
@@ -1405,5 +1478,164 @@ mod tests {
                 assert_eq!(chunk.metadata.first_page, Some(2));
             }
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Issue #1100: table chunks must retain header in RepeatHeader mode
+    // -----------------------------------------------------------------------
+
+    fn make_large_table(rows: usize) -> String {
+        let mut s = "| Name | Value | Description |\n|------|-------|-------------|\n".to_string();
+        for i in 0..rows {
+            s.push_str(&format!(
+                "| item{i} | {i} | Description of item {i} with some extra text |\n"
+            ));
+        }
+        s
+    }
+
+    #[test]
+    fn table_repeat_header_prepends_to_continuation_chunks() {
+        let markdown = make_large_table(40);
+        let config = ChunkingConfig {
+            max_characters: 300,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Markdown,
+            table_chunking: TableChunkingMode::RepeatHeader,
+            ..Default::default()
+        };
+        let result = chunk_text(&markdown, &config, None).unwrap();
+        assert!(result.chunks.len() > 1, "table must split into multiple chunks");
+
+        for chunk in &result.chunks {
+            let trimmed = chunk.content.trim_start();
+            if trimmed.starts_with('|') {
+                assert!(
+                    chunk.content.contains("|------|"),
+                    "chunk missing separator row (header must be prepended):\n{:?}",
+                    chunk.content,
+                );
+                assert!(
+                    chunk.content.contains("| Name | Value | Description |"),
+                    "chunk missing header row:\n{:?}",
+                    chunk.content,
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn table_split_mode_default_leaves_continuation_chunks_without_header() {
+        let markdown = make_large_table(40);
+        let config = ChunkingConfig {
+            max_characters: 300,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Markdown,
+            // Default: Split — no header injection
+            ..Default::default()
+        };
+        let result = chunk_text(&markdown, &config, None).unwrap();
+        assert!(result.chunks.len() > 1, "table must split into multiple chunks");
+
+        // At least one continuation chunk must lack the header (proving default unchanged)
+        let continuation_without_header = result.chunks.iter().skip(1).any(|c| {
+            let t = c.content.trim_start();
+            t.starts_with('|') && !c.content.contains("|------|")
+        });
+        assert!(
+            continuation_without_header,
+            "default Split mode must not inject headers into continuation chunks"
+        );
+    }
+
+    #[test]
+    fn table_repeat_header_two_split_tables_each_get_own_header() {
+        // Two tables both large enough to split. Each table's continuation chunks
+        // must carry THAT table's header, not the other table's header.
+        let table1 = "| Name | Value | Description |\n|------|-------|-------------|\n".to_string()
+            + &"| item | val | some description text here |\n".repeat(30);
+        let separator = "\n\n---\n\n";
+        let table2 = "| Alpha | Beta | Gamma |\n|-------|------|-------|\n".to_string()
+            + &"| alpha | beta | gamma value here |\n".repeat(30);
+        let markdown = format!("{table1}{separator}{table2}");
+
+        let config = ChunkingConfig {
+            max_characters: 300,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Markdown,
+            table_chunking: TableChunkingMode::RepeatHeader,
+            ..Default::default()
+        };
+        let result = chunk_text(&markdown, &config, None).unwrap();
+        assert!(result.chunks.len() > 2, "both tables must produce multiple chunks");
+
+        // Every chunk that starts with a `|` row must have a header + separator
+        // within its first two lines (via injection or natural start).
+        for chunk in &result.chunks {
+            let trimmed = chunk.content.trim_start();
+            if !trimmed.starts_with('|') {
+                continue;
+            }
+            let mut lines = trimmed.lines();
+            lines.next(); // header row
+            let second = lines.next().unwrap_or("").trim();
+            assert!(
+                second.starts_with('|') && second.contains('-'),
+                "table chunk missing separator on second line:\n{:?}",
+                chunk.content,
+            );
+        }
+
+        // Chunks that contain table2 content must NOT have table1's header.
+        for chunk in &result.chunks {
+            if chunk.content.contains("alpha") || chunk.content.contains("Alpha") {
+                assert!(
+                    !chunk.content.contains("Name") || chunk.content.contains("Alpha"),
+                    "table2 chunk must not be contaminated with table1 header:\n{:?}",
+                    chunk.content,
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn table_repeat_header_text_chunker_is_unaffected() {
+        // RepeatHeader is a no-op when chunker_type is Text.
+        let markdown = make_large_table(40);
+        let config = ChunkingConfig {
+            max_characters: 300,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Text,
+            table_chunking: TableChunkingMode::RepeatHeader,
+            ..Default::default()
+        };
+        let result = chunk_text(&markdown, &config, None).unwrap();
+        // Text chunker should not crash and default split behaviour applies.
+        assert!(!result.chunks.is_empty());
+    }
+
+    #[test]
+    fn table_repeat_header_single_chunk_table_unchanged() {
+        // A table that fits in one chunk must not be duplicated.
+        let markdown = "| Col1 | Col2 |\n|------|------|\n| A    | B    |\n| C    | D    |\n";
+        let config = ChunkingConfig {
+            max_characters: 5000,
+            overlap: 0,
+            trim: true,
+            chunker_type: ChunkerType::Markdown,
+            table_chunking: TableChunkingMode::RepeatHeader,
+            ..Default::default()
+        };
+        let result = chunk_text(markdown, &config, None).unwrap();
+        assert_eq!(result.chunks.len(), 1, "small table must stay in one chunk");
+        assert_eq!(
+            result.chunks[0].content.matches("|------|").count(),
+            1,
+            "header must appear exactly once, not be duplicated"
+        );
     }
 }

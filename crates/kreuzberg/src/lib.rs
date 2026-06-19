@@ -212,7 +212,7 @@ pub use core::config::{
     ExtractionConfig, FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, MergeMode,
     NerBackendKind, NerConfig, OcrConfig, OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig,
     RedactionConfig, RedactionPattern, RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig,
-    SummarizationConfig, TokenReductionOptions, TranslationConfig,
+    SummarizationConfig, TableChunkingMode, TokenReductionOptions, TranslationConfig,
 };
 #[cfg(feature = "transcription-types")]
 pub use core::config::{TranscriptionConfig, WhisperModel};

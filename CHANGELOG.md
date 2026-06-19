@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **chunking**: `TableChunkingMode` enum and `ChunkingConfig::table_chunking` field. When set to `RepeatHeader`, the markdown chunker prepends the table header row and separator to every continuation chunk produced by splitting a large table, so each chunk is self-contained for extraction, search, and LLM consumption. Default is `Split` (previous behavior, no header injection). Only applies when `chunker_type` is `Markdown` (#1100).
+
 ## [5.0.0-rc.24] - 2026-06-19
 
 ### Changed

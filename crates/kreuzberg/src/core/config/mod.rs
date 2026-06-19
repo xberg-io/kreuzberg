@@ -50,6 +50,7 @@ pub use page::PageConfig;
 pub use pdf::{HierarchyConfig, PdfConfig};
 pub use processing::{
     ChunkSizing, ChunkerType, ChunkingConfig, EmbeddingConfig, EmbeddingModelType, PostProcessorConfig,
+    TableChunkingMode,
 };
 pub use reranker::{RerankerConfig, RerankerModelType};
 #[cfg(feature = "tree-sitter")]
