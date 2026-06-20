@@ -256,6 +256,7 @@ pub struct OcrTableBoundingBox {
 /// text recognition quality. Different preprocessing strategies work better
 /// for different document types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(default)]
 pub struct ImagePreprocessingConfig {
     /// Target DPI for the image (300 is standard, 600 for small text).
@@ -300,6 +301,7 @@ impl Default for ImagePreprocessingConfig {
 /// Most users can use the defaults, but these settings allow optimization
 /// for specific document types (invoices, handwriting, etc.).
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(default)]
 pub struct TesseractConfig {
     /// Language code (e.g., "eng", "deu", "fra")

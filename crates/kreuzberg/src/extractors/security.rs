@@ -16,6 +16,7 @@ use std::io::{Read, Seek};
 /// All limits are intentionally conservative to prevent DoS attacks
 /// while still supporting legitimate documents.
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 #[serde(default)]
 pub struct SecurityLimits {
     /// Maximum uncompressed size for archives (500 MB)

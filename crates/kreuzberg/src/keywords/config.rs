@@ -14,6 +14,7 @@ fn default_ngram_range() -> (usize, usize) {
 /// YAKE-specific parameters.
 #[cfg(feature = "keywords-yake")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(all(feature = "api", feature = "keywords-yake"), derive(utoipa::ToSchema))]
 pub struct YakeParams {
     /// Window size for co-occurrence analysis (default: 2).
     ///
@@ -31,6 +32,7 @@ impl Default for YakeParams {
 /// RAKE-specific parameters.
 #[cfg(feature = "keywords-rake")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(all(feature = "api", feature = "keywords-rake"), derive(utoipa::ToSchema))]
 pub struct RakeParams {
     /// Minimum word length to consider (default: 1).
     pub min_word_length: usize,
@@ -51,6 +53,7 @@ impl Default for RakeParams {
 
 /// Keyword extraction configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct KeywordConfig {
     /// Algorithm to use for extraction.
     #[serde(default)]
@@ -74,6 +77,7 @@ pub struct KeywordConfig {
     /// (1, 3) = unigrams, bigrams, and trigrams (default)
     #[serde(default = "default_ngram_range")]
     #[cfg_attr(alef, alef(skip))]
+    #[cfg_attr(feature = "api", schema(value_type = [usize; 2]))]
     pub ngram_range: (usize, usize),
 
     /// Language code for stopword filtering (e.g., "en", "de", "fr").
