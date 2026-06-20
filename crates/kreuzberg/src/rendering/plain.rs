@@ -352,6 +352,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
         b.push_image(Some("A nice photo"), image, None, None);
         let doc = b.build();

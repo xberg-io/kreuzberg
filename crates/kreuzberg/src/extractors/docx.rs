@@ -1334,6 +1334,7 @@ impl DocumentExtractor for DocxExtractor {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             });
         }
 

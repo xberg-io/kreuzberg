@@ -319,6 +319,7 @@ fn test_extraction_config_needs_image_processing() {
         run_ocr_on_images: true,
         ocr_text_only: false,
         append_ocr_text: false,
+        include_data_base64: false,
         output_format: kreuzberg::core::config::extraction::ImageOutputFormat::Native,
         #[cfg(feature = "svg")]
         svg: kreuzberg::core::config::extraction::SvgOptions::default(),

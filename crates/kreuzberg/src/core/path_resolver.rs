@@ -117,6 +117,7 @@ pub(crate) fn read_image_file(path: &Path, image_index: u32) -> Option<Extracted
         cluster_id: None,
         caption: None,
         qr_codes: None,
+        data_base64: None,
     })
 }
 

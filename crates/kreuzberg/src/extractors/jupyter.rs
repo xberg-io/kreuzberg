@@ -323,6 +323,7 @@ impl JupyterExtractor {
                             cluster_id: None,
                             caption: None,
                             qr_codes: None,
+                            data_base64: None,
                         });
                         content.push_str(&format!("[Image: {}]\n", mime_type));
                     }

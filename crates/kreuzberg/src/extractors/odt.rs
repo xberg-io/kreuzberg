@@ -735,6 +735,7 @@ fn build_internal_elements(
                                             cluster_id: None,
                                             caption: None,
                                             qr_codes: None,
+                                            data_base64: None,
                                         };
                                         let idx = builder.push_image(description.as_deref(), image, None, None);
                                         if let Some(h) = href {

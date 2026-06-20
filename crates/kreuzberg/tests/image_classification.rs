@@ -35,6 +35,7 @@ fn test_cluster_tiles_basic() {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         },
         ExtractedImage {
             data: Bytes::new(),
@@ -55,6 +56,7 @@ fn test_cluster_tiles_basic() {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         },
     ];
 
@@ -98,6 +100,7 @@ fn test_extracted_image_with_classification() {
         cluster_id: Some(1),
         caption: None,
         qr_codes: None,
+        data_base64: None,
     };
 
     let json = serde_json::to_string(&image).unwrap();
@@ -133,6 +136,7 @@ fn test_extracted_image_with_classification_none() {
         cluster_id: None,
         caption: None,
         qr_codes: None,
+        data_base64: None,
     };
 
     let json = serde_json::to_string(&image).unwrap();

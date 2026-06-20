@@ -500,6 +500,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         let result = ExtractionResult {

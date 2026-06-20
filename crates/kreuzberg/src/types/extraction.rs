@@ -700,6 +700,11 @@ pub struct ExtractedImage {
     /// `Some(vec![])` when detection ran but found nothing.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub qr_codes: Option<Vec<super::qr::QrCode>>,
+
+    /// Base64-encoded copy of `data`; populated when `ImageExtractionConfig::include_data_base64`
+    /// is `true`. Omitted from JSON by default; use instead of `data` in JSON-only clients.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data_base64: Option<String>,
 }
 
 // ============================================================================

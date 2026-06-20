@@ -253,6 +253,7 @@ impl EpubExtractor {
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 };
                 builder.push_image(Some("Cover"), image, None, None);
             }
@@ -420,6 +421,7 @@ impl EpubExtractor {
                                     cluster_id: None,
                                     caption: None,
                                     qr_codes: None,
+                                    data_base64: None,
                                 };
                                 builder.push_image(description.as_deref(), image, None, None);
                             } else {

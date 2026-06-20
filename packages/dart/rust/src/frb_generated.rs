@@ -9670,6 +9670,7 @@ const _: fn() = || {
         let _: Option<i64> = ExtractedImage.cluster_id;
         let _: Option<String> = ExtractedImage.caption;
         let _: Option<Vec<crate::QrCode>> = ExtractedImage.qr_codes;
+        let _: Option<String> = ExtractedImage.data_base64;
     }
     {
         let ExtractedUri = None::<crate::ExtractedUri>.unwrap();
@@ -9990,6 +9991,7 @@ const _: fn() = || {
         let _: bool = ImageExtractionConfig.append_ocr_text;
         let _: crate::ImageOutputFormat = ImageExtractionConfig.output_format;
         let _: crate::SvgOptions = ImageExtractionConfig.svg;
+        let _: bool = ImageExtractionConfig.include_data_base64;
     }
     {
         let ImageMetadata = None::<crate::ImageMetadata>.unwrap();
@@ -13635,6 +13637,7 @@ impl SseDecode for crate::ExtractedImage {
         let mut var_clusterId = <Option<i64>>::sse_decode(deserializer);
         let mut var_caption = <Option<String>>::sse_decode(deserializer);
         let mut var_qrCodes = <Option<Vec<crate::QrCode>>>::sse_decode(deserializer);
+        let mut var_dataBase64 = <Option<String>>::sse_decode(deserializer);
         return crate::ExtractedImage {
             data: var_data,
             format: var_format,
@@ -13654,6 +13657,7 @@ impl SseDecode for crate::ExtractedImage {
             cluster_id: var_clusterId,
             caption: var_caption,
             qr_codes: var_qrCodes,
+            data_base64: var_dataBase64,
         };
     }
 }
@@ -14355,6 +14359,7 @@ impl SseDecode for crate::ImageExtractionConfig {
         let mut var_appendOcrText = <bool>::sse_decode(deserializer);
         let mut var_outputFormat = <crate::ImageOutputFormat>::sse_decode(deserializer);
         let mut var_svg = <crate::SvgOptions>::sse_decode(deserializer);
+        let mut var_includeDataBase64 = <bool>::sse_decode(deserializer);
         return crate::ImageExtractionConfig {
             extract_images: var_extractImages,
             target_dpi: var_targetDpi,
@@ -14371,6 +14376,7 @@ impl SseDecode for crate::ImageExtractionConfig {
             append_ocr_text: var_appendOcrText,
             output_format: var_outputFormat,
             svg: var_svg,
+            include_data_base64: var_includeDataBase64,
         };
     }
 }
@@ -21625,6 +21631,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ExtractedImage> {
             self.0.cluster_id.into_into_dart().into_dart(),
             self.0.caption.into_into_dart().into_dart(),
             self.0.qr_codes.into_into_dart().into_dart(),
+            self.0.data_base64.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -22217,6 +22224,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageExtractionConfig> 
             self.0.append_ocr_text.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
             self.0.svg.into_into_dart().into_dart(),
+            self.0.include_data_base64.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -26839,6 +26847,7 @@ impl SseEncode for crate::ExtractedImage {
         <Option<i64>>::sse_encode(self.cluster_id, serializer);
         <Option<String>>::sse_encode(self.caption, serializer);
         <Option<Vec<crate::QrCode>>>::sse_encode(self.qr_codes, serializer);
+        <Option<String>>::sse_encode(self.data_base64, serializer);
     }
 }
 
@@ -27339,6 +27348,7 @@ impl SseEncode for crate::ImageExtractionConfig {
         <bool>::sse_encode(self.append_ocr_text, serializer);
         <crate::ImageOutputFormat>::sse_encode(self.output_format, serializer);
         <crate::SvgOptions>::sse_encode(self.svg, serializer);
+        <bool>::sse_encode(self.include_data_base64, serializer);
     }
 }
 

@@ -172,6 +172,10 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
         apply_output_format_pass(&mut result, image_cfg);
     }
 
+    if let Some(ref image_cfg) = config.images {
+        apply_data_base64_pass(&mut result, image_cfg);
+    }
+
     // 2. Run post-processing pipeline
     let pp_config = config.postprocessor.as_ref();
     let postprocessing_enabled = pp_config.is_none_or(|c| c.enabled);
@@ -348,6 +352,10 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
         apply_output_format_pass(&mut result, image_cfg);
     }
 
+    if let Some(ref image_cfg) = config.images {
+        apply_data_base64_pass(&mut result, image_cfg);
+    }
+
     // 2. Run synchronous post-processing
     execute_chunking(&mut result, config)?;
 
@@ -412,6 +420,21 @@ fn apply_output_format_pass(
                 });
             }
         }
+    }
+}
+
+/// Populate `ExtractedImage::data_base64` when the caller opts in via
+/// `ImageExtractionConfig::include_data_base64`.
+fn apply_data_base64_pass(
+    result: &mut ExtractionResult,
+    config: &crate::core::config::extraction::ImageExtractionConfig,
+) {
+    if !config.include_data_base64 {
+        return;
+    }
+    use base64::Engine as _;
+    for image in result.images.iter_mut().flatten() {
+        image.data_base64 = Some(base64::engine::general_purpose::STANDARD.encode(&image.data));
     }
 }
 

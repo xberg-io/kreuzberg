@@ -1386,6 +1386,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         });
         let out = render(&doc);
         assert!(out.contains("image_0.png"), "image link must appear; got: {}", out);
@@ -1425,6 +1426,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         });
         let out = render(&doc);
         assert!(

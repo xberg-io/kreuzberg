@@ -175,5 +175,6 @@ pub(crate) fn decode_data_uri_image(uri: &str, index: u32) -> Option<ExtractedIm
         cluster_id: None,
         caption: None,
         qr_codes: None,
+        data_base64: None,
     })
 }

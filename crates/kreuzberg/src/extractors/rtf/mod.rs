@@ -259,6 +259,7 @@ impl RtfExtractor {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             };
             builder.push_image(None, image, None, None);
         }

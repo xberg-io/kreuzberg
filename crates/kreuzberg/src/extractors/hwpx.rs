@@ -150,6 +150,7 @@ fn build_hwpx_internal_document(doc: unhwp::model::Document, mime_type: &str) ->
                                 cluster_id: None,
                                 caption: None,
                                 qr_codes: None,
+                                data_base64: None,
                             };
                             builder.push_image(img_ref.alt_text.as_deref(), image, None, None);
                             image_index += 1;

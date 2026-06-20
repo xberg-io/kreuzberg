@@ -994,6 +994,7 @@ mod tests {
             qr_codes: None,
             image_kind: None,
             kind_confidence: None,
+            data_base64: None,
         }];
         let doc = assemble_internal_document(pages, &[], Some(&images), &image_positions);
         let img_elem = doc

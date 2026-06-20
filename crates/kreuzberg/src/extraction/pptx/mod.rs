@@ -266,6 +266,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 });
             }
         }

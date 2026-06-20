@@ -313,6 +313,7 @@ pub(crate) fn extract_images_with_data(
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             };
 
             all_images.push(extracted_img);

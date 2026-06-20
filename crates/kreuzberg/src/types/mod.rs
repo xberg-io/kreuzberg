@@ -345,6 +345,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         let json = serde_json::to_string(&image).unwrap();
@@ -386,6 +387,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         let json = serde_json::to_string(&image).unwrap();
@@ -441,6 +443,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         let json_value = serde_json::to_value(&image).unwrap();
@@ -487,6 +490,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         let cloned = image.clone();
@@ -496,5 +500,41 @@ mod tests {
         // Debug should work
         let debug = format!("{:?}", image);
         assert!(debug.contains("bounding_box"));
+    }
+
+    #[test]
+    fn extracted_image_data_base64_absent_by_default() {
+        let image = ExtractedImage::default();
+        let json = serde_json::to_string(&image).unwrap();
+        assert!(
+            !json.contains("data_base64"),
+            "data_base64 must not appear when None: {json}"
+        );
+    }
+
+    #[test]
+    fn extracted_image_data_base64_round_trips() {
+        use base64::Engine as _;
+        let raw = b"hello image";
+        let b64 = base64::engine::general_purpose::STANDARD.encode(raw);
+        let image = ExtractedImage {
+            data: bytes::Bytes::from_static(raw),
+            data_base64: Some(b64.clone()),
+            ..Default::default()
+        };
+        let json = serde_json::to_string(&image).unwrap();
+        assert!(json.contains("data_base64"), "data_base64 must appear when Some");
+        let back: ExtractedImage = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.data_base64.as_deref(), Some(b64.as_str()));
+    }
+
+    #[test]
+    fn extracted_image_old_json_without_data_base64_deserializes_cleanly() {
+        let json = r#"{"data":[],"format":"png","image_index":0,"is_mask":false}"#;
+        let image: ExtractedImage = serde_json::from_str(json).unwrap();
+        assert!(
+            image.data_base64.is_none(),
+            "absent data_base64 must deserialize to None"
+        );
     }
 }

@@ -583,6 +583,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -608,6 +609,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
         ];
 
@@ -640,6 +642,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         }];
 
         cluster_tiles(&mut images);
@@ -675,6 +678,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -700,6 +704,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
         ];
 
@@ -731,6 +736,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -751,6 +757,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
         ];
 
@@ -782,6 +789,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -802,6 +810,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
         ];
 
@@ -840,6 +849,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -865,6 +875,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             // Cluster 2
             ExtractedImage {
@@ -891,6 +902,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
             ExtractedImage {
                 data: bytes::Bytes::new(),
@@ -916,6 +928,7 @@ mod tests {
                 cluster_id: None,
                 caption: None,
                 qr_codes: None,
+                data_base64: None,
             },
         ];
 
@@ -950,6 +963,7 @@ mod tests {
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 },
                 ExtractedImage {
                     data: bytes::Bytes::new(),
@@ -970,6 +984,7 @@ mod tests {
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 },
             ]
         };
@@ -1027,6 +1042,7 @@ mod tests {
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 });
             }
         }

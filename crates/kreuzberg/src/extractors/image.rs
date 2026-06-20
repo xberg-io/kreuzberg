@@ -523,6 +523,7 @@ impl DocumentExtractor for ImageExtractor {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
 
         // When disable_ocr is set (or ocr.enabled = false), skip OCR and return metadata only.

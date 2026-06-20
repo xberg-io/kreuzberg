@@ -262,6 +262,15 @@ pub struct ImageExtractionConfig {
     #[cfg(feature = "svg")]
     #[serde(default)]
     pub svg: SvgOptions,
+
+    /// When `true`, populate `ExtractedImage::data_base64` with a Base64-encoded
+    /// copy of the raw image bytes.
+    ///
+    /// Useful for JSON-only clients that cannot efficiently parse the default
+    /// integer-array serialization of `data`. Defaults to `false`; enabling it
+    /// doubles the in-memory image representation for the duration of the response.
+    #[serde(default)]
+    pub include_data_base64: bool,
 }
 
 /// Token reduction configuration.
@@ -311,6 +320,7 @@ impl Default for ImageExtractionConfig {
             output_format: ImageOutputFormat::Native,
             #[cfg(feature = "svg")]
             svg: SvgOptions::default(),
+            include_data_base64: false,
         }
     }
 }

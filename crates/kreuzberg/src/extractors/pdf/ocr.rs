@@ -1218,6 +1218,7 @@ pub(crate) fn build_page_raster_image(
         cluster_id: None,
         caption: None,
         qr_codes: None,
+        data_base64: None,
     }
 }
 

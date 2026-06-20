@@ -625,6 +625,7 @@ impl FictionBookExtractor {
                                 cluster_id: None,
                                 caption: None,
                                 qr_codes: None,
+                                data_base64: None,
                             });
                             image_index += 1;
                         }

@@ -110,6 +110,7 @@ fn build_hwp_internal_document(hwp_doc: &HwpDocument) -> InternalDocument {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
         builder.push_image(None, extracted, None, None);
     }

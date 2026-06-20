@@ -5538,6 +5538,15 @@ class ExtractedImage {
   /// `Some(vec![])` when detection ran but found nothing.
   final List<QrCode>? qrCodes;
 
+  /// Base64-encoded representation of `data`, populated when
+  /// `ImageExtractionConfig::include_data_base64` is `true`.
+  ///
+  /// When present this field holds `base64::STANDARD.encode(&data)`. Both `data`
+  /// and `data_base64` are always in sync — `data_base64` is never set without
+  /// `data` also being present. JSON-only clients that cannot consume integer-array
+  /// bytes should enable this flag and read `data_base64` instead of `data`.
+  final String? dataBase64;
+
   const ExtractedImage({
     required this.data,
     required this.format,
@@ -5557,6 +5566,7 @@ class ExtractedImage {
     this.clusterId,
     this.caption,
     this.qrCodes,
+    this.dataBase64,
   });
 
   @override
@@ -5578,7 +5588,8 @@ class ExtractedImage {
       kindConfidence.hashCode ^
       clusterId.hashCode ^
       caption.hashCode ^
-      qrCodes.hashCode;
+      qrCodes.hashCode ^
+      dataBase64.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -5602,7 +5613,8 @@ class ExtractedImage {
           kindConfidence == other.kindConfidence &&
           clusterId == other.clusterId &&
           caption == other.caption &&
-          qrCodes == other.qrCodes;
+          qrCodes == other.qrCodes &&
+          dataBase64 == other.dataBase64;
 }
 
 /// A URI extracted from a document.
@@ -7589,6 +7601,14 @@ class ImageExtractionConfig {
   /// format is SVG.  Only available when the `svg` feature is active.
   final SvgOptions svg;
 
+  /// When `true`, populate `ExtractedImage::data_base64` with a Base64-encoded
+  /// copy of the raw image bytes.
+  ///
+  /// Useful for JSON-only clients that cannot efficiently parse the default
+  /// integer-array serialization of `data`. Defaults to `false`; enabling it
+  /// doubles the in-memory image representation for the duration of the response.
+  final bool includeDataBase64;
+
   const ImageExtractionConfig({
     required this.extractImages,
     required this.targetDpi,
@@ -7605,6 +7625,7 @@ class ImageExtractionConfig {
     required this.appendOcrText,
     required this.outputFormat,
     required this.svg,
+    required this.includeDataBase64,
   });
 
   @override
@@ -7623,7 +7644,8 @@ class ImageExtractionConfig {
       ocrTextOnly.hashCode ^
       appendOcrText.hashCode ^
       outputFormat.hashCode ^
-      svg.hashCode;
+      svg.hashCode ^
+      includeDataBase64.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -7644,7 +7666,8 @@ class ImageExtractionConfig {
           ocrTextOnly == other.ocrTextOnly &&
           appendOcrText == other.appendOcrText &&
           outputFormat == other.outputFormat &&
-          svg == other.svg;
+          svg == other.svg &&
+          includeDataBase64 == other.includeDataBase64;
 }
 
 /// Heuristic classification of what an image likely depicts.

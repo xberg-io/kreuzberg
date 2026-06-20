@@ -994,6 +994,7 @@ fn test_append_ocr_text_for_pptx_images() {
         cluster_id: None,
         caption: None,
         qr_codes: None,
+        data_base64: None,
     });
 
     super::append_embedded_image_ocr_text(&mut doc);

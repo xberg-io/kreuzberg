@@ -560,6 +560,7 @@ impl SyncExtractor for HtmlExtractor {
                     cluster_id: None,
                     caption: None,
                     qr_codes: None,
+                    data_base64: None,
                 };
                 doc.push_image(extracted);
             }

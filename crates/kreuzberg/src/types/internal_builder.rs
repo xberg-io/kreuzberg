@@ -807,6 +807,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         };
         b.push_image(Some("A photo"), image, Some(1), None);
         let doc = b.build();

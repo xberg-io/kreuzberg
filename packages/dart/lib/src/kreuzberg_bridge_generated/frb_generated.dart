@@ -14847,8 +14847,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ExtractedImage dco_decode_extracted_image(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 18)
-      throw Exception('unexpected arr length: expect 18 but see ${arr.length}');
+    if (arr.length != 19)
+      throw Exception('unexpected arr length: expect 19 but see ${arr.length}');
     return ExtractedImage(
       data: dco_decode_list_prim_u_8_strict(arr[0]),
       format: dco_decode_String(arr[1]),
@@ -14868,6 +14868,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       clusterId: dco_decode_opt_box_autoadd_i_64(arr[15]),
       caption: dco_decode_opt_String(arr[16]),
       qrCodes: dco_decode_opt_list_qr_code(arr[17]),
+      dataBase64: dco_decode_opt_String(arr[18]),
     );
   }
 
@@ -15391,8 +15392,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ImageExtractionConfig dco_decode_image_extraction_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 15)
-      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
+    if (arr.length != 16)
+      throw Exception('unexpected arr length: expect 16 but see ${arr.length}');
     return ImageExtractionConfig(
       extractImages: dco_decode_bool(arr[0]),
       targetDpi: dco_decode_i_64(arr[1]),
@@ -15409,6 +15410,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       appendOcrText: dco_decode_bool(arr[12]),
       outputFormat: dco_decode_image_output_format(arr[13]),
       svg: dco_decode_svg_options(arr[14]),
+      includeDataBase64: dco_decode_bool(arr[15]),
     );
   }
 
@@ -21586,6 +21588,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_clusterId = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_caption = sse_decode_opt_String(deserializer);
     var var_qrCodes = sse_decode_opt_list_qr_code(deserializer);
+    var var_dataBase64 = sse_decode_opt_String(deserializer);
     return ExtractedImage(
       data: var_data,
       format: var_format,
@@ -21605,6 +21608,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       clusterId: var_clusterId,
       caption: var_caption,
       qrCodes: var_qrCodes,
+      dataBase64: var_dataBase64,
     );
   }
 
@@ -22311,6 +22315,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_appendOcrText = sse_decode_bool(deserializer);
     var var_outputFormat = sse_decode_image_output_format(deserializer);
     var var_svg = sse_decode_svg_options(deserializer);
+    var var_includeDataBase64 = sse_decode_bool(deserializer);
     return ImageExtractionConfig(
       extractImages: var_extractImages,
       targetDpi: var_targetDpi,
@@ -22327,6 +22332,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       appendOcrText: var_appendOcrText,
       outputFormat: var_outputFormat,
       svg: var_svg,
+      includeDataBase64: var_includeDataBase64,
     );
   }
 
@@ -30106,6 +30112,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.clusterId, serializer);
     sse_encode_opt_String(self.caption, serializer);
     sse_encode_opt_list_qr_code(self.qrCodes, serializer);
+    sse_encode_opt_String(self.dataBase64, serializer);
   }
 
   @protected
@@ -30621,6 +30628,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.appendOcrText, serializer);
     sse_encode_image_output_format(self.outputFormat, serializer);
     sse_encode_svg_options(self.svg, serializer);
+    sse_encode_bool(self.includeDataBase64, serializer);
   }
 
   @protected

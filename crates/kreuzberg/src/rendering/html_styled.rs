@@ -768,6 +768,7 @@ mod tests {
             cluster_id: None,
             caption: None,
             qr_codes: None,
+            data_base64: None,
         });
         doc.push_element(crate::types::internal::InternalElement::text(
             crate::types::internal::ElementKind::Image { image_index: idx },
