@@ -41,7 +41,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Kubernetes Deployment](https://docs.kreuzberg.dev/guides/kubernetes/): Kubernetes deployment guide
 - [API Server](https://docs.kreuzberg.dev/guides/api-server/): REST API server setup
 - [Creating Plugins](https://docs.kreuzberg.dev/guides/plugins/): Build custom extractor plugins
-- [AI Coding Assistants](https://docs.kreuzberg.dev/guides/agent-skills/): Agent skills for AI coding assistants
+- [AI Coding Assistants](https://docs.kreuzberg.dev/guides/agent-skills/): Install the plugin with `/plugin marketplace add kreuzberg-dev/plugins` then `/plugin install kreuzberg@kreuzberg` — ships agent skills plus an MCP server, works with Claude Code, Codex, Cursor, Gemini, Copilot, and opencode
 - [C# Bindings](https://docs.kreuzberg.dev/guides/csharp/): C# binding usage guide
 
 ## CLI
