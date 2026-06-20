@@ -1,5 +1,5 @@
 {
-  "name": "kreuzberg-cli",
+  "name": "@kreuzberg/kreuzberg-cli",
   "version": "0.0.1",
   "description": "CLI proxy for kreuzberg — downloads and runs the native kreuzberg binary from GitHub releases.",
   "type": "module",
@@ -11,7 +11,7 @@
     "directory": "cli-proxy/npm"
   },
   "bin": {
-    "kreuzberg": "./bin/kreuzberg.js"
+    "kreuzberg": "bin/kreuzberg.js"
   },
   "files": [
     "bin/",
@@ -19,5 +19,8 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
