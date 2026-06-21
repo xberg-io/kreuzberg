@@ -42,6 +42,9 @@ use sha2::{Digest as _, Sha256};
 use tokio::sync::Semaphore;
 
 use crate::core::config::{ExtractionConfig, LlmConfig, PageConfig};
+// The sync structured-extraction path shares the process-wide runtime in
+// `core::runtime` rather than building one per call.
+use crate::core::runtime::global_runtime;
 pub use crate::heuristics::StructuredThresholds;
 use crate::heuristics::{
     ConfidenceSignals, ConfidenceWeights, ExtractionConfidence, MultidocThresholds, StructuredCallMode,
@@ -350,22 +353,6 @@ pub fn split_and_extract_sync(
     global_runtime()
         .map_err(|e| StructuredError::Extraction(format!("runtime init failed: {e}")))?
         .block_on(split_and_extract(bytes, mime, spec, options))
-}
-
-// ── Global runtime (mirrors core/extractor/sync.rs pattern) ─────────────────
-
-static GLOBAL_RUNTIME: once_cell::sync::OnceCell<tokio::runtime::Runtime> = once_cell::sync::OnceCell::new();
-
-fn global_runtime() -> crate::Result<&'static tokio::runtime::Runtime> {
-    GLOBAL_RUNTIME.get_or_try_init(|| {
-        tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .map_err(|e| crate::KreuzbergError::Plugin {
-                message: format!("failed to create global Tokio runtime: {e}"),
-                plugin_name: "structured_runtime".to_string(),
-            })
-    })
 }
 
 // ── Core orchestration ────────────────────────────────────────────────────────

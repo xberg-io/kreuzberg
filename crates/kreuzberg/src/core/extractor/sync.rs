@@ -13,8 +13,11 @@ use crate::types::ExtractionResult;
 #[cfg(feature = "tokio-runtime")]
 use std::path::Path;
 
+// Sync wrappers share the process-wide runtime in `core::runtime` rather than
+// building one per call (100x+ faster, and a per-call runtime panics on drop
+// inside a caller's blocking context).
 #[cfg(feature = "tokio-runtime")]
-use once_cell::sync::OnceCell;
+use crate::core::runtime::global_runtime;
 
 #[cfg(feature = "tokio-runtime")]
 use super::batch::{batch_extract_bytes, batch_extract_files};
@@ -25,34 +28,6 @@ use super::file::extract_file;
 
 #[cfg(not(feature = "tokio-runtime"))]
 use super::helpers::error_extraction_result;
-
-/// Global Tokio runtime cell for synchronous operations.
-///
-/// Lazily initialized on first use and shared across all sync wrappers.
-/// Using a global runtime instead of creating one per call provides 100x+ performance improvement.
-///
-/// # Availability
-///
-/// This static is only available when the `tokio-runtime` feature is enabled.
-/// For WASM targets, use the truly synchronous extraction functions instead.
-#[cfg(feature = "tokio-runtime")]
-static GLOBAL_RUNTIME: OnceCell<tokio::runtime::Runtime> = OnceCell::new();
-
-/// Returns a reference to the global Tokio runtime, initializing it on first call.
-///
-/// Returns an error if the runtime cannot be created (e.g. system resource exhaustion).
-#[cfg(feature = "tokio-runtime")]
-fn global_runtime() -> crate::Result<&'static tokio::runtime::Runtime> {
-    GLOBAL_RUNTIME.get_or_try_init(|| {
-        tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .map_err(|e| crate::KreuzbergError::Plugin {
-                message: format!("Failed to create global Tokio runtime: {e}"),
-                plugin_name: "runtime".to_string(),
-            })
-    })
-}
 
 /// Synchronous wrapper for `extract_file`.
 ///

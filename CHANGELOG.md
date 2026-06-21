@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **embeddings/reranking**: the synchronous `embed_texts` and `rerank` entry points no longer panic with "Cannot drop a runtime in a context where blocking is not allowed" when invoked from inside a caller's blocking context (e.g. a `spawn_blocking` task in server mode). The no-ambient-runtime path previously built a per-call `new_current_thread` runtime and dropped it inside that blocking context; both paths now drive the future on a shared, process-wide multi-thread runtime (`core::runtime::global_runtime`) that is never dropped — also a ~100x speedup over per-call runtime construction. The sync extraction wrappers and the structured-extraction sync path now share the same runtime, collapsing three duplicate definitions into one.
+
 ## [5.0.0-rc.27] - 2026-06-21
 
 ### Added

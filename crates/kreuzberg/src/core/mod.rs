@@ -42,6 +42,7 @@ pub mod io;
 pub mod mime;
 pub(crate) mod path_resolver;
 pub mod pipeline;
+pub(crate) mod runtime;
 #[cfg(feature = "api-types")]
 pub mod server_config;
 

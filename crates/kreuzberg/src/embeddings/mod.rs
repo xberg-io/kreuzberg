@@ -934,13 +934,11 @@ pub fn embed_texts<T: AsRef<str>>(
                     handle.block_on(crate::llm::vlm_embeddings::embed_via_llm(texts, llm, normalize))
                 })
             } else {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                    .map_err(|e| {
-                        crate::KreuzbergError::embedding(format!("Failed to create runtime for LLM embeddings: {e}"))
-                    })?;
-                rt.block_on(crate::llm::vlm_embeddings::embed_via_llm(texts, llm, normalize))
+                // No ambient runtime: drive the future on the shared, never-dropped
+                // global runtime. Building a per-call runtime here would panic on
+                // drop when this sync path runs inside a caller's blocking context.
+                crate::core::runtime::global_runtime()?
+                    .block_on(crate::llm::vlm_embeddings::embed_via_llm(texts, llm, normalize))
             };
             result.map(|(embeddings, _usage)| embeddings)
         }
@@ -987,13 +985,10 @@ pub fn embed_texts<T: AsRef<str>>(
             let embed_result = if let Ok(handle) = tokio::runtime::Handle::try_current() {
                 tokio::task::block_in_place(|| handle.block_on(embed_future))
             } else {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                    .map_err(|e| {
-                        crate::KreuzbergError::embedding(format!("Failed to create runtime for plugin embeddings: {e}"))
-                    })?;
-                rt.block_on(embed_future)
+                // No ambient runtime: drive the future on the shared, never-dropped
+                // global runtime. Building a per-call runtime here would panic on
+                // drop when this sync path runs inside a caller's blocking context.
+                crate::core::runtime::global_runtime()?.block_on(embed_future)
             };
             let mut embeddings = embed_result?;
 
@@ -1558,6 +1553,36 @@ mod tests {
             let config = config_for("never-registered-x", false);
             let err = super::super::embed_texts(&["a"], &config).unwrap_err();
             assert!(matches!(err, crate::KreuzbergError::Plugin { .. }));
+        }
+
+        /// Regression: the synchronous `embed_texts` must work when invoked from
+        /// inside a multi-thread Tokio runtime (e.g. a server's `spawn_blocking`
+        /// task). The previous implementation built a per-call current-thread
+        /// runtime and dropped it inside the caller's blocking context, panicking
+        /// with "Cannot drop a runtime in a context where blocking is not allowed".
+        /// Routing through the shared, never-dropped global runtime removes that.
+        #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+        async fn embed_texts_inside_multi_thread_runtime_does_not_panic() {
+            let name = unique_name("rt-safe");
+            register_embedding_backend(Arc::new(ConfigurableBackend {
+                name: name.clone(),
+                reported_dimensions: 4,
+                vector_dimensions: 4,
+                response_count: None,
+                panic_on_embed: false,
+                fill_value: 0.5,
+            }))
+            .unwrap();
+
+            let cfg = config_for(&name, false);
+            let vectors = tokio::task::spawn_blocking(move || super::super::embed_texts(&["a", "b"], &cfg))
+                .await
+                .expect("spawn_blocking task must not panic")
+                .expect("embedding must succeed");
+            assert_eq!(vectors.len(), 2);
+            assert!(vectors.iter().all(|v| v.len() == 4 && v[0] == 0.5));
+
+            unregister_embedding_backend(&name).unwrap();
         }
 
         #[test]

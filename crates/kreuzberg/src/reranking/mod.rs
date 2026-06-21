@@ -837,13 +837,11 @@ pub fn rerank(
                     handle.block_on(crate::llm::rerank::rerank_via_llm(&query, &documents, llm, top_k))
                 })
             } else {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                    .map_err(|e| {
-                        crate::KreuzbergError::reranking(format!("Failed to create runtime for LLM reranking: {e}"))
-                    })?;
-                rt.block_on(crate::llm::rerank::rerank_via_llm(&query, &documents, llm, top_k))
+                // No ambient runtime: drive the future on the shared, never-dropped
+                // global runtime. Building a per-call runtime here would panic on
+                // drop when this sync path runs inside a caller's blocking context.
+                crate::core::runtime::global_runtime()?
+                    .block_on(crate::llm::rerank::rerank_via_llm(&query, &documents, llm, top_k))
             };
             result.map(|(results, _usage)| results)
         }
@@ -884,13 +882,10 @@ pub fn rerank(
                 }
                 tokio::task::block_in_place(|| handle.block_on(rerank_future))
             } else {
-                let rt = tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                    .map_err(|e| {
-                        crate::KreuzbergError::reranking(format!("Failed to create runtime for plugin reranking: {e}"))
-                    })?;
-                rt.block_on(rerank_future)
+                // No ambient runtime: drive the future on the shared, never-dropped
+                // global runtime. Building a per-call runtime here would panic on
+                // drop when this sync path runs inside a caller's blocking context.
+                crate::core::runtime::global_runtime()?.block_on(rerank_future)
             }?;
 
             validate_reranker_output(&logits, expected_count, name)?;
