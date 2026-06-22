@@ -345,7 +345,7 @@ impl KreuzbergMcp {
     /// This tool removes all cached files and returns the number of files removed and space freed.
     #[tool(
         description = "Clear all cached files. Returns the number of files removed and space freed in MB.",
-        annotations(title = "Clear Cache", destructive_hint = true)
+        annotations(title = "Clear Cache", read_only_hint = false, destructive_hint = true)
     )]
     fn cache_clear(
         &self,
@@ -447,7 +447,12 @@ impl KreuzbergMcp {
     /// so they are available for offline use.
     #[tool(
         description = "Download and cache model files for offline use. Optionally download embedding models.",
-        annotations(title = "Cache Warm", destructive_hint = false)
+        annotations(
+            title = "Cache Warm",
+            read_only_hint = false,
+            destructive_hint = false,
+            open_world_hint = true
+        )
     )]
     #[allow(unused_mut)]
     fn cache_warm(
@@ -564,7 +569,12 @@ impl KreuzbergMcp {
     /// Requires the `embeddings` feature to be enabled.
     #[tool(
         description = "Generate vector embeddings for text strings. Use preset: 'speed', 'balanced', or 'quality'.",
-        annotations(title = "Embed Text", read_only_hint = true, idempotent_hint = true)
+        annotations(
+            title = "Embed Text",
+            read_only_hint = true,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     fn embed_text(
         &self,
@@ -580,7 +590,12 @@ impl KreuzbergMcp {
     /// Requires the `liter-llm` feature to be enabled.
     #[tool(
         description = "Extract structured data from a document using an LLM with a JSON schema. Requires 'liter-llm' feature.",
-        annotations(title = "Extract Structured", read_only_hint = true, idempotent_hint = true)
+        annotations(
+            title = "Extract Structured",
+            read_only_hint = true,
+            idempotent_hint = false,
+            open_world_hint = true
+        )
     )]
     async fn extract_structured(
         &self,
@@ -1251,6 +1266,77 @@ mod tests {
             let desc = tool.description.as_ref().unwrap();
             assert!(!desc.is_empty(), "Tool '{}' description should not be empty", tool.name);
         }
+    }
+
+    #[tokio::test]
+    async fn test_tool_annotations_reflect_behavior() {
+        let router = KreuzbergMcp::tool_router();
+        let tools = router.list_all();
+
+        let annotations_for = |name: &str| {
+            tools
+                .iter()
+                .find(|t| t.name == name)
+                .unwrap_or_else(|| panic!("tool '{name}' should exist"))
+                .annotations
+                .clone()
+                .unwrap_or_else(|| panic!("tool '{name}' should have annotations"))
+        };
+
+        // Local, side-effect-free extraction/info tools: read-only, idempotent, closed-world.
+        for name in [
+            "extract_file",
+            "extract_bytes",
+            "batch_extract_files",
+            "detect_mime_type",
+            "cache_stats",
+            "list_formats",
+            "get_version",
+            "cache_manifest",
+            "chunk_text",
+        ] {
+            let a = annotations_for(name);
+            assert_eq!(a.read_only_hint, Some(true), "{name} should be read-only");
+            assert_eq!(a.idempotent_hint, Some(true), "{name} should be idempotent");
+            assert_ne!(a.open_world_hint, Some(true), "{name} should be closed-world");
+        }
+
+        // Destructive cache deletion: explicitly not read-only.
+        let clear = annotations_for("cache_clear");
+        assert_eq!(
+            clear.read_only_hint,
+            Some(false),
+            "cache_clear modifies the environment"
+        );
+        assert_eq!(clear.destructive_hint, Some(true), "cache_clear is destructive");
+
+        // Downloads model files from HuggingFace: writes cache, reaches the open world.
+        let warm = annotations_for("cache_warm");
+        assert_eq!(warm.read_only_hint, Some(false), "cache_warm writes the cache");
+        assert_eq!(
+            warm.destructive_hint,
+            Some(false),
+            "cache_warm is additive, not destructive"
+        );
+        assert_eq!(warm.open_world_hint, Some(true), "cache_warm fetches from HuggingFace");
+
+        // May fetch an embedding model from HuggingFace.
+        let embed = annotations_for("embed_text");
+        assert_eq!(embed.read_only_hint, Some(true), "embed_text does not mutate user data");
+        assert_eq!(embed.open_world_hint, Some(true), "embed_text may fetch a model");
+
+        // External LLM call: non-deterministic, open-world.
+        let structured = annotations_for("extract_structured");
+        assert_eq!(
+            structured.idempotent_hint,
+            Some(false),
+            "extract_structured is non-deterministic"
+        );
+        assert_eq!(
+            structured.open_world_hint,
+            Some(true),
+            "extract_structured calls an external LLM"
+        );
     }
 
     #[tokio::test]
