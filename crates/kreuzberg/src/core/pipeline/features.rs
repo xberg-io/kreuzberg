@@ -92,6 +92,26 @@ pub(crate) fn recompute_boundaries_from_pages(content: &str, pages: &[crate::typ
     boundaries
 }
 
+/// Clamp page boundaries into valid char boundaries within `text`.
+///
+/// `byte_start`/`byte_end` are each capped at `text.len()` and snapped down to the nearest UTF-8
+/// char boundary via [`str::floor_char_boundary`]. This keeps page provenance best-effort when a
+/// boundary set predates the rendered text it is paired with — e.g. the raw-extractor-text offsets
+/// in `metadata.pages.boundaries` used as a fallback when [`recompute_boundaries_from_pages`] cannot
+/// locate a page — without tripping the chunking page-boundary validation (#1148). Boundaries that
+/// are already in range and aligned are returned unchanged.
+pub(crate) fn clamp_boundaries_to_text(boundaries: &[PageBoundary], text: &str) -> Vec<PageBoundary> {
+    let len = text.len();
+    boundaries
+        .iter()
+        .map(|b| PageBoundary {
+            page_number: b.page_number,
+            byte_start: text.floor_char_boundary(b.byte_start.min(len)),
+            byte_end: text.floor_char_boundary(b.byte_end.min(len)),
+        })
+        .collect()
+}
+
 /// Map TSLP `CodeChunk`s directly to kreuzberg `Chunk`s, bypassing text-splitter.
 ///
 /// When the extraction result contains code intelligence with non-empty chunks,
@@ -202,6 +222,17 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
                     result.formatted_content.as_deref(),
                 )
             };
+
+        // Page boundaries can come from a stale fallback — the raw-extractor-text offsets in
+        // `result.metadata.pages.boundaries` — when `recompute_boundaries_from_pages` cannot locate
+        // a page inside the rendered content (e.g. unusually wide PDF pages whose whitespace layout
+        // breaks the substring match). Those offsets may exceed `chunk_input`, tripping the
+        // page-boundary validation. Clamp every boundary into a valid char boundary within
+        // `chunk_input` so provenance stays best-effort without a spurious warning (#1148). Already
+        // valid boundaries (the common recompute path) are unchanged.
+        let clamped_boundaries: Option<Vec<PageBoundary>> =
+            effective_page_boundaries.map(|boundaries| clamp_boundaries_to_text(boundaries, chunk_input));
+        let effective_page_boundaries = clamped_boundaries.as_deref();
 
         match crate::chunking::chunk_text_with_heading_source(
             chunk_input,
@@ -1056,5 +1087,49 @@ mod tests {
             .chunks
             .expect("chunks must be Some([]) not None for empty content");
         assert!(chunks.is_empty());
+    }
+
+    #[test]
+    fn clamp_boundaries_to_text_caps_stale_offsets_within_text() {
+        use crate::chunking::validation::validate_utf8_boundaries;
+
+        // Stale fallback (cf. #1148): a single-page boundary whose byte_end was computed against the
+        // longer raw extractor text, so it exceeds the rendered text length.
+        let text = "rendered content that is shorter than the raw extractor text";
+        let stale = [PageBoundary {
+            page_number: 1,
+            byte_start: 0,
+            byte_end: text.len() + 926,
+        }];
+        // Pre-clamp, the page-boundary validation rejects the out-of-range boundary.
+        assert!(validate_utf8_boundaries(text, &stale).is_err());
+
+        let clamped = clamp_boundaries_to_text(&stale, text);
+        assert_eq!(clamped[0].byte_start, 0);
+        assert_eq!(clamped[0].byte_end, text.len());
+        // Post-clamp, validation passes — no spurious warning.
+        assert!(validate_utf8_boundaries(text, &clamped).is_ok());
+
+        // Already-valid boundaries are unchanged.
+        let valid = [PageBoundary {
+            page_number: 2,
+            byte_start: 0,
+            byte_end: 10,
+        }];
+        let unchanged = clamp_boundaries_to_text(&valid, text);
+        assert_eq!(unchanged[0].byte_start, 0);
+        assert_eq!(unchanged[0].byte_end, 10);
+        assert_eq!(unchanged[0].page_number, 2);
+
+        // Multibyte: clamping snaps to a char boundary, never mid-codepoint ('é' spans bytes 1..3).
+        let multibyte = "héllo";
+        let mid = [PageBoundary {
+            page_number: 1,
+            byte_start: 0,
+            byte_end: 100,
+        }];
+        let mb = clamp_boundaries_to_text(&mid, multibyte);
+        assert_eq!(mb[0].byte_end, multibyte.len());
+        assert!(multibyte.is_char_boundary(mb[0].byte_end));
     }
 }
