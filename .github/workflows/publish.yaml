@@ -802,6 +802,12 @@ jobs:
           package-name: kreuzberg-cli
           binary-name: kreuzberg
           target: ${{ matrix.target }}
+          # Ship the server surface in prebuilt binaries so `kreuzberg mcp` /
+          # `kreuzberg mcp --transport http` / `kreuzberg api` work from
+          # install.sh + Homebrew (the CLI `default` features omit these). `heic`
+          # is deliberately excluded — it needs vcpkg libheif on the Windows
+          # release target. Docker images already build with `--features all`.
+          extra-cargo-args: --features mcp,mcp-http,api
 
       - name: Package CLI artifact
         # Inline: archive layout (.tar.gz on Unix, .zip on Windows) varies per
