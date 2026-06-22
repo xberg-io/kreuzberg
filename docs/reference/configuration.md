@@ -818,6 +818,16 @@ Configuration for the token-reduction pipeline.
 
 ---
 
+### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parse_citations` | `bool` | `True` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+---
+
 ### DocumentStructure
 
 Top-level structured document representation.

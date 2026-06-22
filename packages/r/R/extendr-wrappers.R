@@ -1719,6 +1719,86 @@ TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "kreuz
 }
 #' @export
 `[[.TokenCounter` <- `$.TokenCounter`
+#' Configuration for markdown footnote and citation parsing
+#' @field parse_citations Whether to parse the structured citation block (default: true).
+#' @export
+FootnoteConfig <- new.env(parent = emptyenv())
+FootnoteConfig$default <- function() .Call("wrap__FootnoteConfig__default", PACKAGE = "kreuzberg")
+FootnoteConfig$with_parse_citations <- function(self, enabled) .Call("wrap__FootnoteConfig__with_parse_citations", self, enabled, PACKAGE = "kreuzberg")
+FootnoteConfig$from_json <- function(json) {
+  .Call("wrap__FootnoteConfig__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.FootnoteConfig` <- function(self, name) {
+  func <- FootnoteConfig[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.FootnoteConfig` <- `$.FootnoteConfig`
+#' @export
+with_parse_citations.FootnoteConfig <- function(x, ...) x$with_parse_citations(...)
+#' A footnote anchor reference in markdown text
+#'
+#' Represents a `[^label]` use-site (not a definition).
+#' @field label The label of the footnote reference (e.g., "1" in `[^1]`).
+#' @field offset Byte offset of the anchor in the markdown text.
+#' @export
+FootnoteAnchor <- new.env(parent = emptyenv())
+#' @export
+`$.FootnoteAnchor` <- function(self, name) {
+  func <- FootnoteAnchor[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.FootnoteAnchor` <- `$.FootnoteAnchor`
+#' A footnote definition from markdown text
+#'
+#' Represents `[^label]: content` declarations (including multi-line continuations).
+#' @field label The label of the footnote (e.g., "1" in `[^1]: ...`).
+#' @field content The full content of the footnote definition.
+#' @field offset Byte offset of the definition line in the markdown text.
+#' @export
+FootnoteDefinition <- new.env(parent = emptyenv())
+#' @export
+`$.FootnoteDefinition` <- function(self, name) {
+  func <- FootnoteDefinition[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.FootnoteDefinition` <- `$.FootnoteDefinition`
+#' A structured citation from a citation block
+#'
+#' Parsed from entries like:
+#' `[^srcN]: source, locator, excerpt: "text"`
+#' @field label The label of the citation (e.g., "src1" in `[^src1]: ...`).
+#' @field source The source reference (path, URL, or identifier).
+#' @field locator Optional locator within the source (e.g., "page 3" or "section 2.1").
+#' @field excerpt Optional excerpt — quoted text from the source.
+#' @export
+Citation <- new.env(parent = emptyenv())
+#' @export
+`$.Citation` <- function(self, name) {
+  func <- Citation[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.Citation` <- `$.Citation`
 #' A PDF annotation extracted from a document page
 #' @field annotation_type The type of annotation.
 #' @field content Text content of the annotation (e.g., comment text, link URL).
@@ -4798,6 +4878,8 @@ with_drop_score <- function(x, ...) UseMethod("with_drop_score")
 with_model_tier <- function(x, ...) UseMethod("with_model_tier")
 #' @export
 with_padding <- function(x, ...) UseMethod("with_padding")
+#' @export
+with_parse_citations <- function(x, ...) UseMethod("with_parse_citations")
 #' @export
 with_rec_batch_num <- function(x, ...) UseMethod("with_rec_batch_num")
 #' @export

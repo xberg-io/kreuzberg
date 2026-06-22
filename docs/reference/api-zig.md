@@ -1469,6 +1469,212 @@ try translateResult(.{}, .{});
 
 ---
 
+#### findFootnoteAnchors()
+
+Find all footnote anchor references in markdown text.
+
+Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+Footnote definitions (`[^label]: ...`) are NOT included in the results.
+
+**Returns:**
+
+A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+
+**Signature:**
+
+```zig
+pub fn find_footnote_anchors(markdown: [:0]const u8) []const FootnoteAnchor
+```
+
+**Example:**
+
+```zig
+const result = findFootnoteAnchors("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `\[:0\]const u8` | Yes | The markdown text to search |
+
+**Returns:** `[]const FootnoteAnchor`
+
+---
+
+#### parseFootnoteDefinitions()
+
+Parse footnote definitions from markdown text.
+
+Returns a vector of footnote definitions found in the markdown.
+Handles multi-line definitions with continuation/indented lines (CommonMark format).
+
+**Returns:**
+
+A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+
+**Signature:**
+
+```zig
+pub fn parse_footnote_definitions(markdown: [:0]const u8) []const FootnoteDefinition
+```
+
+**Example:**
+
+```zig
+const result = parseFootnoteDefinitions("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `\[:0\]const u8` | Yes | The markdown text to search |
+
+**Returns:** `[]const FootnoteDefinition`
+
+---
+
+#### findInferenceMarkers()
+
+Find inference markers in markdown text.
+
+Returns byte offsets of every `[*inference*]` marker found in the text.
+
+**Returns:**
+
+A vector of byte offsets where inference markers appear.
+
+**Signature:**
+
+```zig
+pub fn find_inference_markers(markdown: [:0]const u8) []const u64
+```
+
+**Example:**
+
+```zig
+const result = findInferenceMarkers("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `\[:0\]const u8` | Yes | The markdown text to search |
+
+**Returns:** `[]const u64`
+
+---
+
+#### findUnmarkedClaims()
+
+Find unmarked claims in markdown text.
+
+Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+nor an inference marker (`[*inference*]`).
+
+The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+and is not a heading, blank line, or markup-only line is considered a claim.
+Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+
+**Returns:**
+
+A vector of trimmed line text strings for unmarked claims.
+
+**Signature:**
+
+```zig
+pub fn find_unmarked_claims(markdown: [:0]const u8) []const [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = findUnmarkedClaims("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `\[:0\]const u8` | Yes | The markdown text to search |
+
+**Returns:** `[]const [:0]const u8`
+
+---
+
+#### parseCitations()
+
+Parse the structured citation block from markdown.
+
+Extracts citations from the block after a `---` thematic break followed by
+`<!-- citations ... -->` comment. Parses each entry as:
+`[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+
+Returns parsed citations with source, optional locator, and optional excerpt.
+
+**Returns:**
+
+A vector of `Citation` entries parsed from the citation block.
+
+**Signature:**
+
+```zig
+pub fn parse_citations(markdown: [:0]const u8) []const Citation
+```
+
+**Example:**
+
+```zig
+const result = parseCitations("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `\[:0\]const u8` | Yes | The markdown text to search |
+
+**Returns:** `[]const Citation`
+
+---
+
+#### verifyExcerpt()
+
+Verify that an excerpt appears verbatim in source text.
+
+Performs exact matching by default. Also tries whitespace-normalized matching
+(collapsing runs of whitespace on both sides) since PDF-extracted text often
+has irregular spacing.
+
+**Returns:**
+
+`true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+
+**Signature:**
+
+```zig
+pub fn verify_excerpt(excerpt: [:0]const u8, source_text: [:0]const u8) bool
+```
+
+**Example:**
+
+```zig
+const result = verifyExcerpt("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `excerpt` | `\[:0\]const u8` | Yes | The text snippet to find |
+| `sourceText` | `\[:0\]const u8` | Yes | The full source text to search |
+
+**Returns:** `bool`
+
+---
+
 #### chunkForRag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
@@ -3032,6 +3238,22 @@ Contains the generated chunks and metadata about the chunking.
 
 ---
 
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `\[:0\]const u8` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `\[:0\]const u8` | — | The source reference (path, URL, or identifier). |
+| `locator` | `\[:0\]const u8?` | `null` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `\[:0\]const u8?` | `null` | Optional excerpt — quoted text from the source. |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -4576,6 +4798,85 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `\[:0\]const u8` | — | Footnote label |
 | `content` | `\[\]const FormattedBlock` | — | Footnote content blocks |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `\[:0\]const u8` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `u64` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parseCitations` | `bool` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```zig
+pub fn default() FootnoteConfig
+```
+
+**Example:**
+
+```zig
+const result = FootnoteConfig.default();
+```
+
+**Returns:** `FootnoteConfig`
+
+###### withParseCitations()
+
+Set whether to parse the citation block.
+
+**Signature:**
+
+```zig
+pub fn withParseCitations(self: *const FootnoteConfig, enabled: bool) FootnoteConfig
+```
+
+**Example:**
+
+```zig
+const result = instance.withParseCitations(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enabled` | `bool` | Yes | The enabled |
+
+**Returns:** `FootnoteConfig`
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `\[:0\]const u8` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `\[:0\]const u8` | — | The full content of the footnote definition. |
+| `offset` | `u64` | — | Byte offset of the definition line in the markdown text. |
 
 ---
 

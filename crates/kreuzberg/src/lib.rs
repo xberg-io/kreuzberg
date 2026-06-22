@@ -413,6 +413,12 @@ pub use keywords::RakeParams;
 #[cfg(feature = "keywords-yake")]
 pub use keywords::YakeParams;
 
+#[cfg(feature = "markdown-footnotes")]
+pub use text::markdown_footnotes::{
+    Citation, FootnoteAnchor, FootnoteConfig, FootnoteDefinition, find_footnote_anchors, find_inference_markers,
+    find_unmarked_claims, parse_citations, parse_footnote_definitions, verify_excerpt,
+};
+
 // DiffLine and CellChange are canonical in types::revisions (unconditional)
 // and surfaced at the crate root via `pub use types::*` above.
 // The diff feature adds algorithm types on top.

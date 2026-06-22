@@ -954,6 +954,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChunkingResult dco_decode_chunking_result(dynamic raw);
 
   @protected
+  Citation dco_decode_citation(dynamic raw);
+
+  @protected
   CitationMetadata dco_decode_citation_metadata(dynamic raw);
 
   @protected
@@ -1146,6 +1149,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Footnote dco_decode_footnote(dynamic raw);
 
   @protected
+  FootnoteAnchor dco_decode_footnote_anchor(dynamic raw);
+
+  @protected
+  FootnoteConfig dco_decode_footnote_config(dynamic raw);
+
+  @protected
+  FootnoteDefinition dco_decode_footnote_definition(dynamic raw);
+
+  @protected
   FormFieldType dco_decode_form_field_type(dynamic raw);
 
   @protected
@@ -1292,6 +1304,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ChunkInfo> dco_decode_list_chunk_info(dynamic raw);
 
   @protected
+  List<Citation> dco_decode_list_citation(dynamic raw);
+
+  @protected
   List<ClassificationLabel> dco_decode_list_classification_label(dynamic raw);
 
   @protected
@@ -1353,6 +1368,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Footnote> dco_decode_list_footnote(dynamic raw);
+
+  @protected
+  List<FootnoteAnchor> dco_decode_list_footnote_anchor(dynamic raw);
+
+  @protected
+  List<FootnoteDefinition> dco_decode_list_footnote_definition(dynamic raw);
 
   @protected
   List<FormattedBlock> dco_decode_list_formatted_block(dynamic raw);
@@ -3144,6 +3165,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChunkingResult sse_decode_chunking_result(SseDeserializer deserializer);
 
   @protected
+  Citation sse_decode_citation(SseDeserializer deserializer);
+
+  @protected
   CitationMetadata sse_decode_citation_metadata(SseDeserializer deserializer);
 
   @protected
@@ -3356,6 +3380,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Footnote sse_decode_footnote(SseDeserializer deserializer);
 
   @protected
+  FootnoteAnchor sse_decode_footnote_anchor(SseDeserializer deserializer);
+
+  @protected
+  FootnoteConfig sse_decode_footnote_config(SseDeserializer deserializer);
+
+  @protected
+  FootnoteDefinition sse_decode_footnote_definition(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   FormFieldType sse_decode_form_field_type(SseDeserializer deserializer);
 
   @protected
@@ -3522,6 +3557,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ChunkInfo> sse_decode_list_chunk_info(SseDeserializer deserializer);
 
   @protected
+  List<Citation> sse_decode_list_citation(SseDeserializer deserializer);
+
+  @protected
   List<ClassificationLabel> sse_decode_list_classification_label(
     SseDeserializer deserializer,
   );
@@ -3609,6 +3647,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Footnote> sse_decode_list_footnote(SseDeserializer deserializer);
+
+  @protected
+  List<FootnoteAnchor> sse_decode_list_footnote_anchor(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<FootnoteDefinition> sse_decode_list_footnote_definition(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<FormattedBlock> sse_decode_list_formatted_block(
@@ -5996,6 +6044,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_citation(Citation self, SseSerializer serializer);
+
+  @protected
   void sse_encode_citation_metadata(
     CitationMetadata self,
     SseSerializer serializer,
@@ -6290,6 +6341,24 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_footnote(Footnote self, SseSerializer serializer);
 
   @protected
+  void sse_encode_footnote_anchor(
+    FootnoteAnchor self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_footnote_config(
+    FootnoteConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_footnote_definition(
+    FootnoteDefinition self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_form_field_type(FormFieldType self, SseSerializer serializer);
 
   @protected
@@ -6509,6 +6578,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_citation(List<Citation> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_classification_label(
     List<ClassificationLabel> self,
     SseSerializer serializer,
@@ -6615,6 +6687,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_footnote(List<Footnote> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_footnote_anchor(
+    List<FootnoteAnchor> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_footnote_definition(
+    List<FootnoteDefinition> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_formatted_block(

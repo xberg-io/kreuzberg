@@ -104,3 +104,7 @@ pub mod translation {
         ))
     }
 }
+
+#[cfg(feature = "markdown-footnotes")]
+/// Markdown footnote and citation parsing.
+pub mod markdown_footnotes;

@@ -1516,6 +1516,218 @@ def translate_result(result, config)
 
 ---
 
+#### find_footnote_anchors()
+
+Find all footnote anchor references in markdown text.
+
+Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+Footnote definitions (`[^label]: ...`) are NOT included in the results.
+
+**Returns:**
+
+A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+
+**Signature:**
+
+```elixir
+@spec find_footnote_anchors(markdown) :: {:ok, term()} | {:error, term()}
+def find_footnote_anchors(markdown)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = find_footnote_anchors("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String.t()` | Yes | The markdown text to search |
+
+**Returns:** `list(FootnoteAnchor)`
+
+---
+
+#### parse_footnote_definitions()
+
+Parse footnote definitions from markdown text.
+
+Returns a vector of footnote definitions found in the markdown.
+Handles multi-line definitions with continuation/indented lines (CommonMark format).
+
+**Returns:**
+
+A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+
+**Signature:**
+
+```elixir
+@spec parse_footnote_definitions(markdown) :: {:ok, term()} | {:error, term()}
+def parse_footnote_definitions(markdown)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = parse_footnote_definitions("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String.t()` | Yes | The markdown text to search |
+
+**Returns:** `list(FootnoteDefinition)`
+
+---
+
+#### find_inference_markers()
+
+Find inference markers in markdown text.
+
+Returns byte offsets of every `[*inference*]` marker found in the text.
+
+**Returns:**
+
+A vector of byte offsets where inference markers appear.
+
+**Signature:**
+
+```elixir
+@spec find_inference_markers(markdown) :: {:ok, term()} | {:error, term()}
+def find_inference_markers(markdown)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = find_inference_markers("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String.t()` | Yes | The markdown text to search |
+
+**Returns:** `list(integer())`
+
+---
+
+#### find_unmarked_claims()
+
+Find unmarked claims in markdown text.
+
+Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+nor an inference marker (`[*inference*]`).
+
+The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+and is not a heading, blank line, or markup-only line is considered a claim.
+Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+
+**Returns:**
+
+A vector of trimmed line text strings for unmarked claims.
+
+**Signature:**
+
+```elixir
+@spec find_unmarked_claims(markdown) :: {:ok, term()} | {:error, term()}
+def find_unmarked_claims(markdown)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = find_unmarked_claims("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String.t()` | Yes | The markdown text to search |
+
+**Returns:** `list(String.t())`
+
+---
+
+#### parse_citations()
+
+Parse the structured citation block from markdown.
+
+Extracts citations from the block after a `---` thematic break followed by
+`<!-- citations ... -->` comment. Parses each entry as:
+`[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+
+Returns parsed citations with source, optional locator, and optional excerpt.
+
+**Returns:**
+
+A vector of `Citation` entries parsed from the citation block.
+
+**Signature:**
+
+```elixir
+@spec parse_citations(markdown) :: {:ok, term()} | {:error, term()}
+def parse_citations(markdown)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = parse_citations("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String.t()` | Yes | The markdown text to search |
+
+**Returns:** `list(Citation)`
+
+---
+
+#### verify_excerpt()
+
+Verify that an excerpt appears verbatim in source text.
+
+Performs exact matching by default. Also tries whitespace-normalized matching
+(collapsing runs of whitespace on both sides) since PDF-extracted text often
+has irregular spacing.
+
+**Returns:**
+
+`true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+
+**Signature:**
+
+```elixir
+@spec verify_excerpt(excerpt, source_text) :: {:ok, term()} | {:error, term()}
+def verify_excerpt(excerpt, source_text)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = verify_excerpt("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `excerpt` | `String.t()` | Yes | The text snippet to find |
+| `source_text` | `String.t()` | Yes | The full source text to search |
+
+**Returns:** `boolean()`
+
+---
+
 #### chunk_for_rag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
@@ -3114,6 +3326,22 @@ Contains the generated chunks and metadata about the chunking.
 
 ---
 
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String.t()` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `String.t()` | — | The source reference (path, URL, or identifier). |
+| `locator` | `String.t() \| nil` | `nil` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `String.t() \| nil` | `nil` | Optional excerpt — quoted text from the source. |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -4658,6 +4886,85 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `String.t()` | — | Footnote label |
 | `content` | `list(FormattedBlock)` | — | Footnote content blocks |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String.t()` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `integer()` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parse_citations` | `boolean()` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+##### Functions
+
+###### default()
+
+**Signature:**
+
+```elixir
+def default()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = FootnoteConfig.default()
+```
+
+**Returns:** `FootnoteConfig`
+
+###### with_parse_citations()
+
+Set whether to parse the citation block.
+
+**Signature:**
+
+```elixir
+def with_parse_citations(enabled)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = instance.with_parse_citations(true)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enabled` | `boolean()` | Yes | The enabled |
+
+**Returns:** `FootnoteConfig`
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String.t()` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `String.t()` | — | The full content of the footnote definition. |
+| `offset` | `integer()` | — | Byte offset of the definition line in the markdown text. |
 
 ---
 

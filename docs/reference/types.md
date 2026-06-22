@@ -1033,6 +1033,16 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ---
 
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parse_citations` | `bool` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+---
+
 #### DocumentStructure
 
 Top-level structured document representation.
@@ -2482,6 +2492,49 @@ One detected PII span in the input text.
 | `end` | `usize` | — | Exclusive byte-offset end of the match. |
 | `category` | `PiiCategory` | — | Category the match belongs to. |
 | `text` | `String` | — | Matched substring (owned copy — pattern engine returns owned data so the caller can free the original text if needed before replacement). |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `usize` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `String` | — | The full content of the footnote definition. |
+| `offset` | `usize` | — | Byte offset of the definition line in the markdown text. |
+
+---
+
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `String` | — | The source reference (path, URL, or identifier). |
+| `locator` | `Option<String>` | `None` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `Option<String>` | `None` | Optional excerpt — quoted text from the source. |
 
 ---
 

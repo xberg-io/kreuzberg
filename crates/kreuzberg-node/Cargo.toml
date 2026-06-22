@@ -20,7 +20,7 @@ ignored = ["serde_json", "async-trait", "tokio-util"]
 crate-type = ["cdylib"]
 
 [features]
-default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "markdown-footnotes", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
 api = ["kreuzberg/api"]
 api-types = ["kreuzberg/api-types"]
 auto-rotate-types = ["kreuzberg/auto-rotate-types"]
@@ -39,6 +39,7 @@ keywords-rake = ["kreuzberg/keywords-rake"]
 keywords-yake = ["kreuzberg/keywords-yake"]
 layout-types = ["kreuzberg/layout-types"]
 liter-llm = ["kreuzberg/liter-llm"]
+markdown-footnotes = ["kreuzberg/markdown-footnotes"]
 ner-llm = ["kreuzberg/ner-llm"]
 ner-onnx = ["kreuzberg/ner-onnx"]
 ocr = ["kreuzberg/ocr"]
@@ -60,7 +61,7 @@ xml = ["kreuzberg/xml"]
 
 [dependencies]
 async-trait = "0.1"
-kreuzberg = { version = "5.0.0-rc.28", path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction", "enrichment", "heuristics", "presets", "structured"] }
+kreuzberg = { version = "5.0.0-rc.28", path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "markdown-footnotes", "redaction", "enrichment", "heuristics", "presets", "structured"] }
 napi = { version = "3", features = ["async", "serde-json"] }
 napi-derive = "3"
 serde = { version = "1", features = ["derive"] }

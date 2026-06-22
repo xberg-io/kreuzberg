@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -443,6 +443,85 @@ Future<void> translateResult({
   required ExtractionResult result,
   required TranslationConfig config,
 }) => RustLib.instance.api.crateTranslateResult(result: result, config: config);
+
+/// Find all footnote anchor references in markdown text.
+///
+/// Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+/// Footnote definitions (`[^label]: ...`) are NOT included in the results.
+///
+/// **Returns:**
+///
+/// A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+Future<List<FootnoteAnchor>> findFootnoteAnchors({required String markdown}) =>
+    RustLib.instance.api.crateFindFootnoteAnchors(markdown: markdown);
+
+/// Parse footnote definitions from markdown text.
+///
+/// Returns a vector of footnote definitions found in the markdown.
+/// Handles multi-line definitions with continuation/indented lines (CommonMark format).
+///
+/// **Returns:**
+///
+/// A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+Future<List<FootnoteDefinition>> parseFootnoteDefinitions({
+  required String markdown,
+}) => RustLib.instance.api.crateParseFootnoteDefinitions(markdown: markdown);
+
+/// Find inference markers in markdown text.
+///
+/// Returns byte offsets of every `[*inference*]` marker found in the text.
+///
+/// **Returns:**
+///
+/// A vector of byte offsets where inference markers appear.
+Future<Int64List> findInferenceMarkers({required String markdown}) =>
+    RustLib.instance.api.crateFindInferenceMarkers(markdown: markdown);
+
+/// Find unmarked claims in markdown text.
+///
+/// Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+/// nor an inference marker (`[*inference*]`).
+///
+/// The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+/// and is not a heading, blank line, or markup-only line is considered a claim.
+/// Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+///
+/// **Returns:**
+///
+/// A vector of trimmed line text strings for unmarked claims.
+Future<List<String>> findUnmarkedClaims({required String markdown}) =>
+    RustLib.instance.api.crateFindUnmarkedClaims(markdown: markdown);
+
+/// Parse the structured citation block from markdown.
+///
+/// Extracts citations from the block after a `---` thematic break followed by
+/// `<!-- citations ... -->` comment. Parses each entry as:
+/// `[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+///
+/// Returns parsed citations with source, optional locator, and optional excerpt.
+///
+/// **Returns:**
+///
+/// A vector of `Citation` entries parsed from the citation block.
+Future<List<Citation>> parseCitations({required String markdown}) =>
+    RustLib.instance.api.crateParseCitations(markdown: markdown);
+
+/// Verify that an excerpt appears verbatim in source text.
+///
+/// Performs exact matching by default. Also tries whitespace-normalized matching
+/// (collapsing runs of whitespace on both sides) since PDF-extracted text often
+/// has irregular spacing.
+///
+/// **Returns:**
+///
+/// `true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+Future<bool> verifyExcerpt({
+  required String excerpt,
+  required String sourceText,
+}) => RustLib.instance.api.crateVerifyExcerpt(
+  excerpt: excerpt,
+  sourceText: sourceText,
+);
 
 /// Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 ///
@@ -1114,6 +1193,19 @@ Future<TokenReductionConfig> createTokenReductionConfigFromJson({
 
 Future<PatternMatch> createPatternMatchFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePatternMatchFromJson(json: json);
+
+Future<FootnoteConfig> createFootnoteConfigFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateFootnoteConfigFromJson(json: json);
+
+Future<FootnoteAnchor> createFootnoteAnchorFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateFootnoteAnchorFromJson(json: json);
+
+Future<FootnoteDefinition> createFootnoteDefinitionFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateFootnoteDefinitionFromJson(json: json);
+
+Future<Citation> createCitationFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateCitationFromJson(json: json);
 
 Future<PdfAnnotation> createPdfAnnotationFromJson({required String json}) =>
     RustLib.instance.api.crateCreatePdfAnnotationFromJson(json: json);
@@ -3126,6 +3218,45 @@ class ChunkingResult {
           runtimeType == other.runtimeType &&
           chunks == other.chunks &&
           chunkCount == other.chunkCount;
+}
+
+/// A structured citation from a citation block.
+///
+/// Parsed from entries like:
+/// `[^srcN]: source, locator, excerpt: "text"`
+class Citation {
+  /// The label of the citation (e.g., "src1" in `[^src1]: ...`).
+  final String label;
+
+  /// The source reference (path, URL, or identifier).
+  final String source;
+
+  /// Optional locator within the source (e.g., "page 3" or "section 2.1").
+  final String? locator;
+
+  /// Optional excerpt — quoted text from the source.
+  final String? excerpt;
+
+  const Citation({
+    required this.label,
+    required this.source,
+    this.locator,
+    this.excerpt,
+  });
+
+  @override
+  int get hashCode =>
+      label.hashCode ^ source.hashCode ^ locator.hashCode ^ excerpt.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Citation &&
+          runtimeType == other.runtimeType &&
+          label == other.label &&
+          source == other.source &&
+          locator == other.locator &&
+          excerpt == other.excerpt;
 }
 
 /// Citation file metadata (RIS, PubMed, EndNote).
@@ -6758,6 +6889,83 @@ class Footnote {
           runtimeType == other.runtimeType &&
           label == other.label &&
           content == other.content;
+}
+
+/// A footnote anchor reference in markdown text.
+///
+/// Represents a `[^label]` use-site (not a definition).
+class FootnoteAnchor {
+  /// The label of the footnote reference (e.g., "1" in `[^1]`).
+  final String label;
+
+  /// Byte offset of the anchor in the markdown text.
+  final PlatformInt64 offset;
+
+  const FootnoteAnchor({required this.label, required this.offset});
+
+  @override
+  int get hashCode => label.hashCode ^ offset.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FootnoteAnchor &&
+          runtimeType == other.runtimeType &&
+          label == other.label &&
+          offset == other.offset;
+}
+
+/// Configuration for markdown footnote and citation parsing.
+class FootnoteConfig {
+  /// Whether to parse the structured citation block (default: true).
+  ///
+  /// When enabled, the parser will look for and extract citations from
+  /// the block after `---` + `<!-- citations ... -->`.
+  final bool parseCitations;
+
+  const FootnoteConfig({required this.parseCitations});
+
+  @override
+  int get hashCode => parseCitations.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FootnoteConfig &&
+          runtimeType == other.runtimeType &&
+          parseCitations == other.parseCitations;
+}
+
+/// A footnote definition from markdown text.
+///
+/// Represents `[^label]: content` declarations (including multi-line continuations).
+class FootnoteDefinition {
+  /// The label of the footnote (e.g., "1" in `[^1]: ...`).
+  final String label;
+
+  /// The full content of the footnote definition.
+  final String content;
+
+  /// Byte offset of the definition line in the markdown text.
+  final PlatformInt64 offset;
+
+  const FootnoteDefinition({
+    required this.label,
+    required this.content,
+    required this.offset,
+  });
+
+  @override
+  int get hashCode => label.hashCode ^ content.hashCode ^ offset.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FootnoteDefinition &&
+          runtimeType == other.runtimeType &&
+          label == other.label &&
+          content == other.content &&
+          offset == other.offset;
 }
 
 /// Kind of a PDF form field.

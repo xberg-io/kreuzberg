@@ -297,6 +297,8 @@ keywords-yake = ["stopwords"]
 keywords-rake = ["dep:rake", "stopwords"]
 keywords = ["keywords-yake", "keywords-rake"]
 
+markdown-footnotes = []
+
 diff = ["dep:similar"]
 
 # OSS v5 follow-up: text analysis, redaction, classification, captioning, QR detection.
@@ -397,6 +399,7 @@ no-ort-target = [
     "chunking-tokenizers",
     "quality",
     "keywords",
+    "markdown-footnotes",
     "enrichment",
     "heuristics",
     "office",
@@ -511,7 +514,14 @@ formats = [
     "heic",
 ]
 # Text processing and analysis capabilities.
-analysis = ["language-detection", "chunking", "quality", "keywords", "diff"]
+analysis = [
+    "language-detection",
+    "chunking",
+    "quality",
+    "keywords",
+    "markdown-footnotes",
+    "diff",
+]
 # Network services and observability infrastructure.
 services = ["api", "mcp", "otel"]
 # Everything — all formats, analysis, services, OCR, ML, and code intelligence.

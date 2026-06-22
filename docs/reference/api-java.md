@@ -1411,6 +1411,212 @@ translateResult(new ExtractionResult(), new TranslationConfig());
 
 ---
 
+#### findFootnoteAnchors()
+
+Find all footnote anchor references in markdown text.
+
+Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+Footnote definitions (`[^label]: ...`) are NOT included in the results.
+
+**Returns:**
+
+A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+
+**Signature:**
+
+```java
+public static List<FootnoteAnchor> findFootnoteAnchors(String markdown)
+```
+
+**Example:**
+
+```java
+var result = findFootnoteAnchors("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `List<FootnoteAnchor>`
+
+---
+
+#### parseFootnoteDefinitions()
+
+Parse footnote definitions from markdown text.
+
+Returns a vector of footnote definitions found in the markdown.
+Handles multi-line definitions with continuation/indented lines (CommonMark format).
+
+**Returns:**
+
+A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+
+**Signature:**
+
+```java
+public static List<FootnoteDefinition> parseFootnoteDefinitions(String markdown)
+```
+
+**Example:**
+
+```java
+var result = parseFootnoteDefinitions("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `List<FootnoteDefinition>`
+
+---
+
+#### findInferenceMarkers()
+
+Find inference markers in markdown text.
+
+Returns byte offsets of every `[*inference*]` marker found in the text.
+
+**Returns:**
+
+A vector of byte offsets where inference markers appear.
+
+**Signature:**
+
+```java
+public static List<Long> findInferenceMarkers(String markdown)
+```
+
+**Example:**
+
+```java
+var result = findInferenceMarkers("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `List<Long>`
+
+---
+
+#### findUnmarkedClaims()
+
+Find unmarked claims in markdown text.
+
+Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+nor an inference marker (`[*inference*]`).
+
+The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+and is not a heading, blank line, or markup-only line is considered a claim.
+Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+
+**Returns:**
+
+A vector of trimmed line text strings for unmarked claims.
+
+**Signature:**
+
+```java
+public static List<String> findUnmarkedClaims(String markdown)
+```
+
+**Example:**
+
+```java
+var result = findUnmarkedClaims("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `List<String>`
+
+---
+
+#### parseCitations()
+
+Parse the structured citation block from markdown.
+
+Extracts citations from the block after a `---` thematic break followed by
+`<!-- citations ... -->` comment. Parses each entry as:
+`[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+
+Returns parsed citations with source, optional locator, and optional excerpt.
+
+**Returns:**
+
+A vector of `Citation` entries parsed from the citation block.
+
+**Signature:**
+
+```java
+public static List<Citation> parseCitations(String markdown)
+```
+
+**Example:**
+
+```java
+var result = parseCitations("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `List<Citation>`
+
+---
+
+#### verifyExcerpt()
+
+Verify that an excerpt appears verbatim in source text.
+
+Performs exact matching by default. Also tries whitespace-normalized matching
+(collapsing runs of whitespace on both sides) since PDF-extracted text often
+has irregular spacing.
+
+**Returns:**
+
+`true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+
+**Signature:**
+
+```java
+public static boolean verifyExcerpt(String excerpt, String sourceText)
+```
+
+**Example:**
+
+```java
+var result = verifyExcerpt("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `excerpt` | `String` | Yes | The text snippet to find |
+| `sourceText` | `String` | Yes | The full source text to search |
+
+**Returns:** `boolean`
+
+---
+
 #### chunkForRag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
@@ -2974,6 +3180,22 @@ Contains the generated chunks and metadata about the chunking.
 
 ---
 
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `String` | — | The source reference (path, URL, or identifier). |
+| `locator` | `Optional<String>` | `null` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `Optional<String>` | `null` | Optional excerpt — quoted text from the source. |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -4518,6 +4740,85 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `String` | — | Footnote label |
 | `content` | `List<FormattedBlock>` | — | Footnote content blocks |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `long` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parseCitations` | `boolean` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+##### Methods
+
+###### defaultOptions()
+
+**Signature:**
+
+```java
+public static FootnoteConfig defaultOptions()
+```
+
+**Example:**
+
+```java
+var result = FootnoteConfig.defaultOptions();
+```
+
+**Returns:** `FootnoteConfig`
+
+###### withParseCitations()
+
+Set whether to parse the citation block.
+
+**Signature:**
+
+```java
+public FootnoteConfig withParseCitations(boolean enabled)
+```
+
+**Example:**
+
+```java
+var result = instance.withParseCitations(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enabled` | `boolean` | Yes | The enabled |
+
+**Returns:** `FootnoteConfig`
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `String` | — | The full content of the footnote definition. |
+| `offset` | `long` | — | Byte offset of the definition line in the markdown text. |
 
 ---
 

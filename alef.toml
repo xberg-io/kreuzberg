@@ -141,6 +141,7 @@ sources = [
   "crates/kreuzberg/src/rendering/mod.rs",
   "crates/kreuzberg/src/keywords/mod.rs",
   "crates/kreuzberg/src/chunking/mod.rs",
+  "crates/kreuzberg/src/text/markdown_footnotes/mod.rs",
   # RAG chunker composer (chunk_for_rag — re-exported from chunking/mod.rs)
   "crates/kreuzberg/src/chunking/rag.rs",
   "crates/kreuzberg/src/embeddings/mod.rs",
@@ -225,6 +226,7 @@ features = [
   "ner-onnx",
   "ner-llm",
   "diff",
+  "markdown-footnotes",
   "redaction",
   "enrichment",
   "heuristics",

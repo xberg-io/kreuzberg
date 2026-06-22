@@ -1469,6 +1469,212 @@ translateResult(new ExtractionResult(), new TranslationConfig());
 
 ---
 
+#### findFootnoteAnchors()
+
+Find all footnote anchor references in markdown text.
+
+Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+Footnote definitions (`[^label]: ...`) are NOT included in the results.
+
+**Returns:**
+
+A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+
+**Signature:**
+
+```php
+public static function findFootnoteAnchors(string $markdown): array<FootnoteAnchor>
+```
+
+**Example:**
+
+```php
+$result = findFootnoteAnchors("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `string` | Yes | The markdown text to search |
+
+**Returns:** `array<FootnoteAnchor>`
+
+---
+
+#### parseFootnoteDefinitions()
+
+Parse footnote definitions from markdown text.
+
+Returns a vector of footnote definitions found in the markdown.
+Handles multi-line definitions with continuation/indented lines (CommonMark format).
+
+**Returns:**
+
+A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+
+**Signature:**
+
+```php
+public static function parseFootnoteDefinitions(string $markdown): array<FootnoteDefinition>
+```
+
+**Example:**
+
+```php
+$result = parseFootnoteDefinitions("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `string` | Yes | The markdown text to search |
+
+**Returns:** `array<FootnoteDefinition>`
+
+---
+
+#### findInferenceMarkers()
+
+Find inference markers in markdown text.
+
+Returns byte offsets of every `[*inference*]` marker found in the text.
+
+**Returns:**
+
+A vector of byte offsets where inference markers appear.
+
+**Signature:**
+
+```php
+public static function findInferenceMarkers(string $markdown): array<int>
+```
+
+**Example:**
+
+```php
+$result = findInferenceMarkers("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `string` | Yes | The markdown text to search |
+
+**Returns:** `array<int>`
+
+---
+
+#### findUnmarkedClaims()
+
+Find unmarked claims in markdown text.
+
+Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+nor an inference marker (`[*inference*]`).
+
+The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+and is not a heading, blank line, or markup-only line is considered a claim.
+Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+
+**Returns:**
+
+A vector of trimmed line text strings for unmarked claims.
+
+**Signature:**
+
+```php
+public static function findUnmarkedClaims(string $markdown): array<string>
+```
+
+**Example:**
+
+```php
+$result = findUnmarkedClaims("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `string` | Yes | The markdown text to search |
+
+**Returns:** `array<string>`
+
+---
+
+#### parseCitations()
+
+Parse the structured citation block from markdown.
+
+Extracts citations from the block after a `---` thematic break followed by
+`<!-- citations ... -->` comment. Parses each entry as:
+`[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+
+Returns parsed citations with source, optional locator, and optional excerpt.
+
+**Returns:**
+
+A vector of `Citation` entries parsed from the citation block.
+
+**Signature:**
+
+```php
+public static function parseCitations(string $markdown): array<Citation>
+```
+
+**Example:**
+
+```php
+$result = parseCitations("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `string` | Yes | The markdown text to search |
+
+**Returns:** `array<Citation>`
+
+---
+
+#### verifyExcerpt()
+
+Verify that an excerpt appears verbatim in source text.
+
+Performs exact matching by default. Also tries whitespace-normalized matching
+(collapsing runs of whitespace on both sides) since PDF-extracted text often
+has irregular spacing.
+
+**Returns:**
+
+`true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+
+**Signature:**
+
+```php
+public static function verifyExcerpt(string $excerpt, string $sourceText): bool
+```
+
+**Example:**
+
+```php
+$result = verifyExcerpt("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `excerpt` | `string` | Yes | The text snippet to find |
+| `sourceText` | `string` | Yes | The full source text to search |
+
+**Returns:** `bool`
+
+---
+
 #### chunkForRag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
@@ -3032,6 +3238,22 @@ Contains the generated chunks and metadata about the chunking.
 
 ---
 
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `string` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `string` | — | The source reference (path, URL, or identifier). |
+| `locator` | `?string` | `null` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `?string` | `null` | Optional excerpt — quoted text from the source. |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -4576,6 +4798,85 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `string` | — | Footnote label |
 | `content` | `array<FormattedBlock>` | — | Footnote content blocks |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `string` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `int` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parseCitations` | `bool` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```php
+public static function default(): FootnoteConfig
+```
+
+**Example:**
+
+```php
+$result = FootnoteConfig::default();
+```
+
+**Returns:** `FootnoteConfig`
+
+###### withParseCitations()
+
+Set whether to parse the citation block.
+
+**Signature:**
+
+```php
+public function withParseCitations(bool $enabled): FootnoteConfig
+```
+
+**Example:**
+
+```php
+$result = $instance->withParseCitations(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enabled` | `bool` | Yes | The enabled |
+
+**Returns:** `FootnoteConfig`
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `string` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `string` | — | The full content of the footnote definition. |
+| `offset` | `int` | — | Byte offset of the definition line in the markdown text. |
 
 ---
 

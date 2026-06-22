@@ -1607,6 +1607,245 @@ translate_result(ExtractionResult::default(), TranslationConfig::default()).awai
 
 ---
 
+#### find_footnote_anchors()
+
+Find all footnote anchor references in markdown text.
+
+Returns a vector of footnote anchors (`[^label]` use-sites), including byte offsets.
+Footnote definitions (`[^label]: ...`) are NOT included in the results.
+
+**Returns:**
+
+A vector of `FootnoteAnchor` entries, each with the label and byte offset.
+
+**Signature:**
+
+```rust
+pub fn find_footnote_anchors(markdown: &str) -> Vec<FootnoteAnchor>
+```
+
+**Example:**
+
+```rust
+let text = "Text[^src1] more text[^src2].";
+let anchors = find_footnote_anchors(text);
+assert_eq!(anchors.len(), 2);
+assert_eq!(anchors[0].label, "src1");
+assert_eq!(anchors[1].label, "src2");
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `Vec<FootnoteAnchor>`
+
+---
+
+#### parse_footnote_definitions()
+
+Parse footnote definitions from markdown text.
+
+Returns a vector of footnote definitions found in the markdown.
+Handles multi-line definitions with continuation/indented lines (CommonMark format).
+
+**Returns:**
+
+A vector of `FootnoteDefinition` entries, each with label, content, and byte offset.
+
+**Signature:**
+
+```rust
+pub fn parse_footnote_definitions(markdown: &str) -> Vec<FootnoteDefinition>
+```
+
+**Example:**
+
+```rust
+let text = r#"[^1]: First footnote.
+[^2]: Second footnote.
+  Continued line."#;
+let defs = parse_footnote_definitions(text);
+assert_eq!(defs.len(), 2);
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `Vec<FootnoteDefinition>`
+
+---
+
+#### find_inference_markers()
+
+Find inference markers in markdown text.
+
+Returns byte offsets of every `[*inference*]` marker found in the text.
+
+**Returns:**
+
+A vector of byte offsets where inference markers appear.
+
+**Signature:**
+
+```rust
+pub fn find_inference_markers(markdown: &str) -> Vec<usize>
+```
+
+**Example:**
+
+```rust
+let text = "A claim [*inference*] with inference marker.";
+let offsets = find_inference_markers(text);
+assert_eq!(offsets.len(), 1);
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `Vec<usize>`
+
+---
+
+#### find_unmarked_claims()
+
+Find unmarked claims in markdown text.
+
+Returns lines that assert a claim but carry neither a footnote citation anchor (`[^...]`)
+nor an inference marker (`[*inference*]`).
+
+The heuristic is simple: a line that contains alphabetic words, ends with sentence punctuation,
+and is not a heading, blank line, or markup-only line is considered a claim.
+Exclude lines that appear in the citation block (after `---` + `<!-- citations ... -->`).
+
+**Returns:**
+
+A vector of trimmed line text strings for unmarked claims.
+
+**Signature:**
+
+```rust
+pub fn find_unmarked_claims(markdown: &str) -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let text = r#"This is a claim without citation.
+Another claim with citation.[^1]
+This is a claim with inference.[*inference*]
+
+[^1]: Citation"#;
+let unmarked = find_unmarked_claims(text);
+assert_eq!(unmarked.len(), 1);
+assert!(unmarked[0].contains("without citation"));
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `Vec<String>`
+
+---
+
+#### parse_citations()
+
+Parse the structured citation block from markdown.
+
+Extracts citations from the block after a `---` thematic break followed by
+`<!-- citations ... -->` comment. Parses each entry as:
+`[^srcN]: <source>, <optional-locator>, excerpt: "<text>"`
+
+Returns parsed citations with source, optional locator, and optional excerpt.
+
+**Returns:**
+
+A vector of `Citation` entries parsed from the citation block.
+
+**Signature:**
+
+```rust
+pub fn parse_citations(markdown: &str) -> Vec<Citation>
+```
+
+**Example:**
+
+```rust
+let text = r#"Body text.
+
+---
+<!-- citations -->
+[^src1]: docs/paper.pdf, page 3, excerpt: "Exact quoted text."
+"#;
+let citations = parse_citations(text);
+assert_eq!(citations.len(), 1);
+assert_eq!(citations[0].source, "docs/paper.pdf");
+assert_eq!(citations[0].locator, Some("page 3".to_string()));
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `markdown` | `String` | Yes | The markdown text to search |
+
+**Returns:** `Vec<Citation>`
+
+---
+
+#### verify_excerpt()
+
+Verify that an excerpt appears verbatim in source text.
+
+Performs exact matching by default. Also tries whitespace-normalized matching
+(collapsing runs of whitespace on both sides) since PDF-extracted text often
+has irregular spacing.
+
+**Returns:**
+
+`true` if the excerpt appears (exactly or with normalized whitespace), `false` otherwise.
+
+**Signature:**
+
+```rust
+pub fn verify_excerpt(excerpt: &str, source_text: &str) -> bool
+```
+
+**Example:**
+
+```rust
+let source = "The document states: Exact quoted text.";
+let excerpt = "Exact quoted text";
+assert!(verify_excerpt(excerpt, source));
+
+// Whitespace normalization
+let source2 = "Text with  irregular   spacing.";
+let excerpt2 = "Text with irregular spacing";
+assert!(verify_excerpt(excerpt2, source2));
+```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `excerpt` | `String` | Yes | The text snippet to find |
+| `source_text` | `String` | Yes | The full source text to search |
+
+**Returns:** `bool`
+
+---
+
 #### chunk_for_rag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
@@ -3287,6 +3526,22 @@ Contains the generated chunks and metadata about the chunking.
 
 ---
 
+#### Citation
+
+A structured citation from a citation block.
+
+Parsed from entries like:
+`[^srcN]: source, locator, excerpt: "text"`
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the citation (e.g., "src1" in `\[^src1\]: ...`). |
+| `source` | `String` | — | The source reference (path, URL, or identifier). |
+| `locator` | `Option<String>` | `None` | Optional locator within the source (e.g., "page 3" or "section 2.1"). |
+| `excerpt` | `Option<String>` | `None` | Optional excerpt — quoted text from the source. |
+
+---
+
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
@@ -4862,6 +5117,85 @@ Footnote in Djot.
 |-------|------|---------|-------------|
 | `label` | `String` | — | Footnote label |
 | `content` | `Vec<FormattedBlock>` | — | Footnote content blocks |
+
+---
+
+#### FootnoteAnchor
+
+A footnote anchor reference in markdown text.
+
+Represents a `[^label]` use-site (not a definition).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote reference (e.g., "1" in `\[^1\]`). |
+| `offset` | `usize` | — | Byte offset of the anchor in the markdown text. |
+
+---
+
+#### FootnoteConfig
+
+Configuration for markdown footnote and citation parsing.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `parse_citations` | `bool` | `true` | Whether to parse the structured citation block (default: true). When enabled, the parser will look for and extract citations from the block after `---` + `<!-- citations ... -->`. |
+
+##### Methods
+
+###### default()
+
+**Signature:**
+
+```rust
+pub fn default() -> FootnoteConfig
+```
+
+**Example:**
+
+```rust
+let result = FootnoteConfig::default();
+```
+
+**Returns:** `FootnoteConfig`
+
+###### with_parse_citations()
+
+Set whether to parse the citation block.
+
+**Signature:**
+
+```rust
+pub fn with_parse_citations(&self, enabled: bool) -> FootnoteConfig
+```
+
+**Example:**
+
+```rust
+let result = instance.with_parse_citations(true);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `enabled` | `bool` | Yes | The enabled |
+
+**Returns:** `FootnoteConfig`
+
+---
+
+#### FootnoteDefinition
+
+A footnote definition from markdown text.
+
+Represents `[^label]: content` declarations (including multi-line continuations).
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `String` | — | The label of the footnote (e.g., "1" in `\[^1\]: ...`). |
+| `content` | `String` | — | The full content of the footnote definition. |
+| `offset` | `usize` | — | Byte offset of the definition line in the markdown text. |
 
 ---
 
