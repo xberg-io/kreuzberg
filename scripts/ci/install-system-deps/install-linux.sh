@@ -110,6 +110,18 @@ fi
 # Always run ldconfig to update the dynamic linker cache, even if libheif was cached
 sudo ldconfig
 
+# If cache save is enabled (e.g., actions/cache post-run), prepare cache directory
+# Actions/cache will restore from /tmp/libheif-cache in the next workflow run
+if [ -n "${GITHUB_ACTION:-}" ]; then
+  mkdir -p /tmp/libheif-cache/usr/local/lib/pkgconfig
+  mkdir -p /tmp/libheif-cache/usr/local/include
+  mkdir -p /tmp/libheif-cache/usr/local/share
+  cp -a /usr/local/lib/libheif* /tmp/libheif-cache/usr/local/lib/ 2>/dev/null || true
+  cp -a /usr/local/lib/pkgconfig/libheif.pc /tmp/libheif-cache/usr/local/lib/pkgconfig/ 2>/dev/null || true
+  [ -d /usr/local/include/libheif ] && cp -a /usr/local/include/libheif /tmp/libheif-cache/usr/local/include/
+  [ -d /usr/local/share/libheif ] && cp -a /usr/local/share/libheif /tmp/libheif-cache/usr/local/share/
+fi
+
 # Diagnostic: verify the correct libheif is in the cache and has the required symbol.
 # This helps debug future ARM linker issues.
 echo ""

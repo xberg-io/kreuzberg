@@ -262,6 +262,9 @@ jobs:
       - name: Verify libheif installation (Linux)
         if: runner.os == 'Linux'
         shell: bash
+        env:
+          PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:${PKG_CONFIG_PATH:-}
+          LD_LIBRARY_PATH: /usr/local/lib:${LD_LIBRARY_PATH:-}
         run: |
           echo "Checking libheif installation..."
           if [ -f /usr/local/lib/pkgconfig/libheif.pc ]; then

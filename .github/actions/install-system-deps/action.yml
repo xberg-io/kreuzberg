@@ -58,19 +58,37 @@ runs:
           tesseract-linux-${{ runner.arch }}-v5-
           tesseract-linux-${{ runner.arch }}-
 
-    - name: Cache libheif source build (Linux)
+    - name: Restore libheif cache (Linux)
       if: runner.os == 'Linux'
       id: cache-libheif-linux
       uses: actions/cache@v5
       with:
         path: |
-          /usr/local/lib/libheif*
-          /usr/local/lib/pkgconfig/libheif.pc
-          /usr/local/include/libheif/
-          /usr/local/share/libheif/
-        key: libheif-linux-${{ runner.arch }}-v1.23.0-cache-v2
+          /tmp/libheif-cache/usr/local/lib/libheif*
+          /tmp/libheif-cache/usr/local/lib/pkgconfig/libheif.pc
+          /tmp/libheif-cache/usr/local/include/libheif/
+          /tmp/libheif-cache/usr/local/share/libheif/
+        key: libheif-linux-${{ runner.arch }}-v1.23.0-cache-v3
         restore-keys: |
-          libheif-linux-${{ runner.arch }}-v1.23.0-cache-v2
+          libheif-linux-${{ runner.arch }}-v1.23.0-cache-v3
+
+    - name: Restore cached libheif to /usr/local (Linux)
+      if: runner.os == 'Linux' && steps.cache-libheif-linux.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo "Restoring cached libheif from /tmp/libheif-cache to /usr/local..."
+        if [ -d /tmp/libheif-cache/usr/local/lib ]; then
+          sudo cp -a /tmp/libheif-cache/usr/local/lib/libheif* /usr/local/lib/ 2>/dev/null || true
+          sudo cp -a /tmp/libheif-cache/usr/local/lib/pkgconfig/libheif.pc /usr/local/lib/pkgconfig/ 2>/dev/null || true
+        fi
+        if [ -d /tmp/libheif-cache/usr/local/include/libheif ]; then
+          sudo cp -a /tmp/libheif-cache/usr/local/include/libheif /usr/local/include/
+        fi
+        if [ -d /tmp/libheif-cache/usr/local/share/libheif ]; then
+          sudo cp -a /tmp/libheif-cache/usr/local/share/libheif /usr/local/share/
+        fi
+        sudo ldconfig
+        echo "✓ Restored cached libheif"
 
     - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
