@@ -20451,6 +20451,7 @@ impl magnus::TryConvert for ImageOutputFormat {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -20806,6 +20807,7 @@ impl magnus::TryConvert for VlmFallbackPolicy {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "mode": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -20953,6 +20955,7 @@ impl magnus::TryConvert for ChunkSizing {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -21014,6 +21017,7 @@ impl magnus::TryConvert for EmbeddingModelType {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -21086,6 +21090,7 @@ impl magnus::TryConvert for RerankerModelType {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -21825,6 +21830,7 @@ impl magnus::TryConvert for NodeContent {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "node_type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -21892,6 +21898,7 @@ impl magnus::TryConvert for AnnotationKind {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "annotation_type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -22392,6 +22399,7 @@ impl magnus::TryConvert for FormatMetadata {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "format_type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -22781,6 +22789,7 @@ impl magnus::TryConvert for OcrBoundingGeometry {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23046,6 +23055,7 @@ impl magnus::TryConvert for DiffLine {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "kind": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23175,6 +23185,7 @@ impl magnus::TryConvert for RevisionAnchor {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23418,6 +23429,7 @@ impl magnus::TryConvert for EnrichStatus {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "status": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23522,6 +23534,7 @@ impl magnus::TryConvert for ChunkingDecision {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23600,6 +23613,7 @@ impl magnus::TryConvert for NoChunkingReason {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)
@@ -23661,6 +23675,7 @@ impl magnus::TryConvert for ChunkingReason {
         // If that fails, try treating it as a plain string value and wrap in quotes
         // If both fail, try as Custom variant (for untagged enum support)
         serde_json::from_str(&json_str)
+            .or_else(|_| serde_json::from_value(serde_json::json!({ "type": json_str })))
             .or_else(|_| serde_json::from_str(&format!("\"{json_str}\"")))
             .or_else(|_| {
                 // Try as a JSON string for Custom variant (untagged enums accept any remaining value)

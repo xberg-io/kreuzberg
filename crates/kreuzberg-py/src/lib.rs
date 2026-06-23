@@ -11817,7 +11817,7 @@ impl ImageOutputFormat {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ImageOutputFormat: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -12535,7 +12535,7 @@ impl VlmFallbackPolicy {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "mode": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid VlmFallbackPolicy: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -12802,7 +12802,7 @@ impl ChunkSizing {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ChunkSizing: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -12933,7 +12933,7 @@ impl EmbeddingModelType {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid EmbeddingModelType: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -13100,7 +13100,7 @@ impl RerankerModelType {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid RerankerModelType: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -14485,7 +14485,7 @@ impl AnnotationKind {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "annotation_type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid AnnotationKind: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -15539,7 +15539,7 @@ impl FormatMetadata {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "format_type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid FormatMetadata: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -16660,7 +16660,7 @@ impl DiffLine {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "kind": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid DiffLine: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -16870,7 +16870,7 @@ impl RevisionAnchor {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid RevisionAnchor: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -17289,7 +17289,7 @@ impl EnrichStatus {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "status": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid EnrichStatus: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -17492,7 +17492,7 @@ impl ChunkingDecision {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ChunkingDecision: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -17626,7 +17626,7 @@ impl NoChunkingReason {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid NoChunkingReason: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
@@ -17827,7 +17827,7 @@ impl ChunkingReason {
         // serde_json can deserialize into the tagged enum.
         let json_str: String = if let Some(v) = value {
             if let Ok(s) = v.extract::<String>() {
-                serde_json::to_string(&s)
+                serde_json::to_string(&serde_json::json!({ "type": s }))
                     .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Invalid ChunkingReason: {e}")))?
             } else {
                 let json_mod = py.import("json")?;
