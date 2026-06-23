@@ -638,7 +638,7 @@ itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 jsonschema = { version = "0.46", optional = true }
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
-kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.30", optional = true }
+kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.31", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", optional = true }
 libc = { workspace = true }
@@ -750,9 +750,9 @@ zip = { version = ">=7.0.0", optional = true, default-features = false, features
 # Note: candle-core unconditionally links platform-specific deps (cudarc on Linux, metal-kernels on macOS).
 # To avoid conflicts during feature unification, GPU features (candle-cuda/metal/mkl/accelerate) should
 # only be explicitly enabled with platform awareness. CI uses `--features full` which excludes GPU accel.
-kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.30", optional = true }
+kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.31", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.30", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.31", optional = true }
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 pprof = { version = "0.15.0", features = ["flamegraph"], optional = true }
 # Enable tokenizers `http` feature on native targets so model downloads work via hf-hub.
@@ -773,9 +773,9 @@ ureq = { version = "3.3", default-features = false, features = ["native-tls", "j
 # native-tls (schannel) so hf-hub's Agent trusts the Windows system certificate store (#1146).
 hf-hub = { version = "0.5", default-features = false, features = ["ureq", "native-tls"], optional = true }
 # Candle-based VLM OCR backends - pure-Rust transformer inference, not on WASM yet.
-kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.30", optional = true }
+kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.31", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.30", optional = true }
+kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.31", optional = true }
 # liter-llm: aws-lc-sys MSVC fix shipped in kreuzberg-dev/liter-llm; track via git patch.
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 # Enable tokenizers `http` feature on Windows so model downloads work via hf-hub.

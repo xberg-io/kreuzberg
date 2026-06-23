@@ -101,13 +101,13 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 Kotlin DSL (`build.gradle.kts`):
 
 ```kotlin
-implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.30")
+implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.31")
 ```
 
 Groovy DSL (`build.gradle`):
 
 ```groovy
-implementation 'dev.kreuzberg:kreuzberg-android:5.0.0-rc.30'
+implementation 'dev.kreuzberg:kreuzberg-android:5.0.0-rc.31'
 ```
 
 Add to your `pom.xml`:
@@ -116,7 +116,7 @@ Add to your `pom.xml`:
 <dependency>
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg-android</artifactId>
-    <version>5.0.0-rc.30</version>
+    <version>5.0.0-rc.31</version>
 </dependency>
 ```
 
