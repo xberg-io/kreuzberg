@@ -734,6 +734,12 @@ mod build_tesseract {
         cc::Build::new()
             .file("src/shim.cpp")
             .cpp(true)
+            // Pin C++17 (the standard the rest of the build already uses, see
+            // get_os_specific_config) rather than relying on the compiler's default.
+            // The vendored Tesseract 5.x headers require C++17; toolchains whose
+            // default dialect is lower (Apple clang, older GCC/clang) fail to compile
+            // the shim. It builds on CI only because GCC there defaults to C++17.
+            .std("c++17")
             .include(tesseract_install_dir.join("include"))
             .compile("kreuzberg_shim");
 
