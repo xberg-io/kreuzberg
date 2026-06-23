@@ -154,6 +154,7 @@ impl Fixture {
                     | "olefile"
                     | "omnidocbench"
                     | "mistral-pixtral"
+                    | "nougat"
             ) {
                 return Err(Error::InvalidFixture {
                     path: fixture_path.to_path_buf(),
