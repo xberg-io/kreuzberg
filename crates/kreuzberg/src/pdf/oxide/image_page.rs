@@ -164,13 +164,12 @@ pub(crate) fn render_image_only_page(
             }
             Some(img)
         }
-        // Warn only when pdf_oxide genuinely couldn't render the page; otherwise its
-        // normal rasterization is correct and this is just a safety-net miss.
+        // Warn only when the page's only renderable content is this image; otherwise
+        // the normal render is correct and this is just a safety-net miss.
         Err(e) if has_unsupported => {
             tracing::warn!(
                 page = page_index + 1,
-                "page image uses a filter pdf_oxide cannot rasterize (e.g. JPEG 2000) and could not be \
-                 decoded; the page may be blank: {e}"
+                "could not decode this page's JPEG 2000 image; the page may be empty in the output: {e}"
             );
             None
         }

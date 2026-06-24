@@ -191,11 +191,28 @@ pub(crate) fn encode_dynamic_image_to_png(img: &image::DynamicImage) -> Result<(
     let mut buf = std::io::Cursor::new(Vec::new());
     img.write_to(&mut buf, image::ImageFormat::Png)
         .map_err(|e| KreuzbergError::Parsing {
-            message: format!("Failed to PNG-encode recovered page image: {e}"),
+            message: format!("Failed to encode page image as PNG: {e}"),
             source: None,
         })?;
     Ok((buf.into_inner(), w, h))
 }
+
+/// Sample points per axis for the blank-page check. A grid (here 48×48 ≈ 2300
+/// points) keeps the cost constant regardless of page resolution; the safety net
+/// only needs to find one content block, and a scanned page's content covers far
+/// more than one grid cell, so real pages never read as blank.
+#[cfg(all(feature = "pdf", feature = "ocr"))]
+const BLANK_CHECK_SAMPLES_PER_AXIS: u32 = 48;
+
+/// Channel value at or above which a sample counts as white. Below 255 to tolerate
+/// the off-white background of real scans and JPEG ringing near pure white.
+#[cfg(all(feature = "pdf", feature = "ocr"))]
+const BLANK_CHECK_WHITE_LEVEL: u8 = 250;
+
+/// Minimum alpha for a sample to count as content (fully/near transparent samples
+/// are page background, not content).
+#[cfg(all(feature = "pdf", feature = "ocr"))]
+const BLANK_CHECK_MIN_ALPHA: u8 = 10;
 
 /// Whether a rendered page is effectively blank (uniform near-white or fully
 /// transparent). Used to trigger the image-only-page safety net. Samples a coarse
@@ -208,14 +225,15 @@ fn is_effectively_blank(img: &image::DynamicImage) -> bool {
     if w == 0 || h == 0 {
         return true;
     }
-    // ~64 samples per axis: enough to catch any real content, negligible cost.
-    let step_x = (w / 64).max(1) as usize;
-    let step_y = (h / 64).max(1) as usize;
+    let step_x = (w / BLANK_CHECK_SAMPLES_PER_AXIS).max(1) as usize;
+    let step_y = (h / BLANK_CHECK_SAMPLES_PER_AXIS).max(1) as usize;
     for y in (0..h).step_by(step_y) {
         for x in (0..w).step_by(step_x) {
             let px = img.get_pixel(x, y);
-            // Opaque and not near-white on any channel => real content.
-            if px[3] > 10 && (px[0] < 250 || px[1] < 250 || px[2] < 250) {
+            let opaque = px[3] >= BLANK_CHECK_MIN_ALPHA;
+            let colored =
+                px[0] < BLANK_CHECK_WHITE_LEVEL || px[1] < BLANK_CHECK_WHITE_LEVEL || px[2] < BLANK_CHECK_WHITE_LEVEL;
+            if opaque && colored {
                 return false;
             }
         }
