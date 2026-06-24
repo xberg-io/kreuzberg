@@ -85,7 +85,10 @@ fn collect_page_images(doc: &PdfDocument, page_index: usize) -> Vec<PageImage> {
     let resources = match doc.get_page_resources(page_index) {
         Ok(r) => r,
         Err(e) => {
-            tracing::debug!(page = page_index + 1, "image-only render: get_page_resources failed: {e}");
+            tracing::debug!(
+                page = page_index + 1,
+                "image-only render: get_page_resources failed: {e}"
+            );
             return Vec::new();
         }
     };
@@ -105,7 +108,10 @@ fn collect_page_images(doc: &PdfDocument, page_index: usize) -> Vec<PageImage> {
                 &xobj_owned
             }
             Err(e) => {
-                tracing::debug!(page = page_index + 1, "image-only render: load XObject dict failed: {e}");
+                tracing::debug!(
+                    page = page_index + 1,
+                    "image-only render: load XObject dict failed: {e}"
+                );
                 return Vec::new();
             }
         }

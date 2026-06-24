@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **PDF**: JPEG 2000 (`/JPXDecode`) pages no longer render blank. `pdf_oxide` has no JPEG 2000 decoder, so it dropped the image and rasterized the page to white; scanned PDFs stored as full-page JPEG 2000 images then produced zero OCR output across every backend, with no error. Pages whose dominant image XObject uses a filter `pdf_oxide` cannot rasterize are now decoded directly via the in-tree decoder set (`hayro-jpeg2000`), with a safety net for images `pdf_oxide` renders blank and a warning when a page image cannot be decoded at all (instead of a silent blank). Applies to `render_pdf_page_to_png`, the OCR pipeline, and the layout runner. JPEG 2000 was the only image format pdfium handled that `pdf_oxide` could not, so this closes the image-rendering gap from the pdfium → pdf_oxide migration. (#1158)
 - **build/node-musl**: the Alpine musl Node binding build sets `CC_/CXX_<target>=gcc/g++` so `cc-rs` (used by `ring`, tesseract) finds a compiler on napi-rs's cross path. It previously failed with `error occurred in cc-rs: failed to find tool "aarch64-linux-musl-gcc"` — the cargo `*_LINKER` vars were set but `cc-rs` resolves the *compiler* via its own per-target `CC_`/`CXX_` lookup. (`docker/Dockerfile.musl-node`)
 - **Ruby gem now ships precompiled platform binaries.** `ruby-gem` only ran `rake build`, emitting a
   source-only gem on every matrix leg, so `gem install kreuzberg` compiled the native extension from

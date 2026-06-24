@@ -197,10 +197,11 @@ pub(crate) fn render_page_dynamic_image(
 pub(crate) fn encode_dynamic_image_to_png(img: &image::DynamicImage) -> Result<(Vec<u8>, u32, u32)> {
     let (w, h) = (img.width(), img.height());
     let mut buf = std::io::Cursor::new(Vec::new());
-    img.write_to(&mut buf, image::ImageFormat::Png).map_err(|e| KreuzbergError::Parsing {
-        message: format!("Failed to PNG-encode recovered page image: {e}"),
-        source: None,
-    })?;
+    img.write_to(&mut buf, image::ImageFormat::Png)
+        .map_err(|e| KreuzbergError::Parsing {
+            message: format!("Failed to PNG-encode recovered page image: {e}"),
+            source: None,
+        })?;
     Ok((buf.into_inner(), w, h))
 }
 
@@ -398,7 +399,11 @@ fn build_minimal_pdf_with_jpx_image(jp2: &[u8], w: u32, h: u32) -> Vec<u8> {
     let content = format!("q {w} 0 0 {h} 0 0 cm /Im0 Do Q\n");
     offsets[5] = buf.len();
     buf.extend_from_slice(
-        format!("5 0 obj\n<</Length {}>>\nstream\n{content}endstream\nendobj\n", content.len()).as_bytes(),
+        format!(
+            "5 0 obj\n<</Length {}>>\nstream\n{content}endstream\nendobj\n",
+            content.len()
+        )
+        .as_bytes(),
     );
 
     let xref_offset = buf.len();
@@ -407,9 +412,7 @@ fn build_minimal_pdf_with_jpx_image(jp2: &[u8], w: u32, h: u32) -> Vec<u8> {
     for offset in &offsets[1..=5] {
         buf.extend_from_slice(format!("{offset:010} 00000 n \n").as_bytes());
     }
-    buf.extend_from_slice(
-        format!("trailer\n<</Size 6 /Root 1 0 R>>\nstartxref\n{xref_offset}\n%%EOF\n").as_bytes(),
-    );
+    buf.extend_from_slice(format!("trailer\n<</Size 6 /Root 1 0 R>>\nstartxref\n{xref_offset}\n%%EOF\n").as_bytes());
 
     buf
 }
@@ -432,7 +435,9 @@ mod jpx_tests {
     fn jpx_page_renders_non_blank_via_public_api() {
         let pdf = build_minimal_pdf_with_jpx_image(&jp2_fixture(), 512, 512);
         let png = render_pdf_page_to_png(&pdf, 0, Some(150), None).expect("JPEG 2000 page should render");
-        let luma = image::load_from_memory(&png).expect("output is a valid image").to_luma8();
+        let luma = image::load_from_memory(&png)
+            .expect("output is a valid image")
+            .to_luma8();
         let min = luma.iter().copied().min().unwrap_or(255);
         let max = luma.iter().copied().max().unwrap_or(255);
         assert!(
