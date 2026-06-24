@@ -635,9 +635,9 @@ infer = "0.19.0"
 itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 jsonschema = { version = "0.46", optional = true, default-features = false }
-kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
+kreuzberg-gliner-rs = { version = "0.2.1", optional = true }
 kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.34", optional = true }
-kreuzberg-orp = { version = "0.1.1", optional = true }
+kreuzberg-orp = { version = "0.1.2", optional = true }
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "5.0.0-rc.34", optional = true }
 libc = { workspace = true }
 # lofty: pure-Rust audio tag reader (ID3v1/v2, MP4 atoms, Vorbis comments, FLAC, etc.)
@@ -647,7 +647,7 @@ lofty = { version = "0.24", optional = true }
 # excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
 # to build on Windows MSVC.
 log = { workspace = true }
-lopdf = { version = "0.41.0", optional = true }
+lopdf = { version = "0.42.0", optional = true }
 mail-parser = { version = "0.11.4", optional = true }
 mel_spec = { version = "0.4", optional = true }
 memchr = "2.8.2"
@@ -677,7 +677,7 @@ rake = { version = "0.3.6", optional = true }
 rayon = { workspace = true }
 regex = "1.12.4"
 resvg = { workspace = true, optional = true }
-rmcp = { version = "1.7.0", features = [
+rmcp = { version = "1.8.0", features = [
     "server",
     "macros",
     "base64",
