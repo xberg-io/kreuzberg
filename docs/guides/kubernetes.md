@@ -9,7 +9,7 @@ Deploy via the official Helm chart (OCI artifact on GHCR).
 ### Install
 
 ```bash title="Terminal"
-helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.8.4
+helm install kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg --version 4.8.4
 ```
 
 ### Configure
@@ -65,7 +65,7 @@ podDisruptionBudget:
 ```
 
 ```bash title="Terminal"
-helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg \
+helm install kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg \
   --version 4.8.4 \
   -f values.yaml
 ```
@@ -73,7 +73,7 @@ helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg \
 ### Upgrade
 
 ```bash title="Terminal"
-helm upgrade kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.8.4
+helm upgrade kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg --version 4.8.4
 ```
 
 ### What's Included
@@ -90,7 +90,7 @@ The chart creates the following resources:
 | HorizontalPodAutoscaler | CPU/memory-based autoscaling                               | `autoscaling.enabled`         |
 | PodDisruptionBudget     | Availability during disruptions                            | `podDisruptionBudget.enabled` |
 
-All values are documented in the chart's [`values.yaml`](https://github.com/kreuzberg-dev/kreuzberg/blob/main/charts/kreuzberg/values.yaml).
+All values are documented in the chart's [`values.yaml`](https://github.com/xberg-io/kreuzberg/blob/main/charts/kreuzberg/values.yaml).
 
 ---
 
@@ -113,7 +113,7 @@ spec:
     spec:
       containers:
         - name: kreuzberg
-          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          image: ghcr.io/xberg-io/kreuzberg:latest
           ports:
             - containerPort: 8000
               name: http
@@ -366,7 +366,7 @@ spec:
               mountPath: /app/.kreuzberg
       containers:
         - name: kreuzberg
-          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          image: ghcr.io/xberg-io/kreuzberg:latest
           ports:
             - containerPort: 8000
               name: http

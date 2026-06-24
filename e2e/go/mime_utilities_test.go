@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	kreuzberg "github.com/kreuzberg-dev/kreuzberg/v5"
+	kreuzberg "github.com/xberg-io/kreuzberg/v5"
 )
 
 func Test_MimeDetectBytes(t *testing.T) {

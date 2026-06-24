@@ -613,7 +613,7 @@ extract_form_fields = false
 
     import (
         "fmt"
-        kreuzberg "github.com/kreuzberg-dev/kreuzberg/packages/go/v5"
+        kreuzberg "github.com/xberg-io/kreuzberg/packages/go/v5"
     )
 
     func main() {

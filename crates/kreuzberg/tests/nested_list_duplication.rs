@@ -4,7 +4,7 @@
 //!
 //! 1. html-to-markdown-rs emitted malformed/duplicated Markdown for nested
 //!    `ul > li > ul > li > ol` HTML structures.
-//!    Fixed in html-to-markdown-rs 3.5.0 (kreuzberg-dev/html-to-markdown#385).
+//!    Fixed in html-to-markdown-rs 3.5.0 (xberg-io/html-to-markdown#385).
 //!
 //! 2. The Markdown chunker panicked on the malformed Markdown from (1).
 //!    The underflow originated in `sep.start - offset` in

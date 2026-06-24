@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	kz "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
+	kz "github.com/xberg-io/kreuzberg/packages/go/v4"
 )
 
 var debugEnabled = os.Getenv("KREUZBERG_BENCHMARK_DEBUG") != ""

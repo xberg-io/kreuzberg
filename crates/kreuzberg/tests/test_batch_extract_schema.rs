@@ -5,7 +5,7 @@ use rmcp::schemars::schema_for;
 
 #[test]
 fn test_file_configs_items_is_object_not_boolean() {
-    // Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/877
+    // Regression test for https://github.com/xberg-io/kreuzberg/issues/877
     // Moonshot AI (Kimi) rejects `"items": true` — items must be an object.
     let schema = schema_for!(BatchExtractFilesParams);
     let schema_value = serde_json::to_value(&schema).unwrap();

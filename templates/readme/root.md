@@ -21,7 +21,7 @@ OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whispe
 | **Polyglot** | Native bindings for Rust, Python, Node.js, WebAssembly, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, R, Dart, Swift, Zig, and C |
 | **OCR** | Tesseract (incl. WASM), PaddleOCR, EasyOCR, and VLM OCR across 143 vision providers — extensible via plugins |
 | **Transcription** | Whisper ONNX transcripts for MP3, M4A, WAV, WebM, and MP4 audio tracks |
-| **LLM intelligence** | Structured JSON extraction, embeddings, and VLM OCR through [liter-llm](https://github.com/kreuzberg-dev/liter-llm), including local engines |
+| **LLM intelligence** | Structured JSON extraction, embeddings, and VLM OCR through [liter-llm](https://github.com/xberg-io/liter-llm), including local engines |
 | **Deployment** | Use as a library, CLI tool, REST API server, or MCP server |
 | **High performance** | Rust core with pure-Rust PDF, SIMD optimizations, full parallelism, and streaming for multi-GB files |
 | **Token-efficient output** | TOON wire format uses ~30–50% fewer tokens than JSON for LLM/RAG pipelines |
@@ -32,7 +32,7 @@ OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whispe
 96 file formats across 8 categories — Office documents, images (OCR-enabled), web and structured data, email, archives, academic, and audio/video — plus code intelligence for 306 programming languages. See the [format reference](https://docs.kreuzberg.dev/reference/formats/) for the complete list.
 
 <div align="center">
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
+  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
     <img src="docs/assets/star.gif" alt="Star Kreuzberg on GitHub" width="640">
   </a>
 </div>
@@ -54,7 +54,7 @@ pip install kreuzberg
 uv add kreuzberg
 ```
 
-See [Python README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python) for full documentation.
+See [Python README](https://github.com/xberg-io/kreuzberg/tree/main/packages/python) for full documentation.
 
 </details>
 
@@ -65,7 +65,7 @@ See [Python README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/package
 npm install @kreuzberg/node
 ```
 
-See [Node.js README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node) for full documentation.
+See [Node.js README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-node) for full documentation.
 
 </details>
 
@@ -76,7 +76,7 @@ See [Node.js README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates
 cargo add kreuzberg
 ```
 
-See [Rust README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg) for full documentation.
+See [Rust README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg) for full documentation.
 
 </details>
 
@@ -84,17 +84,17 @@ See [Rust README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kr
 <summary><strong>Go</strong></summary>
 
 ```sh
-go get github.com/kreuzberg-dev/kreuzberg/v5
+go get github.com/xberg-io/kreuzberg/v5
 ```
 
-See [Go README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v5) for full documentation.
+See [Go README](https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Java</strong></summary>
 
-Available on Maven Central as `dev.kreuzberg:kreuzberg`. See [Java README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/java) for the dependency snippet and current version.
+Available on Maven Central as `dev.kreuzberg:kreuzberg`. See [Java README](https://github.com/xberg-io/kreuzberg/tree/main/packages/java) for the dependency snippet and current version.
 
 </details>
 
@@ -105,7 +105,7 @@ Available on Maven Central as `dev.kreuzberg:kreuzberg`. See [Java README](https
 dotnet add package Kreuzberg
 ```
 
-See [C# README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/csharp) for full documentation.
+See [C# README](https://github.com/xberg-io/kreuzberg/tree/main/packages/csharp) for full documentation.
 
 </details>
 
@@ -116,7 +116,7 @@ See [C# README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/cs
 gem install kreuzberg
 ```
 
-See [Ruby README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby) for full documentation.
+See [Ruby README](https://github.com/xberg-io/kreuzberg/tree/main/packages/ruby) for full documentation.
 
 </details>
 
@@ -124,17 +124,17 @@ See [Ruby README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/
 <summary><strong>PHP</strong></summary>
 
 ```sh
-composer require kreuzberg-dev/kreuzberg
+composer require xberg-io/kreuzberg
 ```
 
-See [PHP README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php) for full documentation.
+See [PHP README](https://github.com/xberg-io/kreuzberg/tree/main/packages/php) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Elixir</strong></summary>
 
-Add `{:kreuzberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir) for full documentation.
+Add `{:kreuzberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/kreuzberg/tree/main/packages/elixir) for full documentation.
 
 </details>
 
@@ -145,28 +145,28 @@ Add `{:kreuzberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README]
 npm install @kreuzberg/wasm
 ```
 
-See [WebAssembly README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-wasm) for full documentation.
+See [WebAssembly README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-wasm) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>R</strong></summary>
 
-Install from r-universe. See [R README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/r) for full documentation.
+Install from r-universe. See [R README](https://github.com/xberg-io/kreuzberg/tree/main/packages/r) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Kotlin (Android)</strong></summary>
 
-Available on Maven Central as `dev.kreuzberg:kreuzberg-android`. See [Kotlin README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/kotlin-android) for the dependency snippet and current version.
+Available on Maven Central as `dev.kreuzberg:kreuzberg-android`. See [Kotlin README](https://github.com/xberg-io/kreuzberg/tree/main/packages/kotlin-android) for the dependency snippet and current version.
 
 </details>
 
 <details>
 <summary><strong>Swift</strong></summary>
 
-Add via Swift Package Manager. See [Swift README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/swift) for full documentation.
+Add via Swift Package Manager. See [Swift README](https://github.com/xberg-io/kreuzberg/tree/main/packages/swift) for full documentation.
 
 </details>
 
@@ -177,21 +177,21 @@ Add via Swift Package Manager. See [Swift README](https://github.com/kreuzberg-d
 dart pub add kreuzberg
 ```
 
-See [Dart README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/dart) for full documentation.
+See [Dart README](https://github.com/xberg-io/kreuzberg/tree/main/packages/dart) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Zig</strong></summary>
 
-Add via `zig fetch`. See [Zig README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/zig) for full documentation.
+Add via `zig fetch`. See [Zig README](https://github.com/xberg-io/kreuzberg/tree/main/packages/zig) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>C/C++ (FFI)</strong></summary>
 
-Build from source as part of this workspace. See [C (FFI) README](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-ffi) for full documentation.
+Build from source as part of this workspace. See [C (FFI) README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-ffi) for full documentation.
 
 </details>
 
@@ -199,7 +199,7 @@ Build from source as part of this workspace. See [C (FFI) README](https://github
 <summary><strong>CLI</strong></summary>
 
 ```sh
-brew install kreuzberg-dev/tap/kreuzberg
+brew install xberg-io/tap/kreuzberg
 ```
 
 See [CLI usage](https://docs.kreuzberg.dev/cli/usage/) for full documentation.
@@ -210,7 +210,7 @@ See [CLI usage](https://docs.kreuzberg.dev/cli/usage/) for full documentation.
 <summary><strong>Docker</strong></summary>
 
 ```sh
-docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
+docker pull ghcr.io/xberg-io/kreuzberg:latest
 ```
 
 See [Docker guide](https://docs.kreuzberg.dev/guides/docker/) for API, CLI, and MCP server modes.
@@ -225,7 +225,7 @@ binaries (Homebrew, `install.sh`, Docker) include it; from source, enable the `m
 
 ```sh
 # Prebuilt (Homebrew / install.sh / Docker) — MCP is included
-brew install kreuzberg-dev/tap/kreuzberg
+brew install xberg-io/tap/kreuzberg
 kreuzberg mcp                                   # stdio (default)
 
 # From source — enable the mcp feature
@@ -253,13 +253,13 @@ resources, prompts, HTTP transport, and configuration.
 
 ### AI Coding Assistants
 
-Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.com/kreuzberg-dev/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
+Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
 
 <details open>
 <summary><strong>Claude Code</strong></summary>
 
 ```text
-/plugin marketplace add kreuzberg-dev/plugins
+/plugin marketplace add xberg-io/plugins
 /plugin install kreuzberg@kreuzberg
 ```
 
@@ -269,7 +269,7 @@ Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.c
 <summary><strong>Codex CLI</strong></summary>
 
 ```text
-/plugins add https://github.com/kreuzberg-dev/plugins
+/plugins add https://github.com/xberg-io/plugins
 ```
 
 Then search for `kreuzberg` and select **Install Plugin**.
@@ -279,7 +279,7 @@ Then search for `kreuzberg` and select **Install Plugin**.
 <details>
 <summary><strong>Cursor</strong></summary>
 
-Settings → Plugins → Add from URL → `https://github.com/kreuzberg-dev/plugins`, then select **kreuzberg**.
+Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **kreuzberg**.
 
 </details>
 
@@ -287,7 +287,7 @@ Settings → Plugins → Add from URL → `https://github.com/kreuzberg-dev/plug
 <summary><strong>Gemini CLI</strong></summary>
 
 ```text
-gemini extensions install https://github.com/kreuzberg-dev/plugins
+gemini extensions install https://github.com/xberg-io/plugins
 ```
 
 </details>
@@ -296,7 +296,7 @@ gemini extensions install https://github.com/kreuzberg-dev/plugins
 <summary><strong>Factory Droid</strong></summary>
 
 ```text
-droid plugin marketplace add https://github.com/kreuzberg-dev/plugins
+droid plugin marketplace add https://github.com/xberg-io/plugins
 droid plugin install kreuzberg@kreuzberg
 ```
 
@@ -306,7 +306,7 @@ droid plugin install kreuzberg@kreuzberg
 <summary><strong>GitHub Copilot CLI</strong></summary>
 
 ```text
-copilot plugin marketplace add https://github.com/kreuzberg-dev/plugins
+copilot plugin marketplace add https://github.com/xberg-io/plugins
 copilot plugin install kreuzberg@kreuzberg
 ```
 
@@ -338,12 +338,12 @@ Join our [Discord community](https://discord.gg/xt9WY3GnKR) for questions and di
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/kreuzberg-dev/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
-- [kreuzcrawl](https://github.com/kreuzberg-dev/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
-- [html-to-markdown](https://github.com/kreuzberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
-- [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
-- [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
-- [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces every per-language binding across the 5 polyglot repos.
+- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
+- [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
+- [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
+- [alef](https://github.com/xberg-io/alef) — the polyglot binding generator that produces every per-language binding across the 5 polyglot repos.
 
 ## License
 

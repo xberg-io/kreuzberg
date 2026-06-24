@@ -150,7 +150,7 @@ pub enum MergeMode {
 mod tests {
     use super::*;
 
-    /// Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/716
+    /// Regression test for https://github.com/xberg-io/kreuzberg/issues/716
     ///
     /// `LlmConfig` must implement `Default` so callers can use the struct-update
     /// syntax documented in the VLM OCR guide:

@@ -15,14 +15,14 @@ No SDK, no code — just your terminal.
 === "Install script"
 
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/scripts/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/xberg-io/kreuzberg/main/scripts/install.sh | bash
     ```
 
 === "Homebrew"
 
     ```bash
-    brew trust kreuzberg-dev/tap
-    brew install kreuzberg-dev/tap/kreuzberg
+    brew trust xberg-io/tap
+    brew install xberg-io/tap/kreuzberg
     ```
 
 === "Cargo"
@@ -34,14 +34,14 @@ No SDK, no code — just your terminal.
 === "Docker (CLI image)"
 
     ```bash
-    docker pull ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
-    docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest extract /data/document.pdf
+    docker pull ghcr.io/xberg-io/kreuzberg-cli:latest
+    docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest extract /data/document.pdf
     ```
 
 === "Docker (full image)"
 
     ```bash
-    docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
+    docker pull ghcr.io/xberg-io/kreuzberg:latest
     ```
 
 !!! Note "MCP Server included"
@@ -114,7 +114,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  go get github.com/kreuzberg-dev/kreuzberg/v5@latest
+  go get github.com/xberg-io/kreuzberg/v5@latest
   ```
 
   [API Reference](../reference/api-go.md){ .install-api-link }
@@ -158,7 +158,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```swift
-  .package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "5.0.0-rc.17")
+  .package(url: "https://github.com/xberg-io/kreuzberg.git", from: "5.0.0-rc.17")
   ```
 
   [API Reference](../reference/api-swift.md){ .install-api-link }
@@ -180,7 +180,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  composer require kreuzberg-dev/kreuzberg
+  composer require xberg-io/kreuzberg
   ```
 
   [API Reference](../reference/api-php.md){ .install-api-link }
@@ -203,7 +203,7 @@ No SDK, no code — just your terminal.
 
   ```r
   install.packages("kreuzberg",
-    repos = "https://kreuzberg-dev.r-universe.dev")
+    repos = "https://xberg-io.r-universe.dev")
   ```
 
   [API Reference](../reference/api-r.md){ .install-api-link }
@@ -236,7 +236,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
+  zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
   ```
 
   [API Reference](../reference/api-zig.md){ .install-api-link }
@@ -428,7 +428,7 @@ Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from
 ### Go
 
 ```bash
-go get github.com/kreuzberg-dev/kreuzberg/v5@latest
+go get github.com/xberg-io/kreuzberg/v5@latest
 ```
 
 !!! Warning "Windows"

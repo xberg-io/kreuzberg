@@ -3,8 +3,8 @@ site_name = "Kreuzberg"
 site_description = "A modern text extraction library supporting PDFs, images, office documents and more"
 site_url = "https://docs.kreuzberg.dev"
 site_author = "kreuzberg.dev"
-repo_name = "kreuzberg-dev/kreuzberg"
-repo_url = "https://github.com/kreuzberg-dev/kreuzberg"
+repo_name = "xberg-io/kreuzberg"
+repo_url = "https://github.com/xberg-io/kreuzberg"
 edit_uri = "edit/main/docs/"
 copyright = "Copyright &copy; 2023-2026 Kreuzberg.dev"
 
@@ -268,7 +268,7 @@ forks = true
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/kreuzberg-dev/kreuzberg"
+link = "https://github.com/xberg-io/kreuzberg"
 name = "View on GitHub"
 
 [[project.extra.social]]
@@ -278,7 +278,7 @@ name = "View on PyPI"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/docker"
-link = "https://github.com/kreuzberg-dev/kreuzberg/pkgs/container/kreuzberg"
+link = "https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg"
 name = "View on GitHub Container Registry"
 
 [[project.extra.social]]

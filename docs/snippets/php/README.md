@@ -258,7 +258,7 @@ Each snippet is designed to be self-contained and runnable. To test:
 1. Install dependencies:
 
    ```bash
-   composer require kreuzberg-dev/kreuzberg
+   composer require xberg-io/kreuzberg
    ```
 
 2. Ensure the extension is loaded:
@@ -295,6 +295,6 @@ These snippets follow these conventions:
 ## Links
 
 - **Documentation**: <https://kreuzberg.dev>
-- **GitHub**: <https://github.com/kreuzberg-dev/Kreuzberg>
-- **Issues**: <https://github.com/kreuzberg-dev/kreuzberg/issues>
+- **GitHub**: <https://github.com/xberg-io/Kreuzberg>
+- **Issues**: <https://github.com/xberg-io/kreuzberg/issues>
 - **Package**: <https://packagist.org/packages/kreuzberg/Kreuzberg>

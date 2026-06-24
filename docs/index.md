@@ -59,22 +59,22 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 | **TypeScript (Native)** | `npm install @kreuzberg/node`                  | [API Reference](reference/api-typescript.md) |
 | **TypeScript (WASM)**   | `npm install @kreuzberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
 | **Rust**                | `cargo add kreuzberg`                          | [API Reference](reference/api-rust.md)       |
-| **Go**                  | `go get github.com/kreuzberg-dev/kreuzberg/v5` | [API Reference](reference/api-go.md)         |
+| **Go**                  | `go get github.com/xberg-io/kreuzberg/v5` | [API Reference](reference/api-go.md)         |
 | **Java / Kotlin JVM**   | Maven Central `dev.kreuzberg:kreuzberg`        | [API Reference](reference/api-java.md)       |
 | **Kotlin Android**      | Maven Central `dev.kreuzberg:kreuzberg-android` | [API Reference](reference/api-kotlin-android.md) |
 | **C#**                  | `dotnet add package Kreuzberg`                 | [API Reference](reference/api-csharp.md)     |
 | **Ruby**                | `gem install kreuzberg`                        | [API Reference](reference/api-ruby.md)       |
-| **PHP**                 | `composer require kreuzberg-dev/kreuzberg`         | [API Reference](reference/api-php.md)        |
+| **PHP**                 | `composer require xberg-io/kreuzberg`         | [API Reference](reference/api-php.md)        |
 | **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.17"}`               | [API Reference](reference/api-elixir.md)     |
 | **R**                   | r-universe `kreuzberg`                         | [API Reference](reference/api-r.md)          |
 | **Dart / Flutter**      | `dart pub add kreuzberg`                       | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                          | [API Reference](reference/api-swift.md)      |
 | **Zig**                 | `zig fetch --save` from GitHub                 | [API Reference](reference/api-zig.md)        |
 | **C (FFI)**             | Shared library + header                        | [API Reference](reference/api-c.md)          |
-| **CLI**                 | `brew install kreuzberg-dev/tap/kreuzberg`     | [CLI Guide](cli/usage.md)                    |
-| **Docker**              | `ghcr.io/kreuzberg-dev/kreuzberg`              | [Docker Guide](guides/docker.md)             |
+| **CLI**                 | `brew install xberg-io/tap/kreuzberg`     | [CLI Guide](cli/usage.md)                    |
+| **Docker**              | `ghcr.io/xberg-io/kreuzberg`              | [Docker Guide](guides/docker.md)             |
 
-Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust kreuzberg-dev/tap` once before installing the CLI from `kreuzberg-dev/tap`.
+Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xberg-io/tap` once before installing the CLI from `xberg-io/tap`.
 
 !!! Tip "Choosing Between TypeScript Packages"
 
@@ -181,6 +181,6 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://kreuz
 
 ## Getting Help
 
-- **Bugs & feature requests** — [Open an issue on GitHub](https://github.com/kreuzberg-dev/kreuzberg/issues)
+- **Bugs & feature requests** — [Open an issue on GitHub](https://github.com/xberg-io/kreuzberg/issues)
 - **Community chat** — [Join the Discord](https://discord.gg/xt9WY3GnKR)
 - **Contributing** — [Read the contributor guide](contributing.md)

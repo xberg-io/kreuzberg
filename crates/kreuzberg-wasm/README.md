@@ -1,7 +1,7 @@
 # WebAssembly
 
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
-  <a href="https://github.com/kreuzberg-dev/alef">
+  <a href="https://github.com/xberg-io/alef">
     <img src="https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6" alt="Bindings">
   </a>
   <!-- Language Bindings -->
@@ -20,14 +20,14 @@
   <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v5">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5">
+    <img src="https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
   </a>
-  <a href="https://packagist.org/packages/kreuzberg-dev/kreuzberg">
-    <img src="https://img.shields.io/packagist/v/kreuzberg-dev/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  <a href="https://packagist.org/packages/xberg-io/kreuzberg">
+    <img src="https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6" alt="PHP">
   </a>
   <a href="https://rubygems.org/gems/kreuzberg">
     <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
@@ -35,7 +35,7 @@
   <a href="https://hex.pm/packages/kreuzberg">
     <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
   </a>
-  <a href="https://kreuzberg-dev.r-universe.dev/kreuzberg">
+  <a href="https://xberg-io.r-universe.dev/kreuzberg">
     <img src="https://img.shields.io/badge/R-kreuzberg-007ec6" alt="R">
   </a>
   <a href="https://pub.dev/packages/kreuzberg">
@@ -44,24 +44,24 @@
   <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg-android">
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/swift">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/swift">
     <img src="https://img.shields.io/badge/Swift-SPM-007ec6" alt="Swift">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/zig">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/zig">
     <img src="https://img.shields.io/badge/Zig-package-007ec6" alt="Zig">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
+  <a href="https://github.com/xberg-io/kreuzberg/releases">
     <img src="https://img.shields.io/badge/C-FFI-007ec6" alt="C FFI">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/pkgs/container/kreuzberg">
+  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/pkgs/container/charts%2Fkreuzberg">
+  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/charts%2Fkreuzberg">
     <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
   </a>
 
   <!-- Project Info -->
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
+  <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
@@ -79,8 +79,8 @@
   <a href="https://docs.kreuzberg.dev/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
-    <img height="22" src="https://img.shields.io/github/stars/kreuzberg-dev/kreuzberg?style=social" alt="GitHub Stars">
+  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/xberg-io/kreuzberg?style=social" alt="GitHub Stars">
   </a>
 </div>
 
@@ -321,7 +321,7 @@ extractDocuments(fileBytes, mimes)
 | **Diagnostics** | Parse errors with line/column positions |
 | **Syntax-Aware Chunking** | Split code by semantic boundaries, not arbitrary byte offsets |
 
-Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — [documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev).
+Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — [documentation](https://docs.tree-sitter-language-pack.kreuzberg.dev).
 
 **[Complete Format Reference](https://docs.kreuzberg.dev/reference/formats/)**
 
@@ -482,16 +482,16 @@ For advanced configuration options including language detection, table extractio
 
 ## Contributing
 
-Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg-dev/kreuzberg/blob/main/CONTRIBUTING.md).
+Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/kreuzberg/blob/main/CONTRIBUTING.md).
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/kreuzberg-dev/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
-- [kreuzcrawl](https://github.com/kreuzberg-dev/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
-- [html-to-markdown](https://github.com/kreuzberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
-- [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
-- [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
-- [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces this README and all per-language bindings.
+- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
+- [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
+- [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
+- [alef](https://github.com/xberg-io/alef) — the polyglot binding generator that produces this README and all per-language bindings.
 - [Discord](https://discord.gg/xt9WY3GnKR) — community, roadmap, announcements.
 
 ## License
@@ -501,5 +501,5 @@ Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 ## Support
 
 - **Discord Community**: [Join our Discord](https://discord.gg/xt9WY3GnKR)
-- **GitHub Issues**: [Report bugs](https://github.com/kreuzberg-dev/kreuzberg/issues)
-- **Discussions**: [Ask questions](https://github.com/kreuzberg-dev/kreuzberg/discussions)
+- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/kreuzberg/issues)
+- **Discussions**: [Ask questions](https://github.com/xberg-io/kreuzberg/discussions)

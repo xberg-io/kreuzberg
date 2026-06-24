@@ -14,7 +14,7 @@ if (!extension_loaded('kreuzberg')) {
     echo "Kreuzberg extension not found!\n\n";
     echo "Installation steps:\n";
     echo "1. Download the extension for your platform from:\n";
-    echo "   https://github.com/kreuzberg-dev/kreuzberg/releases\n\n";
+    echo "   https://github.com/xberg-io/kreuzberg/releases\n\n";
     echo "2. Copy the extension to your PHP extensions directory:\n";
     echo "   - Linux/macOS: kreuzberg.so\n";
     echo "   - Windows: kreuzberg.dll\n\n";

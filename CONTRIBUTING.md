@@ -6,12 +6,12 @@ Thank you for your interest in contributing to Kreuzberg! Whether you're fixing 
 
 Welcome! We're glad you're here. Start by choosing an issue that matches your experience level:
 
-- [Good first issue](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
-- [Help wanted](https://github.com/kreuzberg-dev/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
+- [Good first issue](https://github.com/xberg-io/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
+- [Help wanted](https://github.com/xberg-io/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
 
 > **Tip:** Pick an issue you feel confident about. If you're unsure about scope or approach, leave a comment on the issue and we'll help you get started.
 
-Want to work on something bigger or propose a new feature? [Open a discussion](https://github.com/kreuzberg-dev/kreuzberg/issues) with maintainers first.
+Want to work on something bigger or propose a new feature? [Open a discussion](https://github.com/xberg-io/kreuzberg/issues) with maintainers first.
 
 ## Jump right in
 
@@ -104,10 +104,10 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). Prefix your
 
 ## Community
 
-- **Star the repo:** [Give us a star on GitHub](https://github.com/kreuzberg-dev/kreuzberg) — it helps others discover Kreuzberg!
+- **Star the repo:** [Give us a star on GitHub](https://github.com/xberg-io/kreuzberg) — it helps others discover Kreuzberg!
 - **Documentation:** [docs.kreuzberg.dev](https://docs.kreuzberg.dev)
 - **Discord:** [Join our community](https://discord.gg/xt9WY3GnKR)
-- **Issues:** [GitHub Issues](https://github.com/kreuzberg-dev/kreuzberg/issues)
+- **Issues:** [GitHub Issues](https://github.com/xberg-io/kreuzberg/issues)
 - **License:** [Elastic License 2.0 (ELv2)](LICENSE)
 
 Thank you for helping make Kreuzberg better!

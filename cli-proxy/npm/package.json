@@ -6,7 +6,7 @@
 	"author": "Na'aman Hirschfeld",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/kreuzberg-dev/kreuzberg.git",
+		"url": "git+https://github.com/xberg-io/kreuzberg.git",
 		"directory": "cli-proxy/npm"
 	},
 	"bin": {

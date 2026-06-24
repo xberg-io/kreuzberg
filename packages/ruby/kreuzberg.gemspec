@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
   spec.summary       = "High-performance document intelligence library"
   spec.description   = "High-performance document intelligence library"
-  spec.homepage      = "https://github.com/kreuzberg-dev/kreuzberg"
+  spec.homepage      = "https://github.com/xberg-io/kreuzberg"
 
   spec.license       = "Elastic-2.0"
 

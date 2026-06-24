@@ -32,7 +32,7 @@ Official Docker images built on the Rust core with Debian 13 (Trixie). Each imag
 
 |                   | **Core**                               | **Full**                                 |
 | ----------------- | -------------------------------------- | ---------------------------------------- |
-| **Image**         | `ghcr.io/kreuzberg-dev/kreuzberg:core` | `ghcr.io/kreuzberg-dev/kreuzberg:latest` |
+| **Image**         | `ghcr.io/xberg-io/kreuzberg:core` | `ghcr.io/xberg-io/kreuzberg:latest` |
 | **Size**          | ~1.0–1.3 GB                            | ~1.5–2.1 GB                              |
 | **Tesseract OCR** | 12 languages                           | 12 languages                             |
 | **Modern Office** | DOCX, PPTX, XLSX                       | DOCX, PPTX, XLSX                         |
@@ -48,18 +48,18 @@ All images include: Tesseract OCR (eng, spa, fra, deu, ita, por, chi-sim, chi-tr
 ### API Server (Default)
 
 ```bash title="Terminal"
-docker run -p 8000:8000 ghcr.io/kreuzberg-dev/kreuzberg:latest
+docker run -p 8000:8000 ghcr.io/xberg-io/kreuzberg:latest
 
 # Custom port and CORS
 docker run -p 9000:9000 \
   -e KREUZBERG_CORS_ORIGINS="https://myapp.com" \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   serve --host 0.0.0.0 --port 9000
 
 # With config file
 docker run -p 8000:8000 \
   -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   serve --config /config/kreuzberg.toml
 ```
 
@@ -69,31 +69,31 @@ See [API Server Guide](api-server.md) for endpoint documentation.
 
 ```bash title="Terminal"
 # Extract a file
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
   extract /data/document.pdf
 
 # Extract with OCR
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
   extract /data/scanned.pdf --ocr true
 
 # Batch processing
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
   batch /data/*.pdf --format json
 
 # MIME detection
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
   detect /data/unknown-file.bin
 ```
 
 ### MCP Server
 
 ```bash title="Terminal"
-docker run ghcr.io/kreuzberg-dev/kreuzberg:latest mcp
+docker run ghcr.io/xberg-io/kreuzberg:latest mcp
 
 # With config
 docker run \
   -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   mcp --config /config/kreuzberg.toml
 ```
 
@@ -117,17 +117,17 @@ Host and port are set via CLI args: `serve --host 0.0.0.0 --port 8000`.
 # Cache persistence (embedding models, OCR cache)
 docker run -p 8000:8000 \
   -v kreuzberg-cache:/app/.kreuzberg \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest
+  ghcr.io/xberg-io/kreuzberg:latest
 
 # Config file
 docker run -p 8000:8000 \
   -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   serve --config /config/kreuzberg.toml
 
 # Documents (read-only)
 docker run -v $(pwd)/documents:/data:ro \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   extract /data/document.pdf
 ```
 
@@ -138,7 +138,7 @@ docker run -v $(pwd)/documents:/data:ro \
 ```yaml title="docker-compose.yaml"
 services:
   kreuzberg-api:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+    image: ghcr.io/xberg-io/kreuzberg:latest
     ports:
       - "8000:8000"
     environment:
@@ -170,7 +170,7 @@ docker run --security-opt no-new-privileges \
   --read-only \
   --tmpfs /tmp \
   -p 8000:8000 \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest
+  ghcr.io/xberg-io/kreuzberg:latest
 ```
 
 Ensure mounted volumes have correct permissions:
@@ -189,7 +189,7 @@ chown -R 1000:1000 /path/to/mounted/directory
 
 ```bash title="Terminal"
 docker run -p 8000:8000 --memory=1g --cpus=1 \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest
+  ghcr.io/xberg-io/kreuzberg:latest
 ```
 
 ## Building Custom Images
@@ -203,7 +203,7 @@ docker run -p 8000:8000 --memory=1g --cpus=1 \
     --8<-- "snippets/docker/build_full.md"
 
 ```dockerfile title="Custom Dockerfile"
-FROM ghcr.io/kreuzberg-dev/kreuzberg:latest
+FROM ghcr.io/xberg-io/kreuzberg:latest
 
 USER root
 RUN apt-get update && \

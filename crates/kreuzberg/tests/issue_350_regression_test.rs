@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/350
+//! Regression test for https://github.com/xberg-io/kreuzberg/issues/350
 //!
 //! Tests with real DOCX files that were reported to be detected as ZIP.
 //! If the test files don't exist, the test is skipped.

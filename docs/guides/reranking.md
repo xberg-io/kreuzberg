@@ -84,7 +84,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "Go"
 
     ```go
-    import "github.com/kreuzberg-dev/kreuzberg/v5"
+    import "github.com/xberg-io/kreuzberg/v5"
 
     config := kreuzberg.RerankerConfig{
         Model: &kreuzberg.RerankerModelTypePreset{Name: "fast"},

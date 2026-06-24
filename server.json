@@ -1,19 +1,19 @@
 {
 	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-	"name": "io.github.kreuzberg-dev/kreuzberg",
+	"name": "io.github.xberg-io/kreuzberg",
 	"title": "Kreuzberg",
 	"description": "Extract text, tables, metadata, and images from documents via local CLI.",
 	"version": "5.0.0-rc.10",
 	"websiteUrl": "https://kreuzberg.dev",
 	"repository": {
-		"url": "https://github.com/kreuzberg-dev/kreuzberg",
+		"url": "https://github.com/xberg-io/kreuzberg",
 		"source": "github",
 		"id": "925434317"
 	},
 	"packages": [
 		{
 			"registryType": "oci",
-			"identifier": "ghcr.io/kreuzberg-dev/kreuzberg-cli:5.0.0-rc.10",
+			"identifier": "ghcr.io/xberg-io/kreuzberg-cli:5.0.0-rc.10",
 			"version": "5.0.0-rc.10",
 			"transport": {
 				"type": "stdio"

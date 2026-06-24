@@ -4,13 +4,13 @@ The Kreuzberg plugin teaches AI coding assistants how to use the library — cov
 
 ## Installing
 
-Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.com/kreuzberg-dev/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
+Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
 
 <details open>
 <summary><strong>Claude Code</strong></summary>
 
 ```text
-/plugin marketplace add kreuzberg-dev/plugins
+/plugin marketplace add xberg-io/plugins
 /plugin install kreuzberg@kreuzberg
 ```
 
@@ -20,7 +20,7 @@ Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.c
 <summary><strong>Codex CLI</strong></summary>
 
 ```text
-/plugins add https://github.com/kreuzberg-dev/plugins
+/plugins add https://github.com/xberg-io/plugins
 ```
 
 Then search for `kreuzberg` and select **Install Plugin**.
@@ -29,14 +29,14 @@ Then search for `kreuzberg` and select **Install Plugin**.
 <details>
 <summary><strong>Cursor</strong></summary>
 
-Settings → Plugins → Add from URL → `https://github.com/kreuzberg-dev/plugins`, then select **Kreuzberg**.
+Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **Kreuzberg**.
 </details>
 
 <details>
 <summary><strong>Gemini CLI</strong></summary>
 
 ```text
-gemini extensions install https://github.com/kreuzberg-dev/plugins
+gemini extensions install https://github.com/xberg-io/plugins
 ```
 
 </details>
@@ -45,7 +45,7 @@ gemini extensions install https://github.com/kreuzberg-dev/plugins
 <summary><strong>Factory Droid</strong></summary>
 
 ```text
-droid plugin marketplace add https://github.com/kreuzberg-dev/plugins
+droid plugin marketplace add https://github.com/xberg-io/plugins
 droid plugin install kreuzberg@kreuzberg
 ```
 
@@ -55,7 +55,7 @@ droid plugin install kreuzberg@kreuzberg
 <summary><strong>GitHub Copilot CLI</strong></summary>
 
 ```text
-copilot plugin marketplace add https://github.com/kreuzberg-dev/plugins
+copilot plugin marketplace add https://github.com/xberg-io/plugins
 copilot plugin install kreuzberg@kreuzberg
 ```
 
@@ -129,7 +129,7 @@ When your AI coding assistant discovers the skill, it knows:
 
 ## Further Reading
 
-- [Plugin marketplace](https://github.com/kreuzberg-dev/plugins) — install the plugin in every supported harness
+- [Plugin marketplace](https://github.com/xberg-io/plugins) — install the plugin in every supported harness
 - [Extraction Basics](extraction.md) — core extraction API
 - [Configuration](configuration.md) — all configuration options
 - [Advanced Features](advanced.md) — chunking, embeddings, language detection

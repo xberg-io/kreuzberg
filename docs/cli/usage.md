@@ -671,17 +671,17 @@ kreuzberg detect document.pdf
 
 ## Docker Usage
 
-Use `ghcr.io/kreuzberg-dev/kreuzberg-cli:latest` for the CLI image, or `ghcr.io/kreuzberg-dev/kreuzberg:latest` for the full image (also includes the CLI).
+Use `ghcr.io/xberg-io/kreuzberg-cli:latest` for the CLI image, or `ghcr.io/xberg-io/kreuzberg:latest` for the full image (also includes the CLI).
 
 ### Basic Docker
 
 ```bash title="Terminal"
 # Extract document using Docker with mounted directory
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
   extract /data/document.pdf
 
 # Extract and save output to host directory using shell redirection
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
   extract /data/document.pdf > output.txt
 ```
 
@@ -689,7 +689,7 @@ docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
 
 ```bash title="Terminal"
 # Extract with OCR using Docker
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
   extract /data/scanned.pdf --ocr true
 ```
 
@@ -702,7 +702,7 @@ version: "3.8"
 
 services:
   kreuzberg:
-    image: ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
+    image: ghcr.io/xberg-io/kreuzberg-cli:latest
     volumes:
       - ./documents:/input
     command: extract /input/document.pdf --ocr true

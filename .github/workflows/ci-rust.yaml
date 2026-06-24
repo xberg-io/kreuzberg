@@ -50,7 +50,7 @@ permissions:
 jobs:
   rust:
     name: Rust (${{ matrix.os }})
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -66,13 +66,13 @@ jobs:
 
       - name: Free disk space
         if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+        uses: xberg-io/actions/free-disk-space-linux@v1
         with:
           show-initial: "false"
           show-final: "true"
 
       - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
+        uses: xberg-io/actions/setup-rust@v1
         with:
           cache-key-prefix: rust-${{ matrix.os }}
           use-sccache: "true"
@@ -91,7 +91,7 @@ jobs:
           label: ${{ matrix.os }}
 
       - name: Install Task
-        uses: kreuzberg-dev/actions/install-task@v1
+        uses: xberg-io/actions/install-task@v1
 
       - name: Run clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
@@ -111,7 +111,7 @@ jobs:
 
   live-hf:
     name: Live HF preset tests
-    if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     steps:
@@ -120,13 +120,13 @@ jobs:
           submodules: recursive
 
       - name: Free disk space
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+        uses: xberg-io/actions/free-disk-space-linux@v1
         with:
           show-initial: "false"
           show-final: "true"
 
       - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
+        uses: xberg-io/actions/setup-rust@v1
         with:
           cache-key-prefix: rust-live-hf
           use-sccache: "true"

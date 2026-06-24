@@ -26,7 +26,7 @@ This is the fastest way to get both services running together.
 ```yaml title="docker-compose.yaml"
 services:
   kreuzberg:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest-core
+    image: ghcr.io/xberg-io/kreuzberg:latest-core
     ports:
       - "8000:8000"
     command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
@@ -72,7 +72,7 @@ Open `http://localhost:3000`, create an account, and upload a document. The extr
       --name kreuzberg \
       -p 8000:8000 \
       -v kreuzberg-cache:/app/.kreuzberg \
-      ghcr.io/kreuzberg-dev/kreuzberg:latest-core \
+      ghcr.io/xberg-io/kreuzberg:latest-core \
       serve --host 0.0.0.0 --port 8000
     ```
 

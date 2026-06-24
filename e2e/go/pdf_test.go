@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	kreuzberg "github.com/kreuzberg-dev/kreuzberg/v5"
+	kreuzberg "github.com/xberg-io/kreuzberg/v5"
 )
 
 func Test_RenderPdfPageFirst(t *testing.T) {

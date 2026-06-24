@@ -172,7 +172,7 @@ php -m | grep kreuzberg
 
 ## Support
 
-For issues, visit: https://github.com/kreuzberg-dev/kreuzberg/issues
+For issues, visit: https://github.com/xberg-io/kreuzberg/issues
 EOF
 
 TARBALL_NAME="${PKG_NAME}.tar.gz"

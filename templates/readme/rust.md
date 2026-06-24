@@ -1,6 +1,6 @@
 # Kreuzberg
 
-[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/kreuzberg-dev/alef)
+[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/xberg-io/alef)
 
 [![Rust](https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6)](https://crates.io/crates/kreuzberg)
 [![Python](https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6)](https://pypi.org/project/kreuzberg/)
@@ -8,7 +8,7 @@
 [![WASM](https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/wasm)
 [![Ruby](https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/kreuzberg)
 [![Java](https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-[![Go](https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6)](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v5)
+[![Go](https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6)](https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5)
 [![C#](https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Kreuzberg/)
 
 [![License: Elastic-2.0](https://img.shields.io/badge/License-Elastic--2.0-007ec6)](https://www.elastic.co/licensing/elastic-license)
@@ -21,7 +21,7 @@ High-performance document intelligence library for Rust. Extract text, metadata,
 This is the core Rust library that powers the Python, TypeScript, and Ruby bindings.
 
 > **Version 5.0.0-rc.17 Release**
-> This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
+> This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/xberg-io/kreuzberg/issues) you encounter.
 >
 > **Note**: The Rust crate is not currently published to crates.io for this RC. Use git dependencies or language bindings (Python, TypeScript, Ruby) instead.
 

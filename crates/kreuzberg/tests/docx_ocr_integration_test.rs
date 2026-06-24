@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/781
+//! Regression test for https://github.com/xberg-io/kreuzberg/issues/781
 //!
 //! DOCX OCR extraction was failing because the pipeline was deriving the document
 //! (Markdown/Text generation) BEFORE running OCR on embedded images. As a result,

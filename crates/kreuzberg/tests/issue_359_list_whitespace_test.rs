@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/359
+//! Regression test for https://github.com/xberg-io/kreuzberg/issues/359
 //!
 //! DOCX list items with multiple text runs should preserve whitespace between runs.
 //! e.g. "Sermocination ypsiliform" must not become "Sermocinationypsiliform".

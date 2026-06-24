@@ -1,6 +1,6 @@
 # kreuzberg-paddle-ocr
 
-[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/kreuzberg-dev/alef)
+[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/xberg-io/alef)
 
 PaddleOCR via ONNX Runtime for Kreuzberg — high-performance text detection
 and recognition using PaddlePaddle's OCR models.

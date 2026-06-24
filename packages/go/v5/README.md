@@ -1,7 +1,7 @@
 # Kreuzberg
 
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
-  <a href="https://github.com/kreuzberg-dev/alef">
+  <a href="https://github.com/xberg-io/alef">
     <img src="https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6" alt="Bindings">
   </a>
   <!-- Language Bindings -->
@@ -20,14 +20,14 @@
   <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go/v5">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5">
+    <img src="https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
   </a>
-  <a href="https://packagist.org/packages/kreuzberg-dev/kreuzberg">
-    <img src="https://img.shields.io/packagist/v/kreuzberg-dev/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  <a href="https://packagist.org/packages/xberg-io/kreuzberg">
+    <img src="https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6" alt="PHP">
   </a>
   <a href="https://rubygems.org/gems/kreuzberg">
     <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
@@ -35,7 +35,7 @@
   <a href="https://hex.pm/packages/kreuzberg">
     <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
   </a>
-  <a href="https://kreuzberg-dev.r-universe.dev/kreuzberg">
+  <a href="https://xberg-io.r-universe.dev/kreuzberg">
     <img src="https://img.shields.io/badge/R-kreuzberg-007ec6" alt="R">
   </a>
   <a href="https://pub.dev/packages/kreuzberg">
@@ -44,24 +44,24 @@
   <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg-android">
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/swift">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/swift">
     <img src="https://img.shields.io/badge/Swift-SPM-007ec6" alt="Swift">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/zig">
+  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/zig">
     <img src="https://img.shields.io/badge/Zig-package-007ec6" alt="Zig">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
+  <a href="https://github.com/xberg-io/kreuzberg/releases">
     <img src="https://img.shields.io/badge/C-FFI-007ec6" alt="C FFI">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/pkgs/container/kreuzberg">
+  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/pkgs/container/charts%2Fkreuzberg">
+  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/charts%2Fkreuzberg">
     <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
   </a>
 
   <!-- Project Info -->
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
+  <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.kreuzberg.dev">
@@ -79,15 +79,15 @@
   <a href="https://docs.kreuzberg.dev/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
-  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
-    <img height="22" src="https://img.shields.io/github/stars/kreuzberg-dev/kreuzberg?style=social" alt="GitHub Stars">
+  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/xberg-io/kreuzberg?style=social" alt="GitHub Stars">
   </a>
 </div>
 
 High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.
 
 > **Version 5.0.0-rc.36**
-> Report issues at [github.com/kreuzberg-dev/kreuzberg](https://github.com/kreuzberg-dev/kreuzberg/issues).
+> Report issues at [github.com/xberg-io/kreuzberg](https://github.com/xberg-io/kreuzberg/issues).
 
 ## What This Package Provides
 
@@ -125,10 +125,10 @@ To use this package via `go get`:
 
 ```bash
 # Get the latest release
-go get github.com/kreuzberg-dev/kreuzberg/v5@latest
+go get github.com/xberg-io/kreuzberg/v5@latest
 
 # Or a specific version
-go get github.com/kreuzberg-dev/kreuzberg/v5@v5.0.0-rc.36
+go get github.com/xberg-io/kreuzberg/v5@v5.0.0-rc.36
 ```
 
 You'll need to provide the static library at build time. See [Building with Static Libraries](#building-with-static-libraries) below.
@@ -139,11 +139,11 @@ When building outside the Kreuzberg monorepo, you need to provide the static lib
 
 #### Option 1: Download Pre-built Static Library
 
-Download the static library for your platform from [GitHub Releases](https://github.com/kreuzberg-dev/kreuzberg/releases):
+Download the static library for your platform from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases):
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/kreuzberg-dev/kreuzberg/releases/download/v5.0.0-rc.36/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/xberg-io/kreuzberg/releases/download/v5.0.0-rc.36/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location
@@ -168,7 +168,7 @@ If pre-built libraries aren't available for your platform:
 
 ```bash
 # Clone the repository
-git clone https://github.com/kreuzberg-dev/kreuzberg.git
+git clone https://github.com/xberg-io/kreuzberg.git
 cd kreuzberg
 
 # Build the static library
@@ -215,7 +215,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/v5"
+	"github.com/xberg-io/kreuzberg/v5"
 )
 
 func main() {
@@ -321,7 +321,7 @@ func init() {
 
 ## API Reference
 
-- **GoDoc**: [pkg.go.dev/github.com/kreuzberg-dev/kreuzberg/v5](<https://pkg.go.dev/github.com/kreuzberg-dev/kreuzberg/v5>)
+- **GoDoc**: [pkg.go.dev/github.com/xberg-io/kreuzberg/v5](<https://pkg.go.dev/github.com/xberg-io/kreuzberg/v5>)
 - **Full documentation**: [kreuzberg.dev](https://kreuzberg.dev) (configuration, formats, OCR backends)
 
 ## Troubleshooting
@@ -329,7 +329,7 @@ func init() {
 | Issue                                                                          | Fix                                                                                                                                                                                                                 |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libkreuzberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lkreuzberg_ffi" go build`                                           |
-| `cannot find -lkreuzberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/kreuzberg-dev/kreuzberg/releases) or build it yourself: `cargo build -p kreuzberg-ffi --release` |
+| `cannot find -lkreuzberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases) or build it yourself: `cargo build -p kreuzberg-ffi --release` |
 | `undefined: v4.ExtractFile`                                                    | This function was removed in v4.1.0. Use `ExtractFileSync` and wrap in goroutine if needed (see migration guide)                                                                                                    |
 | `Missing dependency: tesseract`                                                | Install the OCR backend and ensure it is on `PATH`. Errors bubble up as `*v4.MissingDependencyError`.                                                                                                               |
 | `undefined: C.customValidator` during build                                    | Export the callback with `//export` in a `*_cgo.go` file before using it in `Register*` helpers.                                                                                                                    |
@@ -346,10 +346,10 @@ Need help? Join the [Discord](https://discord.gg/xt9WY3GnKR) or open an issue wi
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/kreuzberg-dev/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
-- [kreuzcrawl](https://github.com/kreuzberg-dev/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
-- [html-to-markdown](https://github.com/kreuzberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
-- [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
-- [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
-- [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces this README and all per-language bindings.
+- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
+- [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
+- [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
+- [alef](https://github.com/xberg-io/alef) — the polyglot binding generator that produces this README and all per-language bindings.
 - [Discord](https://discord.gg/xt9WY3GnKR) — community, roadmap, announcements.

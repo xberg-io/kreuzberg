@@ -8,7 +8,7 @@ defmodule Kreuzberg.Native do
   use RustlerPrecompiled,
     otp_app: :kreuzberg,
     crate: "kreuzberg_nif",
-    base_url: "https://github.com/kreuzberg-dev/kreuzberg/releases/download/v#{Mix.Project.config()[:version]}",
+    base_url: "https://github.com/xberg-io/kreuzberg/releases/download/v#{Mix.Project.config()[:version]}",
     version: Mix.Project.config()[:version],
     targets: [
       "aarch64-apple-darwin",

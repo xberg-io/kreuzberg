@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/706
+//! Regression test for https://github.com/xberg-io/kreuzberg/issues/706
 //!
 //! Tesseract OCR was producing corrupted page content: the top-level `content`
 //! field contained the coherent HOCR-rendered text followed by a word-by-word

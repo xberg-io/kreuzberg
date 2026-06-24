@@ -73,7 +73,7 @@ A map of what Kreuzberg can do. Each section links to the guide or reference pag
         standalone CLI release binaries. Container images redistribute the
         unmodified upstream `libheif` as a separate shared object (`libheif.so`),
         which you may replace with your own build to satisfy LGPL §6. See
-        [`THIRD_PARTY_LICENSES.md`](https://github.com/kreuzberg-dev/kreuzberg/blob/main/THIRD_PARTY_LICENSES.md)
+        [`THIRD_PARTY_LICENSES.md`](https://github.com/xberg-io/kreuzberg/blob/main/THIRD_PARTY_LICENSES.md)
         for the full notice and source pointer.
 
 === "Audio and Video"
@@ -278,7 +278,7 @@ Pure-Rust VLM OCR via the `candle-hunyuan-ocr` feature. Tencent Hunyuan-OCR visi
 
 Configure via `--ocr-backend candle-hunyuan-ocr` or `ocr.backend = "candle-hunyuan-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle DeepSeek-OCR
 
@@ -305,7 +305,7 @@ Pure-Rust VLM OCR via the `candle-deepseek-ocr` feature. DeepSeek-OCR vision-lan
 
 Configure via `--ocr-backend candle-deepseek-ocr` or `ocr.backend = "candle-deepseek-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle PaddleOCR-VL 1.5
 
@@ -332,7 +332,7 @@ Pure-Rust VLM OCR via the `candle-paddleocr-vl-15` feature. PaddleOCR-VL 1.5 vis
 
 Configure via `--ocr-backend candle-paddleocr-vl-15` or `ocr.backend = "candle-paddleocr-vl-15"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle VLM-OCR Umbrella
 
@@ -360,7 +360,7 @@ Optional post-extraction steps, each configured independently through `Extractio
 
 !!! Info "Available by v4.8"
 
-Kreuzberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
+Kreuzberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/xberg-io/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
 
 <details>
 <summary><strong>VLM OCR</strong> -- Vision language models as an OCR backend</summary>
@@ -513,7 +513,7 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 | **CLI**        | One-off extractions, scripting, CI pipelines           | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
 | **REST API**   | Multi-service architectures, language-agnostic access  | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
 | **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
-| **Docker**     | Reproducible deployments with all dependencies bundled | `ghcr.io/kreuzberg-dev/kreuzberg:latest` -- see [Docker Guide](guides/docker.md)         |
+| **Docker**     | Reproducible deployments with all dependencies bundled | `ghcr.io/xberg-io/kreuzberg:latest` -- see [Docker Guide](guides/docker.md)         |
 
 ---
 
@@ -576,7 +576,7 @@ Rust builds are modular through Cargo features. The default feature set is `toki
 
     ```bash
     gem install kreuzberg                  # Ruby
-    go get github.com/kreuzberg-dev/kreuzberg/packages/go/v5  # Go
+    go get github.com/xberg-io/kreuzberg/packages/go/v5  # Go
     dotnet add package Kreuzberg           # C#
     ```
 
@@ -606,7 +606,7 @@ For the full configuration schema and examples, see the [Configuration Guide](gu
 Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
 
 ```bash
-npx skills add kreuzberg-dev/kreuzberg
+npx skills add xberg-io/kreuzberg
 ```
 
 Compatible with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any tool supporting the Agent Skills standard. See the [AI Coding Assistants Guide](guides/agent-skills.md).

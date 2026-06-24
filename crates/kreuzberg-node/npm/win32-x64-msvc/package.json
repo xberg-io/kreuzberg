@@ -4,7 +4,7 @@
   "license": "Elastic-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzberg.git"
+    "url": "git+https://github.com/xberg-io/kreuzberg.git"
   },
   "main": "kreuzberg-node.win32-x64-msvc.node",
   "files": ["kreuzberg-node.win32-x64-msvc.node"],

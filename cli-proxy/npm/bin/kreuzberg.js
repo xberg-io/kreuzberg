@@ -44,8 +44,8 @@ async function ensureBinary() {
 function printUnavailable() {
 	process.stderr.write(
 		`${BIN_NAME} is not available for your platform yet. Install it with:\n` +
-			`  brew install kreuzberg-dev/tap/kreuzberg\n` +
-			`  or use the Kreuzberg plugin:  /plugin marketplace add kreuzberg-dev/plugins\n`,
+			`  brew install xberg-io/tap/kreuzberg\n` +
+			`  or use the Kreuzberg plugin:  /plugin marketplace add xberg-io/plugins\n`,
 	);
 }
 

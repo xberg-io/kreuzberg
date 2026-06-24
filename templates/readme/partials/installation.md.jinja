@@ -129,7 +129,7 @@ flutter pub add {{ package_name }}
 Add to your `Package.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/kreuzberg-dev/kreuzberg.git", from: "{{ version }}"),
+.package(url: "https://github.com/xberg-io/kreuzberg.git", from: "{{ version }}"),
 ```
 
 Then add the product to the relevant target:
@@ -158,7 +158,7 @@ end
 Fetch the package and pin it in `build.zig.zon`:
 
 ```bash
-zig fetch --save https://github.com/kreuzberg-dev/kreuzberg/archive/refs/tags/v{{ version }}.tar.gz
+zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v{{ version }}.tar.gz
 ```
 
 Then wire it into `build.zig`:
@@ -176,7 +176,7 @@ Install from the kreuzberg R-universe:
 
 ```r
 install.packages("{{ package_name }}",
-  repos = c("https://kreuzberg-dev.r-universe.dev", getOption("repos")))
+  repos = c("https://xberg-io.r-universe.dev", getOption("repos")))
 ```
 
 {% elif pm == "cargo" %}

@@ -4,7 +4,7 @@ The `kreuzberg-surrealdb` package connects Kreuzberg's document extraction pipel
 
 [![PyPI](https://img.shields.io/pypi/v/kreuzberg-surrealdb)](https://pypi.org/project/kreuzberg-surrealdb/)
 [![Python](https://img.shields.io/pypi/pyversions/kreuzberg-surrealdb)](https://pypi.org/project/kreuzberg-surrealdb/)
-[![License](https://img.shields.io/pypi/l/kreuzberg-surrealdb)](https://github.com/kreuzberg-dev/kreuzberg-surrealdb/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/kreuzberg-surrealdb)](https://github.com/xberg-io/kreuzberg-surrealdb/blob/main/LICENSE)
 
 ## How it works
 
@@ -68,4 +68,4 @@ The package provides two entry points. Choose based on whether you need chunking
 | Indices    | BM25 on documents                   | BM25 + HNSW on chunks                 | BM25 on chunks                  |
 | Best for   | Keyword search over whole documents | Semantic or hybrid search over chunks | Keyword search over chunks      |
 
-For the complete API reference, embedding model options, chunking configuration, and database schema details, see the [kreuzberg-surrealdb readme](https://github.com/kreuzberg-dev/kreuzberg-surrealdb). For general SurrealDB usage, see the [SurrealDB docs](https://surrealdb.com/docs).
+For the complete API reference, embedding model options, chunking configuration, and database schema details, see the [kreuzberg-surrealdb readme](https://github.com/xberg-io/kreuzberg-surrealdb). For general SurrealDB usage, see the [SurrealDB docs](https://surrealdb.com/docs).

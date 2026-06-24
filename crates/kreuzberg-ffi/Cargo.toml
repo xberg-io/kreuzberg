@@ -7,7 +7,7 @@ description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
 categories = []
-repository = "https://github.com/kreuzberg-dev/kreuzberg"
+repository = "https://github.com/xberg-io/kreuzberg"
 
 # `serde_json`, `ahash`, and `tokio` are emitted unconditionally above so the
 # manifest is stable across regens (and so the C FFI codegen can pull them in

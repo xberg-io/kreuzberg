@@ -1,6 +1,6 @@
 # kreuzberg-cli
 
-[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/kreuzberg-dev/alef)
+[![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/xberg-io/alef)
 
 Command-line interface for the Kreuzberg document intelligence library.
 
@@ -55,7 +55,7 @@ All platforms receive precompiled binaries through GitHub releases. Linux musl b
 ### Install Script (Linux / macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xberg-io/kreuzberg/main/scripts/install.sh | bash
 ```
 
 ### Homebrew
@@ -63,8 +63,8 @@ curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/script
 Homebrew 6.0+ requires explicit trust for third-party taps. Trust once, then install:
 
 ```bash
-brew trust kreuzberg-dev/tap
-brew install kreuzberg-dev/tap/kreuzberg
+brew trust xberg-io/tap
+brew install xberg-io/tap/kreuzberg
 ```
 
 ### Cargo
@@ -76,8 +76,8 @@ cargo install kreuzberg-cli
 ### Docker
 
 ```bash
-docker pull ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
-docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest extract /data/document.pdf
+docker pull ghcr.io/xberg-io/kreuzberg-cli:latest
+docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest extract /data/document.pdf
 ```
 
 ### From Source
@@ -1018,7 +1018,7 @@ RUST_LOG=debug cargo test -p kreuzberg-cli -- --nocapture
 
 - **Kreuzberg Core**: `../kreuzberg/`
 - **Main Documentation**: <https://docs.kreuzberg.dev>
-- **GitHub Repository**: <https://github.com/kreuzberg-dev/kreuzberg>
+- **GitHub Repository**: <https://github.com/xberg-io/kreuzberg>
 - **Configuration Guide**: See example configuration sections above
 
 ## Contributing

@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-urls.repository = "https://github.com/kreuzberg-dev/kreuzberg"
+urls.repository = "https://github.com/xberg-io/kreuzberg"
 homepage = "https://kreuzberg.dev"
 
 [dependency-groups]

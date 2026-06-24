@@ -42,7 +42,7 @@ tasks:
     cmds:
       - cmd: |
           if ! command -v alef >/dev/null 2>&1; then
-            cargo install --locked --git https://github.com/kreuzberg-dev/alef --tag {{.ALEF_SNIPPETS_TAG}} alef-cli
+            cargo install --locked --git https://github.com/xberg-io/alef --tag {{.ALEF_SNIPPETS_TAG}} alef-cli
           fi
         ignore_error: false
 

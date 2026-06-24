@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-REPO="kreuzberg-dev/kreuzberg"
+REPO="xberg-io/kreuzberg"
 BINARY_NAME="kreuzberg"
 
 # --- Helpers ---

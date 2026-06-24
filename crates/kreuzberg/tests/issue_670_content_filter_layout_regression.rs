@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/kreuzberg-dev/kreuzberg/issues/670
+//! Regression test for https://github.com/xberg-io/kreuzberg/issues/670
 //!
 //! ContentFilterConfig.include_headers / include_footers must prevent layout-model
 //! PageHeader / PageFooter classifications from being stripped as furniture.

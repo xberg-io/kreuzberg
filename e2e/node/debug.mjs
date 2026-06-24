@@ -2,7 +2,7 @@ import { extractFileSync } from "kreuzberg";
 
 // Test DOCX
 const docxResult = extractFileSync(
-	"/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzberg/test_documents/docx/fake.docx",
+	"/Users/naamanhirschfeld/workspace/xberg-io/kreuzberg/test_documents/docx/fake.docx",
 	undefined,
 	{
 		includeDocumentStructure: true,
@@ -18,7 +18,7 @@ console.log(
 
 // Test XLSX
 const xlsxResult = extractFileSync(
-	"/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzberg/test_documents/xlsx/stanley_cups.xlsx",
+	"/Users/naamanhirschfeld/workspace/xberg-io/kreuzberg/test_documents/xlsx/stanley_cups.xlsx",
 );
 console.log("\n=== XLSX Result ===");
 console.log("metadata.format:", xlsxResult.metadata?.format);

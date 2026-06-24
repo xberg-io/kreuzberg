@@ -9,7 +9,7 @@
     <InformationalVersion>5.0.0-rc.36</InformationalVersion>
     <Description>High-performance document intelligence library</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/kreuzberg-dev/kreuzberg</RepositoryUrl>
+    <RepositoryUrl>https://github.com/xberg-io/kreuzberg</RepositoryUrl>
     <Authors>Na&apos;aman Hirschfeld &lt;naaman@kreuzberg.dev&gt;</Authors>
     <Company>Alef Team</Company>
     <Product>Kreuzberg</Product>

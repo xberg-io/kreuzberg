@@ -183,11 +183,11 @@ Individual tool calls override file defaults via a `config` parameter. See [Extr
 ## Running in Docker
 
 ```bash title="Terminal"
-docker run ghcr.io/kreuzberg-dev/kreuzberg:latest mcp
+docker run ghcr.io/xberg-io/kreuzberg:latest mcp
 
 docker run \
   -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/kreuzberg-dev/kreuzberg:latest \
+  ghcr.io/xberg-io/kreuzberg:latest \
   mcp --config /config/kreuzberg.toml
 ```
 
@@ -196,7 +196,7 @@ For production, use Compose with a persistent cache volume so embedding models d
 ```yaml title="docker-compose.yaml"
 services:
   kreuzberg-mcp:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+    image: ghcr.io/xberg-io/kreuzberg:latest
     command: mcp --config /config/kreuzberg.toml
     volumes:
       - ./kreuzberg.toml:/config/kreuzberg.toml:ro

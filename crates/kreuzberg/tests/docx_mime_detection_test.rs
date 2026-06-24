@@ -1,6 +1,6 @@
 //! Test that DOCX files are correctly detected as DOCX, not ZIP.
 //!
-//! This tests the fix for https://github.com/kreuzberg-dev/kreuzberg/issues/350
+//! This tests the fix for https://github.com/xberg-io/kreuzberg/issues/350
 
 use std::io::Write;
 use tempfile::NamedTempFile;

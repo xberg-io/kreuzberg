@@ -1,6 +1,6 @@
 # kreuzberg-cli
 
-CLI proxy for [`kreuzberg`](https://github.com/kreuzberg-dev/kreuzberg). Installing
+CLI proxy for [`kreuzberg`](https://github.com/xberg-io/kreuzberg). Installing
 this package provides a `kreuzberg` command that downloads the matching native
 binary from GitHub releases and runs it.
 

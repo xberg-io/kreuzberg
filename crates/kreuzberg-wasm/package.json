@@ -6,7 +6,7 @@
   "license": "Elastic-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kreuzberg-dev/kreuzberg",
+    "url": "https://github.com/xberg-io/kreuzberg",
     "directory": "crates/kreuzberg-wasm"
   },
   "publishConfig": {

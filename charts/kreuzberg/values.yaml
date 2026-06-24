@@ -14,7 +14,7 @@ image:
   # -- Container image registry
   registry: ghcr.io
   # -- Container image repository
-  repository: kreuzberg-dev/kreuzberg
+  repository: xberg-io/kreuzberg
   # -- Image tag. Defaults to Chart.AppVersion when empty.
   # Use "latest" for the full image (Tesseract + PaddleOCR + layout models)
   # or "core" for the minimal image (no pre-downloaded models).

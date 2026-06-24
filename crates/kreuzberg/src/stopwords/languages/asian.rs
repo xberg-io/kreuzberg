@@ -22,7 +22,7 @@ macro_rules! embed_stopwords {
                         panic!(
                             "Failed to parse embedded stopwords for language '{}': {}. \
                             This indicates corrupted or malformed JSON in the embedded stopwords data. \
-                            Please report this issue at https://github.com/kreuzberg-dev/kreuzberg/issues",
+                            Please report this issue at https://github.com/xberg-io/kreuzberg/issues",
                             $lang, e
                         );
                     }

@@ -183,7 +183,7 @@ mavenPublishing {
     pom {
         name.set("kreuzberg-android")
         description.set("High-performance document intelligence library")
-        url.set("https://github.com/kreuzberg-dev/kreuzberg")
+        url.set("https://github.com/xberg-io/kreuzberg")
         licenses {
             license {
                 name.set("Elastic-2.0")
@@ -198,9 +198,9 @@ mavenPublishing {
         }
 
         scm {
-            url.set("https://github.com/kreuzberg-dev/kreuzberg")
-            connection.set("scm:git:git://github.com/kreuzberg-dev/kreuzberg.git")
-            developerConnection.set("scm:git:ssh://git@github.com:kreuzberg-dev/kreuzberg.git")
+            url.set("https://github.com/xberg-io/kreuzberg")
+            connection.set("scm:git:git://github.com/xberg-io/kreuzberg.git")
+            developerConnection.set("scm:git:ssh://git@github.com:xberg-io/kreuzberg.git")
         }
     }
 }

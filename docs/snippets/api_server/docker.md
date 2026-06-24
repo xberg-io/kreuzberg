@@ -1,8 +1,8 @@
 ```bash title="Bash"
 # Run server on port 8000
-docker run -d \n  -p 8000:8000 \n  ghcr.io/kreuzberg-dev/kreuzberg:latest \n  serve -H 0.0.0.0 -p 8000
+docker run -d \n  -p 8000:8000 \n  ghcr.io/xberg-io/kreuzberg:latest \n  serve -H 0.0.0.0 -p 8000
 
 # With environment variables
-docker run -d \n  -e KREUZBERG_CORS_ORIGINS="https://myapp.com" \n  -e KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200 \n  -p 8000:8000 \n  ghcr.io/kreuzberg-dev/kreuzberg:latest \n  serve -H 0.0.0.0 -p 8000
+docker run -d \n  -e KREUZBERG_CORS_ORIGINS="https://myapp.com" \n  -e KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200 \n  -p 8000:8000 \n  ghcr.io/xberg-io/kreuzberg:latest \n  serve -H 0.0.0.0 -p 8000
 
 ```

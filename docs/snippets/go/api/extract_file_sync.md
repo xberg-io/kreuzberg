@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/kreuzberg-dev/kreuzberg/v5"
+	"github.com/xberg-io/kreuzberg/v5"
 )
 
 func main() {

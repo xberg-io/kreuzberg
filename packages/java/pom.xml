@@ -11,7 +11,7 @@
 
     <name>kreuzberg</name>
     <description>High-performance document intelligence library</description>
-    <url>https://github.com/kreuzberg-dev/kreuzberg</url>
+    <url>https://github.com/xberg-io/kreuzberg</url>
 
     <licenses>
         <license>
@@ -28,9 +28,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/kreuzberg-dev/kreuzberg.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/kreuzberg-dev/kreuzberg.git</developerConnection>
-        <url>https://github.com/kreuzberg-dev/kreuzberg</url>
+        <connection>scm:git:git://github.com/xberg-io/kreuzberg.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/xberg-io/kreuzberg.git</developerConnection>
+        <url>https://github.com/xberg-io/kreuzberg</url>
     </scm>
 
     <properties>

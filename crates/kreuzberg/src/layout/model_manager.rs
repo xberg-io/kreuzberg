@@ -122,7 +122,7 @@ const MODELS: &[ModelDefinition] = &[
     ModelDefinition {
         model_type: "pp_doclayout_v3",
         // ONNX export of PaddlePaddle/PP-DocLayoutV3 (PaddleDetection DETR), produced by the
-        // kreuzberg-dev/paddle-to-onnx pipeline (opset 17) and mirrored in the Kreuzberg HF
+        // xberg-io/paddle-to-onnx pipeline (opset 17) and mirrored in the Kreuzberg HF
         // layout-models repo alongside rtdetr/tatr. Upstream PaddlePaddle/PP-DocLayoutV3 ships
         // only Paddle-native weights (no ONNX), so it cannot be downloaded directly.
         hf_repo_id: "Kreuzberg/layout-models",

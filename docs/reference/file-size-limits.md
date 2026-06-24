@@ -71,7 +71,7 @@ Configure limits in your Docker Compose setup:
 version: "3.8"
 services:
   kreuzberg-api:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+    image: ghcr.io/xberg-io/kreuzberg:latest
     ports:
       - "8000:8000"
     environment:
@@ -104,7 +104,7 @@ spec:
     spec:
       containers:
         - name: kreuzberg
-          image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+          image: ghcr.io/xberg-io/kreuzberg:latest
           env:
             - name: KREUZBERG_MAX_MULTIPART_FIELD_BYTES
               value: "524288000"
@@ -313,7 +313,7 @@ Configure Docker resource limits appropriately:
 ```yaml title="docker-compose.yaml"
 services:
   kreuzberg-api:
-    image: ghcr.io/kreuzberg-dev/kreuzberg:latest
+    image: ghcr.io/xberg-io/kreuzberg:latest
     environment:
       KREUZBERG_MAX_MULTIPART_FIELD_BYTES: "524288000"
     deploy:

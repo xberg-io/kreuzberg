@@ -4,8 +4,8 @@ Version: 5.0.0.9036
 Authors@R: person("Na'aman", "Hirschfeld", email = "naaman@kreuzberg.dev", role = c("aut", "cre"))
 Description: High-performance document intelligence library
     Rust bindings generated with extendr.
-URL: https://github.com/kreuzberg-dev/kreuzberg
-BugReports: https://github.com/kreuzberg-dev/kreuzberg/issues
+URL: https://github.com/xberg-io/kreuzberg
+BugReports: https://github.com/xberg-io/kreuzberg/issues
 License: Elastic-2.0
 Depends: R (>= 4.2)
 Imports: jsonlite

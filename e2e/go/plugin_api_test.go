@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	kreuzberg "github.com/kreuzberg-dev/kreuzberg/v5"
+	kreuzberg "github.com/xberg-io/kreuzberg/v5"
 )
 
 type testStub_register_document_extractor_trait_bridge struct{}

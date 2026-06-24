@@ -482,7 +482,7 @@ Configure LLM-powered features such as structured extraction, vision-based OCR, 
 **Type**: `String`
 **Default**: None (must be set explicitly or via config)
 
-Default LLM model for structured extraction. Uses [liter-llm](https://github.com/kreuzberg-dev/liter-llm) model format (`provider/model-name`).
+Default LLM model for structured extraction. Uses [liter-llm](https://github.com/xberg-io/liter-llm) model format (`provider/model-name`).
 
 ```bash title="LLM Model Configuration"
 # OpenAI

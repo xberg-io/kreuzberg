@@ -22,7 +22,7 @@ formula="${tap_dir}/Formula/kreuzberg.rb"
   exit 1
 }
 
-tarball_url="https://github.com/kreuzberg-dev/kreuzberg/archive/${tag}.tar.gz"
+tarball_url="https://github.com/xberg-io/kreuzberg/archive/${tag}.tar.gz"
 
 echo "Updating Homebrew formula for kreuzberg ${version} (tag ${tag})"
 

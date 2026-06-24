@@ -183,7 +183,7 @@ Fast text detection and recognition for 80+ languages across 11 script families.
 
 **Selection:** Use `--ocr-language` or config `ocr.languages` with a single code or list. Join multiple codes with `+` for CLI: `--ocr-language en+de+zh_hans`.
 
-**Note:** PaddleOCR uses two-letter ISO 639-1 codes and script-specific variants (e.g., `zh_hans` for Simplified Chinese). Consult the [paddleocr-vl backend source](https://github.com/kreuzberg-dev/kreuzberg/blob/main/crates/kreuzberg/src/candle_ocr/paddleocr_vl_backend.rs) for the authoritative list.
+**Note:** PaddleOCR uses two-letter ISO 639-1 codes and script-specific variants (e.g., `zh_hans` for Simplified Chinese). Consult the [paddleocr-vl backend source](https://github.com/xberg-io/kreuzberg/blob/main/crates/kreuzberg/src/candle_ocr/paddleocr_vl_backend.rs) for the authoritative list.
 
 ### EasyOCR
 

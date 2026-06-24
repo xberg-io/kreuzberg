@@ -27,7 +27,7 @@ defmodule Kreuzberg.MixProject do
   defp package do
     [
       licenses: ["Elastic-2.0"],
-      links: %{"GitHub" => "https://github.com/kreuzberg-dev/kreuzberg"},
+      links: %{"GitHub" => "https://github.com/xberg-io/kreuzberg"},
       files:
         ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/kreuzberg_nif/Cargo.toml native/kreuzberg_nif/Cargo.lock native/kreuzberg_nif/src)
     ]

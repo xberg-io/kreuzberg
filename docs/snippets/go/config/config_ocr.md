@@ -1,7 +1,7 @@
 ```go title="Go"
 package main
 
-import "github.com/kreuzberg-dev/kreuzberg/packages/go/v5"
+import "github.com/xberg-io/kreuzberg/packages/go/v5"
 
 func main() {
 	psm := int32(3)

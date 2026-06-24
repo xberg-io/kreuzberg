@@ -1,4 +1,4 @@
-//! Regression tests for https://github.com/kreuzberg-dev/kreuzberg/issues/671
+//! Regression tests for https://github.com/xberg-io/kreuzberg/issues/671
 //!
 //! ImageExtractionConfig.inject_placeholders was silently ignored on PPTX:
 //! setting inject_placeholders=False had no effect and all three configs

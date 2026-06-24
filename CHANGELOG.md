@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- **OpenSSL entirely removed from build.** kreuzberg migrated all TLS to rustls + OS-native trust stores (ureq platform-verifier, ort tls-rustls), eliminating OpenSSL from every target. The `setup-openssl` GitHub action is no longer used. The `linux-features` input (which passed `kreuzberg/openssl-vendored` to enable OpenSSL vendoring on gnu zigbuild) has been removed from kreuzberg-dev/actions v1.8.89 and is no longer passed to any build action in publish.yaml. The musl Dockerfiles no longer install `openssl-dev`/`openssl-libs-static`. The python wheel build no longer installs `openssl-devel`. This eliminates the vendored-OpenSSL zigbuild workaround on all targets.
+- **OpenSSL entirely removed from build.** kreuzberg migrated all TLS to rustls + OS-native trust stores (ureq platform-verifier, ort tls-rustls), eliminating OpenSSL from every target. The `setup-openssl` GitHub action is no longer used. The `linux-features` input (which passed `kreuzberg/openssl-vendored` to enable OpenSSL vendoring on gnu zigbuild) has been removed from xberg-io/actions v1.8.89 and is no longer passed to any build action in publish.yaml. The musl Dockerfiles no longer install `openssl-dev`/`openssl-libs-static`. The python wheel build no longer installs `openssl-devel`. This eliminates the vendored-OpenSSL zigbuild workaround on all targets.
 
 ### Fixed
 
@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **build/linux-glibc**: the prebuilt gnu Linux release binaries (CLI, Go/Java/C#/Dart/C FFI, Elixir NIF, Node) now target a **glibc 2.28 floor** instead of inheriting the CI runner's glibc 2.39, so they run on RHEL 8/9, Debian 12, Ubuntu 22.04, and Amazon Linux 2 — not just bleeding-edge distros. The builds compile via `cargo-zigbuild` against a pinned `*-linux-gnu.2.28` target (Zig's clang backend also sidesteps GCC-14's glibc≥2.38 `__isoc23_*` symbols); the statically-linked tesseract/leptonica C++ is rebuilt at the same floor. musl/macOS/Windows artifacts are unchanged. Lands via the `kreuzberg-dev/actions` build actions (opt-in `glibc-version` input); the Python wheels were already at manylinux_2_28 (glibc 2.28).
+- **build/linux-glibc**: the prebuilt gnu Linux release binaries (CLI, Go/Java/C#/Dart/C FFI, Elixir NIF, Node) now target a **glibc 2.28 floor** instead of inheriting the CI runner's glibc 2.39, so they run on RHEL 8/9, Debian 12, Ubuntu 22.04, and Amazon Linux 2 — not just bleeding-edge distros. The builds compile via `cargo-zigbuild` against a pinned `*-linux-gnu.2.28` target (Zig's clang backend also sidesteps GCC-14's glibc≥2.38 `__isoc23_*` symbols); the statically-linked tesseract/leptonica C++ is rebuilt at the same floor. musl/macOS/Windows artifacts are unchanged. Lands via the `xberg-io/actions` build actions (opt-in `glibc-version` input); the Python wheels were already at manylinux_2_28 (glibc 2.28).
 - **build/wasm**: `kreuzberg-wasm` again builds for `wasm32-unknown-unknown`. The optional `jsonschema` dependency (pulled in by the `presets` feature, which is part of `no-ort-target`/`wasm-target`) was compiled with default features, whose `resolve-http`/`resolve-file` resolvers emit a `compile_error!` on `wasm32`. It is now declared `default-features = false`; the only `jsonschema` usages (`validator_for`, `draft202012::new` on self-contained in-memory schemas) need no remote/file `$ref` resolution, so this is behaviour-preserving on every target and also removes an SSRF-capable remote-`$ref` path. Fixes the WASM publish job that failed on rc.31.
 - **deps**: bumped workspace dependencies to latest (tree-sitter-language-pack 1.10, liter-llm 1.8, html-to-markdown-rs 3.7, pdf_oxide 0.3.67, mail-parser 0.11.4, cc 1.2.65) and the kotlin-android generated Gradle deps to latest stable (via alef).
 - **build/macos-wheel**: pinned the macOS Python-wheel runner to `macos-15` (was `macos-latest`). The `macos-latest` image rolled forward to macOS 26 "Tahoe", whose Homebrew HEIF/AV1 bottles (libheif, libx265, libaom, libvmaf, libsharpyuv, libde265) are built with an `LC_BUILD_VERSION` minimum of 26.0; that exceeds the wheel's `MACOSX_DEPLOYMENT_TARGET=15.0`, so `delocate-wheel` refused to vendor them (`Library dependencies do not satisfy target MacOS version 15.0`) and the arm64 wheel build failed. Pinning the runner keeps the bottle min-target aligned with the 15.0 wheel tag.
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ocr**: Multi-language OCR support via config. `OcrConfig.language` and `OcrPipelineStage.language` now accept both single language codes (`"eng"`) and lists (`["eng", "deu"]`) for deserialiation. Internally, languages are stored as `Vec<String>` and joined with `"+"` for Tesseract (e.g., `["eng", "deu"]` → `"eng+deu"`). Backward compatibility: old configs with single-string language codes deserialize correctly; Tesseract's `"+"` format is automatically split into a list. This fixes issue #1139 — multi-language OCR can now be set from config files and the Python API (#1139).
 - **alef**: bump `alef_version` to 0.25.59 and regenerate all bindings, FFI, e2e suites, and API docs. Completes the extendr (R) binding surface — slice `&[&str]` argument conversion, optional-only `Nullable<&T>` promotion, integer cast-back at call sites, and explicit `KreuzbergError → extendr_api::Error` conversion — so the generated `kreuzberg-r` crate now compiles, alongside the 0.25.58 long-signature parameter-type fix.
-- **php**: the Packagist package is now published as `kreuzberg-dev/kreuzberg`; READMEs, the root README badges, and `composer.json` reference the new coordinates.
+- **php**: the Packagist package is now published as `xberg-io/kreuzberg`; READMEs, the root README badges, and `composer.json` reference the new coordinates.
 
 ## [5.0.0-rc.26] - 2026-06-20
 
@@ -183,7 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **rustdoc**: qualify four unresolved intra-doc links that failed `rustdoc-lint` (`-D rustdoc::broken_intra_doc_links`) under `--features=full`: `ChunkMetadata::heading_path` (`chunking/rag.rs`), `EntityCategory` (`enrichment/mod.rs`), and `ExtractionResult` ×2 (`heuristics/multidoc.rs`) now use explicit `crate::types::…` paths so they resolve outside their defining modules.
 - **ci**: point the root `tsconfig.json` project references at the real TypeScript projects (`packages/node`, `e2e/node`, `e2e/wasm`). The previous references (`crates/kreuzberg-node`, `crates/kreuzberg-wasm`, `packages/typescript/core`, `e2e/wasm-workers`) were stale after the TS surface moved out of the Rust crate dirs, so `tsc --noEmit` aborted with `TS6053: File not found`.
 - **ci**: exclude `tools/benchmark-harness/scripts/` from the `pmd` hook. The Java subprocess benchmark runner deliberately catches `Error`/`Throwable` to emit a clean failure record, tripping PMD's `AvoidCatchingGenericException` — irrelevant for auxiliary benchmark tooling.
-- **docs**: `docs/features.md` linked the candle VLM-OCR attribution notes to `../ATTRIBUTIONS.md` (a repo-root file outside the docs tree), which `task docs:build:strict` resolves as three non-existent internal pages (`features.md:271/298/325`) and aborts on under `--strict`. The links now point to the canonical GitHub URL (`https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md`), matching the brand rule that docs link outward to the source repo. Introduced by `082b212931 docs(ocr): document candle-vlm-ocr backends`; CI Docs was last green at `de14720cdb`.
+- **docs**: `docs/features.md` linked the candle VLM-OCR attribution notes to `../ATTRIBUTIONS.md` (a repo-root file outside the docs tree), which `task docs:build:strict` resolves as three non-existent internal pages (`features.md:271/298/325`) and aborts on under `--strict`. The links now point to the canonical GitHub URL (`https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md`), matching the brand rule that docs link outward to the source repo. Introduced by `082b212931 docs(ocr): document candle-vlm-ocr backends`; CI Docs was last green at `de14720cdb`.
 - **alef**: bump `alef_version` to 0.25.39 and regenerate all bindings. Picks up four fixes that affect the kreuzberg surface. (1) **Kotlin/Android DTO instance methods** (e.g. `ExtractionConfig`, `RedactionConfig`, `ServerConfig`, `PaddleOcrConfig` withers) were emitted as broken top-level functions after the data-class constructor `)` with snake_case locals and references to non-existent native methods, breaking compilation; they are now emitted inside the class body as camelCase member stubs that throw `UnsupportedOperationException` with reconstruct-via-Builder guidance. (2) **Java** stops emitting throwing `UnsupportedOperationException` stubs for `Self`-returning DTO/enum methods (no JNI/FFM symbol exists for them yet — absence beats a stub that compiles but misleads), and restores the `true` default for boxed `@Nullable Boolean` `#[serde(default)]` fields (e.g. `ChunkingConfig.trim`, `EmbeddingConfig.normalize`) so omitted JSON no longer surfaces `null` from the accessor. (3) The new `OcrBackend::emits_structured_markdown` vtable method is now wired through the full FFI/native bridge surface (FFI struct + initializers, C header, Go/Zig/Dart/JNI/node bridges), fixing the rc.20 `missing field emits_structured_markdown in initializer of KreuzbergOcrBackendVTable` native-build break. (4) Enum associated static-factory methods are now collected and surfaced. Also carries the 0.25.36 cfg-variant dedup completeness (pyo3/napi/wasm/zig/dart FRB mirror) and the Java `marshal_optional_bytes.jinja` template registration. (5) **Duplicate-definition build breaks** unmasked once the FFI vtable compiled past `emits_structured_markdown`: the swift Rust crate emitted `pub fn token_counter_noop` twice for own-block opaque types (`TokenCounter`, E0428), and the PHP `#[php_impl]` block emitted `download_model`/`default_model_name`/`known_models` three times each from a `ner-onnx` cfg-pair plus an unconditional re-export (E0592) — alef 0.25.39 consolidates noop emission to a single source and deduplicates the PHP Rust surface. Also includes 0.25.38's napi map-return wrapping and pyo3 enum-factory-staticmethod handling.
 
 - **alef**: bump `alef_version` to 0.25.35 and regenerate all bindings, fixing two binding-surface regressions that broke every language e2e suite on rc.20. (1) The async embedding/reranking entry points (`embed_texts_async`, `rerank_async`) vanished from generated bindings — the real implementations are generic / `alef(skip)`-marked and re-exported at the crate root under one cfg, while a no-ORT stub lives under the disjoint `not(...)` cfg; alef's extractor dropped the re-export and a dedup-by-name pass then collapsed the remaining pair, so the symbol disappeared whenever the surviving entry's cfg was inactive (`embedTextsAsync is not a function`, missing `kreuzberg_embed_texts_async` FFI symbol, `:nif_not_loaded`, etc.). alef 0.25.34's pub-use-clears-skip + dedup-by-`(name,cfg)` extractor fixes restore both cfg-gated variants. (2) Those paired variants then produced duplicate-method compile errors in single-surface bindings (Java `Kreuzberg.java` had 14 identical-signature duplicates; C#/Go/Kotlin/Swift/Dart/PHP/Ruby/Elixir + the JNI shim likewise); alef 0.25.35's shared `codegen::fn_dedup` collapses same-named cfg-variant functions to one host method for those backends while Rust-cfg-gated backends (FFI/napi/pyo3/wasm) keep both `#[cfg]` arms. Also carries the alef PHP `Default::default` gating, Swift `exclude_types` forwarder filtering, extendr `extendr_module!` cfg-gated registration, Java checkstyle/import cleanups, and the Dart `token_count` `u32→i64` cast.
@@ -288,7 +288,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Limitation:** `output_format = html` uses verbatim substring search on the HTML-escaped string.
   Pages whose text contains `&`, `<`, or `>` will not match (e.g. `"AT&T"` becomes `"AT&amp;T"`)
   and silently produce no provenance for that page.
-  ([#1105](https://github.com/kreuzberg-dev/kreuzberg/issues/1105))
+  ([#1105](https://github.com/xberg-io/kreuzberg/issues/1105))
 
 ## [5.0.0-rc.18] - 2026-06-16
 
@@ -434,7 +434,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   all annotations fully contained within it are passed recursively into the node's
   children. This fixes `**bold link**` dropping the URL and `Visit **docs** here`
   dropping the link when only the inner word was bold.
-  ([#1086](https://github.com/kreuzberg-dev/kreuzberg/issues/1086))
+  ([#1086](https://github.com/xberg-io/kreuzberg/issues/1086))
 
 - **CI / publish: source-build libheif 1.23.0 to satisfy `libheif-sys 5.3 >= 1.21`.** Ubuntu Noble's
   apt ships `libheif 1.17.6` and Alpine 3.21 ships `libheif 1.19.5` — both rejected by `libheif-sys`
@@ -448,7 +448,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `GITHUB_ENV`. Cached via a new `cache-libheif-linux` step in `install-system-deps/action.yml`.
   - `docker/Dockerfile.musl-{build,ffi,rustler}` now pull `libheif-dev` and codec headers from
     `alpine/edge/community` + `edge/main` (libheif 1.23.0) instead of Alpine 3.21 main.
-  - `kreuzberg-dev/actions/build-python-wheels@v1.8.64` source-builds libheif inside
+  - `xberg-io/actions/build-python-wheels@v1.8.64` source-builds libheif inside
     `manylinux_2_28` via `CIBW_BEFORE_ALL_LINUX` (AlmaLinux 8 + EPEL ships codec subsets only —
     we install what's available and let libheif compile without missing codec features).
   - `python-wheels` job in `publish.yaml` now runs `install-system-deps` before `build-python-wheels`
@@ -467,7 +467,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Publish workflow: install libheif on Linux + macOS runners.** `libheif-sys` is a transitive
   dependency of `kreuzberg-libheif` (gated behind the `heic` feature, included in `full`), and the
   publish workflow's per-language build jobs (Swift / Zig / C-FFI / C# / Go / Java / Kotlin-Android /
-  CLI / Node / Dart / Python wheels) invoked `kreuzberg-dev/actions/build-*` without first installing
+  CLI / Node / Dart / Python wheels) invoked `xberg-io/actions/build-*` without first installing
   system dependencies. `libheif-sys`'s pkg-config probe then failed with `Package libheif was not
   found in the pkg-config search path`. Added `libheif-dev` to
   `scripts/ci/install-system-deps/install-linux.sh`, `brew install libheif` to
@@ -609,7 +609,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   extension whitelists. The function already backed the CLI
   (`kreuzberg formats`), REST API (`GET /formats`), and MCP server; it
   is now exported from the crate root and exposed in every binding via
-  the alef catalog. ([#1091](https://github.com/kreuzberg-dev/kreuzberg/issues/1091))
+  the alef catalog. ([#1091](https://github.com/xberg-io/kreuzberg/issues/1091))
 
 - **[v5.0.0] reranking: cross-encoder reordering with optional liter-llm wiring.**
   New top-level `rerank` / `rerank_async` API, `RerankerConfig` with
@@ -674,7 +674,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Limitation:** `output_format = html` uses verbatim substring search on the HTML-escaped string.
   Pages whose text contains `&`, `<`, or `>` will not match (e.g. `"AT&T"` becomes `"AT&amp;T"`)
   and silently produce no provenance for that page.
-  ([#1105](https://github.com/kreuzberg-dev/kreuzberg/issues/1105))
+  ([#1105](https://github.com/xberg-io/kreuzberg/issues/1105))
 
 - **`ocr_inline_images` now respects the configured OCR backend.** Previously,
   enabling `PdfConfig.ocr_inline_images` always routed through a hardcoded
@@ -686,20 +686,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   As a side effect, inline-image OCR now benefits from the registered backend's
   shared `OcrCache`; the previous path created a fresh `OcrProcessor` (and a cold
   cache) on every extraction call.
-  ([#1088](https://github.com/kreuzberg-dev/kreuzberg/issues/1088))
+  ([#1088](https://github.com/xberg-io/kreuzberg/issues/1088))
 
 - **rendering: fixed panic when a non-`Item` block element appears directly under
   a `List` node before any `ListItem`.** The comrak AST builder now synthesises an
   implicit `Item` wrapper instead of falling back onto the bare `List`, which violated
   CommonMark's `List → Item-only` constraint and panicked in debug builds.
-  ([#1096](https://github.com/kreuzberg-dev/kreuzberg/issues/1096))
+  ([#1096](https://github.com/xberg-io/kreuzberg/issues/1096))
 
 - **pdf: `result.pages[*].isBlank` now reflects OCR content for scanned/rasterized PDFs.**
   When OCR (including VLM) wrote text into existing `PageContent` entries, `is_blank` was
   never recalculated — it retained the stale value from native text extraction, which is
   always `Some(true)` for pages with no text layer. All four write sites in the OCR
   page-assembly block now call `is_page_text_blank` after every content mutation.
-  ([#1095](https://github.com/kreuzberg-dev/kreuzberg/issues/1095))
+  ([#1095](https://github.com/xberg-io/kreuzberg/issues/1095))
 
 - **`ImagePreprocessingConfig` default `auto_rotate` changed from `true` to `false`; server
   no longer aborts (exit 133 / SIGTRAP) when `preprocessing` is set in the server config.**
@@ -709,7 +709,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   barrier shim now wraps the five most dangerous Tesseract C API calls on native builds so
   that any escaping exception is converted to a graceful error return instead of aborting the
   process. To keep auto-rotation, set `auto_rotate: true` explicitly.
-  ([#1089](https://github.com/kreuzberg-dev/kreuzberg/issues/1089))
+  ([#1089](https://github.com/xberg-io/kreuzberg/issues/1089))
 
 - **reranker: `RerankError` migrated to `thiserror`.** Matches the rest
   of the library and `rust-conventions`.
@@ -746,7 +746,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `extraction.rs` that silently swallowed function-level errors are also
   replaced with `unwrap_or_else(|e| { tracing::warn!(...); Vec::new() })`
   so that a `page_count()` failure is equally visible.
-  ([#1097](https://github.com/kreuzberg-dev/kreuzberg/issues/1097))
+  ([#1097](https://github.com/xberg-io/kreuzberg/issues/1097))
 
 - **publish.yaml `trigger-pubdev` job: explicit `permissions: actions: write`.** Since the `a8f8597e45` migration to the `kreuzberg-dev-publisher` App-token, the `gh workflow run publish-pubdev.yaml` step has 403'd with "Resource not accessible by integration" — the App's installation token didn't carry `actions: write`. Adding job-level `permissions: { actions: write, contents: read }` covers the case where GITHUB_TOKEN is used as a fallback, and documents that the App's permissions also need `actions: write` configured on github.com.
 
@@ -847,11 +847,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`@kreuzberg/node-linux-x64-musl` and `@kreuzberg/node-linux-arm64-musl` placeholder publishes.**
   Both platform packages now exist on npm with trusted-publisher rules pointing at
-  `kreuzberg-dev/kreuzberg` `publish.yaml`. rc.8 publish hit `npm error 404` on the very first
+  `xberg-io/kreuzberg` `publish.yaml`. rc.8 publish hit `npm error 404` on the very first
   publish for these two packages because npm trusted publishing requires the package to exist
   before the TP rule can bind to it. Placeholder version `5.0.0-placeholder.0` published under
   `placeholder` dist-tag; the rc.9 publish workflow ships real binaries via OIDC.
-- **`kreuzberg-dev/actions@v1` bumped to v1.8.47.** Three composite-action fixes consumed by this
+- **`xberg-io/actions@v1` bumped to v1.8.47.** Three composite-action fixes consumed by this
   publish: `build-python-wheels` no longer pre-installs Rust on macOS (cibuildwheel handles it,
   removes `clippy-preview` conflict), `build-python-sdist` uses an absolute `--out` path for
   split-layout maturin sdist builds (fixes `pyproject.toml not found` after `cd`), and
@@ -990,7 +990,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **python (#937)**: `ExtractionConfig(cancel_token=…)` now accepts the kwarg at construction.
 
-- **php (#940)**: `composer require kreuzberg-dev/kreuzberg` now downloads the prebuilt binary instead of attempting to build from source.
+- **php (#940)**: `composer require xberg-io/kreuzberg` now downloads the prebuilt binary instead of attempting to build from source.
 
 - **node (#1013)**: PDF chunks now carry `firstPage`/`lastPage` metadata.
 
@@ -1705,7 +1705,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
   `sheet_count` / `sheet_names` mirror fields are gone; access them via
   `metadata.format.excel.sheet_count` / `.sheet_names`. Affects REST,
   MCP, CLI (`--output-format json`), and every binding.
-- **Go module path changed from `v4` to `v5`**: Import path is now `github.com/kreuzberg-dev/kreuzberg/v5`. Update your `go.mod` and all import statements.
+- **Go module path changed from `v4` to `v5`**: Import path is now `github.com/xberg-io/kreuzberg/v5`. Update your `go.mod` and all import statements.
 - **PHP binding parameter names are now lowerCamelCase**: Function parameters such as `$mime_type` are now `$mimeType`, `$page_index` → `$pageIndex`, etc., matching PHP naming conventions.
 - **Python `_to_rust_extraction_config` dict-coercion refactored**: The `isinstance(value, dict)` branch now delegates to `_coerce_dict_extraction_config()`. No public API change; internal helper is not part of the public surface.
 
@@ -1737,7 +1737,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
 - **#839**: `extraction_timeout_secs` now applies to the single-file `extract_file` / `extract_bytes` paths. Previously the timeout only fired in batch and async wrappers, so a hostile single document could hang past the configured limit. The timeout is gated on `tokio-runtime`; non-tokio builds remain timeout-less by design.
 - **#797**: Chunking presets no longer auto-inject an `EmbeddingConfig`. Setting `ChunkingConfig.preset` (e.g. `"multilingual"`) without an explicit `embedding` field previously caused `resolve_preset()` to silently inject `Some(EmbeddingConfig { model: Preset { name }, ..default() })`, which made the extraction pipeline run `generate_embeddings_for_chunks()` and populate every `chunk.embedding` with vectors the caller never asked for. Presets now configure chunking parameters only; opt into embedding generation by providing an `EmbeddingConfig` explicitly.
 - **#782**: `result_format = "element_based"` now classifies headings and image placeholders correctly. `process_hierarchy` maps `h1` → `ElementType::Title` and `h2..h6` → `ElementType::Heading`, with the numeric level stored as `metadata.additional["heading_level"]`. `process_content` detects single-line markdown ATX headings (`# Title`, `## Section`, …) and emits them as `Title`/`Heading` instead of `NarrativeText`. `[Image: …]` placeholder lines are now emitted as `ElementType::Image` carrying the description in `metadata.additional["image_description"]`. `process_images` writes `metadata.additional["image_index"]` so consumers can join elements back to the `ExtractionResult.images` array by index.
-- **#844**: Python wrapper `extract_*` functions no longer crash on every call. Picked up upstream alef 0.11.24+ codegen fixes (kreuzberg-dev/alef#44): `#[serde(skip)]` is propagated to wrapper structs (no more `unknown field 'cancel_token'`), `api.py` wrappers forward arguments by keyword (no more `extract_file` mime*type/config arg-reorder `TypeError`), async pyo3 functions emit `async def` + `await`, and trait-bridge `register*\*`helpers are re-exported through`api.py`/`**init**.py` `**all**`.
+- **#844**: Python wrapper `extract_*` functions no longer crash on every call. Picked up upstream alef 0.11.24+ codegen fixes (xberg-io/alef#44): `#[serde(skip)]` is propagated to wrapper structs (no more `unknown field 'cancel_token'`), `api.py` wrappers forward arguments by keyword (no more `extract_file` mime*type/config arg-reorder `TypeError`), async pyo3 functions emit `async def` + `await`, and trait-bridge `register*\*`helpers are re-exported through`api.py`/`**init**.py` `**all**`.
 - **`force_ocr_pages` now reliably yields `ExtractionMethod::Mixed`** even when `pages` config is not explicitly set. The PDF text path now synthesizes a default `PageConfig` when force-ocr-pages is non-empty so byte boundaries are always available for splicing OCR text into the right ranges.
 - **PDF page extraction strategy enum renamed `ExtractionMethod` → `PageExtractionMethod`** in `kreuzberg-pdfium-render` to disambiguate from `kreuzberg::ExtractionMethod` (the new native/ocr/mixed strategy enum from #761). The pdfium variant remains exported via `pdfium_render::prelude` under the new name.
 
@@ -1993,7 +1993,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **Helm chart for Kubernetes deployment** — minimal, security-hardened Helm chart with Deployment, Service, Ingress, PVC, HPA, PDB, and ServiceAccount templates. Publishes to GHCR as an OCI artifact. (#695)
 - **Helm lint and kubeconform pre-commit hooks** — added `helm lint --strict` and `kubeconform` (k8s 1.28.0 schema validation) to pre-commit and CI pipeline.
-- **Helm chart publish workflow** — new `publish-helm.yaml` GitHub Actions workflow pushes versioned chart to `oci://ghcr.io/kreuzberg-dev/charts`.
+- **Helm chart publish workflow** — new `publish-helm.yaml` GitHub Actions workflow pushes versioned chart to `oci://ghcr.io/xberg-io/charts`.
 
 ### Fixed
 
@@ -2261,7 +2261,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Code Intelligence
 
-- **Tree-sitter integration** for 248 programming languages via [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack)
+- **Tree-sitter integration** for 248 programming languages via [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack)
   - Extract functions, classes, imports, exports, symbols, docstrings, diagnostics
   - Syntax-aware code chunking
   - Language detection from file extension and shebang
@@ -2735,11 +2735,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Fixed
 
-- **Token reduction not applied** ([#436](https://github.com/kreuzberg-dev/kreuzberg/issues/436)): Token reduction config was accepted but never executed during extraction. The pipeline now applies `reduce_tokens()` when `token_reduction.mode` is configured.
+- **Token reduction not applied** ([#436](https://github.com/xberg-io/kreuzberg/issues/436)): Token reduction config was accepted but never executed during extraction. The pipeline now applies `reduce_tokens()` when `token_reduction.mode` is configured.
 - **Nested HTML table extraction**: Nested HTML tables now extract correctly with proper cell data and markdown rendering, using the visitor-based table extraction API from html-to-markdown-rs.
 - **hOCR plain text output**: hOCR conversion now correctly produces plain text when `OutputFormat::Plain` is requested, instead of silently falling back to Markdown.
-- **PDF garbled text for positioned/tabular content** ([#431](https://github.com/kreuzberg-dev/kreuzberg/issues/431)): PDF text extraction now detects X-position gaps between consecutive characters and inserts spaces when the gap exceeds `0.8 × avg_font_size`. Previously, characters placed at specific coordinates without explicit space characters were concatenated without spaces.
-- **Chunk page metadata drift with overlap** ([#439](https://github.com/kreuzberg-dev/kreuzberg/issues/439)): Chunk byte offsets are now computed via pointer arithmetic from the source text, fixing cumulative drift that caused chunks to report incorrect page numbers when overlap is enabled.
+- **PDF garbled text for positioned/tabular content** ([#431](https://github.com/xberg-io/kreuzberg/issues/431)): PDF text extraction now detects X-position gaps between consecutive characters and inserts spaces when the gap exceeds `0.8 × avg_font_size`. Previously, characters placed at specific coordinates without explicit space characters were concatenated without spaces.
+- **Chunk page metadata drift with overlap** ([#439](https://github.com/xberg-io/kreuzberg/issues/439)): Chunk byte offsets are now computed via pointer arithmetic from the source text, fixing cumulative drift that caused chunks to report incorrect page numbers when overlap is enabled.
 - **Node.js metadata casing**: Standardized all `Metadata` and `EmailMetadata` fields to `camelCase` (e.g., `pageCount`, `creationDate`, `fromEmail`) in the Node.js/TypeScript bindings. Also corrected pluralization for `authors` and `keywords`.
 - **WASM build failure on Windows CI**: CMake try-compile checks on Windows used the host MSVC compiler (`cl.exe`), which rejected GCC/Clang flags like `-Wno-implicit-function-declaration`. Added `CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` to both `build_leptonica_wasm` and `build_tesseract_wasm` to skip linking during cross-compilation checks.
 - **WASM OCR build panic when `git`/`patch` unavailable**: The tesseract WASM patch (`tesseract.diff`) application panicked when both `git apply` and `patch` commands failed. Added programmatic C++ source fixups as a fallback, applying all necessary changes (CPUID guard, pixa*debug* unique_ptr conversion, source list trimming) via string replacement when the diff patch cannot be applied.
@@ -3782,7 +3782,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir Bindings
 
-- Fixed `force_build: true` causing production installs to fail; now only builds from source in development. ([#333](https://github.com/kreuzberg-dev/kreuzberg/issues/333))
+- Fixed `force_build: true` causing production installs to fail; now only builds from source in development. ([#333](https://github.com/xberg-io/kreuzberg/issues/333))
 
 #### Docker Images
 
@@ -3798,7 +3798,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Rust Core
 
-- Fixed XLSX out-of-memory with Excel Solver files that declare extreme cell dimensions. ([#331](https://github.com/kreuzberg-dev/kreuzberg/issues/331))
+- Fixed XLSX out-of-memory with Excel Solver files that declare extreme cell dimensions. ([#331](https://github.com/xberg-io/kreuzberg/issues/331))
 
 ---
 
@@ -3808,8 +3808,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Rust Core
 
-- Fixed PPTX image page numbers being reversed due to unsorted slide paths. ([#329](https://github.com/kreuzberg-dev/kreuzberg/issues/329))
-- Added comprehensive error logging for silent plugin failures. ([#328](https://github.com/kreuzberg-dev/kreuzberg/issues/328))
+- Fixed PPTX image page numbers being reversed due to unsorted slide paths. ([#329](https://github.com/xberg-io/kreuzberg/issues/329))
+- Added comprehensive error logging for silent plugin failures. ([#328](https://github.com/xberg-io/kreuzberg/issues/328))
 - Extended `VALID_OUTPUT_FORMATS` to include all valid aliases (`plain`, `text`, `markdown`, `md`, `djot`, `html`).
 - Fixed `validate_file_exists()` to return `Io` error instead of `Validation` error for file-not-found.
 
@@ -3841,7 +3841,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Documentation
 
-- Added Kubernetes deployment guide with health check configuration and troubleshooting. ([#328](https://github.com/kreuzberg-dev/kreuzberg/issues/328))
+- Added Kubernetes deployment guide with health check configuration and troubleshooting. ([#328](https://github.com/xberg-io/kreuzberg/issues/328))
 
 ---
 
@@ -3979,7 +3979,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir
 
-- Fixed `FunctionClauseError` when extracting DOCX files with keywords metadata. ([#309](https://github.com/kreuzberg-dev/kreuzberg/issues/309))
+- Fixed `FunctionClauseError` when extracting DOCX files with keywords metadata. ([#309](https://github.com/xberg-io/kreuzberg/issues/309))
 
 ---
 
@@ -3989,7 +3989,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Docker
 
-- Migrated from Docker Hub to GitHub Container Registry (`ghcr.io/kreuzberg-dev/kreuzberg`).
+- Migrated from Docker Hub to GitHub Container Registry (`ghcr.io/xberg-io/kreuzberg`).
 
 ### Fixed
 
@@ -3999,7 +3999,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Python
 
-- Fixed missing `_internal_bindings.pyi` type stub file in Python wheels. ([#298](https://github.com/kreuzberg-dev/kreuzberg/issues/298))
+- Fixed missing `_internal_bindings.pyi` type stub file in Python wheels. ([#298](https://github.com/xberg-io/kreuzberg/issues/298))
 
 #### Homebrew
 
@@ -4027,7 +4027,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Go Module
 
-- Added automated FFI library installer that downloads the correct platform-specific library from GitHub releases. ([#281](https://github.com/kreuzberg-dev/kreuzberg/issues/281))
+- Added automated FFI library installer that downloads the correct platform-specific library from GitHub releases. ([#281](https://github.com/xberg-io/kreuzberg/issues/281))
 
 ### Fixed
 
@@ -4043,7 +4043,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Docker
 
-- Fixed `MissingDependencyError` when extracting legacy MS Office formats in Docker; added LibreOffice symlinks and missing runtime dependencies. ([#288](https://github.com/kreuzberg-dev/kreuzberg/issues/288))
+- Fixed `MissingDependencyError` when extracting legacy MS Office formats in Docker; added LibreOffice symlinks and missing runtime dependencies. ([#288](https://github.com/xberg-io/kreuzberg/issues/288))
 
 ---
 
@@ -4053,21 +4053,21 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### HTML Configuration Support
 
-- Full `html_options` configuration now available from config files and all language bindings. ([#282](https://github.com/kreuzberg-dev/kreuzberg/issues/282))
+- Full `html_options` configuration now available from config files and all language bindings. ([#282](https://github.com/xberg-io/kreuzberg/issues/282))
 
 ### Fixed
 
 #### Go Module
 
-- Fixed header include path so `go get` users no longer get compilation errors about missing headers. ([#280](https://github.com/kreuzberg-dev/kreuzberg/issues/280))
+- Fixed header include path so `go get` users no longer get compilation errors about missing headers. ([#280](https://github.com/xberg-io/kreuzberg/issues/280))
 
 #### C# SDK
 
-- Fixed `JsonException` when using keyword extraction; keywords now properly deserialized as `ExtractedKeyword` objects. ([#285](https://github.com/kreuzberg-dev/kreuzberg/issues/285))
+- Fixed `JsonException` when using keyword extraction; keywords now properly deserialized as `ExtractedKeyword` objects. ([#285](https://github.com/xberg-io/kreuzberg/issues/285))
 
 #### Distribution
 
-- Made Homebrew tap repository public to enable `brew install kreuzberg-dev/tap/kreuzberg`. ([#283](https://github.com/kreuzberg-dev/kreuzberg/issues/283))
+- Made Homebrew tap repository public to enable `brew install xberg-io/tap/kreuzberg`. ([#283](https://github.com/xberg-io/kreuzberg/issues/283))
 
 ---
 
@@ -4077,7 +4077,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Go Module
 
-- Fixed Go module tag format so `go get` works correctly. ([#264](https://github.com/kreuzberg-dev/kreuzberg/issues/264))
+- Fixed Go module tag format so `go get` works correctly. ([#264](https://github.com/xberg-io/kreuzberg/issues/264))
 
 #### Elixir
 
@@ -4091,11 +4091,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir
 
-- Fixed NIF binaries not uploaded to GitHub releases, breaking `rustler_precompiled`. ([#279](https://github.com/kreuzberg-dev/kreuzberg/issues/279))
+- Fixed NIF binaries not uploaded to GitHub releases, breaking `rustler_precompiled`. ([#279](https://github.com/xberg-io/kreuzberg/issues/279))
 
 #### Python
 
-- Fixed `kreuzberg-tesseract` missing from PyPI source distributions, causing builds from source to fail. ([#277](https://github.com/kreuzberg-dev/kreuzberg/issues/277))
+- Fixed `kreuzberg-tesseract` missing from PyPI source distributions, causing builds from source to fail. ([#277](https://github.com/xberg-io/kreuzberg/issues/277))
 
 #### Homebrew
 
@@ -4149,7 +4149,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 #### API Server
 
-- Added `POST /embed` endpoint for generating embeddings from text. ([#266](https://github.com/kreuzberg-dev/kreuzberg/issues/266))
+- Added `POST /embed` endpoint for generating embeddings from text. ([#266](https://github.com/xberg-io/kreuzberg/issues/266))
 - Added `ServerConfig` type for file-based server configuration (TOML/YAML/JSON) with environment variable overrides.
 
 #### Observability
@@ -4424,7 +4424,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 - PDFium feature names changed: `pdf-static` -> `static-pdfium`, `pdf-bundled` -> `bundled-pdfium`, `pdf-system` -> `system-pdfium`.
 - Default PDFium linking changed to `bundled-pdfium`.
-- Go module path moved to `github.com/kreuzberg-dev/kreuzberg/packages/go/v4`.
+- Go module path moved to `github.com/xberg-io/kreuzberg/packages/go/v4`.
 
 ### Fixed
 
@@ -4976,130 +4976,130 @@ See the [API Reference](https://docs.kreuzberg.dev/reference/api-python/) for de
 - [Format Support](https://docs.kreuzberg.dev/reference/formats/) - Supported file formats
 - [Extraction Guide](https://docs.kreuzberg.dev/guides/extraction/) - Extraction examples
 
-[4.10.0-rc.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.10.0-rc.4
-[4.10.0-rc.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.10.0-rc.2
-[4.10.0-rc.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.10.0-rc.1
-[4.9.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.5
-[4.9.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.4
-[4.9.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.3
-[4.9.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.2
-[4.9.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.1
-[4.9.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.9.0
-[4.8.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.6
-[4.8.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.5
-[4.8.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.4
-[4.8.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.3
-[4.8.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.2
-[4.8.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.1
-[4.8.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.8.0
-[4.7.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.4
-[4.7.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.3
-[4.7.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.2
-[4.7.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.1
-[4.7.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.7.0
-[4.6.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.6.3
-[4.6.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.6.2
-[4.6.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.6.1
-[4.6.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.6.0
-[4.5.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.5.4
-[4.5.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.5.3
-[4.5.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.5.2
-[4.5.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.5.1
-[4.5.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.5.0
-[4.4.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.6
-[4.4.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.5
-[4.4.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.4
-[4.4.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.3
-[4.4.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.2
-[4.4.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.1
-[4.4.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.4.0
-[4.3.8]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.8
-[4.3.7]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.7
-[4.3.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.6
-[4.3.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.5
-[4.3.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.4
-[4.3.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.3
-[4.3.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.2
-[4.3.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.1
-[4.3.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.3.0
-[4.2.15]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.15
-[4.2.14]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.14
-[4.2.13]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.13
-[4.2.12]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.12
-[4.2.11]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.11
-[4.2.10]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.10
-[4.2.9]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.9
-[4.2.8]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.8
-[4.2.7]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.7
-[4.2.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.6
-[4.2.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.5
-[4.2.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.4
-[4.2.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.3
-[4.2.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.2
-[4.2.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.1
-[4.2.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.2.0
-[4.1.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.1.2
-[4.1.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.1.1
-[4.1.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.1.0
-[4.0.8]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.8
-[4.0.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.6
-[4.0.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.5
-[4.0.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.4
-[4.0.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.3
-[4.0.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.2
-[4.0.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.1
-[4.0.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0
-[4.0.0-rc.29]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.29
-[4.0.0-rc.28]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.28
-[4.0.0-rc.27]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.27
-[4.0.0-rc.26]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.26
-[4.0.0-rc.25]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.25
-[4.0.0-rc.24]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.24
-[4.0.0-rc.23]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.23
-[4.0.0-rc.22]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.22
-[4.0.0-rc.21]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.21
-[4.0.0-rc.20]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.20
-[4.0.0-rc.19]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.19
-[4.0.0-rc.18]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.18
-[4.0.0-rc.17]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.17
-[4.0.0-rc.16]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.16
-[4.0.0-rc.15]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.15
-[4.0.0-rc.14]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.14
-[4.0.0-rc.13]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.13
-[4.0.0-rc.12]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.12
-[4.0.0-rc.11]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.11
-[4.0.0-rc.10]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.10
-[4.0.0-rc.9]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.9
-[4.0.0-rc.8]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.8
-[4.0.0-rc.7]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.7
-[4.0.0-rc.6]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.6
-[4.0.0-rc.5]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.5
-[4.0.0-rc.4]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.4
-[4.0.0-rc.3]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.3
-[4.0.0-rc.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.2
-[3.22.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.22.0
-[3.21.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.21.0
-[3.20.2]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.20.2
-[3.20.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.20.1
-[3.20.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.20.0
-[3.19.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.19.1
-[3.19.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.19.0
-[3.18.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.18.0
-[3.17.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.17.0
-[3.16.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.16.0
-[3.15.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.15.0
-[3.14.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.14.0
-[3.13.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.13.0
-[3.12.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.12.0
-[3.11.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.11.1
-[3.11.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.11.0
-[3.10.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.10.0
-[3.9.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.9.0
-[3.7.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.7.0
-[3.6.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.6.0
-[3.5.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.5.0
-[3.4.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.4.0
-[3.3.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.3.0
-[3.2.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.2.0
-[3.1.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.1.0
-[3.0.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v3.0.0
+[4.10.0-rc.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.4
+[4.10.0-rc.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.2
+[4.10.0-rc.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.1
+[4.9.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.5
+[4.9.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.4
+[4.9.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.3
+[4.9.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.2
+[4.9.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.1
+[4.9.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.0
+[4.8.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.6
+[4.8.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.5
+[4.8.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.4
+[4.8.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.3
+[4.8.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.2
+[4.8.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.1
+[4.8.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.0
+[4.7.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.4
+[4.7.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.3
+[4.7.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.2
+[4.7.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.1
+[4.7.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.0
+[4.6.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.3
+[4.6.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.2
+[4.6.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.1
+[4.6.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.0
+[4.5.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.4
+[4.5.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.3
+[4.5.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.2
+[4.5.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.1
+[4.5.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.0
+[4.4.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.6
+[4.4.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.5
+[4.4.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.4
+[4.4.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.3
+[4.4.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.2
+[4.4.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.1
+[4.4.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.0
+[4.3.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.8
+[4.3.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.7
+[4.3.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.6
+[4.3.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.5
+[4.3.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.4
+[4.3.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.3
+[4.3.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.2
+[4.3.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.1
+[4.3.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.0
+[4.2.15]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.15
+[4.2.14]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.14
+[4.2.13]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.13
+[4.2.12]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.12
+[4.2.11]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.11
+[4.2.10]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.10
+[4.2.9]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.9
+[4.2.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.8
+[4.2.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.7
+[4.2.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.6
+[4.2.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.5
+[4.2.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.4
+[4.2.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.3
+[4.2.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.2
+[4.2.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.1
+[4.2.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.0
+[4.1.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.2
+[4.1.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.1
+[4.1.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.0
+[4.0.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.8
+[4.0.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.6
+[4.0.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.5
+[4.0.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.4
+[4.0.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.3
+[4.0.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.2
+[4.0.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.1
+[4.0.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0
+[4.0.0-rc.29]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.29
+[4.0.0-rc.28]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.28
+[4.0.0-rc.27]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.27
+[4.0.0-rc.26]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.26
+[4.0.0-rc.25]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.25
+[4.0.0-rc.24]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.24
+[4.0.0-rc.23]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.23
+[4.0.0-rc.22]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.22
+[4.0.0-rc.21]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.21
+[4.0.0-rc.20]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.20
+[4.0.0-rc.19]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.19
+[4.0.0-rc.18]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.18
+[4.0.0-rc.17]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.17
+[4.0.0-rc.16]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.16
+[4.0.0-rc.15]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.15
+[4.0.0-rc.14]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.14
+[4.0.0-rc.13]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.13
+[4.0.0-rc.12]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.12
+[4.0.0-rc.11]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.11
+[4.0.0-rc.10]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.10
+[4.0.0-rc.9]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.9
+[4.0.0-rc.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.8
+[4.0.0-rc.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.7
+[4.0.0-rc.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.6
+[4.0.0-rc.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.5
+[4.0.0-rc.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.4
+[4.0.0-rc.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.3
+[4.0.0-rc.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.2
+[3.22.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.22.0
+[3.21.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.21.0
+[3.20.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.2
+[3.20.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.1
+[3.20.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.0
+[3.19.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.19.1
+[3.19.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.19.0
+[3.18.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.18.0
+[3.17.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.17.0
+[3.16.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.16.0
+[3.15.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.15.0
+[3.14.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.14.0
+[3.13.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.13.0
+[3.12.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.12.0
+[3.11.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.11.1
+[3.11.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.11.0
+[3.10.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.10.0
+[3.9.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.9.0
+[3.7.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.7.0
+[3.6.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.6.0
+[3.5.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.5.0
+[3.4.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.4.0
+[3.3.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.3.0
+[3.2.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.2.0
+[3.1.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.1.0
+[3.0.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.0.0

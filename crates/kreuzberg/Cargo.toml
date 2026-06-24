@@ -6,7 +6,7 @@ rust-version.workspace = true
 authors.workspace = true
 description = "High-performance document intelligence library for Rust. Extract text, metadata, and structured data from PDFs, Office documents, images, and 96 formats and 306 programming languages via tree-sitter code intelligence with async/sync APIs."
 license.workspace = true
-repository = "https://github.com/kreuzberg-dev/kreuzberg"
+repository = "https://github.com/xberg-io/kreuzberg"
 homepage = "https://kreuzberg.dev"
 documentation = "https://docs.rs/kreuzberg"
 keywords = ["document", "extraction", "pdf", "ocr", "parser"]
@@ -783,7 +783,7 @@ hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optio
 kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.36", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.36", optional = true }
-# liter-llm: aws-lc-sys MSVC fix shipped in kreuzberg-dev/liter-llm; track via git patch.
+# liter-llm: aws-lc-sys MSVC fix shipped in xberg-io/liter-llm; track via git patch.
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 # Enable tokenizers `http` feature on Windows so model downloads work via hf-hub.
 tokenizers = { version = "0.23", default-features = false, features = ["http", "fancy-regex"], optional = true }

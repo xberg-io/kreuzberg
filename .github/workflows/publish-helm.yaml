@@ -97,12 +97,12 @@ jobs:
       - name: Push chart to GHCR
         if: ${{ steps.meta.outputs.dry_run != 'true' }}
         run: |
-          helm push .helm-packages/kreuzberg-${{ steps.meta.outputs.version }}.tgz oci://ghcr.io/kreuzberg-dev/charts
+          helm push .helm-packages/kreuzberg-${{ steps.meta.outputs.version }}.tgz oci://ghcr.io/xberg-io/charts
           echo "### Published" >> "$GITHUB_STEP_SUMMARY"
-          echo "Chart pushed to \`oci://ghcr.io/kreuzberg-dev/charts/kreuzberg:${{ steps.meta.outputs.version }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Chart pushed to \`oci://ghcr.io/xberg-io/charts/kreuzberg:${{ steps.meta.outputs.version }}\`" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Dry-run summary
         if: ${{ steps.meta.outputs.dry_run == 'true' }}
         run: |
           echo "### Dry Run" >> "$GITHUB_STEP_SUMMARY"
-          echo "Would have pushed \`kreuzberg-${{ steps.meta.outputs.version }}.tgz\` to \`oci://ghcr.io/kreuzberg-dev/charts\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Would have pushed \`kreuzberg-${{ steps.meta.outputs.version }}.tgz\` to \`oci://ghcr.io/xberg-io/charts\`" >> "$GITHUB_STEP_SUMMARY"

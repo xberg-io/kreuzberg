@@ -22,9 +22,9 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-urls.Homepage = "https://github.com/kreuzberg-dev/kreuzberg"
-urls.Issues = "https://github.com/kreuzberg-dev/kreuzberg/issues"
-urls.Repository = "https://github.com/kreuzberg-dev/kreuzberg.git"
+urls.Homepage = "https://github.com/xberg-io/kreuzberg"
+urls.Issues = "https://github.com/xberg-io/kreuzberg/issues"
+urls.Repository = "https://github.com/xberg-io/kreuzberg.git"
 scripts.kreuzberg = "kreuzberg_cli.cli:main"
 scripts.xberg = "kreuzberg_cli.cli:main"
 
