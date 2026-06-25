@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 // TestPostProcessor tests custom post processor behavior
@@ -33,7 +33,7 @@ func TestPostProcessor(t *testing.T) {
 	}
 
 	// Register the processor
-	err := kreuzberg.RegisterPostProcessor(
+	err := xberg.RegisterPostProcessor(
 		"test-processor",
 		10,
 		(C.PostProcessorCallback)(C.testPostProcessor),
@@ -70,7 +70,7 @@ func TestPostProcessor(t *testing.T) {
 	}
 
 	// Cleanup
-	_ = kreuzberg.UnregisterPostProcessor("test-processor")
+	_ = xberg.UnregisterPostProcessor("test-processor")
 }
 
 // TestValidator tests custom validator behavior
@@ -96,7 +96,7 @@ func TestValidator(t *testing.T) {
 	}
 
 	// Register the validator
-	err := kreuzberg.RegisterValidator(
+	err := xberg.RegisterValidator(
 		"test-validator",
 		50,
 		(C.ValidatorCallback)(C.testValidator),
@@ -157,7 +157,7 @@ func TestValidator(t *testing.T) {
 	}
 
 	// Cleanup
-	_ = kreuzberg.UnregisterValidator("test-validator")
+	_ = xberg.UnregisterValidator("test-validator")
 }
 
 // TestValidatorIntegration tests validator with actual extraction
@@ -179,7 +179,7 @@ func TestValidatorIntegration(t *testing.T) {
 	}
 
 	// Register validator
-	err := kreuzberg.RegisterValidator(
+	err := xberg.RegisterValidator(
 		"integration-validator",
 		100,
 		(C.ValidatorCallback)(C.integrationValidator),
@@ -190,7 +190,7 @@ func TestValidatorIntegration(t *testing.T) {
 
 	// The validator will be called automatically during extraction
 	// This test verifies the registration was successful
-	validators, err := kreuzberg.ListValidators()
+	validators, err := xberg.ListValidators()
 	if err != nil {
 		t.Fatalf("Failed to list validators: %v", err)
 	}
@@ -208,6 +208,6 @@ func TestValidatorIntegration(t *testing.T) {
 	}
 
 	// Cleanup
-	_ = kreuzberg.UnregisterValidator("integration-validator")
+	_ = xberg.UnregisterValidator("integration-validator")
 }
 ```

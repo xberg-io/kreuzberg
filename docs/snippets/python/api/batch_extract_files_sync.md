@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import batch_extract_files_sync, BatchFileItem, ExtractionConfig
+from xberg import batch_extract_files_sync, BatchFileItem, ExtractionConfig
 
 items = [
     BatchFileItem(path="doc1.pdf"),

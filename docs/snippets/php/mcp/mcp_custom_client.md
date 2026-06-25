@@ -9,9 +9,9 @@ $descriptors = [
     2 => ['pipe', 'w'],
 ];
 
-$process = proc_open(['kreuzberg', 'mcp'], $descriptors, $pipes);
+$process = proc_open(['xberg', 'mcp'], $descriptors, $pipes);
 if (!is_resource($process)) {
-    throw new RuntimeException('failed to spawn kreuzberg mcp');
+    throw new RuntimeException('failed to spawn xberg mcp');
 }
 
 $request = [

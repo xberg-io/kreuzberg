@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_bytes, ExtractionConfig};
+use xberg::{extract_bytes, ExtractionConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let content = tokio::fs::read("document.pdf").await?;
     let config = ExtractionConfig::default();
     let result = extract_bytes(&content, "application/pdf", &config).await?;

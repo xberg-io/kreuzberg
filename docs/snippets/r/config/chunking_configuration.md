@@ -1,5 +1,5 @@
 ```r
-library(kreuzberg)
+library(xberg)
 
 # Configure text chunking for RAG pipelines
 config <- list(
@@ -15,7 +15,7 @@ cat("Number of chunks:", length(result$chunks), "\n")
 ```
 
 ```r title="R - Prepend Heading Context"
-library(kreuzberg)
+library(xberg)
 
 # Prepend heading context to chunk content for structured documents
 config <- list(

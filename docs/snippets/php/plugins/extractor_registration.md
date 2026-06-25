@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class CustomJsonExtractor implements DocumentExtractor {
     public function name(): string {
@@ -62,5 +62,5 @@ class CustomJsonExtractor implements DocumentExtractor {
 // Note: Document extractor registration would use a similar pattern
 // when the binding API is available
 $extractor = new CustomJsonExtractor();
-Kreuzberg::registerDocumentExtractor($extractor);
+Xberg::registerDocumentExtractor($extractor);
 ```

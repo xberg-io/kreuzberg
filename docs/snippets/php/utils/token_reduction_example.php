@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\TokenReductionConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\TokenReductionConfig;
 
 $config = new ExtractionConfig(
     tokenReduction: new TokenReductionConfig(
@@ -23,8 +23,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('verbose_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('verbose_document.pdf');
 
 echo "Token Reduction Example:\n";
 echo str_repeat('=', 60) . "\n";
@@ -72,7 +72,7 @@ $batchConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($batchConfig);
+$xberg = new Xberg($batchConfig);
 $totalOriginal = 0;
 $totalReduced = 0;
 
@@ -82,7 +82,7 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
 
     $originalTokens = $result->metadata['original_token_count'] ?? 0;
     $reducedTokens = $result->metadata['token_count'] ?? 0;
@@ -110,7 +110,7 @@ if ($totalOriginal > 0) {
 function fitWithinTokenLimit(
     string $filePath,
     int $maxTokens,
-    Kreuzberg $kreuzberg
+    Xberg $xberg
 ): ?array {
     $modes = ['light', 'moderate', 'aggressive'];
 
@@ -122,8 +122,8 @@ function fitWithinTokenLimit(
             )
         );
 
-        $kreuzbergWithMode = new Kreuzberg($config);
-        $result = $kreuzbergWithMode->extractFile($filePath);
+        $xbergWithMode = new Xberg($config);
+        $result = $xbergWithMode->extractFile($filePath);
 
         $tokens = $result->metadata['token_count'] ?? strlen($result->content);
 
@@ -144,8 +144,8 @@ function fitWithinTokenLimit(
         )
     );
 
-    $kreuzbergWithMode = new Kreuzberg($config);
-    $result = $kreuzbergWithMode->extractFile($filePath);
+    $xbergWithMode = new Xberg($config);
+    $result = $xbergWithMode->extractFile($filePath);
     $tokens = $result->metadata['token_count'] ?? strlen($result->content);
 
     return [
@@ -163,7 +163,7 @@ $tokenLimit = 8000;
 $testFile = 'large_document.pdf';
 
 if (file_exists($testFile)) {
-    $fitResult = fitWithinTokenLimit($testFile, $tokenLimit, $kreuzberg);
+    $fitResult = fitWithinTokenLimit($testFile, $tokenLimit, $xberg);
 
     echo "Target limit: " . number_format($tokenLimit) . " tokens\n";
     echo "Reduction mode used: {$fitResult['mode']}\n";

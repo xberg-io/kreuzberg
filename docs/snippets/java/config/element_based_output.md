@@ -1,9 +1,9 @@
 ```java title="Element-Based Output (Java)"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Element;
-import dev.kreuzberg.ResultFormat;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ExtractionResult;
+import dev.xberg.Element;
+import dev.xberg.ResultFormat;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class ElementBasedOutput {
             .build();
 
         // Extract document
-        ExtractionResult result = Kreuzberg.extractFileSync(Path.of("document.pdf"), config);
+        ExtractionResult result = Xberg.extractFileSync(Path.of("document.pdf"), config);
 
         // Access elements
         List<Element> elements = result.elements();

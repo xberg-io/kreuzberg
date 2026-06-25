@@ -3,7 +3,7 @@
 Register a validator that filters out extraction results with text below a minimum length threshold.
 
 ```typescript title="WASM"
-import init, { registerValidator, extractBytes } from "kreuzberg-wasm";
+import init, { registerValidator, extractBytes } from "xberg-wasm";
 
 await init();
 

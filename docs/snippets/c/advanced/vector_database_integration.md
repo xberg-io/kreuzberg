@@ -1,5 +1,5 @@
 ```c title="C"
-#include "kreuzberg.h"
+#include "xberg.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -21,35 +21,35 @@ int main(void) {
         "}"
         "}";
 
-    KREUZBERGExtractionConfig *config = kreuzberg_extraction_config_from_json(config_json);
+    XBERGExtractionConfig *config = xberg_extraction_config_from_json(config_json);
     if (!config) {
         fprintf(stderr, "config parse failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
+                xberg_last_error_code(),
+                xberg_last_error_context());
         return 1;
     }
 
-    KREUZBERGExtractionResult *result =
-        kreuzberg_extract_file_sync(document_path, NULL, config);
+    XBERGExtractionResult *result =
+        xberg_extract_file_sync(document_path, NULL, config);
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
-        kreuzberg_extraction_config_free(config);
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extraction_config_free(config);
         return 1;
     }
 
     /* The chunks JSON array carries content + embedding + metadata for each
        chunk. Pass this directly to your vector database client (pgvector,
        Qdrant, Pinecone, etc.) along with the document_id as a metadata field. */
-    char *chunks_json = kreuzberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_chunks(result);
     printf("document_id: %s\n", document_id);
     printf("chunks (JSON, ready to upsert into a vector DB):\n%s\n",
            chunks_json ? chunks_json : "[]");
-    kreuzberg_free_string(chunks_json);
+    xberg_free_string(chunks_json);
 
-    kreuzberg_extraction_result_free(result);
-    kreuzberg_extraction_config_free(config);
+    xberg_extraction_result_free(result);
+    xberg_extraction_config_free(config);
     return 0;
 }
 ```

@@ -1,4 +1,4 @@
-import { extractBytes, initWasm } from "@kreuzberg/wasm";
+import { extractBytes, initWasm } from "@xberg/wasm";
 
 async function getDocumentMetadata() {
   await initWasm();

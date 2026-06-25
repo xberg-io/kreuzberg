@@ -53,9 +53,9 @@ TARGET_DIR="${WORKSPACE}/target/release"
 
 # On Windows, Rust builds DLLs without the "lib" prefix
 if [[ "$OS" == "windows" ]]; then
-  EXT_FILE="kreuzberg_php.${EXT_SUFFIX}"
+  EXT_FILE="xberg_php.${EXT_SUFFIX}"
 else
-  EXT_FILE="libkreuzberg_php.${EXT_SUFFIX}"
+  EXT_FILE="libxberg_php.${EXT_SUFFIX}"
 fi
 
 echo "Looking for extension file: ${TARGET_DIR}/${EXT_FILE}"
@@ -64,11 +64,11 @@ echo "Looking for extension file: ${TARGET_DIR}/${EXT_FILE}"
 if [[ -d "${TARGET_DIR}" ]]; then
   echo "Contents of ${TARGET_DIR}:"
   shopt -s nullglob
-  files=("${TARGET_DIR}"/*kreuzberg* "${TARGET_DIR}"/*.dll "${TARGET_DIR}"/*.so "${TARGET_DIR}"/*.dylib)
+  files=("${TARGET_DIR}"/*xberg* "${TARGET_DIR}"/*.dll "${TARGET_DIR}"/*.so "${TARGET_DIR}"/*.dylib)
   if [[ ${#files[@]} -gt 0 ]]; then
     ls -la "${files[@]}"
   else
-    echo "No kreuzberg binaries found"
+    echo "No xberg binaries found"
   fi
 else
   echo "::error::Target directory does not exist: ${TARGET_DIR}"
@@ -80,7 +80,7 @@ if [[ ! -f "${TARGET_DIR}/${EXT_FILE}" ]]; then
   # Try alternative names
   echo "Attempting to find alternative file names..."
   for ext in .dll .so .dylib; do
-    for prefix in libkreuzberg_php kreuzberg_php; do
+    for prefix in libxberg_php xberg_php; do
       candidate="${TARGET_DIR}/${prefix}${ext}"
       if [[ -f "$candidate" ]]; then
         echo "::notice::Found candidate: $candidate"
@@ -96,7 +96,7 @@ if [[ ! -f "${TARGET_DIR}/${EXT_FILE}" ]]; then
   fi
 fi
 
-PKG_NAME="kreuzberg-${VERSION}-${PLATFORM}"
+PKG_NAME="xberg-${VERSION}-${PLATFORM}"
 PKG_DIR="${OUTPUT_DIR}/${PKG_NAME}"
 mkdir -p "${PKG_DIR}/ext"
 
@@ -114,7 +114,7 @@ cp "${PHP_DIR}/CHANGELOG.md" "${PKG_DIR}/" || echo "::warning::CHANGELOG.md not 
 
 cat >"${PKG_DIR}/pie.json" <<EOF
 {
-  "name": "kreuzberg",
+  "name": "xberg",
   "version": "${VERSION}",
   "platform": "${PLATFORM}",
   "os": "${OS}",
@@ -128,7 +128,7 @@ EOF
 cat >"${PKG_DIR}/INSTALL.md" <<EOF
 # Installation Instructions
 
-This is a pre-built PIE package for the Kreuzberg PHP extension.
+This is a pre-built PIE package for the Xberg PHP extension.
 
 ## Platform
 - OS: ${OS}
@@ -140,7 +140,7 @@ This is a pre-built PIE package for the Kreuzberg PHP extension.
 The easiest way to install this extension is using PIE:
 
 \`\`\`bash
-pie install kreuzberg/kreuzberg
+pie install xberg/xberg
 \`\`\`
 
 PIE will automatically:
@@ -160,19 +160,19 @@ If you prefer manual installation:
    \`\`\`
 4. Install the Composer package:
    \`\`\`bash
-   composer require kreuzberg/kreuzberg
+   composer require xberg/xberg
    \`\`\`
 
 ## Verification
 
 Verify the extension is loaded:
 \`\`\`bash
-php -m | grep kreuzberg
+php -m | grep xberg
 \`\`\`
 
 ## Support
 
-For issues, visit: https://github.com/xberg-io/kreuzberg/issues
+For issues, visit: https://github.com/xberg-io/xberg/issues
 EOF
 
 TARBALL_NAME="${PKG_NAME}.tar.gz"

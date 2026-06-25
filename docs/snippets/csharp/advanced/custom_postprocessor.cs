@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class WordCountPostProcessor : IPostProcessor
 {
@@ -53,12 +53,12 @@ class Program
         var wordCountProcessor = new WordCountPostProcessor();
         var sentimentProcessor = new SentimentPostProcessor();
 
-        KreuzbergLib.RegisterPostProcessor(wordCountProcessor);
-        KreuzbergLib.RegisterPostProcessor(sentimentProcessor);
+        XbergLib.RegisterPostProcessor(wordCountProcessor);
+        XbergLib.RegisterPostProcessor(sentimentProcessor);
 
         try
         {
-            var result = KreuzbergLib.ExtractFileSync("document.pdf");
+            var result = XbergLib.ExtractFileSync("document.pdf");
 
             if (result.Metadata.Additional != null)
             {
@@ -72,7 +72,7 @@ class Program
                 }
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

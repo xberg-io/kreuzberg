@@ -1,6 +1,6 @@
 //! Corpus-wide extraction survey: extract all documents and print stats.
 //!
-//! Replaces `crates/kreuzberg/tests/pdf_markdown_all_docs.rs`.
+//! Replaces `crates/xberg/tests/pdf_markdown_all_docs.rs`.
 
 use crate::Result;
 use crate::corpus::{self, CorpusFilter};
@@ -36,8 +36,8 @@ pub async fn run_survey(config: &SurveyConfig) -> Result<Vec<DocStats>> {
     let docs = corpus::build_corpus(&config.fixtures_dir, &filter)?;
     eprintln!("Survey: {} documents", docs.len());
 
-    let extraction_config = kreuzberg::ExtractionConfig {
-        output_format: kreuzberg::core::config::OutputFormat::Markdown,
+    let extraction_config = xberg::ExtractionConfig {
+        output_format: xberg::core::config::OutputFormat::Markdown,
         ..Default::default()
     };
 
@@ -47,7 +47,7 @@ pub async fn run_survey(config: &SurveyConfig) -> Result<Vec<DocStats>> {
     for (idx, doc) in docs.iter().enumerate() {
         eprint!("[{}/{}] {} ...", idx + 1, total, doc.name);
         let t = Instant::now();
-        let extraction_future = kreuzberg::extract_file(&doc.document_path, None, &extraction_config);
+        let extraction_future = xberg::extract_file(&doc.document_path, None, &extraction_config);
         let (content, error) = match tokio::time::timeout(std::time::Duration::from_secs(180), extraction_future).await
         {
             Ok(Ok(r)) => (r.content, None),

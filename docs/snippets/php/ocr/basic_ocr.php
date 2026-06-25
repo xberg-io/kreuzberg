@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -22,8 +22,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned_document.pdf');
 
 echo "OCR Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -36,8 +36,8 @@ $multilingualConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($multilingualConfig);
-$result = $kreuzberg->extractFile('multilingual_scan.pdf');
+$xberg = new Xberg($multilingualConfig);
+$result = $xberg->extractFile('multilingual_scan.pdf');
 
 echo "Multilingual OCR:\n";
 echo str_repeat('=', 60) . "\n";
@@ -50,14 +50,14 @@ $imageConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($imageConfig);
+$xberg = new Xberg($imageConfig);
 
 $imageFormats = ['png', 'jpg', 'tiff'];
 foreach ($imageFormats as $format) {
     $file = "scan.$format";
     if (file_exists($file)) {
         echo "Processing $file...\n";
-        $result = $kreuzberg->extractFile($file);
+        $result = $xberg->extractFile($file);
         echo "Extracted " . strlen($result->content) . " characters\n";
         echo "Preview: " . substr($result->content, 0, 100) . "...\n\n";
     }
@@ -85,15 +85,15 @@ foreach ($languages as $lang => $description) {
             )
         );
 
-        $kreuzberg = new Kreuzberg($config);
-        $result = $kreuzberg->extractFile($file);
+        $xberg = new Xberg($config);
+        $result = $xberg->extractFile($file);
 
         echo "$description ($lang):\n";
         echo "  Characters extracted: " . mb_strlen($result->content) . "\n\n";
     }
 }
 
-use function Kreuzberg\extract_file;
+use function Xberg\extract_file;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
@@ -105,7 +105,7 @@ echo "Invoice OCR:\n";
 echo str_repeat('=', 60) . "\n";
 echo $result->content . "\n";
 
-$result = $kreuzberg->extractFile('scanned.pdf');
+$result = $xberg->extractFile('scanned.pdf');
 
 $contentLength = strlen($result->content);
 $pageCount = $result->metadata->pageCount ?? 1;

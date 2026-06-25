@@ -1,5 +1,5 @@
 ```typescript title="WASM - Chunking for RAG Pipeline"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -45,7 +45,7 @@ ragChunks.slice(0, 3).forEach((c) => {
 ```
 
 ```typescript title="WASM - RAG with Retrieval Context"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

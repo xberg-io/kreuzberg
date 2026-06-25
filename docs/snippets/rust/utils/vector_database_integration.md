@@ -1,12 +1,12 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig};
 
 let config = ExtractionConfig {
     chunking: Some(ChunkingConfig {
         max_characters: 512,
         overlap: 50,
         embedding: Some(EmbeddingConfig {
-            model: kreuzberg::EmbeddingModelType::Preset { name: "balanced".to_string() },
+            model: xberg::EmbeddingModelType::Preset { name: "balanced".to_string() },
             normalize: true,
             ..Default::default()
         }),

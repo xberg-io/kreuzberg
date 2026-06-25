@@ -1,6 +1,6 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import extract_file
+from xberg import extract_file
 
 async def main() -> None:
     result = await extract_file("document.pdf")

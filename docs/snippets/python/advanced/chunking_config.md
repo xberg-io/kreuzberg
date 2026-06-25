@@ -1,6 +1,6 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import ExtractionConfig, ChunkingConfig, extract_file
+from xberg import ExtractionConfig, ChunkingConfig, extract_file
 
 
 async def main() -> None:
@@ -20,7 +20,7 @@ asyncio.run(main())
 
 ```python title="Python - Semantic"
 import asyncio
-from kreuzberg import ExtractionConfig, ChunkingConfig, extract_file
+from xberg import ExtractionConfig, ChunkingConfig, extract_file
 
 
 async def main() -> None:
@@ -37,7 +37,7 @@ asyncio.run(main())
 
 ```python title="Python - Prepend Heading Context"
 import asyncio
-from kreuzberg import ExtractionConfig, ChunkingConfig, extract_file
+from xberg import ExtractionConfig, ChunkingConfig, extract_file
 
 
 async def main() -> None:

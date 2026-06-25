@@ -33,8 +33,8 @@ echo "  LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-}"
 echo "  DYLD_LIBRARY_PATH: ${DYLD_LIBRARY_PATH:-}"
 echo ""
 
-echo "Vendoring kreuzberg core..."
-python3 "$REPO_ROOT/scripts/ci/ruby/vendor-kreuzberg-core.py"
+echo "Vendoring xberg core..."
+python3 "$REPO_ROOT/scripts/ci/ruby/vendor-xberg-core.py"
 echo ""
 
 cd "$REPO_ROOT/packages/ruby"
@@ -48,4 +48,4 @@ bundle exec rake compile
 bundle exec rake build
 
 echo "Installing built gem..."
-gem install pkg/kreuzberg-*.gem
+gem install pkg/xberg-*.gem

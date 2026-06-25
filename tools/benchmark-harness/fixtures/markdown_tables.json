@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/tables.pandoc.md",
 	"file_type": "md",
 	"file_size": 2556,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Pandoc table syntax - simple tables, multiline tables with captions",
 		"category": "markdown-tables",

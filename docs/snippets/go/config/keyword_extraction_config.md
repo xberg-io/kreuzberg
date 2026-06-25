@@ -4,12 +4,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
 			Algorithm:  "YAKE",
 			MaxKeywords: 10,
 			MinScore:   0.3,

@@ -3,7 +3,7 @@
 Register a custom validator that checks extraction results for quality or correctness.
 
 ```typescript title="WASM"
-import init, { registerValidator, extractBytes } from "kreuzberg-wasm";
+import init, { registerValidator, extractBytes } from "xberg-wasm";
 
 await init();
 

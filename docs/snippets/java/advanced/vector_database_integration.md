@@ -1,10 +1,10 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.EmbeddingConfig;
-import dev.kreuzberg.EmbeddingModelType;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.EmbeddingConfig;
+import dev.xberg.EmbeddingModelType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class VectorDatabaseIntegration {
                 .build())
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile(documentPath, config);
+        ExtractionResult result = Xberg.extractFile(documentPath, config);
         List<Object> chunks = result.getChunks() != null ? result.getChunks() : List.of();
 
         List<VectorRecord> vectorRecords = new java.util.ArrayList<>();

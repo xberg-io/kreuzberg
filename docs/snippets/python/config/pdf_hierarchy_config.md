@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
+from xberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
 
 config: ExtractionConfig = ExtractionConfig(
     pdf_options=PdfConfig(

@@ -3,7 +3,7 @@ import {
   extractFile,
   type RakeParams,
   type YakeParams,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering

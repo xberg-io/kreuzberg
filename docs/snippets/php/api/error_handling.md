@@ -2,16 +2,16 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\KreuzbergException;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\XbergException;
 
 $config = new ExtractionConfig();
 try {
-    $result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+    $result = Xberg::extractFileSync('document.pdf', null, $config);
     echo $result->getContent();
-} catch (KreuzbergException $e) {
-    // The extension throws KreuzbergException with the error message
+} catch (XbergException $e) {
+    // The extension throws XbergException with the error message
     // Error context is available in the exception message
     echo "Extraction failed: " . $e->getMessage() . "\n";
     echo "Error code: " . $e->getCode() . "\n";

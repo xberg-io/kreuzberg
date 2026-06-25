@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractFilesSync } from "kreuzberg";
+import { batchExtractFilesSync } from "xberg";
 
 const items = [
   { path: "doc1.pdf", config: undefined },

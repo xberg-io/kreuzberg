@@ -1,6 +1,6 @@
 # Performance Profiling Workflow
 
-Reproducible flamegraph-driven workflow for Kreuzberg PDF performance work. The infrastructure (pprof, the `--profile-dir` harness flag, the `task benchmark:profile` command) already exists; this page codifies how to use it as the entry gate for any optimization.
+Reproducible flamegraph-driven workflow for Xberg PDF performance work. The infrastructure (pprof, the `--profile-dir` harness flag, the `task benchmark:profile` command) already exists; this page codifies how to use it as the entry gate for any optimization.
 
 ## When to use
 
@@ -11,7 +11,7 @@ Reproducible flamegraph-driven workflow for Kreuzberg PDF performance work. The 
 ```bash
 # 1. Build with debug symbols. The default release profile strips them,
 #    so the flamegraph fills with raw addresses and `__mh_execute_header`.
-cargo build --profile profiling -p kreuzberg-cli --features full
+cargo build --profile profiling -p xberg-cli --features full
 cargo build --profile profiling -p benchmark-harness --features profiling
 
 # 2. Run the harness with --profile-dir (note: pipeline-benchmark, not compare).
@@ -28,14 +28,14 @@ target/profiling/benchmark-harness pipeline-benchmark \
 The Taskfile wrapper:
 
 ```bash
-task benchmark:profile FRAMEWORK=kreuzberg PIPELINE=baseline OUTPUT_FORMAT=plaintext MODE=batch
+task benchmark:profile FRAMEWORK=xberg PIPELINE=baseline OUTPUT_FORMAT=plaintext MODE=batch
 ```
 
 …**works for the SF1 portion** but currently builds `--release` not `--profile profiling`, so the resulting SVGs only have system-symbol resolution. Until the task definition is fixed, drive flamegraph generation manually with the explicit commands above. (Tracked as a follow-up; don't optimize against a release-stripped flamegraph.)
 
 What this does:
 
-- Builds `kreuzberg-cli` in release mode with `--features all`.
+- Builds `xberg-cli` in release mode with `--features all`.
 - Runs the pipeline against the corpus at `tools/benchmark-harness/fixtures/`.
 - Captures CPU samples at 1000 Hz via the pprof wrapper in `tools/benchmark-harness/src/profiling.rs`.
 - Writes `flamegraphs/<short-sha>/<pipeline>-<format>-<mode>.svg`.
@@ -61,7 +61,7 @@ Open the SVG in any browser; the flamegraph is interactive (click to zoom, searc
 - **Width = total time** (self + children). Wide functions at the bottom of a stack are not necessarily hotspots — they're often just the entry point. Look at _self time_ (the visible non-child width).
 - **Tall stacks** mean deep call chains; they're not problems unless the leaf is hot.
 - **Repeated narrow towers** in different stacks are good candidates — the same function called from many places, each contributing a thin slice.
-- Filter out `pdf_oxide`, `image`, `tokio`, and system libraries (`libc`, `libpthread`) — those are dependencies. Focus on `kreuzberg::*` symbols.
+- Filter out `pdf_oxide`, `image`, `tokio`, and system libraries (`libc`, `libpthread`) — those are dependencies. Focus on `xberg::*` symbols.
 
 ## Memory profiling
 
@@ -85,7 +85,7 @@ The protocol below is enforced for every perf candidate. Skipping a step has cos
 ### Before any code change
 
 1. Generate flamegraph on current HEAD (`task benchmark:profile`).
-2. Identify the top-15 self-time `kreuzberg::*` functions. Filter out `pdf_oxide` / `image` / `tokio` / system libs.
+2. Identify the top-15 self-time `xberg::*` functions. Filter out `pdf_oxide` / `image` / `tokio` / system libs.
 3. Pick **one** candidate. Document:
    - File:line of the function.
    - Approximate self-time percentage.
@@ -97,9 +97,9 @@ The protocol below is enforced for every perf candidate. Skipping a step has cos
 
 ### Verify (main agent — never trust subagent ACCEPT verdicts without independent measurement)
 
-5. `cargo build -p kreuzberg --features full` — zero warnings.
-6. `cargo clippy -p kreuzberg --tests -- -D warnings` — clean.
-7. `cargo test -p kreuzberg` — green.
+5. `cargo build -p xberg --features full` — zero warnings.
+6. `cargo clippy -p xberg --tests -- -D warnings` — clean.
+7. `cargo test -p xberg` — green.
 8. Re-run the harness:
 
    ```bash
@@ -126,4 +126,4 @@ The protocol below is enforced for every perf candidate. Skipping a step has cos
 
 - **Don't trust subagent ACCEPT verdicts without measuring.** A `performance-engineer` agent has previously declared an optimization accepted with a correctness regression baked in. Always rerun the test suite locally after the agent reports done.
 - **Behavior probes catch what F1 doesn't.** F1 metrics aggregate; a small regression on a corner case can wash out. When the optimization touches text-shape code (whitespace, escape, punctuation), write a 4-input mini-test asserting exact byte equality vs the unoptimized version.
-- **Cache invalidation.** When you change the Kreuzberg crate, rebuild _both_ `kreuzberg-cli` and `benchmark-harness` (the harness links the crate in-process for `compare`). A build that "finished in 1.10s" without recompiling the Kreuzberg crate is a sign the change wasn't picked up.
+- **Cache invalidation.** When you change the Xberg crate, rebuild _both_ `xberg-cli` and `benchmark-harness` (the harness links the crate in-process for `compare`). A build that "finished in 1.10s" without recompiling the Xberg crate is a sign the change wasn't picked up.

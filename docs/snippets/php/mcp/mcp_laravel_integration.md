@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Log;
 use Psr\Log\LoggerInterface;
 
 /**
- * Laravel service for Kreuzberg MCP integration.
+ * Laravel service for Xberg MCP integration.
  *
  * Register in AppServiceProvider:
- * $this->app->singleton(KreuzbergMcpService::class);
+ * $this->app->singleton(XbergMcpService::class);
  *
  * Then inject in controllers or jobs.
  */
-final class KreuzbergMcpService
+final class XbergMcpService
 {
     private Client $http;
 
@@ -29,7 +29,7 @@ final class KreuzbergMcpService
     ) {
         $this->http = new Client([
             'base_uri' => $this->mcpUrl,
-            'timeout' => config('kreuzberg.timeout', 30),
+            'timeout' => config('xberg.timeout', 30),
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -46,7 +46,7 @@ final class KreuzbergMcpService
      */
     public function extractFile(string $path, ?array $config = null): array
     {
-        $cacheKey = 'kreuzberg_extract_' . md5($path . json_encode($config));
+        $cacheKey = 'xberg_extract_' . md5($path . json_encode($config));
 
         return Cache::remember($cacheKey, now()->addHours(24), function () use ($path, $config): array {
             $this->logger->info('Extracting file via MCP', [
@@ -154,14 +154,14 @@ final class KreuzbergMcpService
 // Usage in a Laravel controller
 namespace App\Http\Controllers;
 
-use App\Services\KreuzbergMcpService;
+use App\Services\XbergMcpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 final class DocumentController extends Controller
 {
     public function __construct(
-        private readonly KreuzbergMcpService $kreuzberg,
+        private readonly XbergMcpService $xberg,
     ) {}
 
     public function extract(Request $request): JsonResponse
@@ -177,7 +177,7 @@ final class DocumentController extends Controller
             'extractImages' => $validated['extract_images'] ?? false,
         ];
 
-        $result = $this->kreuzberg->extractFile(
+        $result = $this->xberg->extractFile(
             $validated['file_path'],
             $config
         );
@@ -195,7 +195,7 @@ final class DocumentController extends Controller
             'file_paths.*' => 'required|string',
         ]);
 
-        $results = $this->kreuzberg->batchExtractFiles($validated['file_paths']);
+        $results = $this->xberg->batchExtractFiles($validated['file_paths']);
 
         return response()->json([
             'success' => true,
@@ -206,11 +206,11 @@ final class DocumentController extends Controller
 
     public function health(): JsonResponse
     {
-        $healthy = $this->kreuzberg->healthCheck();
+        $healthy = $this->xberg->healthCheck();
 
         return response()->json([
             'healthy' => $healthy,
-            'service' => 'kreuzberg-mcp',
+            'service' => 'xberg-mcp',
         ], $healthy ? 200 : 503);
     }
 }

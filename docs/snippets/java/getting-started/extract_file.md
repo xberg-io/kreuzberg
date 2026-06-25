@@ -1,7 +1,7 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
 import java.io.IOException;
 
 public class ExtractFile {
@@ -11,7 +11,7 @@ public class ExtractFile {
             .enableQualityProcessing(true)
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("contract.pdf", config);
+        ExtractionResult result = Xberg.extractFile("contract.pdf", config);
 
         System.out.println("Extracted " + result.getContent().length() + " characters");
         System.out.println("Quality score: " + result.getQualityScore());

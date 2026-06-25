@@ -46,7 +46,7 @@ def sign_wheel(wheel_path: Path, identity: str) -> None:
     with tempfile.TemporaryDirectory() as temp_dir_str:
         temp_dir = Path(temp_dir_str)
         unpacked_dir = unpack_wheel(wheel_path, temp_dir)
-        package_root = unpacked_dir / "kreuzberg"
+        package_root = unpacked_dir / "xberg"
 
         targets = list(package_root.glob("_internal_bindings*.so"))
         targets.append(package_root / "libpdfium.dylib")
@@ -90,7 +90,7 @@ def main() -> None:
     identity = (
         args.identity
         or os.environ.get("MACOS_CODESIGN_IDENTITY")
-        or os.environ.get("KREUZBERG_CODESIGN_IDENTITY")
+        or os.environ.get("XBERG_CODESIGN_IDENTITY")
         or "-"
     )
 

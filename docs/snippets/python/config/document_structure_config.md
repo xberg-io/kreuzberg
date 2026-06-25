@@ -1,5 +1,5 @@
 ```python title="Document Structure Config (Python)"
-from kreuzberg import extract_file_sync, ExtractionConfig
+from xberg import extract_file_sync, ExtractionConfig
 
 # Enable document structure output
 config = ExtractionConfig(include_document_structure=True)

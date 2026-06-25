@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Extract text from a scanned PDF using OCR
 # Tesseract processes the document and returns structured content
@@ -17,7 +17,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("scanned_invoice.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("scanned_invoice.pdf", nil, config)
 
 # Process the extracted content
 content = result.content

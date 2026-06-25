@@ -1,7 +1,7 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-result = Kreuzberg.extract_file_sync('document.pdf')
+result = Xberg.extract_file_sync('document.pdf')
 
 if result.metadata.pages&.boundaries
   content_bytes = result.content.bytes

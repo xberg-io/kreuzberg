@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/archives/documents.tgz",
 	"file_type": "tgz",
 	"file_size": 27452,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Gzipped TAR archive with documents",
 		"category": "archive"

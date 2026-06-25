@@ -1,11 +1,11 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
+import dev.xberg.Xberg;
 
 try {
     // Unregister specific plugins
-    Kreuzberg.unregisterPostProcessor("word-count");
-    Kreuzberg.unregisterValidator("min-length");
-} catch (KreuzbergException e) {
+    Xberg.unregisterPostProcessor("word-count");
+    Xberg.unregisterValidator("min-length");
+} catch (XbergException e) {
     System.err.println("Failed to unregister: " + e.getMessage());
 }
 ```

@@ -6,27 +6,27 @@
 //! - Steady-state throughput: chunks/sec at default batch size
 //! - Batch size sweep: throughput at batch sizes 8, 16, 32, 64, 128
 //!
-//! Requires ONNX Runtime on the system. See `kreuzberg::embeddings` for installation
+//! Requires ONNX Runtime on the system. See `xberg::embeddings` for installation
 //! instructions.
 
 use std::time::Instant;
 
 use rayon::prelude::*;
 
-use kreuzberg::embeddings::{EMBEDDING_PRESETS, EmbeddingPreset};
-use kreuzberg::{Chunk, ChunkMetadata, EmbeddingConfig, EmbeddingModelType};
+use xberg::embeddings::{EMBEDDING_PRESETS, EmbeddingPreset};
+use xberg::{Chunk, ChunkMetadata, EmbeddingConfig, EmbeddingModelType};
 
 /// Embed text content into each chunk using the public `embed_texts` API.
 ///
 /// Mirrors the internal `embed_chunks` behaviour: collects
 /// chunk text, calls `embed_texts`, and writes each resulting vector back into
 /// `chunk.embedding`.
-fn embed_chunks(chunks: &mut [Chunk], config: &EmbeddingConfig) -> kreuzberg::Result<()> {
+fn embed_chunks(chunks: &mut [Chunk], config: &EmbeddingConfig) -> xberg::Result<()> {
     if chunks.is_empty() {
         return Ok(());
     }
     let texts: Vec<String> = chunks.iter().map(|c| c.content.clone()).collect();
-    let embeddings = kreuzberg::embed_texts(texts, config)?;
+    let embeddings = xberg::embed_texts(texts, config)?;
     for (chunk, embedding) in chunks.iter_mut().zip(embeddings) {
         chunk.embedding = Some(embedding);
     }

@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFile } from "kreuzberg";
+import { extractFile } from "xberg";
 
 const result = await extractFile("document.pdf", {
   outputFormat: "html",

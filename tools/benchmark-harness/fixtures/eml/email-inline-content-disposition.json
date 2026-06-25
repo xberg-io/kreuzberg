@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/unstructured/eml/email-inline-content-disposition.eml",
 	"file_type": "eml",
 	"file_size": 657,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from unstructured test suite",
 		"source": "unstructured",

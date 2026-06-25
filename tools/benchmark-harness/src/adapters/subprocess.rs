@@ -20,7 +20,7 @@ use std::time::{Duration, Instant};
 /// function finds the earliest `[` or `{` character and returns everything
 /// from that point, ignoring any preceding log lines. Whichever delimiter
 /// appears first wins — must not bias toward `[` because object outputs
-/// (e.g. kreuzberg-cli's envelope) contain nested arrays.
+/// (e.g. xberg-cli's envelope) contain nested arrays.
 fn extract_json_from_stdout(raw: &str) -> &str {
     let bracket = raw.find('[');
     let brace = raw.find('{');
@@ -78,7 +78,7 @@ impl SubprocessAdapter {
     /// Determine if a framework supports OCR based on its name
     ///
     /// Known frameworks with OCR support:
-    /// - kreuzberg-* (all Kreuzberg bindings support OCR)
+    /// - xberg-* (all Xberg bindings support OCR)
     /// - pymupdf (supports OCR via tesseract)
     ///
     /// Frameworks without OCR support:
@@ -87,8 +87,8 @@ impl SubprocessAdapter {
     fn framework_supports_ocr(framework_name: &str) -> bool {
         let name_lower = framework_name.to_lowercase();
 
-        // Kreuzberg bindings all support OCR
-        if name_lower.starts_with("kreuzberg-") || name_lower == "kreuzberg" {
+        // Xberg bindings all support OCR
+        if name_lower.starts_with("xberg-") || name_lower == "xberg" {
             return true;
         }
 
@@ -124,9 +124,9 @@ impl SubprocessAdapter {
     /// Create a new subprocess adapter
     ///
     /// # Arguments
-    /// * `name` - Framework name (e.g., "kreuzberg-python")
+    /// * `name` - Framework name (e.g., "xberg-python")
     /// * `command` - Path to executable (e.g., "python3", "node")
-    /// * `args` - Base arguments (e.g., ["-m", "kreuzberg"])
+    /// * `args` - Base arguments (e.g., ["-m", "xberg"])
     /// * `env` - Environment variables
     /// * `supported_formats` - List of file extensions this framework can process (e.g., ["pdf", "docx"])
     pub fn new(
@@ -155,9 +155,9 @@ impl SubprocessAdapter {
     /// allowing the subprocess to use its native batch API for parallel processing.
     ///
     /// # Arguments
-    /// * `name` - Framework name (e.g., "kreuzberg-python-batch")
+    /// * `name` - Framework name (e.g., "xberg-python-batch")
     /// * `command` - Path to executable (e.g., "python3", "node")
-    /// * `args` - Base arguments (e.g., ["-m", "kreuzberg"])
+    /// * `args` - Base arguments (e.g., ["-m", "xberg"])
     /// * `env` - Environment variables
     /// * `supported_formats` - List of file extensions this framework can process
     pub fn with_batch_support(
@@ -436,7 +436,7 @@ impl SubprocessAdapter {
             ));
         }
 
-        // kreuzberg-cli envelope shape: {result: {content, metadata, ...}, extraction_time_ms: f64}.
+        // xberg-cli envelope shape: {result: {content, metadata, ...}, extraction_time_ms: f64}.
         // Unwrap to the flat shape competitors emit so downstream parsing is uniform.
         let parsed = if let Some(inner) = raw.get("result").filter(|v| v.is_object()) {
             let mut flat = inner.clone();

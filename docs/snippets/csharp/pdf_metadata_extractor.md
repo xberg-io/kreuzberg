@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var processor = new PdfMetadataExtractor();
-KreuzbergLib.RegisterPostProcessor(processor);
+XbergLib.RegisterPostProcessor(processor);
 
 public class PdfMetadataExtractor : IPostProcessor
 {

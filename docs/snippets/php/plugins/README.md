@@ -2,7 +2,7 @@
 
 ## Status: Not Yet Implemented
 
-The PHP plugin system for Kreuzberg is **deferred to a future version**. This includes:
+The PHP plugin system for Xberg is **deferred to a future version**. This includes:
 
 - Custom OCR backend registration
 - Post-processor plugins
@@ -24,34 +24,34 @@ The following functions exist in Python, Ruby, Node.js, and other bindings but a
 
 ### OCR Backend Registration
 
-- `kreuzberg_register_ocr_backend()`
-- `kreuzberg_unregister_ocr_backend()`
-- `kreuzberg_list_ocr_backends()`
+- `xberg_register_ocr_backend()`
+- `xberg_unregister_ocr_backend()`
+- `xberg_list_ocr_backends()`
 
 ### Post-Processor Plugins
 
-- `kreuzberg_register_post_processor()`
-- `kreuzberg_unregister_post_processor()`
-- `kreuzberg_list_post_processors()`
-- `kreuzberg_clear_post_processors()`
+- `xberg_register_post_processor()`
+- `xberg_unregister_post_processor()`
+- `xberg_list_post_processors()`
+- `xberg_clear_post_processors()`
 
 ### Validator Plugins
 
-- `kreuzberg_register_validator()`
-- `kreuzberg_unregister_validator()`
-- `kreuzberg_list_validators()`
-- `kreuzberg_clear_validators()`
+- `xberg_register_validator()`
+- `xberg_unregister_validator()`
+- `xberg_list_validators()`
+- `xberg_clear_validators()`
 
 ### Custom Extractor Plugins
 
-- `kreuzberg_register_extractor()`
-- `kreuzberg_unregister_extractor()`
-- `kreuzberg_list_extractors()`
-- `kreuzberg_clear_extractors()`
+- `xberg_register_extractor()`
+- `xberg_unregister_extractor()`
+- `xberg_list_extractors()`
+- `xberg_clear_extractors()`
 
 ### Plugin Testing
 
-- `kreuzberg_test_plugin()`
+- `xberg_test_plugin()`
 
 ## Workarounds
 
@@ -66,8 +66,8 @@ Instead of registering a post-processor plugin, process the extraction result di
 
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Types\ExtractionResult;
+use Xberg\Xberg;
+use Xberg\Types\ExtractionResult;
 
 function postProcessResult(ExtractionResult $result): ExtractionResult
 {
@@ -85,8 +85,8 @@ function postProcessResult(ExtractionResult $result): ExtractionResult
     );
 }
 
-$kreuzberg = new Kreuzberg();
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg();
+$result = $xberg->extractFile('document.pdf');
 $processed = postProcessResult($result);
 ```
 
@@ -99,9 +99,9 @@ PHP bindings support all built-in OCR backends:
 
 declare(strict_types=1);
 
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Kreuzberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Xberg;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -110,8 +110,8 @@ $config = new ExtractionConfig(
     ),
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned.pdf');
 ```
 
 ### 3. Validate Results in PHP
@@ -123,8 +123,8 @@ Instead of validator plugins, validate extraction results directly:
 
 declare(strict_types=1);
 
-use Kreuzberg\Exceptions\ValidationException;
-use Kreuzberg\Types\ExtractionResult;
+use Xberg\Exceptions\ValidationException;
+use Xberg\Types\ExtractionResult;
 
 function validateResult(ExtractionResult $result): void
 {
@@ -137,24 +137,24 @@ function validateResult(ExtractionResult $result): void
     }
 }
 
-$result = $kreuzberg->extractFile('document.pdf');
+$result = $xberg->extractFile('document.pdf');
 validateResult($result);
 ```
 
-### 4. Extend the Kreuzberg Class
+### 4. Extend the Xberg Class
 
 For application-specific functionality, extend the main class:
 
-```php title="Extend Kreuzberg Class"
+```php title="Extend Xberg Class"
 <?php
 
 declare(strict_types=1);
 
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Kreuzberg as BaseKreuzberg;
-use Kreuzberg\Types\ExtractionResult;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Xberg as BaseXberg;
+use Xberg\Types\ExtractionResult;
 
-final class CustomKreuzberg extends BaseKreuzberg
+final class CustomXberg extends BaseXberg
 {
     public function extractAndValidate(
         string $path,
@@ -217,15 +217,15 @@ Despite the deferred plugin system, PHP bindings achieve **95% feature parity** 
 
 For questions about the plugin system or to request early access when available:
 
-- GitHub Issues: <https://github.com/xberg-io/kreuzberg/issues>
-- Discussions: <https://github.com/xberg-io/kreuzberg/discussions>
+- GitHub Issues: <https://github.com/xberg-io/xberg/issues>
+- Discussions: <https://github.com/xberg-io/xberg/discussions>
 
 ## Contributing
 
 If you're interested in helping implement the plugin system for PHP:
 
-1. Review the plugin implementations in Python (`crates/kreuzberg-py/src/plugins.rs`)
+1. Review the plugin implementations in Python (`crates/xberg-py/src/plugins.rs`)
 2. Review ext-php-rs callback documentation
-3. Open a discussion on the Kreuzberg GitHub repository
+3. Open a discussion on the Xberg GitHub repository
 
 We welcome contributions!

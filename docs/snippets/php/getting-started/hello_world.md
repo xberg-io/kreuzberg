@@ -2,8 +2,8 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, null);
+$result = Xberg::extractFileSync('document.pdf', null, null);
 echo "Hello, " . substr($result->getContent(), 0, 50) . "\n";
 ```

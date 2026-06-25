@@ -1,13 +1,13 @@
 ```java title="Document Structure Config (Java)"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ExtractionResult;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ExtractionResult;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .includeDocumentStructure(true)
     .build();
 
-ExtractionResult result = Kreuzberg.extractFileSync("document.pdf", config);
+ExtractionResult result = Xberg.extractFileSync("document.pdf", config);
 
 if (result.getDocumentStructure().isPresent()) {
     var document = result.getDocumentStructure().get();

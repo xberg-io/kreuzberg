@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.PostProcessor;
-import dev.kreuzberg.KreuzbergException;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.PostProcessor;
+import dev.xberg.XbergException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,15 +34,15 @@ public class PdfMetadataExtractorExample {
         };
 
         try {
-            Kreuzberg.registerPostProcessor("pdf-metadata-extractor", pdfMetadata, 50);
+            Xberg.registerPostProcessor("pdf-metadata-extractor", pdfMetadata, 50);
 
             logger.info("PDF metadata extractor initialized");
 
-            ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+            ExtractionResult result = Xberg.extractFile("document.pdf");
             System.out.println("PDF processed: " + result.getMetadata().get("pdf_processed"));
 
             logger.info("Processed " + processedCount.get() + " PDFs");
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             e.printStackTrace();
         }
     }

@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure PDF-specific extraction options
 # Extract annotations, metadata, and flatten forms for comprehensive document processing
@@ -16,7 +16,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("form_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("form_document.pdf", nil, config)
 
 IO.puts("PDF Extraction Complete:")
 IO.puts("Content length: #{byte_size(result.content)} bytes")

@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Configure OCR settings via a plain list mirroring the config JSON.
 config <- list(

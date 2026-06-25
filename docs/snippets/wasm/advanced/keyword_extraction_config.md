@@ -1,5 +1,5 @@
 ```typescript title="WASM - Keyword Extraction Setup"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -35,7 +35,7 @@ console.log(`Extracted keywords: ${Array.from(keywords).slice(0, 10).join(", ")}
 ```
 
 ```typescript title="WASM - Keyword Filtering"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

@@ -1,3 +1,3 @@
 ```bash title="Bash"
-kreuzberg extract scanned.pdf --ocr true
+xberg extract scanned.pdf --ocr true
 ```

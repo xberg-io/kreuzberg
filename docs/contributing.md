@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Thank you for your interest in contributing to Kreuzberg! This guide covers everything you need — from picking an issue to getting your pull request merged.
+Thank you for your interest in contributing to Xberg! This guide covers everything you need — from picking an issue to getting your pull request merged.
 
 ---
 
@@ -9,8 +9,8 @@ Thank you for your interest in contributing to Kreuzberg! This guide covers ever
 Welcome! Here's how to get started:
 
 1. **Pick an issue** that matches your experience level:
-   - [Good first issue](https://github.com/xberg-io/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
-   - [Help wanted](https://github.com/xberg-io/kreuzberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
+   - [Good first issue](https://github.com/xberg-io/xberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks ideal for newcomers
+   - [Help wanted](https://github.com/xberg-io/xberg/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — tasks where we'd especially appreciate community help
 2. **Read through the issue** and any existing comments
 3. **Leave a comment** letting maintainers know you'd like to work on it
 4. **Ask questions** — we're here to help!
@@ -20,7 +20,7 @@ Congratulations — that's really all it takes to start contributing! Fork, fix,
 !!! Tip
 Start small. A focused contribution you understand well is more valuable than an ambitious one that stalls.
 
-Want to propose a larger change or new feature? [Open an issue](https://github.com/xberg-io/kreuzberg/issues) to discuss it with maintainers first.
+Want to propose a larger change or new feature? [Open an issue](https://github.com/xberg-io/xberg/issues) to discuss it with maintainers first.
 
 ---
 
@@ -83,9 +83,9 @@ task node:build
 Fork the repository on GitHub, then clone your fork:
 
 ```bash title="Terminal"
-git clone git@github.com:<your-username>/kreuzberg.git
-cd kreuzberg
-git remote add upstream https://github.com/xberg-io/kreuzberg.git
+git clone git@github.com:<your-username>/xberg.git
+cd xberg
+git remote add upstream https://github.com/xberg-io/xberg.git
 ```
 
 ### 2. Create a branch
@@ -135,11 +135,11 @@ When adding user-facing features, add or update pages under `docs/` and referenc
 
 ### Finding issues
 
-Browse the [issue tracker](https://github.com/xberg-io/kreuzberg/issues) and filter by labels: `good first issue`, `help wanted`, `bug`, or `enhancement`.
+Browse the [issue tracker](https://github.com/xberg-io/xberg/issues) and filter by labels: `good first issue`, `help wanted`, `bug`, or `enhancement`.
 
 ### Reporting a bug
 
-Include: what you expected, what happened (with error output), steps to reproduce, your environment (OS, language version, Kreuzberg version), and a minimal sample file if applicable.
+Include: what you expected, what happened (with error output), steps to reproduce, your environment (OS, language version, Xberg version), and a minimal sample file if applicable.
 
 ### Suggesting improvements
 
@@ -187,14 +187,14 @@ Don't worry about failing CI on your first PR. Maintainers will help you resolve
 
 ## CI/CD
 
-Kreuzberg ships six GitHub Actions workflows under `.github/workflows/`. The first two run automatically on contributor PRs; the rest are manual or release-driven and contributors do not need to invoke them.
+Xberg ships six GitHub Actions workflows under `.github/workflows/`. The first two run automatically on contributor PRs; the rest are manual or release-driven and contributors do not need to invoke them.
 
 | Workflow              | Trigger                                     | What it does                                                                                                                                                          |
 | --------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ci.yaml`             | Push to `main`, every PR                    | Clippy, fmt, unit + integration tests, type checks for the Python and TypeScript bindings. Runs on `ubuntu-24.04-arm`. This is the canonical "PR is mergeable" check. |
 | `docs.yaml`           | Push/PR touching `docs/**`, manual dispatch | Builds the docs site in strict mode, validates `--8<--` snippet includes, runs prose linting, and deploys to GitHub Pages from `main`.                                |
 | `publish.yaml`        | Manual dispatch, GitHub release event       | Publishes to PyPI, npm, crates.io, Docker Hub, Homebrew, and other registries. Not run on PRs.                                                                        |
-| `publish-docker.yaml` | Manual dispatch, GitHub release event       | Builds and publishes the Kreuzberg Docker images.                                                                                                                     |
+| `publish-docker.yaml` | Manual dispatch, GitHub release event       | Builds and publishes the Xberg Docker images.                                                                                                                     |
 | `benchmarks.yaml`     | Manual dispatch only                        | Three-iteration performance run with quality metrics on `ubuntu-24.04-arm`. Used to compare proposed changes against `main`.                                          |
 | `profiling.yaml`      | Manual dispatch only                        | Generates flamegraphs for six fixture types (small/medium PDFs, simple DOCX, and others) for performance investigations.                                              |
 
@@ -214,7 +214,7 @@ If a check is reporting "expected check missing" rather than failing outright, t
 - **Rust:** Edition 2024, no `unwrap()` in production paths, document all public items, `SAFETY` comments for `unsafe` blocks
 - **Python:** `frozen=True` / `slots=True` dataclasses, function-based pytest, follow Ruff and Mypy rules
 - **TypeScript:** Strict types, no `any`, bindings in `packages/typescript/src`
-- **Ruby:** No global state outside `Kreuzberg` module, panic-free native bridge, follow RuboCop
+- **Ruby:** No global state outside `Xberg` module, panic-free native bridge, follow RuboCop
 - **Go / Java / C#:** Follow standard language conventions and project linters
 
 **Testing:** language-specific tests live in each package; shared E2E behavior belongs in `e2e/` fixtures. When adding features, regenerate with `task e2e:<lang>:generate`.
@@ -223,9 +223,9 @@ If a check is reporting "expected check missing" rather than failing outright, t
 
 ## Community and support
 
-- **Star the repo:** [Give us a star on GitHub](https://github.com/xberg-io/kreuzberg) — it helps others discover Kreuzberg!
+- **Star the repo:** [Give us a star on GitHub](https://github.com/xberg-io/xberg) — it helps others discover Xberg!
 - **Discord:** [Join our community](https://discord.gg/xt9WY3GnKR)
-- **Issues:** [GitHub Issues](https://github.com/xberg-io/kreuzberg/issues)
-- **License:** [Elastic License 2.0 (ELv2)](https://github.com/xberg-io/kreuzberg/blob/main/LICENSE)
+- **Issues:** [GitHub Issues](https://github.com/xberg-io/xberg/issues)
+- **License:** [Elastic License 2.0 (ELv2)](https://github.com/xberg-io/xberg/blob/main/LICENSE)
 
-Thank you for contributing to Kreuzberg!
+Thank you for contributing to Xberg!

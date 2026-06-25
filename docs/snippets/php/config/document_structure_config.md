@@ -1,11 +1,11 @@
 ```php title="Document Structure Config (PHP)"
 <?php
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\Kreuzberg;
+use Xberg\ExtractionConfig;
+use Xberg\Xberg;
 
 $config = new ExtractionConfig(includeDocumentStructure: true);
 
-$result = Kreuzberg::extractFileSync('document.pdf', $config);
+$result = Xberg::extractFileSync('document.pdf', $config);
 
 if ($result->document !== null) {
     foreach ($result->document->nodes as $node) {

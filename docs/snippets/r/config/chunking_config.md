@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Example 1: Basic character-based chunking
 config <- list(
@@ -17,7 +17,7 @@ for (i in seq_len(min(3L, num_chunks))) {
 ```
 
 ```r title="R - Markdown chunker with token-based sizing"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   chunking = list(
@@ -35,7 +35,7 @@ cat(sprintf("Markdown document split into %d chunks\n", length(result$chunks)))
 ```
 
 ```r title="R - Prepend heading context"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   chunking = list(

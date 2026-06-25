@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // Custom-plugin construction (createXxxDartImpl) is unreachable from Dart
@@ -7,17 +7,17 @@ Future<void> main() async {
   // so this snippet exercises the lifecycle against the *built-in* renderer
   // registry (markdown / html / djot / plain).
 
-  var renderers = await KreuzbergBridge.listRenderers();
+  var renderers = await XbergBridge.listRenderers();
   print('Renderers before unregister: $renderers');
 
   // Unregister a single renderer by name.
-  await KreuzbergBridge.unregisterRenderer('plain');
-  renderers = await KreuzbergBridge.listRenderers();
+  await XbergBridge.unregisterRenderer('plain');
+  renderers = await XbergBridge.listRenderers();
   print('Renderers after unregister: $renderers');
 
   // Bulk-clear all renderers (including remaining built-ins).
-  await KreuzbergBridge.clearRenderers();
-  renderers = await KreuzbergBridge.listRenderers();
+  await XbergBridge.clearRenderers();
+  renderers = await XbergBridge.listRenderers();
   print('Renderers after clear: $renderers');
 }
 ```

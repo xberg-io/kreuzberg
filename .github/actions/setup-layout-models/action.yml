@@ -32,15 +32,15 @@ runs:
     - name: Setup cache directory
       shell: bash
       run: |
-        mkdir -p ~/.cache/kreuzberg/layout
-        echo "Cache directory: $HOME/.cache/kreuzberg/layout"
+        mkdir -p ~/.cache/xberg/layout
+        echo "Cache directory: $HOME/.cache/xberg/layout"
 
     - name: Restore layout models from cache
       if: inputs.cache-enabled == 'true'
       uses: actions/cache@v5
       id: cache-models
       with:
-        path: ~/.cache/kreuzberg/layout
+        path: ~/.cache/xberg/layout
         key: ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-rtdetr_3bf2fb0e+tatr_c11f4033
         restore-keys: |
           ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-
@@ -51,8 +51,8 @@ runs:
       if: contains(inputs.models, 'rtdetr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/layout-models/resolve/main/rtdetr/model.onnx"
-        CACHE_DIR="$HOME/.cache/kreuzberg/layout"
+        MODEL_URL="https://huggingface.co/Xberg/layout-models/resolve/main/rtdetr/model.onnx"
+        CACHE_DIR="$HOME/.cache/xberg/layout"
         MODEL_DIR="$CACHE_DIR/rtdetr"
         MODEL_FILE="$MODEL_DIR/model.onnx"
 
@@ -82,7 +82,7 @@ runs:
       if: contains(inputs.models, 'rtdetr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_FILE="$HOME/.cache/kreuzberg/layout/rtdetr/model.onnx"
+        MODEL_FILE="$HOME/.cache/xberg/layout/rtdetr/model.onnx"
         EXPECTED="3bf2fb0ee6df87435b7ae47f0f3930ec3dc97ec56fd824acc6d57bc7a6b89ef2"
 
         if command -v sha256sum &>/dev/null; then
@@ -104,8 +104,8 @@ runs:
       if: contains(inputs.models, 'tatr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/layout-models/resolve/main/tatr/model.onnx"
-        CACHE_DIR="$HOME/.cache/kreuzberg/layout"
+        MODEL_URL="https://huggingface.co/Xberg/layout-models/resolve/main/tatr/model.onnx"
+        CACHE_DIR="$HOME/.cache/xberg/layout"
         MODEL_DIR="$CACHE_DIR/tatr"
         MODEL_FILE="$MODEL_DIR/tatr.onnx"
 
@@ -135,7 +135,7 @@ runs:
       if: contains(inputs.models, 'tatr') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_FILE="$HOME/.cache/kreuzberg/layout/tatr/tatr.onnx"
+        MODEL_FILE="$HOME/.cache/xberg/layout/tatr/tatr.onnx"
         EXPECTED="c11f4033da75e9c4d41c403ef356e89caa0a37a7d111b55461e7d5ba856bb6b6"
 
         if command -v sha256sum &>/dev/null; then
@@ -157,7 +157,7 @@ runs:
       id: verify-models
       shell: bash
       run: |
-        CACHE_DIR="$HOME/.cache/kreuzberg/layout"
+        CACHE_DIR="$HOME/.cache/xberg/layout"
         AVAILABLE_MODELS=()
         TOTAL_SIZE=0
 
@@ -191,7 +191,7 @@ runs:
       id: set-outputs
       shell: bash
       run: |
-        CACHE_DIR="$HOME/.cache/kreuzberg/layout"
+        CACHE_DIR="$HOME/.cache/xberg/layout"
         echo "cache-dir=$CACHE_DIR" >> $GITHUB_OUTPUT
-        echo "KREUZBERG_CACHE_DIR=$HOME/.cache/kreuzberg" >> $GITHUB_ENV
+        echo "XBERG_CACHE_DIR=$HOME/.cache/xberg" >> $GITHUB_ENV
         echo "Layout model cache configured at: $CACHE_DIR"

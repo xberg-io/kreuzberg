@@ -5,7 +5,7 @@ import 'dart:io';
 
 Future<void> main() async {
   final process = await Process.start(
-    'kreuzberg',
+    'xberg',
     <String>['mcp'],
     mode: ProcessStartMode.inheritStdio,
   );

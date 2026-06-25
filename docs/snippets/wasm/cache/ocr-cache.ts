@@ -1,4 +1,4 @@
-import { extractBytes, initWasm, TesseractWasmBackend } from "@kreuzberg/wasm";
+import { extractBytes, initWasm, TesseractWasmBackend } from "@xberg/wasm";
 
 async function demonstrateOcrCaching() {
   await initWasm();

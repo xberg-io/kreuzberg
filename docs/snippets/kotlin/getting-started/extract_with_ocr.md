@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -14,7 +14,7 @@ fun main() {
         .withForceOcr(true)
         .build()
 
-    val result = dev.kreuzberg.Kreuzberg.extractFileSync(Paths.get("scanned.pdf"), null, config)
+    val result = dev.xberg.Xberg.extractFileSync(Paths.get("scanned.pdf"), null, config)
     println(result.content())
     result.detectedLanguages()?.let { println("Detected languages: $it") }
 }

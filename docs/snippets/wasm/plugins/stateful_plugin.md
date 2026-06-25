@@ -3,7 +3,7 @@
 Create a stateful post-processor that maintains state across multiple extraction calls.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extractBytes } from "kreuzberg-wasm";
+import init, { registerPostProcessor, extractBytes } from "xberg-wasm";
 
 await init();
 

@@ -20,8 +20,8 @@ mkdir -p verify-temp
 tar -xzf "${ARTIFACT}" -C verify-temp
 
 REQUIRED_FILES=(
-  "kreuzberg-ffi/include/kreuzberg.h"
-  "kreuzberg-ffi/share/pkgconfig/kreuzberg-ffi.pc"
+  "xberg-ffi/include/xberg.h"
+  "xberg-ffi/share/pkgconfig/xberg-ffi.pc"
 )
 
 echo ""
@@ -37,11 +37,11 @@ done
 
 echo ""
 echo "=== Checking static library (required for Go) ==="
-STATIC_LIB="verify-temp/kreuzberg-ffi/lib/libkreuzberg_ffi.a"
+STATIC_LIB="verify-temp/xberg-ffi/lib/libxberg_ffi.a"
 if [ -f "$STATIC_LIB" ]; then
-  echo "✓ Found static library: libkreuzberg_ffi.a ($(du -h "$STATIC_LIB" | cut -f1))"
+  echo "✓ Found static library: libxberg_ffi.a ($(du -h "$STATIC_LIB" | cut -f1))"
 else
-  echo "✗ Missing static library: libkreuzberg_ffi.a"
+  echo "✗ Missing static library: libxberg_ffi.a"
   exit 1
 fi
 
@@ -49,26 +49,26 @@ echo ""
 echo "=== Checking platform-specific dynamic libraries (optional) ==="
 PLATFORM_LIBS_FOUND=0
 
-if find verify-temp/kreuzberg-ffi/lib -name "*.so" -o -name "*.so.*" 2>/dev/null | grep -q .; then
-  LIBKREUZBERG=$(find verify-temp/kreuzberg-ffi/lib -name "libkreuzberg_ffi.so*" 2>/dev/null | head -1)
-  if [ -n "$LIBKREUZBERG" ]; then
-    echo "✓ Found Linux dynamic library: $(basename "$LIBKREUZBERG")"
+if find verify-temp/xberg-ffi/lib -name "*.so" -o -name "*.so.*" 2>/dev/null | grep -q .; then
+  LIBXBERG=$(find verify-temp/xberg-ffi/lib -name "libxberg_ffi.so*" 2>/dev/null | head -1)
+  if [ -n "$LIBXBERG" ]; then
+    echo "✓ Found Linux dynamic library: $(basename "$LIBXBERG")"
     PLATFORM_LIBS_FOUND=1
   fi
 fi
 
-if find verify-temp/kreuzberg-ffi/lib -name "*.dylib" 2>/dev/null | grep -q .; then
-  LIBKREUZBERG=$(find verify-temp/kreuzberg-ffi/lib -name "libkreuzberg_ffi.dylib" 2>/dev/null | head -1)
-  if [ -n "$LIBKREUZBERG" ]; then
-    echo "✓ Found macOS dynamic library: $(basename "$LIBKREUZBERG")"
+if find verify-temp/xberg-ffi/lib -name "*.dylib" 2>/dev/null | grep -q .; then
+  LIBXBERG=$(find verify-temp/xberg-ffi/lib -name "libxberg_ffi.dylib" 2>/dev/null | head -1)
+  if [ -n "$LIBXBERG" ]; then
+    echo "✓ Found macOS dynamic library: $(basename "$LIBXBERG")"
     PLATFORM_LIBS_FOUND=1
   fi
 fi
 
-if find verify-temp/kreuzberg-ffi/lib -name "*.dll" 2>/dev/null | grep -q .; then
-  LIBKREUZBERG=$(find verify-temp/kreuzberg-ffi/lib -name "kreuzberg_ffi.dll" 2>/dev/null | head -1)
-  if [ -n "$LIBKREUZBERG" ]; then
-    echo "✓ Found Windows dynamic library: $(basename "$LIBKREUZBERG")"
+if find verify-temp/xberg-ffi/lib -name "*.dll" 2>/dev/null | grep -q .; then
+  LIBXBERG=$(find verify-temp/xberg-ffi/lib -name "xberg_ffi.dll" 2>/dev/null | head -1)
+  if [ -n "$LIBXBERG" ]; then
+    echo "✓ Found Windows dynamic library: $(basename "$LIBXBERG")"
     PLATFORM_LIBS_FOUND=1
   fi
 fi

@@ -9,7 +9,7 @@ block (with ``<text:changed-region>`` children for each revision) into
 markers around the live insertion text.
 
 The shape mirrors what
-``crates/kreuzberg/src/extractors/odt.rs::parse_tracked_changes`` consumes:
+``crates/xberg/src/extractors/odt.rs::parse_tracked_changes`` consumes:
 ``office:change-info`` -> ``dc:creator`` + ``dc:date``, child element
 ``insertion`` / ``deletion`` / ``format-change`` drives ``RevisionKind``.
 """

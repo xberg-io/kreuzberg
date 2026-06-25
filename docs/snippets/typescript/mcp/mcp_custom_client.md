@@ -2,7 +2,7 @@
 import { spawn } from "child_process";
 import * as readline from "readline";
 
-const mcpProcess = spawn("kreuzberg", ["mcp"]);
+const mcpProcess = spawn("xberg", ["mcp"]);
 
 const rl = readline.createInterface({
   input: mcpProcess.stdout,

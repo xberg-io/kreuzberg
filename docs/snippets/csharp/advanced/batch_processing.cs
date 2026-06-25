@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 
 class Program
@@ -24,13 +24,13 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var result = await KreuzbergLib.ExtractFileAsync(filePath, config);
+                var result = await XbergLib.ExtractFileAsync(filePath, config);
                 batchResults.Add(result);
                 Console.WriteLine($"Processed {filePath}: {result.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                KreuzbergLib.ExtractFileAsync(path, config)
+                XbergLib.ExtractFileAsync(path, config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);
@@ -38,7 +38,7 @@ class Program
             var totalChars = results.Sum(r => r.Content.Length);
             Console.WriteLine($"Total extracted: {totalChars} characters");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Batch processing error: {ex.Message}");
         }

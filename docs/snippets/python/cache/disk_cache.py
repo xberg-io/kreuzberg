@@ -1,8 +1,8 @@
 ```python title="disk_cache.py"
 from pathlib import Path
-from kreuzberg import Kreuzberg, ExtractionConfig, CacheConfig
+from xberg import Xberg, ExtractionConfig, CacheConfig
 
-cache_dir = Path.home() / ".cache" / "kreuzberg"
+cache_dir = Path.home() / ".cache" / "xberg"
 cache_dir.mkdir(parents=True, exist_ok=True)
 
 config = ExtractionConfig(
@@ -15,21 +15,21 @@ config = ExtractionConfig(
     ),
 )
 
-kreuzberg = Kreuzberg(config)
+xberg = Xberg(config)
 
 print("First extraction (will be cached)...")
-result1 = kreuzberg.extract_file("document.pdf")
+result1 = xberg.extract_file("document.pdf")
 print(f"  - Content length: {len(result1.content)}")
 print(f"  - Cached: {result1.metadata.get('was_cached', False)}")
 
 print("\nSecond extraction (from cache)...")
-result2 = kreuzberg.extract_file("document.pdf")
+result2 = xberg.extract_file("document.pdf")
 print(f"  - Content length: {len(result2.content)}")
 print(f"  - Cached: {result2.metadata.get('was_cached', False)}")
 
 print(f"\nResults are identical: {result1.content == result2.content}")
 
-cache_stats = kreuzberg.get_cache_stats()
+cache_stats = xberg.get_cache_stats()
 print(f"\nCache Statistics:")
 print(f"  - Total entries: {cache_stats.get('total_entries', 0)}")
 print(f"  - Cache size: {cache_stats.get('cache_size_bytes', 0) / 1024 / 1024:.1f} MB")

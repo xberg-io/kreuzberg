@@ -78,11 +78,11 @@ setup_rust_ffi_paths() {
 }
 
 verify_pkg_config() {
-  if pkg-config --exists kreuzberg-ffi 2>/dev/null; then
+  if pkg-config --exists xberg-ffi 2>/dev/null; then
     return 0
   else
     {
-      echo "Error: pkg-config cannot find kreuzberg-ffi"
+      echo "Error: pkg-config cannot find xberg-ffi"
       echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-<not set>}"
       echo "Run 'pkg-config --list-all' to see available packages"
     } >&2
@@ -97,13 +97,13 @@ setup_go_paths_windows() {
   local gnu_target="${repo_root}/target/x86_64-pc-windows-gnu/release"
   local release_target="${repo_root}/target/release"
 
-  export PKG_CONFIG_PATH="${repo_root}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH:-}"
+  export PKG_CONFIG_PATH="${repo_root}/crates/xberg-ffi:${PKG_CONFIG_PATH:-}"
 
   export PATH="${gnu_target};${release_target};${PATH:-}"
 
   export CGO_ENABLED=1
-  export CGO_CFLAGS="-I${repo_root}/crates/kreuzberg-ffi/include"
-  export CGO_LDFLAGS="-L${gnu_target} -L${release_target} -lkreuzberg_ffi -static-libgcc -static-libstdc++"
+  export CGO_CFLAGS="-I${repo_root}/crates/xberg-ffi/include"
+  export CGO_LDFLAGS="-L${gnu_target} -L${release_target} -lxberg_ffi -static-libgcc -static-libstdc++"
 
   echo "✓ Configured Go cgo environment for Windows"
 }
@@ -113,7 +113,7 @@ setup_go_paths() {
   local repo_root="${1:-${REPO_ROOT:-}}"
   [ -z "$repo_root" ] && return 0
 
-  local pc_path="${repo_root}/crates/kreuzberg-ffi/kreuzberg-ffi.pc"
+  local pc_path="${repo_root}/crates/xberg-ffi/xberg-ffi.pc"
   if [ ! -f "$pc_path" ]; then
     local version=""
     version="$(sed -n 's/^version = \"\\(.*\\)\"/\\1/p' "${repo_root}/Cargo.toml" | head -n 1 || true)"
@@ -138,33 +138,33 @@ setup_go_paths() {
 prefix=${repo_root}
 exec_prefix=\${prefix}
 libdir=${repo_root}/target/release
-includedir=${repo_root}/crates/kreuzberg-ffi
+includedir=${repo_root}/crates/xberg-ffi
 
-Name: kreuzberg-ffi
-Description: C FFI bindings for Kreuzberg document intelligence library
+Name: xberg-ffi
+Description: C FFI bindings for Xberg document intelligence library
 Version: ${version}
 URL: https://xberg.io
-Libs: -L\${libdir} -lkreuzberg_ffi
+Libs: -L\${libdir} -lxberg_ffi
 Libs.private: ${libs_private}
 Cflags: -I\${includedir}
 EOF
   fi
 
-  export PKG_CONFIG_PATH="${repo_root}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH:-}"
+  export PKG_CONFIG_PATH="${repo_root}/crates/xberg-ffi:${PKG_CONFIG_PATH:-}"
 
   export CGO_ENABLED=1
-  export CGO_CFLAGS="-I${repo_root}/crates/kreuzberg-ffi/include"
+  export CGO_CFLAGS="-I${repo_root}/crates/xberg-ffi/include"
 
   local platform="${RUNNER_OS:-$(uname -s)}"
   case "$platform" in
   Linux)
     export LD_LIBRARY_PATH="${repo_root}/target/release:${LD_LIBRARY_PATH:-}"
-    export CGO_LDFLAGS="-L${repo_root}/target/release -lkreuzberg_ffi -Wl,-rpath,${repo_root}/target/release"
+    export CGO_LDFLAGS="-L${repo_root}/target/release -lxberg_ffi -Wl,-rpath,${repo_root}/target/release"
     ;;
   macOS | Darwin)
     export DYLD_LIBRARY_PATH="${repo_root}/target/release:${DYLD_LIBRARY_PATH:-}"
     export DYLD_FALLBACK_LIBRARY_PATH="${repo_root}/target/release:${DYLD_FALLBACK_LIBRARY_PATH:-}"
-    export CGO_LDFLAGS="-L${repo_root}/target/release -lkreuzberg_ffi -Wl,-rpath,${repo_root}/target/release"
+    export CGO_LDFLAGS="-L${repo_root}/target/release -lxberg_ffi -Wl,-rpath,${repo_root}/target/release"
     ;;
   Windows | MINGW* | MSYS* | CYGWIN*)
     if [ -z "${CGO_LDFLAGS:-}" ] && [ -z "${GITHUB_ENV:-}" ]; then

@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 files <- c("english.pdf", "spanish.pdf", "french.pdf")
 config <- list(language_detection = list(enabled = TRUE))

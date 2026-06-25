@@ -1,5 +1,5 @@
 ```typescript title="WASM - Extract and Score Keywords"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -53,7 +53,7 @@ topKeywords.forEach((kw) => {
 ```
 
 ```typescript title="WASM - Keyword Context Window"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

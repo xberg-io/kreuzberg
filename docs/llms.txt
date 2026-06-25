@@ -1,19 +1,19 @@
-# Kreuzberg
+# Xberg
 
 > High-performance document intelligence library with a Rust core and polyglot SDKs. Extract text, metadata, and structured data from 96 file formats including PDF, DOCX, PPTX, XLSX, HTML, images (with OCR), email, archives, and more.
 
-Kreuzberg provides async/sync APIs, text chunking, language detection, keyword extraction, and an extensible plugin system. It is 10-50x faster than pure-Python alternatives thanks to its Rust core.
+Xberg provides async/sync APIs, text chunking, language detection, keyword extraction, and an extensible plugin system. It is 10-50x faster than pure-Python alternatives thanks to its Rust core.
 
 ## Getting Started
 
-- [Installation](https://docs.xberg.io/getting-started/installation/): Install Kreuzberg for Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, or WebAssembly
+- [Installation](https://docs.xberg.io/getting-started/installation/): Install Xberg for Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, or WebAssembly
 - [Quick Start](https://docs.xberg.io/getting-started/quickstart/): Get started with document extraction in minutes
 
 ## Concepts
 
 - [Architecture](https://docs.xberg.io/concepts/architecture/): Rust core with polyglot bindings architecture
 - [Extraction Pipeline](https://docs.xberg.io/concepts/extraction-pipeline/): How document extraction works
-- [Plugin System](https://docs.xberg.io/concepts/plugin-system/): Extend Kreuzberg with custom extractors and backends
+- [Plugin System](https://docs.xberg.io/concepts/plugin-system/): Extend Xberg with custom extractors and backends
 - [Reranking](https://docs.xberg.io/concepts/reranking/): Query-time document reranking with cross-encoders
 - [MIME Detection](https://docs.xberg.io/guides/extraction/#mime-type-detection): Automatic file format detection
 - [Performance](https://docs.xberg.io/guides/development/#performance): Performance characteristics and optimization
@@ -41,7 +41,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Kubernetes Deployment](https://docs.xberg.io/guides/kubernetes/): Kubernetes deployment guide
 - [API Server](https://docs.xberg.io/guides/api-server/): REST API server setup
 - [Creating Plugins](https://docs.xberg.io/guides/plugins/): Build custom extractor plugins
-- [AI Coding Assistants](https://docs.xberg.io/guides/agent-skills/): Install the plugin with `/plugin marketplace add xberg-io/plugins` then `/plugin install kreuzberg@kreuzberg` — ships agent skills plus an MCP server, works with Claude Code, Codex, Cursor, Gemini, Copilot, and opencode
+- [AI Coding Assistants](https://docs.xberg.io/guides/agent-skills/): Install the plugin with `/plugin marketplace add xberg-io/plugins` then `/plugin install xberg@xberg` — ships agent skills plus an MCP server, works with Claude Code, Codex, Cursor, Gemini, Copilot, and opencode
 - [C# Bindings](https://docs.xberg.io/guides/csharp/): C# binding usage guide
 
 ## CLI
@@ -64,15 +64,15 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Elixir API](https://docs.xberg.io/reference/api-elixir/): Elixir binding reference
 - [C API](https://docs.xberg.io/reference/api-c/): C FFI binding reference
 - [Configuration Reference](https://docs.xberg.io/reference/configuration/): Full configuration options
-- [Environment Variables](https://docs.xberg.io/reference/environment-variables/): KREUZBERG_* environment variable reference
+- [Environment Variables](https://docs.xberg.io/reference/environment-variables/): XBERG_* environment variable reference
 - [File Size Limits](https://docs.xberg.io/reference/file-size-limits/): Upload and processing size limits
 - [Format Support](https://docs.xberg.io/reference/formats/): Supported file formats (96)
 - [Types](https://docs.xberg.io/reference/types/): Type definitions
 - [Errors](https://docs.xberg.io/reference/errors/): Error types and handling
 
-## Kreuzberg Ecosystem
+## Xberg Ecosystem
 
-- [Kreuzberg Cloud](https://docs.kreuzberg.cloud): Managed extraction API with SDKs, dashboards, and observability
+- [Xberg Enterprise](https://enterprise.xberg.io): Managed extraction API with SDKs, dashboards, and observability
 - [kreuzcrawl](https://docs.kreuzcrawl.xberg.io): Web crawling and scraping with HTML to Markdown and headless-Chrome fallback
 - [html-to-markdown](https://docs.html-to-markdown.xberg.io): Fast, lossless HTML to Markdown engine
 - [liter-llm](https://docs.liter-llm.xberg.io): Universal LLM API client with native bindings for 14 languages and 143 providers
@@ -88,4 +88,4 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Features Overview](https://docs.xberg.io/features/): Complete feature list
 - [Changelog](https://docs.xberg.io/CHANGELOG/): Release history
 - [Contributing](https://docs.xberg.io/contributing/): Contribution guidelines
-- [Comparisons](https://docs.xberg.io/comparisons/kreuzberg-vs-unstructured/): Kreuzberg vs alternatives
+- [Comparisons](https://docs.xberg.io/comparisons/xberg-vs-unstructured/): Xberg vs alternatives

@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 document_id <- "doc-001"
 

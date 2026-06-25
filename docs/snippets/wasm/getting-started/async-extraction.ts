@@ -1,4 +1,4 @@
-import { extractBytes, getWasmCapabilities, initWasm } from "@kreuzberg/wasm";
+import { extractBytes, getWasmCapabilities, initWasm } from "@xberg/wasm";
 
 async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   const caps = getWasmCapabilities();

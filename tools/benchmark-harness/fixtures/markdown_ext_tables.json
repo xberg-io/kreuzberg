@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/tables.markdown",
 	"file_type": "markdown",
 	"file_size": 2556,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc"],
+	"expected_frameworks": ["xberg", "docling", "pandoc"],
 	"metadata": {
 		"description": "Markdown document with multiple table examples (MARKDOWN extension)",
 		"category": "markup",

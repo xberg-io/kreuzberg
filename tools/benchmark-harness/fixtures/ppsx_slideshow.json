@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pptx/powerpoint_sample.ppsx",
 	"file_type": "ppsx",
 	"file_size": 37674,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "PowerPoint Slideshow (auto-play presentation)",
 		"category": "presentation",

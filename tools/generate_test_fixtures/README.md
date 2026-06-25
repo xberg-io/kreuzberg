@@ -1,10 +1,10 @@
 # generate-test-fixtures
 
-Deterministic fixture-generation toolkit for kreuzberg integration tests.
+Deterministic fixture-generation toolkit for xberg integration tests.
 
 Produces real on-disk DOCX / ODT / XLSX / PPTX / PDF documents that exercise
 track-changes / revisions / comments / incremental-update / diff / security
-code paths in `kreuzberg::extract` and `kreuzberg::diff::compare`. Every
+code paths in `xberg::extract` and `xberg::diff::compare`. Every
 binary fixture is paired with a `<stem>.gt.json` ground-truth sidecar that
 integration tests load to assert structured expectations.
 
@@ -26,7 +26,7 @@ tools/generate_test_fixtures/
     xlsx_revisions.py      XLSX xl/revisions/revisionHeaders.xml fixtures
     pptx_comments.py       PPTX ppt/comments/comment{N}.xml fixtures
     pdf_incremental.py     PDF base + incremental xref chain fixtures
-    diff_pairs.py          paired v1/v2 inputs for kreuzberg::diff::compare
+    diff_pairs.py          paired v1/v2 inputs for xberg::diff::compare
     security_fixtures.py   DDE / oversized embed / zip-bomb fixtures
   tests/
     test_generation.py     smoke test: each generator runs + GT JSON parses
@@ -34,7 +34,7 @@ tools/generate_test_fixtures/
 
 ## Usage
 
-From the kreuzberg repo root:
+From the xberg repo root:
 
 ```bash
 uv run --directory tools/generate_test_fixtures \
@@ -78,5 +78,5 @@ override to `2024-01-01T00:00:00Z` via `zipfile.ZipInfo`.
 
 The user owns the call on whether these belong in the `test_documents/` git
 submodule. The generator scripts are committed; the binary outputs are not.
-The integration test scaffold (`crates/kreuzberg/tests/`) is marked
+The integration test scaffold (`crates/xberg/tests/`) is marked
 `#[ignore]` until the binaries land.

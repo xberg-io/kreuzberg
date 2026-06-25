@@ -135,7 +135,7 @@ export {
   unregisterRerankerBackend,
   unregisterValidator,
   verifyExcerpt,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 export type {
   AccelerationConfig,
@@ -349,4 +349,4 @@ export type {
   XmlMetadata,
   YakeParams,
   YearRange,
-} from "@kreuzberg/node";
+} from "@xberg/node";

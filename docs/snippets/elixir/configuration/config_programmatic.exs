@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Build configuration dynamically based on runtime conditions
 # Useful for environment-specific settings and feature flags
@@ -37,7 +37,7 @@ end
 # Build configuration based on file type and requirements
 config = ConfigBuilder.build_config(:pdf, true)
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("Dynamic configuration applied")
 IO.puts("Content: #{String.slice(result.content, 0..100)}")

@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::extract_file_sync;
+use xberg::extract_file_sync;
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let result = extract_file_sync("document.pdf", None, &Default::default())?;
     println!("{}", result.content);
     Ok(())

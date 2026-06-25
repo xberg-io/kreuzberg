@@ -1,6 +1,6 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 let config = try extractionConfigFromJson("{}")

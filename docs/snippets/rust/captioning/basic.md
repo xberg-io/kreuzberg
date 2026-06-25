@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, CaptioningConfig, LlmConfig};
+use xberg::{extract_file, ExtractionConfig, CaptioningConfig, LlmConfig};
 
 let config = ExtractionConfig {
     captioning: Some(CaptioningConfig {

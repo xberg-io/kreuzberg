@@ -1,9 +1,9 @@
 ```rust title="Rust"
-use kreuzberg::{
+use xberg::{
     extract_file_sync, ExtractionConfig, ImagePreprocessingConfig, OcrConfig, TesseractConfig,
 };
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let preprocessing = ImagePreprocessingConfig {
         target_dpi: 300,
         denoise: true,

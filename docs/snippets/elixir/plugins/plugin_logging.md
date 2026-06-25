@@ -24,4 +24,4 @@ impl DocumentExtractor for MyExtractor {
 }
 ```
 
-The logs will be captured by Kreuzberg's tracing infrastructure and can be monitored from Elixir through structured logging in the output.
+The logs will be captured by Xberg's tracing infrastructure and can be monitored from Elixir through structured logging in the output.

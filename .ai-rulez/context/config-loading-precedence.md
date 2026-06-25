@@ -9,19 +9,19 @@ summary: Configuration loading precedence for CLI and server modes
 1. Individual CLI flags (`--ocr`, `--output-format`, `--chunk`)
 2. Inline JSON config (`--config-json` or `--config-json-base64`)
 3. Config file (`--config path.toml`)
-4. Auto-discovered config (`kreuzberg.{toml,yaml,json}` in cwd/parents)
+4. Auto-discovered config (`xberg.{toml,yaml,json}` in cwd/parents)
 5. Default values
 
 ## Server/MCP Mode Precedence
 
 1. CLI arguments (`--host`, `--port`)
-2. Environment variables (`KREUZBERG_HOST`, `KREUZBERG_PORT`)
+2. Environment variables (`XBERG_HOST`, `XBERG_PORT`)
 3. Config file `[server]` section
 4. Defaults (`127.0.0.1:8000`)
 
 ## Config File Discovery
 
-Searches current directory and parents for `kreuzberg.toml`, `kreuzberg.yaml`, or `kreuzberg.json`. Stops at first match.
+Searches current directory and parents for `xberg.toml`, `xberg.yaml`, or `xberg.json`. Stops at first match.
 
 ## Inline JSON Config
 
@@ -39,7 +39,7 @@ Use `--config-json-base64` for shell escaping.
 
 ## Config File Formats
 
-**TOML** (`kreuzberg.toml`):
+**TOML** (`xberg.toml`):
 
 ```toml
 use_cache = true

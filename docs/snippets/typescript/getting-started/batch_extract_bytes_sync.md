@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractBytesSync } from "@kreuzberg/node";
+import { batchExtractBytesSync } from "@xberg/node";
 import { readFileSync } from "fs";
 
 const files = ["doc1.pdf", "doc2.docx"];

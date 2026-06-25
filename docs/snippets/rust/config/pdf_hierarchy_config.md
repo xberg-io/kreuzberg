@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
+use xberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         pdf_options: Some(PdfConfig {
             hierarchy: Some(HierarchyConfig {

@@ -5,7 +5,7 @@
 #   docker build -f docker/Dockerfile.musl-ffi \
 #     --output type=local,dest=./dist .
 #
-# Produces libkreuzberg_ffi.so at dist/libkreuzberg_ffi.so
+# Produces libxberg_ffi.so at dist/libxberg_ffi.so
 # =============================================================================
 FROM alpine:3.21 AS builder
 
@@ -41,15 +41,15 @@ ENV RUSTFLAGS="-C target-feature=-crt-static"
 
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
-COPY crates/kreuzberg/ crates/kreuzberg/
-COPY crates/kreuzberg-ffi/ crates/kreuzberg-ffi/
-COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
-COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
-COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
-COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
+COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-ffi/ crates/xberg-ffi/
+COPY crates/xberg-tesseract/ crates/xberg-tesseract/
+COPY crates/xberg-paddle-ocr/ crates/xberg-paddle-ocr/
+COPY crates/xberg-candle-ocr/ crates/xberg-candle-ocr/
+COPY crates/xberg-libheif/ crates/xberg-libheif/
 
 # Remove workspace members that aren't included
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-cli/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-node/d; /xberg-cli/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # Build the FFI shared library.
 #
@@ -61,17 +61,17 @@ RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-cli/
 # (observed on rc.13 + rc.14 + rc.15 Publish runs). Drop both flags: cargo
 # will use Cargo.lock as a resolution hint, download missing crates from the
 # network, and rewrite the in-image lock to match the slimmed manifest.
-RUN cargo build --release --package kreuzberg-ffi && \
-    cp target/release/libkreuzberg_ffi.so /build/libkreuzberg_ffi.so && \
-    strip /build/libkreuzberg_ffi.so
+RUN cargo build --release --package xberg-ffi && \
+    cp target/release/libxberg_ffi.so /build/libxberg_ffi.so && \
+    strip /build/libxberg_ffi.so
 
 # Verify the library
-RUN file /build/libkreuzberg_ffi.so && \
+RUN file /build/libxberg_ffi.so && \
     echo "=== Dynamic dependencies ===" && \
-    readelf -d /build/libkreuzberg_ffi.so 2>/dev/null | grep NEEDED || echo "No dynamic dependencies (fully static)"
+    readelf -d /build/libxberg_ffi.so 2>/dev/null | grep NEEDED || echo "No dynamic dependencies (fully static)"
 
 # =============================================================================
 # Output stage — just the shared library
 # =============================================================================
 FROM scratch
-COPY --from=builder /build/libkreuzberg_ffi.so /libkreuzberg_ffi.so
+COPY --from=builder /build/libxberg_ffi.so /libxberg_ffi.so

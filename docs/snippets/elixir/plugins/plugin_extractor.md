@@ -4,8 +4,8 @@ Custom document extractor implementation is not available in the Elixir binding.
 To implement a custom JSON extractor in Rust:
 
 ```rust
-use kreuzberg::plugins::{DocumentExtractor, Plugin};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig, Metadata};
+use xberg::plugins::{DocumentExtractor, Plugin};
+use xberg::{Result, ExtractionResult, ExtractionConfig, Metadata};
 use async_trait::async_trait;
 use std::path::Path;
 

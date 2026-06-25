@@ -1,8 +1,8 @@
 ```bash title="Bash"
 # Start MCP server via Python CLI proxy
-python -m kreuzberg mcp
+python -m xberg mcp
 
 # With custom config
-python -m kreuzberg mcp --config kreuzberg.toml
+python -m xberg mcp --config xberg.toml
 
 ```

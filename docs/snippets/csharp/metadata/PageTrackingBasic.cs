@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -8,7 +8,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = Kreuzberg.ExtractFileSync("document.pdf", config);
+var result = Xberg.ExtractFileSync("document.pdf", config);
 
 if (result.Pages != null)
 {

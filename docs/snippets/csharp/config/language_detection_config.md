@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -11,7 +11,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFile("document.pdf", null, config);
+var result = await XbergLib.ExtractFile("document.pdf", null, config);
 Console.WriteLine($"Detected language: {result.Language}");
 if (result.DetectedLanguages != null)
 {

@@ -1,4 +1,4 @@
-Use Kreuzberg::{extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig};
+Use Xberg::{extract_file_sync, ExtractionConfig, ChunkingConfig, PageConfig};
 
 Let config = ExtractionConfig {
 chunking: Some(ChunkingConfig {

@@ -1,6 +1,6 @@
 # API Server
 
-Kreuzberg runs as an HTTP REST API server (`kreuzberg serve`) or as an MCP server (`kreuzberg mcp`) for AI agent integration.
+Xberg runs as an HTTP REST API server (`xberg serve`) or as an MCP server (`xberg mcp`) for AI agent integration.
 
 ## HTTP REST API
 
@@ -267,14 +267,14 @@ Errors follow the same shape as `/extract`. A `501` response indicates the serve
 
 ### Configuration
 
-The server discovers `kreuzberg.toml` in the current and parent directories. Pass `--config path/to/file` to use a different file.
+The server discovers `xberg.toml` in the current and parent directories. Pass `--config path/to/file` to use a different file.
 
 | Variable                       | Default | Description                     |
 | ------------------------------ | ------- | ------------------------------- |
-| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100`   | Max upload size in MB           |
-| `KREUZBERG_CORS_ORIGINS`       | `*`     | Comma-separated allowed origins |
+| `XBERG_MAX_UPLOAD_SIZE_MB` | `100`   | Max upload size in MB           |
+| `XBERG_CORS_ORIGINS`       | `*`     | Comma-separated allowed origins |
 
-!!! Warning Default CORS allows all origins. Set `KREUZBERG_CORS_ORIGINS` explicitly in production.
+!!! Warning Default CORS allows all origins. Set `XBERG_CORS_ORIGINS` explicitly in production.
 
 See [Configuration Guide](configuration.md) for all options.
 
@@ -285,8 +285,8 @@ See [Configuration Guide](configuration.md) for all options.
 ### Start
 
 ```bash title="Terminal"
-kreuzberg mcp
-kreuzberg mcp --config kreuzberg.toml
+xberg mcp
+xberg mcp --config xberg.toml
 ```
 
 === "Python"
@@ -346,8 +346,8 @@ All tools accept an optional `config` object. `extract_file` and `extract_bytes`
     ```json
     {
       "mcpServers": {
-        "kreuzberg": {
-          "command": "kreuzberg",
+        "xberg": {
+          "command": "xberg",
           "args": ["mcp"]
         }
       }

@@ -179,11 +179,11 @@ Fast text detection and recognition for 80+ languages across 11 script families.
 | Ukrainian | `uk` | Cyrillic |
 | Vietnamese | `vi` | Latin |
 
-**Installation:** Built into Kreuzberg via the `paddle-ocr` feature. Models download automatically on first use.
+**Installation:** Built into Xberg via the `paddle-ocr` feature. Models download automatically on first use.
 
 **Selection:** Use `--ocr-language` or config `ocr.languages` with a single code or list. Join multiple codes with `+` for CLI: `--ocr-language en+de+zh_hans`.
 
-**Note:** PaddleOCR uses two-letter ISO 639-1 codes and script-specific variants (e.g., `zh_hans` for Simplified Chinese). Consult the [paddleocr-vl backend source](https://github.com/xberg-io/kreuzberg/blob/main/crates/kreuzberg/src/candle_ocr/paddleocr_vl_backend.rs) for the authoritative list.
+**Note:** PaddleOCR uses two-letter ISO 639-1 codes and script-specific variants (e.g., `zh_hans` for Simplified Chinese). Consult the [paddleocr-vl backend source](https://github.com/xberg-io/xberg/blob/main/crates/xberg/src/candle_ocr/paddleocr_vl_backend.rs) for the authoritative list.
 
 ### EasyOCR
 
@@ -191,7 +191,7 @@ High-accuracy deep learning models for 80+ languages. Python-only backend.
 
 EasyOCR supports the same 80+ languages as PaddleOCR plus additional variants. Refer to the [official EasyOCR language list](https://github.com/JaidedAI/EasyOCR?tab=readme-ov-file#supported-languages) for the complete set.
 
-**Installation:** `pip install "kreuzberg[easyocr]"`
+**Installation:** `pip install "xberg[easyocr]"`
 
 **Selection:** Use `--ocr-language` or config `ocr.languages` with language codes from the EasyOCR documentation.
 
@@ -402,7 +402,7 @@ Language selection follows the configuration cascade (highest to lowest priority
 
 1. **CLI flag:** `--ocr-language eng` or `--ocr-language eng+deu`
 2. **Inline JSON config:** `--config-json '{"ocr": {"languages": ["eng", "deu"]}}'`
-3. **Config file:** `kreuzberg.toml` or `kreuzberg.yaml`:
+3. **Config file:** `xberg.toml` or `xberg.yaml`:
 
    ```toml
    [ocr]
@@ -425,7 +425,7 @@ Combine languages with `+` in CLI, or use arrays in config:
 === "CLI"
 
     ```bash
-    kreuzberg extract --ocr-language eng+deu+fra file.pdf
+    xberg extract --ocr-language eng+deu+fra file.pdf
     ```
 
 === "TOML config"
@@ -461,7 +461,7 @@ Install missing language packs for Tesseract via your OS package manager before 
 Use the `language-detection` feature to auto-detect document language, then pass the detected language to OCR:
 
 ```python
-from kreuzberg import Client
+from xberg import Client
 
 client = Client()
 result = client.extract_file(

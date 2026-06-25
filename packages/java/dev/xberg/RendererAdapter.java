@@ -1,0 +1,42 @@
+package dev.xberg;
+
+/**
+ * Path A Bridge implementation for IRenderer.
+ *
+ * Wraps a user-supplied implementation and delegates all method calls.
+ * This adapter conforms to the hand-authored sealed interface.
+ */
+public final class RendererAdapter implements IRenderer {
+    private final IRenderer impl;
+
+    public RendererAdapter(IRenderer impl) {
+        this.impl = impl;
+    }
+
+    @Override
+    public String name() {
+        return impl.name();
+    }
+
+    @Override
+    public String version() {
+        return impl.version();
+    }
+
+    @Override
+    public void initialize() throws Exception {
+        impl.initialize();
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        impl.shutdown();
+    }
+
+    @Override
+    public String render(String doc) throws Exception {
+        return impl.render(doc);
+    }
+
+
+}

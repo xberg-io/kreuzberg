@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -12,7 +12,7 @@ fun main() {
         .withPages(Optional.of(pageConfig))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("document.pdf"), null, config)
 
     val pages = result.pages() ?: return
     for (page in pages) {

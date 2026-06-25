@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
+use Xberg\Config\EmbeddingConfig;
 
 echo "Example 1: Basic Embedding Generation\n";
 echo "=====================================\n";
@@ -28,8 +28,8 @@ $config1 = new ExtractionConfig(
     embedding: new EmbeddingConfig()  
 );
 
-$kreuzberg = new Kreuzberg($config1);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config1);
+$result = $xberg->extractFile('document.pdf');
 
 if ($result->chunks !== null) {
     foreach ($result->chunks as $i => $chunk) {
@@ -150,7 +150,7 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$result5 = (new Kreuzberg($config5))->extractFile('document.pdf');
+$result5 = (new Xberg($config5))->extractFile('document.pdf');
 
 if ($result5->chunks !== null) {
     echo "Processing " . count($result5->chunks) . " chunks with embeddings...\n\n";

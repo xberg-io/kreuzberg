@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFile, ExtractionConfig } from "@kreuzberg/node";
+import { extractFile, ExtractionConfig } from "@xberg/node";
 
 const config = ExtractionConfig.discover();
 if (config) {

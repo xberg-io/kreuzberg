@@ -32,15 +32,15 @@ runs:
     - name: Setup cache directory
       shell: bash
       run: |
-        mkdir -p ~/.cache/kreuzberg/paddle-ocr
-        echo "Cache directory: $HOME/.cache/kreuzberg/paddle-ocr"
+        mkdir -p ~/.cache/xberg/paddle-ocr
+        echo "Cache directory: $HOME/.cache/xberg/paddle-ocr"
 
     - name: Restore PaddleOCR models from cache
       if: inputs.cache-enabled == 'true'
       uses: actions/cache@v5
       id: cache-models
       with:
-        path: ~/.cache/kreuzberg/paddle-ocr
+        path: ~/.cache/xberg/paddle-ocr
         key: ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-v4
         restore-keys: |
           ${{ inputs.cache-key-suffix }}-${{ runner.os }}-${{ runner.arch }}-
@@ -51,8 +51,8 @@ runs:
       if: contains(inputs.models, 'det') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/PP-OCRv5_server_det_infer.onnx"
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/PP-OCRv5_server_det_infer.onnx"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/det"
         MODEL_FILE="$MODEL_DIR/model.onnx"
 
@@ -81,8 +81,8 @@ runs:
       if: contains(inputs.models, 'cls') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/ch_ppocr_mobile_v2.0_cls_infer.onnx"
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/ch_ppocr_mobile_v2.0_cls_infer.onnx"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/cls"
         MODEL_FILE="$MODEL_DIR/model.onnx"
 
@@ -111,8 +111,8 @@ runs:
       if: contains(inputs.models, 'rec') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        MODEL_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/rec/english/model.onnx"
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        MODEL_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/rec/english/model.onnx"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/rec/english"
         MODEL_FILE="$MODEL_DIR/model.onnx"
 
@@ -141,8 +141,8 @@ runs:
       if: contains(inputs.models, 'rec') && steps.cache-models.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        DICT_URL="https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/rec/english/dict.txt"
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        DICT_URL="https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/rec/english/dict.txt"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         MODEL_DIR="$CACHE_DIR/rec/english"
         DICT_FILE="$MODEL_DIR/dict.txt"
 
@@ -171,7 +171,7 @@ runs:
       id: verify-models
       shell: bash
       run: |
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         AVAILABLE_MODELS=()
         TOTAL_SIZE=0
 
@@ -218,14 +218,14 @@ runs:
       id: set-outputs
       shell: bash
       run: |
-        CACHE_DIR="$HOME/.cache/kreuzberg/paddle-ocr"
+        CACHE_DIR="$HOME/.cache/xberg/paddle-ocr"
         echo "cache-dir=$CACHE_DIR" >> $GITHUB_OUTPUT
         echo "PADDLE_OCR_MODEL_CACHE=$CACHE_DIR" >> $GITHUB_ENV
-        echo "KREUZBERG_CACHE_DIR=$HOME/.cache/kreuzberg" >> $GITHUB_ENV
+        echo "XBERG_CACHE_DIR=$HOME/.cache/xberg" >> $GITHUB_ENV
 
     - name: Export cache environment
       shell: bash
       run: |
-        echo "PADDLE_OCR_MODEL_CACHE=$HOME/.cache/kreuzberg/paddle-ocr" >> $GITHUB_ENV
-        echo "KREUZBERG_CACHE_DIR=$HOME/.cache/kreuzberg" >> $GITHUB_ENV
-        echo "PaddleOCR model cache configured at: $HOME/.cache/kreuzberg/paddle-ocr"
+        echo "PADDLE_OCR_MODEL_CACHE=$HOME/.cache/xberg/paddle-ocr" >> $GITHUB_ENV
+        echo "XBERG_CACHE_DIR=$HOME/.cache/xberg" >> $GITHUB_ENV
+        echo "PaddleOCR model cache configured at: $HOME/.cache/xberg/paddle-ocr"

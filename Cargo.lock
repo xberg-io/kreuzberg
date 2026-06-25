@@ -539,7 +539,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "5.0.0-rc.36"
+version = "1.0.0-rc.1"
 dependencies = [
  "ahash 0.8.12",
  "anyhow",
@@ -549,7 +549,6 @@ dependencies = [
  "dotenvy",
  "futures",
  "jsonschema",
- "kreuzberg",
  "num_cpus",
  "pprof",
  "pulldown-cmark 0.13.4",
@@ -567,6 +566,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "which 8.0.4",
+ "xberg",
 ]
 
 [[package]]
@@ -4503,198 +4503,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg"
-version = "5.0.0-rc.36"
-dependencies = [
- "ahash 0.8.12",
- "anyhow",
- "async-trait",
- "auto_enums",
- "axum",
- "base64 0.22.1",
- "biblatex",
- "biblib",
- "bitvec",
- "blake3",
- "bytes",
- "calamine",
- "cfb 0.14.0",
- "chardetng",
- "chrono",
- "comrak",
- "criterion 0.8.2",
- "dbase",
- "dirs",
- "dotenvy",
- "either",
- "encoding_rs",
- "fast_image_resize",
- "filetime",
- "flate2",
- "getrandom 0.2.17",
- "getrandom 0.3.4",
- "getrandom 0.4.3",
- "hayro-jbig2",
- "hayro-jpeg2000 0.3.5",
- "hex",
- "hf-hub 0.5.0",
- "html-to-markdown-rs",
- "icu_provider",
- "icu_segmenter",
- "image 0.25.10",
- "include_dir",
- "indexmap 2.14.0",
- "infer",
- "itertools 0.15.0",
- "jotdown",
- "jsonschema",
- "kreuzberg-candle-ocr",
- "kreuzberg-gliner-rs",
- "kreuzberg-libheif",
- "kreuzberg-orp",
- "kreuzberg-paddle-ocr",
- "kreuzberg-tesseract",
- "libc",
- "liter-llm",
- "lofty",
- "log",
- "lopdf",
- "mail-parser",
- "mel_spec",
- "memchr",
- "memmap2",
- "mime_guess",
- "minijinja",
- "moka",
- "ndarray 0.17.2",
- "nom-exif",
- "num_cpus",
- "once_cell",
- "opentelemetry",
- "opentelemetry_sdk",
- "org",
- "ort",
- "outlook-pst",
- "parking_lot",
- "pastey 0.2.3",
- "pdf_oxide",
- "pprof",
- "pulldown-cmark 0.13.4",
- "qrcode",
- "quick-xml 0.40.1",
- "rake",
- "rayon",
- "regex",
- "resvg",
- "rmcp",
- "rmp-serde",
- "roxmltree 0.21.1",
- "rqrr",
- "serde",
- "serde_json",
- "serde_toon_format",
- "serde_yaml_ng",
- "serial_test",
- "sevenz-rust2",
- "sha2 0.11.0",
- "simdutf8",
- "similar",
- "snap",
- "strum 0.28.0",
- "symphonia",
- "tar",
- "tempfile",
- "thiserror 2.0.18",
- "tiff 0.11.3",
- "tokenizers 0.23.1",
- "tokio",
- "tokio-test",
- "toml 1.1.2+spec-1.1.0",
- "tower",
- "tower-http 0.7.0",
- "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
- "tree-sitter-language-pack",
- "unhwp",
- "unicode-normalization",
- "ureq 3.3.0",
- "urlencoding",
- "utoipa",
- "uuid",
- "v_htmlescape",
- "wasm-bindgen-rayon",
- "whatlang",
- "wiremock",
- "zip 8.6.0",
-]
-
-[[package]]
-name = "kreuzberg-candle-ocr"
-version = "5.0.0-rc.36"
-dependencies = [
- "base64 0.22.1",
- "candle-core",
- "candle-nn",
- "candle-transformers",
- "hf-hub 0.5.0",
- "image 0.25.10",
- "parking_lot",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokenizers 0.23.1",
- "tracing",
-]
-
-[[package]]
-name = "kreuzberg-cli"
-version = "5.0.0-rc.36"
-dependencies = [
- "anstyle",
- "anyhow",
- "base64 0.22.1",
- "bytes",
- "clap",
- "clap_complete",
- "kreuzberg",
- "serde",
- "serde_json",
- "serde_toon_format",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "tree-sitter-language-pack",
- "ureq 3.3.0",
-]
-
-[[package]]
-name = "kreuzberg-dart"
-version = "5.0.0-rc.36"
-dependencies = [
- "async-trait",
- "flutter_rust_bridge",
- "kreuzberg",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "kreuzberg-ffi"
-version = "5.0.0-rc.36"
-dependencies = [
- "ahash 0.8.12",
- "async-trait",
- "cbindgen",
- "kreuzberg",
- "serde_json",
- "tempfile",
- "tokio",
-]
-
-[[package]]
 name = "kreuzberg-gliner-rs"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4711,45 +4519,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg-jni"
-version = "5.0.0-rc.36"
-dependencies = [
- "base64 0.22.1",
- "futures-util",
- "jni 0.22.4",
- "kreuzberg",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "kreuzberg-libheif"
-version = "5.0.0-rc.36"
-dependencies = [
- "cfg-if",
- "enumn",
- "four-cc",
- "image 0.25.10",
- "libc",
- "libheif-sys",
-]
-
-[[package]]
-name = "kreuzberg-node"
-version = "5.0.0-rc.36"
-dependencies = [
- "async-trait",
- "kreuzberg",
- "napi",
- "napi-build",
- "napi-derive",
- "serde",
- "serde_json",
- "serde_with",
- "tokio-util",
-]
-
-[[package]]
 name = "kreuzberg-orp"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4758,91 +4527,6 @@ dependencies = [
  "composable",
  "ndarray 0.17.2",
  "ort",
-]
-
-[[package]]
-name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.36"
-dependencies = [
- "geo-clipper",
- "geo-types",
- "image 0.25.10",
- "imageproc",
- "ndarray 0.17.2",
- "ort",
- "serde",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "kreuzberg-php"
-version = "5.0.0-rc.36"
-dependencies = [
- "async-trait",
- "ext-php-rs",
- "kreuzberg",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "kreuzberg-py"
-version = "5.0.0-rc.36"
-dependencies = [
- "async-trait",
- "kreuzberg",
- "pyo3",
- "pyo3-async-runtimes",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "kreuzberg-swift"
-version = "5.0.0-rc.36"
-dependencies = [
- "ahash 0.8.12",
- "async-trait",
- "kreuzberg",
- "libc",
- "serde",
- "serde_json",
- "swift-bridge",
- "swift-bridge-build",
- "tokio",
-]
-
-[[package]]
-name = "kreuzberg-tesseract"
-version = "5.0.0-rc.36"
-dependencies = [
- "cc",
- "cmake",
- "image 0.25.10",
- "reqwest",
- "thiserror 2.0.18",
- "zip 8.6.0",
-]
-
-[[package]]
-name = "kreuzberg-wasm"
-version = "5.0.0-rc.36"
-dependencies = [
- "async-trait",
- "futures",
- "futures-util",
- "getrandom 0.2.17",
- "getrandom 0.3.4",
- "getrandom 0.4.3",
- "js-sys",
- "kreuzberg",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -10772,6 +10456,322 @@ checksum = "32e45ad4206f6d2479085147f02bc2ef834ac85886624a23575ae137c8aa8156"
 dependencies = [
  "libc",
  "rustix",
+]
+
+[[package]]
+name = "xberg"
+version = "1.0.0-rc.1"
+dependencies = [
+ "ahash 0.8.12",
+ "anyhow",
+ "async-trait",
+ "auto_enums",
+ "axum",
+ "base64 0.22.1",
+ "biblatex",
+ "biblib",
+ "bitvec",
+ "blake3",
+ "bytes",
+ "calamine",
+ "cfb 0.14.0",
+ "chardetng",
+ "chrono",
+ "comrak",
+ "criterion 0.8.2",
+ "dbase",
+ "dirs",
+ "dotenvy",
+ "either",
+ "encoding_rs",
+ "fast_image_resize",
+ "filetime",
+ "flate2",
+ "getrandom 0.2.17",
+ "getrandom 0.3.4",
+ "getrandom 0.4.3",
+ "hayro-jbig2",
+ "hayro-jpeg2000 0.3.5",
+ "hex",
+ "hf-hub 0.5.0",
+ "html-to-markdown-rs",
+ "icu_provider",
+ "icu_segmenter",
+ "image 0.25.10",
+ "include_dir",
+ "indexmap 2.14.0",
+ "infer",
+ "itertools 0.15.0",
+ "jotdown",
+ "jsonschema",
+ "kreuzberg-gliner-rs",
+ "kreuzberg-orp",
+ "libc",
+ "liter-llm",
+ "lofty",
+ "log",
+ "lopdf",
+ "mail-parser",
+ "mel_spec",
+ "memchr",
+ "memmap2",
+ "mime_guess",
+ "minijinja",
+ "moka",
+ "ndarray 0.17.2",
+ "nom-exif",
+ "num_cpus",
+ "once_cell",
+ "opentelemetry",
+ "opentelemetry_sdk",
+ "org",
+ "ort",
+ "outlook-pst",
+ "parking_lot",
+ "pastey 0.2.3",
+ "pdf_oxide",
+ "pprof",
+ "pulldown-cmark 0.13.4",
+ "qrcode",
+ "quick-xml 0.40.1",
+ "rake",
+ "rayon",
+ "regex",
+ "resvg",
+ "rmcp",
+ "rmp-serde",
+ "roxmltree 0.21.1",
+ "rqrr",
+ "serde",
+ "serde_json",
+ "serde_toon_format",
+ "serde_yaml_ng",
+ "serial_test",
+ "sevenz-rust2",
+ "sha2 0.11.0",
+ "simdutf8",
+ "similar",
+ "snap",
+ "strum 0.28.0",
+ "symphonia",
+ "tar",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tiff 0.11.3",
+ "tokenizers 0.23.1",
+ "tokio",
+ "tokio-test",
+ "toml 1.1.2+spec-1.1.0",
+ "tower",
+ "tower-http 0.7.0",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+ "tree-sitter-language-pack",
+ "unhwp",
+ "unicode-normalization",
+ "ureq 3.3.0",
+ "urlencoding",
+ "utoipa",
+ "uuid",
+ "v_htmlescape",
+ "wasm-bindgen-rayon",
+ "whatlang",
+ "wiremock",
+ "xberg-candle-ocr",
+ "xberg-libheif",
+ "xberg-paddle-ocr",
+ "xberg-tesseract",
+ "zip 7.2.0",
+]
+
+[[package]]
+name = "xberg-candle-ocr"
+version = "1.0.0-rc.1"
+dependencies = [
+ "base64 0.22.1",
+ "candle-core",
+ "candle-nn",
+ "candle-transformers",
+ "hf-hub 0.5.0",
+ "image 0.25.10",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokenizers 0.23.1",
+ "tracing",
+]
+
+[[package]]
+name = "xberg-cli"
+version = "1.0.0-rc.1"
+dependencies = [
+ "anstyle",
+ "anyhow",
+ "base64 0.22.1",
+ "bytes",
+ "clap",
+ "clap_complete",
+ "serde",
+ "serde_json",
+ "serde_toon_format",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "tree-sitter-language-pack",
+ "ureq 3.3.0",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-dart"
+version = "1.0.0-rc.1"
+dependencies = [
+ "async-trait",
+ "flutter_rust_bridge",
+ "serde",
+ "serde_json",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-ffi"
+version = "1.0.0-rc.1"
+dependencies = [
+ "ahash 0.8.12",
+ "async-trait",
+ "cbindgen",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-jni"
+version = "1.0.0-rc.1"
+dependencies = [
+ "base64 0.22.1",
+ "futures-util",
+ "jni 0.22.4",
+ "serde_json",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-libheif"
+version = "1.0.0-rc.1"
+dependencies = [
+ "cfg-if",
+ "enumn",
+ "four-cc",
+ "image 0.25.10",
+ "libc",
+ "libheif-sys",
+]
+
+[[package]]
+name = "xberg-node"
+version = "1.0.0-rc.1"
+dependencies = [
+ "async-trait",
+ "napi",
+ "napi-build",
+ "napi-derive",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "tokio-util",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-paddle-ocr"
+version = "1.0.0-rc.1"
+dependencies = [
+ "geo-clipper",
+ "geo-types",
+ "image 0.25.10",
+ "imageproc",
+ "ndarray 0.17.2",
+ "ort",
+ "serde",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "xberg-php"
+version = "1.0.0-rc.1"
+dependencies = [
+ "async-trait",
+ "ext-php-rs",
+ "serde",
+ "serde_json",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-py"
+version = "1.0.0-rc.1"
+dependencies = [
+ "async-trait",
+ "pyo3",
+ "pyo3-async-runtimes",
+ "serde",
+ "serde_json",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-swift"
+version = "1.0.0-rc.1"
+dependencies = [
+ "ahash 0.8.12",
+ "async-trait",
+ "libc",
+ "serde",
+ "serde_json",
+ "swift-bridge",
+ "swift-bridge-build",
+ "tokio",
+ "xberg",
+]
+
+[[package]]
+name = "xberg-tesseract"
+version = "1.0.0-rc.1"
+dependencies = [
+ "cc",
+ "cmake",
+ "image 0.25.10",
+ "reqwest",
+ "thiserror 2.0.18",
+ "zip 7.2.0",
+]
+
+[[package]]
+name = "xberg-wasm"
+version = "1.0.0-rc.1"
+dependencies = [
+ "async-trait",
+ "futures",
+ "futures-util",
+ "getrandom 0.2.17",
+ "getrandom 0.3.4",
+ "getrandom 0.4.3",
+ "js-sys",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "xberg",
 ]
 
 [[package]]

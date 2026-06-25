@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using Xunit;
 
 public class CustomValidatorTests
@@ -10,7 +10,7 @@ public class CustomValidatorTests
         var validator = new TestValidator();
         ValidatorRegistry.Register(validator);
 
-        var validators = KreuzbergLib.ListValidators();
+        var validators = XbergLib.ListValidators();
         Assert.Contains("test-validator", validators);
     }
 
@@ -45,7 +45,7 @@ public class TestValidator : IValidator
     {
         if (string.IsNullOrEmpty(result.Content))
         {
-            throw new KreuzbergException("Content cannot be empty", 1000);
+            throw new XbergException("Content cannot be empty", 1000);
         }
     }
 

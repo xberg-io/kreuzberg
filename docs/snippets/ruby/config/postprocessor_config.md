@@ -1,8 +1,8 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  postprocessor: Kreuzberg::PostProcessorConfig.new(
+config = Xberg::ExtractionConfig.new(
+  postprocessor: Xberg::PostProcessorConfig.new(
     enabled: true,
     enabled_processors: ['deduplication', 'whitespace_normalization'],
     disabled_processors: ['mojibake_fix']

@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, KeywordConfig, KeywordAlgorithm};
+use xberg::{extract_file, ExtractionConfig, KeywordConfig, KeywordAlgorithm};
 
 let config = ExtractionConfig {
     keywords: Some(KeywordConfig {

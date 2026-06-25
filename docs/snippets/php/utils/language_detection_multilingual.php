@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\LanguageDetectionConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\LanguageDetectionConfig;
 
 $config = new ExtractionConfig(
     languageDetection: new LanguageDetectionConfig(
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('multilingual_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('multilingual_document.pdf');
 
 echo "Multilingual Language Detection:\n";
 echo str_repeat('=', 60) . "\n";
@@ -153,7 +153,7 @@ $multilingualConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($multilingualConfig);
+$xberg = new Xberg($multilingualConfig);
 
 $statistics = [
     'monolingual' => 0,
@@ -167,7 +167,7 @@ foreach ($testDocuments as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
     $languages = $result->detectedLanguages ?? [];
     $type = categorizeMultilingualDocument($languages);
 
@@ -189,7 +189,7 @@ echo "  Monolingual: {$statistics['monolingual']}\n";
 echo "  Bilingual: {$statistics['bilingual']}\n";
 echo "  Multilingual: {$statistics['multilingual']}\n\n";
 
-function analyzeLanguagePairs(array $documents, Kreuzberg $kreuzberg): array
+function analyzeLanguagePairs(array $documents, Xberg $xberg): array
 {
     $pairs = [];
 
@@ -198,7 +198,7 @@ function analyzeLanguagePairs(array $documents, Kreuzberg $kreuzberg): array
             continue;
         }
 
-        $result = $kreuzberg->extractFile($document);
+        $result = $xberg->extractFile($document);
         $languages = $result->detectedLanguages ?? [];
 
         if (count($languages) >= 2) {

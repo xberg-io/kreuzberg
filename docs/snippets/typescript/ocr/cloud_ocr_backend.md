@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { registerOcrBackend, extractFileSync } from "@kreuzberg/node";
+import { registerOcrBackend, extractFileSync } from "@xberg/node";
 
 const supportedLangs = ["eng", "deu", "fra"];
 

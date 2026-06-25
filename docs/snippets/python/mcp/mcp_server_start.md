@@ -4,7 +4,7 @@ import time
 from typing import Optional
 
 mcp_process: subprocess.Popen = subprocess.Popen(
-    ["python", "-m", "kreuzberg", "mcp"],
+    ["python", "-m", "xberg", "mcp"],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
 )

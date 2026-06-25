@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -14,19 +14,19 @@ func main() {
 	normalize := true
 	batchSize := int32(16)
 
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
-				Model:     kreuzberg.EmbeddingModelType_Preset("all-mpnet-base-v2"),
+			Embedding: &xberg.EmbeddingConfig{
+				Model:     xberg.EmbeddingModelType_Preset("all-mpnet-base-v2"),
 				Normalize: &normalize,
 				BatchSize: &batchSize,
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("research_paper.pdf", config)
+	result, err := xberg.ExtractFileSync("research_paper.pdf", config)
 	if err != nil {
 		log.Fatalf("RAG extraction failed: %v", err)
 	}

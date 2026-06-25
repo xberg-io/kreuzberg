@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const ContentValidator = struct {
     pub fn validate(self: *ContentValidator, result: [*c]const u8, config: [*c]const u8) !void {
@@ -25,7 +25,7 @@ const ContentValidator = struct {
 
 pub fn main() !void {
     var instance = ContentValidator{};
-    var vtable = kreuzberg.make_validator_vtable(ContentValidator, &instance);
+    var vtable = xberg.make_validator_vtable(ContentValidator, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -41,6 +41,6 @@ pub fn main() !void {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    _ = kreuzberg.register_validator("content-validator", vtable, &instance, &out_error);
+    _ = xberg.register_validator("content-validator", vtable, &instance, &out_error);
 }
 ```

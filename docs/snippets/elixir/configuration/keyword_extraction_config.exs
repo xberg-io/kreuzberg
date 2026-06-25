@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure keyword extraction
 config = %ExtractionConfig{
@@ -10,7 +10,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Access extracted keywords
 if result.keywords do

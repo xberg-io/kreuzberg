@@ -1,6 +1,6 @@
 ```typescript title="WASM"
-import init, { extractBytes } from "kreuzberg-wasm";
-import { PageConfig, ExtractionConfig } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
+import { PageConfig, ExtractionConfig } from "xberg-wasm";
 
 await init();
 

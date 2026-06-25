@@ -2,14 +2,14 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\OcrConfig;
-use Kreuzberg\ChunkingConfig;
-use Kreuzberg\LanguageDetectionConfig;
-use Kreuzberg\TokenReductionOptions;
-use Kreuzberg\PostProcessorConfig;
-use Kreuzberg\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ChunkingConfig;
+use Xberg\LanguageDetectionConfig;
+use Xberg\TokenReductionOptions;
+use Xberg\PostProcessorConfig;
+use Xberg\EmbeddingConfig;
 
 // Advanced configuration combining multiple features
 $config = new ExtractionConfig(
@@ -37,7 +37,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Content length: " . strlen($result->getContent()) . " characters\n";
 if ($result->getDetectedLanguages()) {

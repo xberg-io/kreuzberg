@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class QualityScoreValidator implements Validator {
     private float $minQualityScore = 0.7;
@@ -64,7 +64,7 @@ class QualityScoreValidator implements Validator {
 
 // Register the quality score validator
 $validator = new QualityScoreValidator();
-Kreuzberg::registerValidator($validator);
+Xberg::registerValidator($validator);
 
 echo "Quality score validator registered\n";
 ```

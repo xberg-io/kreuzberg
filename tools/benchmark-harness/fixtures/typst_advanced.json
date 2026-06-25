@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/typst/advanced.typ",
 	"file_type": "typ",
 	"file_size": 1137,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Advanced Typst document with complex formatting",
 		"category": "academic"

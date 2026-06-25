@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Text.RegularExpressions;
 
 class WordCountPostProcessor : IPostProcessor
@@ -93,14 +93,14 @@ class Program
         var cleanupProcessor = new CleanupPostProcessor();
         var languageProcessor = new LanguageDetectionPostProcessor();
 
-        KreuzbergLib.RegisterPostProcessor(wordCountProcessor);
-        KreuzbergLib.RegisterPostProcessor(cleanupProcessor);
-        KreuzbergLib.RegisterPostProcessor(languageProcessor);
+        XbergLib.RegisterPostProcessor(wordCountProcessor);
+        XbergLib.RegisterPostProcessor(cleanupProcessor);
+        XbergLib.RegisterPostProcessor(languageProcessor);
 
         try
         {
             var config = new ExtractionConfig();
-            var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+            var result = XbergLib.ExtractFileSync("document.pdf", config);
 
             Console.WriteLine($"Original content length: {result.Content.Length}");
 
@@ -116,7 +116,7 @@ class Program
                 }
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

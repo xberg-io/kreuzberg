@@ -1,12 +1,12 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
     EnableQualityProcessing = true
 };
 
-var result = await KreuzbergLib.ExtractFileAsync(
+var result = await XbergLib.ExtractFileAsync(
     "document.pdf",
     config
 );

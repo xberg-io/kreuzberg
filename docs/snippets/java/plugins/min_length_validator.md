@@ -1,9 +1,9 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Validator;
-import dev.kreuzberg.ValidationException;
-import dev.kreuzberg.KreuzbergException;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.Validator;
+import dev.xberg.ValidationException;
+import dev.xberg.XbergException;
 import java.io.IOException;
 
 public class MinLengthValidatorExample {
@@ -20,13 +20,13 @@ public class MinLengthValidatorExample {
         };
 
         try {
-            Kreuzberg.registerValidator("min-length", minLengthValidator, 100);
+            Xberg.registerValidator("min-length", minLengthValidator, 100);
 
-            ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+            ExtractionResult result = Xberg.extractFile("document.pdf");
             System.out.println("Validation passed!");
         } catch (ValidationException e) {
             System.err.println("Validation failed: " + e.getMessage());
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             e.printStackTrace();
         }
     }

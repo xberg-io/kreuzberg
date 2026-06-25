@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 custom_ocr_backend <- function(image_path, language) {
   cat(sprintf("Processing image: %s\n", image_path))

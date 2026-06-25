@@ -1,9 +1,9 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
-# Wrap an already-loaded embedder (e.g. an ONNX session) so kreuzberg can
+# Wrap an already-loaded embedder (e.g. an ONNX session) so xberg can
 # call back into it during chunking and standalone embed requests.
 my_embedder <- list(
   name = "my-embedder",

@@ -1,6 +1,6 @@
 # Benchmark Harness
 
-Rust CLI tool for comparative benchmarking of document extraction across 13 Kreuzberg language bindings and 7 reference frameworks. Measures performance (latency, throughput, memory) and quality (TF1, SF1) against ground truth.
+Rust CLI tool for comparative benchmarking of document extraction across 13 Xberg language bindings and 7 reference frameworks. Measures performance (latency, throughput, memory) and quality (TF1, SF1) against ground truth.
 
 ## Overview
 
@@ -16,7 +16,7 @@ CLI (clap)
  |
  +-- run              --> AdapterRegistry --> BenchmarkRunner --> results.json
  |                         |
- |                         +-- NativeAdapter (in-process Kreuzberg)
+ |                         +-- NativeAdapter (in-process Xberg)
  |                         +-- SubprocessAdapter (persistent child process)
  |                         +-- BatchSubprocessAdapter (batch API)
  |
@@ -35,7 +35,7 @@ CLI (clap)
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `main.rs`                           | CLI entry point (clap subcommands)                                                                                         |
 | `adapter.rs`                        | `FrameworkAdapter` trait definition                                                                                        |
-| `adapters/`                         | Adapter implementations: subprocess (persistent/batch), native (in-process), kreuzberg factory functions for all languages |
+| `adapters/`                         | Adapter implementations: subprocess (persistent/batch), native (in-process), xberg factory functions for all languages |
 | `runner.rs`                         | Benchmark orchestration, iteration control, resource monitoring                                                            |
 | `quality.rs`                        | TF1: token-level bag-of-words F1 scoring                                                                                   |
 | `markdown_quality.rs`               | SF1: structural block-level F1 scoring                                                                                     |
@@ -89,7 +89,7 @@ Fixtures are JSON files organized by format directory under `fixtures/`:
   "document": "relative/path/to/file.pdf",
   "file_type": "pdf",
   "file_size": 123456,
-  "expected_frameworks": ["kreuzberg", "docling"],
+  "expected_frameworks": ["xberg", "docling"],
   "metadata": {},
   "ground_truth": {
     "text_file": "relative/path/to/gt.txt",
@@ -125,7 +125,7 @@ Fixtures are JSON files organized by format directory under `fixtures/`:
 
 ## Frameworks
 
-### Kreuzberg Bindings (13)
+### Xberg Bindings (13)
 
 Each binding is benchmarked in both single-file (sequential, fair latency) and batch (concurrent, throughput) modes:
 
@@ -163,7 +163,7 @@ Runs benchmarks using framework adapters with configurable iterations, warmup, a
 ```bash
 benchmark-harness run \
   -f fixtures/ \
-  -F kreuzberg-rust,kreuzberg-python \
+  -F xberg-rust,xberg-python \
   -m batch \
   -o results/ \
   -i 3 -w 1
@@ -208,7 +208,7 @@ benchmark-harness compare \
 | Flag             | Description                                           |
 | ---------------- | ----------------------------------------------------- |
 | `--pipelines`    | Comma-separated pipeline names                        |
-| `--dump-outputs` | Write extraction outputs to `/tmp/kreuzberg_compare/` |
+| `--dump-outputs` | Write extraction outputs to `/tmp/xberg_compare/` |
 | `--guardrails`   | Fail on quality regressions (non-zero exit)           |
 | `--filter`       | Only run documents matching this substring            |
 
@@ -233,7 +233,7 @@ benchmark-harness pipeline-benchmark \
 | `--sort-by`       | Sort metric: `sf1`, `tf1`, `time`                                                            | `sf1`               |
 | `--bottom-n`      | Show only the N worst-performing documents                                                   | none                |
 | `--triage-blocks` | Print per-block-type F1 breakdown                                                            | `false`             |
-| `--dump-outputs`  | Write outputs to `/tmp/kreuzberg_pipeline/`                                                  | `false`             |
+| `--dump-outputs`  | Write outputs to `/tmp/xberg_pipeline/`                                                  | `false`             |
 | `--json-output`   | Write JSON results to file                                                                   | none                |
 | `--profile-dir`   | Generate per-pipeline flamegraph SVGs                                                        | none                |
 
@@ -300,10 +300,10 @@ setup
   Build harness + FFI library + validate ground truth
     |
     v
-bench-{language} x {single-file, batch}     (13 Kreuzberg binding jobs)
+bench-{language} x {single-file, batch}     (13 Xberg binding jobs)
     |
     v
-kreuzberg-gate                                (wait for all Kreuzberg benchmarks)
+xberg-gate                                (wait for all Xberg benchmarks)
     |
     v
 bench-{external}                              (7 reference framework jobs, some sharded)

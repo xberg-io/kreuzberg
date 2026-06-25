@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, TokenReductionConfig};
+use xberg::{extract_file, ExtractionConfig, TokenReductionConfig};
 
 let config = ExtractionConfig {
     token_reduction: Some(TokenReductionConfig {

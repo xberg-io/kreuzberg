@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 public class QualityValidator : IValidator
 {
@@ -25,7 +25,7 @@ class Program
     static void Main()
     {
         var validator = new QualityValidator();
-        KreuzbergLib.RegisterValidator(validator);
+        XbergLib.RegisterValidator(validator);
     }
 }
 ```

@@ -1,5 +1,5 @@
 ```rust title="Document Structure Config (Rust)"
-use kreuzberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig};
 
 let config = ExtractionConfig {
     include_document_structure: true,

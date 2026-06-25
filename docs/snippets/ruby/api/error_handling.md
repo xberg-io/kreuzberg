@@ -1,8 +1,8 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 begin
-  result = Kreuzberg.extract_file_sync('missing.pdf')
+  result = Xberg.extract_file_sync('missing.pdf')
   puts result.content
 rescue RuntimeError => e
   # All extraction errors are raised as RuntimeError

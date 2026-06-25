@@ -1,5 +1,5 @@
 ```typescript title="WASM - Detect and Process Multilingual Content"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -67,7 +67,7 @@ chunksByLanguage.forEach((chunks, lang) => {
 ```
 
 ```typescript title="WASM - Language-Specific Text Processing"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -122,7 +122,7 @@ sentences.slice(0, 3).forEach((sent, idx) => {
 ```
 
 ```typescript title="WASM - Multilingual Chunking Strategy"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

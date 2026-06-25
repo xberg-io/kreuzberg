@@ -2,13 +2,13 @@
 package main
 
 import (
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	enableQualityProcessing := true
 
-	config := &kreuzberg.ExtractionConfig{
+	config := &xberg.ExtractionConfig{
 		EnableQualityProcessing: &enableQualityProcessing,
 	}
 	_ = config

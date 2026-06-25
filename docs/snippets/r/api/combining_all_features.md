@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config_json <- jsonlite::toJSON(list(
   output_format = "markdown",

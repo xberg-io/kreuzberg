@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+use xberg::{Result, ExtractionResult, ExtractionConfig};
 use async_trait::async_trait;
 
 struct WordCountProcessor;

@@ -1,6 +1,6 @@
 # OCR (Optical Character Recognition)
 
-Extract text from images and scanned PDFs. Kreuzberg automatically determines when OCR is needed — images always require it, scanned PDFs trigger it per-page, and hybrid PDFs only OCR the pages that lack a text layer. Set `force_ocr=True` to OCR all pages regardless.
+Extract text from images and scanned PDFs. Xberg automatically determines when OCR is needed — images always require it, scanned PDFs trigger it per-page, and hybrid PDFs only OCR the pages that lack a text layer. Set `force_ocr=True` to OCR all pages regardless.
 
 ## Backend Comparison
 
@@ -77,7 +77,7 @@ tesseract --list-langs
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "5", features = ["paddle-ocr"] }
+    xberg = { version = "5", features = ["paddle-ocr"] }
     ```
 
 === "Python"
@@ -87,13 +87,13 @@ tesseract --list-langs
 ### EasyOCR (Python only)
 
 ```bash title="Terminal"
-pip install "kreuzberg[easyocr]"
+pip install "xberg[easyocr]"
 ```
 
-!!! Info "Python 3.14" EasyOCR 1.7.3+ and PyTorch 2.9.1+ support Python 3.14. Install `kreuzberg[easyocr]` on any supported Python version (3.10–3.14).
+!!! Info "Python 3.14" EasyOCR 1.7.3+ and PyTorch 2.9.1+ support Python 3.14. Install `xberg[easyocr]` on any supported Python version (3.10–3.14).
 
 !!! Tip "Tesseract marker extra"
-`pip install "kreuzberg[tesseract]"` is available as a metadata-only marker to document a dependency on the Tesseract system package. It installs no Python packages — Tesseract itself must still be installed via your OS package manager (see above).
+`pip install "xberg[tesseract]"` is available as a metadata-only marker to document a dependency on the Tesseract system package. It installs no Python packages — Tesseract itself must still be installed via your OS package manager (see above).
 
 ## Configuration
 
@@ -166,7 +166,7 @@ Specify multiple language codes separated by `+` (Tesseract) or as a list (EasyO
 === "Wasm"
 
     ```typescript
-    import { enableOcr, extractFromFile, initWasm } from '@kreuzberg/wasm';
+    import { enableOcr, extractFromFile, initWasm } from '@xberg/wasm';
 
     await initWasm();
     await enableOcr();
@@ -234,7 +234,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "Python"
 
     ```python title="disable_ocr.py"
-    from kreuzberg import ExtractionConfig, extract_file_sync
+    from xberg import ExtractionConfig, extract_file_sync
 
     config = ExtractionConfig(disable_ocr=True)
     result = extract_file_sync("scanned.png", config=config)
@@ -244,7 +244,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "TypeScript"
 
     ```typescript title="disable_ocr.ts"
-    import { extractFileSync } from '@kreuzberg/node';
+    import { extractFileSync } from '@xberg/node';
 
     const result = extractFileSync('scanned.png', {
       disableOcr: true,
@@ -255,7 +255,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 === "Rust"
 
     ```rust title="disable_ocr.rs"
-    use kreuzberg::{ExtractionConfig, extract_file};
+    use xberg::{ExtractionConfig, extract_file};
 
     let config = ExtractionConfig {
         disable_ocr: true,
@@ -305,7 +305,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "5", features = ["candle-glm-ocr"] }
+    xberg = { version = "5", features = ["candle-glm-ocr"] }
     ```
 
     **GPU support:**
@@ -323,7 +323,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "Python"
 
     ```python title="candle_glm_ocr.py"
-    from kreuzberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
 
     # Paired mode: per-region dispatch (default)
     config = ExtractionConfig(
@@ -352,7 +352,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "TypeScript"
 
     ```typescript title="candle-glm-ocr.ts"
-    import { extractFileSync } from '@kreuzberg/node';
+    import { extractFileSync } from '@xberg/node';
 
     // Paired mode: per-region dispatch (default)
     const result = extractFileSync('document.pdf', {
@@ -379,7 +379,7 @@ Candle GLM-OCR dispatches by detected layout region using PP-DocLayout-V3. Each 
 === "Rust"
 
     ```rust title="candle_glm_ocr.rs"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     // Paired mode: per-region dispatch (default)
@@ -430,7 +430,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "5", features = ["candle-hunyuan-ocr"] }
+    xberg = { version = "5", features = ["candle-hunyuan-ocr"] }
     ```
 
     **GPU support:**
@@ -446,7 +446,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "Python"
 
     ```python title="candle_hunyuan_ocr.py"
-    from kreuzberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -463,7 +463,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "TypeScript"
 
     ```typescript title="candle-hunyuan-ocr.ts"
-    import { extractFileSync } from '@kreuzberg/node';
+    import { extractFileSync } from '@xberg/node';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,
@@ -479,7 +479,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "Rust"
 
     ```rust title="candle_hunyuan_ocr.rs"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -499,7 +499,7 @@ Tencent Hunyuan-OCR — vision-language model for comprehensive document parsing
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract document.pdf --force-ocr true --ocr-backend candle-hunyuan-ocr --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
+    xberg extract document.pdf --force-ocr true --ocr-backend candle-hunyuan-ocr --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
     ```
 
 **Supported languages:** English, Chinese, Japanese, Korean, French, German, Spanish, Italian, Portuguese, Russian, Arabic, Hindi, Thai, Vietnamese, and others.
@@ -518,7 +518,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "5", features = ["candle-deepseek-ocr"] }
+    xberg = { version = "5", features = ["candle-deepseek-ocr"] }
     ```
 
     **GPU support:**
@@ -534,7 +534,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "Python"
 
     ```python title="candle_deepseek_ocr.py"
-    from kreuzberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -551,7 +551,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "TypeScript"
 
     ```typescript title="candle-deepseek-ocr.ts"
-    import { extractFileSync } from '@kreuzberg/node';
+    import { extractFileSync } from '@xberg/node';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,
@@ -567,7 +567,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "Rust"
 
     ```rust title="candle_deepseek_ocr.rs"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -587,7 +587,7 @@ DeepSeek-OCR — combination of SAM + CLIP encoder fused with Qwen2 decoder and 
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract document.pdf --force-ocr true --ocr-backend candle-deepseek-ocr --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
+    xberg extract document.pdf --force-ocr true --ocr-backend candle-deepseek-ocr --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
     ```
 
 **Supported languages:** English, Chinese, Japanese, Korean, French, German, Spanish, Italian, Portuguese, Russian, Arabic, Hindi, Thai, Vietnamese, and others.
@@ -606,7 +606,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 
     ```toml title="Cargo.toml (Rust example)"
     [dependencies]
-    kreuzberg = { version = "5", features = ["candle-paddleocr-vl-15"] }
+    xberg = { version = "5", features = ["candle-paddleocr-vl-15"] }
     ```
 
     **GPU support:**
@@ -622,7 +622,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "Python"
 
     ```python title="candle_paddleocr_vl.py"
-    from kreuzberg import ExtractionConfig, OcrConfig, extract_file_sync
+    from xberg import ExtractionConfig, OcrConfig, extract_file_sync
 
     config = ExtractionConfig(
         force_ocr=True,
@@ -639,7 +639,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "TypeScript"
 
     ```typescript title="candle-paddleocr-vl.ts"
-    import { extractFileSync } from '@kreuzberg/node';
+    import { extractFileSync } from '@xberg/node';
 
     const result = extractFileSync('document.pdf', {
       forceOcr: true,
@@ -655,7 +655,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "Rust"
 
     ```rust title="candle_paddleocr_vl.rs"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig};
     use serde_json::json;
 
     let config = ExtractionConfig {
@@ -675,7 +675,7 @@ PaddleOCR-VL 1.5 — SigLIP vision encoder + Ernie-4.5 text decoder for lightwei
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract document.pdf --force-ocr true --ocr-backend candle-paddleocr-vl-15 --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
+    xberg extract document.pdf --force-ocr true --ocr-backend candle-paddleocr-vl-15 --ocr-backend-options '{"device":"auto","model_path":"~/.cache/huggingface/"}'
     ```
 
 **Supported languages:** English, Chinese, Japanese, Korean, French, German, Spanish, Italian, Portuguese, Russian, and others.
@@ -697,7 +697,7 @@ Use a vision-language model (e.g. GPT-4o, Claude) as the OCR backend — each pa
 === "Rust"
 
     ```rust title="Rust"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
 
     let config = ExtractionConfig {
         force_ocr: true,
@@ -717,12 +717,12 @@ Use a vision-language model (e.g. GPT-4o, Claude) as the OCR backend — each pa
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract scan.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
+    xberg extract scan.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
     ```
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     force_ocr = true
 
     [ocr]
@@ -798,22 +798,22 @@ Models are cached locally after first download, so subsequent runs start immedia
 
 ```bash title="Terminal"
 # Basic OCR extraction
-kreuzberg extract scanned.pdf --ocr true
+xberg extract scanned.pdf --ocr true
 
 # Specific language
-kreuzberg extract french_doc.pdf --ocr true --ocr-language fra
+xberg extract french_doc.pdf --ocr true --ocr-language fra
 
 # Specific backend
-kreuzberg extract chinese_doc.pdf --ocr true --ocr-backend paddle-ocr --ocr-language ch
+xberg extract chinese_doc.pdf --ocr true --ocr-backend paddle-ocr --ocr-language ch
 
 # Force OCR on all pages
-kreuzberg extract document.pdf --force-ocr true
+xberg extract document.pdf --force-ocr true
 
 # VLM OCR backend
-kreuzberg extract handwritten.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
+xberg extract handwritten.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
 
 # Use a config file
-kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
+xberg extract scanned.pdf --config xberg.toml --ocr true
 ```
 
 | Flag                      | Description                                                                        |

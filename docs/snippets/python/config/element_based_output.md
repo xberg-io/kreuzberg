@@ -1,5 +1,5 @@
 ```python title="Element-Based Output (Python)"
-from kreuzberg import extract_file_sync, ExtractionConfig
+from xberg import extract_file_sync, ExtractionConfig
 
 # Configure element-based output
 config = ExtractionConfig(result_format="element_based")

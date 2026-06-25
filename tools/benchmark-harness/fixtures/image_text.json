@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/images/jpn_vert.jpeg",
 	"file_type": "jpeg",
 	"file_size": 35012,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pymupdf4llm", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "markitdown", "pymupdf4llm", "tika", "unstructured"],
 	"metadata": {
 		"description": "Vertical Japanese text image requiring OCR - 35KB JPEG",
 		"category": "image-text",

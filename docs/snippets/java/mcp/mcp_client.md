@@ -14,7 +14,7 @@ public class McpClient {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public McpClient() throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("kreuzberg", "mcp");
+        ProcessBuilder pb = new ProcessBuilder("xberg", "mcp");
         mcpProcess = pb.start();
         stdin = new BufferedWriter(new OutputStreamWriter(mcpProcess.getOutputStream()));
         stdout = new BufferedReader(new InputStreamReader(mcpProcess.getInputStream()));

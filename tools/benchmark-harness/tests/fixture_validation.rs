@@ -442,7 +442,7 @@ fn fixture_structure_is_valid() {
         "document": "relative/path/to/document.pdf",
         "file_type": "pdf",
         "file_size": 1024,
-        "expected_frameworks": ["kreuzberg"],
+        "expected_frameworks": ["xberg"],
         "metadata": {
             "description": "Test document",
             "category": "sample"

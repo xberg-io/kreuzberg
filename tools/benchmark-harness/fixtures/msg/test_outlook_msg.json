@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/markitdown/msg/test_outlook_msg.msg",
 	"file_type": "msg",
 	"file_size": 13312,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from markitdown test suite",
 		"source": "markitdown",

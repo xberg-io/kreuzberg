@@ -34,7 +34,7 @@ sed -i '' "s/\\\\'/'/g" "$file"        # Unescape quotes
   "document": "relative/path/to/source.ext",
   "file_type": "docx",
   "file_size": 12345,
-  "expected_frameworks": ["kreuzberg"],
+  "expected_frameworks": ["xberg"],
   "metadata": { "description": "...", "source": "pandoc-generated" },
   "ground_truth": {
     "text_file": "relative/path/to/gt.txt",

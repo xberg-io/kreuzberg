@@ -2,7 +2,7 @@
 # This example demonstrates how to configure language detection with multiple
 # parameters for detecting and tracking all languages in documents.
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Advanced language detection configuration
 config = %ExtractionConfig{
@@ -14,7 +14,7 @@ config = %ExtractionConfig{
 }
 
 # Extract file with language detection enabled
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Process the detection results
 detection_results = result.detected_languages || []

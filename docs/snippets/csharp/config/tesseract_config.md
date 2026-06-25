@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -17,6 +17,6 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFile("scanned.pdf", null, config);
+var result = await XbergLib.ExtractFile("scanned.pdf", null, config);
 Console.WriteLine($"OCR text: {result.Content.Substring(0, Math.Min(100, result.Content.Length))}");
 ```

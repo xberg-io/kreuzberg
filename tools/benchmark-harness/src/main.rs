@@ -121,7 +121,7 @@ enum Commands {
         output: PathBuf,
 
         /// Baseline framework for delta calculations (not used but provided for compatibility)
-        #[arg(long, default_value = "kreuzberg-rust")]
+        #[arg(long, default_value = "xberg-rust")]
         baseline: String,
     },
 
@@ -142,7 +142,7 @@ enum Commands {
         #[arg(long, value_delimiter = ',')]
         pipelines: Option<Vec<String>>,
 
-        /// Dump extraction outputs to /tmp/kreuzberg_compare/
+        /// Dump extraction outputs to /tmp/xberg_compare/
         #[arg(long)]
         dump_outputs: bool,
 
@@ -212,7 +212,7 @@ enum Commands {
         #[arg(long)]
         group: Option<String>,
 
-        /// Dump outputs to /tmp/kreuzberg_pipeline/
+        /// Dump outputs to /tmp/xberg_pipeline/
         #[arg(long)]
         dump_outputs: bool,
 
@@ -411,16 +411,16 @@ async fn main() -> Result<()> {
                 };
             }
 
-            // Wave 2: kreuzberg-cli adapter registration
+            // Wave 2: xberg-cli adapter registration
             // Supports 3 pipelines (baseline, layout, paddle-ocr) x 2 output formats x single+batch modes
-            use benchmark_harness::KreuzbergPipeline;
-            use benchmark_harness::adapters::create_kreuzberg_adapter;
+            use benchmark_harness::XbergPipeline;
+            use benchmark_harness::adapters::create_xberg_adapter;
 
-            let mut kreuzberg_count = 0;
+            let mut xberg_count = 0;
             let pipelines = [
-                KreuzbergPipeline::Baseline,
-                KreuzbergPipeline::Layout,
-                KreuzbergPipeline::PaddleOcr,
+                XbergPipeline::Baseline,
+                XbergPipeline::Layout,
+                XbergPipeline::PaddleOcr,
             ];
             let formats = [OutputFormat::Markdown, OutputFormat::Plaintext];
 
@@ -430,16 +430,16 @@ async fn main() -> Result<()> {
                         OutputFormat::Markdown => "markdown",
                         OutputFormat::Plaintext => "plaintext",
                     };
-                    let framework_name = format!("kreuzberg-{}-{}", format_slug, pipeline.as_str());
+                    let framework_name = format!("xberg-{}-{}", format_slug, pipeline.as_str());
                     if should_init(&framework_name) {
                         // Single-file mode
-                        match create_kreuzberg_adapter(*pipeline, *format, false) {
+                        match create_xberg_adapter(*pipeline, *format, false) {
                             Ok(adapter) => {
                                 if let Err(err) = registry.register(Arc::new(adapter)) {
                                     eprintln!("[adapter] ✗ {} (registration failed: {})", framework_name, err);
                                 } else {
                                     eprintln!("[adapter] ✓ {} (registered)", framework_name);
-                                    kreuzberg_count += 1;
+                                    xberg_count += 1;
                                 }
                             }
                             Err(err) => eprintln!("[adapter] ✗ {} (initialization failed: {})", framework_name, err),
@@ -449,13 +449,13 @@ async fn main() -> Result<()> {
                         let batch_name = format!("{}-batch", framework_name);
                         if should_init(&batch_name) && !matches!(config.benchmark_mode, BenchmarkMode::Batch) {
                             // Skip registering batch in batch mode (would be redundant)
-                            match create_kreuzberg_adapter(*pipeline, *format, true) {
+                            match create_xberg_adapter(*pipeline, *format, true) {
                                 Ok(adapter) => {
                                     if let Err(err) = registry.register(Arc::new(adapter)) {
                                         eprintln!("[adapter] ✗ {} (registration failed: {})", batch_name, err);
                                     } else {
                                         eprintln!("[adapter] ✓ {} (registered)", batch_name);
-                                        kreuzberg_count += 1;
+                                        xberg_count += 1;
                                     }
                                 }
                                 Err(err) => eprintln!("[adapter] ✗ {} (initialization failed: {})", batch_name, err),
@@ -468,15 +468,15 @@ async fn main() -> Result<()> {
             let total_requested = if frameworks.is_empty() {
                 6
             } else {
-                frameworks.iter().filter(|f| f.contains("kreuzberg")).count()
+                frameworks.iter().filter(|f| f.contains("xberg")).count()
             };
             eprintln!(
-                "[adapter] Kreuzberg CLI: {}/{} available",
-                kreuzberg_count, total_requested
+                "[adapter] Xberg CLI: {}/{} available",
+                xberg_count, total_requested
             );
 
             // Skip third-party frameworks in batch mode — they don't have batch APIs,
-            // so benchmarking them sequentially alongside kreuzberg's real batch is not apples-to-apples.
+            // so benchmarking them sequentially alongside xberg's real batch is not apples-to-apples.
             let mut external_count = 0;
 
             if !matches!(config.benchmark_mode, BenchmarkMode::Batch) {
@@ -502,11 +502,11 @@ async fn main() -> Result<()> {
             );
             eprintln!(
                 "[adapter] Total adapters: {} available",
-                kreuzberg_count + external_count
+                xberg_count + external_count
             );
 
             // Track which requested frameworks failed to initialize
-            // NOTE: This check must run AFTER all adapters (kreuzberg + external) are registered
+            // NOTE: This check must run AFTER all adapters (xberg + external) are registered
             let mut failed_frameworks = Vec::new();
             for name in &frameworks {
                 if !registry.contains(name) {

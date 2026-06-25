@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PdfConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PdfConfig;
 
 // Hierarchy detection in PDF options array
 $config = new ExtractionConfig(
@@ -29,8 +29,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Hierarchy detection enabled\n";
 echo "Content length: " . strlen($result->content) . " characters\n";
@@ -48,8 +48,8 @@ $advancedConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($advancedConfig);
-$result = $kreuzberg->extractFile('complex_document.pdf');
+$xberg = new Xberg($advancedConfig);
+$result = $xberg->extractFile('complex_document.pdf');
 
 echo "Advanced hierarchy detection completed\n";
 echo "Detected structure preserved in output\n";
@@ -64,8 +64,8 @@ $fastConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($fastConfig);
-$result = $kreuzberg->extractFile('simple_document.pdf');
+$xberg = new Xberg($fastConfig);
+$result = $xberg->extractFile('simple_document.pdf');
 
 echo "Fast extraction without hierarchy detection\n";
 ```

@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/images/complex_document.png",
 	"file_type": "png",
 	"file_size": 28485,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "markitdown", "mineru", "pymupdf4llm", "tika", "unstructured"],
 	"metadata": {
 		"description": "Complex table image - 28KB PNG with detailed table structure",
 		"category": "image-table",

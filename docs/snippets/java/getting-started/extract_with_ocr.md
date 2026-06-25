@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
 import java.io.IOException;
 
 public class ExtractWithOCR {
@@ -16,7 +16,7 @@ public class ExtractWithOCR {
             .ocr(ocrConfig)
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+        ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
 
         System.out.println("Extracted text from scanned document:");
         System.out.println(result.getContent());

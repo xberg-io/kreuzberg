@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -67,7 +67,7 @@ class CustomCacheWrapper
             return cached;
         }
 
-        var result = KreuzbergLib.ExtractFileSync(filePath, config);
+        var result = XbergLib.ExtractFileSync(filePath, config);
         Set(cacheKey, result);
         Console.WriteLine("Extracted and cached");
 
@@ -95,7 +95,7 @@ class Program
             cache.Clear();
             Console.WriteLine("Cache cleared");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

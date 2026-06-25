@@ -4,14 +4,14 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	enabled := true
 	minConfidence := 0.9
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, kreuzberg.ExtractionConfig{
-		LanguageDetection: &kreuzberg.LanguageDetectionConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", nil, xberg.ExtractionConfig{
+		LanguageDetection: &xberg.LanguageDetectionConfig{
 			Enabled:        &enabled,
 			MinConfidence:  &minConfidence,
 			DetectMultiple: true,

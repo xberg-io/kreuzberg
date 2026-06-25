@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         enable_quality_processing: true,
         use_cache: true,

@@ -1,6 +1,6 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 // Build a fully-featured `ExtractionConfig` via JSON. ExtractionConfig has

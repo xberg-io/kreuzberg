@@ -1,11 +1,11 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 # Using keyword arguments with defaults
-config = Kreuzberg::ExtractionConfig.new(
-  pdf_options: Kreuzberg::PdfConfig.new(
+config = Xberg::ExtractionConfig.new(
+  pdf_options: Xberg::PdfConfig.new(
     extract_images: true,
-    hierarchy: Kreuzberg::HierarchyConfig.new(
+    hierarchy: Xberg::HierarchyConfig.new(
       enabled: true,
       k_clusters: 6,
       include_bbox: true,
@@ -15,8 +15,8 @@ config = Kreuzberg::ExtractionConfig.new(
 )
 
 # Using hash syntax alternative
-config = Kreuzberg::ExtractionConfig.new(
-  pdf_options: Kreuzberg::PdfConfig.new(
+config = Xberg::ExtractionConfig.new(
+  pdf_options: Xberg::PdfConfig.new(
     extract_images: true,
     hierarchy: {
       enabled: true,

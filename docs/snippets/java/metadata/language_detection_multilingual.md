@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.LanguageDetectionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.LanguageDetectionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .languageDetection(LanguageDetectionConfig.builder()
@@ -11,7 +11,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("multilingual_document.pdf", config);
+ExtractionResult result = Xberg.extractFile("multilingual_document.pdf", config);
 
 System.out.println("Detected languages: " + result.getDetectedLanguages());
 ```

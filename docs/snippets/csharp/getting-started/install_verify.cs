@@ -1,7 +1,7 @@
-using Kreuzberg;
+using Xberg;
 
-var version = KreuzbergClient.GetVersion();
-Console.WriteLine($"Kreuzberg version: {version}");
+var version = XbergClient.GetVersion();
+Console.WriteLine($"Xberg version: {version}");
 
-var result = KreuzbergClient.ExtractFileSync("document.pdf");
+var result = XbergClient.ExtractFileSync("document.pdf");
 Console.WriteLine($"Extraction successful: {result.Success}");

@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 final class MinLengthValidator: Validator {
     let minLength: Int
@@ -44,5 +44,5 @@ final class MinLengthValidator: Validator {
 }
 
 let validator = MinLengthValidator(minLength: 100)
-try Kreuzberg.registerValidator(validator)
+try Xberg.registerValidator(validator)
 ```

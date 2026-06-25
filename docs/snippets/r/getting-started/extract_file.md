@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Extract a file and inspect the result
 result <- extract_file_sync("document.pdf")

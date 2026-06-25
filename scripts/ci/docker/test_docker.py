@@ -22,7 +22,7 @@ NC = "\033[0m"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 TEST_DOCS_DIR = REPO_ROOT / "test_documents"
-RESULTS_FILE = Path("/tmp/kreuzberg-docker-test-results.json")
+RESULTS_FILE = Path("/tmp/xberg-docker-test-results.json")
 
 
 @dataclass
@@ -72,7 +72,7 @@ class TestRunner:
         self.error(msg)
 
     def container_name(self) -> str:
-        name = f"kreuzberg-test-{int(time.time())}-{random.randint(0, 99999)}"
+        name = f"xberg-test-{int(time.time())}-{random.randint(0, 99999)}"
         self.containers.append(name)
         return name
 
@@ -136,10 +136,10 @@ def test_version(t: TestRunner) -> None:
     t.start("CLI --version command")
     out = t.run_cli_output("--version")
     t.debug(f"Version output: {out}")
-    if "kreuzberg" in out.lower():
+    if "xberg" in out.lower():
         t.pass_test()
     else:
-        t.fail_test("CLI version", f"Expected 'kreuzberg' in output, got: {out}")
+        t.fail_test("CLI version", f"Expected 'xberg' in output, got: {out}")
 
 
 def test_help(t: TestRunner) -> None:
@@ -756,10 +756,10 @@ def test_security_nonroot(t: TestRunner) -> None:
         timeout=30,
     )
     user = r.stdout.strip()
-    if user == "kreuzberg":
+    if user == "xberg":
         t.pass_test()
     else:
-        t.fail_test("Non-root user", f"Container running as: {user} (expected: kreuzberg)")
+        t.fail_test("Non-root user", f"Container running as: {user} (expected: xberg)")
 
 
 def test_security_readonly(t: TestRunner) -> None:

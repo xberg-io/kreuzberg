@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	useCache := true
 	enableQP := true
 
-	config := &kreuzberg.ExtractionConfig{
+	config := &xberg.ExtractionConfig{
 		UseCache:                &useCache,
 		EnableQualityProcessing: &enableQP,
 	}
 
-	result, err := kreuzberg.ExtractFileSync("contract.pdf", config)
+	result, err := xberg.ExtractFileSync("contract.pdf", config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

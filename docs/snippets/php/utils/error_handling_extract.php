@@ -6,7 +6,7 @@ declare(strict_types=1);
 /**
  * Error Handling for HTTP/API Extraction
  *
- * Demonstrate error handling when using Kreuzberg extraction via HTTP API.
+ * Demonstrate error handling when using Xberg extraction via HTTP API.
  * Shows how to properly handle HTTP errors and API response errors.
  */
 

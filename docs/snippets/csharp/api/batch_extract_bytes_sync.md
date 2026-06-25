@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var items = new List<BatchBytesItem>
 {
@@ -8,7 +8,7 @@ var items = new List<BatchBytesItem>
 };
 
 var config = new ExtractionConfig { OutputFormat = OutputFormat.Text };
-var results = KreuzbergLib.BatchExtractBytesSync(items, config);
+var results = XbergLib.BatchExtractBytesSync(items, config);
 
 foreach (var result in results)
 {

@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg</artifactId>
-    <version>5.0.0-rc.36</version>
+    <groupId>dev.xberg</groupId>
+    <artifactId>xberg</artifactId>
+    <version>1.0.0-rc.1</version>
     <packaging>jar</packaging>
 
-    <name>kreuzberg</name>
+    <name>xberg</name>
     <description>High-performance document intelligence library</description>
-    <url>https://github.com/xberg-io/kreuzberg</url>
+    <url>https://github.com/xberg-io/xberg</url>
 
     <licenses>
         <license>
@@ -28,9 +28,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/xberg-io/kreuzberg.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/xberg-io/kreuzberg.git</developerConnection>
-        <url>https://github.com/xberg-io/kreuzberg</url>
+        <connection>scm:git:git://github.com/xberg-io/xberg.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/xberg-io/xberg.git</developerConnection>
+        <url>https://github.com/xberg-io/xberg</url>
     </scm>
 
     <properties>

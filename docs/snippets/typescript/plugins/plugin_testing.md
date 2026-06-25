@@ -6,7 +6,7 @@ import {
   unregisterPostProcessor,
   unregisterValidator,
   type ExtractionResult,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 describe("Plugin Testing", () => {
   describe("PostProcessor", () => {

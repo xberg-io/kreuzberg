@@ -1,12 +1,12 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
     PdfOptions = new PdfConfig { ExtractMetadata = true }
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", null, config);
+var result = XbergLib.ExtractFileSync("document.pdf", null, config);
 
 if (result.Metadata?.Format?.Pdf != null)
 {
@@ -16,7 +16,7 @@ if (result.Metadata?.Format?.Pdf != null)
     Console.WriteLine($"Title: {pdfMeta.Title}");
 }
 
-var htmlResult = KreuzbergLib.ExtractFileSync("page.html", null, config);
+var htmlResult = XbergLib.ExtractFileSync("page.html", null, config);
 if (htmlResult.Metadata?.Format?.Html != null)
 {
     var htmlMeta = htmlResult.Metadata.Format.Html;

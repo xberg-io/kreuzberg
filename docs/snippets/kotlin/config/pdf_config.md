@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -19,7 +19,7 @@ fun main() {
         .withPdfOptions(Optional.of(pdf))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("encrypted.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("encrypted.pdf"), null, config)
     println("Title: ${result.metadata().title()}")
     println("Authors: ${result.metadata().authors()}")
 }

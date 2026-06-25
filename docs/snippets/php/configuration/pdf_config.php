@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PdfConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PdfConfig;
 
 $config = new ExtractionConfig(
     pdf: new PdfConfig(
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "PDF extraction complete\n";
 echo "Images extracted: " . count($result->images ?? []) . "\n\n";
@@ -39,8 +39,8 @@ $highQualityConfig = new ExtractionConfig(
     extractImages: true
 );
 
-$kreuzberg = new Kreuzberg($highQualityConfig);
-$result = $kreuzberg->extractFile('presentation.pdf');
+$xberg = new Xberg($highQualityConfig);
+$result = $xberg->extractFile('presentation.pdf');
 
 foreach ($result->images ?? [] as $image) {
     $filename = sprintf('image_%d_page_%d.%s',
@@ -60,9 +60,9 @@ $fastConfig = new ExtractionConfig(
     extractTables: false  
 );
 
-$kreuzberg = new Kreuzberg($fastConfig);
+$xberg = new Xberg($fastConfig);
 $start = microtime(true);
-$result = $kreuzberg->extractFile('large_document.pdf');
+$result = $xberg->extractFile('large_document.pdf');
 $elapsed = microtime(true) - $start;
 
 echo "\nFast extraction completed in " . number_format($elapsed, 3) . " seconds\n";

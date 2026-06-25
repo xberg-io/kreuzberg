@@ -5,7 +5,7 @@ public class McpServer {
     public static void main(String[] args) {
         try {
             // Start MCP server using CLI
-            ProcessBuilder pb = new ProcessBuilder("kreuzberg", "mcp");
+            ProcessBuilder pb = new ProcessBuilder("xberg", "mcp");
             pb.inheritIO();
             Process process = pb.start();
             process.waitFor();

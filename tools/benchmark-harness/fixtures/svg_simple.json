@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xml/simple_svg.svg",
 	"file_type": "svg",
 	"file_size": 426,
-	"expected_frameworks": ["kreuzberg", "pymupdf4llm", "tika"],
+	"expected_frameworks": ["xberg", "pymupdf4llm", "tika"],
 	"metadata": {
 		"description": "Simple SVG image",
 		"category": "image"

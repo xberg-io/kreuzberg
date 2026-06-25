@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/images_extra/Hadley_Crater.j2k",
 	"file_type": "j2k",
 	"file_size": 626560,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "JPEG 2000 code stream image of Hadley Crater (J2K extension)",
 		"category": "image",

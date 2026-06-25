@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -13,7 +13,7 @@ fun main() {
         .withHtmlOutput(Optional.of(htmlOutput))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("document.pdf"), null, config)
     println(result.content()) // HTML with kb-* classes
 }
 ```

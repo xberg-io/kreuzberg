@@ -3,7 +3,7 @@
 	"file_type": "pdf",
 	"file_size": 18810,
 	"expected_frameworks": [
-		"kreuzberg",
+		"xberg",
 		"docling",
 		"markitdown",
 		"mineru",
@@ -17,7 +17,7 @@
 	],
 	"metadata": {
 		"description": "Searchable PDF with extractable text content",
-		"source": "kreuzberg",
+		"source": "xberg",
 		"size_category": "small"
 	},
 	"ground_truth": {

@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import register_ocr_backend
+from xberg import register_ocr_backend
 import httpx
 
 class CloudOcrBackend:

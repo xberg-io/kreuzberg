@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.TokenReductionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.TokenReductionConfig;
 import java.util.Map;
 
 ExtractionConfig config = ExtractionConfig.builder()
@@ -12,7 +12,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("verbose_document.pdf", config);
+ExtractionResult result = Xberg.extractFile("verbose_document.pdf", config);
 
 Map<String, Object> metadata = result.getMetadata() != null ? result.getMetadata() : Map.of();
 

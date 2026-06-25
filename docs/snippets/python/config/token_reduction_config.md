@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionConfig, TokenReductionConfig
+from xberg import ExtractionConfig, TokenReductionConfig
 
 config: ExtractionConfig = ExtractionConfig(
     token_reduction=TokenReductionConfig(

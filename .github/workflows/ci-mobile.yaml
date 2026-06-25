@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "crates/kreuzberg/**"
-      - "crates/kreuzberg-ffi/**"
-      - "crates/kreuzberg-dart/**"
-      - "crates/kreuzberg-swift/**"
-      - "crates/kreuzberg-jni/**"
+      - "crates/xberg/**"
+      - "crates/xberg-ffi/**"
+      - "crates/xberg-dart/**"
+      - "crates/xberg-swift/**"
+      - "crates/xberg-jni/**"
       - "packages/dart/**"
       - "packages/swift/**"
       - "packages/kotlin-android/**"
@@ -16,11 +16,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "crates/kreuzberg/**"
-      - "crates/kreuzberg-ffi/**"
-      - "crates/kreuzberg-dart/**"
-      - "crates/kreuzberg-swift/**"
-      - "crates/kreuzberg-jni/**"
+      - "crates/xberg/**"
+      - "crates/xberg-ffi/**"
+      - "crates/xberg-dart/**"
+      - "crates/xberg-swift/**"
+      - "crates/xberg-jni/**"
       - "packages/dart/**"
       - "packages/swift/**"
       - "packages/kotlin-android/**"
@@ -39,7 +39,7 @@ env:
   # Mobile feature subsets (Android drops ORT-requiring features) leave some
   # functions only used in the full-feature graph; -A dead_code keeps the
   # cross-compile check honest about other classes of warnings without choking
-  # on these. -A unexpected_cfgs: the kreuzberg-ffi crate's auto-derived feature
+  # on these. -A unexpected_cfgs: the xberg-ffi crate's auto-derived feature
   # list omits a few core features (structured/enrichment/heuristics/presets)
   # that its generated cfg-guards still reference, so the reduced android-target
   # graph trips unexpected_cfgs on feature names that simply aren't declared.
@@ -51,7 +51,7 @@ permissions:
 jobs:
   android-check:
     name: Android cargo check (${{ matrix.abi }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -65,14 +65,14 @@ jobs:
           cache-key-prefix: ci-mobile-android-${{ matrix.abi }}
           use-sccache: "true"
       - uses: xberg-io/actions/setup-android-ndk@v1
-      - name: cargo ndk check kreuzberg-dart
-        run: cargo ndk --target ${{ matrix.abi }} --platform 21 -- check -p kreuzberg-dart --no-default-features --features android-target
-      - name: cargo ndk check kreuzberg-ffi
-        run: cargo ndk --target ${{ matrix.abi }} --platform 21 -- check -p kreuzberg-ffi --no-default-features --features android-target
+      - name: cargo ndk check xberg-dart
+        run: cargo ndk --target ${{ matrix.abi }} --platform 21 -- check -p xberg-dart --no-default-features --features android-target
+      - name: cargo ndk check xberg-ffi
+        run: cargo ndk --target ${{ matrix.abi }} --platform 21 -- check -p xberg-ffi --no-default-features --features android-target
 
   ios-check:
     name: iOS cargo check (${{ matrix.target }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: macos-latest
     timeout-minutes: 30
     strategy:
@@ -86,7 +86,7 @@ jobs:
           target: ${{ matrix.target }}
           cache-key-prefix: ci-mobile-ios-${{ matrix.target }}
           use-sccache: "true"
-      - name: cargo check kreuzberg-dart
-        run: cargo check --locked -p kreuzberg-dart --target ${{ matrix.target }}
-      - name: cargo check kreuzberg-swift
-        run: cargo check --locked -p kreuzberg-swift --target ${{ matrix.target }}
+      - name: cargo check xberg-dart
+        run: cargo check --locked -p xberg-dart --target ${{ matrix.target }}
+      - name: cargo check xberg-swift
+        run: cargo check --locked -p xberg-swift --target ${{ matrix.target }}

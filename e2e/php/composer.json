@@ -8,12 +8,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Kreuzberg\\": "../../packages/php/src/"
+      "Xberg\\": "../../packages/php/src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Kreuzberg\\E2e\\": "tests/"
+      "Xberg\\E2e\\": "tests/"
     }
   },
   "scripts": {

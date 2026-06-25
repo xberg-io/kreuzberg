@@ -1,8 +1,8 @@
 name: Cache HuggingFace fastembed models
 description: >-
-  Persists the HuggingFace hub cache directory used by the kreuzberg embedding
+  Persists the HuggingFace hub cache directory used by the xberg embedding
   and reranker engines, keyed on a hash of the preset definitions so any
-  catalog change forces a fresh download. Sets KREUZBERG_HF_CACHE_DIR so
+  catalog change forces a fresh download. Sets XBERG_HF_CACHE_DIR so
   downstream tests pick up the cache automatically.
 
 inputs:
@@ -42,14 +42,14 @@ runs:
         fi
         mkdir -p "$dir"
         echo "cache-dir=$dir" >> "$GITHUB_OUTPUT"
-        echo "KREUZBERG_HF_CACHE_DIR=$dir" >> "$GITHUB_ENV"
+        echo "XBERG_HF_CACHE_DIR=$dir" >> "$GITHUB_ENV"
 
     - name: Restore HuggingFace fastembed cache
       id: restore
       uses: actions/cache@v4
       with:
         path: ${{ steps.resolve.outputs.cache-dir }}
-        key: hf-fastembed-${{ runner.os }}-${{ hashFiles('crates/kreuzberg/src/reranking/mod.rs', 'crates/kreuzberg/src/embeddings/mod.rs') }}-${{ inputs.cache-key-suffix }}
+        key: hf-fastembed-${{ runner.os }}-${{ hashFiles('crates/xberg/src/reranking/mod.rs', 'crates/xberg/src/embeddings/mod.rs') }}-${{ inputs.cache-key-suffix }}
         restore-keys: |
-          hf-fastembed-${{ runner.os }}-${{ hashFiles('crates/kreuzberg/src/reranking/mod.rs', 'crates/kreuzberg/src/embeddings/mod.rs') }}-
+          hf-fastembed-${{ runner.os }}-${{ hashFiles('crates/xberg/src/reranking/mod.rs', 'crates/xberg/src/embeddings/mod.rs') }}-
           hf-fastembed-${{ runner.os }}-

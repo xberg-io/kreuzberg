@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\ChunkingConfig;
 
 $longOpts = [
     'file:',
@@ -32,7 +32,7 @@ $longOpts = [
 $options = getopt('f:o:', $longOpts);
 
 if (isset($options['help']) || empty($options)) {
-    echo "Kreuzberg Advanced CLI\n";
+    echo "Xberg Advanced CLI\n";
     echo str_repeat('=', 60) . "\n\n";
     echo "Usage: php cli_with_config.php [options]\n\n";
     echo "Options:\n";
@@ -85,8 +85,8 @@ try {
     fwrite(STDERR, "  Format: $format\n\n");
 
     $start = microtime(true);
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile($inputFile);
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile($inputFile);
     $elapsed = microtime(true) - $start;
 
     fwrite(STDERR, "Extraction completed in " . number_format($elapsed, 3) . "s\n");
@@ -127,7 +127,7 @@ try {
     fwrite(STDERR, "  Chunks: " . count($result->chunks ?? []) . "\n");
 
     exit(0);
-} catch (\Kreuzberg\Exceptions\KreuzbergException $e) {
+} catch (\Xberg\Exceptions\XbergException $e) {
     fwrite(STDERR, "Error: " . $e->getMessage() . "\n");
     exit(1);
 }

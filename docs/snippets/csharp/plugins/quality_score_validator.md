@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 public class QualityScoreValidator : IValidator
 {
@@ -24,7 +24,7 @@ public class QualityScoreValidator : IValidator
 
         if (qualityScore < MinimumQuality)
         {
-            throw new KreuzbergException(
+            throw new XbergException(
                 $"Quality score {qualityScore:F2} below minimum {MinimumQuality}",
                 1003
             );

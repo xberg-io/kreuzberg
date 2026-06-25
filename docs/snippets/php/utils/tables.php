@@ -12,16 +12,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Result\ExtractedTable;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Result\ExtractedTable;
 
 $config = new ExtractionConfig(
     extractTables: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Table Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";

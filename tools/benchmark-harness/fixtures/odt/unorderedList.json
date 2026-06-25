@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/odt/unorderedList.odt",
 	"file_type": "odt",
 	"file_size": 9505,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "odt test: unorderedList",
 		"source": "pandoc-generated",

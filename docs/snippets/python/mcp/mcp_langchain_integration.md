@@ -6,7 +6,7 @@ import subprocess
 import json
 
 mcp_process = subprocess.Popen(
-    ["kreuzberg", "mcp"],
+    ["xberg", "mcp"],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,

@@ -1,11 +1,11 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(max_characters: 500, overlap: 50),
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(max_characters: 500, overlap: 50),
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 
 result.chunks&.each do |chunk|
   first = chunk.metadata.first_page

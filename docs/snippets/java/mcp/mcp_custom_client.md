@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class McpCustomClient {
     public static void main(String[] args) throws IOException, InterruptedException {
-        ProcessBuilder pb = new ProcessBuilder("kreuzberg", "mcp");
+        ProcessBuilder pb = new ProcessBuilder("xberg", "mcp");
         Process mcp = pb.start();
 
         ObjectMapper mapper = new ObjectMapper();

@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import (
+from xberg import (
     extract_file_sync,
     ExtractionConfig,
     ImagePreprocessingConfig,

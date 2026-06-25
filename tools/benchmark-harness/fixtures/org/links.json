@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/org/links.org",
 	"file_type": "org",
 	"file_size": 359,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "org test: links",
 		"source": "pandoc-generated",

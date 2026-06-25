@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/titles.fb2",
 	"file_type": "fb2",
 	"file_size": 620,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "FictionBook document testing title rendering with simple and emphasized/strong titles",
 		"category": "literature"

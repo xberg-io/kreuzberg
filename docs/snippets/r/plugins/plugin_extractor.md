@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 custom_json_extractor <- function(path, mime_type) {
   raw <- readLines(path, warn = FALSE)

@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\TokenReductionOptions;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\TokenReductionOptions;
 
 $config = new ExtractionConfig(
     tokenReduction: new TokenReductionOptions(
@@ -13,7 +13,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('verbose_document.pdf', null, $config);
+$result = Xberg::extractFileSync('verbose_document.pdf', null, $config);
 
 if ($result->getTokenCount() !== null) {
     echo "Original token count: " . $result->getTokenCount() . "\n";

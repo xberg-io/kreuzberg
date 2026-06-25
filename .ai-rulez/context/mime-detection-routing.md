@@ -32,7 +32,7 @@ fn select_extractor_for_mime(mime_type: &str) -> Result<Arc<dyn DocumentExtracto
     let registry = get_document_extractor_registry();
     let registry_guard = registry.read()?;
     registry_guard.get_for_mime_type(mime_type)
-        .ok_or_else(|| KreuzbergError::UnsupportedFormat(mime_type.into()))
+        .ok_or_else(|| XbergError::UnsupportedFormat(mime_type.into()))
 }
 ```
 

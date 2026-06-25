@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 result <- extract_file_sync("spreadsheet.xlsx")
 

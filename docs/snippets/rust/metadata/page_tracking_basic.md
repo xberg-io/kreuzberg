@@ -1,4 +1,4 @@
-Use Kreuzberg::{extract_file_sync, ExtractionConfig, PageConfig};
+Use Xberg::{extract_file_sync, ExtractionConfig, PageConfig};
 
 Let config = ExtractionConfig {
 pages: Some(PageConfig {

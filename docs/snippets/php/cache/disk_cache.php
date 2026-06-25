@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Types\ExtractionResult;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Types\ExtractionResult;
 
 class DiskCache
 {
@@ -23,7 +23,7 @@ class DiskCache
 
     public function __construct(string $cacheDir = null, int $ttl = 7 * 86400)
     {
-        $this->cacheDir = $cacheDir ?? sys_get_temp_dir() . '/kreuzberg_cache';
+        $this->cacheDir = $cacheDir ?? sys_get_temp_dir() . '/xberg_cache';
         $this->ttl = $ttl;
 
         if (!is_dir($this->cacheDir)) {
@@ -104,7 +104,7 @@ class DiskCache
 }
 
 $cache = new DiskCache();
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 $config = new ExtractionConfig();
 
 $file = 'document.pdf';
@@ -115,7 +115,7 @@ $start = microtime(true);
 $result = $cache->get($file, $config);
 
 if ($result === null) {
-    $result = $kreuzberg->extractFile($file, config: $config);
+    $result = $xberg->extractFile($file, config: $config);
     $cache->set($file, $config, $result);
     echo "  Status: Extracted and cached\n";
 } else {
@@ -132,7 +132,7 @@ $start = microtime(true);
 $result = $cache->get($file, $config);
 
 if ($result === null) {
-    $result = $kreuzberg->extractFile($file, config: $config);
+    $result = $xberg->extractFile($file, config: $config);
     $cache->set($file, $config, $result);
     echo "  Status: Extracted and cached\n";
 } else {
@@ -150,10 +150,10 @@ echo "Total entries: {$stats['total_entries']}\n";
 echo "Cache size: " . number_format($stats['cache_size_bytes'] / 1024 / 1024, 2) . " MB\n";
 echo "Cache directory: {$stats['cache_dir']}\n\n";
 
-class CachedKreuzberg
+class CachedXberg
 {
     public function __construct(
-        private Kreuzberg $kreuzberg,
+        private Xberg $xberg,
         private DiskCache $cache
     ) {}
 
@@ -167,7 +167,7 @@ class CachedKreuzberg
         $result = $this->cache->get($filePath, $config);
 
         if ($result === null) {
-            $result = $this->kreuzberg->extractFile($filePath, $mimeType, $config);
+            $result = $this->xberg->extractFile($filePath, $mimeType, $config);
             $this->cache->set($filePath, $config, $result);
         }
 
@@ -185,12 +185,12 @@ class CachedKreuzberg
     }
 }
 
-$cachedKreuzberg = new CachedKreuzberg(
-    new Kreuzberg(),
+$cachedXberg = new CachedXberg(
+    new Xberg(),
     new DiskCache()
 );
 
-echo "Using CachedKreuzberg wrapper:\n";
+echo "Using CachedXberg wrapper:\n";
 echo str_repeat('=', 60) . "\n";
 
 $files = ['doc1.pdf', 'doc2.pdf', 'doc3.pdf'];
@@ -198,14 +198,14 @@ foreach ($files as $file) {
     if (!file_exists($file)) continue;
 
     $start = microtime(true);
-    $result = $cachedKreuzberg->extractFile($file);
+    $result = $cachedXberg->extractFile($file);
     $elapsed = microtime(true) - $start;
 
     echo "$file: " . number_format($elapsed, 4) . "s\n";
 }
 
 echo "\nCache stats:\n";
-$stats = $cachedKreuzberg->getCacheStats();
+$stats = $cachedXberg->getCacheStats();
 print_r($stats);
 
 function cleanupCache(DiskCache $cache, int $maxAge = 7 * 86400): int

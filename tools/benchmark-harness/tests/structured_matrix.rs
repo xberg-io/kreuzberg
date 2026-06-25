@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use benchmark_harness::datasets::{Split, cord};
 use benchmark_harness::json_quality::{field_precision_recall_f1, is_valid_against_schema, type_correctness_rate};
-use kreuzberg::core::config::{ExtractionConfig, LlmConfig, StructuredExtractionConfig};
-use kreuzberg::extract_file;
+use xberg::core::config::{ExtractionConfig, LlmConfig, StructuredExtractionConfig};
+use xberg::extract_file;
 use serde_json::{Value, json};
 use std::collections::HashMap;
 use std::env;
@@ -55,9 +55,9 @@ async fn test_structured_extraction_matrix() -> Result<()> {
     let _ = dotenvy::dotenv();
 
     // Determine dataset root
-    let datasets_root = env::var("KREUZBERG_DATASETS_ROOT").unwrap_or_else(|_| {
+    let datasets_root = env::var("XBERG_DATASETS_ROOT").unwrap_or_else(|_| {
         let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
-        format!("{}/.kreuzberg/datasets", home)
+        format!("{}/.xberg/datasets", home)
     });
 
     // Load CORD fixtures

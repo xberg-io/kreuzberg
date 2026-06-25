@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kreuzberg;
+namespace Xberg;
 
 /**
  * Plugin interface for Renderer.

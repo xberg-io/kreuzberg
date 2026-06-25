@@ -1,7 +1,7 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-Kreuzberg.unregister_post_processor('word_count')
-Kreuzberg.unregister_validator('min_length_validator')
-Kreuzberg.unregister_ocr_backend('cloud-ocr')
+Xberg.unregister_post_processor('word_count')
+Xberg.unregister_validator('min_length_validator')
+Xberg.unregister_ocr_backend('cloud-ocr')
 ```

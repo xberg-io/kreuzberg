@@ -199,13 +199,13 @@ Local in-process embeddings via ONNX for semantic search and RAG — no external
 
 ### In-Process Embedding Backends (Plugin Variant)
 
-Plug a caller-managed embedder (e.g. `llama-cpp-python`, `sentence-transformers`) into Kreuzberg via the `Plugin` variant of `EmbeddingModelType` — Kreuzberg calls back into the registered backend instead of running its own ONNX model.
+Plug a caller-managed embedder (e.g. `llama-cpp-python`, `sentence-transformers`) into Xberg via the `Plugin` variant of `EmbeddingModelType` — Xberg calls back into the registered backend instead of running its own ONNX model.
 
-1. Register the backend once at startup via `kreuzberg::plugins::register_embedding_backend(Arc::new(MyEmbedder))`. The backend implements `EmbeddingBackend` (a `Plugin`-inheriting async trait with `dimensions()` and `embed(texts) -> Vec<Vec<f32>>`).
+1. Register the backend once at startup via `xberg::plugins::register_embedding_backend(Arc::new(MyEmbedder))`. The backend implements `EmbeddingBackend` (a `Plugin`-inheriting async trait with `dimensions()` and `embed(texts) -> Vec<Vec<f32>>`).
 2. Reference it by name in `EmbeddingConfig`: `{ "model": { "type": "plugin", "name": "my-embedder" } }`.
 3. Optional: set `EmbeddingConfig.max_embed_duration_secs` (default 60) to bound the wait on a hung backend; `None` disables the timeout.
 
-The CLI (`kreuzberg embed --provider plugin --plugin my-embedder`), MCP server (`embed_text` tool, `embedding_plugin` parameter), REST API, and env var `KREUZBERG_EMBEDDING_PLUGIN_NAME` all accept the Plugin variant once a backend is registered.
+The CLI (`xberg embed --provider plugin --plugin my-embedder`), MCP server (`embed_text` tool, `embedding_plugin` parameter), REST API, and env var `XBERG_EMBEDDING_PLUGIN_NAME` all accept the Plugin variant once a backend is registered.
 
 **Fork-safety**: Python callers running under `multiprocessing`, `gunicorn`'s prefork worker, or Celery prefork must re-register the backend in each child process — native-backed embedders (including `llama-cpp-python`) aren't fork-safe. Use `os.register_at_fork(after_in_child=reregister_fn)` to automate the re-registration.
 
@@ -541,7 +541,7 @@ Extracted fields appear in `result.form_fields` as a list of `PdfFormField` stru
 
 Enable form field extraction (default):
 
-```toml title="kreuzberg.toml"
+```toml title="xberg.toml"
 [pdf]
 extract_form_fields = true
 ```
@@ -558,7 +558,7 @@ extract_form_fields = false
 === "Python"
 
     ```python
-    from kreuzberg import extract_file, ExtractionConfig, PdfConfig
+    from xberg import extract_file, ExtractionConfig, PdfConfig
 
     config = ExtractionConfig(
         pdf=PdfConfig(extract_form_fields=True)
@@ -573,7 +573,7 @@ extract_form_fields = false
 === "TypeScript"
 
     ```typescript
-    import { extractFile, ExtractionConfig } from "kreuzberg";
+    import { extractFile, ExtractionConfig } from "xberg";
 
     const config: ExtractionConfig = {
       pdf: { extract_form_fields: true }
@@ -589,7 +589,7 @@ extract_form_fields = false
 === "Rust"
 
     ```rust
-    use kreuzberg::{extract_file, ExtractionConfig, PdfConfig};
+    use xberg::{extract_file, ExtractionConfig, PdfConfig};
 
     let config = ExtractionConfig {
         pdf: Some(PdfConfig {
@@ -613,14 +613,14 @@ extract_form_fields = false
 
     import (
         "fmt"
-        kreuzberg "github.com/xberg-io/kreuzberg/packages/go/v5"
+        xberg "github.com/xberg-io/xberg/packages/go/v5"
     )
 
     func main() {
-        config := kreuzberg.NewExtractionConfig()
+        config := xberg.NewExtractionConfig()
         config.Pdf.ExtractFormFields = true
 
-        result, err := kreuzberg.ExtractFile("form.pdf", config)
+        result, err := xberg.ExtractFile("form.pdf", config)
         if err != nil {
             panic(err)
         }

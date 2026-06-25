@@ -1,12 +1,12 @@
 ---
-summary: WASM build constraints and patterns for kreuzberg-wasm crate
+summary: WASM build constraints and patterns for xberg-wasm crate
 ---
 
 # WASM Build Constraints
 
 ## Overview
 
-WASM target in `crates/kreuzberg-wasm/`. Uses wasm-bindgen with sync-only internal APIs.
+WASM target in `crates/xberg-wasm/`. Uses wasm-bindgen with sync-only internal APIs.
 
 ## Feature Flags
 
@@ -51,7 +51,7 @@ const MAX_HTML_SIZE: usize = 2 * 1024 * 1024;  // 2MB - stack constraint
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[profile.release.package.kreuzberg-wasm]
+[profile.release.package.xberg-wasm]
 opt-level = "z"       # Size optimization
 codegen-units = 1
 ```

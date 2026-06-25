@@ -1,5 +1,5 @@
 import asyncio
-from kreuzberg import (
+from xberg import (
     ExtractionConfig,
     KeywordConfig,
     KeywordAlgorithm,

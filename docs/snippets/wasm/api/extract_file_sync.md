@@ -1,6 +1,6 @@
 ```typescript title="WASM"
 // WASM exposes only async extraction. Read the file as bytes and call extractBytes.
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

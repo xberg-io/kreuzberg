@@ -1,7 +1,7 @@
 //! Framework comparison: run multiple extraction pipelines on the corpus and
 //! compare quality (SF1, TF1) against ground truth with optional guardrails.
 //!
-//! Replaces the logic previously in `crates/kreuzberg/tests/framework_comparison.rs`.
+//! Replaces the logic previously in `crates/xberg/tests/framework_comparison.rs`.
 //! Uses canonical scoring from [`crate::markdown_quality`] and [`crate::quality`].
 //!
 //! # Pipeline semantics
@@ -181,16 +181,16 @@ impl Pipeline {
         }
     }
 
-    /// All pipelines that use kreuzberg in-process extraction.
+    /// All pipelines that use xberg in-process extraction.
     ///
     /// `CandleTrocr`, `CandlePaddleocrVl`, and the new Candle VLM backends
     /// (`CandleHunyuanOcr`, `CandleDeepseekOcr`, `CandlePaddleocrVl15`) are
-    /// deliberately omitted from `all_kreuzberg()`: they need large model
+    /// deliberately omitted from `all_xberg()`: they need large model
     /// downloads from HuggingFace and only build with their own feature flags,
     /// so default cross-pipeline runs do not include them.
     /// `CandleGlmOcr` is included because the `glm-ocr-bench` feature gates
     /// the entire harness build, making the inclusion safe.
-    pub fn all_kreuzberg() -> Vec<Pipeline> {
+    pub fn all_xberg() -> Vec<Pipeline> {
         vec![
             Pipeline::Baseline,
             Pipeline::Layout,
@@ -259,45 +259,45 @@ pub struct DocResult {
     pub results: Vec<PipelineResult>,
 }
 
-/// Build a kreuzberg ExtractionConfig for the given pipeline.
-pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
-    use kreuzberg::core::config::{OutputFormat, layout::LayoutDetectionConfig};
+/// Build a xberg ExtractionConfig for the given pipeline.
+pub fn build_extraction_config(pipeline: Pipeline) -> xberg::ExtractionConfig {
+    use xberg::core::config::{OutputFormat, layout::LayoutDetectionConfig};
 
-    let base = kreuzberg::ExtractionConfig {
+    let base = xberg::ExtractionConfig {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
 
     match pipeline {
         Pipeline::Baseline => base,
-        Pipeline::Layout => kreuzberg::ExtractionConfig {
+        Pipeline::Layout => xberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig::default()),
             // Drive the new layout-for-markdown path: layout regions inform
             // heading / table / list / figure detection in the structure
             // pipeline, which dramatically improves SF1 on PDFs.
             use_layout_for_markdown: true,
             // Enable OCR fallback for pages with no native text (image-only pages).
-            // With force_ocr=false (default), kreuzberg auto-detects empty pages
+            // With force_ocr=false (default), xberg auto-detects empty pages
             // and falls back to tesseract OCR only when needed.
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::Tesseract => kreuzberg::ExtractionConfig {
+        Pipeline::Tesseract => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::TesseractLayout => kreuzberg::ExtractionConfig {
+        Pipeline::TesseractLayout => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
@@ -305,9 +305,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
-        Pipeline::Paddle => kreuzberg::ExtractionConfig {
+        Pipeline::Paddle => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: true,
@@ -315,9 +315,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             }),
             ..base
         },
-        Pipeline::PaddleLayout => kreuzberg::ExtractionConfig {
+        Pipeline::PaddleLayout => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: true,
@@ -326,9 +326,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
-        Pipeline::PaddleServer => kreuzberg::ExtractionConfig {
+        Pipeline::PaddleServer => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: true,
@@ -337,9 +337,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             }),
             ..base
         },
-        Pipeline::PaddleServerLayout => kreuzberg::ExtractionConfig {
+        Pipeline::PaddleServerLayout => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: true,
@@ -349,9 +349,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
-        Pipeline::TesseractAutoRotate => kreuzberg::ExtractionConfig {
+        Pipeline::TesseractAutoRotate => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: true,
@@ -359,9 +359,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             }),
             ..base
         },
-        Pipeline::PaddleNoRotate => kreuzberg::ExtractionConfig {
+        Pipeline::PaddleNoRotate => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "paddleocr".to_string(),
                 language: vec!["eng".to_string()],
                 auto_rotate: false,
@@ -369,37 +369,37 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             }),
             ..base
         },
-        Pipeline::LayoutSlanetAuto => kreuzberg::ExtractionConfig {
+        Pipeline::LayoutSlanetAuto => xberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                table_model: kreuzberg::core::config::layout::TableModel::SlanetAuto,
+                table_model: xberg::core::config::layout::TableModel::SlanetAuto,
                 ..Default::default()
             }),
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::PdfOxide => kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
+        Pipeline::PdfOxide => xberg::ExtractionConfig {
+            pdf_options: Some(xberg::PdfConfig { ..Default::default() }),
             ..base
         },
-        Pipeline::PdfOxideLayout => kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig { ..Default::default() }),
+        Pipeline::PdfOxideLayout => xberg::ExtractionConfig {
+            pdf_options: Some(xberg::PdfConfig { ..Default::default() }),
             layout: Some(LayoutDetectionConfig::default()),
             // Drive the layout-for-markdown path so the oxide extractor receives
             // layout hints (heading/table/figure detection feeds the structure pipeline).
             use_layout_for_markdown: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::PdfOxideReadingOrder => kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig {
+        Pipeline::PdfOxideReadingOrder => xberg::ExtractionConfig {
+            pdf_options: Some(xberg::PdfConfig {
                 reading_order: true,
                 ..Default::default()
             }),
@@ -407,7 +407,7 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             // Reading-order reordering requires layout hints; without this flag
             // `maybe_run_layout_for_markdown` returns early and reading_order is a no-op.
             use_layout_for_markdown: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
@@ -415,72 +415,72 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             ..base
         },
         Pipeline::Docling | Pipeline::PaddleOcrPython | Pipeline::RapidOcr => base, // Not used for extraction — read from file
-        Pipeline::LayoutSlanetWired => kreuzberg::ExtractionConfig {
+        Pipeline::LayoutSlanetWired => xberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                table_model: kreuzberg::core::config::layout::TableModel::SlanetWired,
+                table_model: xberg::core::config::layout::TableModel::SlanetWired,
                 ..Default::default()
             }),
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::LayoutSlanetWireless => kreuzberg::ExtractionConfig {
+        Pipeline::LayoutSlanetWireless => xberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                table_model: kreuzberg::core::config::layout::TableModel::SlanetWireless,
+                table_model: xberg::core::config::layout::TableModel::SlanetWireless,
                 ..Default::default()
             }),
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::LayoutSlanetPlus => kreuzberg::ExtractionConfig {
+        Pipeline::LayoutSlanetPlus => xberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                table_model: kreuzberg::core::config::layout::TableModel::SlanetPlus,
+                table_model: xberg::core::config::layout::TableModel::SlanetPlus,
                 ..Default::default()
             }),
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandleTrocr => kreuzberg::ExtractionConfig {
+        Pipeline::CandleTrocr => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-trocr".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandlePaddleocrVl => kreuzberg::ExtractionConfig {
+        Pipeline::CandlePaddleocrVl => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-paddleocr-vl".to_string(),
                 language: vec!["eng".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandleGlmOcr => kreuzberg::ExtractionConfig {
+        Pipeline::CandleGlmOcr => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-glm-ocr".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandleGlmOcrLayout => kreuzberg::ExtractionConfig {
+        Pipeline::CandleGlmOcrLayout => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-glm-ocr".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
@@ -488,9 +488,9 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
-        Pipeline::CandleGlmOcrLayoutChart => kreuzberg::ExtractionConfig {
+        Pipeline::CandleGlmOcrLayoutChart => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-glm-ocr".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
@@ -501,27 +501,27 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
             }),
             ..base
         },
-        Pipeline::CandleHunyuanOcr => kreuzberg::ExtractionConfig {
+        Pipeline::CandleHunyuanOcr => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-hunyuan-ocr".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandleDeepseekOcr => kreuzberg::ExtractionConfig {
+        Pipeline::CandleDeepseekOcr => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-deepseek-ocr".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
             }),
             ..base
         },
-        Pipeline::CandlePaddleocrVl15 => kreuzberg::ExtractionConfig {
+        Pipeline::CandlePaddleocrVl15 => xberg::ExtractionConfig {
             force_ocr: true,
-            ocr: Some(kreuzberg::core::config::OcrConfig {
+            ocr: Some(xberg::core::config::OcrConfig {
                 backend: "candle-paddleocr-vl".to_string(),
                 language: vec!["en".to_string()],
                 ..Default::default()
@@ -600,7 +600,7 @@ pub async fn extract_pipeline(
             let extraction_future = async {
                 tokio::time::timeout(
                     std::time::Duration::from_secs(180),
-                    kreuzberg::extract_file(&doc_path, None, &config),
+                    xberg::extract_file(&doc_path, None, &config),
                 )
                 .await
             };
@@ -717,7 +717,7 @@ pub async fn run_comparison(config: &ComparisonConfig) -> Result<Vec<DocResult>>
             let result = run_pipeline(pipeline, doc, &gt_text, gt_markdown.as_deref(), &config.fixtures_dir).await;
 
             if config.dump_outputs {
-                let dump_dir = std::path::PathBuf::from("/tmp/kreuzberg_compare");
+                let dump_dir = std::path::PathBuf::from("/tmp/xberg_compare");
                 let _ = std::fs::create_dir_all(&dump_dir);
                 let _ = std::fs::write(
                     dump_dir.join(format!("{}_{}.md", doc.name, pipeline.name())),
@@ -1230,7 +1230,7 @@ fn run_diagnostics(config: &ComparisonConfig, results: &[DocResult]) -> Result<(
 
     if diagnosed_count > 0 {
         eprintln!(
-            "\nDiagnosed {} document(s) with SF1 < {:.0}% -> /tmp/kreuzberg_diagnose/",
+            "\nDiagnosed {} document(s) with SF1 < {:.0}% -> /tmp/xberg_diagnose/",
             diagnosed_count,
             config.diagnose_threshold * 100.0
         );
@@ -1398,12 +1398,12 @@ mod tests {
 
     #[test]
     fn test_pipeline_config_deterministic() {
-        for pipeline in Pipeline::all_kreuzberg() {
+        for pipeline in Pipeline::all_xberg() {
             let config = build_extraction_config(pipeline);
             // Verify the config is valid (doesn't panic) and has markdown output
             assert_eq!(
                 format!("{:?}", config.output_format),
-                format!("{:?}", kreuzberg::core::config::OutputFormat::Markdown),
+                format!("{:?}", xberg::core::config::OutputFormat::Markdown),
                 "Pipeline {:?} should produce Markdown config",
                 pipeline
             );

@@ -1084,7 +1084,7 @@ mod tests {
 
         // Test with -sync suffix
         let mut result_sync = BenchmarkResult {
-            framework: "kreuzberg-python-sync".to_string(),
+            framework: "xberg-python-sync".to_string(),
             output_format: OutputFormat::Markdown,
             file_path: PathBuf::from("/test/file.pdf"),
             file_size: 1024,
@@ -1108,7 +1108,7 @@ mod tests {
 
         // Test with -async suffix
         let mut result_async = BenchmarkResult {
-            framework: "kreuzberg-python-async".to_string(),
+            framework: "xberg-python-async".to_string(),
             output_format: OutputFormat::Markdown,
             file_path: PathBuf::from("/test/file.pdf"),
             file_size: 1024,
@@ -1132,7 +1132,7 @@ mod tests {
 
         // Test with -batch suffix
         let mut result_batch = BenchmarkResult {
-            framework: "kreuzberg-python-batch".to_string(),
+            framework: "xberg-python-batch".to_string(),
             output_format: OutputFormat::Markdown,
             file_path: PathBuf::from("/test/file.pdf"),
             file_size: 1024,
@@ -1164,9 +1164,9 @@ mod tests {
         runner.enrich_with_framework_size(&mut result_async);
         runner.enrich_with_framework_size(&mut result_batch);
 
-        // If framework_sizes.json exists and contains kreuzberg-python, verify all variants are enriched
+        // If framework_sizes.json exists and contains xberg-python, verify all variants are enriched
         if let Some(size_info) = &result_sync.framework_capabilities.installation_size {
-            // All three should have the same size info from base "kreuzberg-python"
+            // All three should have the same size info from base "xberg-python"
             assert!(size_info.size_bytes > 0, "Size should be positive");
             assert!(!size_info.method.is_empty(), "Method should be set");
             assert!(!size_info.description.is_empty(), "Description should be set");

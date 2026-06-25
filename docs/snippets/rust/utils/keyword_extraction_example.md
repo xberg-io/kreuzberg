@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, KeywordAlgorithm, KeywordConfig};
+use xberg::{extract_file, ExtractionConfig, KeywordAlgorithm, KeywordConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         keywords: Some(KeywordConfig {
             algorithm: KeywordAlgorithm::Yake,

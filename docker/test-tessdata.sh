@@ -15,7 +15,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}Testing Kreuzberg Docker tessdata configuration...${NC}\n"
+echo -e "${YELLOW}Testing Xberg Docker tessdata configuration...${NC}\n"
 
 # Test 1: Check if tessdata path discovery logic works
 test_tessdata_discovery() {
@@ -95,17 +95,17 @@ test_user_permissions() {
 
   echo -e "${YELLOW}Test: User permissions in $test_name${NC}"
 
-  if grep -q "USER kreuzberg" "$dockerfile"; then
-    echo -e "${GREEN}✓ Non-root 'kreuzberg' user is set${NC}"
+  if grep -q "USER xberg" "$dockerfile"; then
+    echo -e "${GREEN}✓ Non-root 'xberg' user is set${NC}"
   else
     echo -e "${RED}✗ Non-root user NOT found${NC}"
     return 1
   fi
 
-  if grep -q "chown -R kreuzberg:kreuzberg" "$dockerfile"; then
-    echo -e "${GREEN}✓ Directory ownership set to kreuzberg user${NC}"
+  if grep -q "chown -R xberg:xberg" "$dockerfile"; then
+    echo -e "${GREEN}✓ Directory ownership set to xberg user${NC}"
   else
-    echo -e "${RED}✗ Directory ownership NOT set for kreuzberg user${NC}"
+    echo -e "${RED}✗ Directory ownership NOT set for xberg user${NC}"
     return 1
   fi
 

@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const WordCountProcessor = struct {
     pub fn process(self: *WordCountProcessor, result: [*c]const u8, config: [*c]const u8) !void {
@@ -37,7 +37,7 @@ const WordCountProcessor = struct {
 
 pub fn main() !void {
     var instance = WordCountProcessor{};
-    var vtable = kreuzberg.make_post_processor_vtable(WordCountProcessor, &instance);
+    var vtable = xberg.make_post_processor_vtable(WordCountProcessor, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -53,6 +53,6 @@ pub fn main() !void {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    _ = kreuzberg.register_post_processor("word-count", vtable, &instance, &out_error);
+    _ = xberg.register_post_processor("word-count", vtable, &instance, &out_error);
 }
 ```

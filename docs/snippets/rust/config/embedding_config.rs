@@ -7,7 +7,7 @@ let embedding_config = EmbeddingConfig {
     batch_size: 32,
     normalize: true,
     show_download_progress: true,
-    cache_dir: Some(std::path::PathBuf::from("~/.cache/kreuzberg/embeddings")),
+    cache_dir: Some(std::path::PathBuf::from("~/.cache/xberg/embeddings")),
     acceleration: None,
 };
 
@@ -27,7 +27,7 @@ let embedding_config = EmbeddingConfig {
     batch_size: 32,
     normalize: true,
     show_download_progress: true,
-    cache_dir: None,  // Uses default: .kreuzberg/embeddings/
+    cache_dir: None,  // Uses default: .xberg/embeddings/
     acceleration: None,
 };
 
@@ -53,7 +53,7 @@ let embedding_config = EmbeddingConfig {
 
 // Integration with ChunkingConfig
 // Add embeddings to your chunking configuration:
-use kreuzberg::{ChunkingConfig, ExtractionConfig};
+use xberg::{ChunkingConfig, ExtractionConfig};
 
 let chunking_with_embeddings = ChunkingConfig {
     max_characters: 1024,
@@ -78,7 +78,7 @@ let extraction_config = ExtractionConfig {
 //   - false: Raw embedding values
 //
 // cache_dir: Where to store downloaded models
-//   - None: Uses .kreuzberg/embeddings/ in current directory
+//   - None: Uses .xberg/embeddings/ in current directory
 //   - Some(path): Custom directory for model storage
 //
 // show_download_progress: Display download progress bar

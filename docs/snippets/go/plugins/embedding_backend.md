@@ -4,12 +4,12 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
-// MyEmbedder wraps an already-loaded embedder so kreuzberg can call back into
+// MyEmbedder wraps an already-loaded embedder so xberg can call back into
 // it during chunking and standalone embed requests. Implement the
-// kreuzberg.EmbeddingBackend interface.
+// xberg.EmbeddingBackend interface.
 type MyEmbedder struct{}
 
 func (e *MyEmbedder) Name() string    { return "my-embedder" }
@@ -34,19 +34,19 @@ func (e *MyEmbedder) Embed(texts []string) ([][]float32, error) {
 
 func main() {
 	// Register once at startup.
-	if err := kreuzberg.RegisterEmbeddingBackend(&MyEmbedder{}); err != nil {
+	if err := xberg.RegisterEmbeddingBackend(&MyEmbedder{}); err != nil {
 		log.Fatalf("failed to register embedding backend: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterEmbeddingBackend("my-embedder"); err != nil {
+		if err := xberg.UnregisterEmbeddingBackend("my-embedder"); err != nil {
 			log.Printf("warning: failed to unregister embedding backend: %v", err)
 		}
 	}()
 
 	maxDuration := uint64(30)
 	embedderName := "my-embedder"
-	config := kreuzberg.EmbeddingConfig{
-		Model: kreuzberg.EmbeddingModelType{
+	config := xberg.EmbeddingConfig{
+		Model: xberg.EmbeddingModelType{
 			Variant: "plugin",
 			Type:    "plugin",
 			Name:    &embedderName,
@@ -55,7 +55,7 @@ func main() {
 		MaxEmbedDurationSecs: &maxDuration,
 	}
 
-	vectors, err := kreuzberg.EmbedTexts([]string{"Hello, world!", "Second text"}, config)
+	vectors, err := xberg.EmbedTexts([]string{"Hello, world!", "Second text"}, config)
 	if err != nil {
 		log.Fatalf("embed failed: %v", err)
 	}

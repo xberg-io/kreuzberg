@@ -11,34 +11,34 @@ pub fn build(b: *std.Build) void {
     const ffi_path = b.option(
         []const u8,
         "ffi_path",
-        "Path to directory containing libkreuzberg_ffi.{dylib,so,dll,a}"
+        "Path to directory containing libxberg_ffi.{dylib,so,dll,a}"
     ) orelse "../../target/release";
 
     const ffi_include = b.option(
         []const u8,
         "ffi_include_path",
         "Path to directory containing the FFI C header"
-    ) orelse "../../crates/kreuzberg-ffi/include";
+    ) orelse "../../crates/xberg-ffi/include";
 
-    const module = b.addModule("kreuzberg", .{
-        .root_source_file = b.path("src/kreuzberg.zig"),
+    const module = b.addModule("xberg", .{
+        .root_source_file = b.path("src/xberg.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
     module.addLibraryPath(.{ .cwd_relative = ffi_path });
     module.addIncludePath(.{ .cwd_relative = ffi_include });
-    module.linkSystemLibrary("kreuzberg_ffi", .{});
+    module.linkSystemLibrary("xberg_ffi", .{});
 
     const test_module = b.createModule(.{
-        .root_source_file = b.path("src/kreuzberg.zig"),
+        .root_source_file = b.path("src/xberg.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
     test_module.addLibraryPath(.{ .cwd_relative = ffi_path });
     test_module.addIncludePath(.{ .cwd_relative = ffi_include });
-    test_module.linkSystemLibrary("kreuzberg_ffi", .{});
+    test_module.linkSystemLibrary("xberg_ffi", .{});
 
     const tests = b.addTest(.{
         .root_module = test_module,

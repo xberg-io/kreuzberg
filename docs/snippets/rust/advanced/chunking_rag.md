@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig};
 
 let config = ExtractionConfig {
     chunking: Some(ChunkingConfig {

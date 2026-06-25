@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +18,7 @@ int main(void) {
     const uint8_t *bytes = (const uint8_t *)json_payload;
     uintptr_t bytes_len = (uintptr_t)strlen(json_payload);
 
-    KREUZBERGExtractionResult *result = kreuzberg_extract_bytes_sync(
+    XBERGExtractionResult *result = xberg_extract_bytes_sync(
         bytes,
         bytes_len,
         "application/json",
@@ -27,16 +27,16 @@ int main(void) {
 
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
+                xberg_last_error_code(),
+                xberg_last_error_context());
         return 1;
     }
 
-    char *content = kreuzberg_extraction_result_content(result);
+    char *content = xberg_extraction_result_content(result);
     printf("Extracted JSON content: %s\n", content ? content : "(empty)");
 
-    kreuzberg_free_string(content);
-    kreuzberg_extraction_result_free(result);
+    xberg_free_string(content);
+    xberg_extraction_result_free(result);
     return 0;
 }
 ```

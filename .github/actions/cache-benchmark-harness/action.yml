@@ -1,7 +1,7 @@
 name: Cache Benchmark Harness Binary
 description: >
   Build and cache the benchmark-harness binary with intelligent caching based on source hashes.
-  Generates cache keys based on harness source + kreuzberg dependency + Cargo files,
+  Generates cache keys based on harness source + xberg dependency + Cargo files,
   restores from cache if available, builds if needed, and saves to cache.
   Validates artifacts after restore or build to ensure integrity.
 
@@ -74,27 +74,27 @@ runs:
         echo "harness-hash=$HARNESS_HASH" >> "$GITHUB_OUTPUT"
         echo "✓ Harness source hash: $HARNESS_HASH"
 
-    # Compute hash for kreuzberg dependency
-    - name: Compute kreuzberg dependency hash
-      id: kreuzberg-hash
+    # Compute hash for xberg dependency
+    - name: Compute xberg dependency hash
+      id: xberg-hash
       shell: bash
       run: |
         set -euo pipefail
 
-        echo "=== Computing Kreuzberg Dependency Hash ==="
+        echo "=== Computing Xberg Dependency Hash ==="
 
-        # Compute hash for kreuzberg crate (dependency)
-        KREUZBERG_HASH=$(scripts/ci/cache/compute-hash.sh --dirs \
-          "crates/kreuzberg" \
+        # Compute hash for xberg crate (dependency)
+        XBERG_HASH=$(scripts/ci/cache/compute-hash.sh --dirs \
+          "crates/xberg" \
           2>&1 | grep "^[a-f0-9]*$")
 
-        if [[ -z "$KREUZBERG_HASH" ]]; then
-          echo "❌ Failed to compute kreuzberg dependency hash"
+        if [[ -z "$XBERG_HASH" ]]; then
+          echo "❌ Failed to compute xberg dependency hash"
           exit 1
         fi
 
-        echo "kreuzberg-hash=$KREUZBERG_HASH" >> "$GITHUB_OUTPUT"
-        echo "✓ Kreuzberg dependency hash: $KREUZBERG_HASH"
+        echo "xberg-hash=$XBERG_HASH" >> "$GITHUB_OUTPUT"
+        echo "✓ Xberg dependency hash: $XBERG_HASH"
 
     # Compute hash for Cargo files
     - name: Compute Cargo files hash
@@ -123,7 +123,7 @@ runs:
       env:
         BUILD_PROFILE: ${{ inputs.build-profile }}
         HARNESS_HASH: ${{ steps.harness-hash.outputs.harness-hash }}
-        KREUZBERG_HASH: ${{ steps.kreuzberg-hash.outputs.kreuzberg-hash }}
+        XBERG_HASH: ${{ steps.xberg-hash.outputs.xberg-hash }}
         CARGO_HASH: ${{ steps.cargo-hash.outputs.cargo-hash }}
         CACHE_VERSION: ${{ inputs.cache-version }}
       run: |
@@ -132,8 +132,8 @@ runs:
         echo "=== Cache Key Generated ==="
 
         # Build cache key following format:
-        # harness-{profile}-{platform}-src-{harness-hash}-kreuzberg-{kreuzberg-hash}-cargo-{cargo-hash}-v{version}
-        CACHE_KEY="harness-${BUILD_PROFILE}-$(uname -m)-src-${HARNESS_HASH}-kreuzberg-${KREUZBERG_HASH}-cargo-${CARGO_HASH}-${CACHE_VERSION}"
+        # harness-{profile}-{platform}-src-{harness-hash}-xberg-{xberg-hash}-cargo-{cargo-hash}-v{version}
+        CACHE_KEY="harness-${BUILD_PROFILE}-$(uname -m)-src-${HARNESS_HASH}-xberg-${XBERG_HASH}-cargo-${CARGO_HASH}-${CACHE_VERSION}"
 
         echo "cache-key=$CACHE_KEY" >> "$GITHUB_OUTPUT"
 
@@ -143,7 +143,7 @@ runs:
         echo "  Profile:         $BUILD_PROFILE"
         echo "  Platform:        $(uname -m)"
         echo "  Harness hash:    $HARNESS_HASH"
-        echo "  Kreuzberg hash:  $KREUZBERG_HASH"
+        echo "  Xberg hash:  $XBERG_HASH"
         echo "  Cargo hash:      $CARGO_HASH"
         echo "  Cache version:   $CACHE_VERSION"
 
@@ -309,5 +309,5 @@ runs:
         echo ""
         echo "Hashes:"
         echo "  Harness:       ${{ steps.harness-hash.outputs.harness-hash }}"
-        echo "  Kreuzberg:     ${{ steps.kreuzberg-hash.outputs.kreuzberg-hash }}"
+        echo "  Xberg:     ${{ steps.xberg-hash.outputs.xberg-hash }}"
         echo "  Cargo:         ${{ steps.cargo-hash.outputs.cargo-hash }}"

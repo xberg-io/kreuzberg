@@ -1,6 +1,6 @@
-# Migrating from Unstructured to Kreuzberg
+# Migrating from Unstructured to Xberg
 
-This guide helps you migrate from Unstructured.io to Kreuzberg for document intelligence workloads.
+This guide helps you migrate from Unstructured.io to Xberg for document intelligence workloads.
 
 ## Quick Start
 
@@ -11,7 +11,7 @@ curl -X POST "https://api.unstructured.io/general/v0/general" \
   -F 'files=@document.pdf'
 ```
 
-**Kreuzberg API**:
+**Xberg API**:
 
 ```bash
 curl -X POST "http://localhost:8080/extract" \
@@ -23,9 +23,9 @@ curl -X POST "http://localhost:8080/extract" \
 
 ### Unified Output (Default)
 
-Kreuzberg's default output provides richer metadata than Unstructured:
+Xberg's default output provides richer metadata than Unstructured:
 
-**Kreuzberg Unified**:
+**Xberg Unified**:
 
 ```json
 {
@@ -49,7 +49,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 
 ### Element-Based Output
 
-**Kreuzberg** (when `output_format=element_based`):
+**Xberg** (when `output_format=element_based`):
 
 ```json
 {
@@ -109,7 +109,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 
 ## API Endpoint Mapping
 
-| Unstructured               | Kreuzberg          | Notes                             |
+| Unstructured               | Xberg          | Notes                             |
 | -------------------------- | ------------------ | --------------------------------- |
 | `POST /general/v0/general` | `POST /extract`    | Single/batch extraction           |
 | N/A                        | `POST /embed`      | Built-in embeddings (ONNX models) |
@@ -118,7 +118,7 @@ Kreuzberg's default output provides richer metadata than Unstructured:
 
 ## Element Type Mapping
 
-| Unstructured    | Kreuzberg        | Notes                               |
+| Unstructured    | Xberg        | Notes                               |
 | --------------- | ---------------- | ----------------------------------- |
 | `Title`         | `title`          | PDF hierarchy (h1-h6) detection     |
 | `NarrativeText` | `narrative_text` | Paragraphs split on double newlines |
@@ -146,10 +146,10 @@ for element in elements:
     print(f"{element.category}: {element.text}")
 ```
 
-**Kreuzberg**:
+**Xberg**:
 
 ```python
-from kreuzberg import extract_bytes
+from xberg import extract_bytes
 
 # Option 1: Element-based output
 config = {"output_format": "element_based"}
@@ -183,10 +183,10 @@ const response = await fetch("https://api.unstructured.io/general/v0/general", {
 const elements = await response.json();
 ```
 
-**Kreuzberg**:
+**Xberg**:
 
 ```typescript
-import { extractBytes } from "kreuzberg";
+import { extractBytes } from "xberg";
 
 // Option 1: Element-based output
 const result = await extractBytes(pdfBuffer, "application/pdf", {
@@ -218,7 +218,7 @@ curl -X POST "https://api.unstructured.io/general/v0/general" \
   -F 'strategy=hi_res'
 ```
 
-**Kreuzberg**:
+**Xberg**:
 
 ```bash
 # Element-based output
@@ -234,7 +234,7 @@ curl -X POST "http://localhost:8080/extract" \
 
 ## Feature Comparison
 
-### What Kreuzberg Adds
+### What Xberg Adds
 
 1. **Richer Metadata**: Format-specific discriminated unions (PDF, Excel, Email, etc.)
 2. **Native Per-Page**: `PageContent` with byte offsets, hierarchy, tables, images per page
@@ -248,13 +248,13 @@ curl -X POST "http://localhost:8080/extract" \
 ### What Unstructured Has
 
 1. **Layout Detection Models**: ML-based layout analysis (GPU-accelerated)
-2. **Cloud API**: Hosted service (Kreuzberg requires self-hosting)
+2. **Cloud API**: Hosted service (Xberg requires self-hosting)
 3. **More Element Types**: More granular element classification
 4. **Mature Ecosystem**: Larger community, more integrations
 
 ## Configuration Mapping
 
-| Unstructured Parameter                | Kreuzberg Config                     | Notes                              |
+| Unstructured Parameter                | Xberg Config                     | Notes                              |
 | ------------------------------------- | ------------------------------------ | ---------------------------------- |
 | `strategy=hi_res`                     | `pdf_options.hierarchy.enabled=true` | PDF hierarchy extraction           |
 | `coordinates=true`                    | Always included when available       | Bounding boxes in element metadata |
@@ -265,21 +265,21 @@ curl -X POST "http://localhost:8080/extract" \
 
 ## Migration Checklist
 
-- [ ] Update API endpoint URLs (Unstructured → Kreuzberg)
+- [ ] Update API endpoint URLs (Unstructured → Xberg)
 - [ ] Add `output_format=element_based` if using element-based workflow
 - [ ] Update element type references (`Title` → `title`, camelCase → snake_case)
-- [ ] Update metadata field references (Kreuzberg has richer metadata structure)
+- [ ] Update metadata field references (Xberg has richer metadata structure)
 - [ ] Test with sample documents to verify output equivalence
-- [ ] Update error handling (Kreuzberg uses HTTP 422 for validation errors)
-- [ ] Configure caching if needed (Kreuzberg has built-in file-based cache)
-- [ ] Set up embeddings if using RAG pipeline (Kreuzberg has built-in ONNX support)
+- [ ] Update error handling (Xberg uses HTTP 422 for validation errors)
+- [ ] Configure caching if needed (Xberg has built-in file-based cache)
+- [ ] Set up embeddings if using RAG pipeline (Xberg has built-in ONNX support)
 
 ## Advanced: Hybrid Approach
 
 You can use **both formats** simultaneously:
 
 ```python
-from kreuzberg import extract_bytes
+from xberg import extract_bytes
 
 result = extract_bytes(pdf_bytes, "application/pdf", {
     "output_format": "element_based",  # Get elements
@@ -309,14 +309,14 @@ for page in result.pages:
 
 ## Getting Help
 
-- **Documentation**: <https://github.com/xberg-io/Kreuzberg>
-- **Issues**: <https://github.com/xberg-io/kreuzberg/issues>
+- **Documentation**: <https://github.com/xberg-io/Xberg>
+- **Issues**: <https://github.com/xberg-io/xberg/issues>
 - **API Reference**: See `docs/api/` for endpoint documentation
 
 ## Next Steps
 
 After migration:
 
-1. Review the [Kreuzberg vs Unstructured Comparison](../comparisons/kreuzberg-vs-unstructured.md)
-2. Explore Kreuzberg-specific features (hierarchy, per-page metadata, embeddings)
+1. Review the [Xberg vs Unstructured Comparison](../comparisons/xberg-vs-unstructured.md)
+2. Explore Xberg-specific features (hierarchy, per-page metadata, embeddings)
 3. Optimize your pipeline with native Rust performance

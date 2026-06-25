@@ -3,7 +3,7 @@ use std::process::Command;
 use anyhow::Result;
 
 fn extract_with_cli(file_path: &str, output_format: &str) -> Result<String> {
-    let output = Command::new("kreuzberg")
+    let output = Command::new("xberg")
         .args(&["extract", file_path, "--format", output_format])
         .output()?;
 

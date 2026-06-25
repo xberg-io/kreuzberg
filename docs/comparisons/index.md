@@ -1,6 +1,6 @@
 # Comparisons
 
-Kreuzberg sits in a crowded space of document extraction tools. Some are general-purpose libraries that handle dozens of formats, others are laser-focused on PDFs. This page maps the landscape so you can find the right tool for your project.
+Xberg sits in a crowded space of document extraction tools. Some are general-purpose libraries that handle dozens of formats, others are laser-focused on PDFs. This page maps the landscape so you can find the right tool for your project.
 
 For performance and quality numbers across all of these tools, see the [live benchmarks](https://xberg.io/benchmarks).
 
@@ -12,17 +12,17 @@ These handle multiple document formats -- not just PDFs.
 
 | Library                                               | Language | Formats        | License      | Focus                                                            | Deep Dive                                 |
 | ----------------------------------------------------- | -------- | -------------- | ------------ | ---------------------------------------------------------------- | ----------------------------------------- |
-| **Kreuzberg**                                         | Rust     | 96             | Elastic-2.0  | High-throughput extraction with native bindings for 17 languages | --                                        |
-| [Unstructured](https://unstructured.io)               | Python   | ~31            | Apache-2.0   | Element-based output, managed cloud API                          | [Read more](kreuzberg-vs-unstructured.md) |
-| [Docling](https://github.com/docling-project/docling) | Python   | ~38            | MIT          | IBM-backed, ML-powered layout analysis                           | [Read more](kreuzberg-vs-docling.md)      |
-| [Apache Tika](https://tika.apache.org)                | Java     | 1500+ detected | Apache-2.0   | Enterprise standard, broadest format detection                   | [Read more](kreuzberg-vs-tika.md)         |
-| [MarkItDown](https://github.com/microsoft/markitdown) | Python   | ~25            | MIT          | Microsoft-backed, outputs Markdown for LLM prep                  | [Read more](kreuzberg-vs-markitdown.md)   |
-| [MinerU](https://github.com/opendatalab/MinerU)       | Python   | PDF + images   | **AGPL-3.0** | Heavy ML models for scientific document layout                   | [Read more](kreuzberg-vs-mineru.md)       |
+| **Xberg**                                         | Rust     | 96             | Elastic-2.0  | High-throughput extraction with native bindings for 17 languages | --                                        |
+| [Unstructured](https://unstructured.io)               | Python   | ~31            | Apache-2.0   | Element-based output, managed cloud API                          | [Read more](xberg-vs-unstructured.md) |
+| [Docling](https://github.com/docling-project/docling) | Python   | ~38            | MIT          | IBM-backed, ML-powered layout analysis                           | [Read more](xberg-vs-docling.md)      |
+| [Apache Tika](https://tika.apache.org)                | Java     | 1500+ detected | Apache-2.0   | Enterprise standard, broadest format detection                   | [Read more](xberg-vs-tika.md)         |
+| [MarkItDown](https://github.com/microsoft/markitdown) | Python   | ~25            | MIT          | Microsoft-backed, outputs Markdown for LLM prep                  | [Read more](xberg-vs-markitdown.md)   |
+| [MinerU](https://github.com/opendatalab/MinerU)       | Python   | PDF + images   | **AGPL-3.0** | Heavy ML models for scientific document layout                   | [Read more](xberg-vs-mineru.md)       |
 | [Pandoc](https://pandoc.org)                          | Haskell  | 45+ input      | **GPL-2.0**  | Universal document converter (cannot read PDFs)                  | --                                        |
 
 ## PDF-Specific Libraries
 
-These focus on PDF extraction only. They're not direct competitors to Kreuzberg's full format coverage, but you'll often see them in PDF-heavy pipelines.
+These focus on PDF extraction only. They're not direct competitors to Xberg's full format coverage, but you'll often see them in PDF-heavy pipelines.
 
 | Library                                                  | Language           | License      | Focus                                                              |
 | -------------------------------------------------------- | ------------------ | ------------ | ------------------------------------------------------------------ |
@@ -41,4 +41,4 @@ These focus on PDF extraction only. They're not direct competitors to Kreuzberg'
 
 !!! Info "Benchmarks"
 
-    Kreuzberg benchmarks against all of the libraries listed above. For extraction speed, quality scores, and format-by-format comparisons, see the [live benchmark dashboard](https://xberg.io/benchmarks).
+    Xberg benchmarks against all of the libraries listed above. For extraction speed, quality scores, and format-by-format comparisons, see the [live benchmark dashboard](https://xberg.io/benchmarks).

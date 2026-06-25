@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/json/elife-56337.nxml.json",
 	"file_type": "json",
 	"file_size": 352303,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+	"expected_frameworks": ["xberg", "markitdown", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

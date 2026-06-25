@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pptx/powerpoint_with_image.pptm",
 	"file_type": "pptm",
 	"file_size": 69614,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "PowerPoint Macro-Enabled Presentation with images",
 		"category": "presentation",

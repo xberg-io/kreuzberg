@@ -1,5 +1,5 @@
 ```csharp title="extract_keywords.cs"
-using Kreuzberg;
+using Xberg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = KreuzbergLib.ExtractFileSync("research_paper.pdf", config);
+var result = XbergLib.ExtractFileSync("research_paper.pdf", config);
 
 Console.WriteLine("Extracted Keywords:");
 if (result.Metadata.Keywords != null)
@@ -39,7 +39,7 @@ var tfidfConfig = new ExtractionConfig
     }
 };
 
-var tfidfResult = KreuzbergLib.ExtractFileSync("document.pdf", tfidfConfig);
+var tfidfResult = XbergLib.ExtractFileSync("document.pdf", tfidfConfig);
 
 Console.WriteLine("\nTF-IDF Keywords:");
 if (tfidfResult.Metadata.Keywords != null)

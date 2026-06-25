@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/unstructured/msg/fake-email-with-cc-and-bcc.msg",
 	"file_type": "msg",
 	"file_size": 13824,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from unstructured test suite",
 		"source": "unstructured",

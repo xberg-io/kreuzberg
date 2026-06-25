@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pdf/ocr_test_rotated_90.pdf",
 	"file_type": "pdf",
 	"file_size": 94126,
-	"expected_frameworks": ["kreuzberg", "kreuzberg-python", "kreuzberg-node", "kreuzberg-wasm", "kreuzberg-ruby"],
+	"expected_frameworks": ["xberg", "xberg-python", "xberg-node", "xberg-wasm", "xberg-ruby"],
 	"metadata": {
 		"requires_ocr": true
 	},

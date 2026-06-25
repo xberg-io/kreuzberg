@@ -1,4 +1,4 @@
-name = "kreuzberg"
+name = "xberg"
 version = "4.10.0-rc.15"
 description = "High-performance document intelligence library"
 licences = ["MIT"]

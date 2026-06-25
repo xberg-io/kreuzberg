@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ExtractionConfig, mcp::start_mcp_server_with_config};
+use xberg::{ExtractionConfig, mcp::start_mcp_server_with_config};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

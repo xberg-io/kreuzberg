@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, Validator};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+use xberg::plugins::{Plugin, Validator};
+use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
 use async_trait::async_trait;
 
 struct MinLengthValidator {
@@ -22,7 +22,7 @@ impl Validator for MinLengthValidator {
         _config: &ExtractionConfig,
     ) -> Result<()> {
         if result.content.len() < self.min_length {
-            return Err(KreuzbergError::validation(format!(
+            return Err(XbergError::validation(format!(
                 "Content too short: {} < {} characters",
                 result.content.len(),
                 self.min_length

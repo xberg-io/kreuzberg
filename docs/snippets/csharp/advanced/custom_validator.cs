@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class MinLengthValidator : IValidator
 {
@@ -16,7 +16,7 @@ class MinLengthValidator : IValidator
     {
         if (result.Content.Length < _minLength)
         {
-            throw new KreuzbergValidationException(
+            throw new XbergValidationException(
                 $"Content too short: {result.Content.Length} < {_minLength}"
             );
         }
@@ -41,7 +41,7 @@ class QualityScoreValidator : IValidator
 
         if (score < _minScore)
         {
-            throw new KreuzbergValidationException(
+            throw new XbergValidationException(
                 $"Quality score too low: {score:F2} < {_minScore:F2}"
             );
         }
@@ -55,8 +55,8 @@ class Program
         var minLengthValidator = new MinLengthValidator(minLength: 50);
         var qualityValidator = new QualityScoreValidator(minScore: 0.7);
 
-        KreuzbergLib.RegisterValidator(minLengthValidator);
-        KreuzbergLib.RegisterValidator(qualityValidator);
+        XbergLib.RegisterValidator(minLengthValidator);
+        XbergLib.RegisterValidator(qualityValidator);
 
         try
         {
@@ -65,16 +65,16 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+            var result = XbergLib.ExtractFileSync("document.pdf", config);
 
             Console.WriteLine("Validation passed");
             Console.WriteLine($"Content length: {result.Content.Length}");
         }
-        catch (KreuzbergValidationException ex)
+        catch (XbergValidationException ex)
         {
             Console.WriteLine($"Validation failed: {ex.Message}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

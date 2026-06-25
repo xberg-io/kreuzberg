@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 final class MinLengthValidator: Validator {
     func name() -> String {
@@ -37,7 +37,7 @@ final class MinLengthValidator: Validator {
 }
 
 let validator = MinLengthValidator()
-try Kreuzberg.registerValidator(validator)
+try Xberg.registerValidator(validator)
 
 // Extract a file; the validator runs in-pipeline during extraction
 let config = ExtractionConfig(

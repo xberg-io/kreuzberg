@@ -1,5 +1,5 @@
 ```typescript title="Document Structure Config (WASM)"
-import { extractBytes } from "kreuzberg-wasm";
+import { extractBytes } from "xberg-wasm";
 
 const config = {
   includeDocumentStructure: true,

@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'kreuzberg', path: '../../packages/ruby'
+gem 'xberg', path: '../../packages/ruby'
 gem 'rspec', '~> 3.13'
 gem 'rubocop', '~> 1.86'
 gem 'rubocop-rspec', '~> 3.9'

@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
 fun unregisterPlugins() {
     // Each plugin type has a static unregister helper on its bridge class.

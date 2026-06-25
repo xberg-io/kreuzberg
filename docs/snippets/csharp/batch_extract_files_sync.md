@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var files = new[] { "doc1.pdf", "doc2.docx", "doc3.pptx" };
-var results = KreuzbergLib.BatchExtractFilesSync(files, new ExtractionConfig());
+var results = XbergLib.BatchExtractFilesSync(files, new ExtractionConfig());
 
 foreach (var result in results)
 {

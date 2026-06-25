@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PdfConfig;
-use Kreuzberg\Result\ExtractedImage;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PdfConfig;
+use Xberg\Result\ExtractedImage;
 
 $config = new ExtractionConfig(
     extractImages: true,
@@ -25,8 +25,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document_with_images.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document_with_images.pdf');
 
 echo "Image Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";

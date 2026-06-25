@@ -1,9 +1,9 @@
-use kreuzberg::{extract_file, ExtractionConfig};
-use kreuzberg::keywords::{KeywordConfig, KeywordAlgorithm, YakeParams, RakeParams};
+use xberg::{extract_file, ExtractionConfig};
+use xberg::keywords::{KeywordConfig, KeywordAlgorithm, YakeParams, RakeParams};
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
-pub async fn basic_yake() -> kreuzberg::Result<()> {
+pub async fn basic_yake() -> xberg::Result<()> {
     let config = ExtractionConfig {
         keywords: Some(KeywordConfig {
             algorithm: KeywordAlgorithm::Yake,
@@ -25,7 +25,7 @@ pub async fn basic_yake() -> kreuzberg::Result<()> {
 // Example 2: Advanced YAKE with custom parameters
 // Fine-tunes YAKE with custom window size for co-occurrence analysis
 #[cfg(feature = "keywords-yake")]
-pub async fn advanced_yake() -> kreuzberg::Result<()> {
+pub async fn advanced_yake() -> xberg::Result<()> {
     let config = ExtractionConfig {
         keywords: Some(KeywordConfig {
             algorithm: KeywordAlgorithm::Yake,
@@ -49,7 +49,7 @@ pub async fn advanced_yake() -> kreuzberg::Result<()> {
 // Example 3: RAKE configuration
 // Uses RAKE algorithm for rapid keyword extraction with phrase constraints
 #[cfg(feature = "keywords-rake")]
-pub async fn rake_config() -> kreuzberg::Result<()> {
+pub async fn rake_config() -> xberg::Result<()> {
     let config = ExtractionConfig {
         keywords: Some(KeywordConfig {
             algorithm: KeywordAlgorithm::Rake,

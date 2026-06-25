@@ -1,11 +1,11 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{EmbeddingBackend, Plugin, register_embedding_backend};
-use kreuzberg::{EmbeddingConfig, EmbeddingModelType, Result, embed_texts};
+use xberg::plugins::{EmbeddingBackend, Plugin, register_embedding_backend};
+use xberg::{EmbeddingConfig, EmbeddingModelType, Result, embed_texts};
 use async_trait::async_trait;
 use std::sync::Arc;
 
 // Wrap an already-loaded embedder (e.g. a tuned ONNX session or any host-language
-// embedder) so kreuzberg can call back into it during chunking and standalone
+// embedder) so xberg can call back into it during chunking and standalone
 // embed requests.
 struct MyEmbedder {
     // Hold whatever model handles the host already owns.

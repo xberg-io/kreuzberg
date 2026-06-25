@@ -6,11 +6,11 @@
 #     --build-arg TARGET=x86_64-unknown-linux-musl \
 #     --output type=local,dest=./dist .
 #
-# Produces the napi platform artifact (kreuzberg.linux-<arch>-musl.node) at the
+# Produces the napi platform artifact (xberg.linux-<arch>-musl.node) at the
 # output root. napi-rs selects gnu vs musl at runtime via the package `libc`
 # field, so the musl `.node` flows into the existing napi prepublish path as the
-# `@kreuzberg/node-linux-{x64,arm64}-musl` package (already declared in
-# crates/kreuzberg-node/package.json optionalDependencies).
+# `@xberg/node-linux-{x64,arm64}-musl` package (already declared in
+# crates/xberg-node/package.json optionalDependencies).
 # =============================================================================
 FROM alpine:3.21 AS builder
 
@@ -59,20 +59,20 @@ ENV RUSTFLAGS="-C target-feature=-crt-static"
 
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
-COPY crates/kreuzberg/ crates/kreuzberg/
-COPY crates/kreuzberg-node/ crates/kreuzberg-node/
-COPY crates/kreuzberg-ffi/ crates/kreuzberg-ffi/
-COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
-COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
-COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
-COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
+COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-node/ crates/xberg-node/
+COPY crates/xberg-ffi/ crates/xberg-ffi/
+COPY crates/xberg-tesseract/ crates/xberg-tesseract/
+COPY crates/xberg-paddle-ocr/ crates/xberg-paddle-ocr/
+COPY crates/xberg-candle-ocr/ crates/xberg-candle-ocr/
+COPY crates/xberg-libheif/ crates/xberg-libheif/
 
 # Remove workspace members that aren't included. Mirrors Dockerfile.musl-ffi's
-# sed but KEEPS kreuzberg-node (the build target). The wasm member is matched
-# with the quoted `"crates/kreuzberg-wasm"` form so the broad header match does
-# NOT delete the `[profile.release.package.kreuzberg-wasm]` line out from under
+# sed but KEEPS xberg-node (the build target). The wasm member is matched
+# with the quoted `"crates/xberg-wasm"` form so the broad header match does
+# NOT delete the `[profile.release.package.xberg-wasm]` line out from under
 # the range delete below (which would orphan its body keys → "duplicate key").
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-cli/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-cli/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # napi build passes an explicit --target, so cargo treats it as a cross-compile
 # and looks for a triple-prefixed linker (aarch64-linux-musl-gcc /
@@ -96,14 +96,14 @@ ENV CXX_x86_64_unknown_linux_musl=g++
 
 # Build the NAPI binding for the musl target.
 #
-# napi build wraps `cargo build` and emits kreuzberg.<platform>.node. Run it via
-# npx (matching crates/kreuzberg-node/package.json's build script) so no pnpm
+# napi build wraps `cargo build` and emits xberg.<platform>.node. Run it via
+# npx (matching crates/xberg-node/package.json's build script) so no pnpm
 # workspace install is required. Add the musl target first.
 #
 # Neither --offline nor --locked: the `sed -i Cargo.toml` above removes workspace
 # members without touching Cargo.lock (see Dockerfile.musl-ffi for the rationale).
 RUN rustup target add "${TARGET}" && \
-    cd crates/kreuzberg-node && \
+    cd crates/xberg-node && \
     npx --yes -p @napi-rs/cli@^3.6.2 napi build --platform --release --target "${TARGET}" && \
     cp ./*.node /build/ && \
     strip /build/*.node

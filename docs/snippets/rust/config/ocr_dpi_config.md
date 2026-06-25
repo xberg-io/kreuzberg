@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, ImageExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig, ImageExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
             extract_images: true,

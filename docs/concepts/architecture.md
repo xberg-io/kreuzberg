@@ -1,6 +1,6 @@
 # Architecture
 
-Kreuzberg is a document extraction library with a Rust core and native bindings for Python,
+Xberg is a document extraction library with a Rust core and native bindings for Python,
 TypeScript, Ruby, and more. The core handles all the expensive work (PDF parsing, OCR, text
 processing) and exposes it through thin language-specific wrappers. Your code calls directly
 into compiled Rust. No subprocesses, no serialization, no IPC overhead.
@@ -9,7 +9,7 @@ into compiled Rust. No subprocesses, no serialization, no IPC overhead.
 
 ## Design Principles
 
-Three ideas shape how Kreuzberg is built:
+Three ideas shape how Xberg is built:
 
 1. **Rust does the heavy lifting.** Every performance-critical operation runs as native Rust code - compiled, optimized, and fast.
 2. **Plugins cross language boundaries.** A Python OCR backend can register itself with the
@@ -39,7 +39,7 @@ flowchart TB
     end
 
     subgraph engine ["Rust Core"]
-        Core["kreuzberg\ncrate"]
+        Core["xberg\ncrate"]
     end
 
     Python --> PyO3
@@ -68,9 +68,9 @@ extraction, OCR, and text processing. Results come back through the same bridge.
 There are two TypeScript packages because server and browser environments have fundamentally
 different constraints:
 
-- **`@kreuzberg/node`** (native) - compiled via NAPI-RS. Maximum performance on Node.js,
+- **`@xberg/node`** (native) - compiled via NAPI-RS. Maximum performance on Node.js,
   Bun, and Deno. Requires a platform-specific native binary.
-- **`@kreuzberg/wasm`** (WebAssembly) - compiled via wasm-bindgen. Runs in browsers,
+- **`@xberg/wasm`** (WebAssembly) - compiled via wasm-bindgen. Runs in browsers,
   Cloudflare Workers, Vercel Edge, and any JavaScript runtime. About 60-80% of native
   speed, but zero native dependencies.
 
@@ -80,11 +80,11 @@ Rule of thumb: use native on servers, Wasm in browsers and edge runtimes. See th
 
 ## Rust Core Structure
 
-The core crate (`crates/kreuzberg`) is organized into modules with clear responsibilities:
+The core crate (`crates/xberg`) is organized into modules with clear responsibilities:
 
 ```mermaid
 flowchart LR
-    subgraph crate ["kreuzberg crate"]
+    subgraph crate ["xberg crate"]
         Core["core/\nOrchestration\nPipeline entry points"]
         Plugins["plugins/\nTrait definitions\nRegistries"]
         Extractors["extractors/\nMIME → handler\nmapping"]
@@ -92,7 +92,7 @@ flowchart LR
         OCR["ocr/\nTesseract\nTable detection"]
         Text["text/\nToken reduction\nQuality scoring"]
         Types["types/\nExtractionResult\nMetadata · Chunk"]
-        Error["error/\nKreuzbergError"]
+        Error["error/\nXbergError"]
     end
 
     Core --> Plugins
@@ -119,14 +119,14 @@ flowchart LR
 | **ocr/**        | OCR orchestration - Tesseract bindings, HOCR parsing, table detection                                                                                                                                                   |
 | **text/**       | Text processing utilities - token reduction, quality scoring, string manipulation                                                                                                                                       |
 | **types/**      | Shared data structures: `ExtractionResult`, `Metadata`, `Chunk`, and friends                                                                                                                                            |
-| **error/**      | Centralized error handling with the `KreuzbergError` enum                                                                                                                                                               |
+| **error/**      | Centralized error handling with the `XbergError` enum                                                                                                                                                               |
 
 ---
 
 ## Rendering Pipeline
 
 After extraction, the raw internal document representation is passed through the
-**RendererRegistry** to produce the final output in the requested content format. Kreuzberg
+**RendererRegistry** to produce the final output in the requested content format. Xberg
 uses a comrak-based AST bridge for GFM Markdown and HTML5 rendering, ensuring high-fidelity
 output with full table, heading, and list support.
 
@@ -186,14 +186,14 @@ For detailed performance analysis, see [Performance](../guides/development.md#pe
 
 ---
 
-## Using Kreuzberg from Rust
+## Using Xberg from Rust
 
 The Rust core is a standalone library. You don't need Python or Node.js to use it:
 
 ```rust title="main.rs"
-use kreuzberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let result = extract_file_sync("document.pdf", None, &config)?;
     println!("Extracted: {}", result.content);
@@ -201,7 +201,7 @@ fn main() -> kreuzberg::Result<()> {
 }
 ```
 
-This makes Kreuzberg a fit for Rust-native applications, command-line tools, high-performance
+This makes Xberg a fit for Rust-native applications, command-line tools, high-performance
 API servers, and embedded systems where Python or Node.js aren't practical.
 
 ---
@@ -209,6 +209,6 @@ API servers, and embedded systems where Python or Node.js aren't practical.
 ## What to Read Next
 
 - [Extraction Pipeline](extraction-pipeline.md) - how files flow through the system stage by stage
-- [Plugin System](plugin-system.md) - extending Kreuzberg with custom extractors, OCR backends, and processors
+- [Plugin System](plugin-system.md) - extending Xberg with custom extractors, OCR backends, and processors
 - [Performance](../guides/development.md#performance) - why Rust matters for extraction performance
 - [Creating Plugins](../guides/plugins.md) - step-by-step plugin development guide

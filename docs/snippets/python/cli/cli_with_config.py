@@ -6,7 +6,7 @@ from pathlib import Path
 
 def extract_with_config(file_path: str, config_path: str) -> dict:
     result = subprocess.run(
-        ["kreuzberg", "extract", file_path, "--config", config_path, "--format", "json"],
+        ["xberg", "extract", file_path, "--config", config_path, "--format", "json"],
         capture_output=True,
         text=True,
     )
@@ -17,7 +17,7 @@ def extract_with_config(file_path: str, config_path: str) -> dict:
 
     return json.loads(result.stdout)
 
-config_file = Path("kreuzberg.toml")
+config_file = Path("xberg.toml")
 document = "document.pdf"
 
 print(f"Extracting {document} with config {config_file}")

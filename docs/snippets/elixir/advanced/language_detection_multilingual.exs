@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Detect all languages in multilingual document
 config = %ExtractionConfig{
@@ -9,7 +9,7 @@ config = %ExtractionConfig{
   }
 }
 
-case Kreuzberg.extract_file("multilingual.pdf", nil, config) do
+case Xberg.extract_file("multilingual.pdf", nil, config) do
   {:ok, result} ->
     IO.puts("=== Language Detection ===\n")
 

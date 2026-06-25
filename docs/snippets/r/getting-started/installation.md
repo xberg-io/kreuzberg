@@ -1,7 +1,7 @@
 ```r
 # Install from source (requires Rust toolchain)
-# install.packages("kreuzberg")
+# install.packages("xberg")
 
 # Or install from GitHub
-# remotes::install_github("xberg-io/kreuzberg", subdir = "packages/r")
+# remotes::install_github("xberg-io/xberg", subdir = "packages/r")
 ```

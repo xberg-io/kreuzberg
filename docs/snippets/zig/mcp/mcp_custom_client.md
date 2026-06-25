@@ -4,14 +4,14 @@
 const std = @import("std");
 
 // The Zig binding does not expose an MCP client. To talk to the bundled
-// `kreuzberg mcp` server, spawn the CLI as a subprocess and exchange
+// `xberg mcp` server, spawn the CLI as a subprocess and exchange
 // JSON-RPC messages over stdin/stdout.
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var child = std.process.Child.init(&.{ "kreuzberg", "mcp" }, allocator);
+    var child = std.process.Child.init(&.{ "xberg", "mcp" }, allocator);
     child.stdin_behavior = .Pipe;
     child.stdout_behavior = .Pipe;
     child.stderr_behavior = .Inherit;

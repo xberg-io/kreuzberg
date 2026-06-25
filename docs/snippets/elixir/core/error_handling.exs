@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 # Example: Handling extraction errors
-case Kreuzberg.extract_file("document.pdf") do
+case Xberg.extract_file("document.pdf") do
   {:ok, result} ->
     IO.puts("Successfully extracted content")
     IO.puts("Content length: #{byte_size(result.content)} characters")
@@ -10,7 +10,7 @@ case Kreuzberg.extract_file("document.pdf") do
 end
 
 # Example: Handling with custom error message
-result = Kreuzberg.extract_file("nonexistent.pdf")
+result = Xberg.extract_file("nonexistent.pdf")
 
 case result do
   {:ok, data} ->
@@ -20,7 +20,7 @@ case result do
 end
 
 # Example: Extract with pattern matching
-case Kreuzberg.extract(<<>>, "application/pdf") do
+case Xberg.extract(<<>>, "application/pdf") do
   {:ok, result} ->
     IO.puts("Content: #{result.content}")
   {:error, msg} when is_binary(msg) ->

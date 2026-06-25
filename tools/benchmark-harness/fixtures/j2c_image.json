@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/images_extra/rust-logo.j2c",
 	"file_type": "j2c",
 	"file_size": 89445,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "JPEG 2000 code stream image of Rust logo (J2C extension)",
 		"category": "image",

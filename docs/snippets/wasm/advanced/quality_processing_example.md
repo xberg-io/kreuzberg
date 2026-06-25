@@ -1,5 +1,5 @@
 ```typescript title="WASM - Assess Text Quality"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -55,11 +55,11 @@ console.log(
 console.log(`  Empty lines: ${(metrics.emptyLineRatio * 100).toFixed(1)}%`);
 console.log(`  Special chars: ${(metrics.specialCharRatio * 100).toFixed(2)}%`);
 console.log(`  Languages: ${metrics.estimatedLanguages.join(", ") || "unknown"}`);
-console.log(`  Kreuzberg quality score: ${result.qualityScore?.toFixed(3) || "N/A"}`);
+console.log(`  Xberg quality score: ${result.qualityScore?.toFixed(3) || "N/A"}`);
 ```
 
 ```typescript title="WASM - Quality-Based Content Filtering"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -112,7 +112,7 @@ keptChunks.slice(0, 3).forEach((c) => {
 ```
 
 ```typescript title="WASM - Content Encoding Validation"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

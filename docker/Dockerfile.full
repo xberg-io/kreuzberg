@@ -58,23 +58,23 @@ RUN mkdir -p /build/onnxruntime && \
 
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
-COPY crates/kreuzberg/ crates/kreuzberg/
-COPY crates/kreuzberg-cli/ crates/kreuzberg-cli/
-COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
-COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
-COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
-COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
+COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-cli/ crates/xberg-cli/
+COPY crates/xberg-libheif/ crates/xberg-libheif/
+COPY crates/xberg-tesseract/ crates/xberg-tesseract/
+COPY crates/xberg-paddle-ocr/ crates/xberg-paddle-ocr/
+COPY crates/xberg-candle-ocr/ crates/xberg-candle-ocr/
 
 # Remove workspace members that aren't included (Ruby, Node, Python, PHP, Elixir, tools, e2e)
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-node/d; /xberg-ffi/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # Build release binary with server features (api + full format support)
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     --mount=type=cache,target=/build/target \
-    cargo build --release --package kreuzberg-cli --features all && \
-    cp target/release/kreuzberg /build/kreuzberg && \
-    strip /build/kreuzberg
+    cargo build --release --package xberg-cli --features all && \
+    cp target/release/xberg /build/xberg && \
+    strip /build/xberg
 
 # =============================================================================
 # Runtime Stage - Minimal runtime environment
@@ -82,8 +82,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 FROM debian:trixie-slim
 
 # OCI labels for container metadata
-LABEL org.opencontainers.image.source="https://github.com/xberg-io/kreuzberg"
-LABEL org.opencontainers.image.description="Kreuzberg document intelligence - full variant"
+LABEL org.opencontainers.image.source="https://github.com/xberg-io/xberg"
+LABEL org.opencontainers.image.description="Xberg document intelligence - full variant"
 LABEL org.opencontainers.image.licenses="Elastic-2.0"
 
 WORKDIR /app
@@ -128,32 +128,32 @@ COPY --from=builder /build/onnxruntime/lib/libonnxruntime.so* /usr/local/lib/
 RUN ldconfig
 
 # Copy binary from builder
-COPY --from=builder /build/kreuzberg /usr/local/bin/kreuzberg
-RUN chmod +x /usr/local/bin/kreuzberg
+COPY --from=builder /build/xberg /usr/local/bin/xberg
+RUN chmod +x /usr/local/bin/xberg
 
 # Create non-root user
-RUN groupadd -r kreuzberg && \
-    useradd -r -g kreuzberg -d /app -s /sbin/nologin kreuzberg && \
-    mkdir -p /app/.kreuzberg && \
-    chown -R kreuzberg:kreuzberg /app
+RUN groupadd -r xberg && \
+    useradd -r -g xberg -d /app -s /sbin/nologin xberg && \
+    mkdir -p /app/.xberg && \
+    chown -R xberg:xberg /app
 
 # Create config directories for volume mounts
-RUN mkdir -p /etc/kreuzberg /app/.config/kreuzberg && \
-    chown -R kreuzberg:kreuzberg /etc/kreuzberg /app/.config/kreuzberg
+RUN mkdir -p /etc/xberg /app/.config/xberg && \
+    chown -R xberg:xberg /etc/xberg /app/.config/xberg
 
 # Create Hugging Face cache directory for embeddings models
-RUN mkdir -p /app/.kreuzberg/huggingface && \
-    chown -R kreuzberg:kreuzberg /app/.kreuzberg/huggingface
+RUN mkdir -p /app/.xberg/huggingface && \
+    chown -R xberg:xberg /app/.xberg/huggingface
 
-# Pre-download all models (PaddleOCR + layout detection) using kreuzberg cache warm
-RUN KREUZBERG_CACHE_DIR=/app/.kreuzberg \
-    /usr/local/bin/kreuzberg cache warm --cache-dir /app/.kreuzberg --format json && \
-    chown -R kreuzberg:kreuzberg /app/.kreuzberg && \
+# Pre-download all models (PaddleOCR + layout detection) using xberg cache warm
+RUN XBERG_CACHE_DIR=/app/.xberg \
+    /usr/local/bin/xberg cache warm --cache-dir /app/.xberg --format json && \
+    chown -R xberg:xberg /app/.xberg && \
     echo "All models ready (PaddleOCR + layout detection)"
 
 # Ensure read permissions on tessdata files for non-root user
 # Tessdata is installed in version-specific directory (e.g., tesseract-ocr/5 or tesseract-ocr/4)
-# Make all tessdata directories readable by the non-root kreuzberg user
+# Make all tessdata directories readable by the non-root xberg user
 RUN set -eux; \
     echo "Setting up tessdata permissions..."; \
     for dir in /usr/share/tesseract-ocr/*/tessdata /usr/share/tesseract-ocr/tessdata /usr/share/tessdata; do \
@@ -169,24 +169,24 @@ RUN set -eux; \
 # Environment configuration.
 # RUST_LOG=info is the right default here. Third-party transport crates
 # (ureq, rustls, hyper_util, tower_http, hf_hub) are pre-suppressed by the
-# kreuzberg-cli subscriber defaults in logging.rs, so they won't emit DEBUG
+# xberg-cli subscriber defaults in logging.rs, so they won't emit DEBUG
 # even at the "info" root level. HuggingFace model downloads happen once at
 # image build time via `cache warm`; runtime /extract requests hit the HF
 # disk cache under HF_HOME and generate no network traffic.
-ENV KREUZBERG_CACHE_DIR=/app/.kreuzberg \
-    HF_HOME=/app/.kreuzberg/huggingface \
+ENV XBERG_CACHE_DIR=/app/.xberg \
+    HF_HOME=/app/.xberg/huggingface \
     RUST_LOG=info \
     LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib
 
-USER kreuzberg
+USER xberg
 
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD ["/usr/local/bin/kreuzberg", "--version"]
+    CMD ["/usr/local/bin/xberg", "--version"]
 
 # Use tini as PID 1 to properly forward SIGTERM/SIGINT signals
 # This enables graceful shutdown: docker stop → SIGTERM → clean shutdown
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["kreuzberg", "serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["xberg", "serve", "--host", "0.0.0.0", "--port", "8000"]

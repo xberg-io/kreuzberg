@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import register_validator, ExtractionResult, ValidationError
+from xberg import register_validator, ExtractionResult, ValidationError
 
 class MinLengthValidator:
     def __init__(self, min_length: int = 100):

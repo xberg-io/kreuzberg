@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 // Wrap a custom embedder (e.g., CoreML, ONNX, API-based).
 // The Swift class must implement the EmbeddingBackend protocol.
@@ -55,7 +55,7 @@ final class MyEmbedder: EmbeddingBackend {
 
 // Register once at startup
 let embedder = MyEmbedder(modelUrl: URL(fileURLWithPath: "/path/to/model"))
-try Kreuzberg.registerEmbeddingBackend(embedder)
+try Xberg.registerEmbeddingBackend(embedder)
 
 print("Embedding backend 'my-embedder' registered")
 // The registered backend can now be referenced by name in EmbeddingConfig

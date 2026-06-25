@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
 
-ExtractionConfig config = Kreuzberg.discoverExtractionConfig();
-ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+ExtractionConfig config = Xberg.discoverExtractionConfig();
+ExtractionResult result = Xberg.extractFile("document.pdf", config);
 ```

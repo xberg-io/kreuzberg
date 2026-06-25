@@ -1,5 +1,5 @@
-using Kreuzberg;
-using Kreuzberg.Keywords;
+using Xberg;
+using Xberg.Keywords;
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
@@ -17,7 +17,7 @@ var basicYakeConfig = new ExtractionConfig
     }
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", basicYakeConfig);
+var result = XbergLib.ExtractFileSync("document.pdf", basicYakeConfig);
 Console.WriteLine($"Keywords: {string.Join(", ", result.Keywords)}");
 
 // Example 2: Advanced YAKE with custom parameters
@@ -39,7 +39,7 @@ var advancedYakeConfig = new ExtractionConfig
     }
 };
 
-result = KreuzbergLib.ExtractFileSync("document.pdf", advancedYakeConfig);
+result = XbergLib.ExtractFileSync("document.pdf", advancedYakeConfig);
 Console.WriteLine($"Keywords: {string.Join(", ", result.Keywords)}");
 
 // Example 3: RAKE configuration
@@ -62,5 +62,5 @@ var rakeConfig = new ExtractionConfig
     }
 };
 
-result = KreuzbergLib.ExtractFileSync("document.pdf", rakeConfig);
+result = XbergLib.ExtractFileSync("document.pdf", rakeConfig);
 Console.WriteLine($"Keywords: {string.Join(", ", result.Keywords)}");

@@ -32,7 +32,7 @@ Official Docker images built on the Rust core with Debian 13 (Trixie). Each imag
 
 |                   | **Core**                               | **Full**                                 |
 | ----------------- | -------------------------------------- | ---------------------------------------- |
-| **Image**         | `ghcr.io/xberg-io/kreuzberg:core` | `ghcr.io/xberg-io/kreuzberg:latest` |
+| **Image**         | `ghcr.io/xberg-io/xberg:core` | `ghcr.io/xberg-io/xberg:latest` |
 | **Size**          | ~1.0–1.3 GB                            | ~1.5–2.1 GB                              |
 | **Tesseract OCR** | 12 languages                           | 12 languages                             |
 | **Modern Office** | DOCX, PPTX, XLSX                       | DOCX, PPTX, XLSX                         |
@@ -48,19 +48,19 @@ All images include: Tesseract OCR (eng, spa, fra, deu, ita, por, chi-sim, chi-tr
 ### API Server (Default)
 
 ```bash title="Terminal"
-docker run -p 8000:8000 ghcr.io/xberg-io/kreuzberg:latest
+docker run -p 8000:8000 ghcr.io/xberg-io/xberg:latest
 
 # Custom port and CORS
 docker run -p 9000:9000 \
-  -e KREUZBERG_CORS_ORIGINS="https://myapp.com" \
-  ghcr.io/xberg-io/kreuzberg:latest \
+  -e XBERG_CORS_ORIGINS="https://myapp.com" \
+  ghcr.io/xberg-io/xberg:latest \
   serve --host 0.0.0.0 --port 9000
 
 # With config file
 docker run -p 8000:8000 \
-  -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/xberg-io/kreuzberg:latest \
-  serve --config /config/kreuzberg.toml
+  -v $(pwd)/xberg.toml:/config/xberg.toml \
+  ghcr.io/xberg-io/xberg:latest \
+  serve --config /config/xberg.toml
 ```
 
 See [API Server Guide](api-server.md) for endpoint documentation.
@@ -69,32 +69,32 @@ See [API Server Guide](api-server.md) for endpoint documentation.
 
 ```bash title="Terminal"
 # Extract a file
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg:latest \
   extract /data/document.pdf
 
 # Extract with OCR
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg:latest \
   extract /data/scanned.pdf --ocr true
 
 # Batch processing
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg:latest \
   batch /data/*.pdf --format json
 
 # MIME detection
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg:latest \
   detect /data/unknown-file.bin
 ```
 
 ### MCP Server
 
 ```bash title="Terminal"
-docker run ghcr.io/xberg-io/kreuzberg:latest mcp
+docker run ghcr.io/xberg-io/xberg:latest mcp
 
 # With config
 docker run \
-  -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/xberg-io/kreuzberg:latest \
-  mcp --config /config/kreuzberg.toml
+  -v $(pwd)/xberg.toml:/config/xberg.toml \
+  ghcr.io/xberg-io/xberg:latest \
+  mcp --config /config/xberg.toml
 ```
 
 See [API Server Guide - MCP Section](api-server.md#mcp-server) for integration details.
@@ -103,11 +103,11 @@ See [API Server Guide - MCP Section](api-server.md#mcp-server) for integration d
 
 | Variable                       | Default                       | Description                                                                                      |
 | ------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------ |
-| `KREUZBERG_MAX_UPLOAD_SIZE_MB` | `100`                         | Max upload size in MB                                                                            |
-| `KREUZBERG_CORS_ORIGINS`       | `*`                           | Comma-separated allowed origins                                                                  |
+| `XBERG_MAX_UPLOAD_SIZE_MB` | `100`                         | Max upload size in MB                                                                            |
+| `XBERG_CORS_ORIGINS`       | `*`                           | Comma-separated allowed origins                                                                  |
 | `RUST_LOG`                     | `info`                        | Log level: `error`, `warn`, `info`, `debug`, `trace`                                             |
-| `KREUZBERG_CACHE_DIR`          | `/app/.kreuzberg`             | Cache directory (set explicitly in Docker; outside containers defaults to platform global cache) |
-| `HF_HOME`                      | `/app/.kreuzberg/huggingface` | HuggingFace model cache                                                                          |
+| `XBERG_CACHE_DIR`          | `/app/.xberg`             | Cache directory (set explicitly in Docker; outside containers defaults to platform global cache) |
+| `HF_HOME`                      | `/app/.xberg/huggingface` | HuggingFace model cache                                                                          |
 
 Host and port are set via CLI args: `serve --host 0.0.0.0 --port 8000`.
 
@@ -116,42 +116,42 @@ Host and port are set via CLI args: `serve --host 0.0.0.0 --port 8000`.
 ```bash title="Terminal"
 # Cache persistence (embedding models, OCR cache)
 docker run -p 8000:8000 \
-  -v kreuzberg-cache:/app/.kreuzberg \
-  ghcr.io/xberg-io/kreuzberg:latest
+  -v xberg-cache:/app/.xberg \
+  ghcr.io/xberg-io/xberg:latest
 
 # Config file
 docker run -p 8000:8000 \
-  -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/xberg-io/kreuzberg:latest \
-  serve --config /config/kreuzberg.toml
+  -v $(pwd)/xberg.toml:/config/xberg.toml \
+  ghcr.io/xberg-io/xberg:latest \
+  serve --config /config/xberg.toml
 
 # Documents (read-only)
 docker run -v $(pwd)/documents:/data:ro \
-  ghcr.io/xberg-io/kreuzberg:latest \
+  ghcr.io/xberg-io/xberg:latest \
   extract /data/document.pdf
 ```
 
-!!! Note "Model Downloads" Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.kreuzberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
+!!! Note "Model Downloads" Embedding models download on first use (~90 MB – 1.2 GB depending on preset). Use a persistent volume for `/app/.xberg` in production to avoid re-downloading on container restart. Outside Docker, models are cached in the platform-specific global cache directory (for example, `~/.cache/xberg/` on Linux, `~/Library/Caches/xberg/` on macOS).
 
 ## Docker Compose
 
 ```yaml title="docker-compose.yaml"
 services:
-  kreuzberg-api:
-    image: ghcr.io/xberg-io/kreuzberg:latest
+  xberg-api:
+    image: ghcr.io/xberg-io/xberg:latest
     ports:
       - "8000:8000"
     environment:
-      - KREUZBERG_CORS_ORIGINS=https://myapp.com
-      - KREUZBERG_MAX_UPLOAD_SIZE_MB=500
+      - XBERG_CORS_ORIGINS=https://myapp.com
+      - XBERG_MAX_UPLOAD_SIZE_MB=500
       - RUST_LOG=info
     volumes:
       - ./config:/config
-      - cache-data:/app/.kreuzberg
-    command: serve --host 0.0.0.0 --port 8000 --config /config/kreuzberg.toml
+      - cache-data:/app/.xberg
+    command: serve --host 0.0.0.0 --port 8000 --config /config/xberg.toml
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "kreuzberg", "--version"]
+      test: ["CMD", "xberg", "--version"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -163,14 +163,14 @@ volumes:
 
 ## Security
 
-Images run as non-root user `kreuzberg` (UID 1000). For hardened deployments:
+Images run as non-root user `xberg` (UID 1000). For hardened deployments:
 
 ```bash title="Terminal"
 docker run --security-opt no-new-privileges \
   --read-only \
   --tmpfs /tmp \
   -p 8000:8000 \
-  ghcr.io/xberg-io/kreuzberg:latest
+  ghcr.io/xberg-io/xberg:latest
 ```
 
 Ensure mounted volumes have correct permissions:
@@ -189,7 +189,7 @@ chown -R 1000:1000 /path/to/mounted/directory
 
 ```bash title="Terminal"
 docker run -p 8000:8000 --memory=1g --cpus=1 \
-  ghcr.io/xberg-io/kreuzberg:latest
+  ghcr.io/xberg-io/xberg:latest
 ```
 
 ## Building Custom Images
@@ -203,16 +203,16 @@ docker run -p 8000:8000 --memory=1g --cpus=1 \
     --8<-- "snippets/docker/build_full.md"
 
 ```dockerfile title="Custom Dockerfile"
-FROM ghcr.io/xberg-io/kreuzberg:latest
+FROM ghcr.io/xberg-io/xberg:latest
 
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends your-package-here && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-USER kreuzberg
-COPY kreuzberg.toml /app/kreuzberg.toml
-CMD ["serve", "--config", "/app/kreuzberg.toml"]
+USER xberg
+COPY xberg.toml /app/xberg.toml
+CMD ["serve", "--config", "/app/xberg.toml"]
 ```
 
 ## Other Image Variants
@@ -221,7 +221,7 @@ The published Core and Full images cover most use cases. For specialized needs, 
 
 | Dockerfile                | What it builds                                                                        |
 | ------------------------- | ------------------------------------------------------------------------------------- |
-| `Dockerfile.cli`          | Minimal image with just the `kreuzberg` binary — good for CI pipelines and batch jobs |
+| `Dockerfile.cli`          | Minimal image with just the `xberg` binary — good for CI pipelines and batch jobs |
 | `Dockerfile.musl-build`   | Fully static Linux binaries via MUSL — runs on any distro, no dynamic libs            |
 | `Dockerfile.musl-ffi`     | Static C FFI library for language bindings (Go, Ruby, R, PHP, Elixir)                 |
 | `Dockerfile.musl-rustler` | MUSL-based Rustler NIF for Elixir                                                     |
@@ -231,11 +231,11 @@ The published Core and Full images cover most use cases. For specialized needs, 
 A stripped-down image with only the CLI binary. No server, no API — just extraction:
 
 ```bash title="Terminal"
-docker build -f docker/Dockerfile.cli -t kreuzberg-cli .
+docker build -f docker/Dockerfile.cli -t xberg-cli .
 
-docker run -v $(pwd):/data kreuzberg-cli extract /data/document.pdf
-docker run -v $(pwd):/data kreuzberg-cli batch /data/*.pdf --format json
-docker run -v $(pwd):/data kreuzberg-cli detect /data/unknown-file.bin
+docker run -v $(pwd):/data xberg-cli extract /data/document.pdf
+docker run -v $(pwd):/data xberg-cli batch /data/*.pdf --format json
+docker run -v $(pwd):/data xberg-cli detect /data/unknown-file.bin
 ```
 
 ### MUSL Static Builds
@@ -243,8 +243,8 @@ docker run -v $(pwd):/data kreuzberg-cli detect /data/unknown-file.bin
 These produce binaries with zero dynamic library dependencies. A single file that runs on any Linux — Alpine, scratch containers, bare EC2 instances, whatever.
 
 ```bash title="Terminal"
-docker build -f docker/Dockerfile.musl-build -t kreuzberg-musl-build .
-docker build -f docker/Dockerfile.musl-ffi -t kreuzberg-musl-ffi .
+docker build -f docker/Dockerfile.musl-build -t xberg-musl-build .
+docker build -f docker/Dockerfile.musl-ffi -t xberg-musl-ffi .
 ```
 
 The FFI variant builds a shared library used by the Go, Ruby, R, PHP, and Elixir bindings for portable cross-platform distribution.
@@ -261,7 +261,7 @@ The FFI variant builds a shared library used by the Go, Ruby, R, PHP, and Elixir
 
 ??? Question "Large file processing fails"
 
-    Increase memory limit (`--memory=4g`) and upload size (`-e KREUZBERG_MAX_UPLOAD_SIZE_MB=1000`).
+    Increase memory limit (`--memory=4g`) and upload size (`-e XBERG_MAX_UPLOAD_SIZE_MB=1000`).
 
 ## Next Steps
 

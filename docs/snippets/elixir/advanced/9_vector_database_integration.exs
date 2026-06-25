@@ -2,7 +2,7 @@
 # This example demonstrates how to prepare document chunks for integration with vector databases
 # by configuring chunking and processing the extracted content.
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure extraction with chunking enabled
 config = %ExtractionConfig{
@@ -14,7 +14,7 @@ config = %ExtractionConfig{
 }
 
 # Extract file with chunking
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Prepare chunks for vector database ingestion
 documents = Enum.map(result.chunks || [], fn chunk ->

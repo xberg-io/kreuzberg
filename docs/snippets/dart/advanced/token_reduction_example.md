@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -18,7 +18,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('verbose_document.pdf', null, config);
+  final result = await XbergBridge.extractFile('verbose_document.pdf', null, config);
   print('Content length after reduction: ${result.content.length}');
 }
 ```

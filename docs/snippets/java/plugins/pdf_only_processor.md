@@ -1,5 +1,5 @@
 ```java title="Java"
-import dev.kreuzberg.PostProcessor;
+import dev.xberg.PostProcessor;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -2,7 +2,7 @@
 
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 // Standalone embedding requires constructing an EmbeddingConfig directly.
@@ -12,7 +12,7 @@ import RustBridge
 // embedding via `extractionConfigFromJson` (see embedding_with_chunking).
 let texts = RustVec<RustString>()
 texts.push(value: "Hello, world!".intoRustString())
-texts.push(value: "Kreuzberg is fast".intoRustString())
+texts.push(value: "Xberg is fast".intoRustString())
 
 // `config` here is a fully-constructed EmbeddingConfig built via the
 // generated initializer in RustBridge.

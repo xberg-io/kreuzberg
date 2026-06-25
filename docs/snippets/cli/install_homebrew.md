@@ -1,4 +1,4 @@
 ```bash title="Bash"
 brew trust xberg-io/tap
-brew install xberg-io/tap/kreuzberg
+brew install xberg-io/tap/xberg
 ```

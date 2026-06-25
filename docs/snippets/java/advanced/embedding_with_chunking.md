@@ -1,10 +1,10 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.EmbeddingConfig;
-import dev.kreuzberg.EmbeddingModelType;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.EmbeddingConfig;
+import dev.xberg.EmbeddingModelType;
 import java.util.List;
 
 ExtractionConfig config = ExtractionConfig.builder()
@@ -20,7 +20,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+ExtractionResult result = Xberg.extractFile("document.pdf", config);
 
 List<Object> chunks = result.getChunks() != null ? result.getChunks() : List.of();
 for (int index = 0; index < chunks.size(); index++) {

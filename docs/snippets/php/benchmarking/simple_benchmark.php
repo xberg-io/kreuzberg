@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use function Kreuzberg\extract_file;
-use function Kreuzberg\batch_extract_files;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use function Xberg\extract_file;
+use function Xberg\batch_extract_files;
 
 class Benchmark
 {
@@ -107,8 +107,8 @@ if (file_exists($testFile)) {
 if (file_exists($testFile)) {
     $benchmark->run('PDF with table extraction', function () use ($testFile) {
         $config = new ExtractionConfig(extractTables: true);
-        $kreuzberg = new Kreuzberg($config);
-        $kreuzberg->extractFile($testFile);
+        $xberg = new Xberg($config);
+        $xberg->extractFile($testFile);
     }, 5);
 }
 
@@ -117,8 +117,8 @@ if (file_exists($testFile)) {
         $config = new ExtractionConfig(
             ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
         );
-        $kreuzberg = new Kreuzberg($config);
-        $kreuzberg->extractFile($testFile);
+        $xberg = new Xberg($config);
+        $xberg->extractFile($testFile);
     }, 3);
 }
 
@@ -169,8 +169,8 @@ $configs = [
 foreach ($configs as $name => $config) {
     if (file_exists($testFile)) {
         $benchmark->run("$name config", function () use ($testFile, $config) {
-            $kreuzberg = new Kreuzberg($config);
-            $kreuzberg->extractFile($testFile);
+            $xberg = new Xberg($config);
+            $xberg->extractFile($testFile);
         }, 5);
     }
 }

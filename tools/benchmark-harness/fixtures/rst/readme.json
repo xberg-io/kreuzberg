@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/rst/readme.rst",
 	"file_type": "rst",
 	"file_size": 903,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "rst test: readme",
 		"source": "pandoc-generated",

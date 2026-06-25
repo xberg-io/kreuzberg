@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure token reduction for LLM context windows
 # Helps manage token usage when working with large language models
@@ -16,7 +16,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("large_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("large_document.pdf", nil, config)
 
 IO.puts("Token Reduction Configuration Applied:")
 IO.puts("Token Reduction Enabled: true")

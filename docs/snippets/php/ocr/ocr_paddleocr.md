@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -16,8 +16,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned_document.pdf');
 
 echo $result->content . "\n";
 ```

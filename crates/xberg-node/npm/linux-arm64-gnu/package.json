@@ -1,0 +1,16 @@
+{
+  "name": "@xberg/node-linux-arm64-gnu",
+  "version": "1.0.0-rc.1",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xberg-io/xberg.git"
+  },
+  "main": "xberg-node.linux-arm64-gnu.node",
+  "files": ["xberg-node.linux-arm64-gnu.node"],
+  "os": ["linux"],
+  "cpu": ["arm64"],
+  "libc": ["glibc"],
+  "engines": { "node": ">= 18" },
+  "publishConfig": { "access": "public" }
+}

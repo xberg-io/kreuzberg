@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/jats/sample_article.nxml",
 	"file_type": "nxml",
 	"file_size": 7772,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "NXML article format on caffeine health effects (same as JATS)",
 		"category": "markup",

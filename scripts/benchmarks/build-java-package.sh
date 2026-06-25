@@ -25,7 +25,7 @@ mvn -q -B dependency:copy-dependencies \
   -DoutputDirectory=target/dependency
 
 # Compile the benchmark wrapper class into target/classes
-BENCH_SCRIPT="$REPO_ROOT/tools/benchmark-harness/scripts/KreuzbergExtractJava.java"
+BENCH_SCRIPT="$REPO_ROOT/tools/benchmark-harness/scripts/XbergExtractJava.java"
 if [ -f "$BENCH_SCRIPT" ]; then
   CP="target/classes"
   for jar in target/dependency/*.jar; do

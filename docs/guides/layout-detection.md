@@ -25,14 +25,14 @@ Layout detection now populates `ExtractionResult.formulas` <span class="version-
 
 _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty._
 
-!!! Note "Layout Detection Model" Kreuzberg uses only the RT-DETR v2 model for layout detection. The `preset` field is not available in `LayoutDetectionConfig`. Configure table structure recognition separately via `table_model` — see "Table Structure Models" below.
+!!! Note "Layout Detection Model" Xberg uses only the RT-DETR v2 model for layout detection. The `preset` field is not available in `LayoutDetectionConfig`. Configure table structure recognition separately via `table_model` — see "Table Structure Models" below.
 
 ## Configuration
 
 === "Python"
 
     ```python
-    from kreuzberg import ExtractionConfig, LayoutDetectionConfig, extract_file
+    from xberg import ExtractionConfig, LayoutDetectionConfig, extract_file
 
     config = ExtractionConfig(
         layout=LayoutDetectionConfig(
@@ -59,7 +59,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 === "Rust"
 
     ```rust
-    use kreuzberg::core::{ExtractionConfig, LayoutDetectionConfig};
+    use xberg::core::{ExtractionConfig, LayoutDetectionConfig};
 
     let config = ExtractionConfig {
         layout: Some(LayoutDetectionConfig {
@@ -74,7 +74,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     [layout]
     apply_heuristics = true
     # table_model = "tatr"
@@ -84,16 +84,16 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 
     ```bash title="Terminal"
     # Enable layout detection with default settings
-    kreuzberg extract document.pdf --layout --content-format markdown
+    xberg extract document.pdf --layout --content-format markdown
 
     # Custom confidence threshold
-    kreuzberg extract document.pdf --layout-confidence 0.5 --content-format markdown
+    xberg extract document.pdf --layout-confidence 0.5 --content-format markdown
 
     # Specific table model
-    kreuzberg extract document.pdf --layout --layout-table-model slanet_wired
+    xberg extract document.pdf --layout --layout-table-model slanet_wired
 
     # Combined with GPU acceleration
-    kreuzberg extract document.pdf --layout --acceleration coreml
+    xberg extract document.pdf --layout --acceleration coreml
     ```
 
 See [LayoutDetectionConfig](../reference/configuration.md#layoutdetectionconfig) for all fields.
@@ -150,7 +150,7 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "Python"
 
     ```python
-    from kreuzberg import extract_file, ExtractionConfig, LayoutDetectionConfig, PagesConfig
+    from xberg import extract_file, ExtractionConfig, LayoutDetectionConfig, PagesConfig
 
     result = await extract_file(
         "document.pdf",
@@ -195,7 +195,7 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "Rust"
 
     ```rust
-    use kreuzberg::core::{ExtractionConfig, LayoutDetectionConfig, PagesConfig};
+    use xberg::core::{ExtractionConfig, LayoutDetectionConfig, PagesConfig};
 
     let result = extract_file(
         "document.pdf",

@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/json/right_to_left_03.json",
 	"file_type": "json",
 	"file_size": 27176,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+	"expected_frameworks": ["xberg", "markitdown", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

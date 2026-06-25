@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 min_length_validator <- function(result) {
   min_length <- 50L

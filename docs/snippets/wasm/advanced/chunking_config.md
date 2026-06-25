@@ -1,5 +1,5 @@
 ```typescript title="WASM - Fixed-Size Chunks"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -22,7 +22,7 @@ result.chunks?.forEach((chunk, idx) => {
 ```
 
 ```typescript title="WASM - Markdown-Aware Chunking"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -47,7 +47,7 @@ result.chunks?.forEach((chunk) => {
 ```
 
 ```typescript title="WASM - Semantic Chunking with Topic Threshold"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

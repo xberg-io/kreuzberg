@@ -1,9 +1,9 @@
-import Kreuzberg
+import Xberg
 
 @main
 struct Demo {
   static func main() {
-    print("Demo: Kreuzberg loaded successfully")
+    print("Demo: Xberg loaded successfully")
     // Add your API calls here after code generation
   }
 }

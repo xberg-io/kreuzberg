@@ -1,0 +1,15 @@
+{
+  "name": "@xberg/node-darwin-x64",
+  "version": "1.0.0-rc.1",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xberg-io/xberg.git"
+  },
+  "main": "xberg-node.darwin-x64.node",
+  "files": ["xberg-node.darwin-x64.node"],
+  "os": ["darwin"],
+  "cpu": ["x64"],
+  "engines": { "node": ">= 18" },
+  "publishConfig": { "access": "public" }
+}

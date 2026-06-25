@@ -1,6 +1,6 @@
 # Extraction Pipeline
 
-Every file Kreuzberg processes follows the same multi-stage pipeline. A PDF, a scanned
+Every file Xberg processes follows the same multi-stage pipeline. A PDF, a scanned
 image, a spreadsheet, an email attachment: they all enter at the top and come out as a
 structured `ExtractionResult` at the bottom. The stages run in a fixed order, but several
 of them are conditional. Caching can short-circuit the entire flow. OCR only runs when
@@ -61,15 +61,15 @@ chunking), a new cache key is generated so stale results are never returned.
 
 ## 2. MIME Detection
 
-Before Kreuzberg can extract anything, it needs to know what format the file is. It resolves
+Before Xberg can extract anything, it needs to know what format the file is. It resolves
 the MIME type through one of two paths:
 
-- **Explicit:** You pass `mime_type="application/pdf"` and Kreuzberg validates it against the list of supported types.
-- **Auto-detection:** Kreuzberg reads the file extension (for example, `.pdf` →
+- **Explicit:** You pass `mime_type="application/pdf"` and Xberg validates it against the list of supported types.
+- **Auto-detection:** Xberg reads the file extension (for example, `.pdf` →
   `application/pdf`) from an internal mapping table.
 
 If the resolved MIME type isn't in the supported list, the pipeline stops immediately with
-an `UnsupportedFormat` error. No compute is wasted on files Kreuzberg can't handle.
+an `UnsupportedFormat` error. No compute is wasted on files Xberg can't handle.
 
 For the full details on how extension mapping, normalization, and validation work, see [Format Support](../reference/formats.md).
 
@@ -77,7 +77,7 @@ For the full details on how extension mapping, normalization, and validation wor
 
 ## 3. Registry Lookup
 
-With the MIME type resolved, Kreuzberg queries the extractor registry to find the
+With the MIME type resolved, Xberg queries the extractor registry to find the
 `DocumentExtractor` that handles this format. The registry is a map from MIME types to
 extractor implementations, managed by the [plugin system](plugin-system.md).
 
@@ -108,7 +108,7 @@ Each file format has a tailored extraction strategy:
 | **Images** (JPEG, PNG, TIFF, etc.) | The image bytes are loaded into memory and forwarded directly to the OCR backend. There is no text layer to extract from an image.                                                                     |
 | **XML / Plain text**               | A streaming parser processes the file incrementally. This keeps memory usage constant even for multi-gigabyte files because the entire file is never loaded at once.                                   |
 | **Email** (`.eml`, `.msg`)         | The MIME structure is parsed. The email body (plain text or HTML) is extracted as the main content. Attachments are extracted recursively using the same pipeline.                                     |
-| **Office** (DOCX, PPTX)            | The file is a ZIP archive containing XML. Kreuzberg opens the archive, locates the content XML parts, and parses the document structure into text.                                                     |
+| **Office** (DOCX, PPTX)            | The file is a ZIP archive containing XML. Xberg opens the archive, locates the content XML parts, and parses the document structure into text.                                                     |
 
 The extraction result at this point contains raw extracted text. It hasn't been validated, scored, or chunked yet.
 
@@ -116,9 +116,9 @@ The extraction result at this point contains raw extracted text. It hasn't been 
 
 ## 5. OCR (Conditional)
 
-OCR runs only when two conditions are true: the file contains images (or is an image itself), and OCR is enabled in the configuration. Even when both conditions are met, Kreuzberg applies a third check: if the format extractor already produced text, OCR is skipped. This avoids redundant processing on PDFs that have a searchable text layer.
+OCR runs only when two conditions are true: the file contains images (or is an image itself), and OCR is enabled in the configuration. Even when both conditions are met, Xberg applies a third check: if the format extractor already produced text, OCR is skipped. This avoids redundant processing on PDFs that have a searchable text layer.
 
-You can override this behavior with `force_ocr=True`, which tells Kreuzberg to always run
+You can override this behavior with `force_ocr=True`, which tells Xberg to always run
 OCR regardless of whether text was already extracted. This is useful for PDFs where the text
 layer is unreliable or incomplete.
 
@@ -143,7 +143,7 @@ flowchart LR
     style Run fill:#e8f5e9,stroke:#2e7d32
 ```
 
-Kreuzberg ships three OCR backends:
+Xberg ships three OCR backends:
 
 | Backend       | Engine               | When to use it                                                                                                               |
 | ------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -181,7 +181,7 @@ You register validators through the plugin system. See [Plugin System](plugin-sy
 
 These two steps run after validation.
 
-**Quality scoring** is optional. When `enable_quality_processing=True`, Kreuzberg analyzes the extracted text and assigns a numeric score between 0.0 and 1.0. The score factors in the ratio of alphabetic characters to non-text characters, word frequency distribution (gibberish scores low), and the presence of formatting artifacts like repeated whitespace or encoding errors. The result is stored in `result.quality_score`.
+**Quality scoring** is optional. When `enable_quality_processing=True`, Xberg analyzes the extracted text and assigns a numeric score between 0.0 and 1.0. The score factors in the ratio of alphabetic characters to non-text characters, word frequency distribution (gibberish scores low), and the presence of formatting artifacts like repeated whitespace or encoding errors. The result is stored in `result.quality_score`.
 
 **Chunking** is also optional. When you provide a `ChunkingConfig`, the extracted text is split into overlapping fragments with configurable maximum size and overlap. Each chunk records its start and end offset relative to the original text.
 
@@ -208,7 +208,7 @@ Post-processors run in three ordered stages so you can control what happens firs
 | **Middle** | Content analysis      | NER, summarisation, translation, page classification, image captioning, QR-code detection |
 | **Late**   | Final transformations | Output formatting, [redaction & anonymisation](../guides/redaction.md) |
 
-The seven OSS v5 enrichment processors all register through the shared `register_builtin()` umbrella (`crates/kreuzberg/src/plugins/processor/builtin/mod.rs`) behind their feature gates: `ner`, `redaction`, `summarization`, `translation`, `classification`, `captioning`, `qr-codes`. Each is feature-gated and registered only when its Cargo feature is active.
+The seven OSS v5 enrichment processors all register through the shared `register_builtin()` umbrella (`crates/xberg/src/plugins/processor/builtin/mod.rs`) behind their feature gates: `ner`, `redaction`, `summarization`, `translation`, `classification`, `captioning`, `qr-codes`. Each is feature-gated and registered only when its Cargo feature is active.
 
 An important design choice: **post-processor errors do not fail the extraction.** If a
 post-processor throws an exception, the error is logged and the pipeline continues with the
@@ -216,7 +216,7 @@ result as-is. This means a buggy post-processor can't take down your extraction 
 
 Redaction runs Late by design: it must see the populated `entities`, `summary`,
 `translation`, and `page_classifications` fields so it can rewrite their textual content
-before the result leaves Kreuzberg. The original pre-redaction text is dropped at the end
+before the result leaves Xberg. The original pre-redaction text is dropped at the end
 of the pipeline; only `ExtractionResult.redaction_report` carries byte offsets back into
 the original.
 

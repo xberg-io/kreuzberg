@@ -205,7 +205,7 @@ pub async fn run_pipeline_benchmark(config: &PipelineBenchmarkConfig) -> Result<
     );
 
     let dump_dir = if config.dump_outputs {
-        let dir = PathBuf::from("/tmp/kreuzberg_pipeline");
+        let dir = PathBuf::from("/tmp/xberg_pipeline");
         let _ = std::fs::create_dir_all(&dir);
         Some(dir)
     } else {

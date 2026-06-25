@@ -1,8 +1,8 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final result = await KreuzbergBridge.extractFile('document.pdf', null);
+  final result = await XbergBridge.extractFile('document.pdf', null);
 
   final pages = result.metadata.pages;
   if (pages == null) {

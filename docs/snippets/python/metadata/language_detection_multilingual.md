@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
+from xberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
 
 config = ExtractionConfig(
     language_detection=LanguageDetectionConfig(

@@ -12,15 +12,15 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
 
 $config = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned_document.pdf');
 
 echo "Quality Processing Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -106,7 +106,7 @@ $qualityConfig = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$kreuzberg = new Kreuzberg($qualityConfig);
+$xberg = new Xberg($qualityConfig);
 $qualityResults = [];
 
 foreach ($documents as $document) {
@@ -115,7 +115,7 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
     $score = $result->qualityScore ?? 0.0;
 
     $qualityResults[$document] = [

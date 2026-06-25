@@ -1,4 +1,4 @@
-import { extractFromFile, initWasm } from "@kreuzberg/wasm";
+import { extractFromFile, initWasm } from "@xberg/wasm";
 
 async function setupFileInput() {
   await initWasm();

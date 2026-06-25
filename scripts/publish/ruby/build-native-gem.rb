@@ -34,8 +34,8 @@ end
 puts "Found native extensions: #{native_extensions.join(', ')}"
 
 # Load the gemspec
-spec = Gem::Specification.load('kreuzberg.gemspec')
-abort 'ERROR: Could not load kreuzberg.gemspec' unless spec
+spec = Gem::Specification.load('xberg.gemspec')
+abort 'ERROR: Could not load xberg.gemspec' unless spec
 
 # Set platform (transforms source gem into platform gem)
 spec.platform = Gem::Platform.new(platform)

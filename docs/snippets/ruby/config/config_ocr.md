@@ -1,11 +1,11 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'tesseract',
     language: 'eng+fra',
-    tesseract_config: Kreuzberg::TesseractConfig.new(psm: 3)
+    tesseract_config: Xberg::TesseractConfig.new(psm: 3)
   )
 )
 ```

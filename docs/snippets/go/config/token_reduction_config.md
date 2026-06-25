@@ -4,13 +4,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	preserveImportant := true
-	config := kreuzberg.ExtractionConfig{
-		TokenReduction: &kreuzberg.TokenReductionOptions{
+	config := xberg.ExtractionConfig{
+		TokenReduction: &xberg.TokenReductionOptions{
 			Mode:                   "moderate",
 			PreserveImportantWords: &preserveImportant,
 		},

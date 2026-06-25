@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -31,7 +31,7 @@ fun main() {
         .withEnableQualityProcessing(true)
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("report.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("report.pdf"), null, config)
 
     val content = result.content()
     println("Content (${content.length} chars):")

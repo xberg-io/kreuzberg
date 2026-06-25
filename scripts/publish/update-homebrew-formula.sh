@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Update Formula/kreuzberg.rb in the homebrew-tap with the new tag's URL and
+# Update Formula/xberg.rb in the homebrew-tap with the new tag's URL and
 # source-tarball SHA256. The bottle DSL is updated separately by the
 # `homebrew-merge-bottles@v1` action after bottles are built.
 #
@@ -15,16 +15,16 @@ version="${VERSION:?VERSION is required (e.g. 5.0.0-rc.2)}"
 tap_dir="${TAP_DIR:?TAP_DIR is required (path to homebrew-tap checkout)}"
 dry_run="${DRY_RUN:-false}"
 
-formula="${tap_dir}/Formula/kreuzberg.rb"
+formula="${tap_dir}/Formula/xberg.rb"
 
 [[ -f "$formula" ]] || {
   echo "Missing $formula" >&2
   exit 1
 }
 
-tarball_url="https://github.com/xberg-io/kreuzberg/archive/${tag}.tar.gz"
+tarball_url="https://github.com/xberg-io/xberg/archive/${tag}.tar.gz"
 
-echo "Updating Homebrew formula for kreuzberg ${version} (tag ${tag})"
+echo "Updating Homebrew formula for xberg ${version} (tag ${tag})"
 
 if [[ "$dry_run" == "true" ]]; then
   echo "[dry-run] target formula: $formula"

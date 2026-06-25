@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var names = new List<string>
 {
@@ -9,8 +9,8 @@ var names = new List<string>
     "min_length_validator"
 };
 
-KreuzbergLib.UnregisterDocumentExtractor(names[0]);
-KreuzbergLib.UnregisterPostProcessor(names[1]);
-KreuzbergLib.UnregisterOcrBackend(names[2]);
-KreuzbergLib.UnregisterValidator(names[3]);
+XbergLib.UnregisterDocumentExtractor(names[0]);
+XbergLib.UnregisterPostProcessor(names[1]);
+XbergLib.UnregisterOcrBackend(names[2]);
+XbergLib.UnregisterValidator(names[3]);
 ```

@@ -40,16 +40,16 @@ echo "packages/ruby directory contents:"
 find . -maxdepth 1 -type f -o -maxdepth 1 -type d | head -20
 echo ""
 
-echo "=== Vendoring kreuzberg core ==="
-python3 "$REPO_ROOT/scripts/ci/ruby/vendor-kreuzberg-core.py"
+echo "=== Vendoring xberg core ==="
+python3 "$REPO_ROOT/scripts/ci/ruby/vendor-xberg-core.py"
 
 echo ""
 echo "=== Post-vendor directory state ==="
-if [ -d "ext/kreuzberg_rb/vendor" ]; then
+if [ -d "ext/xberg_rb/vendor" ]; then
   echo "Vendor directory contents:"
-  find ext/kreuzberg_rb/vendor -maxdepth 2 -type f | head -10
+  find ext/xberg_rb/vendor -maxdepth 2 -type f | head -10
 else
-  echo "WARNING: No vendor directory found in ext/kreuzberg_rb"
+  echo "WARNING: No vendor directory found in ext/xberg_rb"
 fi
 echo ""
 
@@ -70,7 +70,7 @@ bundle exec rake compile --verbose --trace 2>&1 || {
 
   echo ""
   echo "=== Checking gem installation ==="
-  gem list kreuzberg || echo "Gem not found"
+  gem list xberg || echo "Gem not found"
 
   exit 1
 }
@@ -86,7 +86,7 @@ fi
 echo ""
 
 echo "=== Verifying extension can be loaded ==="
-ruby -e "require_relative 'lib/kreuzberg'; puts 'Extension loaded successfully'" 2>&1 || {
+ruby -e "require_relative 'lib/xberg'; puts 'Extension loaded successfully'" 2>&1 || {
   echo "WARNING: Could not load extension directly"
   echo "This might be expected if gem installation is required"
 }

@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,40 +44,40 @@ static int contains_name(const char *json, const char *name) {
 int main(void) {
     const char *plugin_name = "noop-validator";
 
-    KREUZBERGKreuzbergValidatorVTable vtable = {0};
+    XBERGXbergValidatorVTable vtable = {0};
     vtable.validate = validate_fn;
     vtable.priority = priority_fn;
 
     char *err = NULL;
-    if (kreuzberg_register_validator(plugin_name, vtable, NULL, &err) != 0) {
+    if (xberg_register_validator(plugin_name, vtable, NULL, &err) != 0) {
         fprintf(stderr, "register failed: %s\n", err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 
-    char *list_after_register = kreuzberg_list_validators();
+    char *list_after_register = xberg_list_validators();
     if (!contains_name(list_after_register, plugin_name)) {
         fprintf(stderr, "FAIL: validator missing after register\n");
-        kreuzberg_free_string(list_after_register);
+        xberg_free_string(list_after_register);
         return 1;
     }
     printf("PASS: %s present after register\n", plugin_name);
-    kreuzberg_free_string(list_after_register);
+    xberg_free_string(list_after_register);
 
-    if (kreuzberg_unregister_validator(plugin_name, &err) != 0) {
+    if (xberg_unregister_validator(plugin_name, &err) != 0) {
         fprintf(stderr, "unregister failed: %s\n", err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 
-    char *list_after_unregister = kreuzberg_list_validators();
+    char *list_after_unregister = xberg_list_validators();
     if (contains_name(list_after_unregister, plugin_name)) {
         fprintf(stderr, "FAIL: validator still present after unregister\n");
-        kreuzberg_free_string(list_after_unregister);
+        xberg_free_string(list_after_unregister);
         return 1;
     }
     printf("PASS: %s absent after unregister\n", plugin_name);
-    kreuzberg_free_string(list_after_unregister);
+    xberg_free_string(list_after_unregister);
 
     return 0;
 }

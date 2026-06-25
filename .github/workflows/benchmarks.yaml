@@ -88,8 +88,8 @@ jobs:
         with:
           build-profile: release
 
-      - name: Build kreuzberg-cli (release, all features)
-        run: cargo build --locked --release -p kreuzberg-cli --features all
+      - name: Build xberg-cli (release, all features)
+        run: cargo build --locked --release -p xberg-cli --features all
 
       - name: Validate ground truth
         run: cargo run --locked --release -p benchmark-harness -- validate-gt --fixtures tools/benchmark-harness/fixtures/
@@ -97,13 +97,13 @@ jobs:
       - name: Log disk space before artifact upload
         run: scripts/ci/validate/show-disk-space.sh "Disk space before artifact upload"
 
-      - name: Upload build artifacts (harness binary + kreuzberg-cli)
+      - name: Upload build artifacts (harness binary + xberg-cli)
         uses: actions/upload-artifact@v7
         with:
           name: benchmarks-target
           path: |
             target/release/benchmark-harness
-            target/release/kreuzberg
+            target/release/xberg
           retention-days: 7
           if-no-files-found: warn
 
@@ -173,7 +173,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-${{ matrix.output_format }}-${{ matrix.pipeline }}
+          FRAMEWORK: xberg-${{ matrix.output_format }}-${{ matrix.pipeline }}
           MODE: ${{ matrix.mode }}
           OUTPUT_FORMAT: ${{ matrix.output_format }}
           ITERATIONS: ${{ env.ITERATIONS }}
@@ -718,7 +718,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/checkout@v6
         with:
@@ -853,19 +853,19 @@ jobs:
           echo "=== Validating framework completeness (schema v2.4.0) ==="
 
           # Keys follow the v2.4.0 aggregate-key convention:
-          #   kreuzberg-*  →  "{framework_name}:{mode}"       (format is encoded in the name)
+          #   xberg-*  →  "{framework_name}:{mode}"       (format is encoded in the name)
           #   competitors  →  "{framework}:{output_format}:{mode}"
           #
-          # kreuzberg: 2 pipelines × 2 output formats × 2 modes = 8
+          # xberg: 2 pipelines × 2 output formats × 2 modes = 8
           # competitors: 10 entries (format varies per tool: docling/unstructured/mineru emit
           #   both markdown+plaintext; markitdown/pymupdf4llm markdown-only; tika/liteparse plaintext-only)
           # total expected: 18
           EXPECTED_FRAMEWORKS=(
-            # kreuzberg-* (slim keys — format encoded in name)
-            "kreuzberg-markdown-baseline:single"   "kreuzberg-markdown-baseline:batch"
-            "kreuzberg-markdown-layout:single"     "kreuzberg-markdown-layout:batch"
-            "kreuzberg-plaintext-baseline:single"   "kreuzberg-plaintext-baseline:batch"
-            "kreuzberg-plaintext-layout:single"     "kreuzberg-plaintext-layout:batch"
+            # xberg-* (slim keys — format encoded in name)
+            "xberg-markdown-baseline:single"   "xberg-markdown-baseline:batch"
+            "xberg-markdown-layout:single"     "xberg-markdown-layout:batch"
+            "xberg-plaintext-baseline:single"   "xberg-plaintext-baseline:batch"
+            "xberg-plaintext-layout:single"     "xberg-plaintext-layout:batch"
             # competitors (format in key; single-file only — no batch API)
             "docling:markdown:single"    "docling:plaintext:single"
             "markitdown:markdown:single"

@@ -21,10 +21,10 @@ for rid in linux-arm64 linux-x64 osx-arm64 win-x64; do
   echo ""
   echo "Checking $rid..."
 
-  if unzip -l "$pkg" | grep -E "runtimes/${rid}/native/.*kreuzberg_ffi\\.(dll|so|dylib)"; then
-    echo "  ✓ Found kreuzberg_ffi for $rid"
+  if unzip -l "$pkg" | grep -E "runtimes/${rid}/native/.*xberg_ffi\\.(dll|so|dylib)"; then
+    echo "  ✓ Found xberg_ffi for $rid"
   else
-    echo "  ✗ Missing kreuzberg_ffi binary for $rid" >&2
+    echo "  ✗ Missing xberg_ffi binary for $rid" >&2
     missing_files=$((missing_files + 1))
   fi
 

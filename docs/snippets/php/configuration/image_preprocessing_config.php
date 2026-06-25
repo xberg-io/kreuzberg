@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\ImagePreprocessingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\ImagePreprocessingConfig;
 
 echo "Example 1: Default Image Preprocessing\n";
 echo "======================================\n";
@@ -107,8 +107,8 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config5);
-$result = $kreuzberg->extractFile('noisy_scan.pdf');
+$xberg = new Xberg($config5);
+$result = $xberg->extractFile('noisy_scan.pdf');
 
 echo "Denoising: Enabled\n";
 echo "Best for:\n";
@@ -254,7 +254,7 @@ $config10 = new ExtractionConfig(
     )
 );
 
-$result10 = (new Kreuzberg($config10))->extractFile('poor_quality_scan.pdf');
+$result10 = (new Xberg($config10))->extractFile('poor_quality_scan.pdf');
 
 echo "Processing pipeline:\n";
 echo "1. Load image\n";

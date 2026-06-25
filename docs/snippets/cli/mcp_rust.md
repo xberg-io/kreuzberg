@@ -1,8 +1,8 @@
 ```bash title="Bash"
 # Start MCP server (stdio transport)
-kreuzberg mcp
+xberg mcp
 
 # With custom config
-kreuzberg mcp --config kreuzberg.toml
+xberg mcp --config xberg.toml
 
 ```

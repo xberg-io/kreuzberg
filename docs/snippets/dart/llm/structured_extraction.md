@@ -3,7 +3,7 @@
 ```dart title="Dart"
 import 'dart:convert';
 
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final schema = jsonEncode(<String, Object?>{
@@ -38,7 +38,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('paper.pdf', null, config);
+  final result = await XbergBridge.extractFile('paper.pdf', null, config);
   final structured = result.structuredOutput;
   if (structured != null) {
     print(structured);

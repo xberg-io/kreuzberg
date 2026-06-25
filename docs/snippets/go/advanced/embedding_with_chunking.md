@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -14,12 +14,12 @@ func main() {
 	batchSize := int32(32)
 	showProgress := false
 
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
-				Model:                kreuzberg.EmbeddingModelType_Preset("balanced"),
+			Embedding: &xberg.EmbeddingConfig{
+				Model:                xberg.EmbeddingModelType_Preset("balanced"),
 				Normalize:            &normalize,
 				BatchSize:            &batchSize,
 				ShowDownloadProgress: &showProgress,
@@ -27,7 +27,7 @@ func main() {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return

@@ -1,5 +1,5 @@
 # Configure chunking for RAG/vector search
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   chunking: %{
     "enabled" => true,
     "max_characters" => 512,
@@ -8,7 +8,7 @@ config = %Kreuzberg.ExtractionConfig{
   }
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Prepare chunks for vector embedding and search
 chunks_for_embedding = result.chunks

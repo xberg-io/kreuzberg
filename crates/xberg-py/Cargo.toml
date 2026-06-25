@@ -1,0 +1,34 @@
+[package]
+name = "xberg-py"
+version = "1.0.0-rc.1"
+edition = "2024"
+license = "Elastic-2.0"
+description = "High-performance document intelligence library"
+readme = false
+keywords = ["document", "extraction", "ocr", "pdf", "text"]
+categories = []
+
+# `pyo3-async-runtimes` and `serde_json` are emitted unconditionally above so
+# the manifest is stable across regens, but for umbrella crates with no
+# async fns or no JSON-marshalled return types they are genuinely unused.
+# The conditional `async-trait` / `tokio` / `futures` deps are similarly
+# flagged when the umbrella has trait-bridge / streaming adapters configured
+# but no actual async-trait / async callsite in the generated PyO3 shim.
+[package.metadata.cargo-machete]
+ignored = ["pyo3-async-runtimes", "serde_json", "async-trait", "tokio"]
+
+[lib]
+name = "_xberg"
+crate-type = ["cdylib"]
+
+[features]
+extension-module = ["pyo3/extension-module", "pyo3/abi3-py310"]
+
+[dependencies]
+async-trait = "0.1"
+pyo3 = { version = "0.29" }
+pyo3-async-runtimes = { version = "0.29", features = ["tokio-runtime"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+xberg = { version = "1.0.0-rc.1", path = "../xberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "markdown-footnotes", "redaction", "enrichment", "heuristics", "presets", "structured"] }

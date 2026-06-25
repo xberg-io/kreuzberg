@@ -1,10 +1,10 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
-var extractors = KreuzbergLib.ListDocumentExtractors();
-var processors = KreuzbergLib.ListPostProcessors();
-var ocrBackends = KreuzbergLib.ListOcrBackends();
-var validators = KreuzbergLib.ListValidators();
+var extractors = XbergLib.ListDocumentExtractors();
+var processors = XbergLib.ListPostProcessors();
+var ocrBackends = XbergLib.ListOcrBackends();
+var validators = XbergLib.ListValidators();
 
 Console.WriteLine($"Extractors: {string.Join(", ", extractors)}");
 Console.WriteLine($"Processors: {string.Join(", ", processors)}");

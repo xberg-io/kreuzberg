@@ -1,8 +1,8 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_characters: 1000,
     overlap: 200
   )
@@ -10,10 +10,10 @@ config = Kreuzberg::ExtractionConfig.new(
 ```
 
 ```ruby title="Ruby - Markdown with Heading Context"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     chunker_type: "markdown",
     max_characters: 500,
     overlap: 50,
@@ -22,7 +22,7 @@ config = Kreuzberg::ExtractionConfig.new(
   )
 )
 
-result = Kreuzberg.extract_file("document.md", config)
+result = Xberg.extract_file("document.md", config)
 
 result.chunks.each do |chunk|
   if chunk.metadata.heading_context
@@ -35,10 +35,10 @@ end
 ```
 
 ```ruby title="Ruby - Prepend Heading Context"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     chunker_type: "markdown",
     max_characters: 500,
     overlap: 50,
@@ -46,7 +46,7 @@ config = Kreuzberg::ExtractionConfig.new(
   )
 )
 
-result = Kreuzberg.extract_file("document.md", config)
+result = Xberg.extract_file("document.md", config)
 
 result.chunks.each do |chunk|
   # Each chunk's content is prefixed with its heading breadcrumb

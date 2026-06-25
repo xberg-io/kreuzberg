@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionConfig, NerConfig, LlmConfig
+from xberg import ExtractionConfig, NerConfig, LlmConfig
 
 config = ExtractionConfig(
     ner=NerConfig(

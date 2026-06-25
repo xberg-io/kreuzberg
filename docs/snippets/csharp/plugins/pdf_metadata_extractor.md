@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var enricher = new PdfMetadataEnricher();
 PostProcessorRegistry.Register(enricher);

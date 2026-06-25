@@ -4,14 +4,14 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	useCache := true
 	enableQP := true
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", &kreuzberg.ExtractionConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", &xberg.ExtractionConfig{
 		UseCache:                &useCache,
 		EnableQualityProcessing: &enableQP,
 	})

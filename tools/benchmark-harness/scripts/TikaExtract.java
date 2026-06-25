@@ -1,4 +1,4 @@
-package dev.kreuzberg.benchmark;
+package dev.xberg.benchmark;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,4 +1,4 @@
-"""Deterministic fixture generator for kreuzberg integration tests.
+"""Deterministic fixture generator for xberg integration tests.
 
 Each submodule produces a single category of on-disk fixture (DOCX
 track-changes, ODT tracked changes, XLSX revision headers, PPTX comments,

@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class MyEmbedder implements EmbeddingBackend {
     public function name(): string {
@@ -37,14 +37,14 @@ class MyEmbedder implements EmbeddingBackend {
 
 // Register the embedding backend at startup
 $embedder = new MyEmbedder();
-Kreuzberg::registerEmbeddingBackend($embedder);
+Xberg::registerEmbeddingBackend($embedder);
 
 // Use the registered backend in an EmbeddingConfig
 $config = new EmbeddingConfig();
 $config->model = "my-embedder";
 $config->maxEmbedDurationSecs = 30;
 
-$vectors = Kreuzberg::embedTexts(
+$vectors = Xberg::embedTexts(
     ["Hello, world!", "Second text"],
     $config
 );

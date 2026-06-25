@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -24,18 +24,18 @@ func main() {
 		log.Fatalf("marshal schema: %v", err)
 	}
 
-	config := kreuzberg.ExtractionConfig{
-		StructuredExtraction: &kreuzberg.StructuredExtractionConfig{
+	config := xberg.ExtractionConfig{
+		StructuredExtraction: &xberg.StructuredExtractionConfig{
 			Schema:     schema,
 			SchemaName: "PaperMetadata",
 			Strict:     true,
-			Llm: kreuzberg.LlmConfig{
+			Llm: xberg.LlmConfig{
 				Model: "openai/gpt-4o-mini",
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFile("paper.pdf", nil, config)
+	result, err := xberg.ExtractFile("paper.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extract: %v", err)
 	}

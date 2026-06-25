@@ -7,7 +7,7 @@ collaborative-edit metadata) into the zip alongside the required
 ``xl/_rels/workbook.xml.rels``.
 
 The on-disk shape matches what
-``crates/kreuzberg/src/extraction/excel.rs::parse_revision_headers_xml``
+``crates/xberg/src/extraction/excel.rs::parse_revision_headers_xml``
 consumes: ``<header guid="{...}" userName="..." dateTime="..."/>`` under
 ``<headers xmlns="…spreadsheetml/2006/main">``.
 """

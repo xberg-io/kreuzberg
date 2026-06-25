@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -17,7 +17,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync("multilingual_document.pdf", config);
+            var result = await XbergLib.ExtractFileAsync("multilingual_document.pdf", config);
 
             var languages = result.DetectedLanguages ?? new List<string>();
 
@@ -33,7 +33,7 @@ class Program
             Console.WriteLine($"Total content: {result.Content.Length} characters");
             Console.WriteLine($"MIME type: {result.MimeType}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Processing failed: {ex.Message}");
         }

@@ -1,4 +1,4 @@
-use kreuzberg::{ExtractionConfig, HierarchyConfig, PdfConfig};
+use xberg::{ExtractionConfig, HierarchyConfig, PdfConfig};
 
 // Example 1: Basic hierarchy extraction
 // Enabled with default k_clusters=6 for standard H1-H6 heading hierarchy.

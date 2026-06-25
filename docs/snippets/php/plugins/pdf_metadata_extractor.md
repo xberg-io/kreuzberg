@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class PdfMetadataExtractor implements PostProcessor {
     public function name(): string {
@@ -58,7 +58,7 @@ class PdfMetadataExtractor implements PostProcessor {
 
 // Register the PDF metadata extractor
 $processor = new PdfMetadataExtractor();
-Kreuzberg::registerPostProcessor($processor);
+Xberg::registerPostProcessor($processor);
 
 echo "PDF metadata extractor registered\n";
 ```

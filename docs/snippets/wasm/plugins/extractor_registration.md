@@ -8,7 +8,7 @@ import init, {
   unregisterDocumentExtractor,
   listDocumentExtractors,
   extractBytes,
-} from "kreuzberg-wasm";
+} from "xberg-wasm";
 
 await init();
 

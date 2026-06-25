@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # extract_bytes is the async variant; the call blocks the calling R thread
 # until the underlying tokio task completes. Use future/promises if you need

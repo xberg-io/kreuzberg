@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 
 class Program
@@ -7,28 +7,28 @@ class Program
     {
         try
         {
-            var extractors = KreuzbergLib.ListDocumentExtractors();
+            var extractors = XbergLib.ListDocumentExtractors();
             Console.WriteLine("Registered Document Extractors:");
             foreach (var extractor in extractors)
             {
                 Console.WriteLine($"  - {extractor}");
             }
 
-            var ocrBackends = KreuzbergLib.ListOcrBackends();
+            var ocrBackends = XbergLib.ListOcrBackends();
             Console.WriteLine("\nRegistered OCR Backends:");
             foreach (var backend in ocrBackends)
             {
                 Console.WriteLine($"  - {backend}");
             }
 
-            var processors = KreuzbergLib.ListPostProcessors();
+            var processors = XbergLib.ListPostProcessors();
             Console.WriteLine("\nRegistered Post-Processors:");
             foreach (var processor in processors)
             {
                 Console.WriteLine($"  - {processor}");
             }
 
-            var validators = KreuzbergLib.ListValidators();
+            var validators = XbergLib.ListValidators();
             Console.WriteLine("\nRegistered Validators:");
             foreach (var validator in validators)
             {
@@ -36,16 +36,16 @@ class Program
             }
 
             var customProcessor = new CustomPostProcessor();
-            KreuzbergLib.RegisterPostProcessor(customProcessor);
+            XbergLib.RegisterPostProcessor(customProcessor);
             Console.WriteLine($"\nRegistered custom post-processor: {customProcessor.Name}");
 
-            KreuzbergLib.UnregisterPostProcessor(customProcessor.Name);
+            XbergLib.UnregisterPostProcessor(customProcessor.Name);
             Console.WriteLine($"Unregistered post-processor: {customProcessor.Name}");
 
-            KreuzbergLib.ClearValidators();
+            XbergLib.ClearValidators();
             Console.WriteLine("All validators cleared");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Plugin registry error: {ex.Message}");
         }

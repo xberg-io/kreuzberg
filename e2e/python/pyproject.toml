@@ -6,7 +6,7 @@ requires = [
 ]
 
 [project]
-name = "kreuzberg-e2e"
+name = "xberg-e2e"
 version = "0.0.0"
 description = "End-to-end tests"
 requires-python = ">=3.10"
@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "kreuzberg",
+  "xberg",
   "pytest>=7.4",
   "pytest-asyncio>=0.23",
   "pytest-timeout>=2.1",
@@ -29,7 +29,7 @@ dependencies = [
 packages = []
 
 [tool.uv]
-sources.kreuzberg = { path = "../../packages/python" }
+sources.xberg = { path = "../../packages/python" }
 
 [tool.ruff]
 line-length = 120

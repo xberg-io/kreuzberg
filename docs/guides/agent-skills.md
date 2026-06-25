@@ -1,17 +1,17 @@
 # AI Coding Assistants
 
-The Kreuzberg plugin teaches AI coding assistants how to use the library — covering extraction, configuration, OCR, chunking, embeddings, batch processing, error handling, and plugins across Python, Node.js/TypeScript, Rust, and CLI.
+The Xberg plugin teaches AI coding assistants how to use the library — covering extraction, configuration, OCR, chunking, embeddings, batch processing, error handling, and plugins across Python, Node.js/TypeScript, Rust, and CLI.
 
 ## Installing
 
-Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
+Install the Xberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Xberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
 
 <details open>
 <summary><strong>Claude Code</strong></summary>
 
 ```text
 /plugin marketplace add xberg-io/plugins
-/plugin install kreuzberg@kreuzberg
+/plugin install xberg@xberg
 ```
 
 </details>
@@ -23,13 +23,13 @@ Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xb
 /plugins add https://github.com/xberg-io/plugins
 ```
 
-Then search for `kreuzberg` and select **Install Plugin**.
+Then search for `xberg` and select **Install Plugin**.
 </details>
 
 <details>
 <summary><strong>Cursor</strong></summary>
 
-Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **Kreuzberg**.
+Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **Xberg**.
 </details>
 
 <details>
@@ -46,7 +46,7 @@ gemini extensions install https://github.com/xberg-io/plugins
 
 ```text
 droid plugin marketplace add https://github.com/xberg-io/plugins
-droid plugin install kreuzberg@kreuzberg
+droid plugin install xberg@xberg
 ```
 
 </details>
@@ -56,7 +56,7 @@ droid plugin install kreuzberg@kreuzberg
 
 ```text
 copilot plugin marketplace add https://github.com/xberg-io/plugins
-copilot plugin install kreuzberg@kreuzberg
+copilot plugin install xberg@xberg
 ```
 
 </details>
@@ -69,7 +69,7 @@ Add the package to `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@kreuzberg/opencode-kreuzberg"]
+  "plugin": ["@xberg/opencode-xberg"]
 }
 ```
 
@@ -90,7 +90,7 @@ When your AI coding assistant discovers the skill, it knows:
 === "Python"
 
     ```python
-    from kreuzberg import extract_file, extract_file_sync, ExtractionConfig, OcrConfig
+    from xberg import extract_file, extract_file_sync, ExtractionConfig, OcrConfig
 
     result = await extract_file("document.pdf")
     print(result.content)
@@ -105,7 +105,7 @@ When your AI coding assistant discovers the skill, it knows:
 === "Node.js"
 
     ```typescript
-    import { extractFile, extractFileSync } from '@kreuzberg/node';
+    import { extractFile, extractFileSync } from '@xberg/node';
 
     const result = await extractFile('document.pdf');
     console.log(result.content);
@@ -114,7 +114,7 @@ When your AI coding assistant discovers the skill, it knows:
 === "Rust"
 
     ```rust
-    use kreuzberg::{extract_file, ExtractionConfig};
+    use xberg::{extract_file, ExtractionConfig};
 
     let config = ExtractionConfig::default();
     let result = extract_file("document.pdf", None, &config).await?;
@@ -123,8 +123,8 @@ When your AI coding assistant discovers the skill, it knows:
 === "CLI"
 
     ```bash
-    kreuzberg extract document.pdf
-    kreuzberg extract document.pdf --format json --output-format markdown
+    xberg extract document.pdf
+    xberg extract document.pdf --format json --output-format markdown
     ```
 
 ## Further Reading

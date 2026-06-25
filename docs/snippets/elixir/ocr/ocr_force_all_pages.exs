@@ -3,7 +3,7 @@
 # By default, OCR is only applied when needed (scanned content detected)
 # Use force_all_pages to ensure OCR runs on every page regardless
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configuration with OCR forced on all pages
 config = %ExtractionConfig{
@@ -28,7 +28,7 @@ config = %ExtractionConfig{
 IO.puts("Starting OCR extraction with force_all_pages enabled...")
 start_time = System.monotonic_time(:millisecond)
 
-case Kreuzberg.extract_file("mixed_document.pdf", nil, config) do
+case Xberg.extract_file("mixed_document.pdf", nil, config) do
   {:ok, result} ->
     elapsed_ms = System.monotonic_time(:millisecond) - start_time
 

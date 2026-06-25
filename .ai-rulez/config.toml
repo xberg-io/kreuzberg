@@ -2,7 +2,7 @@
 # Documentation: https://github.com/Goldziher/ai-rulez
 
 version = '4.0'
-name = 'Kreuzberg'
+name = 'Xberg'
 description = 'Rust document intelligence library with active Python, TypeScript/Node, Ruby, PHP, Go, Java, C#, Elixir, R, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C FFI bindings'
 gitignore = true
 presets = ['claude', 'copilot', 'cursor', 'antigravity', 'codex']
@@ -28,31 +28,31 @@ builtins = [
 ]
 
 [[includes]]
-name = 'kreuzberg-core'
+name = 'xberg-core'
 source = 'https://github.com/xberg-io/ai-rulez.git'
 path = 'modules/core'
 merge_strategy = 'local-override'
 
 [[includes]]
-name = 'kreuzberg-languages'
+name = 'xberg-languages'
 source = 'https://github.com/xberg-io/ai-rulez.git'
 path = 'modules/languages'
 merge_strategy = 'local-override'
 
 [[includes]]
-name = 'kreuzberg-cicd'
+name = 'xberg-cicd'
 source = 'https://github.com/xberg-io/ai-rulez.git'
 path = 'modules/cicd'
 merge_strategy = 'local-override'
 
 [[includes]]
-name = 'kreuzberg-infrastructure'
+name = 'xberg-infrastructure'
 source = 'https://github.com/xberg-io/ai-rulez.git'
 path = 'modules/infrastructure'
 merge_strategy = 'local-override'
 
 [[includes]]
-name = 'kreuzberg-e2e-generator'
+name = 'xberg-e2e-generator'
 source = 'https://github.com/xberg-io/ai-rulez.git'
 path = 'modules/e2e-generator'
 merge_strategy = 'local-override'

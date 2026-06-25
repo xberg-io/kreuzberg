@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 quality_score_validator <- function(result) {
   min_score <- 0.5

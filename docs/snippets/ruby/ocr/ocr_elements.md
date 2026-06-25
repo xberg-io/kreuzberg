@@ -1,14 +1,14 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'paddleocr',
     language: 'eng'
   )
 )
 
-result = Kreuzberg.extract_file_sync('scanned.pdf', config: config)
+result = Xberg.extract_file_sync('scanned.pdf', config: config)
 
 result.ocr_elements&.each do |element|
   puts "Text: #{element.text}"

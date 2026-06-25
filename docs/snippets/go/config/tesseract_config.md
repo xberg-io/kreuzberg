@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -13,11 +13,11 @@ func main() {
 	enableTableDetection := true
 	whitelist := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,!?"
 
-	config := kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	config := xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:  "tesseract",
 			Language: "eng+fra+deu",
-			TesseractConfig: &kreuzberg.TesseractConfig{
+			TesseractConfig: &xberg.TesseractConfig{
 				Psm:                   &psm,
 				Oem:                   &oem,
 				MinConfidence:         0.8,
@@ -27,7 +27,7 @@ func main() {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, config)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

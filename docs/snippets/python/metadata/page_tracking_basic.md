@@ -1,4 +1,4 @@
-From Kreuzberg import extract_file_sync, ExtractionConfig, PageConfig
+From Xberg import extract_file_sync, ExtractionConfig, PageConfig
 
 Config = ExtractionConfig(
 pages=PageConfig(extract_pages=True)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-pkg_dir="${1:-crates/kreuzberg-node}"
+pkg_dir="${1:-crates/xberg-node}"
 
 if [ ! -d "$pkg_dir" ]; then
   echo "Package directory not found: $pkg_dir" >&2

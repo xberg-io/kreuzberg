@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	// List all registered document extractors
-	extractors, err := kreuzberg.ListDocumentExtractors()
+	extractors, err := xberg.ListDocumentExtractors()
 	if err != nil {
 		log.Fatalf("list document extractors: %v", err)
 	}
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	// List all registered post-processors
-	processors, err := kreuzberg.ListPostProcessors()
+	processors, err := xberg.ListPostProcessors()
 	if err != nil {
 		log.Fatalf("list post processors: %v", err)
 	}
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// List all registered OCR backends
-	backends, err := kreuzberg.ListOCRBackends()
+	backends, err := xberg.ListOCRBackends()
 	if err != nil {
 		log.Fatalf("list OCR backends: %v", err)
 	}
@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// List all registered validators
-	validators, err := kreuzberg.ListValidators()
+	validators, err := xberg.ListValidators()
 	if err != nil {
 		log.Fatalf("list validators: %v", err)
 	}

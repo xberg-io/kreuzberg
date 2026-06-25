@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
+use Xberg\Xberg;
+use function Xberg\extract_file;
 
 $result = extract_file('document.pdf');
 $metadata = $result->metadata;

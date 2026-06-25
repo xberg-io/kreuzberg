@@ -1,17 +1,17 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final extractors = await KreuzbergBridge.listDocumentExtractors();
+  final extractors = await XbergBridge.listDocumentExtractors();
   print('Registered extractors: $extractors');
 
-  final processors = await KreuzbergBridge.listPostProcessors();
+  final processors = await XbergBridge.listPostProcessors();
   print('Registered processors: $processors');
 
-  final backends = await KreuzbergBridge.listOcrBackends();
+  final backends = await XbergBridge.listOcrBackends();
   print('Registered OCR backends: $backends');
 
-  final validators = await KreuzbergBridge.listValidators();
+  final validators = await XbergBridge.listValidators();
   print('Registered validators: $validators');
 }
 ```

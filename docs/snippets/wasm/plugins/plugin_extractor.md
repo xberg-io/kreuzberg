@@ -3,7 +3,7 @@
 Demonstrate the pattern for using registered plugins during document extraction.
 
 ```typescript title="WASM"
-import init, { extractBytes, registerPostProcessor } from "kreuzberg-wasm";
+import init, { extractBytes, registerPostProcessor } from "xberg-wasm";
 
 await init();
 

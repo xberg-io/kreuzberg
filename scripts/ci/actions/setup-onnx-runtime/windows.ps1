@@ -1,7 +1,7 @@
 $OrtVersion = $args[0]
 if ([string]::IsNullOrWhiteSpace($OrtVersion)) { throw "Usage: windows.ps1 <ortVersion> [destDir] [archId] [strategy]" }
 
-$DestDir = if ($args.Count -ge 2 -and -not [string]::IsNullOrWhiteSpace($args[1])) { $args[1] } else { "crates/kreuzberg-node" }
+$DestDir = if ($args.Count -ge 2 -and -not [string]::IsNullOrWhiteSpace($args[1])) { $args[1] } else { "crates/xberg-node" }
 $ArchId = if ($args.Count -ge 3) { $args[2] } else { "" }
 $Strategy = if ($args.Count -ge 4 -and -not [string]::IsNullOrWhiteSpace($args[3])) { $args[3] } else { "system" }
 

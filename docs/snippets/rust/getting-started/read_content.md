@@ -1,8 +1,8 @@
 ```rust title="Rust"
 use std::fs;
-use kreuzberg::extract_bytes_sync;
+use xberg::extract_bytes_sync;
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let data = fs::read("document.pdf")?;
     let result = extract_bytes_sync(&data, "application/pdf", &Default::default())?;
 

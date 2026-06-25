@@ -7,22 +7,22 @@ declare(strict_types=1);
  * Comprehensive Error Handling
  *
  * Demonstrate proper error handling for document extraction operations.
- * Shows how to catch and handle different types of Kreuzberg exceptions.
+ * Shows how to catch and handle different types of Xberg exceptions.
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Exceptions\KreuzbergException;
-use Kreuzberg\Exceptions\ParsingException;
-use Kreuzberg\Exceptions\OcrException;
-use Kreuzberg\Exceptions\ValidationException;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Exceptions\XbergException;
+use Xberg\Exceptions\ParsingException;
+use Xberg\Exceptions\OcrException;
+use Xberg\Exceptions\ValidationException;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 try {
-    $result = $kreuzberg->extractFile('document.pdf');
+    $result = $xberg->extractFile('document.pdf');
     echo "Extracted " . strlen($result->content) . " characters\n";
 } catch (ParsingException $e) {
     echo "Failed to parse document: " . $e->getMessage() . "\n";
@@ -30,7 +30,7 @@ try {
 } catch (OcrException $e) {
     echo "OCR processing failed: " . $e->getMessage() . "\n";
     echo "Suggestion: Check if document is scanned and OCR is properly configured\n";
-} catch (KreuzbergException $e) {
+} catch (XbergException $e) {
     echo "Extraction error: " . $e->getMessage() . "\n";
     if ($e->getPrevious() !== null) {
         echo "Caused by: " . $e->getPrevious()->getMessage() . "\n";
@@ -45,14 +45,14 @@ try {
         throw new \RuntimeException('Failed to read file');
     }
 
-    $result = $kreuzberg->extractBytes($pdfBytes, 'application/pdf', $config);
+    $result = $xberg->extractBytes($pdfBytes, 'application/pdf', $config);
     echo "Extracted from bytes: " . substr($result->content, 0, 100) . "...\n";
 } catch (ValidationException $e) {
     echo "Invalid configuration or input: " . $e->getMessage() . "\n";
     echo "Details: " . $e->getFile() . " at line " . $e->getLine() . "\n";
 } catch (OcrException $e) {
     echo "OCR failed: " . $e->getMessage() . "\n";
-} catch (KreuzbergException $e) {
+} catch (XbergException $e) {
     echo "Extraction failed: " . $e->getMessage() . "\n";
 } catch (\RuntimeException $e) {
     echo "File system error: " . $e->getMessage() . "\n";
@@ -64,10 +64,10 @@ $failedExtractions = [];
 
 foreach ($files as $file) {
     try {
-        $result = $kreuzberg->extractFile($file);
+        $result = $xberg->extractFile($file);
         $successfulExtractions[$file] = $result;
         echo "Success: $file\n";
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         $failedExtractions[$file] = [
             'error' => $e->getMessage(),
             'type' => get_class($e),
@@ -81,15 +81,15 @@ echo "Successful: " . count($successfulExtractions) . "\n";
 echo "Failed: " . count($failedExtractions) . "\n";
 
 function extractWithRetry(
-    Kreuzberg $kreuzberg,
+    Xberg $xberg,
     string $file,
     int $maxRetries = 3
-): ?\Kreuzberg\Result\ExtractionResult {
+): ?\Xberg\Result\ExtractionResult {
     $attempt = 0;
 
     while ($attempt < $maxRetries) {
         try {
-            return $kreuzberg->extractFile($file);
+            return $xberg->extractFile($file);
         } catch (OcrException $e) {
             $attempt++;
             if ($attempt >= $maxRetries) {
@@ -98,7 +98,7 @@ function extractWithRetry(
             }
             echo "OCR attempt $attempt failed, retrying...\n";
             sleep(1);
-        } catch (KreuzbergException $e) {
+        } catch (XbergException $e) {
             echo "Fatal error (no retry): " . $e->getMessage() . "\n";
             return null;
         }
@@ -107,7 +107,7 @@ function extractWithRetry(
     return null;
 }
 
-$result = extractWithRetry($kreuzberg, 'difficult_scan.pdf');
+$result = extractWithRetry($xberg, 'difficult_scan.pdf');
 if ($result !== null) {
     echo "Successfully extracted with retry: " . strlen($result->content) . " chars\n";
 }

@@ -3,15 +3,15 @@ $ErrorActionPreference = "Stop"
 $target = $env:CLI_TARGET
 if ([string]::IsNullOrWhiteSpace($target)) { throw "CLI_TARGET is required" }
 
-$stage = "kreuzberg-cli-$target"
+$stage = "xberg-cli-$target"
 Remove-Item -Recurse -Force $stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $stage | Out-Null
 
 $candidates = @(
-  ("target/" + $target + "/release/kreuzberg.exe"),
-  ("target/release/kreuzberg.exe"),
-  ("target/" + $target + "/release/kreuzberg-cli.exe"),
-  ("target/release/kreuzberg-cli.exe")
+  ("target/" + $target + "/release/xberg.exe"),
+  ("target/release/xberg.exe"),
+  ("target/" + $target + "/release/xberg-cli.exe"),
+  ("target/release/xberg-cli.exe")
 )
 
 $exePath = $null

@@ -4,13 +4,13 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	preserve := true
-	result, err := kreuzberg.ExtractFileSync("document.pdf", &kreuzberg.ExtractionConfig{
-		TokenReduction: &kreuzberg.TokenReductionConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", &xberg.ExtractionConfig{
+		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:                  "moderate",
 			PreserveImportantWords: &preserve,
 		},

@@ -1,10 +1,10 @@
 # Format Support
 
-Kreuzberg supports 96 file formats across major categories through native Rust extractors.
+Xberg supports 96 file formats across major categories through native Rust extractors.
 
 ## Overview
 
-Kreuzberg uses a high-performance Rust core with one registry-backed extraction path:
+Xberg uses a high-performance Rust core with one registry-backed extraction path:
 
 - **Native Rust Extractors**: Fast, memory-efficient extractors for all supported formats
 
@@ -148,7 +148,7 @@ Audio/video formats use Whisper ONNX transcription when the `transcription` Carg
 
 ## Wire Formats vs Content Formats
 
-Kreuzberg distinguishes between two kinds of format:
+Xberg distinguishes between two kinds of format:
 
 ### Wire Formats (`--format`)
 
@@ -213,7 +213,7 @@ graph TD
 
 ## Feature Flags
 
-Kreuzberg uses Cargo feature flags to enable optional format and processing support. The default feature set is `tokio-runtime` plus `simd-utf8`; format support is opt-in for Rust consumers.
+Xberg uses Cargo feature flags to enable optional format and processing support. The default feature set is `tokio-runtime` plus `simd-utf8`; format support is opt-in for Rust consumers.
 
 | Feature Flag | Enables |
 | ------------ | ------- |
@@ -239,7 +239,7 @@ To enable specific features:
 ```toml title="Cargo.toml"
 [dependencies]
 # Enable only PDF and Excel format support
-kreuzberg = { version = "5", features = ["pdf", "excel"] }
+xberg = { version = "5", features = ["pdf", "excel"] }
 ```
 
 To enable all features with `--all-features`:
@@ -255,21 +255,21 @@ All format extraction features (no server components):
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "5", features = ["full"] }
+xberg = { version = "5", features = ["full"] }
 ```
 
 Server features (API, MCP) with common format support:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "5", features = ["server"] }
+xberg = { version = "5", features = ["server"] }
 ```
 
 CLI features with commonly used formats:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "5", features = ["cli"] }
+xberg = { version = "5", features = ["cli"] }
 ```
 
 ## System Dependencies
@@ -294,7 +294,7 @@ sudo dnf install tesseract
 scoop install tesseract
 ```
 
-**Docker Note**: All system dependencies are pre-installed in official Kreuzberg Docker images.
+**Docker Note**: All system dependencies are pre-installed in official Xberg Docker images.
 
 ### HEIC / HEIF / AVIF (Optional)
 
@@ -302,7 +302,7 @@ Pixel decoding for HEIC-family formats requires the `heic` feature and libheif a
 
 ## Format Detection
 
-Kreuzberg automatically detects file formats using:
+Xberg automatically detects file formats using:
 
 1. **File Extension Mapping**: the supported-format registry maps extensions to MIME types
 2. **mime_guess Crate**: Fallback for unknown extensions
@@ -315,50 +315,50 @@ Example with manual override:
 === "C#"
 
     ```csharp title="format_detection.cs"
-    using Kreuzberg;
+    using Xberg;
 
     // Automatic format detection from file extension
-    var result = KreuzbergClient.ExtractFileSync("document.pdf");
+    var result = XbergClient.ExtractFileSync("document.pdf");
 
     // Manual MIME type override for files without extensions
-    var result2 = KreuzbergClient.ExtractFileAsBytes(rawBytes, "application/pdf", null);
+    var result2 = XbergClient.ExtractFileAsBytes(rawBytes, "application/pdf", null);
     ```
 
 === "Go"
 
     ```go title="format_detection.go"
-    import "kreuzberg"
+    import "xberg"
 
     // Automatic format detection from file extension
-    result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+    result, err := xberg.ExtractFileSync("document.pdf", nil)
     if err != nil {
         log.Fatal(err)
     }
 
     // Manual MIME type override for ambiguous files
-    config := &kreuzberg.ExtractionConfig{}
+    config := &xberg.ExtractionConfig{}
     mimeBytes, _ := ioutil.ReadFile("document.dat")
-    result2, err := kreuzberg.ExtractBytesSync(mimeBytes, "application/pdf", config)
+    result2, err := xberg.ExtractBytesSync(mimeBytes, "application/pdf", config)
     ```
 
 === "Java"
 
     ```java title="FormatDetection.java"
-    import dev.kreuzberg.Kreuzberg;
-    import dev.kreuzberg.ExtractionResult;
+    import dev.xberg.Xberg;
+    import dev.xberg.ExtractionResult;
 
     // Automatic format detection from file extension
-    ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+    ExtractionResult result = Xberg.extractFile("document.pdf");
 
     // Manual MIME type override using detectMimeType for byte arrays
-    String mimeType = Kreuzberg.detectMimeType(new byte[]{/* PDF header bytes */});
-    ExtractionResult result2 = Kreuzberg.extractFileAsBytes(rawBytes, mimeType, null);
+    String mimeType = Xberg.detectMimeType(new byte[]{/* PDF header bytes */});
+    ExtractionResult result2 = Xberg.extractFileAsBytes(rawBytes, mimeType, null);
     ```
 
 === "Python"
 
     ```python title="format_detection.py"
-    from kreuzberg import extract_file
+    from xberg import extract_file
 
     # Automatic format detection from file extension
     result = extract_file("document.pdf")
@@ -370,23 +370,23 @@ Example with manual override:
 === "Ruby"
 
     ```ruby title="format_detection.rb"
-    require 'kreuzberg'
+    require 'xberg'
 
     # Automatic format detection from file extension
-    result = Kreuzberg.extract_file_sync('document.pdf')
+    result = Xberg.extract_file_sync('document.pdf')
 
     # Manual MIME type override for files with ambiguous extensions
-    config = Kreuzberg::Config::Extraction.new
-    result = Kreuzberg.extract_file_sync('document.dat', mime_type: 'application/pdf', config: config)
+    config = Xberg::Config::Extraction.new
+    result = Xberg.extract_file_sync('document.dat', mime_type: 'application/pdf', config: config)
     ```
 
 === "Rust"
 
     ```rust title="format_detection.rs"
-    use kreuzberg::{extract_file, ExtractionConfig};
+    use xberg::{extract_file, ExtractionConfig};
 
     #[tokio::main]
-    async fn main() -> kreuzberg::Result<()> {
+    async fn main() -> xberg::Result<()> {
         let config = ExtractionConfig::default();
 
         // Automatic format detection from file extension
@@ -402,7 +402,7 @@ Example with manual override:
 === "TypeScript"
 
     ```typescript title="format_detection.ts"
-    import { extractFile } from '@kreuzberg/node';
+    import { extractFile } from '@xberg/node';
 
     // Automatic format detection from file extension
     const result = await extractFile('document.pdf');
@@ -422,7 +422,7 @@ OCR is available for:
 ### Configuration
 
 ```python title="ocr_configuration.py"
-from kreuzberg import extract_file, ExtractionConfig, OcrConfig, TesseractConfig
+from xberg import extract_file, ExtractionConfig, OcrConfig, TesseractConfig
 
 # Configure OCR with multi-language support and custom Tesseract settings
 config = ExtractionConfig(
@@ -441,7 +441,7 @@ result = extract_file("scanned_document.pdf", config=config)
 
 ### Automatic OCR Decision
 
-For PDFs, Kreuzberg automatically decides whether OCR is needed by analyzing native text:
+For PDFs, Xberg automatically decides whether OCR is needed by analyzing native text:
 
 - **No OCR**: Document has substantial, meaningful text (>64 non-whitespace chars, >32 chars/page average)
 - **OCR Fallback**: Document appears scanned (mostly punctuation, very low alphanumeric ratio)
@@ -469,7 +469,7 @@ Override with `force_ocr=True` to always use OCR regardless of native text quali
 All formats support concurrent batch processing:
 
 ```python title="batch_processing.py"
-from kreuzberg import batch_extract_file, ExtractionConfig
+from xberg import batch_extract_file, ExtractionConfig
 
 # Process multiple files concurrently for better throughput
 paths = ["file1.pdf", "file2.docx", "file3.xlsx"]
@@ -482,7 +482,7 @@ results = batch_extract_file(paths, config=config)
 
 ### Known Limitations
 
-- **Password-Protected PDFs**: Requires `crypto` extra (`pip install kreuzberg[crypto]`)
+- **Password-Protected PDFs**: Requires `crypto` extra (`pip install xberg[crypto]`)
 - **Legacy Excel (.xls)**: Formula evaluation not supported (values only)
 - **Encrypted Office Documents**: Password protection not supported
 - **Multi-page TIFF**: OCR processes first page only (configurable)
@@ -499,13 +499,13 @@ results = batch_extract_file(paths, config=config)
 
 ## Adding New Formats
 
-Kreuzberg's plugin system allows adding custom format extractors:
+Xberg's plugin system allows adding custom format extractors:
 
 === "C#"
 
     ```csharp title="CustomExtractor.cs"
-    using Kreuzberg;
-    using Kreuzberg.Plugins;
+    using Xberg;
+    using Xberg.Plugins;
 
     // Custom document extractor for proprietary format support
     public class CustomExtractor : IDocumentExtractor
@@ -527,8 +527,8 @@ Kreuzberg's plugin system allows adding custom format extractors:
         }
     }
 
-    // Register the custom extractor with Kreuzberg
-    KreuzbergClient.RegisterDocumentExtractor(new CustomExtractor());
+    // Register the custom extractor with Xberg
+    XbergClient.RegisterDocumentExtractor(new CustomExtractor());
     ```
 
 === "Go"
@@ -537,7 +537,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
     package main
 
     import (
-        "kreuzberg"
+        "xberg"
         "log"
     )
 
@@ -552,10 +552,10 @@ Kreuzberg's plugin system allows adding custom format extractors:
         return []string{"application/x-custom"}
     }
 
-    func (e *CustomExtractor) ExtractBytes(content []byte, mimeType string, config *kreuzberg.ExtractionConfig) (*kreuzberg.ExtractionResult, error) {
+    func (e *CustomExtractor) ExtractBytes(content []byte, mimeType string, config *xberg.ExtractionConfig) (*xberg.ExtractionResult, error) {
         // Implement custom parsing logic for your file format
         text := parseCustomFormat(content)
-        return &kreuzberg.ExtractionResult{
+        return &xberg.ExtractionResult{
             Content:  text,
             MimeType: mimeType,
             Success:  true,
@@ -564,7 +564,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
 
     // Register the custom extractor during package initialization
     func init() {
-        if err := kreuzberg.RegisterDocumentExtractor("custom-format-extractor", &CustomExtractor{}); err != nil {
+        if err := xberg.RegisterDocumentExtractor("custom-format-extractor", &CustomExtractor{}); err != nil {
             log.Fatal(err)
         }
     }
@@ -573,10 +573,10 @@ Kreuzberg's plugin system allows adding custom format extractors:
 === "Java"
 
     ```java title="CustomExtractor.java"
-    import dev.kreuzberg.Kreuzberg;
-    import dev.kreuzberg.DocumentExtractorProtocol;
-    import dev.kreuzberg.ExtractionResult;
-    import dev.kreuzberg.config.ExtractionConfig;
+    import dev.xberg.Xberg;
+    import dev.xberg.DocumentExtractorProtocol;
+    import dev.xberg.ExtractionResult;
+    import dev.xberg.config.ExtractionConfig;
 
     // Custom document extractor for unsupported file formats
     public class CustomExtractor implements DocumentExtractorProtocol {
@@ -602,13 +602,13 @@ Kreuzberg's plugin system allows adding custom format extractors:
     }
 
     // Register the custom extractor
-    Kreuzberg.registerDocumentExtractor(new CustomExtractor());
+    Xberg.registerDocumentExtractor(new CustomExtractor());
     ```
 
 === "Python"
 
     ```python title="custom_extractor.py"
-    from kreuzberg import DocumentExtractor, ExtractionResult, Metadata
+    from xberg import DocumentExtractor, ExtractionResult, Metadata
 
     # Custom extractor for proprietary or unsupported file formats
     class CustomExtractor(DocumentExtractor):
@@ -627,8 +627,8 @@ Kreuzberg's plugin system allows adding custom format extractors:
                 metadata=Metadata()
             )
 
-    # Register the custom extractor with Kreuzberg's registry
-    from kreuzberg import get_document_extractor_registry
+    # Register the custom extractor with Xberg's registry
+    from xberg import get_document_extractor_registry
     registry = get_document_extractor_registry()
     registry.register(CustomExtractor())
     ```
@@ -636,7 +636,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
 === "Ruby"
 
     ```ruby title="custom_extractor.rb"
-    require 'kreuzberg'
+    require 'xberg'
 
     # Custom document extractor for new file format support
     class CustomExtractor
@@ -651,7 +651,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
       def extract_bytes(content, mime_type, config)
         # Implement your custom format parsing logic
         text = parse_custom_format(content)
-        Kreuzberg::Result.new(
+        Xberg::Result.new(
           content: text,
           mime_type: mime_type,
           metadata: {}
@@ -660,14 +660,14 @@ Kreuzberg's plugin system allows adding custom format extractors:
     end
 
     # Register the custom extractor
-    Kreuzberg.register_document_extractor(CustomExtractor.new)
+    Xberg.register_document_extractor(CustomExtractor.new)
     ```
 
 === "Rust"
 
     ```rust title="custom_extractor.rs"
-    use kreuzberg::plugins::{DocumentExtractor, Plugin};
-    use kreuzberg::types::ExtractionResult;
+    use xberg::plugins::{DocumentExtractor, Plugin};
+    use xberg::types::ExtractionResult;
     use async_trait::async_trait;
 
     // Custom document extractor for proprietary file formats
@@ -690,7 +690,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
             content: &[u8],
             mime_type: &str,
             config: &ExtractionConfig,
-        ) -> kreuzberg::Result<ExtractionResult> {
+        ) -> xberg::Result<ExtractionResult> {
             // Implement format-specific parsing logic
             let text = parse_custom_format(content)?;
             Ok(ExtractionResult {
@@ -705,8 +705,8 @@ Kreuzberg's plugin system allows adding custom format extractors:
         }
     }
 
-    // Register the custom extractor with Kreuzberg's plugin registry
-    use kreuzberg::plugins::registry::get_document_extractor_registry;
+    // Register the custom extractor with Xberg's plugin registry
+    use xberg::plugins::registry::get_document_extractor_registry;
     use std::sync::Arc;
 
     let registry = get_document_extractor_registry();
@@ -716,7 +716,7 @@ Kreuzberg's plugin system allows adding custom format extractors:
 === "TypeScript"
 
     ```typescript title="custom_extractor.ts"
-    import { registerDocumentExtractor, type DocumentExtractorProtocol } from '@kreuzberg/node';
+    import { registerDocumentExtractor, type DocumentExtractorProtocol } from '@xberg/node';
 
     // Custom document extractor for new or proprietary file formats
     class CustomExtractor implements DocumentExtractorProtocol {

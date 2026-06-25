@@ -1,21 +1,21 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'tesseract',
     language: 'eng+deu'
   ),
-  chunking: Kreuzberg::ChunkingConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_characters: 1000,
     overlap: 100
   ),
-  language_detection: Kreuzberg::LanguageDetectionConfig.new,
+  language_detection: Xberg::LanguageDetectionConfig.new,
   use_cache: true,
   enable_quality_processing: true
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 
 result.chunks&.each { |chunk| puts chunk[0..100] }
 puts "Languages: #{result.detected_languages.inspect}"

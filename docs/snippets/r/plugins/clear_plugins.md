@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Clear all custom OCR backends
 clear_ocr_backends()

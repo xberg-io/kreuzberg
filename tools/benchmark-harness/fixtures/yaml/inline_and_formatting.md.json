@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/yaml/inline_and_formatting.md.yaml",
 	"file_type": "yaml",
 	"file_size": 17428,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

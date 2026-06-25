@@ -1,10 +1,14 @@
 ---
-description: "Kreuzberg – Extract text, tables, metadata, and audio transcripts from 96 file formats with a Rust core and polyglot SDKs. No GPU required."
+description: "Xberg – Extract text, tables, metadata, and audio transcripts from 96 file formats with a Rust core and polyglot SDKs. No GPU required."
 ---
 
-# Kreuzberg
+# Xberg
 
 Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, metadata, and audio transcripts from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
+
+!!! note "Project formerly named Xberg"
+
+    Xberg is the continuation of Xberg, starting fresh with version 1.0.0-rc.1. The previous version 1.0.0-rc.1 remains available at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
 
 <div class="hero-badges" markdown>
 
@@ -17,7 +21,7 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 
 ---
 
-## Why Kreuzberg
+## Why Xberg
 
 <div class="grid cards" markdown>
 
@@ -55,32 +59,32 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 
 | Language                | Package                                        | Docs                                         |
 | :---------------------- | :--------------------------------------------- | :------------------------------------------- |
-| **Python**              | `pip install kreuzberg`                        | [API Reference](reference/api-python.md)     |
-| **TypeScript (Native)** | `npm install @kreuzberg/node`                  | [API Reference](reference/api-typescript.md) |
-| **TypeScript (WASM)**   | `npm install @kreuzberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
-| **Rust**                | `cargo add kreuzberg`                          | [API Reference](reference/api-rust.md)       |
-| **Go**                  | `go get github.com/xberg-io/kreuzberg/v5` | [API Reference](reference/api-go.md)         |
-| **Java / Kotlin JVM**   | Maven Central `dev.kreuzberg:kreuzberg`        | [API Reference](reference/api-java.md)       |
-| **Kotlin Android**      | Maven Central `dev.kreuzberg:kreuzberg-android` | [API Reference](reference/api-kotlin-android.md) |
-| **C#**                  | `dotnet add package Kreuzberg`                 | [API Reference](reference/api-csharp.md)     |
-| **Ruby**                | `gem install kreuzberg`                        | [API Reference](reference/api-ruby.md)       |
-| **PHP**                 | `composer require xberg-io/kreuzberg`         | [API Reference](reference/api-php.md)        |
-| **Elixir**              | `{:kreuzberg, "~> 5.0.0-rc.17"}`               | [API Reference](reference/api-elixir.md)     |
-| **R**                   | r-universe `kreuzberg`                         | [API Reference](reference/api-r.md)          |
-| **Dart / Flutter**      | `dart pub add kreuzberg`                       | [API Reference](reference/api-dart.md)       |
+| **Python**              | `pip install xberg`                        | [API Reference](reference/api-python.md)     |
+| **TypeScript (Native)** | `npm install @xberg/node`                  | [API Reference](reference/api-typescript.md) |
+| **TypeScript (WASM)**   | `npm install @xberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
+| **Rust**                | `cargo add xberg`                          | [API Reference](reference/api-rust.md)       |
+| **Go**                  | `go get github.com/xberg-io/xberg/v1` | [API Reference](reference/api-go.md)         |
+| **Java / Kotlin JVM**   | Maven Central `dev.xberg:xberg`        | [API Reference](reference/api-java.md)       |
+| **Kotlin Android**      | Maven Central `dev.xberg:xberg-android` | [API Reference](reference/api-kotlin-android.md) |
+| **C#**                  | `dotnet add package Xberg`                 | [API Reference](reference/api-csharp.md)     |
+| **Ruby**                | `gem install xberg`                        | [API Reference](reference/api-ruby.md)       |
+| **PHP**                 | `composer require xberg-io/xberg`         | [API Reference](reference/api-php.md)        |
+| **Elixir**              | `{:xberg, "~> 1.0"}`               | [API Reference](reference/api-elixir.md)     |
+| **R**                   | r-universe `xberg`                         | [API Reference](reference/api-r.md)          |
+| **Dart / Flutter**      | `dart pub add xberg`                       | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                          | [API Reference](reference/api-swift.md)      |
 | **Zig**                 | `zig fetch --save` from GitHub                 | [API Reference](reference/api-zig.md)        |
 | **C (FFI)**             | Shared library + header                        | [API Reference](reference/api-c.md)          |
-| **CLI**                 | `brew install xberg-io/tap/kreuzberg`     | [CLI Guide](cli/usage.md)                    |
-| **Docker**              | `ghcr.io/xberg-io/kreuzberg`              | [Docker Guide](guides/docker.md)             |
+| **CLI**                 | `brew install xberg-io/tap/xberg`     | [CLI Guide](cli/usage.md)                    |
+| **Docker**              | `ghcr.io/xberg-io/xberg`              | [Docker Guide](guides/docker.md)             |
 
 Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xberg-io/tap` once before installing the CLI from `xberg-io/tap`.
 
 !!! Tip "Choosing Between TypeScript Packages"
 
-    **`@kreuzberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
+    **`@xberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).
 
-    **`@kreuzberg/wasm`** — Use for browsers, Cloudflare Workers, Deno, Bun, and serverless environments (60-80% speed, cross-platform).
+    **`@xberg/wasm`** — Use for browsers, Cloudflare Workers, Deno, Bun, and serverless environments (60-80% speed, cross-platform).
 
 ---
 
@@ -100,13 +104,13 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
 
 ---
 
-## Part of Kreuzberg.dev
+## Part of Xberg.io
 
-Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://xberg.io) ecosystem.
+Xberg is the document intelligence core in the [Xberg.io](https://xberg.io) ecosystem.
 
 <div class="grid cards" markdown>
 
-- :material-cloud:{ .lg .middle } **[Kreuzberg Cloud](https://docs.kreuzberg.cloud)**
+- :material-cloud:{ .lg .middle } **[Xberg Enterprise](https://enterprise.xberg.io)**
 
   Managed extraction API with SDKs, dashboards, and observability.
 
@@ -128,7 +132,7 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://xberg
 
 - :fontawesome-brands-discord:{ .lg .middle } **[Discord](https://discord.gg/xt9WY3GnKR)**
 
-  Community chat for Kreuzberg.dev users and contributors.
+  Community chat for Xberg.io users and contributors.
 
 </div>
 
@@ -140,7 +144,7 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://xberg
 
 - :material-rocket-launch:{ .lg .middle } **Getting Started**
 
-  Install Kreuzberg and extract your first document in minutes.
+  Install Xberg and extract your first document in minutes.
 
   [:octicons-arrow-right-24: Quick Start](getting-started/quickstart.md)
 
@@ -181,6 +185,6 @@ Kreuzberg is the document intelligence core in the [Kreuzberg.dev](https://xberg
 
 ## Getting Help
 
-- **Bugs & feature requests** — [Open an issue on GitHub](https://github.com/xberg-io/kreuzberg/issues)
+- **Bugs & feature requests** — [Open an issue on GitHub](https://github.com/xberg-io/xberg/issues)
 - **Community chat** — [Join the Discord](https://discord.gg/xt9WY3GnKR)
 - **Contributing** — [Read the contributor guide](contributing.md)

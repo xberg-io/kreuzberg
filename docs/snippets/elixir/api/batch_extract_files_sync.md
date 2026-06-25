@@ -8,7 +8,7 @@ defmodule Example do
       files
       |> Task.async_stream(
         fn file ->
-          Kreuzberg.extract_file_sync(file, nil, config)
+          Xberg.extract_file_sync(file, nil, config)
         end,
         max_concurrency: 4
       )

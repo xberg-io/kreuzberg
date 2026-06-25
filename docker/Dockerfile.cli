@@ -1,12 +1,12 @@
 # =============================================================================
-# Minimal CLI-only Docker image for Kreuzberg.
+# Minimal CLI-only Docker image for Xberg.
 #
 # Uses the musl-build stage to produce a fully static binary, then copies it
 # into a minimal Alpine image for shell access and volume mounts.
 #
 # Usage:
-#   docker build -f docker/Dockerfile.cli -t kreuzberg-cli .
-#   docker run -v $(pwd):/data kreuzberg-cli extract /data/document.pdf
+#   docker build -f docker/Dockerfile.cli -t xberg-cli .
+#   docker run -v $(pwd):/data xberg-cli extract /data/document.pdf
 # =============================================================================
 
 # Stage 1: Build the static binary using the musl builder
@@ -43,24 +43,24 @@ ENV ORT_PREFER_DYNAMIC_LINK=1
 
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
-COPY crates/kreuzberg/ crates/kreuzberg/
-COPY crates/kreuzberg-cli/ crates/kreuzberg-cli/
-COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
-COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
-COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
-COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
+COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-cli/ crates/xberg-cli/
+COPY crates/xberg-libheif/ crates/xberg-libheif/
+COPY crates/xberg-tesseract/ crates/xberg-tesseract/
+COPY crates/xberg-paddle-ocr/ crates/xberg-paddle-ocr/
+COPY crates/xberg-candle-ocr/ crates/xberg-candle-ocr/
 
 # Remove workspace members that aren't included
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /\"crates\/kreuzberg-wasm\"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-node/d; /xberg-ffi/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /\"crates\/xberg-wasm\"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
-RUN cargo build --release --package kreuzberg-cli --features all && \
-    cp target/release/kreuzberg /build/kreuzberg && \
-    strip /build/kreuzberg
+RUN cargo build --release --package xberg-cli --features all && \
+    cp target/release/xberg /build/xberg && \
+    strip /build/xberg
 
 # Verify the binary was built successfully
-RUN file /build/kreuzberg && \
+RUN file /build/xberg && \
     echo "=== Dynamic dependencies ===" && \
-    readelf -d /build/kreuzberg 2>/dev/null | grep NEEDED || echo "No external dependencies"
+    readelf -d /build/xberg 2>/dev/null | grep NEEDED || echo "No external dependencies"
 
 # =============================================================================
 # Stage 2: Minimal runtime image
@@ -79,10 +79,10 @@ RUN apk add --no-cache libgcc && \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main
 
-COPY --from=builder /build/kreuzberg /usr/local/bin/kreuzberg
+COPY --from=builder /build/xberg /usr/local/bin/xberg
 
-LABEL org.opencontainers.image.source="https://github.com/xberg-io/kreuzberg"
-LABEL org.opencontainers.image.description="Kreuzberg document intelligence - CLI variant"
+LABEL org.opencontainers.image.source="https://github.com/xberg-io/xberg"
+LABEL org.opencontainers.image.description="Xberg document intelligence - CLI variant"
 LABEL org.opencontainers.image.licenses="Elastic-2.0"
 
-ENTRYPOINT ["kreuzberg"]
+ENTRYPOINT ["xberg"]

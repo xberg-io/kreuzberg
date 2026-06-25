@@ -1,7 +1,7 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
-// Wrap a host-language embedding model so kreuzberg can call back into it
+// Wrap a host-language embedding model so xberg can call back into it
 // during chunking and standalone embed requests.
 class MyEmbedder(private val dim: Long = 768L) : IEmbeddingBackend {
     override fun name(): String = "my-embedder"

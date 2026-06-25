@@ -1,4 +1,4 @@
-import type { ChunkingConfig, EmbeddingConfig, ExtractionConfig } from "kreuzberg-wasm";
+import type { ChunkingConfig, EmbeddingConfig, ExtractionConfig } from "xberg-wasm";
 
 // Example 1: Preset model (recommended)
 // Fast, balanced, or quality preset configurations optimized for common use cases.
@@ -10,7 +10,7 @@ const _embeddingConfig: EmbeddingConfig = {
   batchSize: 32,
   normalize: true,
   showDownloadProgress: true,
-  cacheDir: "~/.cache/kreuzberg/embeddings",
+  cacheDir: "~/.cache/xberg/embeddings",
 };
 
 // Available presets:
@@ -30,7 +30,7 @@ const _embeddingConfigCustomOnnx: EmbeddingConfig = {
   batchSize: 32,
   normalize: true,
   showDownloadProgress: true,
-  cacheDir: undefined, // Uses default: .kreuzberg/embeddings/
+  cacheDir: undefined, // Uses default: .xberg/embeddings/
 };
 
 // Popular ONNX-compatible models:
@@ -73,11 +73,11 @@ const _extractionConfig: ExtractionConfig = {
   chunking: chunkingConfig,
 };
 
-// Create Kreuzberg instance with embedding config
-// const kreuzberg = new Kreuzberg(extractionConfig);
+// Create Xberg instance with embedding config
+// const xberg = new Xberg(extractionConfig);
 
 // Or update after initialization:
-// kreuzberg.setConfig(extractionConfig);
+// xberg.setConfig(extractionConfig);
 
 // Key parameter explanations:
 //
@@ -90,7 +90,7 @@ const _extractionConfig: ExtractionConfig = {
 //   - false: Raw embedding values
 //
 // cacheDir: Where to store downloaded models
-//   - undefined: Uses .kreuzberg/embeddings/ in current directory
+//   - undefined: Uses .xberg/embeddings/ in current directory
 //   - string: Custom directory for model storage
 //
 // showDownloadProgress: Display download progress bar

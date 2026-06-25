@@ -1,14 +1,14 @@
 ```php title="Element-Based Output (PHP)"
 <?php
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\Kreuzberg;
+use Xberg\ExtractionConfig;
+use Xberg\Xberg;
 
 // Configure element-based output
 $config = new ExtractionConfig();
 $config->setOutputFormat('element_based');
 
 // Extract document
-$result = Kreuzberg::extractFileSync('document.pdf', $config);
+$result = Xberg::extractFileSync('document.pdf', $config);
 
 // Access elements
 foreach ($result->getElements() as $element) {

@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()

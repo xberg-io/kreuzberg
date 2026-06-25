@@ -87,7 +87,7 @@ jobs:
         run: scripts/ci/validate/show-disk-space.sh "Disk space after artifact upload"
 
   bench-native:
-    name: kreuzberg-rust (${{ matrix.mode }}) [profiling]
+    name: xberg-rust (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -133,7 +133,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-rust
+          FRAMEWORK: xberg-rust
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -144,7 +144,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-rust-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-rust-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -152,12 +152,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-rust-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-rust-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-python-sync:
-    name: kreuzberg-python (${{ matrix.mode }}) [profiling]
+    name: xberg-python (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -215,7 +215,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-python
+          FRAMEWORK: xberg-python
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -226,7 +226,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-python-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-python-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -234,12 +234,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-python-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-python-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-python-async:
-    name: kreuzberg-python-async-OLD (${{ matrix.mode }}) [profiling]
+    name: xberg-python-async-OLD (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -297,7 +297,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-python-async-OLD
+          FRAMEWORK: xberg-python-async-OLD
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -308,7 +308,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -316,12 +316,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-python-async-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-python-batch:
-    name: kreuzberg-python-batch (${{ matrix.mode }}) [profiling]
+    name: xberg-python-batch (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -379,7 +379,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-python-batch
+          FRAMEWORK: xberg-python-batch
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -390,7 +390,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -398,12 +398,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-python-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-node-async:
-    name: kreuzberg-node (${{ matrix.mode }}) [profiling]
+    name: xberg-node (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -463,7 +463,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-node
+          FRAMEWORK: xberg-node
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -474,7 +474,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-node-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-node-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -482,12 +482,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-node-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-node-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-node-batch:
-    name: kreuzberg-node-batch (${{ matrix.mode }}) [profiling]
+    name: xberg-node-batch (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -547,7 +547,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-node-batch
+          FRAMEWORK: xberg-node-batch
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -558,7 +558,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -566,12 +566,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-node-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-wasm-async:
-    name: kreuzberg-wasm-async (${{ matrix.mode }}) [profiling]
+    name: xberg-wasm-async (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -618,7 +618,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-wasm-async
+          FRAMEWORK: xberg-wasm-async
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -629,7 +629,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -637,12 +637,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-wasm-async-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-wasm-batch:
-    name: kreuzberg-wasm-batch (${{ matrix.mode }}) [profiling]
+    name: xberg-wasm-batch (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -689,7 +689,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-wasm-batch
+          FRAMEWORK: xberg-wasm-batch
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -700,7 +700,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -708,12 +708,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-wasm-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-ruby-sync:
-    name: kreuzberg-ruby (${{ matrix.mode }}) [profiling]
+    name: xberg-ruby (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -770,8 +770,8 @@ jobs:
       - name: Setup Layout Models
         uses: ./.github/actions/setup-layout-models
 
-      - name: Vendor kreuzberg core for Ruby
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+      - name: Vendor xberg core for Ruby
+        run: python3 scripts/ci/ruby/vendor-xberg-core.py
 
       - name: Install Task
         uses: xberg-io/actions/install-task@v1
@@ -785,13 +785,13 @@ jobs:
         shell: bash
         run: scripts/ci/ruby/compile-extension.sh
 
-      - name: Build kreuzberg CLI
+      - name: Build xberg CLI
         shell: bash
         run: task rust:cli:build
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-ruby
+          FRAMEWORK: xberg-ruby
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -802,7 +802,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-ruby-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-ruby-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -810,12 +810,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-ruby-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-ruby-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-ruby-batch:
-    name: kreuzberg-ruby-batch (${{ matrix.mode }}) [profiling]
+    name: xberg-ruby-batch (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -872,8 +872,8 @@ jobs:
       - name: Setup Layout Models
         uses: ./.github/actions/setup-layout-models
 
-      - name: Vendor kreuzberg core for Ruby
-        run: python3 scripts/ci/ruby/vendor-kreuzberg-core.py
+      - name: Vendor xberg core for Ruby
+        run: python3 scripts/ci/ruby/vendor-xberg-core.py
 
       - name: Install Task
         uses: xberg-io/actions/install-task@v1
@@ -887,13 +887,13 @@ jobs:
         shell: bash
         run: scripts/ci/ruby/compile-extension.sh
 
-      - name: Build kreuzberg CLI
+      - name: Build xberg CLI
         shell: bash
         run: task rust:cli:build
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-ruby-batch
+          FRAMEWORK: xberg-ruby-batch
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -904,7 +904,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -912,12 +912,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-ruby-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-go-sync:
-    name: kreuzberg-go-sync (${{ matrix.mode }}) [profiling]
+    name: xberg-go-sync (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -979,19 +979,19 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-go-sync
+          FRAMEWORK: xberg-go-sync
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
           PROFILING_FIXTURES: ${{ env.PROFILING_FIXTURES }}
-          KREUZBERG_BENCHMARK_DEBUG: "true"
+          XBERG_BENCHMARK_DEBUG: "true"
         run: task benchmark:run
 
       - name: Upload benchmark artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -999,12 +999,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-go-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-go-batch:
-    name: kreuzberg-go-batch (${{ matrix.mode }}) [profiling]
+    name: xberg-go-batch (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -1066,19 +1066,19 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-go-batch
+          FRAMEWORK: xberg-go-batch
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
           PROFILING_FIXTURES: ${{ env.PROFILING_FIXTURES }}
-          KREUZBERG_BENCHMARK_DEBUG: "true"
+          XBERG_BENCHMARK_DEBUG: "true"
         run: task benchmark:run
 
       - name: Upload benchmark artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -1086,12 +1086,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-go-batch-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-java-sync:
-    name: kreuzberg-java-sync (${{ matrix.mode }}) [profiling]
+    name: xberg-java-sync (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -1153,7 +1153,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-java-sync
+          FRAMEWORK: xberg-java-sync
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -1164,7 +1164,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -1172,12 +1172,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-java-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7
 
   bench-csharp-sync:
-    name: kreuzberg-csharp-sync (${{ matrix.mode }}) [profiling]
+    name: xberg-csharp-sync (${{ matrix.mode }}) [profiling]
     needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -1234,7 +1234,7 @@ jobs:
 
       - name: Run benchmark
         env:
-          FRAMEWORK: kreuzberg-csharp-sync
+          FRAMEWORK: xberg-csharp-sync
           MODE: ${{ matrix.mode }}
           ITERATIONS: ${{ env.ITERATIONS }}
           ENABLE_PROFILING: ${{ env.ENABLE_PROFILING }}
@@ -1245,7 +1245,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: profiling-results-kreuzberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: profiling-results-xberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: benchmark-results/
           retention-days: 7
 
@@ -1253,6 +1253,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: flamegraphs-kreuzberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
+          name: flamegraphs-xberg-csharp-sync-${{ matrix.mode }}-${{ github.run_id }}
           path: flamegraphs/
           retention-days: 7

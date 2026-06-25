@@ -8,7 +8,7 @@ inside the zip: parse the XML, splice change elements around target runs,
 write the archive back out with deterministic ZIP metadata.
 
 The on-disk XML matches what Word produces, which is what
-``crates/kreuzberg/src/extractors/docx`` (the path that populates
+``crates/xberg/src/extractors/docx`` (the path that populates
 ``ExtractionResult.revisions``) consumes.
 """
 

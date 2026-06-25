@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig
+from xberg import extract_file, ExtractionConfig
 
 config = ExtractionConfig(enable_quality_processing=True)
 result = extract_file("scanned_document.pdf", config=config)

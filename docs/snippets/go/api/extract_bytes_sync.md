@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 		log.Fatalf("failed to read file: %v", err)
 	}
 
-	result, err := kreuzberg.ExtractBytesSync(content, "application/pdf", kreuzberg.ExtractionConfig{})
+	result, err := xberg.ExtractBytesSync(content, "application/pdf", xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

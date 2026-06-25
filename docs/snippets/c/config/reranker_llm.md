@@ -1,5 +1,5 @@
 ```c title="C"
-#include "kreuzberg.h"
+#include "xberg.h"
 
 static const char *RERANKER_LLM_CONFIG_JSON =
     "{"

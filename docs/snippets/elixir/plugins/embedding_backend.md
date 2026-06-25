@@ -3,7 +3,7 @@ Embedding backend registration is not available in the Elixir binding. Custom em
 
 To use custom embeddings in Elixir:
 
-1. Implement the embedding backend in Rust (in `crates/kreuzberg/src/plugins/embedding.rs` or a separate Rust crate)
+1. Implement the embedding backend in Rust (in `crates/xberg/src/plugins/embedding.rs` or a separate Rust crate)
 2. Register the backend in the Rust core initialization
 3. Call the embeddings functions from Elixir with the appropriate config
 

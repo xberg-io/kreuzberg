@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-if (extension_loaded('kreuzberg')) {
-    echo "Kreuzberg extension loaded successfully.\n";
+if (extension_loaded('xberg')) {
+    echo "Xberg extension loaded successfully.\n";
 } else {
-    echo "Kreuzberg extension not loaded.\n";
+    echo "Xberg extension not loaded.\n";
 }
 ```

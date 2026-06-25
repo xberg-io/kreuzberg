@@ -1,10 +1,10 @@
 ```elixir title="Elixir"
-# MCP Custom Client - Connect to Kreuzberg MCP servers
+# MCP Custom Client - Connect to Xberg MCP servers
 # Demonstrates creating a reusable MCP client for document extraction
 
-defmodule KreuzbergMCPClient do
+defmodule XbergMCPClient do
   @moduledoc """
-  MCP client for communicating with Kreuzberg extraction servers.
+  MCP client for communicating with Xberg extraction servers.
 
   Provides methods for extracting documents from remote MCP servers
   with support for caching, retry logic, and error handling.
@@ -41,7 +41,7 @@ defmodule KreuzbergMCPClient do
   @doc """
   Extract document from file via MCP server.
 
-  Sends extraction request to remote Kreuzberg MCP server and returns
+  Sends extraction request to remote Xberg MCP server and returns
   structured extraction result with optional caching.
 
   ## Options
@@ -252,21 +252,21 @@ defmodule KreuzbergMCPClient do
 end
 
 # Usage examples
-IO.puts("=== Kreuzberg MCP Client ===\n")
+IO.puts("=== Xberg MCP Client ===\n")
 
 # Create client configuration
-config = KreuzbergMCPClient.Config.new(
+config = XbergMCPClient.Config.new(
   host: "localhost",
   port: 8080,
   timeout_ms: 30000,
   max_retries: 3,
-  cache_dir: "/tmp/kreuzberg_cache"
+  cache_dir: "/tmp/xberg_cache"
 )
 
 # Check server health
 IO.puts("Checking server health...")
 
-case KreuzbergMCPClient.health_check(config) do
+case XbergMCPClient.health_check(config) do
   {:ok, health} ->
     IO.puts("Server status: #{health["status"]}")
     IO.puts("Service: #{health["service"]}\n")
@@ -278,7 +278,7 @@ end
 # Extract single document
 IO.puts("Extracting document...")
 
-case KreuzbergMCPClient.extract_file(config, "document.pdf", use_cache: true) do
+case XbergMCPClient.extract_file(config, "document.pdf", use_cache: true) do
   {:ok, result} ->
     IO.puts("Success!")
     IO.puts("Content size: #{byte_size(result["content"])} bytes")
@@ -300,7 +300,7 @@ documents = [
   "doc3.pdf"
 ]
 
-case KreuzbergMCPClient.batch_extract(config, documents) do
+case XbergMCPClient.batch_extract(config, documents) do
   {:ok, results} ->
     IO.puts("Batch extraction complete!")
     successful = Enum.count(results, &match?({:ok, _}, &1))

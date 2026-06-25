@@ -7,13 +7,13 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -61,18 +61,18 @@ func wordCountProcessor(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register the post-processor with priority 100, early stage
-	if err := kreuzberg.RegisterPostProcessor("word_count_processor", 100,
+	if err := xberg.RegisterPostProcessor("word_count_processor", 100,
 		(C.PostProcessorCallback)(C.wordCountProcessor)); err != nil {
 		log.Fatalf("failed to register post-processor: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterPostProcessor("word_count_processor"); err != nil {
+		if err := xberg.UnregisterPostProcessor("word_count_processor"); err != nil {
 			log.Printf("warning: failed to unregister post-processor: %v", err)
 		}
 	}()
 
 	// Extract document
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

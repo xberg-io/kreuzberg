@@ -4,14 +4,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	preset := "balanced"
 	normalize := true
-	config := kreuzberg.EmbeddingConfig{
-		Model: kreuzberg.EmbeddingModelType{
+	config := xberg.EmbeddingConfig{
+		Model: xberg.EmbeddingModelType{
 			Type: "preset",
 			Name: &preset,
 		},
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// Synchronous
-	embeddings, err := kreuzberg.EmbedTexts([]string{"Hello, world!", "Kreuzberg is fast"}, config)
+	embeddings, err := xberg.EmbedTexts([]string{"Hello, world!", "Xberg is fast"}, config)
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +27,7 @@ func main() {
 	fmt.Println(len(embeddings[0])) // 768
 
 	// Asynchronous
-	embeddings, err = kreuzberg.EmbedTextsAsync([]string{"Hello, world!"}, config)
+	embeddings, err = xberg.EmbedTextsAsync([]string{"Hello, world!"}, config)
 	if err != nil {
 		panic(err)
 	}

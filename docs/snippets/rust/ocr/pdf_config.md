@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ExtractionConfig, PdfConfig};
+use xberg::{ExtractionConfig, PdfConfig};
 
 fn main() {
     let config = ExtractionConfig {

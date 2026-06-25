@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final items = <BatchFileItem>[
@@ -11,7 +11,7 @@ Future<void> main() async {
   ];
 
   // Sync semantics — flutter_rust_bridge still returns a Future from Dart.
-  final results = await KreuzbergBridge.batchExtractFilesSync(items);
+  final results = await XbergBridge.batchExtractFilesSync(items);
 
   print('Processed ${results.length} files');
   for (final result in results) {

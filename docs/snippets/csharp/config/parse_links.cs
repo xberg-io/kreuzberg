@@ -1,11 +1,11 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
     UseCache = true
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.html", config);
+var result = XbergLib.ExtractFileSync("document.html", config);
 
 if (result.Metadata?.Format.Text?.Links != null)
 {

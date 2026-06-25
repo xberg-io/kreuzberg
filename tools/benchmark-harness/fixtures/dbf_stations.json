@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/dbf/stations.dbf",
 	"file_type": "dbf",
 	"file_size": 87623,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "dBASE file with station records",
 		"category": "tables"

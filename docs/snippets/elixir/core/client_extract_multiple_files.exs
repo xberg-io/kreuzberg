@@ -8,7 +8,7 @@ defmodule BatchDocumentClient do
   Handles multiple files with comprehensive error handling and logging.
   """
 
-  alias Kreuzberg.ExtractionResult
+  alias Xberg.ExtractionResult
 
   @doc """
   Extract content from multiple files in batch.
@@ -37,7 +37,7 @@ defmodule BatchDocumentClient do
     config = Keyword.get(opts, :config, nil)
     log_errors = Keyword.get(opts, :log_errors, true)
 
-    case Kreuzberg.batch_extract_files(paths, mime_type, config) do
+    case Xberg.batch_extract_files(paths, mime_type, config) do
       {:ok, results} ->
         IO.debug("Successfully extracted #{length(results)} files")
         {:ok, results}

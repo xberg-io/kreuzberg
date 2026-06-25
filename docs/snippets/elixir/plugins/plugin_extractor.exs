@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule MyApp.WordCountProcessor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
 
   def name, do: "word_count_processor"
 
@@ -23,10 +23,10 @@ defmodule MyApp.WordCountProcessor do
 end
 
 # Register post-processor
-Kreuzberg.Plugin.register_post_processor(MyApp.WordCountProcessor)
+Xberg.Plugin.register_post_processor(MyApp.WordCountProcessor)
 
 # Use with extraction
-{:ok, result} = Kreuzberg.extract_file(
+{:ok, result} = Xberg.extract_file(
   "document.pdf",
   nil
 )

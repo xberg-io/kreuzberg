@@ -1,8 +1,8 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
-// Mirrors KreuzbergDocumentExtractorVTable from the C FFI.
+// Mirrors XbergDocumentExtractorVTable from the C FFI.
 const DocumentExtractorVTable = extern struct {
     name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void,
     version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void,
@@ -42,14 +42,14 @@ const SimpleExtractorState = struct {
     supported_mimes: [:0]const u8,
 };
 
-extern "kreuzberg_ffi" fn kreuzberg_register_document_extractor(
+extern "xberg_ffi" fn xberg_register_document_extractor(
     name: [*c]const u8,
     vtable: DocumentExtractorVTable,
     user_data: ?*anyopaque,
     out_error: ?*?[*c]u8,
 ) i32;
 
-extern "kreuzberg_ffi" fn kreuzberg_free_string(ptr: [*c]u8) void;
+extern "xberg_ffi" fn xberg_free_string(ptr: [*c]u8) void;
 
 // Callbacks for the custom extractor.
 fn extract_bytes_impl(
@@ -158,7 +158,7 @@ pub fn main() !void {
     state.supported_mimes = try std.heap.c_allocator.dupeZ(u8, "[\"application/octet-stream\"]");
 
     var out_error: ?[*c]u8 = null;
-    defer if (out_error) |ptr| kreuzberg_free_string(ptr);
+    defer if (out_error) |ptr| xberg_free_string(ptr);
 
     // Build and register the vtable.
     const vtable = DocumentExtractorVTable{
@@ -175,7 +175,7 @@ pub fn main() !void {
         .free_user_data = cleanup_state,
     };
 
-    const rc = kreuzberg_register_document_extractor(
+    const rc = xberg_register_document_extractor(
         "zig-simple-extractor",
         vtable,
         state,

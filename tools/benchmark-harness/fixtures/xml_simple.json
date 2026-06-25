@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xml/simple_note.xml",
 	"file_type": "xml",
 	"file_size": 165,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Minimal XML note structure with basic text content",
 		"category": "structured"

@@ -1,8 +1,8 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 # Register custom extractor with priority 50
-Kreuzberg.register_document_extractor(
+Xberg.register_document_extractor(
   name: "custom-json-extractor",
   extractor: ->(content, mime_type, config) {
     JSON.parse(content.to_s)
@@ -10,6 +10,6 @@ Kreuzberg.register_document_extractor(
   priority: 50
 )
 
-result = Kreuzberg.extract_file("document.json")
+result = Xberg.extract_file("document.json")
 puts "Extracted content length: #{result.content.length}"
 ```

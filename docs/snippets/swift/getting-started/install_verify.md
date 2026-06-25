@@ -1,9 +1,9 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 let config = try extractionConfigFromJson("{}")
-print("Kreuzberg Swift binding loaded successfully")
+print("Xberg Swift binding loaded successfully")
 print("Default config built: \(config)")
 ```

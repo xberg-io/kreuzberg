@@ -1,12 +1,12 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  pdf_options: Kreuzberg::PdfConfig.new(
+config = Xberg::ExtractionConfig.new(
+  pdf_options: Xberg::PdfConfig.new(
     extract_images: true,
     extract_metadata: true,
     passwords: ['password1', 'password2'],
-    hierarchy: Kreuzberg::HierarchyConfig.new(
+    hierarchy: Xberg::HierarchyConfig.new(
       enabled: true,
       k_clusters: 6,
       include_bbox: true

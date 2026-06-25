@@ -1,5 +1,5 @@
 # Quality processing configuration
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
   quality_processing: %{
@@ -15,7 +15,7 @@ config = %ExtractionConfig{
 }
 
 # Extract file with quality processing and OCR
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Process the quality-processed results
 IO.puts("=== Quality Processing Results ===\n")

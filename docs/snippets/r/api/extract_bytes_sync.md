@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 path <- "document.pdf"
 content <- readBin(path, what = "raw", n = file.info(path)$size)

@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
 // Generic validator pattern: every IValidator has the same shape.
 // `name()` keys the registry, `priority()` orders execution (higher = earlier),

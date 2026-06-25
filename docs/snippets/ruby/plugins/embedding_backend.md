@@ -1,7 +1,7 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-# Wrap an already-loaded embedder so kreuzberg can call back into it during
+# Wrap an already-loaded embedder so xberg can call back into it during
 # chunking and standalone embed requests. The Ruby object must respond to
 # `dimensions` and `embed`; `version`, `initialize`, and `shutdown` are
 # optional lifecycle hooks.
@@ -31,14 +31,14 @@ end
 
 # Register once at startup. The second argument is the plugin name used to
 # reference the backend from EmbeddingConfig.
-Kreuzberg.register_embedding_backend(MyEmbedder.new, 'my-embedder')
+Xberg.register_embedding_backend(MyEmbedder.new, 'my-embedder')
 
-config = Kreuzberg::EmbeddingConfig.new(
+config = Xberg::EmbeddingConfig.new(
   model: { type: 'plugin', name: 'my-embedder' },
   # Optional: bound the wait on a hung backend (default 60s; nil disables).
   max_embed_duration_secs: 30
 )
 
-vectors = Kreuzberg.embed_texts(['Hello, world!', 'Second text'], config: config)
+vectors = Xberg.embed_texts(['Hello, world!', 'Second text'], config: config)
 puts "Generated #{vectors.length} vectors"
 ```

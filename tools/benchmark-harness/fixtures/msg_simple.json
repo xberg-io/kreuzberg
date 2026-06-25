@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/email/simple_msg.msg",
 	"file_type": "msg",
 	"file_size": 8704,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Simple MSG format email without attachments",
 		"category": "simple"

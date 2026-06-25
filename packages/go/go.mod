@@ -1,3 +1,3 @@
-module github.com/xberg-io/kreuzberg/v5
+module github.com/xberg-io/xberg
 
 go 1.26

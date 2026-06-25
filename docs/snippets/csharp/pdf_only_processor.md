@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 public class PdfOnlyProcessor : IPostProcessor
 {
@@ -17,7 +17,7 @@ class Program
     static void Main()
     {
         var processor = new PdfOnlyProcessor();
-        KreuzbergLib.RegisterPostProcessor(processor);
+        XbergLib.RegisterPostProcessor(processor);
     }
 }
 ```

@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_bytes;
+use Xberg\Xberg;
+use function Xberg\extract_bytes;
 
 $fileData = file_get_contents('document.pdf');
 $mimeType = 'application/pdf';
@@ -22,8 +22,8 @@ $result = extract_bytes($fileData, $mimeType);
 echo "Extracted using procedural API:\n";
 echo substr($result->content, 0, 200) . "...\n\n";
 
-$kreuzberg = new Kreuzberg();
-$result = $kreuzberg->extractBytes($fileData, $mimeType);
+$xberg = new Xberg();
+$result = $xberg->extractBytes($fileData, $mimeType);
 echo "Extracted using OOP API:\n";
 echo substr($result->content, 0, 200) . "...\n\n";
 

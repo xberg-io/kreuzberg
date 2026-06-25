@@ -3,7 +3,7 @@ description: Copies Pdfium runtime libraries to destination directory
 
 inputs:
   destination:
-    description: Primary destination directory (e.g., crates/kreuzberg-node or packages/ruby)
+    description: Primary destination directory (e.g., crates/xberg-node or packages/ruby)
     required: true
   additional-destinations:
     description: Additional destination directories (newline-separated)

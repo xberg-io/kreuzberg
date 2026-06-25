@@ -1,4 +1,4 @@
-# Error handling patterns for Kreuzberg extraction
+# Error handling patterns for Xberg extraction
 defmodule ErrorHandlingUtils do
   @doc """
   Safely extract a file with retry logic and error recovery.
@@ -13,7 +13,7 @@ defmodule ErrorHandlingUtils do
   end
 
   defp extract_with_retry(file_path, config, max_retries, attempt, _prev_error) do
-    case Kreuzberg.extract_file(file_path, nil, config) do
+    case Xberg.extract_file(file_path, nil, config) do
       {:ok, result} ->
         {:ok, result}
 
@@ -30,7 +30,7 @@ defmodule ErrorHandlingUtils do
   def extract_multiple(files, config) do
     files
     |> Enum.map(fn file ->
-      {file, Kreuzberg.extract_file(file, nil, config)}
+      {file, Xberg.extract_file(file, nil, config)}
     end)
     |> Enum.reduce(%{successes: [], failures: []}, fn {file, result}, acc ->
       case result do
@@ -116,7 +116,7 @@ defmodule ErrorHandlingUtils do
 end
 
 # Example usage with error handling
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
@@ -144,7 +144,7 @@ end
 
 IO.puts("\n=== Validate Result ===")
 
-{:ok, result} = Kreuzberg.extract_file("test.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("test.pdf", nil, config)
 
 case ErrorHandlingUtils.validate_result(result, ["text", "chunks"]) do
   {:ok, data} ->

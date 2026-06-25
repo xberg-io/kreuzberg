@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 pdf_only_processor <- function(result) {
   # Gate the processor so it only runs for PDF documents.

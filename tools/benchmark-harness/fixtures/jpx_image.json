@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/images_extra/complex_document.jpx",
 	"file_type": "jpx",
 	"file_size": 62261,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "JPEG 2000 extended image of complex document (JPX extension)",
 		"category": "image",

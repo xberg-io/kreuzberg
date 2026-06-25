@@ -1,4 +1,4 @@
-using Kreuzberg.Config;
+using Xberg.Config;
 
 public class EmbeddingConfigExample
 {
@@ -15,7 +15,7 @@ public class EmbeddingConfigExample
             BatchSize = 32,
             Normalize = true,
             ShowDownloadProgress = true,
-            CacheDir = "~/.cache/kreuzberg/embeddings"
+            CacheDir = "~/.cache/xberg/embeddings"
         };
 
         // Available presets:
@@ -37,7 +37,7 @@ public class EmbeddingConfigExample
             BatchSize = 32,
             Normalize = true,
             ShowDownloadProgress = true,
-            CacheDir = null  // Uses default: .kreuzberg/embeddings/
+            CacheDir = null  // Uses default: .xberg/embeddings/
         };
 
         // Popular ONNX-compatible models:
@@ -99,7 +99,7 @@ public class EmbeddingConfigExample
 //   - false: Raw embedding values
 //
 // CacheDir: Where to store downloaded models
-//   - null: Uses .kreuzberg/embeddings/ in current directory
+//   - null: Uses .xberg/embeddings/ in current directory
 //   - String path: Custom directory for model storage
 //
 // ShowDownloadProgress: Display download progress bar

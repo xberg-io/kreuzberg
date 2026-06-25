@@ -42,7 +42,7 @@ def _generators() -> dict[str, GeneratorFn]:
 
 
 def _default_repo_root() -> Path:
-    """Walk upward from this file to find the kreuzberg repo root.
+    """Walk upward from this file to find the xberg repo root.
 
     Anchored on the presence of ``Cargo.toml`` + ``test_documents``. Falls
     back to the current working directory when those markers are absent
@@ -59,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
     """CLI entry. Returns a process exit code (0 on success)."""
     parser = argparse.ArgumentParser(
         prog="generate-test-fixtures",
-        description="Generate deterministic test fixtures for kreuzberg integration tests.",
+        description="Generate deterministic test fixtures for xberg integration tests.",
     )
     parser.add_argument(
         "commands",

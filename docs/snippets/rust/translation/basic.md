@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, TranslationConfig, LlmConfig};
+use xberg::{extract_file, ExtractionConfig, TranslationConfig, LlmConfig};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

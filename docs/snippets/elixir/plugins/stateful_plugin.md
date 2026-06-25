@@ -4,8 +4,8 @@ Stateful plugin implementation is not available in the Elixir binding. Stateful 
 To implement a stateful plugin in Rust:
 
 ```rust
-use kreuzberg::plugins::{Plugin, PostProcessor};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+use xberg::plugins::{Plugin, PostProcessor};
+use xberg::{Result, ExtractionResult, ExtractionConfig};
 use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 

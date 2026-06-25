@@ -7,13 +7,13 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -105,12 +105,12 @@ func ResetPluginState() {
 
 func main() {
 	// Register the stateful post-processor with priority 60
-	if err := kreuzberg.RegisterPostProcessor("stateful_plugin", 60,
+	if err := xberg.RegisterPostProcessor("stateful_plugin", 60,
 		(C.PostProcessorCallback)(C.statefulPlugin)); err != nil {
 		log.Fatalf("failed to register post-processor: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterPostProcessor("stateful_plugin"); err != nil {
+		if err := xberg.UnregisterPostProcessor("stateful_plugin"); err != nil {
 			log.Printf("warning: failed to unregister post-processor: %v", err)
 		}
 
@@ -135,7 +135,7 @@ func main() {
 
 	for _, file := range files {
 		log.Printf("Processing: %s", file)
-		result, err := kreuzberg.ExtractFileSync(file, nil)
+		result, err := xberg.ExtractFileSync(file, nil)
 		if err != nil {
 			log.Printf("  Warning: extraction failed: %v", err)
 			continue

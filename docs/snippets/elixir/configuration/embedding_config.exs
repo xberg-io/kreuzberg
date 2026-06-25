@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure embeddings for vector search
 config = %ExtractionConfig{
@@ -14,7 +14,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("Extracted chunks with embeddings: #{length(result.chunks || [])}")
 ```

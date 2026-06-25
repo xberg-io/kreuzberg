@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, PageClassificationConfig, LlmConfig};
+use xberg::{extract_file, ExtractionConfig, PageClassificationConfig, LlmConfig};
 
 let config = ExtractionConfig {
     page_classification: Some(PageClassificationConfig {

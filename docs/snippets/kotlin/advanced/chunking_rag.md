@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -19,7 +19,7 @@ fun main() {
         .withChunking(Optional.of(chunking))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("research_paper.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("research_paper.pdf"), null, config)
     for (chunk in result.chunks().orEmpty()) {
         val metadata = chunk.metadata()
         println("Chunk ${metadata.chunkIndex() + 1}/${metadata.totalChunks()}")

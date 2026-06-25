@@ -7,4 +7,4 @@ if [[ -z "$TARGET" ]]; then
   exit 1
 fi
 
-cargo build --release --target "$TARGET" --package kreuzberg-cli --features all
+cargo build --release --target "$TARGET" --package xberg-cli --features all

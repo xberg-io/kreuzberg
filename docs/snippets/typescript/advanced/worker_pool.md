@@ -8,7 +8,7 @@ import {
   extractFileInWorker,
   batchExtractFilesInWorker,
   closeWorkerPool,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 // Create a pool with 4 worker threads
 const pool = createWorkerPool(4);

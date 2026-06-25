@@ -1,6 +1,6 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 let data = try Data(contentsOf: URL(fileURLWithPath: "document.pdf"))

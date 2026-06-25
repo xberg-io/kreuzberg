@@ -6,7 +6,7 @@
 #     --output type=local,dest=./dist \
 #     --build-arg TARGETARCH=x86_64 .
 #
-# Produces: dist/kreuzberg (binary) and dist/lib/ (runtime libraries)
+# Produces: dist/xberg (binary) and dist/lib/ (runtime libraries)
 #
 # Runtime libraries (musl libc, libstdc++, libgcc) are bundled alongside
 # the binary for portability across Linux distros.
@@ -46,15 +46,15 @@ ENV ORT_PREFER_DYNAMIC_LINK=1
 
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
-COPY crates/kreuzberg/ crates/kreuzberg/
-COPY crates/kreuzberg-cli/ crates/kreuzberg-cli/
-COPY crates/kreuzberg-tesseract/ crates/kreuzberg-tesseract/
-COPY crates/kreuzberg-paddle-ocr/ crates/kreuzberg-paddle-ocr/
-COPY crates/kreuzberg-candle-ocr/ crates/kreuzberg-candle-ocr/
-COPY crates/kreuzberg-libheif/ crates/kreuzberg-libheif/
+COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-cli/ crates/xberg-cli/
+COPY crates/xberg-tesseract/ crates/xberg-tesseract/
+COPY crates/xberg-paddle-ocr/ crates/xberg-paddle-ocr/
+COPY crates/xberg-candle-ocr/ crates/xberg-candle-ocr/
+COPY crates/xberg-libheif/ crates/xberg-libheif/
 
 # Remove workspace members that aren't included
-RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/d; /kreuzberg-jni/d; /kreuzberg-php/d; /kreuzberg_rustler/d; /kreuzberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/kreuzberg-wasm"/d; /^\[profile\.release\.package\.kreuzberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-node/d; /xberg-ffi/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # Neither --offline nor --locked. The `sed -i Cargo.toml` above removes
 # workspace members without touching Cargo.lock, so --locked would refuse to
@@ -64,12 +64,12 @@ RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/
 # (observed on rc.13 + rc.14 + rc.15 Publish runs). Drop both flags: cargo
 # will use Cargo.lock as a resolution hint, download missing crates from the
 # network, and rewrite the in-image lock to match the slimmed manifest.
-RUN cargo build --release --package kreuzberg-cli --features all && \
-    cp target/release/kreuzberg /build/kreuzberg && \
-    strip /build/kreuzberg
+RUN cargo build --release --package xberg-cli --features all && \
+    cp target/release/xberg /build/xberg && \
+    strip /build/xberg
 
 # Set RPATH so the binary finds shared libs relative to itself
-RUN patchelf --set-rpath '$ORIGIN/lib' /build/kreuzberg
+RUN patchelf --set-rpath '$ORIGIN/lib' /build/xberg
 
 # Collect runtime libraries.
 #
@@ -131,16 +131,16 @@ RUN set -eu; \
 # Rename the actual binary and create a wrapper script that invokes it
 # via the bundled musl interpreter. This makes the binary work on ANY
 # Linux distro (glibc or musl) without system dependencies.
-RUN mv /build/kreuzberg /build/kreuzberg.bin && \
+RUN mv /build/xberg /build/xberg.bin && \
     INTERP_NAME=$(basename /lib/ld-musl-*.so.1) && \
-    printf '#!/bin/sh\nSCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\nexec "$SCRIPT_DIR/lib/%s" --library-path "$SCRIPT_DIR/lib" "$SCRIPT_DIR/kreuzberg.bin" "$@"\n' \
-        "$INTERP_NAME" > /build/kreuzberg && \
-    chmod +x /build/kreuzberg
+    printf '#!/bin/sh\nSCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"\nexec "$SCRIPT_DIR/lib/%s" --library-path "$SCRIPT_DIR/lib" "$SCRIPT_DIR/xberg.bin" "$@"\n' \
+        "$INTERP_NAME" > /build/xberg && \
+    chmod +x /build/xberg
 
 # Verify the binary was built successfully
-RUN file /build/kreuzberg && \
+RUN file /build/xberg && \
     echo "=== Dynamic dependencies ===" && \
-    readelf -d /build/kreuzberg 2>/dev/null | grep -E "NEEDED|RPATH|RUNPATH" || echo "No dependencies" && \
+    readelf -d /build/xberg 2>/dev/null | grep -E "NEEDED|RPATH|RUNPATH" || echo "No dependencies" && \
     echo "=== Bundled libraries ===" && \
     ls -la /build/lib/
 
@@ -148,6 +148,6 @@ RUN file /build/kreuzberg && \
 # Output stage — binary + bundled runtime libraries
 # =============================================================================
 FROM scratch
-COPY --from=builder /build/kreuzberg /kreuzberg
-COPY --from=builder /build/kreuzberg.bin /kreuzberg.bin
+COPY --from=builder /build/xberg /xberg
+COPY --from=builder /build/xberg.bin /xberg.bin
 COPY --from=builder /build/lib/ /lib/

@@ -4,20 +4,20 @@
 declare(strict_types=1);
 
 // Requires: composer require amphp/amp ^3.0
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Async\AmpBridge;
+use Xberg\Xberg;
+use Xberg\Async\AmpBridge;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 // Single file extraction with Amp Future
-$deferred = $kreuzberg->extractFileAsync('document.pdf');
+$deferred = $xberg->extractFileAsync('document.pdf');
 $future = AmpBridge::toFuture($deferred);
 $result = $future->await();
 echo $result->content;
 
 // Batch extraction with Amp Future
 $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
-$batchDeferred = $kreuzberg->batchExtractFilesAsync($files);
+$batchDeferred = $xberg->batchExtractFilesAsync($files);
 $batchFuture = AmpBridge::toBatchFuture($batchDeferred);
 $results = $batchFuture->await();
 

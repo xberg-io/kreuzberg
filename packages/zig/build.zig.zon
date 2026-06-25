@@ -1,7 +1,7 @@
 .{
-    .name = .kreuzberg,
-    .version = "5.0.0-rc.36",
-    .fingerprint = 0xf6a543a8c47292b6,
+    .name = .xberg,
+    .version = "1.0.0-rc.1",
+    .fingerprint = 0x1e6c85dfae465d89,
     .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{

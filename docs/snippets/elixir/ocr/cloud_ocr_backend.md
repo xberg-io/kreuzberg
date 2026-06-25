@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule MyApp.CloudOcrBackend do
-  @behaviour Kreuzberg.Plugin
+  @behaviour Xberg.Plugin
 
   defstruct api_key: nil, supported_langs: []
 
@@ -8,16 +8,16 @@ defmodule MyApp.CloudOcrBackend do
     %__MODULE__{api_key: api_key, supported_langs: supported_langs}
   end
 
-  @impl Kreuzberg.Plugin
+  @impl Xberg.Plugin
   def name(_backend), do: "cloud-ocr"
 
-  @impl Kreuzberg.Plugin
+  @impl Xberg.Plugin
   def version(_backend), do: "1.0.0"
 
-  @impl Kreuzberg.Plugin
+  @impl Xberg.Plugin
   def initialize(_backend), do: :ok
 
-  @impl Kreuzberg.Plugin
+  @impl Xberg.Plugin
   def shutdown(_backend), do: :ok
 
   def process_image(backend, image_bytes, language) do
@@ -35,5 +35,5 @@ end
 
 # Register the custom backend
 backend = MyApp.CloudOcrBackend.new("api-key", ["en", "de", "fr"])
-# Use with Kreuzberg extraction...
+# Use with Xberg extraction...
 ```

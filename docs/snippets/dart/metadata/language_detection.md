@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final languageDetection = LanguageDetectionConfig(
@@ -20,7 +20,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,    languageDetection: languageDetection,
   );
 
-  final result = await KreuzbergBridge.extractFile('document.pdf', null, config);
+  final result = await XbergBridge.extractFile('document.pdf', null, config);
 
   final detected = result.detectedLanguages;
   if (detected != null && detected.isNotEmpty) {

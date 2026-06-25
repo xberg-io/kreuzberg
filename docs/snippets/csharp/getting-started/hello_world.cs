@@ -1,5 +1,5 @@
-using Kreuzberg;
+using Xberg;
 
-var result = KreuzbergClient.ExtractFileSync("document.pdf");
+var result = XbergClient.ExtractFileSync("document.pdf");
 
 Console.WriteLine(result.Content);

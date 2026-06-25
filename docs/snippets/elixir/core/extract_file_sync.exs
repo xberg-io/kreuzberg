@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-{:ok, result} = Kreuzberg.extract_file("document.pdf")
+{:ok, result} = Xberg.extract_file("document.pdf")
 
 content = result.content
 table_count = length(result.tables)

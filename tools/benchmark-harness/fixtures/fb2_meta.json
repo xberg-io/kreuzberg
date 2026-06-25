@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/meta.fb2",
 	"file_type": "fb2",
 	"file_size": 472,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "FictionBook document with book title and abstract annotation metadata",
 		"category": "literature"

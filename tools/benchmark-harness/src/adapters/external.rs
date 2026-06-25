@@ -355,7 +355,7 @@ fn ensure_tika_extract_compiled(java_path: &PathBuf, tika_jar_path: &PathBuf) ->
 
     let class_path = compile_dir
         .join("dev")
-        .join("kreuzberg")
+        .join("xberg")
         .join("benchmark")
         .join("TikaExtract.class");
 
@@ -415,7 +415,7 @@ pub fn create_tika_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
         "-XX:+UseG1GC".to_string(),
         "-cp".to_string(),
         classpath,
-        "dev.kreuzberg.benchmark.TikaExtract".to_string(),
+        "dev.xberg.benchmark.TikaExtract".to_string(),
         ocr_flag(ocr_enabled),
         "sync".to_string(),
     ];

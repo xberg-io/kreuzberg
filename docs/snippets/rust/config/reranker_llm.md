@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{LlmConfig, RerankerConfig, RerankerModelType};
+use xberg::{LlmConfig, RerankerConfig, RerankerModelType};
 
 let config = RerankerConfig {
     model: RerankerModelType::Llm {

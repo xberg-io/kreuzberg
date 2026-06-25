@@ -1,6 +1,6 @@
 ```python title="Python"
 import threading
-from kreuzberg import ExtractionResult
+from xberg import ExtractionResult
 
 class StatefulPlugin:
     def __init__(self):

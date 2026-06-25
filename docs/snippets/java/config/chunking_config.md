@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()
@@ -11,10 +11,10 @@ ExtractionConfig config = ExtractionConfig.builder()
 ```
 
 ```java title="Java - Markdown with Heading Context"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.HeadingContext;
-import dev.kreuzberg.HeadingLevel;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.HeadingContext;
+import dev.xberg.HeadingLevel;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()
@@ -25,7 +25,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = KreuzbergClient.extractFile("document.md", config);
+ExtractionResult result = XbergClient.extractFile("document.md", config);
 
 result.getChunks().forEach(chunk -> {
     var headingContext = chunk.getMetadata().getHeadingContext();
@@ -39,8 +39,8 @@ result.getChunks().forEach(chunk -> {
 ```
 
 ```java title="Java - Prepend Heading Context"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()
@@ -51,7 +51,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = KreuzbergClient.extractFile("document.md", config);
+ExtractionResult result = XbergClient.extractFile("document.md", config);
 
 result.getChunks().forEach(chunk -> {
     // Each chunk's content is prefixed with its heading breadcrumb

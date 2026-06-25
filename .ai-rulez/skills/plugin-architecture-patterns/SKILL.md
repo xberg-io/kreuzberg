@@ -59,7 +59,7 @@ Registry selects **highest priority** extractor for each MIME type. Override bui
 // In extractors/mod.rs → register_default_extractors()
 let registry = get_document_extractor_registry();
 let mut registry = registry.write()
-    .map_err(|e| KreuzbergError::Other(format!("Registry lock poisoned: {}", e)))?;
+    .map_err(|e| XbergError::Other(format!("Registry lock poisoned: {}", e)))?;
 registry.register(Arc::new(MyExtractor::new()))?;
 ```
 

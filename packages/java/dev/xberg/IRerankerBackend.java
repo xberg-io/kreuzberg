@@ -1,0 +1,26 @@
+package dev.xberg;
+
+import java.util.List;
+
+/**
+ * Bridge interface for the RerankerBackend plugin system.
+ *
+ * Implementations are wrapped by RerankerBackendBridge and exposed to the native
+ * runtime through Panama FFM upcall stubs.
+ */
+public interface IRerankerBackend {
+
+    /** Plugin name (used for registry keying). */
+    String name();
+
+    /** Plugin version. */
+    String version();
+
+    /** Initialize the plugin. */
+    default void initialize() throws Exception {}
+
+    /** Shut down the plugin. */
+    default void shutdown() throws Exception {}
+
+/** rerank. */    List<Float> rerank(String query, List<String> documents) throws Exception;
+}

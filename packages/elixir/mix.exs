@@ -1,14 +1,14 @@
-defmodule Kreuzberg.MixProject do
+defmodule Xberg.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :kreuzberg,
-      version: "5.0.0-rc.36",
+      app: :xberg,
+      version: "1.0.0-rc.1",
       elixir: "~> 1.14",
-      elixirc_paths: ["lib", Path.expand("../../packages/elixir/native/kreuzberg_nif/src", __DIR__)],
+      elixirc_paths: ["lib", Path.expand("../../packages/elixir/native/xberg_nif/src", __DIR__)],
       rustler_crates: [
-        kreuzberg_nif: [
+        xberg_nif: [
           mode: :release,
           targets: [
             "aarch64-apple-darwin",
@@ -27,9 +27,9 @@ defmodule Kreuzberg.MixProject do
   defp package do
     [
       licenses: ["Elastic-2.0"],
-      links: %{"GitHub" => "https://github.com/xberg-io/kreuzberg"},
+      links: %{"GitHub" => "https://github.com/xberg-io/xberg"},
       files:
-        ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/kreuzberg_nif/Cargo.toml native/kreuzberg_nif/Cargo.lock native/kreuzberg_nif/src)
+        ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/xberg_nif/Cargo.toml native/xberg_nif/Cargo.lock native/xberg_nif/src)
     ]
   end
 

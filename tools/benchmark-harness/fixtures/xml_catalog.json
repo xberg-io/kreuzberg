@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xml/plant_catalog.xml",
 	"file_type": "xml",
 	"file_size": 7729,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "XML catalog with multiple plant records containing structured product data",
 		"category": "catalog"

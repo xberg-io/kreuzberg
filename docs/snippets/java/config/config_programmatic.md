@@ -1,10 +1,10 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
-import dev.kreuzberg.TesseractConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
+import dev.xberg.TesseractConfig;
 
 public final class ProgrammaticConfigExample {
     public static void main(String[] args) throws Exception {
@@ -24,7 +24,7 @@ public final class ProgrammaticConfigExample {
             .enableQualityProcessing(true)
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+        ExtractionResult result = Xberg.extractFile("document.pdf", config);
         System.out.printf("Content length: %d%n", result.getContent().length());
     }
 }

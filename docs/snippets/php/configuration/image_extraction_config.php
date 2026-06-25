@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ImageExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ImageExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 echo "Example 1: Basic Image Extraction\n";
 echo "=================================\n";
@@ -26,8 +26,8 @@ $config1 = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config1);
-$result = $kreuzberg->extractFile('presentation.pptx');
+$xberg = new Xberg($config1);
+$result = $xberg->extractFile('presentation.pptx');
 
 if ($result->images !== null) {
     echo "Total images extracted: " . count($result->images) . "\n";
@@ -53,7 +53,7 @@ $config2 = new ExtractionConfig(
     )
 );
 
-$result2 = (new Kreuzberg($config2))->extractFile('document.pdf');
+$result2 = (new Xberg($config2))->extractFile('document.pdf');
 
 echo "Filtering images smaller than 200x200 pixels\n";
 if ($result2->images !== null) {
@@ -106,7 +106,7 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$result5 = (new Kreuzberg($config5))->extractFile('document_with_images.pdf');
+$result5 = (new Xberg($config5))->extractFile('document_with_images.pdf');
 
 if ($result5->images !== null) {
     echo "Extracted " . count($result5->images) . " images with OCR:\n\n";
@@ -136,7 +136,7 @@ $config6 = new ExtractionConfig(
     )
 );
 
-$result6 = (new Kreuzberg($config6))->extractFile('presentation.pptx');
+$result6 = (new Xberg($config6))->extractFile('presentation.pptx');
 
 if ($result6->images !== null) {
     $outputDir = 'extracted_images';
@@ -215,7 +215,7 @@ $config8 = new ExtractionConfig(
     )
 );
 
-$result8 = (new Kreuzberg($config8))->extractFile('mixed_content.pdf');
+$result8 = (new Xberg($config8))->extractFile('mixed_content.pdf');
 
 if ($result8->images !== null) {
     echo "Extracted images: " . count($result8->images) . "\n\n";

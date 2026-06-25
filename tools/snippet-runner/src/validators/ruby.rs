@@ -62,7 +62,7 @@ impl SnippetValidator for RubyValidator {
 }
 
 /// Detect YARD-style method signatures like:
-/// `Kreuzberg.extract_file_sync(path, config: nil) -> Kreuzberg::Result`
+/// `Xberg.extract_file_sync(path, config: nil) -> Xberg::Result`
 fn is_api_signature(code: &str) -> bool {
     let lines: Vec<&str> = code.lines().collect();
     // Single-line or very short (1-3 lines) with `->` return type

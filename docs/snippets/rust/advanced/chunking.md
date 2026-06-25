@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ChunkingConfig, EmbeddingConfig, EmbeddingModelType, ExtractionConfig};
+use xberg::{ChunkingConfig, EmbeddingConfig, EmbeddingModelType, ExtractionConfig};
 
 fn main() {
     let config = ExtractionConfig {

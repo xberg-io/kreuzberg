@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -10,7 +10,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = KreuzbergClient.ExtractFileSync("scanned.pdf", config);
+var result = XbergClient.ExtractFileSync("scanned.pdf", config);
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"Detected Languages: {string.Join(", ", result.DetectedLanguages ?? new List<string>())}");

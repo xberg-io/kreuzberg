@@ -1,6 +1,6 @@
 # HTML Styling Contract
 
-This document defines the stability guarantees for Kreuzberg's styled HTML output.
+This document defines the stability guarantees for Xberg's styled HTML output.
 
 ## Stability Guarantee
 

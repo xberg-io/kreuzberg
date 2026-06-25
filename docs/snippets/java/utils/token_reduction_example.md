@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.TokenReductionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.TokenReductionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .tokenReduction(TokenReductionConfig.builder()
@@ -11,7 +11,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("verbose_document.pdf", config);
+ExtractionResult result = Xberg.extractFile("verbose_document.pdf", config);
 
 Object originalTokens = result.getMetadata().get("original_token_count");
 Object reducedTokens = result.getMetadata().get("token_count");

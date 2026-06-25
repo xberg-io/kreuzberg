@@ -1,6 +1,6 @@
-//! Native Kreuzberg Rust adapter
+//! Native Xberg Rust adapter
 //!
-//! This adapter uses the Kreuzberg Rust core library directly for maximum performance.
+//! This adapter uses the Xberg Rust core library directly for maximum performance.
 //! It serves as the baseline for comparing language bindings.
 
 use crate::adapter::FrameworkAdapter;
@@ -8,13 +8,13 @@ use crate::monitoring::ResourceMonitor;
 use crate::types::{BenchmarkResult, ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
 use crate::{Error, Result};
 use async_trait::async_trait;
-use kreuzberg::{ExtractionConfig, ExtractionResult, FormatMetadata, batch_extract_files, extract_file};
+use xberg::{ExtractionConfig, ExtractionResult, FormatMetadata, batch_extract_files, extract_file};
 use std::path::Path;
 use std::time::{Duration, Instant};
 
 /// Determine OCR status by inspecting the actual extraction result metadata.
 ///
-/// The kreuzberg crate sets `FormatMetadata::Ocr` for raw tesseract results, but the
+/// The xberg crate sets `FormatMetadata::Ocr` for raw tesseract results, but the
 /// image extractor overwrites format to `FormatMetadata::Image` even when OCR was used.
 /// So we also check: if the format is `Image` and OCR was enabled in config, OCR was used.
 ///
@@ -38,7 +38,7 @@ fn determine_ocr_status(result: &ExtractionResult, config: &ExtractionConfig) ->
     }
 }
 
-/// Native Rust adapter using kreuzberg crate directly
+/// Native Rust adapter using xberg crate directly
 pub struct NativeAdapter {
     config: ExtractionConfig,
 }
@@ -91,7 +91,7 @@ impl Default for NativeAdapter {
 #[async_trait]
 impl FrameworkAdapter for NativeAdapter {
     fn name(&self) -> &str {
-        "kreuzberg-rust"
+        "xberg-rust"
     }
 
     fn supports_format(&self, file_type: &str) -> bool {
@@ -296,9 +296,9 @@ impl FrameworkAdapter for NativeAdapter {
 
         let start = Instant::now();
 
-        let items: Vec<kreuzberg::BatchFileItem> = file_paths
+        let items: Vec<xberg::BatchFileItem> = file_paths
             .iter()
-            .map(|p| kreuzberg::BatchFileItem {
+            .map(|p| xberg::BatchFileItem {
                 path: p.to_path_buf(),
                 config: None,
             })
@@ -516,7 +516,7 @@ mod tests {
     #[tokio::test]
     async fn test_native_adapter_creation() {
         let adapter = NativeAdapter::new();
-        assert_eq!(adapter.name(), "kreuzberg-rust");
+        assert_eq!(adapter.name(), "xberg-rust");
     }
 
     #[tokio::test]
@@ -541,7 +541,7 @@ mod tests {
             .unwrap();
 
         assert!(result.success);
-        assert_eq!(result.framework, "kreuzberg-rust");
+        assert_eq!(result.framework, "xberg-rust");
         assert!(result.duration.as_millis() < 1000);
     }
 }

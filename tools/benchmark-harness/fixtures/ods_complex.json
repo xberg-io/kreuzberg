@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/data_formats/test_01.ods",
 	"file_type": "ods",
 	"file_size": 183558,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "Complex spreadsheet with embedded objects",
 		"category": "spreadsheet"

@@ -1,9 +1,9 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, OcrConfig, ChunkingConfig, LanguageDetectionConfig, TokenReductionConfig, PostProcessorConfig, EmbeddingConfig, EmbeddingModelType};
-use kreuzberg::keywords::{KeywordConfig, KeywordAlgorithm};
+use xberg::{extract_file, ExtractionConfig, OcrConfig, ChunkingConfig, LanguageDetectionConfig, TokenReductionConfig, PostProcessorConfig, EmbeddingConfig, EmbeddingModelType};
+use xberg::keywords::{KeywordConfig, KeywordAlgorithm};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         use_cache: true,
         enable_quality_processing: true,

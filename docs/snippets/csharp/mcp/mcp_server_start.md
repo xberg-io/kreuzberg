@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 var processInfo = new ProcessStartInfo
 {
-    FileName = "kreuzberg",
+    FileName = "xberg",
     Arguments = "mcp",
     UseShellExecute = false,
     RedirectStandardInput = true,
@@ -14,7 +14,7 @@ var processInfo = new ProcessStartInfo
 };
 
 using var server = Process.Start(processInfo)
-    ?? throw new InvalidOperationException("Failed to start kreuzberg mcp");
+    ?? throw new InvalidOperationException("Failed to start xberg mcp");
 
 await server.WaitForExitAsync();
 ```

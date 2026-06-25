@@ -1,0 +1,45 @@
+[package]
+name = "xberg-libheif"
+version.workspace = true
+edition = "2024"
+rust-version.workspace = true
+authors.workspace = true
+description = "Safe libheif bindings for Xberg — HEIF/HEIC/AVIF decoding (vendored from Cykooz/libheif-rs)"
+license = "MIT"
+repository.workspace = true
+homepage = "https://xberg.io"
+documentation = "https://docs.rs/xberg-libheif"
+readme = "README.md"
+keywords = ["heic", "heif", "avif", "libheif", "xberg"]
+categories = ["multimedia::images", "api-bindings"]
+exclude = ["tests/*", ".github/*"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lib]
+name = "xberg_libheif"
+crate-type = ["lib"]
+
+[features]
+default = ["latest"]
+v1_17 = ["libheif-sys/v1_17"]
+v1_18 = ["v1_17", "libheif-sys/v1_18"]
+v1_19 = ["v1_18", "libheif-sys/v1_19"]
+v1_20 = ["v1_19", "libheif-sys/v1_20"]
+v1_21 = ["v1_20", "libheif-sys/v1_21"]
+latest = ["v1_21"]
+# Register libheif as a decoder for the `image` crate.
+image = ["dep:image"]
+
+[dependencies]
+cfg-if = "1.0"
+enumn = "0.1.14"
+four-cc = "0.4"
+image = { workspace = true, optional = true }
+libc = { workspace = true }
+libheif-sys = "5.3"
+
+[lints]
+workspace = true

@@ -6,11 +6,11 @@ title: "Error Reference"
 
 All error types thrown by the library across all languages.
 
-### KreuzbergError
+### XbergError
 
-Main error type for all Kreuzberg operations.
+Main error type for all Xberg operations.
 
-All errors in Kreuzberg use this enum, which preserves error chains
+All errors in Xberg use this enum, which preserves error chains
 and provides context for debugging.
 
 ## Variants

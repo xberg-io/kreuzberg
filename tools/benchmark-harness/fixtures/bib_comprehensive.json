@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/bibtex/comprehensive.bib",
 	"file_type": "bib",
 	"file_size": 3568,
-	"expected_frameworks": ["kreuzberg", "pandoc", "tika"],
+	"expected_frameworks": ["xberg", "pandoc", "tika"],
 	"metadata": {
 		"description": "BibTeX bibliography file with multiple entries",
 		"category": "academic"

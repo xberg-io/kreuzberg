@@ -7,15 +7,15 @@ declare(strict_types=1);
  * Batch Document Processing
  *
  * Process multiple documents in parallel for maximum performance.
- * Kreuzberg's batch API uses multiple threads to extract documents concurrently.
+ * Xberg's batch API uses multiple threads to extract documents concurrently.
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use function Kreuzberg\batch_extract_files;
-use function Kreuzberg\batch_extract_bytes;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use function Xberg\batch_extract_files;
+use function Xberg\batch_extract_bytes;
 
 $files = [
     'document1.pdf',
@@ -50,14 +50,14 @@ $config = new ExtractionConfig(
     extractImages: false  
 );
 
-$kreuzberg = new Kreuzberg($config);
+$xberg = new Xberg($config);
 
 $pdfFiles = glob('*.pdf');
 if (!empty($pdfFiles)) {
     echo "Processing " . count($pdfFiles) . " PDF files...\n";
 
     $start = microtime(true);
-    $results = $kreuzberg->batchExtractFiles($pdfFiles, $config);
+    $results = $xberg->batchExtractFiles($pdfFiles, $config);
     $elapsed = microtime(true) - $start;
 
     echo "Completed in " . number_format($elapsed, 2) . " seconds\n";
@@ -87,7 +87,7 @@ $results = batch_extract_bytes($dataList, $mimeTypes);
 
 echo "\nProcessed " . count($results) . " files from memory\n";
 
-function processDirectory(string $dir, Kreuzberg $kreuzberg): array
+function processDirectory(string $dir, Xberg $xberg): array
 {
     $results = [];
     $iterator = new RecursiveIteratorIterator(
@@ -112,7 +112,7 @@ function processDirectory(string $dir, Kreuzberg $kreuzberg): array
 
     foreach ($batches as $batchIndex => $batch) {
         echo "Processing batch " . ($batchIndex + 1) . "/" . count($batches) . "...\n";
-        $batchResults = $kreuzberg->batchExtractFiles($batch);
+        $batchResults = $xberg->batchExtractFiles($batch);
         $results = array_merge($results, $batchResults);
     }
 
@@ -122,7 +122,7 @@ function processDirectory(string $dir, Kreuzberg $kreuzberg): array
 $directory = './documents';
 if (is_dir($directory)) {
     echo "\nProcessing directory: $directory\n";
-    $results = processDirectory($directory, $kreuzberg);
+    $results = processDirectory($directory, $xberg);
     echo "Processed " . count($results) . " files\n";
 }
 
@@ -130,7 +130,7 @@ $mixedFiles = ['valid.pdf', 'nonexistent.pdf', 'another.docx'];
 
 try {
     $results = batch_extract_files($mixedFiles);
-} catch (\Kreuzberg\Exceptions\KreuzbergException $e) {
+} catch (\Xberg\Exceptions\XbergException $e) {
     echo "Batch processing error: " . $e->getMessage() . "\n";
 }
 
@@ -146,7 +146,7 @@ foreach ($batches as $index => $batch) {
     echo sprintf("\rProgress: %.1f%% [%d/%d batches]",
         $progress, $index + 1, count($batches));
 
-    $results = $kreuzberg->batchExtractFiles($batch);
+    $results = $xberg->batchExtractFiles($batch);
     $totalProcessed += count($results);
 }
 

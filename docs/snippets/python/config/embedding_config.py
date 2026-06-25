@@ -1,4 +1,4 @@
-from kreuzberg import EmbeddingConfig, EmbeddingModelType, ChunkingConfig, ExtractionConfig
+from xberg import EmbeddingConfig, EmbeddingModelType, ChunkingConfig, ExtractionConfig
 
 # Example 1: Preset model (recommended)
 # Fast, balanced, or quality preset configurations optimized for common use cases.
@@ -7,7 +7,7 @@ embedding_config = EmbeddingConfig(
     batch_size=32,
     normalize=True,
     show_download_progress=True,
-    cache_dir="~/.cache/kreuzberg/embeddings",
+    cache_dir="~/.cache/xberg/embeddings",
 )
 
 # Available presets:
@@ -27,7 +27,7 @@ embedding_config = EmbeddingConfig(
     batch_size=32,
     normalize=True,
     show_download_progress=True,
-    cache_dir=None,  # Uses default: .kreuzberg/embeddings/
+    cache_dir=None,  # Uses default: .xberg/embeddings/
 )
 
 # Popular ONNX-compatible models:
@@ -76,7 +76,7 @@ extraction_config = ExtractionConfig(
 #   - False: Raw embedding values
 #
 # cache_dir: Where to store downloaded models
-#   - None: Uses .kreuzberg/embeddings/ in current directory
+#   - None: Uses .xberg/embeddings/ in current directory
 #   - String path: Custom directory for model storage
 #
 # show_download_progress: Display download progress bar

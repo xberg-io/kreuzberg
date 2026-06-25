@@ -1,15 +1,15 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  language_detection: Kreuzberg::LanguageDetectionConfig.new(
+config = Xberg::ExtractionConfig.new(
+  language_detection: Xberg::LanguageDetectionConfig.new(
     enabled: true,
     min_confidence: 0.8,
     detect_multiple: false
   )
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 
 if result.detected_languages&.any?
   puts "Detected Language: #{result.detected_languages.first}"

@@ -101,13 +101,13 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 Install via pub:
 
 ```bash
-dart pub add kreuzberg
+dart pub add xberg
 ```
 
 For Flutter projects:
 
 ```bash
-flutter pub add kreuzberg
+flutter pub add xberg
 ```
 
 ### System Requirements
@@ -431,7 +431,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

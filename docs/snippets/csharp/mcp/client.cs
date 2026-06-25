@@ -21,7 +21,7 @@ class McpClient
     {
         var processInfo = new ProcessStartInfo
         {
-            FileName = "kreuzberg",
+            FileName = "xberg",
             Arguments = "mcp",
             UseShellExecute = false,
             RedirectStandardInput = true,

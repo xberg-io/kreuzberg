@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 import os.log
 
 let logger = Logger(subsystem: "com.example.plugins", category: "MyPlugin")
@@ -52,5 +52,5 @@ final class MyPlugin: PostProcessor {
 }
 
 let plugin = MyPlugin()
-try Kreuzberg.registerPostProcessor(plugin)
+try Xberg.registerPostProcessor(plugin)
 ```

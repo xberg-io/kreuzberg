@@ -1,5 +1,5 @@
-using Kreuzberg.Config;
-using Kreuzberg;
+using Xberg.Config;
+using Xberg;
 
 public class HierarchyConfigExample
 {
@@ -26,8 +26,8 @@ public class HierarchyConfigExample
             PdfOptions = pdfConfigBasic
         };
 
-        var kreuzberg = new Kreuzberg(extractionConfigBasic);
-        // var result = kreuzberg.ExtractFileSync("document.pdf");
+        var xberg = new Xberg(extractionConfigBasic);
+        // var result = xberg.ExtractFileSync("document.pdf");
 
 
         // Example 2: Custom KClusters for minimal structure

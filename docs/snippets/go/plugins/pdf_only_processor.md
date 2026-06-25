@@ -6,13 +6,13 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -73,12 +73,12 @@ func pdfOnlyProcessor(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register the post-processor with priority 70
-	if err := kreuzberg.RegisterPostProcessor("pdf_only_processor", 70,
+	if err := xberg.RegisterPostProcessor("pdf_only_processor", 70,
 		(C.PostProcessorCallback)(C.pdfOnlyProcessor)); err != nil {
 		log.Fatalf("failed to register post-processor: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterPostProcessor("pdf_only_processor"); err != nil {
+		if err := xberg.UnregisterPostProcessor("pdf_only_processor"); err != nil {
 			log.Printf("warning: failed to unregister post-processor: %v", err)
 		}
 	}()
@@ -91,7 +91,7 @@ func main() {
 	}
 
 	for _, file := range files {
-		result, err := kreuzberg.ExtractFileSync(file, nil)
+		result, err := xberg.ExtractFileSync(file, nil)
 		if err != nil {
 			log.Printf("Warning: extraction failed for %s: %v", file, err)
 			continue

@@ -1,14 +1,14 @@
 ```csharp title="simple_benchmark.cs"
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using Kreuzberg;
+using Xberg;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
 [MemoryDiagnoser]
 [SimpleJob(warmupCount: 3, targetCount: 5)]
-public class KreuzbergBenchmark
+public class XbergBenchmark
 {
     private string _testFilePath;
     private ExtractionConfig _config;
@@ -27,14 +27,14 @@ public class KreuzbergBenchmark
     [Benchmark]
     public void ExtractFileSync()
     {
-        var result = KreuzbergLib.ExtractFileSync(_testFilePath, _config);
+        var result = XbergLib.ExtractFileSync(_testFilePath, _config);
         _ = result.Content.Length;
     }
 
     [Benchmark]
     public async Task ExtractFileAsync()
     {
-        var result = await KreuzbergLib.ExtractFileAsync(_testFilePath, _config);
+        var result = await XbergLib.ExtractFileAsync(_testFilePath, _config);
         _ = result.Content.Length;
     }
 
@@ -51,7 +51,7 @@ public class KreuzbergBenchmark
             }
         };
 
-        var result = await KreuzbergLib.ExtractFileAsync(_testFilePath, ocrConfig);
+        var result = await XbergLib.ExtractFileAsync(_testFilePath, ocrConfig);
         _ = result.Content.Length;
     }
 
@@ -64,7 +64,7 @@ public class KreuzbergBenchmark
             EnableQualityProcessing = true,
         };
 
-        var result = await KreuzbergLib.ExtractFileAsync(_testFilePath, cacheConfig);
+        var result = await XbergLib.ExtractFileAsync(_testFilePath, cacheConfig);
         _ = result.Content.Length;
     }
 }
@@ -76,12 +76,12 @@ public class ManualBenchmark
         var filePath = "document.pdf";
         var config = new ExtractionConfig();
 
-        await KreuzbergLib.ExtractFileAsync(filePath, config);
+        await XbergLib.ExtractFileAsync(filePath, config);
 
         var sw = Stopwatch.StartNew();
         for (int i = 0; i < 10; i++)
         {
-            KreuzbergLib.ExtractFileSync(filePath, config);
+            XbergLib.ExtractFileSync(filePath, config);
         }
         sw.Stop();
         Console.WriteLine($"Sync extraction (10 runs): {sw.ElapsedMilliseconds}ms avg {sw.ElapsedMilliseconds / 10f}ms");
@@ -90,13 +90,13 @@ public class ManualBenchmark
         var tasks = new System.Collections.Generic.List<Task>();
         for (int i = 0; i < 10; i++)
         {
-            tasks.Add(KreuzbergLib.ExtractFileAsync(filePath, config));
+            tasks.Add(XbergLib.ExtractFileAsync(filePath, config));
         }
         await Task.WhenAll(tasks);
         sw.Stop();
         Console.WriteLine($"Async extraction (10 parallel runs): {sw.ElapsedMilliseconds}ms");
 
-        var summary = BenchmarkRunner.Run<KreuzbergBenchmark>();
+        var summary = BenchmarkRunner.Run<XbergBenchmark>();
     }
 }
 ```

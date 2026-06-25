@@ -42,7 +42,7 @@ Three formats are supported. TOML is recommended.
 
 === "TOML (Recommended)"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     use_cache = true
     enable_quality_processing = true
 
@@ -56,7 +56,7 @@ Three formats are supported. TOML is recommended.
 
 === "YAML"
 
-    ```yaml title="kreuzberg.yaml"
+    ```yaml title="xberg.yaml"
     use_cache: true
     enable_quality_processing: true
 
@@ -69,7 +69,7 @@ Three formats are supported. TOML is recommended.
 
 === "JSON"
 
-    ```json title="kreuzberg.json"
+    ```json title="xberg.json"
     {
       "use_cache": true,
       "enable_quality_processing": true,
@@ -85,7 +85,7 @@ Three formats are supported. TOML is recommended.
 
 ### Automatic Discovery
 
-When no `--config` path is supplied, Kreuzberg walks up from the current working directory looking for `kreuzberg.toml` and uses the first match. YAML and JSON files are supported only when passed explicitly via `--config`. If nothing is found, defaults are used.
+When no `--config` path is supplied, Xberg walks up from the current working directory looking for `xberg.toml` and uses the first match. YAML and JSON files are supported only when passed explicitly via `--config`. If nothing is found, defaults are used.
 
 === "Python"
 

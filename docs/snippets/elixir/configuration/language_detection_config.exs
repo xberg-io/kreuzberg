@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure language detection for multilingual documents
 # Automatically detect all languages present in the content
@@ -15,7 +15,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("multilingual.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("multilingual.pdf", nil, config)
 
 IO.puts("Detected Languages:")
 IO.inspect(result.detected_languages)

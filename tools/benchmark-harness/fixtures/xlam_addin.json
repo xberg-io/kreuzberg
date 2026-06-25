@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xlsx/data-with-macros.xlam",
 	"file_type": "xlam",
 	"file_size": 170052,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Excel macro-enabled add-in file with spreadsheet data (XLAM extension)",
 		"category": "spreadsheet",

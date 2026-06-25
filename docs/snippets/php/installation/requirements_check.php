@@ -6,10 +6,10 @@ declare(strict_types=1);
 /**
  * System Requirements Check
  *
- * Verify that your system meets all requirements for running Kreuzberg.
+ * Verify that your system meets all requirements for running Xberg.
  */
 
-echo "Kreuzberg System Requirements Check\n";
+echo "Xberg System Requirements Check\n";
 echo "====================================\n\n";
 
 $requirements_met = true;
@@ -33,8 +33,8 @@ foreach ($required_extensions as $ext) {
     }
 }
 
-echo "Extension 'kreuzberg': ";
-if (extension_loaded('kreuzberg')) {
+echo "Extension 'xberg': ";
+if (extension_loaded('xberg')) {
     echo "✓ Loaded\n";
 } else {
     echo "✗ Missing\n";
@@ -52,7 +52,7 @@ if ($memory_bytes >= 128 * 1024 * 1024) {
 
 echo "\n";
 if ($requirements_met) {
-    echo "✓ All requirements met! You're ready to use Kreuzberg.\n";
+    echo "✓ All requirements met! You're ready to use Xberg.\n";
 } else {
     echo "✗ Some requirements are not met. Please install missing components.\n";
     exit(1);

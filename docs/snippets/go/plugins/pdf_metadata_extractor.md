@@ -7,13 +7,13 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -78,12 +78,12 @@ func pdfMetadataExtractor(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register the post-processor with priority 80, early stage
-	if err := kreuzberg.RegisterPostProcessor("pdf_metadata_extractor", 80,
+	if err := xberg.RegisterPostProcessor("pdf_metadata_extractor", 80,
 		(C.PostProcessorCallback)(C.pdfMetadataExtractor)); err != nil {
 		log.Fatalf("failed to register post-processor: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterPostProcessor("pdf_metadata_extractor"); err != nil {
+		if err := xberg.UnregisterPostProcessor("pdf_metadata_extractor"); err != nil {
 			log.Printf("warning: failed to unregister post-processor: %v", err)
 		}
 
@@ -91,7 +91,7 @@ func main() {
 	}()
 
 	// Extract PDF document
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

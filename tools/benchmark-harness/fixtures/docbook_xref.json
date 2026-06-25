@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/docbook/docbook-xref.docbook",
 	"file_type": "docbook",
 	"file_size": 3129,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "DocBook cross-reference examples with XRef, links, figures, and tables",
 		"category": "documentation"

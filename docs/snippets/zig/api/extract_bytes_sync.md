@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -11,7 +11,7 @@ pub fn main() !void {
     defer allocator.free(content);
 
     const config_json = "{}";
-    const result_json = try kreuzberg.extract_bytes_sync(content, "application/pdf", config_json);
+    const result_json = try xberg.extract_bytes_sync(content, "application/pdf", config_json);
     defer std.heap.c_allocator.free(result_json);
 
     const stdout = std.io.getStdOut().writer();

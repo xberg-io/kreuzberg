@@ -1,8 +1,8 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
     UseCache = false
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+var result = XbergLib.ExtractFileSync("document.pdf", config);

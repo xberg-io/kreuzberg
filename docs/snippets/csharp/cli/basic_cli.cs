@@ -3,9 +3,9 @@ using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Threading.Tasks;
-using Kreuzberg;
+using Xberg;
 
-var rootCommand = new RootCommand("Kreuzberg document extraction CLI");
+var rootCommand = new RootCommand("Xberg document extraction CLI");
 
 var extractFileCommand = new Command("extract-file", "Extract text from a document file");
 var filePath = new Argument<string>("path", "Path to the document file");
@@ -22,7 +22,7 @@ extractFileCommand.SetHandler(async (path, format) =>
 {
     try
     {
-        var result = await KreuzbergLib.ExtractFileAsync(path);
+        var result = await XbergLib.ExtractFileAsync(path);
 
         if (format == "json")
         {

@@ -1,7 +1,7 @@
 <!-- snippet:skip reason="kotlin.test is not on the snippet-runner classpath; the plugin-testing pattern documented here cannot compile under the runner's lightweight Kotlin profile. Run these tests from a real Gradle build." -->
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
-import dev.kreuzberg.kt.Kreuzberg
+import dev.xberg.*
+import dev.xberg.kt.Xberg
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -46,7 +46,7 @@ class MinLengthValidatorTest {
     fun `registration round-trip exposes the plugin in the listing`() {
         ValidatorBridge.registerValidator(MinLengthValidator(minLength = 1))
         try {
-            assertTrue("min-length-validator" in Kreuzberg.listValidators())
+            assertTrue("min-length-validator" in Xberg.listValidators())
         } finally {
             ValidatorBridge.unregisterValidator("min-length-validator")
         }

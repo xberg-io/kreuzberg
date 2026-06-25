@@ -3,10 +3,10 @@
 // by the local asset server so no manual editing of demo.html is ever needed.
 //
 // CDN pattern replaced:
-//   https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@*/...
+//   https://cdn.jsdelivr.net/npm/@xberg/wasm@*/...
 //   → http://localhost:9000/...
 //
-// Also patches pkg/web/kreuzberg_wasm.js (gitignored, wasm-pack generated) to
+// Also patches pkg/web/xberg_wasm.js (gitignored, wasm-pack generated) to
 // replace bare specifier imports ("env", "wasi_snapshot_preview1") with inline
 // browser shims.  The local 5.x WASM binary is compiled with WASI syscalls via
 // tesseract's C layer; the importmap approach does not propagate into Workers
@@ -23,7 +23,7 @@ const src = join(root, "docs", "demo.html");
 const dest = join(root, "docs", "demo-dev.html");
 const ASSET_PORT = process.env.ASSET_PORT ?? "9000";
 
-const cdnRe = /https:\/\/cdn\.jsdelivr\.net\/npm\/@kreuzberg\/wasm@[^/'"]+/g;
+const cdnRe = /https:\/\/cdn\.jsdelivr\.net\/npm\/@xberg\/wasm@[^/'"]+/g;
 
 const patched = readFileSync(src, "utf8")
 	.replace(cdnRe, `http://localhost:${ASSET_PORT}`)
@@ -39,11 +39,11 @@ writeFileSync(dest, patched, "utf8");
 console.log(`patch-demo-dev: docs/demo-dev.html → http://localhost:8001/demo-dev.html`);
 console.log(`  assets served from http://localhost:${ASSET_PORT}`);
 
-// Patch pkg/web/kreuzberg_wasm.js — strip bare "env" / "wasi_snapshot_preview1"
+// Patch pkg/web/xberg_wasm.js — strip bare "env" / "wasi_snapshot_preview1"
 // import lines and replace with inline browser shims so the module loads in a
 // Worker without an importmap (importmap inheritance in Workers is unreliable
 // for bare specifiers in transitive cross-origin dynamic imports).
-const wasmJs = join(root, "crates", "kreuzberg-wasm", "pkg", "web", "kreuzberg_wasm.js");
+const wasmJs = join(root, "crates", "xberg-wasm", "pkg", "web", "xberg_wasm.js");
 if (!existsSync(wasmJs)) {
 	console.warn(`patch-demo-dev: ${wasmJs} not found — skipping WASI shim patch`);
 } else {
@@ -59,7 +59,7 @@ if (!existsSync(wasmJs)) {
 	}
 
 	if (envAliases.length === 0 && wasiAliases.length === 0) {
-		console.log("patch-demo-dev: kreuzberg_wasm.js already patched, skipping");
+		console.log("patch-demo-dev: xberg_wasm.js already patched, skipping");
 	} else {
 		const stripped = original.replace(/^import \* as import\d+ from "(env|wasi_snapshot_preview1)"\s*\n/gm, "");
 
@@ -85,7 +85,7 @@ if (!existsSync(wasmJs)) {
 
 		writeFileSync(wasmJs, patchedWasmJs, "utf8");
 		console.log(
-			`patch-demo-dev: patched kreuzberg_wasm.js` +
+			`patch-demo-dev: patched xberg_wasm.js` +
 				` (${envAliases.length} env alias(es), ${wasiAliases.length} wasi alias(es))`,
 		);
 	}

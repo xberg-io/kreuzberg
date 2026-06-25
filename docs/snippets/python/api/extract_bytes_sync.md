@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_bytes_sync, ExtractionConfig
+from xberg import extract_bytes_sync, ExtractionConfig
 
 with open("document.pdf", "rb") as f:
     content = f.read()

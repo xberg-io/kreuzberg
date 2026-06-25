@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Net.Http;
 
 class Program
@@ -12,7 +12,7 @@ class Program
             var url = "https://example.com/document.pdf";
             var documentBytes = await httpClient.GetByteArrayAsync(url);
 
-            var result = await KreuzbergLib.ExtractBytesAsync(
+            var result = await XbergLib.ExtractBytesAsync(
                 documentBytes,
                 "application/pdf"
             );
@@ -24,7 +24,7 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result2 = await KreuzbergLib.ExtractBytesAsync(
+            var result2 = await XbergLib.ExtractBytesAsync(
                 documentBytes,
                 "application/pdf",
                 config
@@ -44,7 +44,7 @@ class Program
                 try
                 {
                     var bytes = await httpClient.GetByteArrayAsync(u);
-                    return await KreuzbergLib.ExtractBytesAsync(
+                    return await XbergLib.ExtractBytesAsync(
                         bytes,
                         "application/pdf"
                     );
@@ -65,7 +65,7 @@ class Program
         {
             Console.WriteLine($"HTTP error: {ex.Message}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction error: {ex.Message}");
         }

@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
+use Xberg\Xberg;
+use function Xberg\extract_file;
 
 $options = getopt('f:o:h', ['file:', 'output:', 'help']);
 
 if (isset($options['h']) || isset($options['help']) || empty($argv[1])) {
-    echo "Kreuzberg Document Extraction CLI\n";
+    echo "Xberg Document Extraction CLI\n";
     echo str_repeat('=', 60) . "\n\n";
     echo "Usage: php basic_cli.php [options]\n\n";
     echo "Options:\n";
@@ -59,7 +59,7 @@ try {
     }
 
     exit(0);
-} catch (\Kreuzberg\Exceptions\KreuzbergException $e) {
+} catch (\Xberg\Exceptions\XbergException $e) {
     fwrite(STDERR, "Error: " . $e->getMessage() . "\n");
     exit(1);
 }

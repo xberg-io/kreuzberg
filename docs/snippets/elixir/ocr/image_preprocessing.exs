@@ -2,7 +2,7 @@
 # Preprocess images before OCR for improved text extraction
 # Image preprocessing can enhance OCR accuracy on poor quality scans
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 defmodule ImagePreprocessor do
   @moduledoc """
@@ -51,7 +51,7 @@ defmodule ImagePreprocessor do
       use_cache: false  # Disable caching for preprocessing runs
     }
 
-    Kreuzberg.extract_file(file_path, nil, config)
+    Xberg.extract_file(file_path, nil, config)
   end
 
   @doc """
@@ -88,7 +88,7 @@ defmodule ImagePreprocessor do
       use_cache: false
     }
 
-    {:ok, result_standard} = Kreuzberg.extract_file(file_path, nil, config_standard)
+    {:ok, result_standard} = Xberg.extract_file(file_path, nil, config_standard)
 
     # Extract with preprocessing
     IO.puts("Extracting with preprocessing...")

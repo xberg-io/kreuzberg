@@ -1,6 +1,6 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import extract_file, ExtractionConfig, NerConfig, LlmConfig
+from xberg import extract_file, ExtractionConfig, NerConfig, LlmConfig
 
 async def main() -> None:
     config = ExtractionConfig(

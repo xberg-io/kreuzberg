@@ -1,10 +1,10 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.KreuzbergException;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
-import dev.kreuzberg.types.OcrElement;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.XbergException;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
+import dev.xberg.types.OcrElement;
 import java.io.IOException;
 
 public class Main {
@@ -17,7 +17,7 @@ public class Main {
                     .build())
                 .build();
 
-            ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+            ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
 
             if (result.getOcrElements() != null) {
                 for (OcrElement element : result.getOcrElements()) {
@@ -30,7 +30,7 @@ public class Main {
                     System.out.println();
                 }
             }
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
         }
     }

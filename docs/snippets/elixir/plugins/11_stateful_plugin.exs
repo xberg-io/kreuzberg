@@ -1,7 +1,7 @@
 ```elixir title="Elixir"
 # Define a stateful post-processor plugin using an Agent
 defmodule MyApp.Plugins.StatefulTextProcessor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
 
   @moduledoc """
   A stateful post-processor that maintains a count of processed documents.
@@ -82,7 +82,7 @@ defmodule MyApp.Plugins.StatefulTextProcessor do
 end
 
 # Register the stateful plugin
-:ok = Kreuzberg.Plugin.register_post_processor(:stateful, MyApp.Plugins.StatefulTextProcessor)
+:ok = Xberg.Plugin.register_post_processor(:stateful, MyApp.Plugins.StatefulTextProcessor)
 
 # Initialize the plugin
 :ok = MyApp.Plugins.StatefulTextProcessor.initialize()
@@ -101,10 +101,10 @@ IO.inspect(processed2, label: "Second processing")
 IO.puts("Documents processed: #{processed2["processed_count"]}")
 
 # Verify plugin is registered
-{:ok, processors} = Kreuzberg.Plugin.list_post_processors()
+{:ok, processors} = Xberg.Plugin.list_post_processors()
 IO.inspect(processors, label: "Registered processors")
 
 # Cleanup
 :ok = MyApp.Plugins.StatefulTextProcessor.shutdown()
-:ok = Kreuzberg.Plugin.unregister_post_processor(:stateful)
+:ok = Xberg.Plugin.unregister_post_processor(:stateful)
 ```

@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\KeywordConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\KeywordConfig;
 
 $config = new ExtractionConfig(
     keywords: new KeywordConfig(
@@ -15,7 +15,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 if ($result->getKeywords()) {
     foreach ($result->getKeywords() as $keyword) {

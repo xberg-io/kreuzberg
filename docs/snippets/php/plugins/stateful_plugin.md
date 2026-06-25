@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class StatefulPlugin implements PostProcessor {
     private int $callCount = 0;
@@ -72,7 +72,7 @@ class StatefulPlugin implements PostProcessor {
 
 // Register the stateful plugin
 $plugin = new StatefulPlugin();
-Kreuzberg::registerPostProcessor($plugin);
+Xberg::registerPostProcessor($plugin);
 
 echo "Stateful plugin registered\n";
 // Can later retrieve state: $plugin->getCallCount(), $plugin->getCache()

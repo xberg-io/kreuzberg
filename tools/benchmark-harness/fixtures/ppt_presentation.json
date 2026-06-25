@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/ppt/simple.ppt",
 	"file_type": "ppt",
 	"file_size": 504320,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "tika", "unstructured"],
 	"metadata": {
 		"description": "Legacy PPT format - Office 97-2003 presentation document",
 		"category": "legacy"

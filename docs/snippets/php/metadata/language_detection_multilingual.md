@@ -1,9 +1,9 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\LanguageDetectionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\LanguageDetectionConfig;
 
 // Configure multilingual language detection
 $langConfig = new LanguageDetectionConfig(
@@ -15,7 +15,7 @@ $langConfig = new LanguageDetectionConfig(
 $config = new ExtractionConfig();
 $config->language_detection = $langConfig;
 
-$result = Kreuzberg::extract_file_sync("multilingual_document.pdf", null, $config);
+$result = Xberg::extract_file_sync("multilingual_document.pdf", null, $config);
 
 // Iterate through all detected languages
 if (!empty($result->languages)) {

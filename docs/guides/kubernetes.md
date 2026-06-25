@@ -1,6 +1,6 @@
 # Kubernetes Deployment
 
-Deploy Kreuzberg to Kubernetes with proper OCR configuration, permissions, and health checks.
+Deploy Xberg to Kubernetes with proper OCR configuration, permissions, and health checks.
 
 ## Helm Chart
 
@@ -9,7 +9,7 @@ Deploy via the official Helm chart (OCI artifact on GHCR).
 ### Install
 
 ```bash title="Terminal"
-helm install kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg --version 4.8.4
+helm install xberg oci://ghcr.io/xberg-io/charts/xberg --version 4.8.4
 ```
 
 ### Configure
@@ -24,7 +24,7 @@ replicaCount: 1
 image:
   tag: "4.8.4"
 
-kreuzberg:
+xberg:
   logLevel: "info"
   ocrLanguage: "eng"
 
@@ -44,14 +44,14 @@ ingress:
   enabled: true
   className: "nginx"
   hosts:
-    - host: kreuzberg.example.com
+    - host: xberg.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: kreuzberg-tls
+    - secretName: xberg-tls
       hosts:
-        - kreuzberg.example.com
+        - xberg.example.com
 
 autoscaling:
   enabled: true
@@ -65,7 +65,7 @@ podDisruptionBudget:
 ```
 
 ```bash title="Terminal"
-helm install kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg \
+helm install xberg oci://ghcr.io/xberg-io/charts/xberg \
   --version 4.8.4 \
   -f values.yaml
 ```
@@ -73,7 +73,7 @@ helm install kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg \
 ### Upgrade
 
 ```bash title="Terminal"
-helm upgrade kreuzberg oci://ghcr.io/xberg-io/charts/kreuzberg --version 4.8.4
+helm upgrade xberg oci://ghcr.io/xberg-io/charts/xberg --version 4.8.4
 ```
 
 ### What's Included
@@ -90,7 +90,7 @@ The chart creates the following resources:
 | HorizontalPodAutoscaler | CPU/memory-based autoscaling                               | `autoscaling.enabled`         |
 | PodDisruptionBudget     | Availability during disruptions                            | `podDisruptionBudget.enabled` |
 
-All values are documented in the chart's [`values.yaml`](https://github.com/xberg-io/kreuzberg/blob/main/charts/kreuzberg/values.yaml).
+All values are documented in the chart's [`values.yaml`](https://github.com/xberg-io/xberg/blob/main/charts/xberg/values.yaml).
 
 ---
 
@@ -100,20 +100,20 @@ All values are documented in the chart's [`values.yaml`](https://github.com/xber
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kreuzberg-api
+  name: xberg-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: kreuzberg
+      app: xberg
   template:
     metadata:
       labels:
-        app: kreuzberg
+        app: xberg
     spec:
       containers:
-        - name: kreuzberg
-          image: ghcr.io/xberg-io/kreuzberg:latest
+        - name: xberg
+          image: ghcr.io/xberg-io/xberg:latest
           ports:
             - containerPort: 8000
               name: http
@@ -145,10 +145,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kreuzberg-api
+  name: xberg-api
 spec:
   selector:
-    app: kreuzberg
+    app: xberg
   ports:
     - protocol: TCP
       port: 80
@@ -170,12 +170,12 @@ Without `TESSDATA_PREFIX`, OCR silently falls back to non-OCR extraction. Offici
 env:
   - name: TESSDATA_PREFIX
     value: "/usr/share/tesseract-ocr/5/tessdata"
-  - name: KREUZBERG_OCR_LANGUAGE
+  - name: XBERG_OCR_LANGUAGE
     value: "eng"
-  - name: KREUZBERG_CACHE_DIR
-    value: "/app/.kreuzberg"
+  - name: XBERG_CACHE_DIR
+    value: "/app/.xberg"
   - name: HF_HOME
-    value: "/app/.kreuzberg/huggingface"
+    value: "/app/.xberg/huggingface"
 ```
 
 **Pre-installed languages:** `eng`, `spa`, `fra`, `deu`, `ita`, `por`, `chi_sim`, `chi_tra`, `jpn`, `ara`, `rus`, `hin`
@@ -193,7 +193,7 @@ kubectl create configmap tessdata \
 ```yaml
 spec:
   containers:
-    - name: kreuzberg
+    - name: xberg
       env:
         - name: TESSDATA_PREFIX
           value: "/etc/tessdata"
@@ -211,14 +211,14 @@ For large custom language sets, use a PVC instead of a ConfigMap.
 ### Verify Tesseract
 
 ```bash title="Terminal"
-kubectl exec -it deployment/kreuzberg-api -- tesseract --version
-kubectl exec -it deployment/kreuzberg-api -- tesseract --list-langs
-kubectl exec -it deployment/kreuzberg-api -- printenv TESSDATA_PREFIX
+kubectl exec -it deployment/xberg-api -- tesseract --version
+kubectl exec -it deployment/xberg-api -- tesseract --list-langs
+kubectl exec -it deployment/xberg-api -- printenv TESSDATA_PREFIX
 ```
 
 ## Permissions
 
-Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either approach:
+Xberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either approach:
 
 === "Init Container"
 
@@ -227,7 +227,7 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
       initContainers:
       - name: init-permissions
         image: busybox:1.37-glibc
-        command: ['sh', '-c', 'chown -R 1000:1000 /app/.kreuzberg']
+        command: ['sh', '-c', 'chown -R 1000:1000 /app/.xberg']
         securityContext:
           runAsUser: 0
           allowPrivilegeEscalation: false
@@ -236,12 +236,12 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
             drop: ["ALL"]
         volumeMounts:
         - name: cache
-          mountPath: /app/.kreuzberg
+          mountPath: /app/.xberg
       containers:
-      - name: kreuzberg
+      - name: xberg
         volumeMounts:
         - name: cache
-          mountPath: /app/.kreuzberg
+          mountPath: /app/.xberg
     ```
 
 === "fsGroup"
@@ -251,7 +251,7 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
       securityContext:
         fsGroup: 1000
       containers:
-      - name: kreuzberg
+      - name: xberg
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000
@@ -265,7 +265,7 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
 
 ```yaml
 containers:
-  - name: kreuzberg
+  - name: xberg
     livenessProbe:
       httpGet:
         path: /health
@@ -295,15 +295,15 @@ containers:
 ```yaml
 env:
   - name: RUST_LOG
-    value: "kreuzberg=debug,warn"
+    value: "xberg=debug,warn"
 ```
 
 Levels: `trace`, `debug`, `info`, `warn`, `error`
 
 ```bash title="Terminal"
-kubectl logs deployment/kreuzberg-api --tail=50
-kubectl logs deployment/kreuzberg-api -f
-kubectl logs deployment/kreuzberg-api --previous
+kubectl logs deployment/xberg-api --tail=50
+kubectl logs deployment/xberg-api -f
+kubectl logs deployment/xberg-api --previous
 ```
 
 ## Production Deployment
@@ -314,13 +314,13 @@ Full production manifest with namespace, PVC, security context, init container, 
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kreuzberg
+  name: xberg
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: kreuzberg-cache
-  namespace: kreuzberg
+  name: xberg-cache
+  namespace: xberg
 spec:
   accessModes: [ReadWriteOnce]
   resources:
@@ -330,19 +330,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kreuzberg-api
-  namespace: kreuzberg
+  name: xberg-api
+  namespace: xberg
   # NOTE: PVC uses ReadWriteOnce; keep replicas: 1 with RWO storage.
   # Increase replicas only when using ReadWriteMany storage.
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kreuzberg
+      app: xberg
   template:
     metadata:
       labels:
-        app: kreuzberg
+        app: xberg
     spec:
       securityContext:
         runAsNonRoot: true
@@ -354,7 +354,7 @@ spec:
       initContainers:
         - name: init-cache
           image: busybox:1.37-glibc
-          command: ["sh", "-c", "mkdir -p /app/.kreuzberg && chown -R 1000:1000 /app/.kreuzberg"]
+          command: ["sh", "-c", "mkdir -p /app/.xberg && chown -R 1000:1000 /app/.xberg"]
           securityContext:
             runAsUser: 0
             allowPrivilegeEscalation: false
@@ -363,10 +363,10 @@ spec:
               drop: ["ALL"]
           volumeMounts:
             - name: cache
-              mountPath: /app/.kreuzberg
+              mountPath: /app/.xberg
       containers:
-        - name: kreuzberg
-          image: ghcr.io/xberg-io/kreuzberg:latest
+        - name: xberg
+          image: ghcr.io/xberg-io/xberg:latest
           ports:
             - containerPort: 8000
               name: http
@@ -375,13 +375,13 @@ spec:
               value: "info"
             - name: TESSDATA_PREFIX
               value: "/usr/share/tesseract-ocr/5/tessdata"
-            - name: KREUZBERG_CACHE_DIR
-              value: "/app/.kreuzberg"
+            - name: XBERG_CACHE_DIR
+              value: "/app/.xberg"
             - name: HF_HOME
-              value: "/app/.kreuzberg/huggingface"
-            - name: KREUZBERG_CORS_ORIGINS
+              value: "/app/.xberg/huggingface"
+            - name: XBERG_CORS_ORIGINS
               value: "https://app.example.com"
-            - name: KREUZBERG_MAX_UPLOAD_SIZE_MB
+            - name: XBERG_MAX_UPLOAD_SIZE_MB
               value: "500"
           args: ["serve", "--host", "0.0.0.0", "--port", "8000"]
           resources:
@@ -416,25 +416,25 @@ spec:
               drop: ["ALL"]
           volumeMounts:
             - name: cache
-              mountPath: /app/.kreuzberg
+              mountPath: /app/.xberg
             - name: tmp
               mountPath: /tmp
       volumes:
         - name: cache
           persistentVolumeClaim:
-            claimName: kreuzberg-cache
+            claimName: xberg-cache
         - name: tmp
           emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: kreuzberg-api
-  namespace: kreuzberg
+  name: xberg-api
+  namespace: xberg
 spec:
   type: LoadBalancer
   selector:
-    app: kreuzberg
+    app: xberg
   ports:
     - protocol: TCP
       port: 80
@@ -443,20 +443,20 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: kreuzberg-pdb
-  namespace: kreuzberg
+  name: xberg-pdb
+  namespace: xberg
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: kreuzberg
+      app: xberg
 ```
 
 ```bash title="Terminal"
 kubectl apply -f production-deployment.yaml
 ```
 
-!!! Note "Model Persistence" Embedding models download on first use (~90 MB – 1.2 GB). Use a PVC for `/app/.kreuzberg` to avoid re-downloading on pod restart. Outside containers, models are cached in the platform-specific global cache directory (for example, `~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS).
+!!! Note "Model Persistence" Embedding models download on first use (~90 MB – 1.2 GB). Use a PVC for `/app/.xberg` to avoid re-downloading on pod restart. Outside containers, models are cached in the platform-specific global cache directory (for example, `~/.cache/xberg/` on Linux, `~/Library/Caches/xberg/` on macOS).
 
 ## High Availability
 
@@ -481,7 +481,7 @@ spec:
                   matchExpressions:
                     - key: app
                       operator: In
-                      values: [kreuzberg]
+                      values: [xberg]
                 topologyKey: kubernetes.io/hostname
 ```
 
@@ -492,8 +492,8 @@ spec:
     Verify `TESSDATA_PREFIX` is set and tessdata files exist:
 
     ```bash title="Terminal"
-    kubectl exec -it deployment/kreuzberg-api -- printenv TESSDATA_PREFIX
-    kubectl exec -it deployment/kreuzberg-api -- ls /usr/share/tesseract-ocr/5/tessdata/
+    kubectl exec -it deployment/xberg-api -- printenv TESSDATA_PREFIX
+    kubectl exec -it deployment/xberg-api -- ls /usr/share/tesseract-ocr/5/tessdata/
     ```
 
 ??? Question "Permission denied on cache directory"
@@ -502,7 +502,7 @@ spec:
 
 ??? Question "OOMKilled"
 
-    Increase memory limits. Reduce OCR resource usage with `KREUZBERG_PDF_DPI=150` and single-language OCR.
+    Increase memory limits. Reduce OCR resource usage with `XBERG_PDF_DPI=150` and single-language OCR.
 
 ??? Question "Startup probe timeout"
 
@@ -510,16 +510,16 @@ spec:
 
 ??? Question "Language not found"
 
-    Check installed languages with `kubectl exec -it deployment/kreuzberg-api -- tesseract --list-langs`. Mount custom tessdata via ConfigMap or PVC.
+    Check installed languages with `kubectl exec -it deployment/xberg-api -- tesseract --list-langs`. Mount custom tessdata via ConfigMap or PVC.
 
 ### Diagnostic Commands
 
 ```bash title="Terminal"
-kubectl logs deployment/kreuzberg-api --tail=200
-kubectl describe deployment kreuzberg-api
-kubectl get events -n kreuzberg
-kubectl exec -it deployment/kreuzberg-api -- env | sort
-kubectl port-forward service/kreuzberg-api 8000:8000 && curl http://localhost:8000/health
+kubectl logs deployment/xberg-api --tail=200
+kubectl describe deployment xberg-api
+kubectl get events -n xberg
+kubectl exec -it deployment/xberg-api -- env | sort
+kubectl port-forward service/xberg-api 8000:8000 && curl http://localhost:8000/health
 ```
 
 ## Next Steps

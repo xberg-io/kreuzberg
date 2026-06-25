@@ -1,9 +1,9 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
-import dev.kreuzberg.ImagePreprocessingConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
+import dev.xberg.ImagePreprocessingConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .ocr(OcrConfig.builder()
@@ -14,5 +14,5 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
 ```

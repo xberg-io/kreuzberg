@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\ImagePreprocessingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\ImagePreprocessingConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -28,8 +28,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('noisy_scan.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('noisy_scan.pdf');
 
 echo "Basic Preprocessing Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -47,8 +47,8 @@ $highDpiConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($highDpiConfig);
-$result = $kreuzberg->extractFile('small_text_scan.pdf');
+$xberg = new Xberg($highDpiConfig);
+$result = $xberg->extractFile('small_text_scan.pdf');
 
 echo "High DPI Preprocessing:\n";
 echo str_repeat('=', 60) . "\n";
@@ -67,8 +67,8 @@ $deskewConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($deskewConfig);
-$result = $kreuzberg->extractFile('crooked_scan.pdf');
+$xberg = new Xberg($deskewConfig);
+$result = $xberg->extractFile('crooked_scan.pdf');
 
 echo "Deskewed OCR Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -86,8 +86,8 @@ $cleanConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($cleanConfig);
-$result = $kreuzberg->extractFile('watermarked_document.pdf');
+$xberg = new Xberg($cleanConfig);
+$result = $xberg->extractFile('watermarked_document.pdf');
 
 echo "Background Removal Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -111,8 +111,8 @@ $comprehensiveConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($comprehensiveConfig);
-$result = $kreuzberg->extractFile('very_poor_quality.pdf');
+$xberg = new Xberg($comprehensiveConfig);
+$result = $xberg->extractFile('very_poor_quality.pdf');
 
 echo "Comprehensive Preprocessing:\n";
 echo str_repeat('=', 60) . "\n";
@@ -152,9 +152,9 @@ if (file_exists($testFile)) {
     echo str_repeat('=', 60) . "\n";
 
     foreach ($configs as $name => $config) {
-        $kreuzberg = new Kreuzberg($config);
+        $xberg = new Xberg($config);
         $start = microtime(true);
-        $result = $kreuzberg->extractFile($testFile);
+        $result = $xberg->extractFile($testFile);
         $elapsed = microtime(true) - $start;
 
         echo "$name:\n";
@@ -166,7 +166,7 @@ if (file_exists($testFile)) {
 
 function getOptimalPreprocessing(string $file): ImagePreprocessingConfig
 {
-    $quickScan = new Kreuzberg(new ExtractionConfig(
+    $quickScan = new Xberg(new ExtractionConfig(
         ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
     ));
     $quickResult = $quickScan->extractFile($file);
@@ -212,8 +212,8 @@ if (file_exists($file)) {
         )
     );
 
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile($file);
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile($file);
 
     echo "Adaptive preprocessing applied\n";
     echo "Result: " . strlen($result->content) . " characters extracted\n";

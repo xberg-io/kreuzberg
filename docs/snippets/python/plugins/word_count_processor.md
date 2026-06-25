@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import register_post_processor, ExtractionResult
+from xberg import register_post_processor, ExtractionResult
 
 class WordCountProcessor:
     def name(self) -> str:

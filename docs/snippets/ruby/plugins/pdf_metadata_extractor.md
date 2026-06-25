@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class PdfMetadataExtractor
   def initialize
@@ -16,12 +16,12 @@ class PdfMetadataExtractor
 end
 
 extractor = PdfMetadataExtractor.new
-Kreuzberg.register_post_processor('pdf_metadata', extractor)
+Xberg.register_post_processor('pdf_metadata', extractor)
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-result = Kreuzberg.extract_file_sync('report.pdf', config: config)
+result = Xberg.extract_file_sync('report.pdf', config: config)
 puts "Metadata: #{result.metadata.inspect}"
 ```

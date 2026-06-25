@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Enable structured OCR elements alongside text extraction
 config <- list(

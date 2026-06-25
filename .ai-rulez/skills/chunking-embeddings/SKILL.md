@@ -10,7 +10,7 @@ priority: critical
 
 ## Chunking Architecture Overview
 
-**Location**: `crates/kreuzberg/src/chunking/`, `crates/kreuzberg/src/embeddings.rs`
+**Location**: `crates/xberg/src/chunking/`, `crates/xberg/src/embeddings.rs`
 
 ```text
 Extracted Text
@@ -28,7 +28,7 @@ Output: Vec<Chunk> with text, vectors, metadata
 
 ## Chunking Strategies
 
-**Location**: `crates/kreuzberg/src/chunking/mod.rs`
+**Location**: `crates/xberg/src/chunking/mod.rs`
 
 | Strategy                          | Pattern                                                 | Best For                                                           |
 | --------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -46,7 +46,7 @@ Key config fields per strategy (see struct definitions in `chunking/mod.rs`):
 
 ## Chunking Configuration Presets
 
-**Location**: `crates/kreuzberg/src/chunking/mod.rs`
+**Location**: `crates/xberg/src/chunking/mod.rs`
 
 | Preset       | Chunk Size  | Overlap | Strategy   | Use Case               |
 | ------------ | ----------- | ------- | ---------- | ---------------------- |
@@ -59,7 +59,7 @@ Usage: set `config.chunking.preset = Some("balanced")` in `ExtractionConfig`.
 
 ## Embedding Generation with FastEmbed
 
-**Location**: `crates/kreuzberg/src/embeddings.rs`
+**Location**: `crates/xberg/src/embeddings.rs`
 
 ### Model Selection
 

@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.EmbeddingConfig;
-import dev.kreuzberg.EmbeddingModelType;
-import dev.kreuzberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.EmbeddingConfig;
+import dev.xberg.EmbeddingModelType;
+import dev.xberg.ExtractionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()

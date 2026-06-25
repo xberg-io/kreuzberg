@@ -1,8 +1,8 @@
 ```rust title="Element-Based Output (Rust)"
-use kreuzberg::{extract_file_sync, ExtractionConfig};
-use kreuzberg::types::OutputFormat as ResultFormat;
+use xberg::{extract_file_sync, ExtractionConfig};
+use xberg::types::OutputFormat as ResultFormat;
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     // Configure element-based output (result_format controls Unified vs ElementBased)
     let config = ExtractionConfig {
         result_format: ResultFormat::ElementBased,
@@ -32,7 +32,7 @@ fn main() -> kreuzberg::Result<()> {
 
         // Filter by element type
         let titles: Vec<_> = elements.iter()
-            .filter(|e| matches!(e.element_type, kreuzberg::types::ElementType::Title))
+            .filter(|e| matches!(e.element_type, xberg::types::ElementType::Title))
             .collect();
 
         for title in titles {

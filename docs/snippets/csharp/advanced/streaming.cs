@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.IO;
 
 class Program
@@ -24,7 +24,7 @@ class Program
             EnableQualityProcessing = true
         };
 
-        var result = await KreuzbergLib.ExtractFileAsync(filePath, config);
+        var result = await XbergLib.ExtractFileAsync(filePath, config);
 
         var contentChunks = ChunkContent(result.Content, chunkSize: 1000);
 
@@ -68,7 +68,7 @@ class Program
     static async IAsyncEnumerable<string> StreamExtractedChunksAsync(
         string filePath)
     {
-        var result = await KreuzbergLib.ExtractFileAsync(filePath);
+        var result = await XbergLib.ExtractFileAsync(filePath);
 
         if (result.Chunks?.Any() == true)
         {

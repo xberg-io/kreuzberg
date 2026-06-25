@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 
 var config = new ExtractionConfig
@@ -12,7 +12,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFileAsync(
+var result = await XbergLib.ExtractFileAsync(
     "research_paper.pdf",
     config
 );

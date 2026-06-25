@@ -2,11 +2,11 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\OcrConfig;
-use Kreuzberg\ChunkingConfig;
-use Kreuzberg\TesseractConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ChunkingConfig;
+use Xberg\TesseractConfig;
 
 $config = new ExtractionConfig(
     useCache: true,
@@ -22,7 +22,7 @@ $config = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Content length: " . strlen($result->getContent()) . " characters\n";
 ?>

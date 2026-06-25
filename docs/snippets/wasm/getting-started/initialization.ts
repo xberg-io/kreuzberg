@@ -1,6 +1,6 @@
-import { getVersion, getWasmCapabilities, initWasm, isInitialized } from "@kreuzberg/wasm";
+import { getVersion, getWasmCapabilities, initWasm, isInitialized } from "@xberg/wasm";
 
-async function initializeKreuzberg() {
+async function initializeXberg() {
   const caps = getWasmCapabilities();
 
   if (!caps.hasWasm) {
@@ -14,7 +14,7 @@ async function initializeKreuzberg() {
     }
 
     const version = getVersion();
-    console.log(`Kreuzberg ${version} initialized successfully`);
+    console.log(`Xberg ${version} initialized successfully`);
     console.log("Workers available:", caps.hasWorkers);
     console.log("SharedArrayBuffer available:", caps.hasSharedArrayBuffer);
   } catch (error) {
@@ -22,4 +22,4 @@ async function initializeKreuzberg() {
   }
 }
 
-initializeKreuzberg();
+initializeXberg();

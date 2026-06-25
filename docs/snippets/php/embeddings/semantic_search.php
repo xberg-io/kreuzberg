@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
+use Xberg\Config\EmbeddingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -29,7 +29,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
+$xberg = new Xberg($config);
 
 echo "Building document index...\n";
 $documentIndex = [];
@@ -38,7 +38,7 @@ $files = glob('knowledge_base/*.pdf');
 foreach ($files as $file) {
     echo "Indexing: " . basename($file) . "\n";
 
-    $result = $kreuzberg->extractFile($file);
+    $result = $xberg->extractFile($file);
 
     foreach ($result->chunks ?? [] as $chunk) {
         if ($chunk->embedding) {
@@ -85,13 +85,13 @@ function cosineSimilarity(array $a, array $b): float
     return $dotProduct / (sqrt($magnitudeA) * sqrt($magnitudeB));
 }
 
-function getQueryEmbedding(Kreuzberg $kreuzberg, string $query): ?array
+function getQueryEmbedding(Xberg $xberg, string $query): ?array
 {
     $tempFile = tempnam(sys_get_temp_dir(), 'query_');
     file_put_contents($tempFile, $query);
 
     try {
-        $result = $kreuzberg->extractFile($tempFile);
+        $result = $xberg->extractFile($tempFile);
         $chunk = ($result->chunks ?? [])[0] ?? null;
         return $chunk?->embedding;
     } finally {
@@ -111,7 +111,7 @@ foreach ($queries as $query) {
     echo "Query: \"$query\"\n";
     echo str_repeat('=', 60) . "\n";
 
-    $queryEmbedding = getQueryEmbedding($kreuzberg, $query);
+    $queryEmbedding = getQueryEmbedding($xberg, $query);
 
     if ($queryEmbedding) {
         $results = semanticSearch($documentIndex, $queryEmbedding, 3);
@@ -149,7 +149,7 @@ function buildRAGContext(array $searchResults, int $maxTokens = 2000): string
 }
 
 $userQuestion = "How do I optimize performance?";
-$queryEmbedding = getQueryEmbedding($kreuzberg, $userQuestion);
+$queryEmbedding = getQueryEmbedding($xberg, $userQuestion);
 
 if ($queryEmbedding) {
     $results = semanticSearch($documentIndex, $queryEmbedding, 5);
@@ -167,12 +167,12 @@ file_put_contents(
 );
 echo "\nSaved document index to: document_index.json\n";
 
-function multiQuerySearch(array $index, array $queries, Kreuzberg $kreuzberg): array
+function multiQuerySearch(array $index, array $queries, Xberg $xberg): array
 {
     $allResults = [];
 
     foreach ($queries as $query) {
-        $queryEmbedding = getQueryEmbedding($kreuzberg, $query);
+        $queryEmbedding = getQueryEmbedding($xberg, $query);
         if ($queryEmbedding) {
             $results = semanticSearch($index, $queryEmbedding, 10);
             $allResults = array_merge($allResults, $results);
@@ -211,7 +211,7 @@ $relatedQueries = [
 echo "\nMulti-query search results:\n";
 echo str_repeat('=', 60) . "\n";
 
-$results = multiQuerySearch($documentIndex, $relatedQueries, $kreuzberg);
+$results = multiQuerySearch($documentIndex, $relatedQueries, $xberg);
 
 foreach ($results as $index => $result) {
     echo "\n" . ($index + 1) . ". {$result['file']}\n";

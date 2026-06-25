@@ -94,7 +94,7 @@ create_fixture() {
 	"document": "${rel_doc}",
 	"file_type": "${file_type}",
 	"file_size": ${file_size},
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "${description}",
 		"category": "${category}"
@@ -114,7 +114,7 @@ EOJSON
 	"document": "${rel_doc}",
 	"file_type": "${file_type}",
 	"file_size": ${file_size},
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "${description}",
 		"category": "${category}"

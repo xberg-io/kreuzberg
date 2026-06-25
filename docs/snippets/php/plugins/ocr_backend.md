@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class CustomOcrBackend implements OcrBackend {
     private array $supportedLangs = ["eng", "deu", "fra"];
@@ -67,7 +67,7 @@ class CustomOcrBackend implements OcrBackend {
 
 // Register the custom OCR backend
 $backend = new CustomOcrBackend();
-Kreuzberg::registerOcrBackend($backend);
+Xberg::registerOcrBackend($backend);
 
 echo "Custom OCR backend registered\n";
 ```

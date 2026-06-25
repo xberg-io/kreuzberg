@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::ExtractionConfig;
+use xberg::ExtractionConfig;
 
 let config = ExtractionConfig {
     enable_quality_processing: true,

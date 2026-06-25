@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
 class QualityScoreValidator(private val threshold: Double = 0.5) : IValidator {
     override fun name(): String = "quality-score-validator"

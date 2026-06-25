@@ -6,7 +6,7 @@ from pathlib import Path
 
 def extract_with_cli(file_path: str, output_format: str = "text") -> str:
     result = subprocess.run(
-        ["kreuzberg", "extract", file_path, "--format", output_format],
+        ["xberg", "extract", file_path, "--format", output_format],
         capture_output=True,
         text=True,
     )

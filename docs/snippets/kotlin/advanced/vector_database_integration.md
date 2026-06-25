@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -27,7 +27,7 @@ fun extractAndVectorize(documentPath: String, documentId: String): List<VectorRe
         .withChunking(Optional.of(chunking))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get(documentPath), null, config)
+    val result = Xberg.extractFileSync(Paths.get(documentPath), null, config)
 
     val records = mutableListOf<VectorRecord>()
     val chunks = result.chunks().orEmpty()

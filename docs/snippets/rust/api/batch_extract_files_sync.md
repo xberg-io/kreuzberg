@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{batch_extract_files_sync, BatchFileItem, ExtractionConfig};
+use xberg::{batch_extract_files_sync, BatchFileItem, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let items = vec![
         BatchFileItem { path: "doc1.pdf".into(), config: None },

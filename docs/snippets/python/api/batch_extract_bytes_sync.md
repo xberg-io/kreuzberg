@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import batch_extract_bytes_sync, BatchBytesItem, ExtractionConfig
+from xberg import batch_extract_bytes_sync, BatchBytesItem, ExtractionConfig
 
 items = [
     BatchBytesItem(content=b"PDF content", mime_type="application/pdf"),

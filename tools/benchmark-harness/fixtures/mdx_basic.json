@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/sample.mdx",
 	"file_type": "mdx",
 	"file_size": 1065,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "MDX document combining Markdown with JSX components",
 		"category": "markup",

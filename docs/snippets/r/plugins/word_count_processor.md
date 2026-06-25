@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 word_count_processor <- function(result) {
   word_count <- length(strsplit(result$content, "\\s+")[[1]])

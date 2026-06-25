@@ -1,13 +1,13 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 // Clear all registered plugins in each registry
-try Kreuzberg.clearDocumentExtractors()
-try Kreuzberg.clearRenderers()
-try Kreuzberg.clearOcrBackends()
-try Kreuzberg.clearPostProcessors()
-try Kreuzberg.clearValidators()
-try Kreuzberg.clearEmbeddingBackends()
+try Xberg.clearDocumentExtractors()
+try Xberg.clearRenderers()
+try Xberg.clearOcrBackends()
+try Xberg.clearPostProcessors()
+try Xberg.clearValidators()
+try Xberg.clearEmbeddingBackends()
 
 print("All plugins cleared")
 ```

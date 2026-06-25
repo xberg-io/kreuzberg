@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -9,8 +9,8 @@ pub fn main() !void {
     _ = allocator;
 
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("kreuzberg module imported successfully\n", .{});
-    if (kreuzberg._last_error()) |context| {
+    try stdout.print("xberg module imported successfully\n", .{});
+    if (xberg._last_error()) |context| {
         try stdout.print("  last error context: {s}\n", .{context});
     } else {
         try stdout.print("  no prior FFI errors recorded\n", .{});

@@ -32,7 +32,7 @@ class GroundTruth:
     """Structured expectations bound to a binary fixture.
 
     Attributes:
-        fixture_path: Path of the binary fixture relative to the kreuzberg
+        fixture_path: Path of the binary fixture relative to the xberg
             repository root (e.g. ``test_documents/generated/docx/foo.docx``).
             Integration tests join this with the repo root to load the file.
         format: One of ``"docx" | "odt" | "xlsx" | "pptx" | "pdf"``.
@@ -127,7 +127,7 @@ def diff_expectation(
 
     The pair ``(before_path, after_path)`` are both relative-to-repo-root
     paths that the integration test extracts independently before calling
-    ``kreuzberg::diff::compare``. ``expected_added_lines`` / ``…_removed_lines``
+    ``xberg::diff::compare``. ``expected_added_lines`` / ``…_removed_lines``
     are substrings that MUST appear in some ``DiffLine::Added`` /
     ``DiffLine::Removed`` entry — substring match, not equality, since the
     extractor may add framing whitespace.

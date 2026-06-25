@@ -1,7 +1,7 @@
 ```c title="C"
 #include <stdio.h>
 #include <stdlib.h>
-#include "kreuzberg.h"
+#include "xberg.h"
 
 int main(void) {
     const char *query = "How to train a dog";
@@ -15,13 +15,13 @@ int main(void) {
         "{\"model\":{\"type\":\"preset\",\"name\":\"fast\"},\"top_k\":2}";
 
     char *results = NULL;
-    kreuzberg_Error err = kreuzberg_rerank(query, documents, 3, config_json, &results);
-    if (err != KREUZBERG_ERROR_NONE) {
+    xberg_Error err = xberg_rerank(query, documents, 3, config_json, &results);
+    if (err != XBERG_ERROR_NONE) {
         fprintf(stderr, "rerank failed: %d\n", err);
         return 1;
     }
     puts(results);
-    kreuzberg_string_free(results);
+    xberg_string_free(results);
     return 0;
 }
 ```

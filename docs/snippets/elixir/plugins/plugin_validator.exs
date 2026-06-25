@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule MyApp.MinLengthValidator do
-  @behaviour Kreuzberg.Plugin.Validator
+  @behaviour Xberg.Plugin.Validator
 
   def name, do: "min_length_validator"
 
@@ -20,10 +20,10 @@ defmodule MyApp.MinLengthValidator do
 end
 
 # Register validator
-Kreuzberg.Plugin.register_validator(MyApp.MinLengthValidator)
+Xberg.Plugin.register_validator(MyApp.MinLengthValidator)
 
 # Use with extraction
-{:ok, result} = Kreuzberg.extract_file(
+{:ok, result} = Xberg.extract_file(
   "document.pdf",
   nil
 )

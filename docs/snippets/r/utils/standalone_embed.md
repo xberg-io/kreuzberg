@@ -1,12 +1,12 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   model = list(type = "preset", name = "balanced"),
   normalize = TRUE
 )
 
-texts <- c("Hello, world!", "Kreuzberg is fast")
+texts <- c("Hello, world!", "Xberg is fast")
 embeddings <- embed_texts(texts, config)
 
 stopifnot(length(embeddings) == 2L)

@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	// Unregister a specific document extractor
-	if err := kreuzberg.UnregisterDocumentExtractor("custom-json-extractor"); err != nil {
-		var validErr *kreuzberg.ValidationError
+	if err := xberg.UnregisterDocumentExtractor("custom-json-extractor"); err != nil {
+		var validErr *xberg.ValidationError
 		if errors.As(err, &validErr) {
 			log.Printf("validation error: %v", err)
 		} else {
@@ -21,8 +21,8 @@ func main() {
 	}
 
 	// Unregister a specific post-processor
-	if err := kreuzberg.UnregisterPostProcessor("word_count"); err != nil {
-		var validErr *kreuzberg.ValidationError
+	if err := xberg.UnregisterPostProcessor("word_count"); err != nil {
+		var validErr *xberg.ValidationError
 		if errors.As(err, &validErr) {
 			log.Printf("validation error: %v", err)
 		} else {
@@ -31,8 +31,8 @@ func main() {
 	}
 
 	// Unregister a specific OCR backend
-	if err := kreuzberg.UnregisterOCRBackend("cloud-ocr"); err != nil {
-		var validErr *kreuzberg.ValidationError
+	if err := xberg.UnregisterOCRBackend("cloud-ocr"); err != nil {
+		var validErr *xberg.ValidationError
 		if errors.As(err, &validErr) {
 			log.Printf("validation error: %v", err)
 		} else {
@@ -41,8 +41,8 @@ func main() {
 	}
 
 	// Unregister a specific validator
-	if err := kreuzberg.UnregisterValidator("min_length_validator"); err != nil {
-		var validErr *kreuzberg.ValidationError
+	if err := xberg.UnregisterValidator("min_length_validator"); err != nil {
+		var validErr *xberg.ValidationError
 		if errors.As(err, &validErr) {
 			log.Printf("validation error: %v", err)
 		} else {

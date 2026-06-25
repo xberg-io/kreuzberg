@@ -1,5 +1,5 @@
 ```typescript title="WASM"
-import { initWasm, extractBytes } from "@kreuzberg/wasm";
+import { initWasm, extractBytes } from "@xberg/wasm";
 
 await initWasm();
 
@@ -20,7 +20,7 @@ result.chunks?.forEach((chunk, idx) => {
 ```
 
 ```typescript title="WASM - Markdown with Heading Context"
-import { initWasm, extractBytes } from "@kreuzberg/wasm";
+import { initWasm, extractBytes } from "@xberg/wasm";
 
 await initWasm();
 
@@ -49,7 +49,7 @@ result.chunks?.forEach((chunk, idx) => {
 ```
 
 ```typescript title="WASM - Prepend Heading Context"
-import { initWasm, extractBytes } from "@kreuzberg/wasm";
+import { initWasm, extractBytes } from "@xberg/wasm";
 
 await initWasm();
 

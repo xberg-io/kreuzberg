@@ -2,7 +2,7 @@
 # Extract images from documents for further processing
 # Images are returned as base64-encoded data with format and size information
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 defmodule ImageExtractor do
   @moduledoc """
@@ -24,7 +24,7 @@ defmodule ImageExtractor do
       use_cache: true
     }
 
-    case Kreuzberg.extract_file(file_path, nil, config) do
+    case Xberg.extract_file(file_path, nil, config) do
       {:ok, result} ->
         {:ok, result.images || []}
 

@@ -1,11 +1,11 @@
 ```typescript title="WASM"
 // The WASM crate has no MCP client. To integrate with an MCP server,
-// drive the kreuzberg CLI from a Node.js host that uses kreuzberg-wasm
+// drive the xberg CLI from a Node.js host that uses xberg-wasm
 // for in-process extraction.
 import { spawn } from "node:child_process";
 import * as readline from "node:readline";
 
-const mcpProcess = spawn("kreuzberg", ["mcp"]);
+const mcpProcess = spawn("xberg", ["mcp"]);
 
 const rl = readline.createInterface({
   input: mcpProcess.stdout,
@@ -37,4 +37,4 @@ mcpProcess.on("error", (err) => {
 });
 ```
 
-<!-- snippet:syntax-only --> MCP transport is not exported by the WASM crate; this snippet drives the MCP CLI from the same Node host that loads kreuzberg-wasm.
+<!-- snippet:syntax-only --> MCP transport is not exported by the WASM crate; this snippet drives the MCP CLI from the same Node host that loads xberg-wasm.

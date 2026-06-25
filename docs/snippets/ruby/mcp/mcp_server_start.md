@@ -2,7 +2,7 @@
 require 'open3'
 
 begin
-  Open3.popen3('kreuzberg', 'mcp') do |stdin, stdout, stderr, wait_thr|
+  Open3.popen3('xberg', 'mcp') do |stdin, stdout, stderr, wait_thr|
     puts stdout.read
     wait_thr.join
   end

@@ -1,6 +1,6 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 // `BatchBytesItem` is an opaque swift-bridge class with no public Swift

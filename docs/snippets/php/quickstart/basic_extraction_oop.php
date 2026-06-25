@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
-$result = $kreuzberg->extractFile('document.pdf');
+$result = $xberg->extractFile('document.pdf');
 
 echo "Extracted Content:\n";
 echo "==================\n";

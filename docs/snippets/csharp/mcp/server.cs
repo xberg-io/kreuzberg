@@ -12,7 +12,7 @@ class McpServer
     {
         var processInfo = new ProcessStartInfo
         {
-            FileName = "kreuzberg",
+            FileName = "xberg",
             Arguments = "mcp",
             UseShellExecute = false,
             RedirectStandardInput = true,
@@ -30,7 +30,7 @@ class McpServerProgram
 {
     public static async Task Main()
     {
-        var server = new KreuzbergMcpServer();
+        var server = new XbergMcpServer();
 
         server.RegisterTool("extract_file", new Dictionary<string, object>
         {

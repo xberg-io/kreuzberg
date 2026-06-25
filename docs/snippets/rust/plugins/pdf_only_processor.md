@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+use xberg::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
+use xberg::{Result, ExtractionResult, ExtractionConfig};
 use async_trait::async_trait;
 use std::sync::Arc;
 use serde_json::json;

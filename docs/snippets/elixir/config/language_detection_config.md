@@ -7,7 +7,7 @@ config_json = Jason.encode!(%{
   }
 })
 
-{:ok, result} = Kreuzberg.extract_file_sync("document.pdf", "application/pdf", config_json)
+{:ok, result} = Xberg.extract_file_sync("document.pdf", "application/pdf", config_json)
 IO.puts("Detected language: #{result.language}")
 IO.puts("Confidence: #{result.language_confidence}")
 ```

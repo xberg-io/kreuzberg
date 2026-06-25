@@ -2,7 +2,7 @@
 # Access different parts of result
 # Content, metadata, tables, images
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf")
+{:ok, result} = Xberg.extract_file("document.pdf")
 
 # Access main content
 content = result.content

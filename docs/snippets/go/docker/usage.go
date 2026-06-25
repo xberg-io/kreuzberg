@@ -14,22 +14,22 @@ import (
 	"time"
 )
 
-type DockerKreuzbergClient struct {
+type DockerXbergClient struct {
 	containerName string
 	containerImage string
 	apiPort       int
 }
 
-func NewDockerKreuzbergClient(containerName, image string, port int) *DockerKreuzbergClient {
-	return &DockerKreuzbergClient{
+func NewDockerXbergClient(containerName, image string, port int) *DockerXbergClient {
+	return &DockerXbergClient{
 		containerName: containerName,
 		containerImage: image,
 		apiPort:       port,
 	}
 }
 
-func (c *DockerKreuzbergClient) StartContainer() error {
-	fmt.Println("Starting Kreuzberg Docker container...")
+func (c *DockerXbergClient) StartContainer() error {
+	fmt.Println("Starting Xberg Docker container...")
 	cmd := exec.Command("docker", "run", "-d",
 		"--name", c.containerName,
 		"-p", fmt.Sprintf("%d:8000", c.apiPort),
@@ -43,7 +43,7 @@ func (c *DockerKreuzbergClient) StartContainer() error {
 	return nil
 }
 
-func (c *DockerKreuzbergClient) ExtractFile(filePath string) (string, error) {
+func (c *DockerXbergClient) ExtractFile(filePath string) (string, error) {
 	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return "", err
@@ -83,8 +83,8 @@ func (c *DockerKreuzbergClient) ExtractFile(filePath string) (string, error) {
 	return result["content"], nil
 }
 
-func (c *DockerKreuzbergClient) StopContainer() error {
-	fmt.Println("Stopping Kreuzberg Docker container...")
+func (c *DockerXbergClient) StopContainer() error {
+	fmt.Println("Stopping Xberg Docker container...")
 	if err := exec.Command("docker", "stop", c.containerName).Run(); err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (c *DockerKreuzbergClient) StopContainer() error {
 }
 
 func main() {
-	client := NewDockerKreuzbergClient("kreuzberg-api", "kreuzberg:latest", 8000)
+	client := NewDockerXbergClient("xberg-api", "xberg:latest", 8000)
 
 	if err := client.StartContainer(); err != nil {
 		panic(err)

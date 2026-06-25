@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/poem.fb2",
 	"file_type": "fb2",
 	"file_size": 765,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "FictionBook poem with verse structure",
 		"category": "literature"

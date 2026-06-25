@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class CustomXmlExtractor implements DocumentExtractor {
     public function name(): string {
@@ -71,7 +71,7 @@ class CustomXmlExtractor implements DocumentExtractor {
 
 // Register the XML extractor
 $extractor = new CustomXmlExtractor();
-Kreuzberg::registerDocumentExtractor($extractor);
+Xberg::registerDocumentExtractor($extractor);
 
 echo "XML extractor registered\n";
 ```

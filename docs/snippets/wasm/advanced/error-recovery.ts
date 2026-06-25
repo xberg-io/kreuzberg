@@ -1,4 +1,4 @@
-import { extractBytes, initWasm } from "@kreuzberg/wasm";
+import { extractBytes, initWasm } from "@xberg/wasm";
 
 async function extractWithRetry(bytes: Uint8Array, mimeType: string, maxRetries: number = 3) {
   await initWasm();

@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 final class WordCountProcessor: PostProcessor {
     func name() -> String {
@@ -45,5 +45,5 @@ final class WordCountProcessor: PostProcessor {
 }
 
 let processor = WordCountProcessor()
-try Kreuzberg.registerPostProcessor(processor)
+try Xberg.registerPostProcessor(processor)
 ```

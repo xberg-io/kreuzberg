@@ -4,8 +4,8 @@ Quality score validator implementation is not available in the Elixir binding. C
 To implement a quality score validator in Rust:
 
 ```rust
-use kreuzberg::plugins::{Plugin, Validator};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+use xberg::plugins::{Plugin, Validator};
+use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
 use async_trait::async_trait;
 
 struct QualityScoreValidator {
@@ -28,7 +28,7 @@ impl Validator for QualityScoreValidator {
     ) -> Result<()> {
         let quality = calculate_quality_score(result);
         if quality < self.min_score {
-            return Err(KreuzbergError::validation(format!(
+            return Err(XbergError::validation(format!(
                 "Quality score too low: {} < {}",
                 quality, self.min_score
             )));

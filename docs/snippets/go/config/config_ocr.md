@@ -1,16 +1,16 @@
 ```go title="Go"
 package main
 
-import "github.com/xberg-io/kreuzberg/packages/go/v5"
+import "github.com/xberg-io/xberg/packages/go/v5"
 
 func main() {
 	psm := int32(3)
 
-	_ = kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	_ = xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:  "tesseract",
 			Language: "eng+fra",
-			TesseractConfig: &kreuzberg.TesseractConfig{
+			TesseractConfig: &xberg.TesseractConfig{
 				Psm: &psm,
 			},
 		},

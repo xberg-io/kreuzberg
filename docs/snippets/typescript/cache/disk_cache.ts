@@ -1,6 +1,6 @@
 ```typescript title="disk_cache.ts"
 /* oxlint-disable */
-import { extractFile, type ExtractionConfig } from "@kreuzberg/node";
+import { extractFile, type ExtractionConfig } from "@xberg/node";
 
 const config: ExtractionConfig = { useCache: true };
 

@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\PostProcessor\PostProcessorInterface;
-use Kreuzberg\Types\ExtractionResult;
-use Kreuzberg\Kreuzberg;
+use Xberg\PostProcessor\PostProcessorInterface;
+use Xberg\Types\ExtractionResult;
+use Xberg\Xberg;
 
 /**
  * Post-processor for extracting and enriching PDF metadata
@@ -110,5 +110,5 @@ readonly class PdfMetadataExtractor implements PostProcessorInterface
 }
 
 $processor = new PdfMetadataExtractor();
-Kreuzberg::registerPostProcessor($processor);
+Xberg::registerPostProcessor($processor);
 ```

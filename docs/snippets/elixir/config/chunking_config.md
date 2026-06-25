@@ -6,7 +6,7 @@ config_json = Jason.encode!(%{
   }
 })
 
-{:ok, result} = Kreuzberg.extract_file_sync("document.pdf", "application/pdf", config_json)
+{:ok, result} = Xberg.extract_file_sync("document.pdf", "application/pdf", config_json)
 IO.puts("Chunks: #{length(result.chunks)}")
 
 Enum.each(result.chunks, fn chunk ->

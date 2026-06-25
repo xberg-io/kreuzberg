@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\HtmlOutputConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\HtmlOutputConfig;
 
 $config = new ExtractionConfig(
     resultFormat: 'html',
@@ -13,7 +13,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 // Output HTML with kb-* CSS classes
 echo $result->getContent();

@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final Uint8List first = Uint8List.fromList(utf8.encode('Hello, world!'));
@@ -18,7 +18,7 @@ Future<void> main() async {
   ];
 
   // Sync semantics — flutter_rust_bridge still returns a Future from Dart.
-  final results = await KreuzbergBridge.batchExtractBytesSync(items);
+  final results = await XbergBridge.batchExtractBytesSync(items);
 
   print('Processed ${results.length} items');
   for (final result in results) {

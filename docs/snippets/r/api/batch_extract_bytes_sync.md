@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 paths <- c("report.pdf", "notes.txt")
 mimes <- c("application/pdf", "text/plain")

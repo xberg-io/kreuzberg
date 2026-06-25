@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionResult, ValidationError, register_validator
+from xberg import ExtractionResult, ValidationError, register_validator
 
 class QualityValidator:
     def name(self) -> str:

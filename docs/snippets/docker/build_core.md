@@ -1,3 +1,3 @@
 ```bash title="Bash"
-docker build -f docker/Dockerfile.core -t kreuzberg:core .
+docker build -f docker/Dockerfile.core -t xberg:core .
 ```

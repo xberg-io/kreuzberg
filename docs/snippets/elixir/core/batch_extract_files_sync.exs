@@ -1,7 +1,7 @@
 ```elixir title="Elixir"
 file_paths = ["document1.pdf", "document2.pdf", "document3.pdf"]
 
-{:ok, results} = Kreuzberg.batch_extract_files(file_paths)
+{:ok, results} = Xberg.batch_extract_files(file_paths)
 
 Enum.each(results, fn result ->
   IO.puts("File: #{result.mime_type}")

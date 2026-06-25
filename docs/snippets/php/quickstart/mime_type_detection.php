@@ -6,15 +6,15 @@ declare(strict_types=1);
 /**
  * MIME Type Detection
  *
- * Kreuzberg can automatically detect MIME types from file content or paths.
+ * Xberg can automatically detect MIME types from file content or paths.
  * This is useful when the file extension is missing or unreliable.
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Kreuzberg\detect_mime_type;
-use function Kreuzberg\detect_mime_type_from_path;
-use function Kreuzberg\extract_file;
+use function Xberg\detect_mime_type;
+use function Xberg\detect_mime_type_from_path;
+use function Xberg\extract_file;
 
 $path = 'document.pdf';
 $mimeType = detect_mime_type_from_path($path);

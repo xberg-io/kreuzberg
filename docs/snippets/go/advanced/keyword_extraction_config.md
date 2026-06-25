@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -10,9 +10,9 @@ func main() {
 	minScore := 0.3
 	language := "en"
 
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
-			Algorithm:   kreuzberg.KeywordAlgorithm_YAKE,
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
+			Algorithm:   xberg.KeywordAlgorithm_YAKE,
 			MaxKeywords: &maxKeywords,
 			MinScore:    &minScore,
 			Language:    &language,

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -11,7 +11,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFile("document.pdf", null, config);
+var result = await XbergLib.ExtractFile("document.pdf", null, config);
 if (result.Chunks != null)
 {
     Console.WriteLine($"Total chunks: {result.Chunks.Count}");
@@ -23,7 +23,7 @@ if (result.Chunks != null)
 ```
 
 ```csharp title="C# - Markdown with Heading Context"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -36,7 +36,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFile("document.md", null, config);
+var result = await XbergLib.ExtractFile("document.md", null, config);
 if (result.Chunks != null)
 {
     foreach (var chunk in result.Chunks)

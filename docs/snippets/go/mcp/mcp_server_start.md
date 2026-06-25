@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	cmd := exec.Command("kreuzberg", "mcp")
+	cmd := exec.Command("xberg", "mcp")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

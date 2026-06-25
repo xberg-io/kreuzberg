@@ -1,12 +1,12 @@
 ```go title="Go"
 package main
 
-import "github.com/xberg-io/kreuzberg/packages/go/v5"
+import "github.com/xberg-io/xberg/packages/go/v5"
 
 func main() {
 	enabled := true
-	cfg := &kreuzberg.ExtractionConfig{
-		Postprocessor: &kreuzberg.PostProcessorConfig{
+	cfg := &xberg.ExtractionConfig{
+		Postprocessor: &xberg.PostProcessorConfig{
 			Enabled:            &enabled,
 			EnabledProcessors:  []string{"deduplication", "whitespace_normalization"},
 			DisabledProcessors: []string{"mojibake_fix"},

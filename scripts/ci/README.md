@@ -95,7 +95,7 @@ setup_all_library_paths
 
 - `install-ruby-deps.sh` - Install bundle dependencies (Unix)
 - `install-ruby-deps.ps1` - Install bundle dependencies (Windows)
-- `vendor-kreuzberg-core.py` - Vendor core crate for packaging
+- `vendor-xberg-core.py` - Vendor core crate for packaging
 - `configure-bindgen-windows.ps1` - Configure bindgen headers (Windows)
 - `configure-tesseract-windows.ps1` - Configure Tesseract (Windows)
 - `build-gem.sh` - Build Ruby gem
@@ -186,7 +186,7 @@ For comprehensive workflow-to-script mapping and usage examples, see `SCRIPT_MAP
   run: |
     cd packages/python
     if [ "${{ matrix.coverage }}" = "true" ]; then
-      uv run pytest -vv --cov=kreuzberg --cov-report=lcov:coverage.lcov ...
+      uv run pytest -vv --cov=xberg --cov-report=lcov:coverage.lcov ...
     else
       uv run pytest -vv --reruns 1 --reruns-delay 1
     fi

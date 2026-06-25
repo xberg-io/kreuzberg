@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 class VectorRecord {
   final String id;
@@ -60,7 +60,7 @@ Future<List<VectorRecord>> extractAndVectorize(
     useLayoutForMarkdown: false,    chunking: chunking,
   );
 
-  final result = await KreuzbergBridge.extractFile(documentPath, null, config);
+  final result = await XbergBridge.extractFile(documentPath, null, config);
   final chunks = result.chunks ?? const <Chunk>[];
 
   final records = <VectorRecord>[];

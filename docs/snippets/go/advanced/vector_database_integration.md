@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 type VectorRecord struct {
@@ -20,19 +20,19 @@ func extractAndVectorize(documentPath string, documentID string) ([]VectorRecord
 	normalize := true
 	batchSize := int32(32)
 
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
-				Model:     kreuzberg.EmbeddingModelType_Preset("balanced"),
+			Embedding: &xberg.EmbeddingConfig{
+				Model:     xberg.EmbeddingModelType_Preset("balanced"),
 				Normalize: &normalize,
 				BatchSize: &batchSize,
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync(documentPath, config)
+	result, err := xberg.ExtractFileSync(documentPath, config)
 	if err != nil {
 		return nil, err
 	}

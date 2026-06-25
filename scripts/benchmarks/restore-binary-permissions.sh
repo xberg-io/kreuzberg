@@ -18,8 +18,8 @@ fi
 chmod +x "$BINARY_PATH"
 echo "✓ Restored executable permissions on: $BINARY_PATH"
 
-# Also restore kreuzberg-cli if present (used by all kreuzberg adapter pipelines)
-CLI_BINARY="$REPO_ROOT/target/release/kreuzberg"
+# Also restore xberg-cli if present (used by all xberg adapter pipelines)
+CLI_BINARY="$REPO_ROOT/target/release/xberg"
 if [ -f "$CLI_BINARY" ]; then
   chmod +x "$CLI_BINARY"
   echo "✓ Restored executable permissions on: $CLI_BINARY"

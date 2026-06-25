@@ -9,12 +9,12 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 
 - You need to extract URLs, vCards, or payment data embedded as QR codes in scanned documents.
 - You ingest forms, tickets, or invoices that embed QR codes for routing or audit.
-- You need a network-free decoder that ships in every Kreuzberg build (including WASM and Android).
+- You need a network-free decoder that ships in every Xberg build (including WASM and Android).
 
 ## When Not to Use
 
 - You only need standalone QR images, not embedded in larger documents. Use [rqrr](https://docs.rs/rqrr/) directly.
-- You need barcodes other than QR. Kreuzberg only decodes QR for now.
+- You need barcodes other than QR. Xberg only decodes QR for now.
 - You need barcode orientation correction. The decoder processes images as-is.
 
 ## Configuration
@@ -22,7 +22,7 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 === "Python"
 
     ```python title="Python"
-    from kreuzberg import extract_file, ExtractionConfig
+    from xberg import extract_file, ExtractionConfig
 
     config = ExtractionConfig(qr_codes=True)
     result = await extract_file("ticket.pdf", config=config)
@@ -34,7 +34,7 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 === "TypeScript"
 
     ```typescript title="TypeScript"
-    import { extractFile } from '@kreuzberg/node';
+    import { extractFile } from '@xberg/node';
 
     const result = await extractFile("ticket.pdf", { qrCodes: true });
     for (const image of result.images ?? []) {
@@ -47,7 +47,7 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 === "Rust"
 
     ```rust title="Rust"
-    use kreuzberg::{extract_file, ExtractionConfig};
+    use xberg::{extract_file, ExtractionConfig};
 
     let config = ExtractionConfig {
         qr_codes: Some(true),
@@ -65,7 +65,7 @@ Decode QR codes embedded in extracted images. Detection runs over every `Extract
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     qr_codes = true
     ```
 

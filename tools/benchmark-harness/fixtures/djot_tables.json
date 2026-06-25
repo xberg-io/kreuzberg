@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/tables.djot",
 	"file_type": "djot",
 	"file_size": 2102,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Djot markup with tables",
 		"category": "markup"

@@ -82,7 +82,7 @@ Pick any liter-llm provider — see [LLM Integration](llm-integration.md#support
 API-key precedence:
 
 1. `TranslationConfig.llm.api_key`
-2. `KREUZBERG_LLM_API_KEY`
+2. `XBERG_LLM_API_KEY`
 3. Per-provider env var
 
 ## Related

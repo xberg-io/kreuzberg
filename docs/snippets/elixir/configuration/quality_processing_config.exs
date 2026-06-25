@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure quality processing settings
 # Enable noise removal and set minimum quality thresholds for extracted content
@@ -20,7 +20,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("noisy_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("noisy_document.pdf", nil, config)
 
 IO.puts("Quality Processing Applied:")
 IO.puts("Content quality score: #{result.quality_score}")

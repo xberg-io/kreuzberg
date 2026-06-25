@@ -2,9 +2,9 @@
 package main
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -12,7 +12,7 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 //export customValidator
@@ -22,11 +22,11 @@ func customValidator(resultJSON *C.char) *C.char {
 }
 
 func main() {
-	if err := kreuzberg.RegisterValidator("go-validator", 50, (C.ValidatorCallback)(C.customValidator)); err != nil {
+	if err := xberg.RegisterValidator("go-validator", 50, (C.ValidatorCallback)(C.customValidator)); err != nil {
 		log.Fatalf("register validator failed: %v", err)
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

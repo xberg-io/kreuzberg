@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/json/pftaps057006474.json",
 	"file_type": "json",
 	"file_size": 68409,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+	"expected_frameworks": ["xberg", "markitdown", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

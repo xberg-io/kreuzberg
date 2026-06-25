@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, ExtractionConfig, ChunkingConfig
+from xberg import extract_file_sync, ExtractionConfig, ChunkingConfig
 
 config = ExtractionConfig(
     chunking=ChunkingConfig(max_characters=500, overlap=50),

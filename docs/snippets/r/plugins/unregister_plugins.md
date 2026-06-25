@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Remove plugins by their registered name.
 unregister_post_processor("metadata_enrichment")

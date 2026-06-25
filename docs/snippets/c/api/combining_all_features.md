@@ -1,5 +1,5 @@
 ```c title="C"
-#include "kreuzberg.h"
+#include "xberg.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,31 +14,31 @@ int main(void) {
         "\"images\": {\"extract_images\": true, \"target_dpi\": 300, \"inject_placeholders\": true}"
         "}";
 
-    KREUZBERGExtractionConfig *config = kreuzberg_extraction_config_from_json(config_json);
+    XBERGExtractionConfig *config = xberg_extraction_config_from_json(config_json);
     if (!config) {
         fprintf(stderr, "config parse failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
+                xberg_last_error_code(),
+                xberg_last_error_context());
         return 1;
     }
 
-    KREUZBERGExtractionResult *result =
-        kreuzberg_extract_file("document.pdf", NULL, config);
+    XBERGExtractionResult *result =
+        xberg_extract_file("document.pdf", NULL, config);
     if (!result) {
-        int32_t code = kreuzberg_last_error_code();
-        const char *message = kreuzberg_last_error_context();
+        int32_t code = xberg_last_error_code();
+        const char *message = xberg_last_error_context();
         fprintf(stderr, "extraction failed (code %d): %s\n",
                 code, message ? message : "(no message)");
-        kreuzberg_extraction_config_free(config);
+        xberg_extraction_config_free(config);
         return code != 0 ? code : 1;
     }
 
-    char *content = kreuzberg_extraction_result_content(result);
+    char *content = xberg_extraction_result_content(result);
     printf("%s\n", content ? content : "(empty)");
-    kreuzberg_free_string(content);
+    xberg_free_string(content);
 
-    kreuzberg_extraction_result_free(result);
-    kreuzberg_extraction_config_free(config);
+    xberg_extraction_result_free(result);
+    xberg_extraction_config_free(config);
     return 0;
 }
 ```

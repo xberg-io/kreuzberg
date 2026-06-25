@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
 
 echo "Example 1: Basic Chunking\n";
 echo "=========================\n";
@@ -23,8 +23,8 @@ $config1 = new ExtractionConfig(
     chunking: new ChunkingConfig()
 );
 
-$kreuzberg = new Kreuzberg($config1);
-$result = $kreuzberg->extractFile('long_document.pdf');
+$xberg = new Xberg($config1);
+$result = $xberg->extractFile('long_document.pdf');
 
 if ($result->chunks !== null) {
     echo "Total chunks: " . count($result->chunks) . "\n";
@@ -52,7 +52,7 @@ $config2 = new ExtractionConfig(
     )
 );
 
-$result2 = (new Kreuzberg($config2))->extractFile('document.pdf');
+$result2 = (new Xberg($config2))->extractFile('document.pdf');
 echo "Chunks created: " . (isset($result2->chunks) ? count($result2->chunks) : 0) . "\n\n";
 
 echo "Example 3: Large Chunks (More context per chunk)\n";
@@ -67,7 +67,7 @@ $config3 = new ExtractionConfig(
     )
 );
 
-$result3 = (new Kreuzberg($config3))->extractFile('document.pdf');
+$result3 = (new Xberg($config3))->extractFile('document.pdf');
 echo "Chunks created: " . (isset($result3->chunks) ? count($result3->chunks) : 0) . "\n\n";
 
 echo "Example 4: RAG-Optimized Configuration\n";
@@ -82,7 +82,7 @@ $config4 = new ExtractionConfig(
     )
 );
 
-$result4 = (new Kreuzberg($config4))->extractFile('document.pdf');
+$result4 = (new Xberg($config4))->extractFile('document.pdf');
 
 if ($result4->chunks !== null) {
     echo "Total chunks: " . count($result4->chunks) . "\n";
@@ -106,7 +106,7 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$result5 = (new Kreuzberg($config5))->extractFile('document.pdf');
+$result5 = (new Xberg($config5))->extractFile('document.pdf');
 
 if ($result5->chunks !== null) {
     foreach ($result5->chunks as $i => $chunk) {
@@ -143,7 +143,7 @@ $config6 = new ExtractionConfig(
     )
 );
 
-$result6 = (new Kreuzberg($config6))->extractFile('document.md');
+$result6 = (new Xberg($config6))->extractFile('document.md');
 
 if ($result6->chunks !== null) {
     echo "Total chunks: " . count($result6->chunks) . "\n";
@@ -184,7 +184,7 @@ $config7 = new ExtractionConfig(
     )
 );
 
-$result7 = (new Kreuzberg($config7))->extractFile('document.md');
+$result7 = (new Xberg($config7))->extractFile('document.md');
 
 if ($result7->chunks !== null) {
     echo "Total chunks: " . count($result7->chunks) . "\n";

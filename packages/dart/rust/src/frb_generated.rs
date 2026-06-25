@@ -28,7 +28,7 @@
 
 use crate::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
 
 // Section: boilerplate
@@ -10406,62 +10406,6 @@ const _: fn() = || {
         let _: Option<crate::YakeParams> = KeywordConfig.yake_params;
         let _: Option<crate::RakeParams> = KeywordConfig.rake_params;
     }
-    match None::<crate::KreuzbergError>.unwrap() {
-        crate::KreuzbergError::Io { field0 } => {
-            let _: String = field0;
-        }
-        crate::KreuzbergError::Parsing { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Ocr { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Validation { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Cache { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::ImageProcessing { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Serialization { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::MissingDependency { field0 } => {
-            let _: String = field0;
-        }
-        crate::KreuzbergError::Plugin { message, plugin_name } => {
-            let _: String = message;
-            let _: String = plugin_name;
-        }
-        crate::KreuzbergError::LockPoisoned { field0 } => {
-            let _: String = field0;
-        }
-        crate::KreuzbergError::UnsupportedFormat { field0 } => {
-            let _: String = field0;
-        }
-        crate::KreuzbergError::Embedding { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Reranking { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Transcription { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Timeout { elapsed_ms, limit_ms } => {
-            let _: i64 = elapsed_ms;
-            let _: i64 = limit_ms;
-        }
-        crate::KreuzbergError::Cancelled => {}
-        crate::KreuzbergError::Security { message } => {
-            let _: String = message;
-        }
-        crate::KreuzbergError::Other { field0 } => {
-            let _: String = field0;
-        }
-    }
     {
         let LanguageDetectionConfig = None::<crate::LanguageDetectionConfig>.unwrap();
         let _: bool = LanguageDetectionConfig.enabled;
@@ -11447,6 +11391,62 @@ const _: fn() = || {
             let _: f64 = quality_threshold;
         }
         crate::VlmFallbackPolicy::Always => {}
+    }
+    match None::<crate::XbergError>.unwrap() {
+        crate::XbergError::Io { field0 } => {
+            let _: String = field0;
+        }
+        crate::XbergError::Parsing { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Ocr { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Validation { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Cache { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::ImageProcessing { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Serialization { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::MissingDependency { field0 } => {
+            let _: String = field0;
+        }
+        crate::XbergError::Plugin { message, plugin_name } => {
+            let _: String = message;
+            let _: String = plugin_name;
+        }
+        crate::XbergError::LockPoisoned { field0 } => {
+            let _: String = field0;
+        }
+        crate::XbergError::UnsupportedFormat { field0 } => {
+            let _: String = field0;
+        }
+        crate::XbergError::Embedding { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Reranking { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Transcription { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Timeout { elapsed_ms, limit_ms } => {
+            let _: i64 = elapsed_ms;
+            let _: i64 = limit_ms;
+        }
+        crate::XbergError::Cancelled => {}
+        crate::XbergError::Security { message } => {
+            let _: String = message;
+        }
+        crate::XbergError::Other { field0 } => {
+            let _: String = field0;
+        }
     }
     {
         let XlsxAppProperties = None::<crate::XlsxAppProperties>.unwrap();
@@ -15037,97 +15037,6 @@ impl SseDecode for crate::KeywordConfig {
             yake_params: var_yakeParams,
             rake_params: var_rakeParams,
         };
-    }
-}
-
-impl SseDecode for crate::KreuzbergError {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut tag_ = <i32>::sse_decode(deserializer);
-        match tag_ {
-            0 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Io { field0: var_field0 };
-            }
-            1 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Parsing { message: var_message };
-            }
-            2 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Ocr { message: var_message };
-            }
-            3 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Validation { message: var_message };
-            }
-            4 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Cache { message: var_message };
-            }
-            5 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::ImageProcessing { message: var_message };
-            }
-            6 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Serialization { message: var_message };
-            }
-            7 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::MissingDependency { field0: var_field0 };
-            }
-            8 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                let mut var_pluginName = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Plugin {
-                    message: var_message,
-                    plugin_name: var_pluginName,
-                };
-            }
-            9 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::LockPoisoned { field0: var_field0 };
-            }
-            10 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::UnsupportedFormat { field0: var_field0 };
-            }
-            11 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Embedding { message: var_message };
-            }
-            12 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Reranking { message: var_message };
-            }
-            13 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Transcription { message: var_message };
-            }
-            14 => {
-                let mut var_elapsedMs = <i64>::sse_decode(deserializer);
-                let mut var_limitMs = <i64>::sse_decode(deserializer);
-                return crate::KreuzbergError::Timeout {
-                    elapsed_ms: var_elapsedMs,
-                    limit_ms: var_limitMs,
-                };
-            }
-            15 => {
-                return crate::KreuzbergError::Cancelled;
-            }
-            16 => {
-                let mut var_message = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Security { message: var_message };
-            }
-            17 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::KreuzbergError::Other { field0: var_field0 };
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
     }
 }
 
@@ -19790,6 +19699,97 @@ impl SseDecode for crate::WhisperModel {
     }
 }
 
+impl SseDecode for crate::XbergError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::XbergError::Io { field0: var_field0 };
+            }
+            1 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Parsing { message: var_message };
+            }
+            2 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Ocr { message: var_message };
+            }
+            3 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Validation { message: var_message };
+            }
+            4 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Cache { message: var_message };
+            }
+            5 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::ImageProcessing { message: var_message };
+            }
+            6 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Serialization { message: var_message };
+            }
+            7 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::XbergError::MissingDependency { field0: var_field0 };
+            }
+            8 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                let mut var_pluginName = <String>::sse_decode(deserializer);
+                return crate::XbergError::Plugin {
+                    message: var_message,
+                    plugin_name: var_pluginName,
+                };
+            }
+            9 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::XbergError::LockPoisoned { field0: var_field0 };
+            }
+            10 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::XbergError::UnsupportedFormat { field0: var_field0 };
+            }
+            11 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Embedding { message: var_message };
+            }
+            12 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Reranking { message: var_message };
+            }
+            13 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Transcription { message: var_message };
+            }
+            14 => {
+                let mut var_elapsedMs = <i64>::sse_decode(deserializer);
+                let mut var_limitMs = <i64>::sse_decode(deserializer);
+                return crate::XbergError::Timeout {
+                    elapsed_ms: var_elapsedMs,
+                    limit_ms: var_limitMs,
+                };
+            }
+            15 => {
+                return crate::XbergError::Cancelled;
+            }
+            16 => {
+                let mut var_message = <String>::sse_decode(deserializer);
+                return crate::XbergError::Security { message: var_message };
+            }
+            17 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::XbergError::Other { field0: var_field0 };
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseDecode for crate::XlsxAppProperties {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -23051,76 +23051,6 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::KeywordConfig>> for cra
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::KreuzbergError> {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        match self.0 {
-            crate::KreuzbergError::Io { field0 } => [0.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
-            crate::KreuzbergError::Parsing { message } => {
-                [1.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Ocr { message } => [2.into_dart(), message.into_into_dart().into_dart()].into_dart(),
-            crate::KreuzbergError::Validation { message } => {
-                [3.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Cache { message } => {
-                [4.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::ImageProcessing { message } => {
-                [5.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Serialization { message } => {
-                [6.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::MissingDependency { field0 } => {
-                [7.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Plugin { message, plugin_name } => [
-                8.into_dart(),
-                message.into_into_dart().into_dart(),
-                plugin_name.into_into_dart().into_dart(),
-            ]
-            .into_dart(),
-            crate::KreuzbergError::LockPoisoned { field0 } => {
-                [9.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::UnsupportedFormat { field0 } => {
-                [10.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Embedding { message } => {
-                [11.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Reranking { message } => {
-                [12.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Transcription { message } => {
-                [13.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Timeout { elapsed_ms, limit_ms } => [
-                14.into_dart(),
-                elapsed_ms.into_into_dart().into_dart(),
-                limit_ms.into_into_dart().into_dart(),
-            ]
-            .into_dart(),
-            crate::KreuzbergError::Cancelled => [15.into_dart()].into_dart(),
-            crate::KreuzbergError::Security { message } => {
-                [16.into_dart(), message.into_into_dart().into_dart()].into_dart()
-            }
-            crate::KreuzbergError::Other { field0 } => {
-                [17.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::KreuzbergError> {}
-impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::KreuzbergError>> for crate::KreuzbergError {
-    fn into_into_dart(self) -> FrbWrapper<crate::KreuzbergError> {
-        self.into()
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::LanguageDetectionConfig> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -25783,6 +25713,70 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::WhisperModel>> for crat
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::XbergError> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            crate::XbergError::Io { field0 } => [0.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::XbergError::Parsing { message } => [1.into_dart(), message.into_into_dart().into_dart()].into_dart(),
+            crate::XbergError::Ocr { message } => [2.into_dart(), message.into_into_dart().into_dart()].into_dart(),
+            crate::XbergError::Validation { message } => {
+                [3.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Cache { message } => [4.into_dart(), message.into_into_dart().into_dart()].into_dart(),
+            crate::XbergError::ImageProcessing { message } => {
+                [5.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Serialization { message } => {
+                [6.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::MissingDependency { field0 } => {
+                [7.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Plugin { message, plugin_name } => [
+                8.into_dart(),
+                message.into_into_dart().into_dart(),
+                plugin_name.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::XbergError::LockPoisoned { field0 } => {
+                [9.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::UnsupportedFormat { field0 } => {
+                [10.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Embedding { message } => {
+                [11.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Reranking { message } => {
+                [12.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Transcription { message } => {
+                [13.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Timeout { elapsed_ms, limit_ms } => [
+                14.into_dart(),
+                elapsed_ms.into_into_dart().into_dart(),
+                limit_ms.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::XbergError::Cancelled => [15.into_dart()].into_dart(),
+            crate::XbergError::Security { message } => {
+                [16.into_dart(), message.into_into_dart().into_dart()].into_dart()
+            }
+            crate::XbergError::Other { field0 } => [17.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::XbergError> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::XbergError>> for crate::XbergError {
+    fn into_into_dart(self) -> FrbWrapper<crate::XbergError> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::XlsxAppProperties> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -28155,90 +28149,6 @@ impl SseEncode for crate::KeywordConfig {
         <Option<String>>::sse_encode(self.language, serializer);
         <Option<crate::YakeParams>>::sse_encode(self.yake_params, serializer);
         <Option<crate::RakeParams>>::sse_encode(self.rake_params, serializer);
-    }
-}
-
-impl SseEncode for crate::KreuzbergError {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        match self {
-            crate::KreuzbergError::Io { field0 } => {
-                <i32>::sse_encode(0, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::KreuzbergError::Parsing { message } => {
-                <i32>::sse_encode(1, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Ocr { message } => {
-                <i32>::sse_encode(2, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Validation { message } => {
-                <i32>::sse_encode(3, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Cache { message } => {
-                <i32>::sse_encode(4, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::ImageProcessing { message } => {
-                <i32>::sse_encode(5, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Serialization { message } => {
-                <i32>::sse_encode(6, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::MissingDependency { field0 } => {
-                <i32>::sse_encode(7, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::KreuzbergError::Plugin { message, plugin_name } => {
-                <i32>::sse_encode(8, serializer);
-                <String>::sse_encode(message, serializer);
-                <String>::sse_encode(plugin_name, serializer);
-            }
-            crate::KreuzbergError::LockPoisoned { field0 } => {
-                <i32>::sse_encode(9, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::KreuzbergError::UnsupportedFormat { field0 } => {
-                <i32>::sse_encode(10, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::KreuzbergError::Embedding { message } => {
-                <i32>::sse_encode(11, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Reranking { message } => {
-                <i32>::sse_encode(12, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Transcription { message } => {
-                <i32>::sse_encode(13, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Timeout { elapsed_ms, limit_ms } => {
-                <i32>::sse_encode(14, serializer);
-                <i64>::sse_encode(elapsed_ms, serializer);
-                <i64>::sse_encode(limit_ms, serializer);
-            }
-            crate::KreuzbergError::Cancelled => {
-                <i32>::sse_encode(15, serializer);
-            }
-            crate::KreuzbergError::Security { message } => {
-                <i32>::sse_encode(16, serializer);
-                <String>::sse_encode(message, serializer);
-            }
-            crate::KreuzbergError::Other { field0 } => {
-                <i32>::sse_encode(17, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
     }
 }
 
@@ -32030,6 +31940,90 @@ impl SseEncode for crate::WhisperModel {
     }
 }
 
+impl SseEncode for crate::XbergError {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::XbergError::Io { field0 } => {
+                <i32>::sse_encode(0, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::XbergError::Parsing { message } => {
+                <i32>::sse_encode(1, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Ocr { message } => {
+                <i32>::sse_encode(2, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Validation { message } => {
+                <i32>::sse_encode(3, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Cache { message } => {
+                <i32>::sse_encode(4, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::ImageProcessing { message } => {
+                <i32>::sse_encode(5, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Serialization { message } => {
+                <i32>::sse_encode(6, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::MissingDependency { field0 } => {
+                <i32>::sse_encode(7, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::XbergError::Plugin { message, plugin_name } => {
+                <i32>::sse_encode(8, serializer);
+                <String>::sse_encode(message, serializer);
+                <String>::sse_encode(plugin_name, serializer);
+            }
+            crate::XbergError::LockPoisoned { field0 } => {
+                <i32>::sse_encode(9, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::XbergError::UnsupportedFormat { field0 } => {
+                <i32>::sse_encode(10, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::XbergError::Embedding { message } => {
+                <i32>::sse_encode(11, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Reranking { message } => {
+                <i32>::sse_encode(12, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Transcription { message } => {
+                <i32>::sse_encode(13, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Timeout { elapsed_ms, limit_ms } => {
+                <i32>::sse_encode(14, serializer);
+                <i64>::sse_encode(elapsed_ms, serializer);
+                <i64>::sse_encode(limit_ms, serializer);
+            }
+            crate::XbergError::Cancelled => {
+                <i32>::sse_encode(15, serializer);
+            }
+            crate::XbergError::Security { message } => {
+                <i32>::sse_encode(16, serializer);
+                <String>::sse_encode(message, serializer);
+            }
+            crate::XbergError::Other { field0 } => {
+                <i32>::sse_encode(17, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseEncode for crate::XlsxAppProperties {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -32088,7 +32082,7 @@ mod io {
     use super::*;
     use crate::*;
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
@@ -32096,161 +32090,161 @@ mod io {
     flutter_rust_bridge::frb_generated_boilerplate_io!();
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynDocumentExtractorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn DocumentExtractor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynEmbeddingBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn EmbeddingBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynOcrBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn OcrBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynPostProcessorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn PostProcessor + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRendererSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Renderer + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn RerankerBackend + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynRerankerBackendSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn RerankerBackend + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArcdynValidatorSendSync(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Arc < dyn Validator + Send + Sync >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDocumentExtractorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<DocumentExtractorDartImpl>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEmbeddingBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EmbeddingBackendDartImpl>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLlmBackend(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLlmBackend(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LlmBackend>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLlmBackend(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLlmBackend(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LlmBackend>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMetaSchema(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMetaSchema(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MetaSchema>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMetaSchema(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMetaSchema(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MetaSchema>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>::increment_strong_count(
@@ -32259,7 +32253,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerOcrBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<OcrBackendDartImpl>>::decrement_strong_count(
@@ -32268,35 +32262,35 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPostProcessorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<PostProcessorDartImpl>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRegistry(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRegistry(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Registry>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRegistry(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRegistry(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Registry>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>::increment_strong_count(
@@ -32305,7 +32299,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRendererDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RendererDartImpl>>::decrement_strong_count(
@@ -32314,21 +32308,21 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RerankerBackendDartImpl>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRerankerBackendDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<RerankerBackendDartImpl>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TokenCounter>>::increment_strong_count(
@@ -32337,7 +32331,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTokenCounter(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TokenCounter>>::decrement_strong_count(
@@ -32346,7 +32340,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>::increment_strong_count(
@@ -32355,7 +32349,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_kreuzberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
+    pub extern "C" fn frbgen_xberg_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerValidatorDartImpl(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ValidatorDartImpl>>::decrement_strong_count(
@@ -32379,7 +32373,7 @@ mod web {
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
     use flutter_rust_bridge::for_generated::wasm_bindgen;
     use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate

@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only --> Requires network access to the configured LLM provider and a valid API key in the host environment.
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 schema <- list(
   type = "object",

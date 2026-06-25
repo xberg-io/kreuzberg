@@ -5,7 +5,7 @@ defmodule Example do
     config = nil
 
     task = Task.async(fn ->
-      Kreuzberg.extract_bytes_async(content, "application/pdf", config)
+      Xberg.extract_bytes_async(content, "application/pdf", config)
     end)
 
     case Task.await(task) do

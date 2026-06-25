@@ -2,7 +2,7 @@
 title: "C# API Reference"
 ---
 
-## C# API Reference <span class="version-badge">v5.0.0-rc.36</span>
+## C# API Reference <span class="version-badge">v1.0.0-rc.1</span>
 
 ### Functions
 
@@ -24,8 +24,8 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Validation` if MIME type is invalid.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `XbergError.Validation` if MIME type is invalid.
+Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
@@ -72,8 +72,8 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `XbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
@@ -428,7 +428,7 @@ The detected MIME type string.
 
 **Errors:**
 
-Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
+Returns `XbergError.UnsupportedFormat` if MIME type cannot be determined.
 
 **Signature:**
 
@@ -492,7 +492,7 @@ var result = GetExtensionsForMime("value");
 
 List all supported document formats.
 
-Returns every file extension Kreuzberg recognizes together with its
+Returns every file extension Xberg recognizes together with its
 corresponding MIME type, derived from the central format registry.
 Formats that have no registered file extension (such as source code,
 which is detected dynamically) are not included.
@@ -596,7 +596,7 @@ ClearEmbeddingBackends();
 
 List the names of all registered embedding backends.
 
-Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+Used by `xberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
 **Signature:**
@@ -896,7 +896,7 @@ ClearRerankerBackends();
 
 List the names of all registered reranker backends.
 
-Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+Used by `xberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
 Since v5.0.
@@ -1085,10 +1085,10 @@ var result = await ClassifyDocument(new List<object>(), new PageClassificationCo
 
 #### DownloadModel()
 
-Eagerly download a NER model into the kreuzberg cache.
+Eagerly download a NER model into the xberg cache.
 
 `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
-CLI flag `kreuzberg warm --ner` delegates here.
+CLI flag `xberg warm --ner` delegates here.
 
 **Signature:**
 
@@ -1182,7 +1182,7 @@ var result = DefaultModelName();
 
 #### KnownModels()
 
-All NER models kreuzberg knows about (used by `--all-ner-models`).
+All NER models xberg knows about (used by `--all-ner-models`).
 
 **Signature:**
 
@@ -1220,7 +1220,7 @@ var result = KnownModels();
 
 #### DownloadModel()
 
-Download a NER model into the kreuzberg cache.
+Download a NER model into the xberg cache.
 
 **Signature:**
 
@@ -1269,7 +1269,7 @@ var result = DefaultModelName();
 
 #### KnownModels()
 
-All NER models kreuzberg knows about.
+All NER models xberg knows about.
 
 **Signature:**
 
@@ -2051,7 +2051,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
-   `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
+   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2234,7 +2234,7 @@ JSON-serialised `StructuredOutput` on success.
 
 Returns `Validation` when either JSON argument is
 malformed.  All other failures from the underlying
-`extract_structured_sync` call are mapped onto `KreuzbergError`
+`extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
 **Signature:**
@@ -2281,7 +2281,7 @@ JSON-serialised `List<StructuredOutput>` (a JSON array) on success.
 
 Returns `Validation` when either JSON argument is
 malformed.  All other failures from the underlying
-`split_and_extract_sync` call are mapped onto `KreuzbergError`
+`split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
 **Signature:**
@@ -2324,7 +2324,7 @@ A warning is logged when this happens.
 
 **Errors:**
 
-Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+Returns `XbergError.Parsing` if the PDF cannot be opened, authenticated,
 or rendered, or if `page_index` is out of range.
 
 **Signature:**
@@ -2364,7 +2364,7 @@ when you only need the count (e.g. to drive a render loop over the pages).
 
 **Errors:**
 
-Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+Returns `XbergError.Parsing` if the PDF cannot be opened, authenticated,
 or its page count read.
 
 **Signature:**
@@ -2638,9 +2638,9 @@ configured.
 
 **Errors:**
 
-- `KreuzbergError.Validation` if `query` is empty or blank.
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
-- `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+- `XbergError.Validation` if `query` is empty or blank.
+- `XbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
+- `XbergError.Reranking` if the preset is unknown or model download fails.
 
 Since v5.0.
 
@@ -3003,7 +3003,7 @@ Bounding box coordinates for element positioning.
 
 #### CacheStats
 
-Aggregate statistics for a kreuzberg cache directory.
+Aggregate statistics for a xberg cache directory.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3659,10 +3659,10 @@ The pipeline will convert this into the public `ExtractionResult`.
 
 **Errors:**
 
-- `KreuzbergError.Parsing` - Document parsing failed
-- `KreuzbergError.Validation` - Invalid document structure
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
-- `KreuzbergError.MissingDependency` - Required dependency not available
+- `XbergError.Parsing` - Document parsing failed
+- `XbergError.Validation` - Invalid document structure
+- `XbergError.Io` - I/O errors (these always bubble up)
+- `XbergError.MissingDependency` - Required dependency not available
 
 **Signature:**
 
@@ -4169,7 +4169,7 @@ equivalent to satisfy the async signature.
 ##### Thread safety
 
 Backends must be `Send + Sync + 'static`. They are stored in
-`Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
+`Arc<dyn EmbeddingBackend>` and called concurrently from xberg's chunking
 pipeline. If the backend's underlying model isn't thread-safe, the backend
 itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
@@ -4178,7 +4178,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
   `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
   validates this before returning to downstream consumers; a non-conforming
-  backend surfaces as a `KreuzbergError.Validation`, not a panic.
+  backend surfaces as a `XbergError.Validation`, not a panic.
 
 - `embed` may be called from any thread. Its future must be `Send`
   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
@@ -4188,7 +4188,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
   used for all subsequent shape validation. Lazy-loading implementations can
   defer model loading into `initialize()` and report the real dimension
   afterwards. Later mutations of the backend's reported dimension are not
-  observed by kreuzberg — implementations that need to change dimension
+  observed by xberg — implementations that need to change dimension
   must unregister and re-register.
 
 - `shutdown()` (inherited from `Plugin`) may be invoked
@@ -4274,7 +4274,7 @@ Requires the `embeddings` feature to be enabled.
 | `Normalize` | `bool` | `true` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `BatchSize` | `nuint` | `32` | Batch size for embedding generation |
 | `ShowDownloadProgress` | `bool` | `false` | Show model download progress |
-| `CacheDir` | `string?` | `null` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `CacheDir` | `string?` | `null` | Custom cache directory for model files Defaults to `~/.cache/xberg/embeddings/` if not specified. Allows full customization of model download location. |
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `null` (auto-select per platform). |
 | `MaxEmbedDurationSecs` | `ulong?` | `null` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
@@ -4462,8 +4462,8 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `ImageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `KindConfidence` | `float?` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `ClusterId` | `uint?` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-| `Caption` | `string?` | `null` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `null` when captioning is disabled or the VLM declined to caption. |
-| `QrCodes` | `List<QrCode>?` | `new List<QrCode>()` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `null` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
+| `Caption` | `string?` | `null` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/xberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `null` when captioning is disabled or the VLM declined to caption. |
+| `QrCodes` | `List<QrCode>?` | `new List<QrCode>()` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/xberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `null` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
 | `DataBase64` | `string?` | `null` | Base64-encoded copy of `data`; populated when `ImageExtractionConfig.include_data_base64` is `true`. Omitted from JSON by default; use instead of `data` in JSON-only clients. |
 
 ---
@@ -4674,7 +4674,7 @@ This is the main result type returned by all extraction functions.
 | `StructuredOutput` | `object?` | `null` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `CodeIntelligence` | `object?` | `null` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
 | `LlmUsage` | `List<LlmUsage>?` | `new List<LlmUsage>()` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `null` when no LLM was used. |
-| `Entities` | `List<Entity>?` | `new List<Entity>()` | Named entities detected in `content` by the NER post-processor. `null` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
+| `Entities` | `List<Entity>?` | `new List<Entity>()` | Named entities detected in `content` by the NER post-processor. `null` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/xberg/src/text/ner/`). |
 | `Summary` | `DocumentSummary?` | `null` | Summary of `content` produced by the summarisation post-processor. `null` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
 | `ExtractionConfidence` | `ExtractionConfidence?` | `null` | Confidence score computed by the heuristics pipeline. Populated when the `heuristics` feature is enabled and confidence scoring has been performed.  Combines text-coverage, OCR aggregate confidence, and schema-compliance into a single `\[0, 1\]` value. `null` when confidence scoring is not configured or the feature is absent. |
 | `Translation` | `Translation?` | `null` | Translation of `content` produced by the translation post-processor. `null` when translation is not configured. |
@@ -5145,7 +5145,7 @@ Image extraction configuration.
 | `AutoAdjustDpi` | `bool` | `true` | Automatically adjust DPI based on image content |
 | `MinDpi` | `int` | `72` | Minimum DPI threshold |
 | `MaxDpi` | `int` | `600` | Maximum DPI threshold |
-| `MaxImagesPerPage` | `uint?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
+| `MaxImagesPerPage` | `uint?` | `null` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes xberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `null` (default) means no limit — all images are extracted. |
 | `Classify` | `bool` | `false` | When `true`, extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. Defaults to `false` — opt in explicitly to avoid unexpected ML overhead. |
 | `IncludePageRasters` | `bool` | `false` | When `true`, full-page renders produced during OCR preprocessing are captured and returned as `ImageKind.PageRaster` entries in `ExtractionResult.images`. **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the document-level OCR bypass is active (whole-document backend). When OCR is enabled and this flag is set but the active backend skips per-page rendering, a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`. Defaults to `false`. Enable when downstream consumers need page thumbnails (e.g. citation previews, visual grounding). |
 | `RunOcrOnImages` | `bool` | `true` | Run OCR on extracted images and include the recognized text in the document content. When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images are processed with the configured OCR backend. Set to `false` to extract images without OCR processing, even when OCR is enabled. |
@@ -5780,9 +5780,9 @@ An `ExtractionResult` containing the extracted text and metadata.
 
 **Errors:**
 
-- `KreuzbergError.Ocr` - OCR processing failed
-- `KreuzbergError.Validation` - Invalid image format or configuration
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
+- `XbergError.Ocr` - OCR processing failed
+- `XbergError.Validation` - Invalid image format or configuration
+- `XbergError.Io` - I/O errors (these always bubble up)
 
 ##### Reading `backend_options`
 
@@ -6973,7 +6973,7 @@ Returns the semantic version of this plugin.
 
 Should follow semver format: `MAJOR.MINOR.PATCH`
 
-Defaults to the kreuzberg crate version.
+Defaults to the xberg crate version.
 
 **Signature:**
 
@@ -7407,7 +7407,7 @@ A curated structured-extraction preset loaded from the embedded library.
 Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
 validates against the meta-schema in `src/presets/preset.schema.json`.
 
-The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+The curated catalog is downstream (xberg-enterprise) and injects presets via
 `extend_from_dir`. The embedded OSS library
 ships only the `generic_document` toy preset.
 
@@ -7926,7 +7926,7 @@ Returns the number of presets successfully loaded from `dir`.
 
 ##### Use case
 
-This is the injection point for downstream catalogs: kreuzberg-cloud
+This is the injection point for downstream catalogs: xberg-enterprise
 calls this once at startup to add its 20+ curated presets on top of the
 single embedded OSS preset.
 
@@ -8043,7 +8043,7 @@ host callables in `spawn_blocking` or the equivalent.
 ##### Thread safety
 
 Backends must be `Send + Sync + 'static`. They are stored in
-`Arc<dyn RerankerBackend>` and may be called concurrently from kreuzberg's
+`Arc<dyn RerankerBackend>` and may be called concurrently from xberg's
 dispatcher. If the backend's underlying model is not thread-safe, the
 backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
@@ -8051,7 +8051,7 @@ backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
 - `rerank(query, documents)` MUST return exactly `documents.len()` scores.
   The dispatcher validates this before sorting and returning to callers;
-  a non-conforming backend surfaces as a `KreuzbergError.Validation`, not
+  a non-conforming backend surfaces as a `XbergError.Validation`, not
   a panic.
 
 - Scores are raw logits in any range — callers must NOT assume `[0, 1]`.
@@ -8130,7 +8130,7 @@ Since v5.0.
 | `TopK` | `nuint?` | `null` | Return at most this many documents. `null` returns all. Applied after sorting by score, so the highest-scoring documents are kept. |
 | `BatchSize` | `nuint` | `32` | Batch size for local ONNX cross-encoder inference. |
 | `ShowDownloadProgress` | `bool` | `false` | Show model download progress (local ONNX path only). |
-| `CacheDir` | `string?` | `null` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
+| `CacheDir` | `string?` | `null` | Custom cache directory for model files. Defaults to `~/.cache/xberg/rerankers/` if not specified. |
 | `Acceleration` | `AccelerationConfig?` | `null` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `null` (auto-select per platform). |
 | `MaxRerankDurationSecs` | `ulong?` | `null` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `null` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
@@ -8252,7 +8252,7 @@ var result = SecurityLimits.CreateDefault();
 
 API server configuration.
 
-This struct holds all configuration options for the Kreuzberg API server,
+This struct holds all configuration options for the Xberg API server,
 including host/port settings, CORS configuration, and upload limits.
 
 ##### Defaults
@@ -8442,9 +8442,9 @@ returning structured data that conforms to the schema.
 
 Signals consumed by the call-mode heuristic.
 
-All fields derive from a prior kreuzberg extraction — no double-work.
+All fields derive from a prior xberg extraction — no double-work.
 This is a plain DTO; it intentionally has no dependency on internal
-kreuzberg extraction types so it can be constructed from any source.
+xberg extraction types so it can be constructed from any source.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -8513,7 +8513,7 @@ Configuration for the summarisation post-processor.
 
 A supported document format entry.
 
-Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+Represents a file extension and its corresponding MIME type that Xberg can process.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -8810,7 +8810,7 @@ var result = TokenReductionOptions.CreateDefault();
 
 Configuration for audio/video transcription (speech-to-text).
 
-When present and `enabled`, Kreuzberg will route audio and video files
+When present and `enabled`, Xberg will route audio and video files
 (mp3, mp4, m4a, wav, webm, etc.) through the transcription pipeline.
 
 The heavy dependencies (ORT, hf-hub, symphonia) are only pulled when the
@@ -8835,7 +8835,7 @@ model = "tiny"
 | `MaxDurationMs` | `ulong?` | `null` | Hard safety limit on input duration (milliseconds). Files longer than this are rejected after decode, before model work. Default: 30 minutes. Set to `null` to disable (not recommended for untrusted input). |
 | `MaxBytes` | `ulong?` | `null` | Hard safety limit on input size (bytes). Default: 512 MiB. Protects against pathological or malicious uploads. |
 | `TimeoutMs` | `ulong?` | `null` | Wall-clock timeout for the entire transcription operation (ms). Default: 10 minutes. Reserved for timeout enforcement; the current extractor does not enforce this field yet. |
-| `ModelCacheDir` | `string?` | `null` | Override the directory used for Whisper model cache. When `null`, uses the centralized resolver: `KREUZBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/kreuzberg/whisper` on Linux, etc.). |
+| `ModelCacheDir` | `string?` | `null` | Override the directory used for Whisper model cache. When `null`, uses the centralized resolver: `XBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/xberg/whisper` on Linux, etc.). |
 | `AllowNetwork` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `VerifyHash` | `bool` | `true` | Request SHA256 verification of downloaded model files. Reserved for the checksum table follow-up. The current resolver logs a warning and treats this as a no-op. |
 
@@ -9033,7 +9033,7 @@ if validation fails.
 
 **Errors:**
 
-- `KreuzbergError.Validation` - Validation failed
+- `XbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
 ##### Example - Content Length Validation
@@ -9465,20 +9465,20 @@ available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
 
 #### EmbeddingModelType
 
-Embedding model types supported by Kreuzberg.
+Embedding model types supported by Xberg.
 
 | Value | Description |
 |-------|-------------|
 | `Preset` | Use a preset model configuration (recommended) — Fields: `Name`: `string` |
 | `Custom` | Use a custom ONNX model from HuggingFace — Fields: `ModelId`: `string`, `Dimensions`: `nuint` |
 | `Llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `Llm`: `LlmConfig` |
-| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `Name`: `string` |
+| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Xberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `Name`: `string` |
 
 ---
 
 #### RerankerModelType
 
-Reranker model types supported by Kreuzberg.
+Reranker model types supported by Xberg.
 
 Since v5.0.
 
@@ -9487,7 +9487,7 @@ Since v5.0.
 | `Preset` | Use a preset cross-encoder model (recommended). — Fields: `Name`: `string` |
 | `Custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `ModelId`: `string`, `ModelFile`: `string`, `AdditionalFiles`: `List<string>`, `MaxLength`: `long` |
 | `Llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `Llm`: `LlmConfig` |
-| `Plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `Name`: `string` |
+| `Plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Xberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `Name`: `string` |
 
 ---
 
@@ -10341,11 +10341,11 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 
 ### Errors
 
-#### KreuzbergError
+#### XbergError
 
-Main error type for all Kreuzberg operations.
+Main error type for all Xberg operations.
 
-All errors in Kreuzberg use this enum, which preserves error chains
+All errors in Xberg use this enum, which preserves error chains
 and provides context for debugging.
 
 ### Variants

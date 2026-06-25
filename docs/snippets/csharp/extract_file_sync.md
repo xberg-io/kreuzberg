@@ -1,7 +1,7 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", new ExtractionConfig());
+var result = XbergLib.ExtractFileSync("document.pdf", new ExtractionConfig());
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"Tables: {result.Tables.Count}");

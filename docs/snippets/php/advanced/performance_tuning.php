@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use function Kreuzberg\extract_file;
-use function Kreuzberg\batch_extract_files;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use function Xberg\extract_file;
+use function Xberg\batch_extract_files;
 
 function benchmark(callable $fn, string $label): void
 {
@@ -73,27 +73,27 @@ if (file_exists($testFile)) {
     echo str_repeat('=', 60) . "\n\n";
 
     benchmark(function () use ($testFile, $fastConfig) {
-        $kreuzberg = new Kreuzberg($fastConfig);
-        return $kreuzberg->extractFile($testFile);
+        $xberg = new Xberg($fastConfig);
+        return $xberg->extractFile($testFile);
     }, "Fast config (minimal features)");
 
     benchmark(function () use ($testFile, $standardConfig) {
-        $kreuzberg = new Kreuzberg($standardConfig);
-        return $kreuzberg->extractFile($testFile);
+        $xberg = new Xberg($standardConfig);
+        return $xberg->extractFile($testFile);
     }, "Standard config (all features)");
 }
 
 function processLargeDocumentEfficiently(string $filePath): void
 {
     $config = new ExtractionConfig(
-        page: new \Kreuzberg\Config\PageConfig(
+        page: new \Xberg\Config\PageConfig(
             extractPages: true  
         ),
         extractImages: false    
     );
 
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile($filePath);
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile($filePath);
 
     echo "Processing large document page by page:\n";
 
@@ -188,10 +188,10 @@ class ResourceMonitor
 
 $monitor = new ResourceMonitor();
 
-$kreuzberg = new Kreuzberg();
-$monitor->checkpoint("Kreuzberg initialized");
+$xberg = new Xberg();
+$monitor->checkpoint("Xberg initialized");
 
-$result = $kreuzberg->extractFile('document.pdf');
+$result = $xberg->extractFile('document.pdf');
 $monitor->checkpoint("Document extracted");
 
 $words = str_word_count($result->content);
@@ -216,19 +216,19 @@ function processConcurrently(array $files, int $workers = 4): array
     return $results;
 }
 
-class CachedKreuzberg
+class CachedXberg
 {
     private array $cache = [];
     private int $maxCacheSize;
 
     public function __construct(
-        private Kreuzberg $kreuzberg,
+        private Xberg $xberg,
         int $maxCacheSize = 100
     ) {
         $this->maxCacheSize = $maxCacheSize;
     }
 
-    public function extractFile(string $filePath): \Kreuzberg\Types\ExtractionResult
+    public function extractFile(string $filePath): \Xberg\Types\ExtractionResult
     {
         $cacheKey = md5($filePath . filemtime($filePath));
 
@@ -236,7 +236,7 @@ class CachedKreuzberg
             return $this->cache[$cacheKey];
         }
 
-        $result = $this->kreuzberg->extractFile($filePath);
+        $result = $this->xberg->extractFile($filePath);
 
         if (count($this->cache) >= $this->maxCacheSize) {
             array_shift($this->cache); 
@@ -252,19 +252,19 @@ class CachedKreuzberg
     }
 }
 
-$cachedKreuzberg = new CachedKreuzberg(new Kreuzberg(), maxCacheSize: 50);
+$cachedXberg = new CachedXberg(new Xberg(), maxCacheSize: 50);
 
 echo "\nCached extraction performance:\n";
 echo str_repeat('=', 60) . "\n";
 
 $file = 'document.pdf';
 if (file_exists($file)) {
-    benchmark(function () use ($cachedKreuzberg, $file) {
-        return $cachedKreuzberg->extractFile($file);
+    benchmark(function () use ($cachedXberg, $file) {
+        return $cachedXberg->extractFile($file);
     }, "First extraction (uncached)");
 
-    benchmark(function () use ($cachedKreuzberg, $file) {
-        return $cachedKreuzberg->extractFile($file);
+    benchmark(function () use ($cachedXberg, $file) {
+        return $cachedXberg->extractFile($file);
     }, "Second extraction (cached)");
 }
 

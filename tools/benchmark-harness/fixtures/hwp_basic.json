@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/hwp/converted_output.hwp",
 	"file_type": "hwp",
 	"file_size": 95744,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Basic Hangul Word Processor document",
 		"category": "text"

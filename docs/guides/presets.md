@@ -14,7 +14,7 @@ A preset encapsulates the configuration needed to extract structured data from a
 - **Call mode** — Whether to extract from text only, vision only, or both.
 - **Citations** — Whether the prompt asks the model to emit field citations (page, bbox).
 
-The OSS library ships exactly one preset (`generic_document`) as a synthetic example. Downstream consumers (Kreuzberg Cloud, internal applications) load additional presets at runtime via `Registry::extend_from_dir`.
+The OSS library ships exactly one preset (`generic_document`) as a synthetic example. Downstream consumers (Xberg Enterprise, internal applications) load additional presets at runtime via `Registry::extend_from_dir`.
 
 ## Loading Presets
 
@@ -23,7 +23,7 @@ The OSS library ships exactly one preset (`generic_document`) as a synthetic exa
 Access the embedded registry via `Registry::global()`:
 
 ```rust
-use kreuzberg::presets::Registry;
+use xberg::presets::Registry;
 
 let registry = Registry::global();
 let preset = registry.get("generic_document").expect("always present");
@@ -34,7 +34,7 @@ let preset = registry.get("generic_document").expect("always present");
 Load additional presets from a directory at runtime:
 
 ```rust
-use kreuzberg::presets::Registry;
+use xberg::presets::Registry;
 use std::path::Path;
 
 let mut registry = Registry::load_embedded()?;
@@ -49,7 +49,7 @@ Files are read from the root of the directory (non-recursive). Each `*.json` fil
 List all available presets:
 
 ```rust
-use kreuzberg::presets::Registry;
+use xberg::presets::Registry;
 
 let registry = Registry::global();
 for preset in registry.iter() {
@@ -60,7 +60,7 @@ for preset in registry.iter() {
 Query summaries (lightweight metadata):
 
 ```rust
-use kreuzberg::presets::Registry;
+use xberg::presets::Registry;
 
 let registry = Registry::global();
 let summaries = registry.summaries();
@@ -127,7 +127,7 @@ Presets are JSON files with the following structure:
 Presets can include optional context templates. Resolve a preset by merging caller-supplied context:
 
 ```rust
-use kreuzberg::presets::{Registry, resolve};
+use xberg::presets::{Registry, resolve};
 use std::collections::BTreeMap;
 
 let registry = Registry::global();
@@ -174,7 +174,7 @@ Preset functionality is behind the `presets` feature. Enable it in `Cargo.toml`:
 
 ```toml
 [dependencies]
-kreuzberg = { version = "5.0", features = ["presets"] }
+xberg = { version = "5.0", features = ["presets"] }
 ```
 
 ## Best Practices

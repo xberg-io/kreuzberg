@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import (
+from xberg import (
     clear_document_extractors,
     clear_post_processors,
     clear_ocr_backends,

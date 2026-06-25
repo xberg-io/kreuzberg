@@ -371,7 +371,7 @@ def main() -> None:
             "document": doc_rel,
             "file_type": "pdf",
             "file_size": pdf_path.stat().st_size,
-            "expected_frameworks": ["kreuzberg"],
+            "expected_frameworks": ["xberg"],
             "metadata": {
                 "description": f"OmniDocBench: {page_attr.get('data_source', 'unknown')}",
                 "source": "omnidocbench",

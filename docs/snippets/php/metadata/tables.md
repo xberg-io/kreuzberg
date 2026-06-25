@@ -1,10 +1,10 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
 
-$result = Kreuzberg::extract_file_sync("document.pdf", null, new ExtractionConfig());
+$result = Xberg::extract_file_sync("document.pdf", null, new ExtractionConfig());
 
 foreach ($result->tables as $table) {
     echo "Table on page " . $table->page_number . " with " . count($table->cells) . " rows\n";

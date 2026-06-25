@@ -5,7 +5,7 @@ if [ "$(uname -s)" != "Darwin" ]; then
   exit 0
 fi
 
-ffi="target/release/libkreuzberg_ffi.dylib"
+ffi="target/release/libxberg_ffi.dylib"
 if [ ! -f "$ffi" ]; then
   exit 0
 fi

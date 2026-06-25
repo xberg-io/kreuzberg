@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/tables.typst",
 	"file_type": "typst",
 	"file_size": 2552,
-	"expected_frameworks": ["kreuzberg", "pandoc"],
+	"expected_frameworks": ["xberg", "pandoc"],
 	"metadata": {
 		"description": "Typst document with multiple table examples",
 		"category": "markup",

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using Microsoft.Extensions.Logging;
 
 public class MyPlugin

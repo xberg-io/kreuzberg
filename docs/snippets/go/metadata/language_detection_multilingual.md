@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	minConfidence := 0.8
-	config := &kreuzberg.ExtractionConfig{
-		LanguageDetection: &kreuzberg.LanguageDetectionConfig{
+	config := &xberg.ExtractionConfig{
+		LanguageDetection: &xberg.LanguageDetectionConfig{
 			Enabled:        true,
 			MinConfidence:  &minConfidence,
 			DetectMultiple: true,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("multilingual_document.pdf", config)
+	result, err := xberg.ExtractFileSync("multilingual_document.pdf", config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

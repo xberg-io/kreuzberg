@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -26,7 +26,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('scanned.pdf', null, config);
+  final result = await XbergBridge.extractFile('scanned.pdf', null, config);
   final elements = result.ocrElements ?? const <OcrElement>[];
   for (final element in elements) {
     print('Text: ${element.text}');

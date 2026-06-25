@@ -1,7 +1,7 @@
 ```python title="Python"
 import asyncio
 from dataclasses import dataclass, field
-from kreuzberg import (
+from xberg import (
     ExtractionConfig,
     ChunkingConfig,
     EmbeddingConfig,

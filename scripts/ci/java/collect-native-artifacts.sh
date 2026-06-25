@@ -8,25 +8,25 @@ mkdir -p "$out"
 
 case "$rid" in
 windows-x86_64)
-  cp -f target/release/kreuzberg_ffi.dll "$out/"
+  cp -f target/release/xberg_ffi.dll "$out/"
   if [ -f target/release/pdfium.dll ]; then
     cp -f target/release/pdfium.dll "$out/"
   fi
   ;;
 macos-x86_64 | macos-arm64)
-  cp -f target/release/libkreuzberg_ffi.dylib "$out/"
+  cp -f target/release/libxberg_ffi.dylib "$out/"
   if [ -f target/release/libpdfium.dylib ]; then
     cp -f target/release/libpdfium.dylib "$out/"
   fi
   ;;
 linux-x86_64)
-  cp -f target/release/libkreuzberg_ffi.so "$out/"
+  cp -f target/release/libxberg_ffi.so "$out/"
   if [ -f target/release/libpdfium.so ]; then
     cp -f target/release/libpdfium.so "$out/"
   fi
   ;;
 linux-arm64)
-  cp -f target/release/libkreuzberg_ffi.so "$out/"
+  cp -f target/release/libxberg_ffi.so "$out/"
   if [ -f target/release/libpdfium.so ]; then
     cp -f target/release/libpdfium.so "$out/"
   fi

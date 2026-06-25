@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 // Chunking + embeddings produces RAG-ready output. Each chunk in the
 // returned JSON carries `content`, position metadata, and (when an
@@ -18,7 +18,7 @@ pub fn main() !void {
         \\}
     ;
 
-    const result_json = try kreuzberg.extract_file_sync("research_paper.pdf", null, config_json);
+    const result_json = try xberg.extract_file_sync("research_paper.pdf", null, config_json);
     defer std.heap.c_allocator.free(result_json);
 
     const stdout = std.io.getStdOut().writer();

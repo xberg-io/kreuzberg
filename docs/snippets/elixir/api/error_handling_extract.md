@@ -4,7 +4,7 @@ defmodule Example do
     with {:file_exists, true} <- {:file_exists, File.exists?(path)},
          {:read, {:ok, content}} <- {:read, File.read(path)},
          {:mime, {:ok, mime_type}} <- {:mime, detect_mime_type(content)},
-         {:extract, {:ok, result}} <- {:extract, Kreuzberg.extract_bytes_sync(content, mime_type, nil)} do
+         {:extract, {:ok, result}} <- {:extract, Xberg.extract_bytes_sync(content, mime_type, nil)} do
       {:ok, result}
     else
       {:file_exists, false} ->
@@ -22,7 +22,7 @@ defmodule Example do
   end
 
   defp detect_mime_type(content) do
-    Kreuzberg.detect_mime_type_from_bytes(content)
+    Xberg.detect_mime_type_from_bytes(content)
   end
 end
 ```

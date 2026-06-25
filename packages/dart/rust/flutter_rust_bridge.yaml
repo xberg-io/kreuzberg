@@ -1,4 +1,4 @@
 rust_root: .
 rust_input: crate
-dart_output: ../lib/src/kreuzberg_bridge_generated
+dart_output: ../lib/src/xberg_bridge_generated
 add_mod_to_lib: false

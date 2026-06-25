@@ -1,11 +1,11 @@
 ```ruby title="Element-Based Output (Ruby)"
-require 'kreuzberg'
+require 'xberg'
 
 # Configure element-based output
-config = Kreuzberg::ExtractionConfig.new(output_format: 'element_based')
+config = Xberg::ExtractionConfig.new(output_format: 'element_based')
 
 # Extract document
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 
 # Access elements
 result.elements.each do |element|

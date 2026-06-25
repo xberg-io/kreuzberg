@@ -10,7 +10,7 @@ defmodule Example do
       |> Task.async_stream(
         fn file ->
           content = File.read!(file)
-          Kreuzberg.extract_bytes_sync(content, "application/pdf", config)
+          Xberg.extract_bytes_sync(content, "application/pdf", config)
         end,
         max_concurrency: 4
       )

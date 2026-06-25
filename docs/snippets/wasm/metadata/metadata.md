@@ -1,5 +1,5 @@
 ```typescript title="WASM"
-import { extractFromFile, initWasm } from "@kreuzberg/wasm";
+import { extractFromFile, initWasm } from "@xberg/wasm";
 
 await initWasm();
 

@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 import os.lock
 
 final class StatefulPlugin: PostProcessor {
@@ -62,5 +62,5 @@ final class StatefulPlugin: PostProcessor {
 }
 
 let plugin = StatefulPlugin()
-try Kreuzberg.registerPostProcessor(plugin)
+try Xberg.registerPostProcessor(plugin)
 ```

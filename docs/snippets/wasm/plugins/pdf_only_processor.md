@@ -3,7 +3,7 @@
 Register a post-processor that only processes PDF documents and filters others.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extractBytes } from "kreuzberg-wasm";
+import init, { registerPostProcessor, extractBytes } from "xberg-wasm";
 
 await init();
 

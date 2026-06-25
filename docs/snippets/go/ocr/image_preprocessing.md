@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -12,10 +12,10 @@ func main() {
 	deskew := true
 	binarization := "otsu"
 
-	config := kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
-			TesseractConfig: &kreuzberg.TesseractConfig{
-				Preprocessing: &kreuzberg.ImagePreprocessingConfig{
+	config := xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
+			TesseractConfig: &xberg.TesseractConfig{
+				Preprocessing: &xberg.ImagePreprocessingConfig{
 					TargetDpi:          &targetDpi,
 					Denoise:            true,
 					Deskew:             &deskew,
@@ -26,7 +26,7 @@ func main() {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, config)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

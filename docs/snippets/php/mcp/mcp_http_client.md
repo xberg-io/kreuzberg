@@ -7,12 +7,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
- * Connect to Kreuzberg MCP server via HTTP transport.
+ * Connect to Xberg MCP server via HTTP transport.
  *
  * Requires MCP server running with HTTP transport:
- * kreuzberg mcp --transport http --port 3000
+ * xberg mcp --transport http --port 3000
  */
-final readonly class KreuzbergMcpClient
+final readonly class XbergMcpClient
 {
     private Client $http;
 
@@ -40,7 +40,7 @@ final readonly class KreuzbergMcpClient
                 'protocolVersion' => '2024-11-05',
                 'capabilities' => [],
                 'clientInfo' => [
-                    'name' => 'kreuzberg-php-client',
+                    'name' => 'xberg-php-client',
                     'version' => '4.2.7',
                 ],
             ],
@@ -107,7 +107,7 @@ final readonly class KreuzbergMcpClient
 }
 
 // Usage
-$client = new KreuzbergMcpClient('http://localhost:3000');
+$client = new XbergMcpClient('http://localhost:3000');
 
 // Initialize connection
 $serverInfo = $client->initialize();

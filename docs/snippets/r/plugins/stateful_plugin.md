@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Encapsulate mutable counter state in an environment so the plugin function
 # can update it across calls.

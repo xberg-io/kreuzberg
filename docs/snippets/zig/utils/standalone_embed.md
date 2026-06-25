@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 // `embed_texts` takes JSON-encoded inputs across the FFI boundary:
 // - `texts`: a JSON array of strings
@@ -8,7 +8,7 @@ const kreuzberg = @import("kreuzberg");
 // It returns a JSON-encoded 2D float array (one row per input text).
 pub fn main() !void {
     const texts_json =
-        \\["Hello, world!", "Kreuzberg is fast"]
+        \\["Hello, world!", "Xberg is fast"]
     ;
     const config_json =
         \\{
@@ -17,7 +17,7 @@ pub fn main() !void {
         \\}
     ;
 
-    const embeddings_json = try kreuzberg.embed_texts(texts_json, config_json);
+    const embeddings_json = try xberg.embed_texts(texts_json, config_json);
     defer std.heap.c_allocator.free(embeddings_json);
 
     const stdout = std.io.getStdOut().writer();

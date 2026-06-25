@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.PostProcessorConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.PostProcessorConfig;
 import java.util.Arrays;
 
 ExtractionConfig config = ExtractionConfig.builder()

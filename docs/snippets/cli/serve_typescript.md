@@ -1,11 +1,11 @@
 ```bash title="Bash"
 # Start server via TypeScript CLI proxy
-npx kreuzberg serve
+npx xberg serve
 
 # Specify host and port
-npx kreuzberg serve --host 0.0.0.0 --port 3000
+npx xberg serve --host 0.0.0.0 --port 3000
 
 # With custom config
-npx kreuzberg serve --config production.toml
+npx xberg serve --config production.toml
 
 ```

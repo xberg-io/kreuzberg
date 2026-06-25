@@ -4,7 +4,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::process::{Command, Stdio};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut child = Command::new("kreuzberg")
+    let mut child = Command::new("xberg")
         .arg("mcp")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())

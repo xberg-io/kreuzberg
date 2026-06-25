@@ -11,7 +11,7 @@ Eight core extraction functions are available, organized by input type (file pat
 
 ## Extract from Files
 
-Pass a file path. Kreuzberg detects the MIME type from the extension and selects the right parser automatically.
+Pass a file path. Xberg detects the MIME type from the extension and selects the right parser automatically.
 
 ### Synchronous
 
@@ -187,7 +187,7 @@ When the file is already loaded in memory (for example, from an upload or networ
 
 ## Batch Processing
 
-Batch functions accept an array of file paths (or byte arrays) and process them concurrently. This is typically 2-5x faster than looping over single-file functions because Kreuzberg parallelizes internally.
+Batch functions accept an array of file paths (or byte arrays) and process them concurrently. This is typically 2-5x faster than looping over single-file functions because Xberg parallelizes internally.
 
 ### Batch Extract Files
 
@@ -280,7 +280,7 @@ When a batch contains a mix of document types that need different settings (for 
 === "Python"
 
     ```python title="mixed_batch.py"
-    from kreuzberg import (
+    from xberg import (
         batch_extract_files_sync,
         ExtractionConfig,
         FileExtractionConfig,
@@ -305,7 +305,7 @@ When a batch contains a mix of document types that need different settings (for 
 === "TypeScript"
 
     ```typescript title="mixed_batch.ts"
-    import { batchExtractFilesSync } from '@kreuzberg/node';
+    import { batchExtractFilesSync } from '@xberg/node';
 
     const results = batchExtractFilesSync(
       ['report.pdf', 'scan.tiff', 'notes.html'],
@@ -321,7 +321,7 @@ When a batch contains a mix of document types that need different settings (for 
 === "Rust"
 
     ```rust title="mixed_batch.rs"
-    use kreuzberg::{
+    use xberg::{
         batch_extract_files, ExtractionConfig, FileExtractionConfig,
         OcrConfig, OutputFormat,
     };
@@ -362,14 +362,14 @@ Fields set to `None` in `FileExtractionConfig` inherit the batch default. Batch-
 
 ## Content Filtering
 
-Kreuzberg strips running headers, footers, watermarks, and cross-page repeating text by default so that downstream RAG and LLM pipelines see clean body content. `ContentFilterConfig` lets you opt back in to any of these when you need them, for example when extracting legal forms where the header carries the case number, or when running text analysis on a PDF whose brand name was being incorrectly removed by the repeating-text heuristic.
+Xberg strips running headers, footers, watermarks, and cross-page repeating text by default so that downstream RAG and LLM pipelines see clean body content. `ContentFilterConfig` lets you opt back in to any of these when you need them, for example when extracting legal forms where the header carries the case number, or when running text analysis on a PDF whose brand name was being incorrectly removed by the repeating-text heuristic.
 
 By default headers, footers, and watermarks are stripped and cross-page repeating text is deduplicated; see [ContentFilterConfig](../reference/configuration.md#contentfilterconfig) for field-level defaults and per-format behavior.
 
 === "Python"
 
     ```python title="keep_headers_footers.py"
-    from kreuzberg import (
+    from xberg import (
         extract_file_sync,
         ContentFilterConfig,
         ExtractionConfig,
@@ -389,7 +389,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
 === "TypeScript"
 
     ```typescript title="disable_repeating_text.ts"
-    import { extract } from "@kreuzberg/node";
+    import { extract } from "@xberg/node";
 
     // Disable cross-page deduplication so brand names aren't stripped
     const result = await extract("brochure.pdf", {
@@ -402,7 +402,7 @@ By default headers, footers, and watermarks are stripped and cross-page repeatin
 === "Rust"
 
     ```rust title="content_filter.rs"
-    use kreuzberg::{extract_file_sync, ContentFilterConfig, ExtractionConfig};
+    use xberg::{extract_file_sync, ContentFilterConfig, ExtractionConfig};
 
     let config = ExtractionConfig {
         content_filter: Some(ContentFilterConfig {
@@ -421,7 +421,7 @@ When a layout-detection model is active, it can independently classify regions a
 
 ## Supported Formats
 
-Kreuzberg supports 96 file formats across 8 categories:
+Xberg supports 96 file formats across 8 categories:
 
 | Category          | Extensions                                               | Notes                               |
 | ----------------- | -------------------------------------------------------- | ----------------------------------- |
@@ -437,7 +437,7 @@ Kreuzberg supports 96 file formats across 8 categories:
 ### Image metadata and EXIF
 
 For every supported image format — JPEG, PNG, TIFF, WebP, BMP, GIF, JPEG 2000,
-HEIC, HEIF, AVIF — Kreuzberg returns an `ImageMetadata` block on
+HEIC, HEIF, AVIF — Xberg returns an `ImageMetadata` block on
 `metadata.format` containing:
 
 - **`width`** / **`height`** in pixels
@@ -466,7 +466,7 @@ PNG re-encode so no metadata is lost.
 
 ## Page Tracking
 
-Kreuzberg can track page boundaries and extract per-page content. Page tracking availability depends on the format:
+Xberg can track page boundaries and extract per-page content. Page tracking availability depends on the format:
 
 - **PDF** — Full byte-accurate page tracking with O(1) lookup
 - **PPTX** — Slide boundary tracking (each slide = one page)
@@ -490,7 +490,7 @@ See [PageConfig Reference](../reference/configuration.md#pageconfig) for all opt
 
 ## Code File Extraction
 
-Source code files (`.py`, `.rs`, `.ts`, `.go`, etc.) go through tree-sitter and produce a `ProcessResult` on `ExtractionResult.code_intelligence` (structure, imports/exports, symbols, docstrings, diagnostics, semantic chunks). Code files bypass text chunking — TSLP's function/class-aware `CodeChunks` map directly to Kreuzberg `Chunk`s with semantic `chunk_type` and heading context.
+Source code files (`.py`, `.rs`, `.ts`, `.go`, etc.) go through tree-sitter and produce a `ProcessResult` on `ExtractionResult.code_intelligence` (structure, imports/exports, symbols, docstrings, diagnostics, semantic chunks). Code files bypass text chunking — TSLP's function/class-aware `CodeChunks` map directly to Xberg `Chunk`s with semantic `chunk_type` and heading context.
 
 See [Code Intelligence](code-intelligence.md) for usage and [`TreeSitterProcessConfig`](../reference/configuration.md#treesitterprocessconfig) for fields.
 
@@ -517,12 +517,12 @@ Render individual PDF pages as PNG images. Unlike the extraction pipeline (which
 
 ## MIME Type Detection
 
-When extracting from bytes, Kreuzberg requires an explicit MIME type since there's no file extension to infer it from. For file paths, auto-detection from the extension is automatic.
+When extracting from bytes, Xberg requires an explicit MIME type since there's no file extension to infer it from. For file paths, auto-detection from the extension is automatic.
 
 ### Example: Override MIME Type
 
 ```python title="Python"
-from kreuzberg import extract_file
+from xberg import extract_file
 
 # File without extension — provide MIME type explicitly
 result = extract_file("document_copy", mime_type="application/pdf", config=config)

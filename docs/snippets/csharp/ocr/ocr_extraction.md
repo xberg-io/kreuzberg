@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -10,7 +10,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = KreuzbergLib.ExtractFileSync("scanned.pdf", null, config);
+var result = XbergLib.ExtractFileSync("scanned.pdf", null, config);
 
 string content = result.Content;
 string preview = content.Length > 100 ? content[..100] : content;

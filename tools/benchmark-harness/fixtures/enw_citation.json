@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/data_formats/sample.enw",
 	"file_type": "enw",
 	"file_size": 242,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "EndNote citation format with journal article metadata",
 		"category": "citation",

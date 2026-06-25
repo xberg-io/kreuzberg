@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -16,7 +16,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync("document.pdf", config);
+            var result = await XbergLib.ExtractFileAsync("document.pdf", config);
 
             if (result.DetectedLanguages?.Count > 0)
             {
@@ -29,7 +29,7 @@ class Program
 
             Console.WriteLine($"Content length: {result.Content.Length} characters");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction failed: {ex.Message}");
         }

@@ -46,10 +46,10 @@ if [ "$use_zigbuild" = "true" ]; then
   fi
 fi
 
-echo "Running: pnpm --filter '{./crates/kreuzberg-node}' exec napi build ${args[*]}"
-pnpm --filter '{./crates/kreuzberg-node}' exec napi build "${args[@]}"
+echo "Running: pnpm --filter '{./crates/xberg-node}' exec napi build ${args[*]}"
+pnpm --filter '{./crates/xberg-node}' exec napi build "${args[@]}"
 
-artifacts_dir="crates/kreuzberg-node/artifacts"
+artifacts_dir="crates/xberg-node/artifacts"
 echo ""
 echo "=== Build Output ==="
 ls -lah "$artifacts_dir" 2>/dev/null || echo "Artifacts directory not found!"

@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/typst/undergradmath.typ",
 	"file_type": "typ",
 	"file_size": 16617,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Undergraduate mathematics reference in Typst with advanced math notation, custom functions, and LaTeX/TeX logo styling - 16.6KB",
 		"category": "typst-math",

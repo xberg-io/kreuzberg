@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # extract_file is the async variant; extendr drives the tokio runtime so the
 # call returns once extraction completes. R has no native async, so wrap with

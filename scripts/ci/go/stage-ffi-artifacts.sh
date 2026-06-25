@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STAGING_DIR="${1:-artifact-staging/kreuzberg-ffi}"
+STAGING_DIR="${1:-artifact-staging/xberg-ffi}"
 export BUILD_FEATURES="${2:-default}"
 
 echo "=== Staging FFI artifacts to ${STAGING_DIR} ==="
@@ -9,7 +9,7 @@ echo "=== Staging FFI artifacts to ${STAGING_DIR} ==="
 shopt -s nullglob
 
 # Stage static library (.a) - required for Go static linking
-static_lib="target/release/libkreuzberg_ffi.a"
+static_lib="target/release/libxberg_ffi.a"
 if [ -f "$static_lib" ]; then
   cp "$static_lib" "${STAGING_DIR}/lib/"
   echo "✓ Staged static library: $static_lib ($(du -h "$static_lib" | cut -f1))"
@@ -19,7 +19,7 @@ else
 fi
 
 # Stage dynamic libraries (.so, .dylib, .dll) - optional for runtime linking
-ffi_libs=(target/release/libkreuzberg_ffi.{so,dylib,dll} target/release/libkreuzberg_ffi.so.*)
+ffi_libs=(target/release/libxberg_ffi.{so,dylib,dll} target/release/libxberg_ffi.so.*)
 ffi_libs_found=()
 for lib in "${ffi_libs[@]}"; do
   if [ -f "$lib" ]; then
@@ -41,25 +41,25 @@ fi
 shopt -u nullglob
 
 # Stage header file
-cp crates/kreuzberg-ffi/include/kreuzberg.h "${STAGING_DIR}/include/"
-echo "✓ Staged header: kreuzberg.h"
+cp crates/xberg-ffi/include/xberg.h "${STAGING_DIR}/include/"
+echo "✓ Staged header: xberg.h"
 
 # Stage pkg-config file (generated inline — the .pc carries the version and is gitignored).
-ffi_version="$(grep -m1 '^version' crates/kreuzberg-ffi/Cargo.toml | cut -d '"' -f2)"
-cat > "${STAGING_DIR}/share/pkgconfig/kreuzberg-ffi.pc" <<EOF
+ffi_version="$(grep -m1 '^version' crates/xberg-ffi/Cargo.toml | cut -d '"' -f2)"
+cat > "${STAGING_DIR}/share/pkgconfig/xberg-ffi.pc" <<EOF
 prefix=/usr/local
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/lib
 includedir=\${prefix}/include
 
-Name: kreuzberg-ffi
-Description: C FFI bindings for Kreuzberg document intelligence library
+Name: xberg-ffi
+Description: C FFI bindings for Xberg document intelligence library
 Version: ${ffi_version}
 URL: https://xberg.io
-Libs: -L\${libdir} -lkreuzberg_ffi
+Libs: -L\${libdir} -lxberg_ffi
 Cflags: -I\${includedir}
 EOF
-echo "✓ Staged pkg-config: kreuzberg-ffi.pc (version=${ffi_version})"
+echo "✓ Staged pkg-config: xberg-ffi.pc (version=${ffi_version})"
 
 echo ""
 echo "✓ FFI artifacts staged successfully to ${STAGING_DIR}"

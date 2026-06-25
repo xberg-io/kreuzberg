@@ -2,9 +2,9 @@
 # CLI with Configuration - Advanced CLI with config file support
 # Demonstrates managing complex extraction configurations via CLI
 
-defmodule KreuzbergAdvancedCLI do
+defmodule XbergAdvancedCLI do
   @moduledoc """
-  Advanced CLI with configuration file support for Kreuzberg.
+  Advanced CLI with configuration file support for Xberg.
 
   Allows users to define extraction configurations in YAML/TOML files,
   specify preprocessing options, and manage extraction profiles.
@@ -76,7 +76,7 @@ defmodule KreuzbergAdvancedCLI do
         profiles: Map.get(raw_config, "profiles", %{}),
         default_profile: Map.get(raw_config, "default_profile", "default"),
         cache_enabled: Map.get(raw_config, "cache_enabled", true),
-        cache_dir: Map.get(raw_config, "cache_dir", "/tmp/kreuzberg_cache")
+        cache_dir: Map.get(raw_config, "cache_dir", "/tmp/xberg_cache")
       }
     end
 
@@ -138,7 +138,7 @@ defmodule KreuzbergAdvancedCLI do
 
         start_time = System.monotonic_time(:millisecond)
 
-        case Kreuzberg.extract_file(processed_file, nil, extraction_config) do
+        case Xberg.extract_file(processed_file, nil, extraction_config) do
           {:ok, result} ->
             elapsed = System.monotonic_time(:millisecond) - start_time
 
@@ -157,7 +157,7 @@ defmodule KreuzbergAdvancedCLI do
     end
 
     defp build_extraction_config(profile) do
-      %Kreuzberg.ExtractionConfig{
+      %Xberg.ExtractionConfig{
         ocr: profile["ocr"],
         chunking: profile["chunking"],
         quality_processing: profile["quality_processing"],
@@ -175,7 +175,7 @@ defmodule KreuzbergAdvancedCLI do
 
         preprocessing ->
           IO.puts("Preprocessing enabled:")
-          temp_path = "/tmp/kreuzberg_#{System.unique_integer([:positive])}"
+          temp_path = "/tmp/xberg_#{System.unique_integer([:positive])}"
 
           # Apply preprocessing steps
           preprocessing
@@ -322,7 +322,7 @@ defmodule KreuzbergAdvancedCLI do
   end
 
   defp execute_extract(args, opts) do
-    config_path = Keyword.get(opts, :config, "kreuzberg.yaml")
+    config_path = Keyword.get(opts, :config, "xberg.yaml")
     profile = Keyword.get(opts, :profile, nil)
     output_path = Keyword.get(opts, :output, nil)
     verbose = Keyword.get(opts, :verbose, false)
@@ -355,7 +355,7 @@ defmodule KreuzbergAdvancedCLI do
   end
 
   defp execute_list_profiles(opts) do
-    config_path = Keyword.get(opts, :config, "kreuzberg.yaml")
+    config_path = Keyword.get(opts, :config, "xberg.yaml")
 
     case ConfigFile.load(config_path) do
       {:ok, config_file} ->
@@ -394,17 +394,17 @@ defmodule KreuzbergAdvancedCLI do
   end
 
   defp print_usage do
-    IO.puts("Usage: kreuzberg-cli <command> [options] [args]")
+    IO.puts("Usage: xberg-cli <command> [options] [args]")
   end
 
   defp print_help do
     IO.puts("""
-    Kreuzberg Advanced CLI with Configuration
+    Xberg Advanced CLI with Configuration
 
     USAGE:
-      kreuzberg extract <file> [OPTIONS]
-      kreuzberg profiles [OPTIONS]
-      kreuzberg help
+      xberg extract <file> [OPTIONS]
+      xberg profiles [OPTIONS]
+      xberg help
 
     COMMANDS:
       extract <file>        Extract with configured profile
@@ -412,7 +412,7 @@ defmodule KreuzbergAdvancedCLI do
       help                  Show this help message
 
     OPTIONS:
-      -c, --config <path>   Config file path (default: kreuzberg.yaml)
+      -c, --config <path>   Config file path (default: xberg.yaml)
       -p, --profile <name>  Profile name (default: from config)
       -o, --output <path>   Save results to JSON
       -v, --verbose         Verbose output
@@ -420,7 +420,7 @@ defmodule KreuzbergAdvancedCLI do
     CONFIG FILE EXAMPLE:
       default_profile: "standard"
       cache_enabled: true
-      cache_dir: "/tmp/kreuzberg_cache"
+      cache_dir: "/tmp/xberg_cache"
 
       profiles:
         standard:
@@ -448,7 +448,7 @@ defmodule KreuzbergAdvancedCLI do
 end
 
 # Entry point
-case KreuzbergAdvancedCLI.main(System.argv()) do
+case XbergAdvancedCLI.main(System.argv()) do
   :ok -> IO.puts("\nDone.")
   :error -> exit(1)
 end

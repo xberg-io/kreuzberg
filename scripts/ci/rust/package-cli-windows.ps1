@@ -14,6 +14,6 @@ $ErrorActionPreference = 'Stop'
 Write-Host "=== Packaging CLI binary for $Target ==="
 
 cd target/$Target/release
-Compress-Archive -Path kreuzberg.exe -DestinationPath ../../../kreuzberg-cli-$Target.zip
+Compress-Archive -Path xberg.exe -DestinationPath ../../../xberg-cli-$Target.zip
 
-Write-Host "Packaging complete: kreuzberg-cli-$Target.zip"
+Write-Host "Packaging complete: xberg-cli-$Target.zip"

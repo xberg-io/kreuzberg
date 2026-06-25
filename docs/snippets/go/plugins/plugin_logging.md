@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 //export loggingPostProcessor
@@ -62,7 +62,7 @@ func loggingValidator(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register post processor with logging
-	if err := kreuzberg.RegisterPostProcessor(
+	if err := xberg.RegisterPostProcessor(
 		"logging-processor",
 		100, // priority
 		(C.PostProcessorCallback)(C.loggingPostProcessor),
@@ -72,7 +72,7 @@ func main() {
 	log.Println("[Main] PostProcessor registered with logging enabled")
 
 	// Register validator with logging
-	if err := kreuzberg.RegisterValidator(
+	if err := xberg.RegisterValidator(
 		"logging-validator",
 		50, // priority
 		(C.ValidatorCallback)(C.loggingValidator),
@@ -82,7 +82,7 @@ func main() {
 	log.Println("[Main] Validator registered with logging enabled")
 
 	// Extract with logging
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

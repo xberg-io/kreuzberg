@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/txt/redp5110_sampled.doctags.txt",
 	"file_type": "txt",
 	"file_size": 44745,
-	"expected_frameworks": ["kreuzberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

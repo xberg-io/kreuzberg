@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
 
 // Basic chunking
 $config = new ExtractionConfig(
@@ -14,7 +14,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Number of chunks: " . count($result->getChunks()) . "\n";
 foreach ($result->getChunks() as $chunk) {
@@ -27,9 +27,9 @@ foreach ($result->getChunks() as $chunk) {
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -40,7 +40,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.md', null, $config);
+$result = Xberg::extractFileSync('document.md', null, $config);
 
 foreach ($result->getChunks() as $chunk) {
     $metadata = $chunk->getMetadata();

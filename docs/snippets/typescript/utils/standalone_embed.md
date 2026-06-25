@@ -1,6 +1,6 @@
 ```typescript title="TypeScript"
-import { embed, embedSync } from "@kreuzberg/node";
-import type { EmbeddingConfig } from "@kreuzberg/node";
+import { embed, embedSync } from "@xberg/node";
+import type { EmbeddingConfig } from "@xberg/node";
 
 const config: EmbeddingConfig = {
   model: { type: "preset", name: "balanced" },
@@ -8,11 +8,11 @@ const config: EmbeddingConfig = {
 };
 
 // Synchronous
-const embeddings = embedSync(["Hello, world!", "Kreuzberg is fast"], config);
+const embeddings = embedSync(["Hello, world!", "Xberg is fast"], config);
 console.log(embeddings.length); // 2
 console.log(embeddings[0].length); // 768
 
 // Asynchronous (preferred)
-const asyncEmbeddings = await embed(["Hello, world!", "Kreuzberg is fast"], config);
+const asyncEmbeddings = await embed(["Hello, world!", "Xberg is fast"], config);
 console.log(asyncEmbeddings[0].length); // 768
 ```

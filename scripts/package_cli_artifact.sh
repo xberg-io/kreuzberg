@@ -8,10 +8,10 @@ if [[ -z "$TARGET" ]]; then
 fi
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-STAGE="$ROOT/kreuzberg-cli-${TARGET}"
+STAGE="$ROOT/xberg-cli-${TARGET}"
 rm -rf "$STAGE"
 mkdir -p "$STAGE"
-cp "$ROOT/target/${TARGET}/release/kreuzberg" "$STAGE/"
+cp "$ROOT/target/${TARGET}/release/xberg" "$STAGE/"
 cp "$ROOT/LICENSE" "$STAGE/"
 cp "$ROOT/README.md" "$STAGE/"
 
@@ -22,5 +22,5 @@ if [[ -f "$ROOT/target/${TARGET}/release/libpdfium.so" ]]; then
   cp "$ROOT/target/${TARGET}/release/libpdfium.so" "$STAGE/"
 fi
 
-tar -czf "kreuzberg-cli-${TARGET}.tar.gz" -C "$ROOT" "kreuzberg-cli-${TARGET}"
+tar -czf "xberg-cli-${TARGET}.tar.gz" -C "$ROOT" "xberg-cli-${TARGET}"
 rm -rf "$STAGE"

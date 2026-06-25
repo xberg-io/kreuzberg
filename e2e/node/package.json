@@ -1,5 +1,5 @@
 {
-  "name": "@kreuzberg/node-e2e-typescript",
+  "name": "@xberg/node-e2e-typescript",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@kreuzberg/node": "workspace:*",
+    "@xberg/node": "workspace:*",
     "@types/node": "^22.10.2",
     "vitest": "^4.1.5"
   }

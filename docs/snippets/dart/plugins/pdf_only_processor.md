@@ -1,11 +1,11 @@
 <!-- snippet:skip reason="Dart cannot construct the opaque BoxFn closure types required by createPostProcessorDartImpl — flutter_rust_bridge generates them as RustOpaqueInterface with no Dart-side wrapper. The ProcessingStage enum is also not surfaced. Custom post-processors must be written in Rust." -->
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // A Dart implementation of the `PostProcessor` trait that gates on PDF
   // MIME type cannot be plugged into the global registry.
-  // `Kreuzberg.registerPostProcessor(impl)` exists, but its
+  // `Xberg.registerPostProcessor(impl)` exists, but its
   // `createPostProcessorDartImpl` factory takes opaque `BoxFn*` closure
   // values plus a `BoxFnDartFnFutureProcessingStage` whose constructors are
   // not surfaced through flutter_rust_bridge. The `ProcessingStage` enum is

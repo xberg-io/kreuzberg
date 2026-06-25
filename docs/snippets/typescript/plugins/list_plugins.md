@@ -4,7 +4,7 @@ import {
   listOcrBackends,
   listPostProcessors,
   listValidators,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 const extractors = listDocumentExtractors();
 console.log(`Registered extractors: ${extractors.join(", ")}`);

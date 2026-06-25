@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -13,11 +13,11 @@ func main() {
 	normalize := true
 	modelName := "all-mpnet-base-v2"
 
-	cfg := kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	cfg := xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
-			Embedding: &kreuzberg.EmbeddingConfig{
-				Model: kreuzberg.EmbeddingModelType{
+			Embedding: &xberg.EmbeddingConfig{
+				Model: xberg.EmbeddingModelType{
 					Type: "preset",
 					Name: &modelName,
 				},
@@ -28,7 +28,7 @@ func main() {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, cfg)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

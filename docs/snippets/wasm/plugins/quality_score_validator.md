@@ -3,7 +3,7 @@
 Register a validator that computes and checks a quality score for extracted text.
 
 ```typescript title="WASM"
-import init, { registerValidator, extractBytes } from "kreuzberg-wasm";
+import init, { registerValidator, extractBytes } from "xberg-wasm";
 
 await init();
 

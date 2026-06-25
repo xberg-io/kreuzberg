@@ -1,6 +1,6 @@
 //! Benchmark harness for comparing document extraction frameworks.
 //!
-//! This crate provides infrastructure for benchmarking Kreuzberg against other
+//! This crate provides infrastructure for benchmarking Xberg against other
 //! document extraction frameworks, measuring performance (throughput, memory, latency)
 //! and quality (F1 scores, text accuracy).
 //!
@@ -15,7 +15,7 @@
 //!
 //! - **Local quality assessment** (`compare` / `pipeline-benchmark`): interactive
 //!   tools for developers tuning extraction quality. `compare` runs multiple
-//!   Kreuzberg pipeline configurations side-by-side on the corpus, printing an
+//!   Xberg pipeline configurations side-by-side on the corpus, printing an
 //!   SF1/TF1 table. `pipeline-benchmark` extends this with timing data.
 //!
 //! # Module organization
@@ -87,7 +87,7 @@ pub use profile_report::{Hotspot, MemorySnapshot, ProfileReport};
 pub use quality::{compute_quality, compute_quality_with_structure};
 pub use registry::AdapterRegistry;
 pub use runner::BenchmarkRunner;
-pub use types::{BenchmarkResult, DiskSizeInfo, FrameworkCapabilities, KreuzbergPipeline, OutputFormat, PdfMetadata};
+pub use types::{BenchmarkResult, DiskSizeInfo, FrameworkCapabilities, XbergPipeline, OutputFormat, PdfMetadata};
 
 pub use sizes::{
     FrameworkSize, FrameworkSizes, load_framework_sizes as load_sizes_json, measure_framework_sizes,

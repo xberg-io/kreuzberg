@@ -3,9 +3,9 @@ build-backend = "hatchling.build"
 requires = [ "hatchling" ]
 
 [project]
-name = "kreuzberg-cli"
+name = "xberg-cli"
 version = "0.1.0"
-description = "CLI proxy for kreuzberg — downloads and runs the native kreuzberg binary from GitHub releases."
+description = "CLI proxy for xberg — downloads and runs the native xberg binary from GitHub releases."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [ { name = "Na'aman Hirschfeld", email = "naaman@kreuzberg.dev" } ]
@@ -22,12 +22,11 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-urls.Homepage = "https://github.com/xberg-io/kreuzberg"
-urls.Issues = "https://github.com/xberg-io/kreuzberg/issues"
-urls.Repository = "https://github.com/xberg-io/kreuzberg.git"
-scripts.kreuzberg = "kreuzberg_cli.cli:main"
-scripts.xberg = "kreuzberg_cli.cli:main"
+urls.Homepage = "https://github.com/xberg-io/xberg"
+urls.Issues = "https://github.com/xberg-io/xberg/issues"
+urls.Repository = "https://github.com/xberg-io/xberg.git"
+scripts.xberg = "xberg_cli.cli:main"
 
 [tool.hatch]
 build.hooks.custom.path = "hatch_build.py"
-build.targets.wheel.packages = [ "kreuzberg_cli" ]
+build.targets.wheel.packages = [ "xberg_cli" ]

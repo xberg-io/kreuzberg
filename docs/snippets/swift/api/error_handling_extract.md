@@ -1,6 +1,6 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
 func extractText(bytes: [UInt8], mimeType: String) throws -> String {

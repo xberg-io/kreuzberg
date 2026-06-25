@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 min_content_validator <- function(result) {
   min_length <- 100L

@@ -1,7 +1,7 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
-import dev.kreuzberg.TesseractConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
+import dev.xberg.TesseractConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .ocr(OcrConfig.builder()

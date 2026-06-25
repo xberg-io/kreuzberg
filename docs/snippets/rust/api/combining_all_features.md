@@ -1,10 +1,10 @@
 ```rust title="Rust"
-use kreuzberg::{
+use xberg::{
     ChunkingConfig, ChunkerType, ExtractionConfig, ImageExtractionConfig,
     OcrConfig, OutputFormat, extract_file_sync,
 };
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         // OCR: force Tesseract on all pages with English text
         force_ocr: false,

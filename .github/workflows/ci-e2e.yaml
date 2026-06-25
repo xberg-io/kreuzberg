@@ -50,7 +50,7 @@ permissions:
 jobs:
   build-ffi:
     name: Build FFI (${{ matrix.target }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
     timeout-minutes: ${{ matrix.os == 'windows-latest' && 120 || 60 }}
     strategy:
@@ -75,11 +75,11 @@ jobs:
         run: |
           hash=$(find \
             Cargo.toml Cargo.lock rust-toolchain.toml \
-            crates/kreuzberg \
-            crates/kreuzberg-ffi \
-            crates/kreuzberg-cli \
-            crates/kreuzberg-tesseract \
-            crates/kreuzberg-paddle-ocr \
+            crates/xberg \
+            crates/xberg-ffi \
+            crates/xberg-cli \
+            crates/xberg-tesseract \
+            crates/xberg-paddle-ocr \
             -type f \
             \( -name '*.rs' -o -name 'Cargo.toml' -o -name 'Cargo.lock' \
                -o -name 'build.rs' -o -name '*.h' -o -name '*.c' \
@@ -93,13 +93,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            target/release/libkreuzberg_ffi.*
-            target/release/kreuzberg_ffi.*
-            target/release/kreuzberg
-            target/release/kreuzberg.exe
-            crates/kreuzberg-ffi/include/kreuzberg.h
-            crates/kreuzberg-ffi/kreuzberg-ffi.pc
-            crates/kreuzberg-ffi/cmake/
+            target/release/libxberg_ffi.*
+            target/release/xberg_ffi.*
+            target/release/xberg
+            target/release/xberg.exe
+            crates/xberg-ffi/include/xberg.h
+            crates/xberg-ffi/xberg-ffi.pc
+            crates/xberg-ffi/cmake/
           key: ffi-${{ matrix.target }}-${{ steps.ffi-hash.outputs.value }}-libheif-v1.23.0-cache-v2
 
       - name: Setup Rust
@@ -117,14 +117,14 @@ jobs:
         if: steps.ffi-cache.outputs.cache-hit != 'true'
         uses: xberg-io/actions/build-rust-ffi@v1
         with:
-          crate-name: kreuzberg-ffi
+          crate-name: xberg-ffi
 
       - name: Build CLI
         if: steps.ffi-cache.outputs.cache-hit != 'true'
         uses: xberg-io/actions/build-rust-cli@v1
         with:
-          package-name: kreuzberg-cli
-          binary-name: kreuzberg
+          package-name: xberg-cli
+          binary-name: xberg
           extra-cargo-args: --features all
 
       - name: Upload FFI artifacts
@@ -132,19 +132,19 @@ jobs:
         with:
           name: ffi-${{ matrix.target }}
           path: |
-            target/release/libkreuzberg_ffi.*
-            target/release/kreuzberg_ffi.*
-            crates/kreuzberg-ffi/include/kreuzberg.h
-            crates/kreuzberg-ffi/kreuzberg-ffi.pc
-            crates/kreuzberg-ffi/cmake/
-            target/release/kreuzberg
-            target/release/kreuzberg.exe
+            target/release/libxberg_ffi.*
+            target/release/xberg_ffi.*
+            crates/xberg-ffi/include/xberg.h
+            crates/xberg-ffi/xberg-ffi.pc
+            crates/xberg-ffi/cmake/
+            target/release/xberg
+            target/release/xberg.exe
           retention-days: 7
           if-no-files-found: error
 
   e2e-tests:
     name: E2E (${{ matrix.lang }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 60
@@ -232,23 +232,23 @@ jobs:
       - name: Stage FFI artifacts
         shell: bash
         run: |
-          mkdir -p target/release crates/kreuzberg-ffi/include crates/kreuzberg-ffi/cmake
+          mkdir -p target/release crates/xberg-ffi/include crates/xberg-ffi/cmake
           if [ -d ffi-artifacts/target/release ]; then
             cp -r ffi-artifacts/target/release/. target/release/
           fi
-          if [ -d ffi-artifacts/crates/kreuzberg-ffi/include ]; then
-            cp -r ffi-artifacts/crates/kreuzberg-ffi/include/. crates/kreuzberg-ffi/include/
+          if [ -d ffi-artifacts/crates/xberg-ffi/include ]; then
+            cp -r ffi-artifacts/crates/xberg-ffi/include/. crates/xberg-ffi/include/
           fi
-          if [ -d ffi-artifacts/crates/kreuzberg-ffi/cmake ]; then
-            cp -r ffi-artifacts/crates/kreuzberg-ffi/cmake/. crates/kreuzberg-ffi/cmake/
+          if [ -d ffi-artifacts/crates/xberg-ffi/cmake ]; then
+            cp -r ffi-artifacts/crates/xberg-ffi/cmake/. crates/xberg-ffi/cmake/
           fi
-          if [ -f ffi-artifacts/crates/kreuzberg-ffi/kreuzberg-ffi.pc ]; then
-            cp ffi-artifacts/crates/kreuzberg-ffi/kreuzberg-ffi.pc crates/kreuzberg-ffi/
+          if [ -f ffi-artifacts/crates/xberg-ffi/xberg-ffi.pc ]; then
+            cp ffi-artifacts/crates/xberg-ffi/xberg-ffi.pc crates/xberg-ffi/
           fi
-          chmod +x target/release/libkreuzberg_ffi.so 2>/dev/null || true
+          chmod +x target/release/libxberg_ffi.so 2>/dev/null || true
           ls -la target/release/
-          if [ -f target/release/libkreuzberg_ffi.so ]; then
-            sudo cp target/release/libkreuzberg_ffi.so /usr/local/lib/
+          if [ -f target/release/libxberg_ffi.so ]; then
+            sudo cp target/release/libxberg_ffi.so /usr/local/lib/
             sudo ldconfig
           fi
 
@@ -303,7 +303,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p e2e/csharp/bin/Debug/net10.0
-          cp -f target/release/libkreuzberg_ffi.so e2e/csharp/bin/Debug/net10.0/ 2>/dev/null || true
+          cp -f target/release/libxberg_ffi.so e2e/csharp/bin/Debug/net10.0/ 2>/dev/null || true
           if [ -f target/release/libonnxruntime.so.1 ]; then
             cp -f target/release/libonnxruntime.so.1 e2e/csharp/bin/Debug/net10.0/ || true
           fi
@@ -432,7 +432,7 @@ jobs:
           matrix.lang == 'rust' || matrix.lang == 'python'
         shell: bash
         run: |
-          export PKG_CONFIG_PATH="${PWD}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH}"
+          export PKG_CONFIG_PATH="${PWD}/crates/xberg-ffi:${PKG_CONFIG_PATH}"
           # Ensure /usr/local/lib is on LD_LIBRARY_PATH for source-built system libs
           # (e.g., libheif 1.23.0 from install-system-deps, not apt's older version)
           export LD_LIBRARY_PATH="/usr/local/lib:${PWD}/target/release:${ORT_LIB_LOCATION}:${LD_LIBRARY_PATH}"

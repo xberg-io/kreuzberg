@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Kreuzberg CLI installer
+# Xberg CLI installer
 # Usage: curl -fsSL https://xberg.io/install.sh | bash
 #
 # Environment variables:
-#   KREUZBERG_VERSION  - Specific version to install (default: latest)
-#   KREUZBERG_INSTALL  - Installation directory (default: ~/.kreuzberg/bin or /usr/local/bin)
+#   XBERG_VERSION  - Specific version to install (default: latest)
+#   XBERG_INSTALL  - Installation directory (default: ~/.xberg/bin or /usr/local/bin)
 
 set -euo pipefail
 
-REPO="xberg-io/kreuzberg"
-BINARY_NAME="kreuzberg"
+REPO="xberg-io/xberg"
+BINARY_NAME="xberg"
 
 # --- Helpers ---
 
@@ -90,8 +90,8 @@ install() {
   arch="$(detect_arch)"
   target="$(detect_target)"
 
-  if [ -n "${KREUZBERG_VERSION:-}" ]; then
-    version="${KREUZBERG_VERSION}"
+  if [ -n "${XBERG_VERSION:-}" ]; then
+    version="${XBERG_VERSION}"
     # Ensure 'v' prefix
     case "$version" in
     v*) ;;
@@ -102,21 +102,21 @@ install() {
     version="$(get_latest_version)"
   fi
 
-  info "Installing kreuzberg ${version} for ${target}"
+  info "Installing xberg ${version} for ${target}"
 
   # Determine install directory
-  if [ -n "${KREUZBERG_INSTALL:-}" ]; then
-    install_dir="${KREUZBERG_INSTALL}"
+  if [ -n "${XBERG_INSTALL:-}" ]; then
+    install_dir="${XBERG_INSTALL}"
   elif [ "$(id -u)" -eq 0 ]; then
     install_dir="/usr/local/bin"
   else
-    install_dir="${HOME}/.kreuzberg/bin"
+    install_dir="${HOME}/.xberg/bin"
   fi
 
   mkdir -p "$install_dir"
 
   # Download
-  local artifact="kreuzberg-cli-${target}.tar.gz"
+  local artifact="xberg-cli-${target}.tar.gz"
   local url="https://github.com/${REPO}/releases/download/${version}/${artifact}"
 
   info "Downloading ${url}"
@@ -130,7 +130,7 @@ install() {
   tar -xzf "${tmpdir}/${artifact}" -C "$tmpdir"
 
   # Install binary
-  local stage_dir="${tmpdir}/kreuzberg-cli-${target}"
+  local stage_dir="${tmpdir}/xberg-cli-${target}"
   local binary_path="${stage_dir}/${BINARY_NAME}"
   if [ ! -f "$binary_path" ]; then
     error "binary not found in archive at ${binary_path}"

@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { batchExtractFilesSync } from "@kreuzberg/node";
+import { batchExtractFilesSync } from "@xberg/node";
 
 const files = ["doc1.pdf", "doc2.docx", "doc3.pptx"];
 const results = batchExtractFilesSync(files);

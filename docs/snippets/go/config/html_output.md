@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	outputFormat := kreuzberg.OutputFormatHTML
-	theme := kreuzberg.HTMLThemeGitHub
+	outputFormat := xberg.OutputFormatHTML
+	theme := xberg.HTMLThemeGitHub
 	embedCSS := true
 
-	config := &kreuzberg.ExtractionConfig{
+	config := &xberg.ExtractionConfig{
 		OutputFormat: &outputFormat,
-		HTMLOutput: &kreuzberg.HTMLOutputConfig{
+		HTMLOutput: &xberg.HTMLOutputConfig{
 			Theme:    &theme,
 			EmbedCSS: &embedCSS,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

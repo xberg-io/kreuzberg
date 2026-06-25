@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.BatchBytesItem;
-import dev.kreuzberg.ExtractionConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.BatchBytesItem;
+import dev.xberg.ExtractionConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -17,6 +17,6 @@ List<BatchBytesItem> items = Arrays.asList(
 );
 
 ExtractionConfig config = ExtractionConfig.builder().build();
-List<ExtractionResult> results = Kreuzberg.batchExtractBytesSync(items, config);
+List<ExtractionResult> results = Xberg.batchExtractBytesSync(items, config);
 System.out.println("Processed " + results.size() + " documents");
 ```

@@ -2,9 +2,9 @@
 # Disk Caching - Implement persistent disk caching for extraction results
 # Demonstrates advanced caching strategies for document extraction
 
-defmodule KreuzbergDiskCache do
+defmodule XbergDiskCache do
   @moduledoc """
-  Disk-based caching layer for Kreuzberg extraction results.
+  Disk-based caching layer for Xberg extraction results.
 
   Provides persistent caching of extraction results with features like:
   - TTL-based cache expiration
@@ -312,7 +312,7 @@ defmodule KreuzbergDiskCache do
       :miss ->
         Logger.info("Cache miss: #{file_path}")
 
-        case Kreuzberg.extract_file(file_path) do
+        case Xberg.extract_file(file_path) do
           {:ok, result} ->
             new_cache = Cache.put(cache, cache_key, result)
             {:ok, result, new_cache}
@@ -379,20 +379,20 @@ defmodule KreuzbergDiskCache do
 end
 
 # Usage examples
-IO.puts("=== Kreuzberg Disk Cache ===\n")
+IO.puts("=== Xberg Disk Cache ===\n")
 
-cache_dir = "/tmp/kreuzberg_cache"
+cache_dir = "/tmp/xberg_cache"
 
 # Example 1: Single file extraction with caching
 IO.puts("Example 1: Single file extraction with caching")
 IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
-case KreuzbergDiskCache.extract_with_cache("document.pdf", cache_dir) do
+case XbergDiskCache.extract_with_cache("document.pdf", cache_dir) do
   {:ok, result, cache} ->
     IO.puts("Extraction successful!")
     IO.puts("Content size: #{byte_size(result.content)} bytes")
 
-    stats = KreuzbergDiskCache.manage_cache(cache_dir, :stats)
+    stats = XbergDiskCache.manage_cache(cache_dir, :stats)
     IO.puts("\nCache Statistics:")
     IO.puts("  Entries: #{stats.total_entries}")
     IO.puts("  Size: #{stats.total_size_bytes} bytes")
@@ -408,7 +408,7 @@ IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
 documents = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
-{results, stats} = KreuzbergDiskCache.batch_extract_with_cache(documents, cache_dir)
+{results, stats} = XbergDiskCache.batch_extract_with_cache(documents, cache_dir)
 
 successful = Enum.count(results, &match?({:ok, _, _}, &1))
 IO.puts("Batch results:")
@@ -425,11 +425,11 @@ IO.puts("  Usage: #{stats.usage_percent}%\n")
 IO.puts("Example 3: Cache management")
 IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
-cached_files = KreuzbergDiskCache.manage_cache(cache_dir, :list)
+cached_files = XbergDiskCache.manage_cache(cache_dir, :list)
 IO.puts("Cached files:")
 Enum.each(cached_files, fn file -> IO.puts("  - #{file}") end)
 
 IO.puts("\nCache stats:")
-stats = KreuzbergDiskCache.manage_cache(cache_dir, :stats)
+stats = XbergDiskCache.manage_cache(cache_dir, :stats)
 IO.inspect(stats, pretty: true)
 ```

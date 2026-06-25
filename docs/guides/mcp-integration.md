@@ -1,18 +1,18 @@
 # MCP Integration
 
-Kreuzberg speaks [Model Context Protocol](https://modelcontextprotocol.io/). That means any AI agent — Claude, Cursor, a custom LangChain pipeline — can extract documents, generate embeddings, and manage caches through a standard tool interface without writing extraction code.
+Xberg speaks [Model Context Protocol](https://modelcontextprotocol.io/). That means any AI agent — Claude, Cursor, a custom LangChain pipeline — can extract documents, generate embeddings, and manage caches through a standard tool interface without writing extraction code.
 
 Prebuilt binaries (Homebrew, install.sh, Docker) include the MCP server. To get started:
 
 ```bash title="Terminal"
-kreuzberg mcp
+xberg mcp
 ```
 
 If building from source:
 
 ```bash title="Terminal"
-cargo install kreuzberg-cli --features mcp
-kreuzberg mcp
+cargo install xberg-cli --features mcp
+xberg mcp
 ```
 
 That's it. You now have an MCP server running over stdio, ready for any compatible client.
@@ -21,11 +21,11 @@ That's it. You now have an MCP server running over stdio, ready for any compatib
 
 ## How It Works
 
-The MCP server wraps Kreuzberg's extraction engine behind standard tools, running as a child process over stdin/stdout with JSON-RPC messages — no HTTP ports or configuration needed.
+The MCP server wraps Xberg's extraction engine behind standard tools, running as a child process over stdin/stdout with JSON-RPC messages — no HTTP ports or configuration needed.
 
 ```mermaid
 flowchart LR
-    A["AI Agent\n(Claude, Cursor, etc.)"] -->|"JSON-RPC\nover stdio"| B["kreuzberg mcp"]
+    A["AI Agent\n(Claude, Cursor, etc.)"] -->|"JSON-RPC\nover stdio"| B["xberg mcp"]
     B --> C["Extraction Engine"]
     B --> D["Embedding Engine"]
     B --> E["Cache Layer"]
@@ -37,11 +37,11 @@ flowchart LR
 
 ### Stdio (Default)
 
-The standard mode for local AI tools. The agent spawns `kreuzberg mcp` as a subprocess and communicates over pipes.
+The standard mode for local AI tools. The agent spawns `xberg mcp` as a subprocess and communicates over pipes.
 
 ```bash title="Terminal"
-kreuzberg mcp
-kreuzberg mcp --config kreuzberg.toml
+xberg mcp
+xberg mcp --config xberg.toml
 ```
 
 This is what Claude Desktop, Cursor, and most MCP clients expect.
@@ -55,7 +55,7 @@ This is what Claude Desktop, Cursor, and most MCP clients expect.
 For remote deployments or multi-client setups where stdio doesn't work — shared servers, team environments, cloud-hosted agents — HTTP transport exposes the same tool interface over the network:
 
 ```bash title="Terminal"
-kreuzberg mcp --transport http --host 127.0.0.1 --port 8001
+xberg mcp --transport http --host 127.0.0.1 --port 8001
 ```
 
 Configure in Claude Desktop or Cursor:
@@ -63,8 +63,8 @@ Configure in Claude Desktop or Cursor:
 ```json
 {
   "mcpServers": {
-    "kreuzberg": {
-      "command": "kreuzberg",
+    "xberg": {
+      "command": "xberg",
       "args": ["mcp", "--transport", "http", "--host", "127.0.0.1", "--port", "8001"]
     }
   }
@@ -75,7 +75,7 @@ Configure in Claude Desktop or Cursor:
 
 ## Tools
 
-Kreuzberg exposes 13 tools via MCP. All extraction tools accept an optional `config` object to override defaults:
+Xberg exposes 13 tools via MCP. All extraction tools accept an optional `config` object to override defaults:
 
 **Extraction:** `extract_file`, `extract_bytes`, `batch_extract_files`, `detect_mime_type`, `extract_structured`
 **Embeddings:** `embed_text`
@@ -96,15 +96,15 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json title="claude_desktop_config.json"
 {
   "mcpServers": {
-    "kreuzberg": {
-      "command": "kreuzberg",
+    "xberg": {
+      "command": "xberg",
       "args": ["mcp"]
     }
   }
 }
 ```
 
-Restart Claude. Kreuzberg's tools appear automatically — ask Claude to "extract text from invoice.pdf" and it will call `extract_file` behind the scenes.
+Restart Claude. Xberg's tools appear automatically — ask Claude to "extract text from invoice.pdf" and it will call `extract_file` behind the scenes.
 
 ### Cursor
 
@@ -113,8 +113,8 @@ Add to `.cursor/mcp.json` in your project root:
 ```json title=".cursor/mcp.json"
 {
   "mcpServers": {
-    "kreuzberg": {
-      "command": "kreuzberg",
+    "xberg": {
+      "command": "xberg",
       "args": ["mcp"]
     }
   }
@@ -132,7 +132,7 @@ from mcp.client.stdio import stdio_client
 
 async def main() -> None:
     server_params = StdioServerParameters(
-        command="kreuzberg", args=["mcp"]
+        command="xberg", args=["mcp"]
     )
 
     async with stdio_client(server_params) as (read, write):
@@ -159,7 +159,7 @@ If your application manages the server lifecycle directly:
 import subprocess
 
 process = subprocess.Popen(
-    ["python", "-m", "kreuzberg", "mcp"],
+    ["python", "-m", "xberg", "mcp"],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
 )
@@ -173,7 +173,7 @@ print(f"MCP server running (PID {process.pid})")
 Pass a TOML config file to set extraction defaults for all tools:
 
 ```bash title="Terminal"
-kreuzberg mcp --config kreuzberg.toml
+xberg mcp --config xberg.toml
 ```
 
 Individual tool calls override file defaults via a `config` parameter. See [ExtractionConfig Reference](../reference/configuration.md) for all available fields.
@@ -183,24 +183,24 @@ Individual tool calls override file defaults via a `config` parameter. See [Extr
 ## Running in Docker
 
 ```bash title="Terminal"
-docker run ghcr.io/xberg-io/kreuzberg:latest mcp
+docker run ghcr.io/xberg-io/xberg:latest mcp
 
 docker run \
-  -v $(pwd)/kreuzberg.toml:/config/kreuzberg.toml \
-  ghcr.io/xberg-io/kreuzberg:latest \
-  mcp --config /config/kreuzberg.toml
+  -v $(pwd)/xberg.toml:/config/xberg.toml \
+  ghcr.io/xberg-io/xberg:latest \
+  mcp --config /config/xberg.toml
 ```
 
 For production, use Compose with a persistent cache volume so embedding models don't re-download on restart:
 
 ```yaml title="docker-compose.yaml"
 services:
-  kreuzberg-mcp:
-    image: ghcr.io/xberg-io/kreuzberg:latest
-    command: mcp --config /config/kreuzberg.toml
+  xberg-mcp:
+    image: ghcr.io/xberg-io/xberg:latest
+    command: mcp --config /config/xberg.toml
     volumes:
-      - ./kreuzberg.toml:/config/kreuzberg.toml:ro
-      - cache-data:/app/.kreuzberg
+      - ./xberg.toml:/config/xberg.toml:ro
+      - cache-data:/app/.xberg
     restart: unless-stopped
 
 volumes:

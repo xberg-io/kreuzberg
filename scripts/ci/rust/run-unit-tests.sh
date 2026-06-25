@@ -23,7 +23,7 @@ echo "  CARGO_TERM_COLOR: ${CARGO_TERM_COLOR:-not set}"
 
 echo "Workspace information:"
 echo "  Repository: $REPO_ROOT"
-echo "  Excluded packages: kreuzberg-e2e-generator, kreuzberg-py, kreuzberg-node (+ benchmark-harness on Windows)"
+echo "  Excluded packages: xberg-e2e-generator, xberg-py, xberg-node (+ benchmark-harness on Windows)"
 
 if [ ! -d "$TESSDATA_PREFIX" ]; then
   echo "WARNING: TESSDATA_PREFIX directory not found: $TESSDATA_PREFIX"
@@ -43,10 +43,10 @@ for lang in eng osd; do
   fi
 done
 
-if [ -n "${KREUZBERG_PDFIUM_PREBUILT:-}" ]; then
-  export LD_LIBRARY_PATH="${KREUZBERG_PDFIUM_PREBUILT}/lib:${LD_LIBRARY_PATH:-}"
-  export DYLD_LIBRARY_PATH="${KREUZBERG_PDFIUM_PREBUILT}/lib:${DYLD_LIBRARY_PATH:-}"
-  export DYLD_FALLBACK_LIBRARY_PATH="${KREUZBERG_PDFIUM_PREBUILT}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
+if [ -n "${XBERG_PDFIUM_PREBUILT:-}" ]; then
+  export LD_LIBRARY_PATH="${XBERG_PDFIUM_PREBUILT}/lib:${LD_LIBRARY_PATH:-}"
+  export DYLD_LIBRARY_PATH="${XBERG_PDFIUM_PREBUILT}/lib:${DYLD_LIBRARY_PATH:-}"
+  export DYLD_FALLBACK_LIBRARY_PATH="${XBERG_PDFIUM_PREBUILT}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
   echo "Library path configuration:"
   echo "  LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
   echo "  DYLD_LIBRARY_PATH: $DYLD_LIBRARY_PATH"
@@ -55,39 +55,39 @@ fi
 
 echo "=== Starting cargo test ==="
 
-# NOTE: We intentionally avoid `--all-features` for the `kreuzberg` crate because
+# NOTE: We intentionally avoid `--all-features` for the `xberg` crate because
 TEST_LOG="/tmp/cargo-test-$$.log"
 
 if ! {
   # `--all-targets` runs --lib --bins --tests --examples --benches but excludes
-  # `--doc`. 22 rustdoc examples in the kreuzberg crate currently reference
+  # `--doc`. 22 rustdoc examples in the xberg crate currently reference
   # private items (extraction::capacity::estimate_content_capacity et al.) and
   # fail to compile. Tracking the cleanup separately; doc-test coverage is not
   # on the v5.0.0 publish path. TODO: re-enable doc tests once the failing
   # examples are rewritten against the public API.
-  echo "=== cargo test -p kreuzberg --features full ==="
-  RUST_BACKTRACE=full cargo test --locked -p kreuzberg --features full --all-targets --verbose
+  echo "=== cargo test -p xberg --features full ==="
+  RUST_BACKTRACE=full cargo test --locked -p xberg --features full --all-targets --verbose
 
-  echo "=== cargo test --workspace (all features, excluding kreuzberg) ==="
+  echo "=== cargo test --workspace (all features, excluding xberg) ==="
   extra_excludes=()
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
-  # Exclude kreuzberg-candle-ocr and kreuzberg-cli from --all-features on every
-  # platform: both have platform-hostile accelerator features. kreuzberg-candle-ocr
+  # Exclude xberg-candle-ocr and xberg-cli from --all-features on every
+  # platform: both have platform-hostile accelerator features. xberg-candle-ocr
   # has `metal` (Apple-only, breaks Linux) and `cuda` (needs nvcc, absent on macOS).
-  # kreuzberg-cli re-exports candle-cuda and candle-metal, so --all-features pulls
+  # xberg-cli re-exports candle-cuda and candle-metal, so --all-features pulls
   # cudarc (nvcc) and objc2-metal (Apple-only). Neither can be --all-features-built
   # on any CI runner; their device features are exercised by a dedicated
   # curated-feature job, not here.
-  extra_excludes+=(--exclude kreuzberg-candle-ocr)
-  extra_excludes+=(--exclude kreuzberg-cli)
+  extra_excludes+=(--exclude xberg-candle-ocr)
+  extra_excludes+=(--exclude xberg-cli)
   RUST_BACKTRACE=full cargo test --locked \
     --workspace \
-    --exclude kreuzberg \
-    --exclude kreuzberg-e2e-generator \
-    --exclude kreuzberg-py \
-    --exclude kreuzberg-node \
+    --exclude xberg \
+    --exclude xberg-e2e-generator \
+    --exclude xberg-py \
+    --exclude xberg-node \
     ${extra_excludes[@]+"${extra_excludes[@]}"} \
     --all-features \
     --all-targets \

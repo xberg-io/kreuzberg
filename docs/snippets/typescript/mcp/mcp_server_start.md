@@ -1,7 +1,7 @@
 ```typescript title="TypeScript"
 import { spawn } from "child_process";
 
-const mcpProcess = spawn("kreuzberg", ["mcp"]);
+const mcpProcess = spawn("xberg", ["mcp"]);
 
 mcpProcess.stdout.on("data", (data) => {
   console.log(`MCP Server: ${data}`);

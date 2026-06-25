@@ -1,5 +1,5 @@
 ```typescript title="WASM"
-import init, { extractFile } from "kreuzberg-wasm";
+import init, { extractFile } from "xberg-wasm";
 
 await init();
 

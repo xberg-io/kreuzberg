@@ -1,6 +1,6 @@
 # LLM Integration
 
-Kreuzberg integrates with 143 LLM providers (including local inference engines) via [liter-llm](https://github.com/xberg-io/liter-llm) for three capabilities: VLM OCR, structured extraction, and provider-hosted embeddings.
+Xberg integrates with 143 LLM providers (including local inference engines) via [liter-llm](https://github.com/xberg-io/liter-llm) for three capabilities: VLM OCR, structured extraction, and provider-hosted embeddings.
 
 !!! Note "Feature gate" Requires the `liter-llm` Cargo feature. Not included in the default feature set.
 
@@ -29,7 +29,7 @@ Use vision-language models as an OCR backend by rendering document pages as imag
 === "Rust"
 
     ```rust title="Rust"
-    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
+    use xberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
 
     let config = ExtractionConfig {
         force_ocr: true,
@@ -49,13 +49,13 @@ Use vision-language models as an OCR backend by rendering document pages as imag
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract scan.pdf --force-ocr true \
+    xberg extract scan.pdf --force-ocr true \
       --vlm-model openai/gpt-4o-mini
     ```
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     force_ocr = true
 
     [ocr]
@@ -68,7 +68,7 @@ Use vision-language models as an OCR backend by rendering document pages as imag
 === "Environment Variables"
 
     ```bash title="Terminal"
-    export KREUZBERG_VLM_OCR_MODEL=openai/gpt-4o-mini
+    export XBERG_VLM_OCR_MODEL=openai/gpt-4o-mini
     export OPENAI_API_KEY=sk-...
     ```
 
@@ -77,7 +77,7 @@ Use vision-language models as an OCR backend by rendering document pages as imag
 Override the default prompt template for VLM OCR:
 
 ```python title="Python"
-from kreuzberg import ExtractionConfig, OcrConfig, LlmConfig
+from xberg import ExtractionConfig, OcrConfig, LlmConfig
 
 config = ExtractionConfig(
     force_ocr=True,
@@ -124,7 +124,7 @@ Extract structured JSON data from documents by providing a schema; the document 
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract-structured paper.pdf \
+    xberg extract-structured paper.pdf \
       --schema schema.json \
       --model openai/gpt-4o-mini \
       --strict
@@ -132,7 +132,7 @@ Extract structured JSON data from documents by providing a schema; the document 
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     [structured_extraction]
     schema_name = "paper_metadata"
     strict = true
@@ -155,7 +155,7 @@ Extract structured JSON data from documents by providing a schema; the document 
 Override the default extraction prompt with a Jinja2 template:
 
 ```python title="Python"
-from kreuzberg import ExtractionConfig, StructuredExtractionConfig, LlmConfig
+from xberg import ExtractionConfig, StructuredExtractionConfig, LlmConfig
 
 config = ExtractionConfig(
     structured_extraction=StructuredExtractionConfig(
@@ -204,7 +204,7 @@ Use provider-hosted embedding models when you need to match your vector database
 === "TypeScript"
 
     ```typescript title="TypeScript"
-    import { embedSync } from '@kreuzberg/node';
+    import { embedSync } from '@xberg/node';
 
     const embeddings = embedSync(['Hello world'], {
       model: {
@@ -219,7 +219,7 @@ Use provider-hosted embedding models when you need to match your vector database
 === "Rust"
 
     ```rust title="Rust"
-    use kreuzberg::{embed_texts, EmbeddingConfig, EmbeddingModelType, LlmConfig};
+    use xberg::{embed_texts, EmbeddingConfig, EmbeddingModelType, LlmConfig};
 
     let config = EmbeddingConfig {
         model: EmbeddingModelType::Llm {
@@ -237,7 +237,7 @@ Use provider-hosted embedding models when you need to match your vector database
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg embed \
+    xberg embed \
       --provider llm \
       --model openai/text-embedding-3-small \
       --text "Hello world"
@@ -277,21 +277,21 @@ provider routing; point to your local server without needing an API key.
     ollama pull llama3.2-vision
 
     # Use it for VLM OCR (no API key needed)
-    kreuzberg extract scan.pdf --force-ocr true \
+    xberg extract scan.pdf --force-ocr true \
       --vlm-model ollama/llama3.2-vision
 
     # Use it for structured extraction
-    kreuzberg extract-structured doc.pdf \
+    xberg extract-structured doc.pdf \
       --schema schema.json \
       --model ollama/llama3.2
 
     # Use it for embeddings
-    kreuzberg embed --provider llm \
+    xberg embed --provider llm \
       --model ollama/all-minilm \
       --text "Hello world"
     ```
 
-=== "Python" ```python from Kreuzberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
+=== "Python" ```python from Xberg import extract_file, ExtractionConfig, StructuredExtractionConfig, LlmConfig
 
     config = ExtractionConfig(
         structured_extraction=StructuredExtractionConfig(
@@ -352,12 +352,12 @@ API keys can be set via (in order of precedence):
 
 1. `api_key` field in `LlmConfig` — highest priority, per-request
 2. Provider standard env vars (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, etc.)
-3. Kreuzberg-specific env var (`KREUZBERG_LLM_API_KEY`) — used as fallback for any provider
+3. Xberg-specific env var (`XBERG_LLM_API_KEY`) — used as fallback for any provider
 
 !!! Note "Local providers skip API key lookup" Local inference engines (Ollama, LM Studio, vLLM, llama.cpp, LocalAI, llamafile) do not require an API key. If you use a local provider prefix (for example, `ollama/`), the API key fields are ignored.
 
 ```python title="Python"
-from kreuzberg import LlmConfig
+from xberg import LlmConfig
 
 # Explicit API key
 config = LlmConfig(model="openai/gpt-4o", api_key="sk-...")
@@ -397,7 +397,7 @@ curl -X POST http://localhost:4000/extract-structured \
 
 ## MCP Tools
 
-When running Kreuzberg as an MCP server, LLM features are available as tools:
+When running Xberg as an MCP server, LLM features are available as tools:
 
 - `extract_structured` — extract structured data from a document using a JSON schema
 - `embed_text` — extended with `model` parameter for LLM-hosted embeddings

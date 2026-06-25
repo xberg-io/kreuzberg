@@ -1,9 +1,9 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.KreuzbergException;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.XbergException;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
 import java.io.IOException;
 
 public class Main {
@@ -16,9 +16,9 @@ public class Main {
                     .build())
                 .build();
 
-            ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+            ExtractionResult result = Xberg.extractFile("scanned.pdf", config);
             System.out.println(result.getContent());
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
         }
     }

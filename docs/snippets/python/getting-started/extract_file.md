@@ -1,7 +1,7 @@
 ```python title="Python"
 import asyncio
 from pathlib import Path
-from kreuzberg import extract_file
+from xberg import extract_file
 
 async def main() -> None:
     file_path: Path = Path("document.pdf")

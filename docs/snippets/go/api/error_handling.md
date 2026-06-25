@@ -5,15 +5,15 @@ import (
 	"errors"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
-	result, err := kreuzberg.ExtractFileSync("missing.pdf", nil, kreuzberg.ExtractionConfig{})
+	result, err := xberg.ExtractFileSync("missing.pdf", nil, xberg.ExtractionConfig{})
 	if err != nil {
-		if errors.Is(err, kreuzberg.ErrIo) {
+		if errors.Is(err, xberg.ErrIo) {
 			log.Printf("file not found: %v", err)
-		} else if errors.Is(err, kreuzberg.ErrUnsupportedFormat) {
+		} else if errors.Is(err, xberg.ErrUnsupportedFormat) {
 			log.Printf("unsupported format: %v", err)
 		} else {
 			log.Printf("extraction error: %v", err)

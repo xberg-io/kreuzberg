@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +24,7 @@ class RagPipelineExample
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "research_paper.pdf",
                 config
             ).ConfigureAwait(false);
@@ -43,7 +43,7 @@ class RagPipelineExample
                 Console.WriteLine($"Similarity: {chunk.Similarity:F3}\n");
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

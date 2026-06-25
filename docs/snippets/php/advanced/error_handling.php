@@ -12,19 +12,19 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Exceptions\KreuzbergException;
-use function Kreuzberg\extract_file;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Exceptions\XbergException;
+use function Xberg\extract_file;
 
 try {
     $result = extract_file('document.pdf');
     echo "Extraction successful!\n";
     echo "Content length: " . strlen($result->content) . "\n";
-} catch (KreuzbergException $e) {
+} catch (XbergException $e) {
     echo "Error: " . $e->getMessage() . "\n";
     echo "Code: " . $e->getCode() . "\n";
-    error_log("Kreuzberg extraction failed: " . $e->getMessage());
+    error_log("Xberg extraction failed: " . $e->getMessage());
 }
 
 function safeExtract(string $filePath): ?string
@@ -42,7 +42,7 @@ function safeExtract(string $filePath): ?string
     try {
         $result = extract_file($filePath);
         return $result->content;
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         error_log("Extraction error for $filePath: " . $e->getMessage());
         return null;
     }
@@ -67,7 +67,7 @@ function extractWithRetry(
         try {
             $result = extract_file($filePath);
             return $result->content;
-        } catch (KreuzbergException $e) {
+        } catch (XbergException $e) {
             $attempt++;
             if ($attempt >= $maxRetries) {
                 error_log("Max retries exceeded for $filePath: " . $e->getMessage());
@@ -111,7 +111,7 @@ function validateExtractionResult(string $filePath): bool
         }
 
         return true;
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         error_log("Validation failed for $filePath: " . $e->getMessage());
         return false;
     }
@@ -135,7 +135,7 @@ foreach ($files as $file) {
             'content_length' => strlen($result->content),
             'tables' => count($result->tables),
         ];
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         $failed[] = [
             'file' => $file,
             'error' => $e->getMessage(),
@@ -163,24 +163,24 @@ function extractWithFallback(string $filePath): ?string
         if (!empty($result->content)) {
             return $result->content;
         }
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         echo "Normal extraction failed, trying fallback strategies...\n";
     }
 
     try {
         $config = new ExtractionConfig(
-            ocr: new \Kreuzberg\Config\OcrConfig(
+            ocr: new \Xberg\Config\OcrConfig(
                 backend: 'tesseract',
                 language: 'eng'
             )
         );
-        $kreuzberg = new Kreuzberg($config);
-        $result = $kreuzberg->extractFile($filePath);
+        $xberg = new Xberg($config);
+        $result = $xberg->extractFile($filePath);
         if (!empty($result->content)) {
             echo "Fallback: OCR extraction succeeded\n";
             return $result->content;
         }
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         echo "OCR fallback failed: " . $e->getMessage() . "\n";
     }
 
@@ -218,7 +218,7 @@ function extractWithTimeout(string $filePath, int $timeoutSeconds = 30): ?string
         }
 
         return $result->content;
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         error_log("Extraction error: " . $e->getMessage());
         return null;
     } finally {
@@ -252,7 +252,7 @@ function extractOrThrow(string $filePath): string
         }
 
         return $result->content;
-    } catch (KreuzbergException $e) {
+    } catch (XbergException $e) {
         throw new DocumentExtractionException(
             "Extraction failed: " . $e->getMessage(),
             $filePath,
@@ -272,20 +272,20 @@ try {
     }
 }
 
-class LoggingKreuzberg
+class LoggingXberg
 {
     public function __construct(
-        private Kreuzberg $kreuzberg,
+        private Xberg $xberg,
         private \Psr\Log\LoggerInterface $logger
     ) {}
 
-    public function extractFile(string $filePath, ?string $mimeType = null): ?\Kreuzberg\Types\ExtractionResult
+    public function extractFile(string $filePath, ?string $mimeType = null): ?\Xberg\Types\ExtractionResult
     {
         $this->logger->info("Starting extraction", ['file' => $filePath]);
         $startTime = microtime(true);
 
         try {
-            $result = $this->kreuzberg->extractFile($filePath, $mimeType);
+            $result = $this->xberg->extractFile($filePath, $mimeType);
             $elapsed = microtime(true) - $startTime;
 
             $this->logger->info("Extraction successful", [
@@ -296,7 +296,7 @@ class LoggingKreuzberg
             ]);
 
             return $result;
-        } catch (KreuzbergException $e) {
+        } catch (XbergException $e) {
             $elapsed = microtime(true) - $startTime;
 
             $this->logger->error("Extraction failed", [

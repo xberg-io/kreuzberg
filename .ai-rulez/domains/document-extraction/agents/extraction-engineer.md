@@ -6,7 +6,7 @@ model: haiku
 
 When working on document extraction code:
 
-1. Key source paths: crates/kreuzberg/src/core/ (extractor.rs, mime.rs, config.rs), crates/kreuzberg/src/extraction/
+1. Key source paths: crates/xberg/src/core/ (extractor.rs, mime.rs, config.rs), crates/xberg/src/extraction/
 2. The extraction pipeline: Input -> Cache Check -> MIME Detection -> Format Conversion -> Extractor Selection (priority-based) -> Extraction -> Fallback Chain -> Post-Processing -> Caching -> Output
 3. For MIME detection: use EXT_TO_MIME map + magic bytes fallback via infer crate. Always validate_mime_type() before extraction.
 4. For caching: keys based on content hash, invalidate on config changes

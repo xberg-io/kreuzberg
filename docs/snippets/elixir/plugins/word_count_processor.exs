@@ -1,12 +1,12 @@
 ```elixir title="Elixir"
-alias Kreuzberg.Plugin
+alias Xberg.Plugin
 
 # Word Count Post-Processor Plugin
 # This post-processor automatically counts words in extracted content
 # and adds the word count to the metadata.
 
 defmodule MyApp.Plugins.WordCountProcessor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
   require Logger
 
   @impl true

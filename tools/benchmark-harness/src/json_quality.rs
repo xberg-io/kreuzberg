@@ -396,7 +396,7 @@ pub fn field_precision_recall_f1_normalized(
 ///
 /// The resulting object has one leaf per field and is suitable for feeding into
 /// [`collect_leaves`] / [`field_precision_recall_f1_normalized`].
-pub fn flatten_form_fields(fields: &[kreuzberg::PdfFormField]) -> Value {
+pub fn flatten_form_fields(fields: &[xberg::PdfFormField]) -> Value {
     let mut map = serde_json::Map::new();
     for field in fields {
         let key = if field.full_name.is_empty() {
@@ -760,7 +760,7 @@ mod tests {
 
     #[test]
     fn test_flatten_form_fields_uses_full_name_and_value() {
-        use kreuzberg::{FormFieldType, PdfFormField};
+        use xberg::{FormFieldType, PdfFormField};
         let fields = vec![PdfFormField {
             name: "leaf".to_string(),
             full_name: "root.leaf".to_string(),
@@ -779,7 +779,7 @@ mod tests {
 
     #[test]
     fn test_flatten_form_fields_falls_back_to_default_value() {
-        use kreuzberg::{FormFieldType, PdfFormField};
+        use xberg::{FormFieldType, PdfFormField};
         let fields = vec![PdfFormField {
             name: "leaf".to_string(),
             full_name: "root.leaf".to_string(),
@@ -798,7 +798,7 @@ mod tests {
 
     #[test]
     fn test_flatten_form_fields_empty_string_when_no_value() {
-        use kreuzberg::{FormFieldType, PdfFormField};
+        use xberg::{FormFieldType, PdfFormField};
         let fields = vec![PdfFormField {
             name: "leaf".to_string(),
             full_name: "root.leaf".to_string(),
@@ -817,7 +817,7 @@ mod tests {
 
     #[test]
     fn test_flatten_form_fields_empty_full_name_falls_back_to_name() {
-        use kreuzberg::{FormFieldType, PdfFormField};
+        use xberg::{FormFieldType, PdfFormField};
         let fields = vec![PdfFormField {
             name: "solo".to_string(),
             full_name: String::new(),

@@ -8,7 +8,7 @@ import init, {
   listOcrBackends,
   listPostProcessors,
   listValidators,
-} from "kreuzberg-wasm";
+} from "xberg-wasm";
 
 await init();
 

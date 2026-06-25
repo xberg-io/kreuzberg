@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-    cmd := exec.Command("kreuzberg", "serve", "--host", "0.0.0.0", "--port", "3000")
+    cmd := exec.Command("xberg", "serve", "--host", "0.0.0.0", "--port", "3000")
     cmd.Stdout = log.Writer()
     cmd.Stderr = log.Writer()
     if err := cmd.Run(); err != nil {

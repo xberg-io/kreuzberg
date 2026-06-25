@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, LanguageDetectionConfig};
+use xberg::{extract_file, ExtractionConfig, LanguageDetectionConfig};
 
 let config = ExtractionConfig {
     language_detection: Some(LanguageDetectionConfig {

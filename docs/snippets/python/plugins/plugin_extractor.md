@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import register_document_extractor, ExtractionResult
+from xberg import register_document_extractor, ExtractionResult
 import json
 
 class CustomJsonExtractor:

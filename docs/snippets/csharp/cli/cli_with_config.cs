@@ -3,9 +3,9 @@ using System;
 using System.CommandLine;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Kreuzberg;
+using Xberg;
 
-var rootCommand = new RootCommand("Kreuzberg with configuration");
+var rootCommand = new RootCommand("Xberg with configuration");
 
 var extractCommand = new Command("extract", "Extract with custom configuration");
 var filePath = new Argument<string>("path", "Document file path");
@@ -53,7 +53,7 @@ extractCommand.SetHandler(async (path, config, ocr, cache) =>
         Console.WriteLine($"  - Force OCR: {extractionConfig.ForceOcr}");
         Console.WriteLine($"  - Use Cache: {extractionConfig.UseCache}");
 
-        var result = await KreuzbergLib.ExtractFileAsync(path, extractionConfig);
+        var result = await XbergLib.ExtractFileAsync(path, extractionConfig);
 
         Console.WriteLine($"\nExtraction complete:");
         Console.WriteLine($"  - Content length: {result.Content.Length}");

@@ -1,4 +1,4 @@
-```toml title="kreuzberg.toml"
+```toml title="xberg.toml"
 [captioning]
 min_image_area = 1000
 

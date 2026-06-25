@@ -135,11 +135,11 @@ setup_tessdata() {
     elif [ -d "/usr/local/opt/tesseract/share/tessdata" ]; then
       export TESSDATA_PREFIX="/usr/local/opt/tesseract/share/tessdata"
     else
-      export TESSDATA_PREFIX="$HOME/Library/Application Support/kreuzberg-tesseract/tessdata"
+      export TESSDATA_PREFIX="$HOME/Library/Application Support/xberg-tesseract/tessdata"
     fi
     ;;
   Windows | MINGW* | MSYS* | CYGWIN*)
-    export TESSDATA_PREFIX="${APPDATA:-${USERPROFILE:-}}/kreuzberg-tesseract/tessdata"
+    export TESSDATA_PREFIX="${APPDATA:-${USERPROFILE:-}}/xberg-tesseract/tessdata"
     ;;
   *)
     export TESSDATA_PREFIX="${REPO_ROOT:-$(pwd)}/target/tessdata"

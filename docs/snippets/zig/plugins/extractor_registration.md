@@ -1,8 +1,8 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
-// VTable struct for DocumentExtractor; mirrors KreuzbergDocumentExtractorVTable.
+// VTable struct for DocumentExtractor; mirrors XbergDocumentExtractorVTable.
 const DocumentExtractorVTable = extern struct {
     name_fn: ?*const fn (user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void,
     version_fn: ?*const fn (user_data: ?*anyopaque, out_version: ?*?[*c]u8) callconv(.C) void,
@@ -36,19 +36,19 @@ const DocumentExtractorVTable = extern struct {
     free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.C) void,
 };
 
-extern "kreuzberg_ffi" fn kreuzberg_register_document_extractor(
+extern "xberg_ffi" fn xberg_register_document_extractor(
     name: [*c]const u8,
     vtable: DocumentExtractorVTable,
     user_data: ?*anyopaque,
     out_error: ?*?[*c]u8,
 ) i32;
 
-extern "kreuzberg_ffi" fn kreuzberg_unregister_document_extractor(
+extern "xberg_ffi" fn xberg_unregister_document_extractor(
     name: [*c]const u8,
     out_error: ?*?[*c]u8,
 ) i32;
 
-extern "kreuzberg_ffi" fn kreuzberg_free_string(ptr: [*c]u8) void;
+extern "xberg_ffi" fn xberg_free_string(ptr: [*c]u8) void;
 
 // Implement callback functions for the extractor.
 fn extract_bytes_fn(
@@ -128,7 +128,7 @@ fn priority_fn(user_data: ?*anyopaque) callconv(.C) i32 {
 
 pub fn main() !void {
     var out_error: ?[*c]u8 = null;
-    defer if (out_error) |ptr| kreuzberg_free_string(ptr);
+    defer if (out_error) |ptr| xberg_free_string(ptr);
 
     // Build the vtable.
     const vtable = DocumentExtractorVTable{
@@ -146,7 +146,7 @@ pub fn main() !void {
     };
 
     // Register the extractor with null user_data (no state).
-    const register_rc = kreuzberg_register_document_extractor(
+    const register_rc = xberg_register_document_extractor(
         "zig-json-extractor",
         vtable,
         null,
@@ -167,7 +167,7 @@ pub fn main() !void {
 
     // Unregister the extractor when done.
     out_error = null;
-    const unregister_rc = kreuzberg_unregister_document_extractor("zig-json-extractor", &out_error);
+    const unregister_rc = xberg_unregister_document_extractor("zig-json-extractor", &out_error);
     if (unregister_rc == 0) {
         try stdout.print("Successfully unregistered zig-json-extractor\n", .{});
     }

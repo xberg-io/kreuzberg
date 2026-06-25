@@ -1,5 +1,5 @@
 ```typescript title="WASM - Token Counting and Cost Estimation"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -45,7 +45,7 @@ console.log(`  Total cost (est.): $${costEstimate.totalEstimate.toFixed(6)}`);
 ```
 
 ```typescript title="WASM - Token Reduction for Context Windows"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -96,7 +96,7 @@ if (!contextFit.fitsInWindow) {
 ```
 
 ```typescript title="WASM - Selective Token Preservation"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

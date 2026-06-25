@@ -1,12 +1,12 @@
-Require 'Kreuzberg'
+Require 'Xberg'
 
-Config = Kreuzberg::ExtractionConfig.new(
-pages: Kreuzberg::PageConfig.new(
+Config = Xberg::ExtractionConfig.new(
+pages: Xberg::PageConfig.new(
 extract_pages: true
 )
 )
 
-Result = Kreuzberg.extract_file_sync("document.pdf", config: config)
+Result = Xberg.extract_file_sync("document.pdf", config: config)
 
 Result.pages&.each do |page|
 puts "Page #{page.page_number}:"

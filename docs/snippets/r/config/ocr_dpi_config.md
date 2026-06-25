@@ -1,7 +1,7 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
-# Tesseract OCR via the kreuzberg R bindings does not expose a DPI setting in
+# Tesseract OCR via the xberg R bindings does not expose a DPI setting in
 # the high-level config; PDF rasterization DPI is determined by the pipeline.
 # This example demonstrates running Tesseract OCR end-to-end on a PDF.
 config <- list(

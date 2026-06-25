@@ -1,14 +1,14 @@
 # Quick Start
 
-This guide walks you through Kreuzberg's core API — extracting text, handling errors,
+This guide walks you through Xberg's core API — extracting text, handling errors,
 running OCR, and working with metadata. Install your binding first if you haven't:
 [Installation](installation.md).
 
-TypeScript users: `@kreuzberg/node` for Node.js, `@kreuzberg/wasm` for browsers and edge runtimes — see [Language Support](../index.md#language-support).
+TypeScript users: `@xberg/node` for Node.js, `@xberg/wasm` for browsers and edge runtimes — see [Language Support](../index.md#language-support).
 
 ## Your First Extraction
 
-Pass a file path to get its text content. Kreuzberg detects the format automatically:
+Pass a file path to get its text content. Xberg detects the format automatically:
 
 === "C"
 
@@ -76,7 +76,7 @@ Pass a file path to get its text content. Kreuzberg detects the format automatic
 
 ## Handle Errors
 
-Wrap extractions in error handling before going further. Kreuzberg raises specific
+Wrap extractions in error handling before going further. Xberg raises specific
 exceptions for missing files, parse failures, and OCR problems:
 
 === "C"
@@ -141,7 +141,7 @@ exceptions for missing files, parse failures, and OCR problems:
 
 ## OCR for Scanned Documents
 
-Kreuzberg runs OCR automatically when it detects an image or scanned PDF.
+Xberg runs OCR automatically when it detects an image or scanned PDF.
 You can also force OCR on any document:
 
 === "C"
@@ -347,23 +347,23 @@ sheet names for Excel, dimensions for images:
 
     ```bash title="Terminal"
     # Extract with metadata (JSON format includes metadata automatically)
-    kreuzberg extract document.pdf --format json
+    xberg extract document.pdf --format json
 
     # Save to file and parse metadata
-    kreuzberg extract document.pdf --format json > result.json
+    xberg extract document.pdf --format json > result.json
 
     # Print all metadata fields
     cat result.json | jq '.metadata'
 
     # Extract HTML metadata
-    kreuzberg extract page.html --format json | jq '.metadata'
+    xberg extract page.html --format json | jq '.metadata'
 
     # Get specific fields
-    kreuzberg extract document.pdf --format json | \
+    xberg extract document.pdf --format json | \
       jq '.metadata | {page_count, authors, title}'
 
     # Process multiple files
-    kreuzberg batch documents/*.pdf --format json > all_metadata.json
+    xberg batch documents/*.pdf --format json > all_metadata.json
     ```
 
     **JSON Output Structure:**
@@ -383,7 +383,7 @@ sheet names for Excel, dimensions for images:
     }
     ```
 
-Kreuzberg extracts format-specific metadata for:
+Xberg extracts format-specific metadata for:
 
 - **PDF**: page count, title, authors (list), creation date, modification date
 - **HTML**: SEO tags, Open Graph, Twitter Card, structured data, headers, links, images
@@ -399,7 +399,7 @@ See [Types Reference](../reference/types.md) for complete metadata reference.
 
 ## Extract Tables
 
-Tables come back as both structured cells and Markdown. Kreuzberg extracts them
+Tables come back as both structured cells and Markdown. Xberg extracts them
 from PDFs, spreadsheets, and HTML:
 
 === "C"
@@ -468,21 +468,21 @@ from PDFs, spreadsheets, and HTML:
 
     ```bash title="Terminal"
     # Extract with JSON format (includes tables when detected)
-    kreuzberg extract document.pdf --format json
+    xberg extract document.pdf --format json
 
     # Save tables to JSON
-    kreuzberg extract spreadsheet.xlsx --format json > tables.json
+    xberg extract spreadsheet.xlsx --format json > tables.json
 
     # Extract and parse table markdown
-    kreuzberg extract document.pdf --format json | \
+    xberg extract document.pdf --format json | \
       jq '.tables[]? | .markdown'
 
     # Get table cells
-    kreuzberg extract document.pdf --format json | \
+    xberg extract document.pdf --format json | \
       jq '.tables[]? | .cells'
 
     # Batch extract tables from multiple files
-    kreuzberg batch documents/**/*.pdf --format json > all_tables.json
+    xberg batch documents/**/*.pdf --format json > all_tables.json
     ```
 
     **JSON Table Structure:**
@@ -582,5 +582,5 @@ You've covered the core API. Go deeper:
 - **[Extract from Bytes](../reference/api-python.md#extract_bytes_sync)** — Process in-memory data without writing to disk
 - **[OCR Setup](../guides/ocr.md)** — Tesseract, PaddleOCR, EasyOCR backends
 - **[Types Reference](../reference/types.md)** — Full metadata fields for every format
-- **[Docker Deployment](../guides/docker.md)** — Run Kreuzberg in containers
+- **[Docker Deployment](../guides/docker.md)** — Run Xberg in containers
 - **[API Reference](../reference/api-python.md)** — Complete API documentation

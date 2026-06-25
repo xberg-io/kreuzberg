@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   pdf_options = list(extract_images = TRUE, extract_metadata = TRUE)

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await Kreuzberg.ExtractFileAsync("document.pdf", config);
+var result = await Xberg.ExtractFileAsync("document.pdf", config);
 
 var chunks = result.Chunks ?? new List<Chunk>();
 foreach (var (index, chunk) in chunks.WithIndex())

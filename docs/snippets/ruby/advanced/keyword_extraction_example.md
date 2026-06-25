@@ -1,15 +1,15 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  keywords: Kreuzberg::KeywordConfig.new(
-    algorithm: Kreuzberg::KeywordAlgorithm::YAKE,
+config = Xberg::ExtractionConfig.new(
+  keywords: Xberg::KeywordConfig.new(
+    algorithm: Xberg::KeywordAlgorithm::YAKE,
     max_keywords: 10,
     min_score: 0.3
   )
 )
 
-result = Kreuzberg.extract_file_sync('research_paper.pdf', config: config)
+result = Xberg.extract_file_sync('research_paper.pdf', config: config)
 
 keywords = result.metadata&.dig('keywords') || []
 keywords.each do |kw|

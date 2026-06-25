@@ -1,5 +1,5 @@
 ```typescript title="Element-Based Output (WASM)"
-import { extractFileSync, ExtractionConfig } from "kreuzberg-wasm";
+import { extractFileSync, ExtractionConfig } from "xberg-wasm";
 
 // Configure element-based output
 const config: ExtractionConfig = {

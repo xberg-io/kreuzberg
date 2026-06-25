@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 final class QualityValidator: Validator {
     let threshold: Double = 0.5
@@ -50,5 +50,5 @@ final class QualityValidator: Validator {
 }
 
 let validator = QualityValidator()
-try Kreuzberg.registerValidator(validator)
+try Xberg.registerValidator(validator)
 ```

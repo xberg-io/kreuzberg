@@ -1,17 +1,17 @@
 # File Size Limits
 
-Kreuzberg enforces size limits on file uploads and API requests to manage server resources effectively. This page documents the default limits, how to configure them, and recommendations for optimal performance.
+Xberg enforces size limits on file uploads and API requests to manage server resources effectively. This page documents the default limits, how to configure them, and recommendations for optimal performance.
 
 ## Overview
 
-File size limits protect your server from resource exhaustion and unexpected memory spikes. The Kreuzberg API implements two complementary limit types:
+File size limits protect your server from resource exhaustion and unexpected memory spikes. The Xberg API implements two complementary limit types:
 
 | Limit Type                | Purpose                                     | Default |
 | ------------------------- | ------------------------------------------- | ------- |
 | **Request Body Limit**    | Total size of all files in a single request | 100 MB  |
 | **Multipart Field Limit** | Maximum size of an individual file          | 100 MB  |
 
-Both limits are configurable via environment variables (`KREUZBERG_MAX_REQUEST_BODY_BYTES`, `KREUZBERG_MAX_MULTIPART_FIELD_BYTES`) or programmatically via the `ApiSizeLimits` type.
+Both limits are configurable via environment variables (`XBERG_MAX_REQUEST_BODY_BYTES`, `XBERG_MAX_MULTIPART_FIELD_BYTES`) or programmatically via the `ApiSizeLimits` type.
 
 ## Default Configuration
 
@@ -51,16 +51,16 @@ Decrease limits if:
 
 ### 1. Environment Variable (Simplest)
 
-Set the `KREUZBERG_MAX_MULTIPART_FIELD_BYTES` environment variable to specify the max multipart field size in bytes:
+Set the `XBERG_MAX_MULTIPART_FIELD_BYTES` environment variable to specify the max multipart field size in bytes:
 
 ```bash title="Terminal"
 # Set to 200 MB
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200
-kreuzberg serve -H 0.0.0.0 -p 8000
+export XBERG_MAX_MULTIPART_FIELD_BYTES=209715200
+xberg serve -H 0.0.0.0 -p 8000
 
 # Set to 500 MB for large documents
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=524288000
-kreuzberg serve -H 0.0.0.0 -p 8000
+export XBERG_MAX_MULTIPART_FIELD_BYTES=524288000
+xberg serve -H 0.0.0.0 -p 8000
 ```
 
 ### 2. Docker Compose
@@ -70,17 +70,17 @@ Configure limits in your Docker Compose setup:
 ```yaml title="docker-compose.yaml"
 version: "3.8"
 services:
-  kreuzberg-api:
-    image: ghcr.io/xberg-io/kreuzberg:latest
+  xberg-api:
+    image: ghcr.io/xberg-io/xberg:latest
     ports:
       - "8000:8000"
     environment:
       # Set maximum multipart field size to 500 MB
-      KREUZBERG_MAX_MULTIPART_FIELD_BYTES: "524288000"
+      XBERG_MAX_MULTIPART_FIELD_BYTES: "524288000"
       # Configure CORS for production
-      KREUZBERG_CORS_ORIGINS: "https://myapp.com,https://api.myapp.com"
+      XBERG_CORS_ORIGINS: "https://myapp.com,https://api.myapp.com"
     volumes:
-      - ./cache:/app/.kreuzberg
+      - ./cache:/app/.xberg
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -97,18 +97,18 @@ Configure size limits in your Kubernetes deployment:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kreuzberg-api
+  name: xberg-api
 spec:
   replicas: 3
   template:
     spec:
       containers:
-        - name: kreuzberg
-          image: ghcr.io/xberg-io/kreuzberg:latest
+        - name: xberg
+          image: ghcr.io/xberg-io/xberg:latest
           env:
-            - name: KREUZBERG_MAX_MULTIPART_FIELD_BYTES
+            - name: XBERG_MAX_MULTIPART_FIELD_BYTES
               value: "524288000"
-            - name: KREUZBERG_CORS_ORIGINS
+            - name: XBERG_CORS_ORIGINS
               value: "https://myapp.com"
           resources:
             limits:
@@ -121,7 +121,7 @@ spec:
 === "C#"
 
     ```csharp
-    using Kreuzberg;
+    using Xberg;
 
     // Create limits: 50 MB for both request body and individual files
     var limits = ApiSizeLimits.FromMB(50, 50);
@@ -137,22 +137,22 @@ spec:
 === "Go"
 
     ```go
-    import "kreuzberg"
+    import "xberg"
 
     // Create limits: 200 MB for both request body and individual files
-    limits := kreuzberg.NewApiSizeLimits(
+    limits := xberg.NewApiSizeLimits(
         200 * 1024 * 1024,  // max_request_body_bytes
         200 * 1024 * 1024,  // max_multipart_field_bytes
     )
 
     // Or use convenience method with MB values
-    limits := kreuzberg.ApiSizeLimitsFromMB(200, 200)
+    limits := xberg.ApiSizeLimitsFromMB(200, 200)
     ```
 
 === "Java"
 
     ```java
-    import com.kreuzberg.api.ApiSizeLimits;
+    import com.xberg.api.ApiSizeLimits;
 
     // Create limits: 200 MB for both request body and individual files
     ApiSizeLimits limits = new ApiSizeLimits(
@@ -167,8 +167,8 @@ spec:
 === "Python"
 
     ```python
-    from kreuzberg.api import ApiSizeLimits, create_router_with_limits
-    from kreuzberg import ExtractionConfig
+    from xberg.api import ApiSizeLimits, create_router_with_limits
+    from xberg import ExtractionConfig
 
     # Create limits: 200 MB for both request body and individual files
     limits = ApiSizeLimits.from_mb(200, 200)
@@ -187,13 +187,13 @@ spec:
 === "Ruby"
 
     ```ruby
-    require 'kreuzberg'
+    require 'xberg'
 
     # Create limits: 200 MB for both request body and individual files
-    limits = Kreuzberg::Api::ApiSizeLimits.from_mb(200, 200)
+    limits = Xberg::Api::ApiSizeLimits.from_mb(200, 200)
 
     # Or create with custom byte values
-    limits = Kreuzberg::Api::ApiSizeLimits.new(
+    limits = Xberg::Api::ApiSizeLimits.new(
       max_request_body_bytes: 200 * 1024 * 1024,
       max_multipart_field_bytes: 200 * 1024 * 1024
     )
@@ -202,7 +202,7 @@ spec:
 === "Rust"
 
     ```rust
-    use kreuzberg::{ExtractionConfig, api::{create_router_with_limits, ApiSizeLimits}};
+    use xberg::{ExtractionConfig, api::{create_router_with_limits, ApiSizeLimits}};
 
     #[tokio::main]
     async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -225,7 +225,7 @@ spec:
 === "TypeScript"
 
     ```typescript
-    import { ApiSizeLimits, createRouterWithLimits } from 'kreuzberg';
+    import { ApiSizeLimits, createRouterWithLimits } from 'xberg';
 
     // Create limits: 200 MB for both request body and individual files
     const limits = ApiSizeLimits.fromMb(200, 200);
@@ -248,7 +248,7 @@ For standard business documents and PDFs under 50 MB:
 
 ```bash title="Terminal"
 # Use default 100 MB (no configuration needed)
-kreuzberg serve -H 0.0.0.0 -p 8000
+xberg serve -H 0.0.0.0 -p 8000
 ```
 
 ### Medium Documents
@@ -256,8 +256,8 @@ kreuzberg serve -H 0.0.0.0 -p 8000
 For typical scanned document batches and office files up to 200 MB:
 
 ```bash title="Terminal"
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200
-kreuzberg serve -H 0.0.0.0 -p 8000
+export XBERG_MAX_MULTIPART_FIELD_BYTES=209715200
+xberg serve -H 0.0.0.0 -p 8000
 ```
 
 ### Large Scans and Archives
@@ -265,8 +265,8 @@ kreuzberg serve -H 0.0.0.0 -p 8000
 For high-resolution scans, video content, and large archives up to 1 GB:
 
 ```bash title="Terminal"
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=1048576000
-kreuzberg serve -H 0.0.0.0 -p 8000
+export XBERG_MAX_MULTIPART_FIELD_BYTES=1048576000
+xberg serve -H 0.0.0.0 -p 8000
 ```
 
 ### Constrained Environments
@@ -274,8 +274,8 @@ kreuzberg serve -H 0.0.0.0 -p 8000
 For development environments or memory-limited servers:
 
 ```bash title="Terminal"
-export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=52428800
-kreuzberg serve -H 0.0.0.0 -p 8000
+export XBERG_MAX_MULTIPART_FIELD_BYTES=52428800
+xberg serve -H 0.0.0.0 -p 8000
 ```
 
 ## Performance Considerations
@@ -312,10 +312,10 @@ Configure Docker resource limits appropriately:
 
 ```yaml title="docker-compose.yaml"
 services:
-  kreuzberg-api:
-    image: ghcr.io/xberg-io/kreuzberg:latest
+  xberg-api:
+    image: ghcr.io/xberg-io/xberg:latest
     environment:
-      KREUZBERG_MAX_MULTIPART_FIELD_BYTES: "524288000"
+      XBERG_MAX_MULTIPART_FIELD_BYTES: "524288000"
     deploy:
       resources:
         limits:
@@ -328,7 +328,7 @@ services:
 
 ### Reverse Proxy Configuration
 
-When using a reverse proxy (Nginx, Caddy), ensure proxy limits match or exceed Kreuzberg's limits:
+When using a reverse proxy (Nginx, Caddy), ensure proxy limits match or exceed Xberg's limits:
 
 **Nginx:**
 
@@ -337,11 +337,11 @@ server {
     listen 443 ssl http2;
     server_name api.example.com;
 
-    # Match or exceed Kreuzberg's limit
+    # Match or exceed Xberg's limit
     client_max_body_size 500M;
 
     location / {
-        proxy_pass http://kreuzberg;
+        proxy_pass http://xberg;
         # Extended timeouts for large file processing
         proxy_read_timeout 300s;
         proxy_send_timeout 300s;
@@ -355,7 +355,7 @@ server {
 ```caddy title="Caddyfile"
 api.example.com {
     reverse_proxy localhost:8000 {
-        # Match Kreuzberg's limit
+        # Match Xberg's limit
         max_body_size 500MB
         # Enable streaming for large files
         flush_interval -1
@@ -470,13 +470,13 @@ Validate file sizes before upload to provide better user experience:
 1. **Increase limit:**
 
    ```bash
-   export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=524288000
+   export XBERG_MAX_MULTIPART_FIELD_BYTES=524288000
    ```
 
 2. **Check reverse proxy limits:**
 
    ```nginx
-   # Nginx: ensure client_max_body_size matches or exceeds Kreuzberg limit
+   # Nginx: ensure client_max_body_size matches or exceeds Xberg limit
    client_max_body_size 500M;
    ```
 
@@ -505,7 +505,7 @@ Validate file sizes before upload to provide better user experience:
 2. **Reduce upload limit:**
 
    ```bash
-   export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=209715200
+   export XBERG_MAX_MULTIPART_FIELD_BYTES=209715200
    ```
 
 3. **Process files sequentially:**
@@ -516,10 +516,10 @@ Validate file sizes before upload to provide better user experience:
 
    ```bash
    # Docker
-   docker stats kreuzberg-api
+   docker stats xberg-api
 
    # Kubernetes
-   kubectl top pod kreuzberg-api-xxxxx
+   kubectl top pod xberg-api-xxxxx
    ```
 
 ### Slow uploads
@@ -548,9 +548,9 @@ Validate file sizes before upload to provide better user experience:
 
 1. **Match limits to use case:** Set limits based on your actual file sizes, not theoretical maximums
 2. **Monitor and adjust:** Track actual file sizes and adjust limits quarterly
-3. **Use reverse proxy buffering:** Configure reverse proxies to handle buffering, not Kreuzberg
+3. **Use reverse proxy buffering:** Configure reverse proxies to handle buffering, not Xberg
 4. **Implement client-side validation:** Validate file sizes before sending to server
-5. **Plan for scaling:** Run multiple Kreuzberg instances behind a load balancer for high-throughput scenarios
+5. **Plan for scaling:** Run multiple Xberg instances behind a load balancer for high-throughput scenarios
 6. **Set appropriate timeouts:** Increase timeouts for large files (5-10 minutes recommended)
 7. **Document your limits:** Keep configuration in version control with clear documentation
 8. **Test with real files:** Test with actual document types you'll process in production

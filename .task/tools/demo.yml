@@ -7,7 +7,7 @@ version: "3"
 # servers that reproduce the cross-origin scenario the CDN creates in prod:
 #
 #   Docs server  → http://localhost:8001  (serves docs/)
-#   Asset server → http://localhost:9000  (serves crates/kreuzberg-wasm/)
+#   Asset server → http://localhost:9000  (serves crates/xberg-wasm/)
 #
 # First-time setup:
 #   task demo:dev:setup              # install wasm-pack, wasm-bindgen-cli, WASI SDK
@@ -30,9 +30,9 @@ tasks:
 
   dev:build:
     desc: "Build WASM binary for web target (unless SKIP_WASM_BUILD=1)"
-    dir: crates/kreuzberg-wasm
+    dir: crates/xberg-wasm
     cmds:
-      - '[ "${SKIP_WASM_BUILD:-0}" = "1" ] || { pnpm run build:wasm:web && mkdir -p dist/pkg && cp pkg/web/kreuzberg_wasm_bg.wasm dist/pkg/kreuzberg_wasm_bg.wasm; }'
+      - '[ "${SKIP_WASM_BUILD:-0}" = "1" ] || { pnpm run build:wasm:web && mkdir -p dist/pkg && cp pkg/web/xberg_wasm_bg.wasm dist/pkg/xberg_wasm_bg.wasm; }'
 
   dev:patch:
     desc: "Generate docs/demo-dev.html with CDN URLs replaced by localhost:9000"
@@ -69,7 +69,7 @@ tasks:
 
   dev:serve:assets:
     desc: "Serve WASM assets on http://localhost:9000 (simulates CDN origin)"
-    dir: crates/kreuzberg-wasm
+    dir: crates/xberg-wasm
     cmds:
       - npx --yes serve . --cors -l tcp://0.0.0.0:9000
 

@@ -1,11 +1,11 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // Cloud OCR backends are registered in the Rust core. From Dart, select a
-  // registered backend by name. Use `KreuzbergBridge.listOcrBackends()` to
+  // registered backend by name. Use `XbergBridge.listOcrBackends()` to
   // discover available backends at runtime.
-  final backends = await KreuzbergBridge.listOcrBackends();
+  final backends = await XbergBridge.listOcrBackends();
   print('Available OCR backends: $backends');
 
   final config = ExtractionConfig(
@@ -26,7 +26,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('scanned.pdf', null, config);
+  final result = await XbergBridge.extractFile('scanned.pdf', null, config);
   print(result.content);
 }
 ```

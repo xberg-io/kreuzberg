@@ -99,7 +99,7 @@ Byte offsets refer to `result.content`. When the redaction post-processor rewrit
 When `backend = "llm"`, configure the model via `NerConfig.llm`. The API-key precedence chain matches [LLM Integration](llm-integration.md#api-key-configuration):
 
 1. `NerConfig.llm.api_key`
-2. `KREUZBERG_LLM_API_KEY`
+2. `XBERG_LLM_API_KEY`
 3. Per-provider env var (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …)
 
 Local engines (Ollama, LM Studio, vLLM) need no key.

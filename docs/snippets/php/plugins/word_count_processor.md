@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class WordCountProcessor implements PostProcessor {
     public function name(): string {
@@ -57,7 +57,7 @@ class WordCountProcessor implements PostProcessor {
 
 // Register the word-count post-processor
 $processor = new WordCountProcessor();
-Kreuzberg::registerPostProcessor($processor);
+Xberg::registerPostProcessor($processor);
 
 echo "Word-count processor registered\n";
 ```

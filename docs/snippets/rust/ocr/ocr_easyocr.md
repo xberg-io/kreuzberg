@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
+use xberg::{extract_file, ExtractionConfig, OcrConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "easyocr".to_string(),

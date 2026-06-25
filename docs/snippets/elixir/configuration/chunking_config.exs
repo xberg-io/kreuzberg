@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Example 1: Basic character-based chunking for RAG applications
 config = %ExtractionConfig{
@@ -12,7 +12,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Access chunks
 if result.chunks do
@@ -35,7 +35,7 @@ config2 = %ExtractionConfig{
   }
 }
 
-{:ok, result2} = Kreuzberg.extract_file("document.md", nil, config2)
+{:ok, result2} = Xberg.extract_file("document.md", nil, config2)
 
 if result2.chunks do
   IO.puts("Generated #{length(result2.chunks)} markdown chunks")
@@ -65,7 +65,7 @@ config3 = %ExtractionConfig{
   }
 }
 
-{:ok, result3} = Kreuzberg.extract_file("document.md", nil, config3)
+{:ok, result3} = Xberg.extract_file("document.md", nil, config3)
 
 if result3.chunks do
   IO.puts("Generated #{length(result3.chunks)} chunks with prepended headings")

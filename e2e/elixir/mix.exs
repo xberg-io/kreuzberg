@@ -12,7 +12,7 @@ defmodule E2eElixir.MixProject do
 
   defp deps do
     [
-      {:kreuzberg, path: "../../packages/elixir"},
+      {:xberg, path: "../../packages/elixir"},
       {:rustler_precompiled, "~> 0.9"},
       {:rustler, "~> 0.37", runtime: false}
     ]

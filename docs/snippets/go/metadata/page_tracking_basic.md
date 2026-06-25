@@ -2,17 +2,17 @@ Package main
 
 Import (
 "fmt"
-"Kreuzberg"
+"Xberg"
 )
 
 Func main() {
-config := &kreuzberg.ExtractionConfig{
-Pages: &kreuzberg.PageConfig{
+config := &xberg.ExtractionConfig{
+Pages: &xberg.PageConfig{
 ExtractPages: true,
 },
 }
 
-    result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+    result, err := xberg.ExtractFileSync("document.pdf", config)
     if err != nil {
         panic(err)
     }

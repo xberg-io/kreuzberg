@@ -7,10 +7,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\LlmConfig;
-use Kreuzberg\StructuredExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\LlmConfig;
+use Xberg\StructuredExtractionConfig;
 
 $schema = json_encode([
     'type' => 'object',
@@ -45,8 +45,8 @@ $structured = StructuredExtractionConfig::from_json(json_encode([
 $config = new ExtractionConfig();
 $config->structured_extraction = $structured;
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('paper.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('paper.pdf');
 
 if ($result->structured_output !== null) {
     echo $result->structured_output, "\n";

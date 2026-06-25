@@ -1,13 +1,13 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
 import java.io.IOException;
 
 public class InstallVerify {
     public static void main(String[] args) throws IOException {
-        System.out.println("Kreuzberg FFI bindings loaded successfully");
+        System.out.println("Xberg FFI bindings loaded successfully");
 
-        ExtractionResult result = Kreuzberg.extractFile("sample.pdf");
+        ExtractionResult result = Xberg.extractFile("sample.pdf");
         System.out.println("Installation verified!");
         System.out.println("Extracted " + result.getContent().length() + " characters");
     }

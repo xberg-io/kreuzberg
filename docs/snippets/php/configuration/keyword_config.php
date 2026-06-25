@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\KeywordConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\KeywordConfig;
 
 $config = new ExtractionConfig(
     keyword: new KeywordConfig(
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('article.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('article.pdf');
 
 echo "Top Keywords:\n";
 echo str_repeat('=', 40) . "\n";
@@ -42,8 +42,8 @@ $detailedConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($detailedConfig);
-$result = $kreuzberg->extractFile('research_paper.pdf');
+$xberg = new Xberg($detailedConfig);
+$result = $xberg->extractFile('research_paper.pdf');
 
 echo "Detailed keyword analysis:\n";
 echo "Total keywords: " . count($result->metadata->keywords ?? []) . "\n";
@@ -72,7 +72,7 @@ $allKeywords = [];
 foreach ($files as $file) {
     if (!file_exists($file)) continue;
 
-    $result = $kreuzberg->extractFile($file);
+    $result = $xberg->extractFile($file);
     foreach ($result->metadata->keywords ?? [] as $keyword) {
         if (!isset($allKeywords[$keyword])) {
             $allKeywords[$keyword] = 0;

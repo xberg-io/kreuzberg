@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import register_document_extractor
+from xberg import register_document_extractor
 
 class CustomExtractor:
     def name(self) -> str:

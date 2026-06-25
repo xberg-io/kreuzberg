@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -6,7 +6,7 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+var result = XbergClient.ExtractFileSync("document.pdf", config);
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");

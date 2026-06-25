@@ -1,12 +1,12 @@
 [project]
-site_name = "Kreuzberg"
+site_name = "Xberg"
 site_description = "A modern text extraction library supporting PDFs, images, office documents and more"
 site_url = "https://docs.xberg.io"
 site_author = "xberg.io"
-repo_name = "xberg-io/kreuzberg"
-repo_url = "https://github.com/xberg-io/kreuzberg"
+repo_name = "xberg-io/xberg"
+repo_url = "https://github.com/xberg-io/xberg"
 edit_uri = "edit/main/docs/"
-copyright = "Copyright &copy; 2023-2026 Kreuzberg.dev"
+copyright = "Copyright &copy; 2023-2026 Xberg.io"
 
 extra_css = ["css/extra.css"]
 
@@ -102,11 +102,11 @@ nav = [
   { "More" = [
     { "Comparisons" = [
       { "Overview" = "comparisons/index.md" },
-      { "vs Unstructured" = "comparisons/kreuzberg-vs-unstructured.md" },
-      { "vs Docling" = "comparisons/kreuzberg-vs-docling.md" },
-      { "vs Apache Tika" = "comparisons/kreuzberg-vs-tika.md" },
-      { "vs MarkItDown" = "comparisons/kreuzberg-vs-markitdown.md" },
-      { "vs MinerU" = "comparisons/kreuzberg-vs-mineru.md" },
+      { "vs Unstructured" = "comparisons/xberg-vs-unstructured.md" },
+      { "vs Docling" = "comparisons/xberg-vs-docling.md" },
+      { "vs Apache Tika" = "comparisons/xberg-vs-tika.md" },
+      { "vs MarkItDown" = "comparisons/xberg-vs-markitdown.md" },
+      { "vs MinerU" = "comparisons/xberg-vs-mineru.md" },
     ] },
     { "Migration" = [
       { "From Unstructured" = "migration/from-unstructured.md" },
@@ -268,25 +268,25 @@ forks = true
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/xberg-io/kreuzberg"
+link = "https://github.com/xberg-io/xberg"
 name = "View on GitHub"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/python"
-link = "https://pypi.org/project/kreuzberg/"
+link = "https://pypi.org/project/xberg/"
 name = "View on PyPI"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/docker"
-link = "https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg"
+link = "https://github.com/xberg-io/xberg/pkgs/container/xberg"
 name = "View on GitHub Container Registry"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/npm"
-link = "https://www.npmjs.com/package/kreuzberg"
+link = "https://www.npmjs.com/package/xberg"
 name = "View on npm"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/rust"
-link = "https://crates.io/crates/kreuzberg"
+link = "https://crates.io/crates/xberg"
 name = "View on crates.io"

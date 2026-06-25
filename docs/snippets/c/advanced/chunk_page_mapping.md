@@ -1,5 +1,5 @@
 ```c title="C"
-#include "kreuzberg.h"
+#include "xberg.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,35 +16,35 @@ int main(void) {
         "}"
         "}";
 
-    KREUZBERGExtractionConfig *config = kreuzberg_extraction_config_from_json(config_json);
+    XBERGExtractionConfig *config = xberg_extraction_config_from_json(config_json);
     if (!config) {
         fprintf(stderr, "config parse failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
+                xberg_last_error_code(),
+                xberg_last_error_context());
         return 1;
     }
 
-    KREUZBERGExtractionResult *result =
-        kreuzberg_extract_file_sync("document.pdf", NULL, config);
+    XBERGExtractionResult *result =
+        xberg_extract_file_sync("document.pdf", NULL, config);
     if (!result) {
         fprintf(stderr, "extraction failed (code %d): %s\n",
-                kreuzberg_last_error_code(),
-                kreuzberg_last_error_context());
-        kreuzberg_extraction_config_free(config);
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extraction_config_free(config);
         return 1;
     }
 
-    char *chunks_json = kreuzberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_chunks(result);
     printf("chunks (JSON, includes per-chunk first_page/last_page metadata):\n%s\n",
            chunks_json ? chunks_json : "[]");
-    kreuzberg_free_string(chunks_json);
+    xberg_free_string(chunks_json);
 
-    char *pages_json = kreuzberg_extraction_result_pages(result);
+    char *pages_json = xberg_extraction_result_pages(result);
     printf("pages (JSON): %s\n", pages_json ? pages_json : "[]");
-    kreuzberg_free_string(pages_json);
+    xberg_free_string(pages_json);
 
-    kreuzberg_extraction_result_free(result);
-    kreuzberg_extraction_config_free(config);
+    xberg_extraction_result_free(result);
+    xberg_extraction_config_free(config);
     return 0;
 }
 ```

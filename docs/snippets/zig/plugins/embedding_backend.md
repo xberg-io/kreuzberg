@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const MyEmbedder = struct {
     pub fn dimensions(self: *MyEmbedder) usize {
@@ -20,7 +20,7 @@ const MyEmbedder = struct {
 
 pub fn main() !void {
     var instance = MyEmbedder{};
-    var vtable = kreuzberg.make_embedding_backend_vtable(MyEmbedder, &instance);
+    var vtable = xberg.make_embedding_backend_vtable(MyEmbedder, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -36,6 +36,6 @@ pub fn main() !void {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    _ = kreuzberg.register_embedding_backend("my-embedder", vtable, &instance, &out_error);
+    _ = xberg.register_embedding_backend("my-embedder", vtable, &instance, &out_error);
 }
 ```

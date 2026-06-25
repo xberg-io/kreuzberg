@@ -3,8 +3,8 @@ build-backend = "maturin"
 requires = [ "maturin>=1,<2" ]
 
 [project]
-name = "kreuzberg"
-version = "5.0.0rc36"
+name = "xberg"
+version = "1.0.0rc1"
 description = "High-performance document intelligence library"
 keywords = [ "document", "extraction", "ocr", "pdf", "text" ]
 license = "Elastic-2.0"
@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-urls.repository = "https://github.com/xberg-io/kreuzberg"
+urls.repository = "https://github.com/xberg-io/xberg"
 homepage = "https://xberg.io"
 
 [dependency-groups]
@@ -27,12 +27,12 @@ dev = [ "mypy>=1.19", "ruff>=0.14.8" ]
 
 [tool.maturin]
 profile = "release"
-module-name = "kreuzberg._kreuzberg"
-manifest-path = "../../crates/kreuzberg-py/Cargo.toml"
+module-name = "xberg._xberg"
+manifest-path = "../../crates/xberg-py/Cargo.toml"
 # abi3-py310 produces a single wheel per platform that loads on Python 3.10+,
 # avoiding a per-Python-version build matrix.
 features = [ "pyo3/extension-module", "pyo3/abi3-py310" ]
-python-packages = [ "kreuzberg" ]
+python-packages = [ "xberg" ]
 
 [tool.ruff]
 target-version = "py310"
@@ -65,15 +65,15 @@ lint.ignore = [
   "TD",
   "TRY",
 ]
-lint.per-file-ignores."kreuzberg/__init__.py" = [ "I001" ]
+lint.per-file-ignores."xberg/__init__.py" = [ "I001" ]
 # The alef Python codegen still emits cosmetic warnings on the wrapper
 # modules: api.py keeps the legacy `from typing import AsyncIterator` and a
 # single-line import block, options.py carries # noqa: TC001 / F401 markers
 # that turn out unused on every regen, __init__.py star-imports re-sort with
 # a different convention. Silence these specific rules on the wrappers until
 # the codegen is updated to emit ruff-clean output.
-lint.per-file-ignores."kreuzberg/api.py" = [ "F401", "I001", "UP035" ]
-lint.per-file-ignores."kreuzberg/options.py" = [ "F401", "RUF100" ]
+lint.per-file-ignores."xberg/api.py" = [ "F401", "I001", "UP035" ]
+lint.per-file-ignores."xberg/options.py" = [ "F401", "RUF100" ]
 lint.per-file-ignores."tests/**" = [ "ANN", "D103", "PLR2004", "S101" ]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"
@@ -95,5 +95,5 @@ overrides = [
   # sees only the static-type discrepancy. Disable the four error codes the
   # discrepancy raises until the codegen emits matching `_to_rust_*` calls and
   # casts the return values.
-  { module = "kreuzberg.api", disable_error_code = [ "call-arg", "arg-type", "return-value", "attr-defined" ] },
+  { module = "xberg.api", disable_error_code = [ "call-arg", "arg-type", "return-value", "attr-defined" ] },
 ]

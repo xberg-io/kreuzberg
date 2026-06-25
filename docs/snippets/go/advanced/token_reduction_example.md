@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	preserveMarkdown := true
 	mode := "moderate"
 
-	config := &kreuzberg.ExtractionConfig{
-		TokenReduction: &kreuzberg.TokenReductionConfig{
+	config := &xberg.ExtractionConfig{
+		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:             &mode,
 			PreserveMarkdown: &preserveMarkdown,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("verbose_document.pdf", config)
+	result, err := xberg.ExtractFileSync("verbose_document.pdf", config)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

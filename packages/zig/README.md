@@ -101,17 +101,17 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 Fetch the package and pin it in `build.zig.zon`:
 
 ```bash
-zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v5.0.0-rc.36.tar.gz
+zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v1.0.0-rc.1.tar.gz
 ```
 
 Then wire it into `build.zig`:
 
 ```zig
-const kreuzberg_dep = b.dependency("kreuzberg", .{
+const kreuzberg_dep = b.dependency("xberg", .{
     .target = target,
     .optimize = optimize,
 });
-exe.root_module.addImport("kreuzberg", kreuzberg_dep.module("kreuzberg"));
+exe.root_module.addImport("xberg", kreuzberg_dep.module("xberg"));
 ```
 
 ### System Requirements
@@ -436,7 +436,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

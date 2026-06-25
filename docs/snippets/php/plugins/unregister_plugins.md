@@ -1,16 +1,16 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 // Unregister all OCR backends by clearing the registry
-Kreuzberg::clearOcrBackends();
+Xberg::clearOcrBackends();
 
 // Unregister all post-processors by clearing the registry
-Kreuzberg::clearPostProcessors();
+Xberg::clearPostProcessors();
 
 // Unregister all validators by clearing the registry
-Kreuzberg::clearValidators();
+Xberg::clearValidators();
 
 echo "All plugins unregistered\n";
 ```

@@ -1,7 +1,7 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.KeywordConfig;
-import dev.kreuzberg.KeywordAlgorithm;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.KeywordConfig;
+import dev.xberg.KeywordAlgorithm;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .keywords(KeywordConfig.builder()

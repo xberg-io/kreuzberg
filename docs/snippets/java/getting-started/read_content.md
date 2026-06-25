@@ -1,12 +1,12 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
 import java.io.IOException;
 import java.util.Map;
 
 public class ReadContent {
     public static void main(String[] args) throws IOException {
-        ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+        ExtractionResult result = Xberg.extractFile("document.pdf");
 
         String content = result.getContent();
         var tables = result.getTables();

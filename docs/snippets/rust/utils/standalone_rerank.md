@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{rerank, RerankerConfig, RerankerModelType};
+use xberg::{rerank, RerankerConfig, RerankerModelType};
 
 let query = "How to train a dog".to_string();
 let documents = vec![
@@ -18,5 +18,5 @@ let results = rerank(query, documents, &config)?;
 for r in results {
     println!("#{}: {:.3} — {}", r.index, r.score, r.document);
 }
-# Ok::<(), kreuzberg::KreuzbergError>(())
+# Ok::<(), xberg::XbergError>(())
 ```

@@ -1,9 +1,9 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-processors = Kreuzberg.list_post_processors
-validators = Kreuzberg.list_validators
-backends = Kreuzberg.list_ocr_backends
+processors = Xberg.list_post_processors
+validators = Xberg.list_validators
+backends = Xberg.list_ocr_backends
 
 puts "Post-processors: #{processors.inspect}"
 puts "Validators: #{validators.inspect}"

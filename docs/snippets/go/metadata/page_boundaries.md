@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

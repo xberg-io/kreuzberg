@@ -1,12 +1,12 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_characters: 1500,
     overlap: 200,
-    embedding: Kreuzberg::EmbeddingConfig.new(
-      model: Kreuzberg::EmbeddingModelType.new(
+    embedding: Xberg::EmbeddingConfig.new(
+      model: Xberg::EmbeddingModelType.new(
         type: 'preset',
         name: 'text-embedding-all-minilm-l6-v2'
       )

@@ -5,24 +5,24 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxChars := 500
 	maxOverlap := 50
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
+			Embedding: &xberg.EmbeddingConfig{
 				Model:     "balanced",
 				Normalize: true,
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("research_paper.pdf", config)
+	result, err := xberg.ExtractFileSync("research_paper.pdf", config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

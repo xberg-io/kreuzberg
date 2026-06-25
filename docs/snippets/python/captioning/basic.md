@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig, CaptioningConfig, LlmConfig
+from xberg import extract_file, ExtractionConfig, CaptioningConfig, LlmConfig
 
 config = ExtractionConfig(
     captioning=CaptioningConfig(

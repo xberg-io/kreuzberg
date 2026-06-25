@@ -9,13 +9,13 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "CLI"
 
     ```bash title="Terminal"
-    kreuzberg extract doc.pdf --html-theme github
+    xberg extract doc.pdf --html-theme github
     ```
 
 === "Python"
 
     ```python title="html_output.py"
-    from kreuzberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme, extract_file
+    from xberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme, extract_file
 
     config = ExtractionConfig(
         output_format="html",
@@ -28,7 +28,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "TypeScript"
 
     ```typescript title="html_output.ts"
-    import { extractFile, HtmlTheme } from '@kreuzberg/node';
+    import { extractFile, HtmlTheme } from '@xberg/node';
 
     const result = await extractFile('doc.pdf', {
       outputFormat: 'html',
@@ -40,7 +40,7 @@ Render extracted document content as styled HTML with semantic `kb-*` CSS classe
 === "Rust"
 
     ```rust title="html_output.rs"
-    use kreuzberg::{extract_file, ExtractionConfig, HtmlOutputConfig, HtmlTheme};
+    use xberg::{extract_file, ExtractionConfig, HtmlOutputConfig, HtmlTheme};
 
     let config = ExtractionConfig {
         output_format: "html".to_string(),
@@ -71,7 +71,7 @@ See [HtmlOutputConfig](../reference/configuration.md#htmloutputconfig) for detai
 === "Python"
 
     ```python title="html_config.py"
-    from kreuzberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme
+    from xberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme
 
     config = ExtractionConfig(
         output_format="html",
@@ -87,7 +87,7 @@ See [HtmlOutputConfig](../reference/configuration.md#htmloutputconfig) for detai
 === "TypeScript"
 
     ```typescript title="html_config.ts"
-    import { HtmlTheme } from '@kreuzberg/node';
+    import { HtmlTheme } from '@xberg/node';
 
     const config = {
       outputFormat: 'html',
@@ -103,7 +103,7 @@ See [HtmlOutputConfig](../reference/configuration.md#htmloutputconfig) for detai
 === "Rust"
 
     ```rust title="html_config.rs"
-    use kreuzberg::{ExtractionConfig, HtmlOutputConfig, HtmlTheme};
+    use xberg::{ExtractionConfig, HtmlOutputConfig, HtmlTheme};
 
     let config = ExtractionConfig {
         output_format: "html".to_string(),
@@ -146,18 +146,18 @@ Pass custom CSS inline or from a file:
 
     ```bash title="Terminal"
     # Inline override
-    kreuzberg extract doc.pdf --html-theme github \
+    xberg extract doc.pdf --html-theme github \
       --html-css ':root { --kb-max-width: 60ch; }'
 
     # From a file
-    kreuzberg extract doc.pdf --html-theme github \
+    xberg extract doc.pdf --html-theme github \
       --html-css-file custom.css
     ```
 
 === "Python"
 
     ```python title="custom_css.py"
-    from kreuzberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme
+    from xberg import ExtractionConfig, HtmlOutputConfig, HtmlTheme
 
     config = ExtractionConfig(
         output_format="html",
@@ -171,7 +171,7 @@ Pass custom CSS inline or from a file:
 === "Rust"
 
     ```rust title="custom_css.rs"
-    use kreuzberg::{ExtractionConfig, HtmlOutputConfig, HtmlTheme};
+    use xberg::{ExtractionConfig, HtmlOutputConfig, HtmlTheme};
     use std::path::PathBuf;
 
     let config = ExtractionConfig {
@@ -241,4 +241,4 @@ All generated HTML elements include semantic `kb-*` classes for targeted styling
 - [Configuration](configuration.md) -- all configuration options
 - [Extraction Basics](extraction.md) -- core extraction API and supported formats
 - [Element-Based Output](output-formats.md#element-based-output) -- structured element output as an alternative to HTML
-- [Document Structure](output-formats.md#document-structure) -- how Kreuzberg models document structure
+- [Document Structure](output-formats.md#document-structure) -- how Xberg models document structure

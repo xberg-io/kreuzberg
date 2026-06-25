@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pdf/non_searchable.pdf",
 	"file_type": "pdf",
 	"file_size": 70489,
-	"expected_frameworks": ["kreuzberg", "kreuzberg-python", "kreuzberg-node", "kreuzberg-wasm", "kreuzberg-ruby"],
+	"expected_frameworks": ["xberg", "xberg-python", "xberg-node", "xberg-wasm", "xberg-ruby"],
 	"metadata": {
 		"requires_ocr": true
 	},

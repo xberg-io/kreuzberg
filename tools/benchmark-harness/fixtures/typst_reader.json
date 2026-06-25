@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/typst/typst-reader.typ",
 	"file_type": "typ",
 	"file_size": 600,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Typst reader document with Fibonacci sequence, math notation, and computed table",
 		"category": "academic"

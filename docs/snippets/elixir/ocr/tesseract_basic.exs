@@ -1,11 +1,11 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, result} = Kreuzberg.extract_file("scanned_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("scanned_document.pdf", nil, config)
 
 content = result.content
 IO.puts("OCR Extracted content:")

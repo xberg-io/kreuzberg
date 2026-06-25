@@ -16,15 +16,15 @@ set -euo pipefail
 target="${TARGET:?TARGET not set}"
 
 case "$target" in
-x86_64-unknown-linux-gnu) node_file="kreuzberg-node.linux-x64-gnu.node" ;;
-aarch64-unknown-linux-gnu) node_file="kreuzberg-node.linux-arm64-gnu.node" ;;
+x86_64-unknown-linux-gnu) node_file="xberg-node.linux-x64-gnu.node" ;;
+aarch64-unknown-linux-gnu) node_file="xberg-node.linux-arm64-gnu.node" ;;
 *)
   echo "verify-glibc-floor: target $target is not a linux-gnu prebuild — skipping" >&2
   exit 0
   ;;
 esac
 
-node_path="crates/kreuzberg-node/artifacts/${node_file}"
+node_path="crates/xberg-node/artifacts/${node_file}"
 if [ ! -f "$node_path" ]; then
   echo "verify-glibc-floor: ${node_path} not found" >&2
   exit 1
@@ -58,7 +58,7 @@ else
   highest=$(printf '%s\n%s\n' "$max_glibc" "$MAX_FLOOR" | sort -V | tail -1)
   if [ "$highest" != "$MAX_FLOOR" ]; then
     echo "  FAIL: ${node_file} requires ${max_glibc} (> ${MAX_FLOOR})"
-    echo "  This breaks @kreuzberg/node on RHEL 8 / AlmaLinux 8 / Rocky 8."
+    echo "  This breaks @xberg/node on RHEL 8 / AlmaLinux 8 / Rocky 8."
     echo "  Likely cause: a Rust dependency has been bumped to a version that"
     echo "  references a newer glibc symbol; revert the bump or stay on this floor."
     failed=1

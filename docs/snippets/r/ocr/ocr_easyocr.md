@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Note: EasyOCR backend requires Python to be installed
 config <- list(

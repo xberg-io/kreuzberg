@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -8,7 +8,7 @@ class Program
         {
             var pdfBytes = await File.ReadAllBytesAsync("document.pdf");
 
-            var result = await KreuzbergLib.ExtractBytesAsync(
+            var result = await XbergLib.ExtractBytesAsync(
                 pdfBytes,
                 "application/pdf"
             );
@@ -22,7 +22,7 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result2 = await KreuzbergLib.ExtractBytesAsync(
+            var result2 = await XbergLib.ExtractBytesAsync(
                 pdfBytes,
                 "application/pdf",
                 config
@@ -32,7 +32,7 @@ class Program
 
             var imageBytes = new byte[] {  };
 
-            var imageResult = await KreuzbergLib.ExtractBytesAsync(
+            var imageResult = await XbergLib.ExtractBytesAsync(
                 imageBytes,
                 "image/jpeg"
             );
@@ -47,14 +47,14 @@ class Program
 
             foreach (var (name, (bytes, mimeType)) in multipleFiles)
             {
-                var extractResult = await KreuzbergLib.ExtractBytesAsync(
+                var extractResult = await XbergLib.ExtractBytesAsync(
                     bytes,
                     mimeType
                 );
                 Console.WriteLine($"{name}: {extractResult.Content.Length} chars");
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction error: {ex.Message}");
         }

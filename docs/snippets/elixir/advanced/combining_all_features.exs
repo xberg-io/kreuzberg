@@ -1,5 +1,5 @@
 # Use all major features together
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   ocr: %{"enabled" => true},
   chunking: %{"enabled" => true, "max_characters" => 1000},
   images: %{"extract" => true},
@@ -7,7 +7,7 @@ config = %Kreuzberg.ExtractionConfig{
   keyword_extraction: %{"enabled" => true}
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Process results with all extracted features
 IO.inspect(result, label: "Extraction Result")

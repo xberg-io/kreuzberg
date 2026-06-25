@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -11,8 +11,8 @@ func main() {
 	mode := "moderate"
 	languageHint := "eng"
 
-	config := &kreuzberg.ExtractionConfig{
-		TokenReduction: &kreuzberg.TokenReductionConfig{
+	config := &xberg.ExtractionConfig{
+		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:             &mode,
 			PreserveMarkdown: &preserveMarkdown,
 			PreserveCode:     &preserveCode,

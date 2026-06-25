@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -7,7 +7,7 @@ var config = new ExtractionConfig
     UseCache = true
 };
 
-var result = await KreuzbergLib.ExtractFile("document.pdf", null, config);
+var result = await XbergLib.ExtractFile("document.pdf", null, config);
 Console.WriteLine($"Quality score: {result.QualityScore}");
 Console.WriteLine($"Content length: {result.Content.Length}");
 ```

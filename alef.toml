@@ -76,113 +76,113 @@ enabled = false
 
 [workspace.sync]
 extra_paths = [
-  "packages/python/kreuzberg/__init__.py",
-  "packages/ruby/lib/kreuzberg/version.rb",
-  "packages/ruby/ext/kreuzberg_rb/native/Cargo.toml",
-  "crates/kreuzberg-node/package.json",
-  "crates/kreuzberg-node/npm/*/package.json",
-  "packages/go/v5/go.mod",
+  "packages/python/xberg/__init__.py",
+  "packages/ruby/lib/xberg/version.rb",
+  "packages/ruby/ext/xberg_rb/native/Cargo.toml",
+  "crates/xberg-node/package.json",
+  "crates/xberg-node/npm/*/package.json",
+  "packages/go/go.mod",
   "Cargo.toml",
 ]
 
 [[crates]]
-name = "kreuzberg"
-core_import = "kreuzberg"
-error_type = "KreuzbergError"
-error_constructor = "kreuzberg::KreuzbergError::Other({msg})"
+name = "xberg"
+core_import = "xberg"
+error_type = "XbergError"
+error_constructor = "xberg::XbergError::Other({msg})"
 version_from = "Cargo.toml"
 workspace_root = "."
 sources = [
   # Public API surface — only files with types/functions re-exported from lib.rs
-  "crates/kreuzberg/src/lib.rs",
-  "crates/kreuzberg/src/error.rs",
+  "crates/xberg/src/lib.rs",
+  "crates/xberg/src/error.rs",
   # Public types (re-exported via `pub use types::*`)
-  "crates/kreuzberg/src/types/extraction.rs",
-  "crates/kreuzberg/src/types/metadata.rs",
-  "crates/kreuzberg/src/types/page.rs",
-  "crates/kreuzberg/src/types/tables.rs",
-  "crates/kreuzberg/src/types/annotations.rs",
-  "crates/kreuzberg/src/types/document_structure.rs",
-  "crates/kreuzberg/src/types/ocr_elements.rs",
-  "crates/kreuzberg/src/types/formats.rs",
-  "crates/kreuzberg/src/types/uri.rs",
-  "crates/kreuzberg/src/types/djot.rs",
-  "crates/kreuzberg/src/types/internal.rs",
-  "crates/kreuzberg/src/types/form_field.rs",
-  "crates/kreuzberg/src/types/formula.rs",
+  "crates/xberg/src/types/extraction.rs",
+  "crates/xberg/src/types/metadata.rs",
+  "crates/xberg/src/types/page.rs",
+  "crates/xberg/src/types/tables.rs",
+  "crates/xberg/src/types/annotations.rs",
+  "crates/xberg/src/types/document_structure.rs",
+  "crates/xberg/src/types/ocr_elements.rs",
+  "crates/xberg/src/types/formats.rs",
+  "crates/xberg/src/types/uri.rs",
+  "crates/xberg/src/types/djot.rs",
+  "crates/xberg/src/types/internal.rs",
+  "crates/xberg/src/types/form_field.rs",
+  "crates/xberg/src/types/formula.rs",
   # Config types (re-exported via `pub use core::config::*`)
-  "crates/kreuzberg/src/core/config/mod.rs",
-  "crates/kreuzberg/src/core/config/extraction/types.rs",
-  "crates/kreuzberg/src/core/config/extraction/core.rs",
-  "crates/kreuzberg/src/core/config/extraction/file_config.rs",
-  "crates/kreuzberg/src/core/config/ocr.rs",
-  "crates/kreuzberg/src/core/config/page.rs",
-  "crates/kreuzberg/src/core/config/pdf.rs",
-  "crates/kreuzberg/src/core/config/html_output.rs",
-  "crates/kreuzberg/src/core/config/layout.rs",
-  "crates/kreuzberg/src/core/config/acceleration.rs",
-  "crates/kreuzberg/src/core/config/llm.rs",
-  "crates/kreuzberg/src/core/config/content_filter.rs",
-  "crates/kreuzberg/src/core/config/tree_sitter.rs",
-  "crates/kreuzberg/src/core/config/email.rs",
-  "crates/kreuzberg/src/core/config/formats.rs",
+  "crates/xberg/src/core/config/mod.rs",
+  "crates/xberg/src/core/config/extraction/types.rs",
+  "crates/xberg/src/core/config/extraction/core.rs",
+  "crates/xberg/src/core/config/extraction/file_config.rs",
+  "crates/xberg/src/core/config/ocr.rs",
+  "crates/xberg/src/core/config/page.rs",
+  "crates/xberg/src/core/config/pdf.rs",
+  "crates/xberg/src/core/config/html_output.rs",
+  "crates/xberg/src/core/config/layout.rs",
+  "crates/xberg/src/core/config/acceleration.rs",
+  "crates/xberg/src/core/config/llm.rs",
+  "crates/xberg/src/core/config/content_filter.rs",
+  "crates/xberg/src/core/config/tree_sitter.rs",
+  "crates/xberg/src/core/config/email.rs",
+  "crates/xberg/src/core/config/formats.rs",
   # Public MIME/format detection functions
-  "crates/kreuzberg/src/core/mime.rs",
-  "crates/kreuzberg/src/core/formats.rs",
+  "crates/xberg/src/core/mime.rs",
+  "crates/xberg/src/core/formats.rs",
   # Plugin trait (for trait bridges)
-  "crates/kreuzberg/src/plugins/traits.rs",
-  "crates/kreuzberg/src/plugins/embedding.rs",
-  "crates/kreuzberg/src/plugins/reranker.rs",
-  "crates/kreuzberg/src/plugins/registry/mod.rs",
-  "crates/kreuzberg/src/plugins/registry/reranker.rs",
-  "crates/kreuzberg/src/core/config/reranker.rs",
-  "crates/kreuzberg/src/reranking/mod.rs",
+  "crates/xberg/src/plugins/traits.rs",
+  "crates/xberg/src/plugins/embedding.rs",
+  "crates/xberg/src/plugins/reranker.rs",
+  "crates/xberg/src/plugins/registry/mod.rs",
+  "crates/xberg/src/plugins/registry/reranker.rs",
+  "crates/xberg/src/core/config/reranker.rs",
+  "crates/xberg/src/reranking/mod.rs",
   # Public module APIs
-  "crates/kreuzberg/src/rendering/mod.rs",
-  "crates/kreuzberg/src/keywords/mod.rs",
-  "crates/kreuzberg/src/chunking/mod.rs",
-  "crates/kreuzberg/src/text/markdown_footnotes/mod.rs",
+  "crates/xberg/src/rendering/mod.rs",
+  "crates/xberg/src/keywords/mod.rs",
+  "crates/xberg/src/chunking/mod.rs",
+  "crates/xberg/src/text/markdown_footnotes/mod.rs",
   # RAG chunker composer (chunk_for_rag — re-exported from chunking/mod.rs)
-  "crates/kreuzberg/src/chunking/rag.rs",
-  "crates/kreuzberg/src/embeddings/mod.rs",
-  "crates/kreuzberg/src/language_detection/mod.rs",
-  "crates/kreuzberg/src/cache/core.rs",
+  "crates/xberg/src/chunking/rag.rs",
+  "crates/xberg/src/embeddings/mod.rs",
+  "crates/xberg/src/language_detection/mod.rs",
+  "crates/xberg/src/cache/core.rs",
   # Preset types and resolver (re-exported from lib.rs)
-  "crates/kreuzberg/src/presets/types.rs",
-  "crates/kreuzberg/src/presets/resolve.rs",
+  "crates/xberg/src/presets/types.rs",
+  "crates/xberg/src/presets/resolve.rs",
   # Heuristics structured analysis (re-exported as module from lib.rs)
-  "crates/kreuzberg/src/heuristics/structured.rs",
+  "crates/xberg/src/heuristics/structured.rs",
   # Structured-extraction JSON binding entry points (re-exported from lib.rs).
   # Only the FFI-safe JSON-string bridge is exposed; the async engine,
   # StructuredOptions (Arc<dyn VisionCallCache>) and liter-llm types stay internal.
-  "crates/kreuzberg/src/structured/bindings.rs",
+  "crates/xberg/src/structured/bindings.rs",
   # Batch extraction functions (re-exported from lib.rs)
-  "crates/kreuzberg/src/core/extractor/mod.rs",
-  "crates/kreuzberg/src/core/extractor/sync.rs",
+  "crates/xberg/src/core/extractor/mod.rs",
+  "crates/xberg/src/core/extractor/sync.rs",
   # PDF rendering (render_pdf_page_to_png — re-exported from lib.rs)
-  "crates/kreuzberg/src/pdf/render.rs",
+  "crates/xberg/src/pdf/render.rs",
   # PdfMetadata — referenced in types/metadata.rs as Pdf(PdfMetadata) variant
-  "crates/kreuzberg/src/pdf/metadata.rs",
+  "crates/xberg/src/pdf/metadata.rs",
   # Office metadata types (used in metadata.rs)
-  "crates/kreuzberg/src/extraction/office_metadata/mod.rs",
-  "crates/kreuzberg/src/extraction/office_metadata/core_properties.rs",
-  "crates/kreuzberg/src/extraction/office_metadata/app_properties.rs",
-  "crates/kreuzberg/src/extraction/office_metadata/custom_properties.rs",
-  "crates/kreuzberg/src/extraction/office_metadata/odt_properties.rs",
+  "crates/xberg/src/extraction/office_metadata/mod.rs",
+  "crates/xberg/src/extraction/office_metadata/core_properties.rs",
+  "crates/xberg/src/extraction/office_metadata/app_properties.rs",
+  "crates/xberg/src/extraction/office_metadata/custom_properties.rs",
+  "crates/xberg/src/extraction/office_metadata/odt_properties.rs",
   # OCR/PaddleOCR types (re-exported from lib.rs)
-  "crates/kreuzberg/src/ocr/types.rs",
-  "crates/kreuzberg/src/paddle_ocr/mod.rs",
+  "crates/xberg/src/ocr/types.rs",
+  "crates/xberg/src/paddle_ocr/mod.rs",
   # Plugin registry operations (list_document_extractors etc.)
-  "crates/kreuzberg/src/plugins/extractor/mod.rs",
+  "crates/xberg/src/plugins/extractor/mod.rs",
   # OCR backend registry operations (register/unregister/list/clear)
-  "crates/kreuzberg/src/plugins/ocr.rs",
+  "crates/xberg/src/plugins/ocr.rs",
   # Renderer trait and registry operations
-  "crates/kreuzberg/src/plugins/renderer.rs",
+  "crates/xberg/src/plugins/renderer.rs",
   # Validator registry operations
-  "crates/kreuzberg/src/plugins/validator/mod.rs",
+  "crates/xberg/src/plugins/validator/mod.rs",
   # Post-processor trait and registry operations
-  "crates/kreuzberg/src/plugins/processor/trait.rs",
-  "crates/kreuzberg/src/plugins/processor/mod.rs",
+  "crates/xberg/src/plugins/processor/trait.rs",
+  "crates/xberg/src/plugins/processor/mod.rs",
 ]
 features = [
   "full",
@@ -214,7 +214,7 @@ features = [
   "mcp",
   "liter-llm",
   "quality",
-  # Newer kreuzberg core features that are activated via `full` in the desktop
+  # Newer xberg core features that are activated via `full` in the desktop
   # dep block but must be re-declared as binding-crate passthroughs so that
   # alef-emitted `#[cfg(feature = "X")]` arms in binding lib.rs don't trip
   # `unexpected cfg condition value` under `-D warnings`.
@@ -235,7 +235,7 @@ features = [
 ]
 
 [crates.python]
-module_name = "_kreuzberg"
+module_name = "_xberg"
 exclude_types = [
   # Arc<Mutex<T>> opaque types — codegen doesn't generate .lock() for methods
   "PooledString",
@@ -252,7 +252,7 @@ reexported_types = [
 ]
 
 [crates.python.stubs]
-output = "packages/python/kreuzberg/"
+output = "packages/python/xberg/"
 
 # Windows: libheif is not installed on the `windows-latest` runner image, so
 # the PyO3 cdylib drops `heic` along with the ORT-dependent features.
@@ -262,7 +262,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.node]
-package_name = "@kreuzberg/node"
+package_name = "@xberg/node"
 exclude_types = [
   # Opaque Arc<Mutex<T>> types — codegen doesn't generate .lock() calls for methods
   "StreamReader",
@@ -287,7 +287,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.ruby]
-gem_name = "kreuzberg"
+gem_name = "xberg"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -305,7 +305,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.php]
-extension_name = "kreuzberg"
+extension_name = "xberg"
 exclude_types = [
   # Enum types that don't have From<String> implementation for PHP
   "ChunkerType",
@@ -341,7 +341,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.elixir]
-app_name = "kreuzberg"
+app_name = "xberg"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -360,7 +360,7 @@ features = ["windows-target"]
 default_features = false
 
 [crates.wasm]
-package_name = "@kreuzberg/wasm"
+package_name = "@xberg/wasm"
 exclude_types = [
   # ORT/runtime-only types not available in the wasm-target feature set
   "OcrFallbackDecision",
@@ -452,16 +452,16 @@ features = ["wasm-target"]
 async-trait = "0.1"
 
 [crates.ffi]
-prefix = "kreuzberg"
-header_name = "kreuzberg.h"
-lib_name = "kreuzberg_ffi"
+prefix = "xberg"
+header_name = "xberg.h"
+lib_name = "xberg_ffi"
 visitor_callbacks = false
 # Plugin trait-bridge error construction. The generated FFI plugin shims
 # (`plugin_impl_initialize`, `plugin_impl_shutdown`) need to construct a
-# `KreuzbergError` from a runtime String. KreuzbergError::Plugin is a struct
+# `XbergError` from a runtime String. XbergError::Plugin is a struct
 # variant with two fields and cannot be built via `From<String>`, so we
 # provide the literal here. The placeholder local `msg` carries the message.
-plugin_error_constructor = "kreuzberg::KreuzbergError::Plugin { message: msg, plugin_name: String::new() }"
+plugin_error_constructor = "xberg::XbergError::Plugin { message: msg, plugin_name: String::new() }"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -488,7 +488,7 @@ features = ["android-target"]
 default_features = false
 
 # Windows: use the shared `windows-target` aggregate (defined in
-# crates/kreuzberg/Cargo.toml). Excludes ORT-dependent features (paddle-ocr,
+# crates/xberg/Cargo.toml). Excludes ORT-dependent features (paddle-ocr,
 # layout-detection, embeddings, reranker, ner-llm) and `heic` because the
 # standard `windows-latest` runner image does not ship libheif on the
 # pkg-config path. Type-only features (layout-types, paddle-ocr-types,
@@ -500,8 +500,8 @@ features = ["windows-target"]
 default_features = false
 
 [crates.go]
-module = "github.com/xberg-io/kreuzberg/v5"
-package_name = "kreuzberg"
+module = "github.com/xberg-io/xberg"
+package_name = "xberg"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -519,7 +519,7 @@ exclude_types = [
 ]
 
 [crates.java]
-package = "dev.kreuzberg"
+package = "dev.xberg"
 ffi_style = "panama"
 features = [
   "full",
@@ -572,20 +572,20 @@ features = ["windows-target"]
 default_features = false
 
 [crates.dart]
-pubspec_name = "kreuzberg"
-lib_name = "kreuzberg"
+pubspec_name = "xberg"
+lib_name = "xberg"
 style = "frb"
 # `heic` is intentionally excluded from this list: libheif-sys cannot cross-compile
 # to Android NDK or iOS SDK targets, so `heic` must not appear in the crate-level
 # `[features] default`. Desktop builds still get heic because the
 # `cfg(not(android/ios/windows))` target dep uses `features = ["full"]` which
-# includes heic directly on the kreuzberg dependency side.
+# includes heic directly on the xberg dependency side.
 # Drop `heic` from the generated `[features] default` too: a plain
-# `cargo check -p kreuzberg-dart --target aarch64-apple-ios` enables default
-# features, and `heic = ["kreuzberg/heic"]` would pull libheif-sys (no iOS
+# `cargo check -p xberg-dart --target aarch64-apple-ios` enables default
+# features, and `heic = ["xberg/heic"]` would pull libheif-sys (no iOS
 # cross-compile). `heic` stays defined as an opt-in feature for desktop callers.
 # `embeddings`/`reranker` are excluded for the same reason: the crate-level
-# `default` directly forwards `kreuzberg/embeddings` + `kreuzberg/reranker`, which
+# `default` directly forwards `xberg/embeddings` + `xberg/reranker`, which
 # re-pull `ort-sys` on `x86_64-linux-android` (no ORT prebuilt) via cargo feature
 # unification, defeating the `android-target` dep override. Desktop builds still
 # get them through the `cfg(not(android/ios/windows))` `features = ["full"]` dep.
@@ -657,7 +657,7 @@ default_features = false
 
 # Windows: libheif is not installed on the `windows-latest` runner image, so
 # the Dart server native cdylib drops `heic` along with the ORT-dependent
-# features (same shape the kreuzberg-ffi crate uses).
+# features (same shape the xberg-ffi crate uses).
 [[crates.dart.target_dep_overrides]]
 cfg = 'target_os = "windows"'
 features = ["windows-target"]
@@ -667,17 +667,17 @@ default_features = false
 # Self-contained Android library project at packages/kotlin-android/. Server-
 # side Kotlin/JVM consumers use the Java binding directly (Kotlin interops
 # with Java records natively); the Android AAR ships jniLibs/arm64-v8a/ +
-# jniLibs/x86_64/ so Gradle embeds the kreuzberg-ffi cdylib into app builds
+# jniLibs/x86_64/ so Gradle embeds the xberg-ffi cdylib into app builds
 # without manual setup. Emitted by alef-backend-kotlin-android (alef ≥ 0.16).
-package = "dev.kreuzberg"
-namespace = "dev.kreuzberg"
-artifact_id = "kreuzberg-android"
-group_id = "dev.kreuzberg"
+package = "dev.xberg"
+namespace = "dev.xberg"
+artifact_id = "xberg-android"
+group_id = "dev.xberg"
 abis = ["arm64-v8a", "x86_64"]
 # `features = ["full"]` is consumed by the JNI scaffolder (see
-# `alef::scaffold::languages::jni`) to populate the kreuzberg dependency in
-# `crates/kreuzberg-jni/Cargo.toml`. Without it the umbrella dep is featureless,
-# so the JNI shim binds against kreuzberg's stub fallbacks — which take
+# `alef::scaffold::languages::jni`) to populate the xberg dependency in
+# `crates/xberg-jni/Cargo.toml`. Without it the umbrella dep is featureless,
+# so the JNI shim binds against xberg's stub fallbacks — which take
 # `&mut ExtractionResult` for what should be borrow-only ops — and the
 # generated `Java_*` shims fail to compile with mismatched-borrow errors.
 features = ["full"]
@@ -707,7 +707,7 @@ default_features = false
 # JNI shim crate that emits Java_* symbols for all JNI functions and trait-bridge
 # registrations. Paired with kotlin_android backend to provide type-safe calling
 # interface from Kotlin to Rust core via JNI.  Feature selection for the
-# kreuzberg umbrella dependency lives in `[crates.kotlin_android] features`
+# xberg umbrella dependency lives in `[crates.kotlin_android] features`
 # above — the JNI scaffolder reads from there so the same feature set is
 # applied to both the AAR and the host-side test build.
 #
@@ -733,15 +733,15 @@ features = ["windows-target"]
 default_features = false
 
 [crates.swift]
-module_name = "Kreuzberg"
-package_name = "Kreuzberg"
+module_name = "Xberg"
+package_name = "Xberg"
 # `heic` is intentionally excluded: libheif-sys cannot cross-compile to iOS SDK
 # or Android NDK targets. Desktop builds still get heic because the
 # `cfg(not(ios/android/windows))` target dep uses `features = ["full"]` which
-# includes heic directly on the kreuzberg dependency side.
+# includes heic directly on the xberg dependency side.
 # Drop `heic` from the generated `[features] default` too: a plain
-# `cargo check -p kreuzberg-swift --target aarch64-apple-ios` enables default
-# features, and `heic = ["kreuzberg/heic"]` would pull libheif-sys (no iOS
+# `cargo check -p xberg-swift --target aarch64-apple-ios` enables default
+# features, and `heic = ["xberg/heic"]` would pull libheif-sys (no iOS
 # cross-compile). `heic` stays defined as an opt-in feature for desktop callers.
 excluded_default_features = ["heic"]
 features = [
@@ -820,7 +820,7 @@ exclude_functions = [
   # FFI-wrapped function whose RustString return is not properly converted
   "download_model",
   # alef emits cfg-gated fallback stubs (`not(feature = "embeddings"/"reranker")`)
-  # that reference the real `kreuzberg::*_async` functions via super::, but the
+  # that reference the real `xberg::*_async` functions via super::, but the
   # swift_bridge module's extern blocks still expose the symbols unconditionally
   # — same wrinkle as PHP's php_impl macro. Drop the async variants until the
   # alef swift backend can suppress cfg-gated stub fns.
@@ -837,7 +837,7 @@ cfg = 'target_os = "ios"'
 features = ["android-target"]
 default_features = false
 
-# Android: same native-C constraint. Included so cross-compiling kreuzberg-swift
+# Android: same native-C constraint. Included so cross-compiling xberg-swift
 # to Android (e.g. via swift-bridge's Linux-host workflow) doesn't pull in
 # libheif-sys either.
 [[crates.swift.target_dep_overrides]]
@@ -853,10 +853,10 @@ features = ["windows-target"]
 default_features = false
 
 [crates.csharp]
-namespace = "Kreuzberg"
-# project_file directs `dotnet format` to the .csproj inside packages/csharp/Kreuzberg/
+namespace = "Xberg"
+# project_file directs `dotnet format` to the .csproj inside packages/csharp/Xberg/
 # rather than the parent directory (which has no .sln or .csproj at its root).
-project_file = "packages/csharp/Kreuzberg/Kreuzberg.csproj"
+project_file = "packages/csharp/Xberg/Xberg.csproj"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -864,8 +864,8 @@ exclude_functions = [
 ]
 
 [crates.r]
-package_name = "kreuzberg"
-# kreuzberg-libheif transitively links libheif via libheif-sys; R CMD INSTALL needs
+package_name = "xberg"
+# xberg-libheif transitively links libheif via libheif-sys; R CMD INSTALL needs
 # the same `-lheif` so the dlopen at package load doesn't fail on `_heif_check_filetype`.
 extra_makevars_prelude = ["HEIF_LIBS = $(shell pkg-config --libs libheif 2>/dev/null || echo \"-lheif\")"]
 extra_pkg_libs = ["$(HEIF_LIBS)"]
@@ -884,7 +884,7 @@ exclude_functions = [
 ]
 
 [crates.zig]
-module_name = "kreuzberg"
+module_name = "xberg"
 exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
@@ -892,20 +892,20 @@ exclude_functions = [
 ]
 
 [crates.output]
-python = "crates/kreuzberg-py/src/"
-node = "crates/kreuzberg-node/src/"
-ruby = "packages/ruby/ext/kreuzberg_rb/src/"
-php = "crates/kreuzberg-php/src/"
-ffi = "crates/kreuzberg-ffi/src/"
-go = "packages/go/v5/"
-elixir = "packages/elixir/native/kreuzberg_nif/src/"
-wasm = "crates/kreuzberg-wasm/src/"
+python = "crates/xberg-py/src/"
+node = "crates/xberg-node/src/"
+ruby = "packages/ruby/ext/xberg_rb/src/"
+php = "crates/xberg-php/src/"
+ffi = "crates/xberg-ffi/src/"
+go = "packages/go/"
+elixir = "packages/elixir/native/xberg_nif/src/"
+wasm = "crates/xberg-wasm/src/"
 java = "packages/java/"
 csharp = "packages/csharp/src/"
 r = "packages/r/src/rust/src/"
-jni = "crates/kreuzberg-jni/src/"
+jni = "crates/xberg-jni/src/"
 kotlin_android = "packages/kotlin-android/"
-swift = "packages/swift/Sources/Kreuzberg/"
+swift = "packages/swift/Sources/Xberg/"
 dart = "packages/dart/lib/src/"
 zig = "packages/zig/src/"
 
@@ -919,12 +919,12 @@ types = [
   # alef(skip)-annotated in source); serde derives added in Phase 1 but
   # binding surface is unchanged. Listed here to defend against future
   # codegen passes that might re-emit them as transitive container fields.
-  "kreuzberg::extraction::docx::parser::Table",
-  "kreuzberg::extraction::docx::parser::TableCell",
-  "kreuzberg::extraction::docx::parser::TableRow",
-  "kreuzberg::extraction::docx::parser::HeaderFooter",
-  "kreuzberg::extraction::docx::parser::Note",
-  "kreuzberg::extraction::hwp::model::Section",
+  "xberg::extraction::docx::parser::Table",
+  "xberg::extraction::docx::parser::TableCell",
+  "xberg::extraction::docx::parser::TableRow",
+  "xberg::extraction::docx::parser::HeaderFooter",
+  "xberg::extraction::docx::parser::Note",
+  "xberg::extraction::hwp::model::Section",
 
   # GlineBackend has a private Arc<Mutex<GLiNER<SpanMode>>> field and a pub
   # fn new() constructor; alef v0.23.2 strict-construction validation cannot
@@ -936,16 +936,16 @@ types = [
   # Segment<'a> is an internal semantic-chunking type with a lifetime-bound
   # &'a str field. Alef cannot generate a From impl for lifetime-parameterised
   # types without a matching static constructor. Not part of the public API.
-  "kreuzberg::chunking::semantic::merge::Segment",
+  "xberg::chunking::semantic::merge::Segment",
 
   # NerBackend is a pub trait without a corresponding plugin registry entry
-  # (no register_ner_backend/get_ner_backend_registry exists in kreuzberg
+  # (no register_ner_backend/get_ner_backend_registry exists in xberg
   # plugins). Treating it as a binding-visible type breaks swift-bridge
   # (must be declared with `type NerBackend`) and dart frb codegen (needs
   # `dyn NerBackend` in `RustAutoOpaqueInner<T>`). Until a proper trait_bridge
   # entry is added, exclude the trait from the binding surface.
   "NerBackend",
-  "kreuzberg::text::ner::backend::NerBackend",
+  "xberg::text::ner::backend::NerBackend",
 
   # EnrichmentConfig + EnrichedResult sit on top of the (currently
   # binding-excluded) NerBackend trait via `NerEnrichmentConfig.backend:
@@ -958,10 +958,10 @@ types = [
   # exposed.
   "EnrichmentConfig",
   "EnrichedResult",
-  "kreuzberg::enrich::EnrichmentConfig",
-  "kreuzberg::enrich::EnrichedResult",
+  "xberg::enrich::EnrichmentConfig",
+  "xberg::enrich::EnrichedResult",
   "NerEnrichmentConfig",
-  "kreuzberg::enrich::NerEnrichmentConfig",
+  "xberg::enrich::NerEnrichmentConfig",
 
   # ClassifyContext<'a> has a lifetime-bound &'a str field plus a bare
   # `Value` field that alef cannot prove is `serde_json::Value`. Internal
@@ -969,7 +969,7 @@ types = [
   # binding surface. classify_pages/classify_text/classify_document are the
   # public entry points.
   "ClassifyContext",
-  "kreuzberg::text::classification::page_classifier::ClassifyContext",
+  "xberg::text::classification::page_classifier::ClassifyContext",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge
@@ -1058,8 +1058,8 @@ typecheck = "cd packages/python && uv run --no-sync mypy ."
 
 [crates.lint.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
-format = "pnpm dlx oxfmt crates/kreuzberg-node"
-check = "pnpm dlx oxlint crates/kreuzberg-node"
+format = "pnpm dlx oxfmt crates/xberg-node"
+check = "pnpm dlx oxlint crates/xberg-node"
 
 [crates.lint.ruby]
 precondition = "command -v bundle >/dev/null 2>&1"
@@ -1073,7 +1073,7 @@ format = "cd packages/php && vendor/bin/php-cs-fixer fix ."
 check = "cd packages/php && vendor/bin/phpstan --configuration=phpstan.neon --memory-limit=512M"
 
 [crates.lint.go]
-before = "cargo build --release -p kreuzberg-ffi"
+before = "cargo build --release -p xberg-ffi"
 
 [crates.lint.elixir]
 precondition = "command -v mix >/dev/null 2>&1"
@@ -1137,21 +1137,21 @@ upgrade = "cd packages/zig && zig build --fetch"
 [crates.test.python]
 precondition = "command -v uv >/dev/null 2>&1"
 # `uv run --no-sync` in the e2e step never refreshes the e2e venv, and `uv sync`
-# installs `kreuzberg` as a *copied* (non-editable) snapshot. A stale snapshot
+# installs `xberg` as a *copied* (non-editable) snapshot. A stale snapshot
 # built before the wrapper modules were generated leaves the venv with only
-# `_kreuzberg.abi3.so` + `py.typed`, breaking `from kreuzberg import ...`.
+# `_xberg.abi3.so` + `py.typed`, breaking `from xberg import ...`.
 # Force a clean rebuild of that snapshot from current source before testing.
-before = "cd packages/python && maturin develop --release && cd ../../e2e/python && uv sync --reinstall-package kreuzberg"
+before = "cd packages/python && maturin develop --release && cd ../../e2e/python && uv sync --reinstall-package xberg"
 e2e = "cd e2e/python && uv run --no-sync pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
-before = "cd crates/kreuzberg-node && pnpm install && CARGO_BUILD_JOBS=1 pnpm exec napi build --output-dir . --release --platform"
+before = "cd crates/xberg-node && pnpm install && CARGO_BUILD_JOBS=1 pnpm exec napi build --output-dir . --release --platform"
 e2e = "cd e2e/node && pnpm install --frozen-lockfile=false && pnpm test"
 
 [crates.test.go]
 precondition = "command -v go >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi && mkdir -p packages/go/v5/include && cp crates/kreuzberg-ffi/include/kreuzberg.h packages/go/v5/include/"
+before = "cargo build --release -p xberg-ffi && mkdir -p packages/go/include && cp crates/xberg-ffi/include/xberg.h packages/go/include/"
 e2e = "cd e2e/go && go test ./... -count=1"
 
 [crates.test.ruby]
@@ -1161,27 +1161,27 @@ e2e = "cd e2e/ruby && bundle exec rspec"
 
 [crates.test.php]
 precondition = "command -v composer >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-php && cd e2e/php && composer install"
+before = "cargo build --release -p xberg-php && cd e2e/php && composer install"
 e2e = "cd e2e/php && php run_tests.php"
 
 [crates.test.java]
 precondition = "command -v mvn >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi && cd packages/java && mvn -T 1 package -DskipTests"
+before = "cargo build --release -p xberg-ffi && cd packages/java && mvn -T 1 package -DskipTests"
 e2e = "cd e2e/java && mvn test"
 
 [crates.test.csharp]
 precondition = "command -v dotnet >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi && bash scripts/stage_csharp_native_local.sh"
+before = "cargo build --release -p xberg-ffi && bash scripts/stage_csharp_native_local.sh"
 e2e = "dotnet test e2e/csharp"
 
 [crates.test.elixir]
 precondition = "command -v mix >/dev/null 2>&1"
-before = "cd packages/elixir && KREUZBERG_BUILD=1 mix deps.get && KREUZBERG_BUILD=1 mix compile && cd ../../e2e/elixir && KREUZBERG_BUILD=1 mix deps.get"
-e2e = "cd e2e/elixir && KREUZBERG_BUILD=1 mix test"
+before = "cd packages/elixir && XBERG_BUILD=1 mix deps.get && XBERG_BUILD=1 mix compile && cd ../../e2e/elixir && XBERG_BUILD=1 mix deps.get"
+e2e = "cd e2e/elixir && XBERG_BUILD=1 mix test"
 
 [crates.test.r]
 precondition = "command -v Rscript >/dev/null 2>&1"
-before = "rm -f packages/r/src/kreuzberg.so packages/r/src/entrypoint.o && cd packages/r/src/rust && cargo build --release"
+before = "rm -f packages/r/src/xberg.so packages/r/src/entrypoint.o && cd packages/r/src/rust && cargo build --release"
 command = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 e2e = "cd e2e/r && Rscript -e \"devtools::load_all('../../packages/r'); testthat::set_max_fails(Inf); testthat::test_dir('tests')\""
 
@@ -1192,7 +1192,7 @@ precondition = "command -v wasm-pack >/dev/null 2>&1"
 # under --target nodejs. The web target leaves them as ESM `import * as foo from "env"`
 # statements that Node cannot resolve. The published bundler target (pkg/*) is built
 # separately by the publish pipeline.
-before = "wasm-pack build crates/kreuzberg-wasm --release --target nodejs --out-dir pkg/nodejs && cd e2e/wasm && pnpm install --ignore-workspace"
+before = "wasm-pack build crates/xberg-wasm --release --target nodejs --out-dir pkg/nodejs && cd e2e/wasm && pnpm install --ignore-workspace"
 e2e = "cd e2e/wasm && pnpm test"
 
 [crates.test.rust]
@@ -1201,13 +1201,13 @@ e2e = "cd e2e/rust && cargo test"
 
 [crates.test.kotlin_android]
 precondition = "command -v gradle >/dev/null 2>&1"
-before = ["cargo build --release -p kreuzberg-ffi", "ln -sf libkreuzberg_ffi.dylib target/release/libkreuzberg_jni.dylib 2>/dev/null || ln -sf libkreuzberg_ffi.so target/release/libkreuzberg_jni.so 2>/dev/null || true"]
+before = ["cargo build --release -p xberg-ffi", "ln -sf libxberg_ffi.dylib target/release/libxberg_jni.dylib 2>/dev/null || ln -sf libxberg_ffi.so target/release/libxberg_jni.so 2>/dev/null || true"]
 command = "cd packages/kotlin-android && gradle test --no-daemon"
-e2e = "cargo build --release -p kreuzberg-ffi && (ln -sf libkreuzberg_ffi.dylib target/release/libkreuzberg_jni.dylib 2>/dev/null || ln -sf libkreuzberg_ffi.so target/release/libkreuzberg_jni.so 2>/dev/null || true) && cd e2e/kotlin_android && gradle test --no-daemon"
+e2e = "cargo build --release -p xberg-ffi && (ln -sf libxberg_ffi.dylib target/release/libxberg_jni.dylib 2>/dev/null || ln -sf libxberg_ffi.so target/release/libxberg_jni.so 2>/dev/null || true) && cd e2e/kotlin_android && gradle test --no-daemon"
 
 [crates.test.swift]
 precondition = "command -v swift >/dev/null 2>&1"
-before = ["cargo build --release -p kreuzberg-swift", "bash scripts/setup-swift-bridge.sh"]
+before = ["cargo build --release -p xberg-swift", "bash scripts/setup-swift-bridge.sh"]
 command = "cd packages/swift && swift test"
 e2e = "cd e2e/swift_e2e && swift test"
 
@@ -1228,22 +1228,22 @@ cd packages/dart && flutter pub get && cd rust && \
     flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml && \
     echo "$INPUT_HASH" > "$HASH_FILE"; \
   fi; \
-} && cd ../../.. && cargo build --release -p kreuzberg-dart
+} && cd ../../.. && cargo build --release -p xberg-dart
 """
 command = "cd packages/dart && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter test"
 e2e = "cd e2e/dart && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter test"
 
 [crates.test.zig]
 precondition = "command -v zig >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
+before = "cargo build --release -p xberg-ffi"
 # Pass absolute ffi_path/ffi_include_path: zig bakes DT_RUNPATH as a literal
 # string and the test binaries run with cwd=test_documents/, so the default
 # `../../target/release` resolves outside the repo at runtime.
-command = "cd packages/zig && zig build test -Dffi_path=$PWD/../../target/release -Dffi_include_path=$PWD/../../crates/kreuzberg-ffi/include"
-e2e = "cd e2e/zig && zig build test -Dffi_path=$PWD/../../target/release -Dffi_include_path=$PWD/../../crates/kreuzberg-ffi/include"
+command = "cd packages/zig && zig build test -Dffi_path=$PWD/../../target/release -Dffi_include_path=$PWD/../../crates/xberg-ffi/include"
+e2e = "cd e2e/zig && zig build test -Dffi_path=$PWD/../../target/release -Dffi_include_path=$PWD/../../crates/xberg-ffi/include"
 
 [crates.publish]
-core_crate = "crates/kreuzberg"
+core_crate = "crates/xberg"
 
 [crates.publish.languages.ruby]
 vendor_mode = "registry"
@@ -1256,7 +1256,7 @@ nif_versions = ["2.16", "2.17"]
 vendor_mode = "registry"
 
 [crates.publish.languages.dart]
-# dart/rust/Cargo.toml carries path deps on kreuzberg; rewrite to registry on publish.
+# dart/rust/Cargo.toml carries path deps on xberg; rewrite to registry on publish.
 # NOTE: resolve_binding_manifest does not yet resolve the Dart manifest path — the rewrite
 # is a no-op until alef is updated to handle packages/dart/rust/Cargo.toml.
 vendor_mode = "registry"
@@ -1344,7 +1344,7 @@ fields_array = [
 fields_enum = [
   "summary.strategy",
 ]
-# Kreuzberg's `ExtractionResult` exposes every result field as a `pub <field>:`
+# Xberg's `ExtractionResult` exposes every result field as a `pub <field>:`
 # struct field. The Rust e2e renderer in alef uses `fields_method_calls` to
 # decide whether to append `()` after the accessor. Most paths stay as plain
 # field access (`result.content`, not `result.content()`); entries here are the
@@ -1398,7 +1398,7 @@ result_fields = [
 
 [crates.e2e.call]
 function = "extract_file"
-module = "kreuzberg"
+module = "xberg"
 result_var = "result"
 async = true
 returns_result = true
@@ -1409,47 +1409,47 @@ args = [
 ]
 
 [crates.e2e.call.overrides.rust]
-crate_name = "kreuzberg"
+crate_name = "xberg"
 function = "extract_file"
 
 [crates.e2e.call.overrides.python]
-module = "kreuzberg"
+module = "xberg"
 function = "extract_file"
 options_type = "ExtractionConfig"
 
 [crates.e2e.call.overrides.node]
-module = "kreuzberg"
+module = "xberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 arg_order = ["path", "config", "mime_type"]
 result_enum_fields = { outputFormat = "OutputFormat", "metadata.format" = "FormatMetadata" }
 
 [crates.e2e.call.overrides.go]
-module = "github.com/xberg-io/kreuzberg/v5"
+module = "github.com/xberg-io/xberg"
 function = "ExtractFile"
-alias = "kreuzberg"
+alias = "xberg"
 options_type = "ExtractionConfig"
 
 [crates.e2e.call.overrides.java]
-class = "dev.kreuzberg.Kreuzberg"
+class = "dev.xberg.Xberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 enum_fields = { outputFormat = "OutputFormat" }
 
 [crates.e2e.call.overrides.kotlin]
-class = "Kreuzberg"
+class = "Xberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 
 [crates.e2e.call.overrides.csharp]
-class = "KreuzbergLib"
+class = "XbergLib"
 function = "ExtractFile"
 options_type = "ExtractionConfig"
 json_object_types = { chunking = "ChunkingConfig", ocr = "OcrConfig", images = "ImageExtractionConfig", html_output = "HtmlOutputConfig", language_detection = "LanguageDetectionConfig", postprocessor = "PostProcessorConfig", acceleration = "AccelerationConfig", email = "EmailConfig", pages = "PageConfig", pdf_options = "PdfConfig", layout = "LayoutDetectionConfig", tree_sitter = "TreeSitterConfig", structured_extraction = "StructuredExtractionConfig", content_filter = "ContentFilterConfig", token_reduction = "TokenReductionOptions" }
 nested_types = { model = "EmbeddingModelType", embedding = "EmbeddingConfig", keywords = "KeywordConfig", pages = "PageConfig", securityLimits = "SecurityLimits", treeSitter = "TreeSitterConfig" }
 
 [crates.e2e.call.overrides.ruby]
-options_type = "Kreuzberg::ExtractionConfig"
+options_type = "Xberg::ExtractionConfig"
 
 [crates.e2e.call.overrides.elixir]
 # Elixir Rustler facades don't consistently use keyword opts (some use positional defaults),
@@ -1464,7 +1464,7 @@ bigint_fields = ["cacheTtlSecs", "extractionTimeoutSecs"]
 unnamed_arg_indices = [0, 1, 2]
 
 [crates.e2e.call.overrides.php]
-class = "Kreuzberg\\Kreuzberg"
+class = "Xberg\\Xberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 
@@ -1486,10 +1486,10 @@ options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_file]
 function = "extract_file"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
-# kreuzberg's `chunks` is a plain `Vec<TextChunk>` field on `ExtractionResult`,
+# xberg's `chunks` is a plain `Vec<TextChunk>` field on `ExtractionResult`,
 # not a streaming channel. Without this opt-out, alef's streaming auto-detect
 # triggers on any assertion targeting `chunks` / `chunks.length` and emits
 # `range over stream` / `ChatCompletionChunk` codegen.
@@ -1509,7 +1509,7 @@ async = true
 options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_file.overrides.swift]
-# Kreuzberg.extractFile(_:_:_:) is async; matching the base call's async=true
+# Xberg.extractFile(_:_:_:) is async; matching the base call's async=true
 # keeps the generated tests' async/await usage consistent regardless of
 # whether the fixture has an explicit "call": "extract_file" or relies on
 # the default route (which always uses the base [crates.e2e.call]).
@@ -1530,7 +1530,7 @@ options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_bytes]
 function = "extract_bytes"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
 streaming = false
@@ -1574,7 +1574,7 @@ result_is_json_struct = true
 
 [crates.e2e.calls.extract_file_sync]
 function = "extract_file_sync"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 streaming = false
@@ -1613,7 +1613,7 @@ options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_bytes_sync]
 function = "extract_bytes_sync"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 streaming = false
@@ -1725,7 +1725,7 @@ options_type = "LanguageDetectionConfig"
 
 [crates.e2e.calls.detect_mime_type_from_bytes]
 function = "detect_mime_type_from_bytes"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 result_is_simple = true
@@ -1750,7 +1750,7 @@ returns_result = true
 result_is_array = true
 result_is_simple = true
 function = "get_extensions_for_mime"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
@@ -1759,14 +1759,14 @@ args = [{ name = "mime_type", field = "input.mime_type", type = "string" }]
 result_is_simple = true
 result_is_array = true
 function = "list_supported_formats"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = false
 args = []
 
 [crates.e2e.calls.batch_extract_files]
 function = "batch_extract_files"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
 result_is_vec = true
@@ -1806,7 +1806,7 @@ async = false
 
 [crates.e2e.calls.batch_extract_files_sync]
 function = "batch_extract_files_sync"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 result_is_vec = true
@@ -1880,7 +1880,7 @@ returns_result = true
 result_is_simple = true
 result_is_array = true
 function = "embed_texts"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 skip_languages = ["wasm"]
@@ -1965,13 +1965,13 @@ nested_types = { embedding_model = "EmbeddingModelType" }
 # only generated for non-async functions; the suspend wrapper is the public API).
 [crates.e2e.calls.embed_texts.overrides.node]
 function = "embedTextsAsync"
-module = "@kreuzberg/node"
+module = "@xberg/node"
 async = true
 result_is_simple = true
 result_is_array = true
 
 # PHP extension only exposes embedTextsAsync; the embedTexts wrapper delegates to
-# KreuzbergApi::embedTexts which does not exist in the native extension.
+# XbergApi::embedTexts which does not exist in the native extension.
 [crates.e2e.calls.embed_texts.overrides.php]
 function = "embedTextsAsync"
 result_is_simple = true
@@ -1979,7 +1979,7 @@ options_type = "EmbeddingConfig"
 
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
 result_is_vec = true
@@ -2010,7 +2010,7 @@ async = false
 
 [crates.e2e.calls.batch_extract_bytes_sync]
 function = "batch_extract_bytes_sync"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 result_is_vec = true
@@ -2035,7 +2035,7 @@ options_type = "ExtractionConfig"
 [crates.e2e.calls.list_document_extractors]
 result_is_simple = true
 function = "list_document_extractors"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2046,7 +2046,7 @@ returns_result = true
 [crates.e2e.calls.list_ocr_backends]
 result_is_simple = true
 function = "list_ocr_backends"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2056,12 +2056,12 @@ returns_result = true
 
 [crates.e2e.calls.list_ocr_backends.overrides.dart]
 function = "listOcrBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.list_post_processors]
 result_is_simple = true
 function = "list_post_processors"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2071,12 +2071,12 @@ returns_result = true
 
 [crates.e2e.calls.list_post_processors.overrides.dart]
 function = "listPostProcessors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.list_validators]
 result_is_simple = true
 function = "list_validators"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2086,12 +2086,12 @@ returns_result = true
 
 [crates.e2e.calls.list_validators.overrides.dart]
 function = "listValidators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.list_embedding_backends]
 result_is_simple = true
 function = "list_embedding_backends"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2101,12 +2101,12 @@ returns_result = true
 
 [crates.e2e.calls.list_embedding_backends.overrides.dart]
 function = "listEmbeddingBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.list_reranker_backends]
 result_is_simple = true
 function = "list_reranker_backends"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2116,12 +2116,12 @@ returns_result = true
 
 [crates.e2e.calls.list_reranker_backends.overrides.dart]
 function = "listRerankerBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.list_renderers]
 result_is_simple = true
 function = "list_renderers"
-module = "kreuzberg"
+module = "xberg"
 async = false
 args = []
 
@@ -2131,7 +2131,7 @@ returns_result = true
 
 [crates.e2e.calls.list_renderers.overrides.dart]
 function = "listRenderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends]
 # Trait-bridge function — excluded from gen_function surface; bridges emit it directly.
@@ -2145,60 +2145,60 @@ args = []
 
 [crates.e2e.calls.clear_ocr_backends.overrides.python]
 function = "clear_ocr_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.rust]
 function = "clear_ocr_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.node]
 function = "clearOcrBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.go]
 function = "ClearOCRBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.ruby]
 function = "clear_ocr_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.php]
 function = "clearOcrBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.java]
 function = "clearOcrBackends"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.csharp]
 function = "ClearOcrBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_ocr_backends.overrides.swift]
 function = "clearOcrBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.dart]
 function = "clearOcrBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.wasm]
 function = "clearOcrBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.r]
 function = "clear_ocr_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.elixir]
 function = "clear_ocr_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.zig]
 function = "clear_ocr_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_ocr_backends.overrides.kotlin_android]
 function = "clearAll"
@@ -2216,60 +2216,60 @@ args = []
 
 [crates.e2e.calls.clear_post_processors.overrides.python]
 function = "clear_post_processors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.rust]
 function = "clear_post_processors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.node]
 function = "clearPostProcessors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.go]
 function = "ClearPostProcessors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.ruby]
 function = "clear_post_processors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.php]
 function = "clearPostProcessors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.java]
 function = "clearPostProcessors"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.csharp]
 function = "ClearPostProcessors"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_post_processors.overrides.swift]
 function = "clearPostProcessors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.dart]
 function = "clearPostProcessors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.wasm]
 function = "clearPostProcessors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.r]
 function = "clear_post_processors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.elixir]
 function = "clear_post_processors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.zig]
 function = "clear_post_processors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_post_processors.overrides.kotlin_android]
 function = "clearAll"
@@ -2287,60 +2287,60 @@ args = []
 
 [crates.e2e.calls.clear_validators.overrides.python]
 function = "clear_validators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.rust]
 function = "clear_validators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.node]
 function = "clearValidators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.go]
 function = "ClearValidators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.ruby]
 function = "clear_validators"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_validators.overrides.php]
 function = "clearValidators"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_validators.overrides.java]
 function = "clearValidators"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_validators.overrides.csharp]
 function = "ClearValidators"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_validators.overrides.swift]
 function = "clearValidators"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_validators.overrides.dart]
 function = "clearValidators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.wasm]
 function = "clearValidators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.r]
 function = "clear_validators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.elixir]
 function = "clear_validators"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_validators.overrides.zig]
 function = "clear_validators"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_validators.overrides.kotlin_android]
 function = "clearAll"
@@ -2359,60 +2359,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.python]
 function = "unregister_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.rust]
 function = "unregister_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.node]
 function = "unregisterOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.go]
 function = "UnregisterOCRBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.ruby]
 function = "unregister_ocr_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.php]
 function = "unregisterOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.java]
 function = "unregisterOcrBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.csharp]
 function = "UnregisterOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.swift]
 function = "unregisterOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.dart]
 function = "unregisterOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.wasm]
 function = "unregisterOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.r]
 function = "unregister_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.elixir]
 function = "unregister_ocr_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.zig]
 function = "unregister_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_ocr_backend.overrides.kotlin_android]
 function = "unregister"
@@ -2430,60 +2430,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_post_processor.overrides.python]
 function = "unregister_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.rust]
 function = "unregister_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.node]
 function = "unregisterPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.go]
 function = "UnregisterPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.ruby]
 function = "unregister_post_processor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.php]
 function = "unregisterPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.java]
 function = "unregisterPostProcessor"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.csharp]
 function = "UnregisterPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_post_processor.overrides.swift]
 function = "unregisterPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.dart]
 function = "unregisterPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.wasm]
 function = "unregisterPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.r]
 function = "unregister_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.elixir]
 function = "unregister_post_processor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.zig]
 function = "unregister_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_post_processor.overrides.kotlin_android]
 function = "unregister"
@@ -2501,60 +2501,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_validator.overrides.python]
 function = "unregister_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.rust]
 function = "unregister_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.node]
 function = "unregisterValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.go]
 function = "UnregisterValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.ruby]
 function = "unregister_validator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.php]
 function = "unregisterValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.java]
 function = "unregisterValidator"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.csharp]
 function = "UnregisterValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_validator.overrides.swift]
 function = "unregisterValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.dart]
 function = "unregisterValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.wasm]
 function = "unregisterValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.r]
 function = "unregister_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.elixir]
 function = "unregister_validator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.zig]
 function = "unregister_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_validator.overrides.kotlin_android]
 function = "unregister"
@@ -2572,61 +2572,61 @@ args = []
 
 [crates.e2e.calls.register_ocr_backend.overrides.python]
 function = "register_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.rust]
 function = "register_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.node]
 function = "registerOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.go]
 function = "RegisterOCRBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.ruby]
 function = "register_ocr_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.php]
 function = "registerOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.java]
 function = "registerOcrBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.csharp]
 function = "RegisterOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_ocr_backend.overrides.swift]
 function = "registerOcrBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.dart]
 function = "registerOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.wasm]
 function = "registerOcrBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.r]
 function = "register_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { backend = "r_backend" }
 
 [crates.e2e.calls.register_ocr_backend.overrides.elixir]
 function = "register_ocr_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_ocr_backend.overrides.zig]
 function = "register_ocr_backend"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_ocr_backend.overrides.kotlin_android]
@@ -2645,61 +2645,61 @@ args = []
 
 [crates.e2e.calls.register_post_processor.overrides.python]
 function = "register_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.rust]
 function = "register_post_processor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.node]
 function = "registerPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.go]
 function = "RegisterPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.ruby]
 function = "register_post_processor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.php]
 function = "registerPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.java]
 function = "registerPostProcessor"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.csharp]
 function = "RegisterPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_post_processor.overrides.swift]
 function = "registerPostProcessor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.dart]
 function = "registerPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.wasm]
 function = "registerPostProcessor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.r]
 function = "register_post_processor"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { processor = "r_backend" }
 
 [crates.e2e.calls.register_post_processor.overrides.elixir]
 function = "register_post_processor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_post_processor.overrides.zig]
 function = "register_post_processor"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_post_processor.overrides.kotlin_android]
@@ -2718,61 +2718,61 @@ args = []
 
 [crates.e2e.calls.register_validator.overrides.python]
 function = "register_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.rust]
 function = "register_validator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.node]
 function = "registerValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.go]
 function = "RegisterValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.ruby]
 function = "register_validator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_validator.overrides.php]
 function = "registerValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_validator.overrides.java]
 function = "registerValidator"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_validator.overrides.csharp]
 function = "RegisterValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_validator.overrides.swift]
 function = "registerValidator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_validator.overrides.dart]
 function = "registerValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.wasm]
 function = "registerValidator"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_validator.overrides.r]
 function = "register_validator"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { validator = "r_backend" }
 
 [crates.e2e.calls.register_validator.overrides.elixir]
 function = "register_validator"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_validator.overrides.zig]
 function = "register_validator"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_validator.overrides.kotlin_android]
@@ -2791,61 +2791,61 @@ args = []
 
 [crates.e2e.calls.register_embedding_backend.overrides.python]
 function = "register_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.rust]
 function = "register_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.node]
 function = "registerEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.go]
 function = "RegisterEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.ruby]
 function = "register_embedding_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.php]
 function = "registerEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.java]
 function = "registerEmbeddingBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.csharp]
 function = "RegisterEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_embedding_backend.overrides.swift]
 function = "registerEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.dart]
 function = "registerEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.wasm]
 function = "registerEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.r]
 function = "register_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { backend = "r_backend" }
 
 [crates.e2e.calls.register_embedding_backend.overrides.elixir]
 function = "register_embedding_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_embedding_backend.overrides.zig]
 function = "register_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_embedding_backend.overrides.kotlin_android]
@@ -2864,60 +2864,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.python]
 function = "unregister_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.rust]
 function = "unregister_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.node]
 function = "unregisterEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.go]
 function = "UnregisterEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.ruby]
 function = "unregister_embedding_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.php]
 function = "unregisterEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.java]
 function = "unregisterEmbeddingBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.csharp]
 function = "UnregisterEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.swift]
 function = "unregisterEmbeddingBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.dart]
 function = "unregisterEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.wasm]
 function = "unregisterEmbeddingBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.r]
 function = "unregister_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.elixir]
 function = "unregister_embedding_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.zig]
 function = "unregister_embedding_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_embedding_backend.overrides.kotlin_android]
 function = "unregister"
@@ -2935,60 +2935,60 @@ args = []
 
 [crates.e2e.calls.clear_embedding_backends.overrides.python]
 function = "clear_embedding_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.rust]
 function = "clear_embedding_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.node]
 function = "clearEmbeddingBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.go]
 function = "ClearEmbeddingBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.ruby]
 function = "clear_embedding_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.php]
 function = "clearEmbeddingBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.java]
 function = "clearEmbeddingBackends"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.csharp]
 function = "ClearEmbeddingBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_embedding_backends.overrides.swift]
 function = "clearEmbeddingBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.dart]
 function = "clearEmbeddingBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.wasm]
 function = "clearEmbeddingBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.r]
 function = "clear_embedding_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.elixir]
 function = "clear_embedding_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.zig]
 function = "clear_embedding_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_embedding_backends.overrides.kotlin_android]
 function = "clearAll"
@@ -3008,61 +3008,61 @@ args = []
 
 [crates.e2e.calls.register_reranker_backend.overrides.python]
 function = "register_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.rust]
 function = "register_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.node]
 function = "registerRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.go]
 function = "RegisterRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.ruby]
 function = "register_reranker_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.php]
 function = "registerRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.java]
 function = "registerRerankerBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.csharp]
 function = "RegisterRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_reranker_backend.overrides.swift]
 function = "registerRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.dart]
 function = "registerRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.wasm]
 function = "registerRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.r]
 function = "register_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { backend = "r_backend" }
 
 [crates.e2e.calls.register_reranker_backend.overrides.elixir]
 function = "register_reranker_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_reranker_backend.overrides.zig]
 function = "register_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_reranker_backend.overrides.kotlin_android]
@@ -3081,60 +3081,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.python]
 function = "unregister_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.rust]
 function = "unregister_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.node]
 function = "unregisterRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.go]
 function = "UnregisterRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.ruby]
 function = "unregister_reranker_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.php]
 function = "unregisterRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.java]
 function = "unregisterRerankerBackend"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.csharp]
 function = "UnregisterRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.swift]
 function = "unregisterRerankerBackend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.dart]
 function = "unregisterRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.wasm]
 function = "unregisterRerankerBackend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.r]
 function = "unregister_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.elixir]
 function = "unregister_reranker_backend"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.zig]
 function = "unregister_reranker_backend"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_reranker_backend.overrides.kotlin_android]
 function = "unregister"
@@ -3152,60 +3152,60 @@ args = []
 
 [crates.e2e.calls.clear_reranker_backends.overrides.python]
 function = "clear_reranker_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.rust]
 function = "clear_reranker_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.node]
 function = "clearRerankerBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.go]
 function = "ClearRerankerBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.ruby]
 function = "clear_reranker_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.php]
 function = "clearRerankerBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.java]
 function = "clearRerankerBackends"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.csharp]
 function = "ClearRerankerBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_reranker_backends.overrides.swift]
 function = "clearRerankerBackends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.dart]
 function = "clearRerankerBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.wasm]
 function = "clearRerankerBackends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.r]
 function = "clear_reranker_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.elixir]
 function = "clear_reranker_backends"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.zig]
 function = "clear_reranker_backends"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_reranker_backends.overrides.kotlin_android]
 function = "clearAll"
@@ -3217,7 +3217,7 @@ class = "RerankerBackendBridge"
 result_is_simple = true
 result_is_array = true
 function = "rerank"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 skip_languages = ["wasm"]
@@ -3304,7 +3304,7 @@ nested_types = { reranker_model = "RerankerModelType" }
 # only generated for non-async functions; the suspend wrapper is the public API).
 [crates.e2e.calls.rerank.overrides.node]
 function = "rerankAsync"
-module = "@kreuzberg/node"
+module = "@xberg/node"
 async = true
 result_is_simple = true
 result_is_array = true
@@ -3319,7 +3319,7 @@ options_type = "RerankerConfig"
 result_is_simple = true
 result_is_array = true
 function = "rerank_async"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
 skip_languages = ["wasm", "swift"]
@@ -3367,61 +3367,61 @@ args = []
 
 [crates.e2e.calls.register_document_extractor.overrides.python]
 function = "register_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.rust]
 function = "register_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.node]
 function = "registerDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.go]
 function = "RegisterDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.ruby]
 function = "register_document_extractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.php]
 function = "registerDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.java]
 function = "registerDocumentExtractor"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.csharp]
 function = "RegisterDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_document_extractor.overrides.swift]
 function = "registerDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.dart]
 function = "registerDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.wasm]
 function = "registerDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.r]
 function = "register_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { extractor = "r_backend" }
 
 [crates.e2e.calls.register_document_extractor.overrides.elixir]
 function = "register_document_extractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_document_extractor.overrides.zig]
 function = "register_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_document_extractor.overrides.kotlin_android]
@@ -3440,60 +3440,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_document_extractor.overrides.python]
 function = "unregister_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.rust]
 function = "unregister_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.node]
 function = "unregisterDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.go]
 function = "UnregisterDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.ruby]
 function = "unregister_document_extractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.php]
 function = "unregisterDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.java]
 function = "unregisterDocumentExtractor"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.csharp]
 function = "UnregisterDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_document_extractor.overrides.swift]
 function = "unregisterDocumentExtractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.dart]
 function = "unregisterDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.wasm]
 function = "unregisterDocumentExtractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.r]
 function = "unregister_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.elixir]
 function = "unregister_document_extractor"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.zig]
 function = "unregister_document_extractor"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_document_extractor.overrides.kotlin_android]
 function = "unregister"
@@ -3511,60 +3511,60 @@ args = []
 
 [crates.e2e.calls.clear_document_extractors.overrides.python]
 function = "clear_document_extractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.rust]
 function = "clear_document_extractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.node]
 function = "clearDocumentExtractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.go]
 function = "ClearDocumentExtractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.ruby]
 function = "clear_document_extractors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.php]
 function = "clearDocumentExtractors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.java]
 function = "clearDocumentExtractors"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.csharp]
 function = "ClearDocumentExtractors"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_document_extractors.overrides.swift]
 function = "clearDocumentExtractors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.dart]
 function = "clearDocumentExtractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.wasm]
 function = "clearDocumentExtractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.r]
 function = "clear_document_extractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.elixir]
 function = "clear_document_extractors"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.zig]
 function = "clear_document_extractors"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_document_extractors.overrides.kotlin_android]
 function = "clearAll"
@@ -3582,61 +3582,61 @@ args = []
 
 [crates.e2e.calls.register_renderer.overrides.python]
 function = "register_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.rust]
 function = "register_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.node]
 function = "registerRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.go]
 function = "RegisterRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.ruby]
 function = "register_renderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_renderer.overrides.php]
 function = "registerRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_renderer.overrides.java]
 function = "registerRenderer"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.register_renderer.overrides.csharp]
 function = "RegisterRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.register_renderer.overrides.swift]
 function = "registerRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_renderer.overrides.dart]
 function = "registerRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.wasm]
 function = "registerRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.register_renderer.overrides.r]
 function = "register_renderer"
-module = "kreuzberg"
+module = "xberg"
 arg_name_map = { renderer = "r_backend" }
 
 [crates.e2e.calls.register_renderer.overrides.elixir]
 function = "register_renderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.register_renderer.overrides.zig]
 function = "register_renderer"
-module = "kreuzberg"
+module = "xberg"
 returns_result = false
 
 [crates.e2e.calls.register_renderer.overrides.kotlin_android]
@@ -3655,60 +3655,60 @@ args = [{ name = "name", field = "input.name", type = "string" }]
 
 [crates.e2e.calls.unregister_renderer.overrides.python]
 function = "unregister_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.rust]
 function = "unregister_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.node]
 function = "unregisterRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.go]
 function = "UnregisterRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.ruby]
 function = "unregister_renderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.php]
 function = "unregisterRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.java]
 function = "unregisterRenderer"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.csharp]
 function = "UnregisterRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.unregister_renderer.overrides.swift]
 function = "unregisterRenderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.dart]
 function = "unregisterRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.wasm]
 function = "unregisterRenderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.r]
 function = "unregister_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.elixir]
 function = "unregister_renderer"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.zig]
 function = "unregister_renderer"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.unregister_renderer.overrides.kotlin_android]
 function = "unregister"
@@ -3726,60 +3726,60 @@ args = []
 
 [crates.e2e.calls.clear_renderers.overrides.python]
 function = "clear_renderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.rust]
 function = "clear_renderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.node]
 function = "clearRenderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.go]
 function = "ClearRenderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.ruby]
 function = "clear_renderers"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.php]
 function = "clearRenderers"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.java]
 function = "clearRenderers"
-module = "dev.kreuzberg.Kreuzberg"
+module = "dev.xberg.Xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.csharp]
 function = "ClearRenderers"
-module = "Kreuzberg"
+module = "Xberg"
 
 
 [crates.e2e.calls.clear_renderers.overrides.swift]
 function = "clearRenderers"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.dart]
 function = "clearRenderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.wasm]
 function = "clearRenderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.r]
 function = "clear_renderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.elixir]
 function = "clear_renderers"
-module = "Kreuzberg"
+module = "Xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.zig]
 function = "clear_renderers"
-module = "kreuzberg"
+module = "xberg"
 
 [crates.e2e.calls.clear_renderers.overrides.kotlin_android]
 function = "clearAll"
@@ -3789,7 +3789,7 @@ class = "RendererBridge"
 result_is_simple = true
 result_is_array = true
 function = "embed_texts_async"
-module = "kreuzberg"
+module = "xberg"
 async = true
 returns_result = true
 skip_languages = ["wasm", "swift"]
@@ -3827,7 +3827,7 @@ options_type = "EmbeddingConfig"
 result_is_simple = true
 result_is_option = true
 function = "get_embedding_preset"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = false
 args = [{ name = "name", field = "input.preset_name", type = "string" }]
@@ -3836,7 +3836,7 @@ args = [{ name = "name", field = "input.preset_name", type = "string" }]
 result_is_simple = true
 result_is_array = true
 function = "list_embedding_presets"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = false
 args = []
@@ -3844,7 +3844,7 @@ args = []
 [crates.e2e.calls.detect_mime_type]
 result_is_simple = true
 function = "detect_mime_type"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 args = [
@@ -3856,7 +3856,7 @@ args = [
 result_is_bytes = true
 result_is_simple = true
 function = "render_pdf_page_to_png"
-module = "kreuzberg"
+module = "xberg"
 async = false
 returns_result = true
 skip_languages = ["wasm"]
@@ -4001,49 +4001,49 @@ function = "extract_pptx_from_bytes"
 function = "extract_text_from_pdf"
 
 [crates.e2e.packages.rust]
-path = "../../crates/kreuzberg"
+path = "../../crates/xberg"
 
 [crates.e2e.packages.python]
-name = "kreuzberg"
+name = "xberg"
 path = "../../packages/python"
 
 [crates.e2e.packages.node]
-name = "@kreuzberg/node"
-path = "../../crates/kreuzberg-node"
+name = "@xberg/node"
+path = "../../crates/xberg-node"
 
 [crates.e2e.packages.go]
-module = "github.com/xberg-io/kreuzberg/v5"
-path = "../../packages/go/v5"
+module = "github.com/xberg-io/xberg"
+path = "../../packages/go"
 
 [crates.e2e.packages.csharp]
-name = "Kreuzberg"
-path = "../../packages/csharp/Kreuzberg/Kreuzberg.csproj"
+name = "Xberg"
+path = "../../packages/csharp/Xberg/Xberg.csproj"
 
 [crates.e2e.packages.java]
-module = "dev.kreuzberg"
+module = "dev.xberg"
 path = "../../packages/java"
 
 [crates.e2e.packages.ruby]
-name = "kreuzberg"
+name = "xberg"
 path = "../../packages/ruby"
 
 [crates.e2e.packages.elixir]
-module = "Kreuzberg"
+module = "Xberg"
 path = "../../packages/elixir"
 
 [crates.e2e.packages.php]
-name = "xberg-io/kreuzberg"
+name = "xberg-io/xberg"
 path = "../../packages/php"
 
 [crates.e2e.packages.r]
-module = "kreuzberg"
+module = "xberg"
 path = "../../packages/r"
 
 [crates.e2e.packages.dart]
 path = "../../packages/dart"
 
 [crates.e2e.packages.kotlin_android]
-module = "dev.kreuzberg"
+module = "dev.xberg"
 path = "../../packages/kotlin-android"
 
 [crates.e2e.packages.swift]
@@ -4055,8 +4055,8 @@ path = "../../packages/zig"
 [crates.e2e.registry.packages.zig]
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
-# https://github.com/xberg-io/kreuzberg/releases/download/v{version}/kreuzberg-zig-v{version}.tar.gz
-hash = "kreuzberg-5.0.0-rc.36-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+# https://github.com/xberg-io/xberg/releases/download/v{version}/xberg-zig-v{version}.tar.gz
+hash = "xberg-1.0.0-rc.1-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements
@@ -4064,15 +4064,15 @@ hash = "kreuzberg-5.0.0-rc.36-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 # cannot satisfy at import time. The `pkg/nodejs/` variant inlines those
 # imports as `require()` calls handled by wasm-bindgen's Node loader.
 [crates.e2e.packages.wasm]
-name = "@kreuzberg/wasm"
-path = "../../crates/kreuzberg-wasm/pkg/nodejs"
+name = "@xberg/wasm"
+path = "../../crates/xberg-wasm/pkg/nodejs"
 
 [crates.e2e.format]
 python = "ruff check --fix {dir} && ruff format {dir}"
 go = "gofmt -w {dir}"
 rust = "(cd {dir} && cargo fmt --all)"
 
-# The Zig e2e harness links kreuzberg-ffi, which is built with `--features all`
+# The Zig e2e harness links xberg-ffi, which is built with `--features all`
 # and therefore pulls in libheif. On strict-linker targets (notably aarch64)
 # the FFI's undefined libheif symbols cannot be resolved unless the e2e build
 # links libheif explicitly. libheif is installed to /usr/local/lib by the CI
@@ -4088,22 +4088,22 @@ chunks_have_content = "chunks_have_content"
 
 [crates.e2e.registry]
 output = "test_apps"
-github_repo = "https://github.com/xberg-io/kreuzberg"
+github_repo = "https://github.com/xberg-io/xberg"
 
 [crates.scaffold]
 description = "High-performance document intelligence library"
 license = "Elastic-2.0"
-repository = "https://github.com/xberg-io/kreuzberg"
+repository = "https://github.com/xberg-io/xberg"
 homepage = "https://xberg.io"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 keywords = ["document", "extraction", "pdf", "ocr", "text"]
 
 [crates.scaffold.cargo]
 
-# Force dynamic CRT (/MD) for cc-rs MSVC builds. kreuzberg-tesseract uses
+# Force dynamic CRT (/MD) for cc-rs MSVC builds. xberg-tesseract uses
 # cmake-rs which picks /MD, but cc-rs builds (e.g. esaxx-rs via gliner via
 # tokenizers) default to /MT. When both rlibs are linked into the same
-# cdylib (kreuzberg_php.dll, kreuzberg_nif.dll) the mismatch trips
+# cdylib (xberg_php.dll, xberg_nif.dll) the mismatch trips
 # LNK1319 "RuntimeLibrary mismatch detected". cc-rs honors target-suffixed
 # env vars (CFLAGS_<target>, CXXFLAGS_<target>) only when actually
 # compiling for that target, so this is safe on non-Windows builds.
@@ -4122,20 +4122,20 @@ banner_url = "https://github.com/user-attachments/assets/419fc06c-8313-4324-b159
 
 [crates.readme.targets.root]
 template = "root.md"
-name = "Kreuzberg"
+name = "Xberg"
 output_path = "README.md"
 
 [crates.readme.targets.cli]
 template = "cli.md"
-name = "kreuzberg-cli"
-output_path = "crates/kreuzberg-cli/README.md"
+name = "xberg-cli"
+output_path = "crates/xberg-cli/README.md"
 
 [crates.readme.languages.rust]
 template = "rust.md"
-output_path = "crates/kreuzberg/README.md"
+output_path = "crates/xberg/README.md"
 name = "Rust"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "High-performance document intelligence library for Rust. Extract text, tables, metadata, and code intelligence from 96 file formats and 306 programming languages."
 package_manager = ["cargo"]
@@ -4147,8 +4147,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 [crates.readme.languages.python]
 template = "python.md"
 name = "Python"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system."
 package_manager = ["pip"]
@@ -4159,10 +4159,10 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 
 [crates.readme.languages.typescript]
 template = "language_package.md"
-output_path = "crates/kreuzberg-node/README.md"
+output_path = "crates/xberg-node/README.md"
 name = "TypeScript (Node.js)"
-package_name = "@kreuzberg/node"
-badge_url = "https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6"
+package_name = "@xberg/node"
+badge_url = "https://img.shields.io/npm/v/@xberg/node?label=TypeScript&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions."
 package_manager = ["pnpm"]
@@ -4178,10 +4178,10 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 
 [crates.readme.languages.go]
 template = "go.md"
-output_path = "packages/go/v5/README.md"
+output_path = "packages/go/README.md"
 name = "Go"
-package_name = "github.com/xberg-io/kreuzberg/v5"
-badge_url = "https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6"
+package_name = "github.com/xberg-io/xberg"
+badge_url = "https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance."
 package_manager = ["go get"]
@@ -4193,8 +4193,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 [crates.readme.languages.java]
 template = "language_package.md"
 name = "Java"
-package_name = "dev.kreuzberg:kreuzberg"
-badge_url = "https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6"
+package_name = "dev.xberg:xberg"
+badge_url = "https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance."
 package_manager = ["maven", "gradle"]
@@ -4206,8 +4206,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 [crates.readme.languages.php]
 template = "language_package.md"
 name = "PHP"
-package_name = "xberg-io/kreuzberg"
-badge_url = "https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6"
+package_name = "xberg-io/xberg"
+badge_url = "https://img.shields.io/packagist/v/xberg-io/xberg?label=PHP&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. PHP bindings with modern PHP 8.2+ support and type-safe API."
 package_manager = ["composer"]
@@ -4219,8 +4219,8 @@ snippets = { basic_extraction = "quickstart/basic_extraction_oop.php", batch_pro
 [crates.readme.languages.ruby]
 template = "ruby.md"
 name = "Ruby"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Ruby bindings with idiomatic Ruby API and native performance."
 package_manager = ["rubygems", "bundler"]
@@ -4232,8 +4232,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.md", async_extracti
 [crates.readme.languages.csharp]
 template = "language_package.md"
 name = "C#"
-package_name = "Kreuzberg"
-badge_url = "https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6"
+package_name = "Xberg"
+badge_url = "https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. .NET bindings with full type safety, async/await support, and .NET 10.0+ compatibility."
 package_manager = ["nuget"]
@@ -4245,8 +4245,8 @@ snippets = { basic_extraction = "getting-started/basic_usage.cs", async_extracti
 [crates.readme.languages.elixir]
 template = "language_package.md"
 name = "Elixir"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/hexpm/v/xberg?label=Elixir&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Elixir bindings with native BEAM concurrency, OTP integration, and idiomatic Elixir API."
 package_manager = ["mix"]
@@ -4257,10 +4257,10 @@ snippets = { basic_extraction = "getting-started/basic_usage.exs", async_extract
 
 [crates.readme.languages.wasm]
 template = "language_package.md"
-output_path = "crates/kreuzberg-wasm/README.md"
+output_path = "crates/xberg-wasm/README.md"
 name = "WebAssembly"
-package_name = "@kreuzberg/wasm"
-badge_url = "https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6"
+package_name = "@xberg/wasm"
+badge_url = "https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support."
 package_manager = ["pnpm"]
@@ -4272,8 +4272,8 @@ snippets = { basic_extraction = "getting-started/basic-extract.ts", browser_extr
 [crates.readme.languages.r]
 template = "language_package.md"
 name = "R"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/badge/R-kreuzberg-007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/badge/R-xberg-007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. R bindings with native R API, data frame integration, and high-performance document extraction."
 package_manager = ["install.packages"]
@@ -4284,10 +4284,10 @@ snippets = { basic_extraction = "getting-started/basic_extraction.md", async_ext
 
 [crates.readme.languages.ffi]
 template = "language_package.md"
-output_path = "crates/kreuzberg-ffi/README.md"
+output_path = "crates/xberg-ffi/README.md"
 name = "FFI (C/C++)"
-package_name = "kreuzberg-ffi"
-badge_url = "https://img.shields.io/badge/C%2FC%2B%2B-kreuzberg--ffi-007ec6"
+package_name = "xberg-ffi"
+badge_url = "https://img.shields.io/badge/C%2FC%2B%2B-xberg--ffi-007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. C/C++ FFI bindings providing a stable ABI for native integration, shared library distribution, and cross-language interop."
 package_manager = ["cargo"]
@@ -4296,8 +4296,8 @@ features = { ocr = true, async = true, plugin_system = true, embeddings = true, 
 [crates.readme.languages.kotlin_android]
 template = "language_package.md"
 name = "Kotlin (Android)"
-package_name = "dev.kreuzberg:kreuzberg-android"
-badge_url = "https://img.shields.io/badge/Android-kreuzberg-3DDC84"
+package_name = "dev.xberg:xberg-android"
+badge_url = "https://img.shields.io/badge/Android-xberg-3DDC84"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Android library (AAR) with bundled jniLibs/arm64-v8a and jniLibs/x86_64 — Gradle automatically picks up the native cdylib for emulator and device builds. Server-side Kotlin/JVM consumers can use the Java binding directly via standard Kotlin/Java interop."
 package_manager = ["gradle", "maven"]
@@ -4309,8 +4309,8 @@ snippets = { basic_extraction = "api/extract_file_sync.md", async_extraction = "
 [crates.readme.languages.swift]
 template = "language_package.md"
 name = "Swift"
-package_name = "Kreuzberg"
-badge_url = "https://img.shields.io/badge/Swift-kreuzberg-007ec6"
+package_name = "Xberg"
+badge_url = "https://img.shields.io/badge/Swift-xberg-007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Swift bindings via swift-bridge for macOS, iOS, and Linux, with native Swift types and async/await support."
 package_manager = ["spm"]
@@ -4322,8 +4322,8 @@ snippets = { basic_extraction = "api/extract_file_sync.md", async_extraction = "
 [crates.readme.languages.dart]
 template = "language_package.md"
 name = "Dart / Flutter"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/badge/Dart-kreuzberg-007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/badge/Dart-xberg-007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Dart bindings via flutter_rust_bridge for both Flutter apps and pure-Dart server contexts, with isolate-safe Future/Stream APIs."
 package_manager = ["pub"]
@@ -4335,8 +4335,8 @@ snippets = { basic_extraction = "api/extract_file_sync.md", async_extraction = "
 [crates.readme.languages.zig]
 template = "language_package.md"
 name = "Zig"
-package_name = "kreuzberg"
-badge_url = "https://img.shields.io/badge/Zig-kreuzberg-007ec6"
+package_name = "xberg"
+badge_url = "https://img.shields.io/badge/Zig-xberg-007ec6"
 docs_url = "https://xberg.io/"
 description = "Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Zig bindings consuming the C FFI surface via @cImport, idiomatic error sets, optional types, and slice-based memory management."
 package_manager = ["zig"]
@@ -4347,40 +4347,40 @@ snippets = { basic_extraction = "api/extract_file_sync.md", async_extraction = "
 
 [[crates.trait_bridges]]
 trait_name = "OcrBackend"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_ocr_backend_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_ocr_backend_registry"
 register_fn = "register_ocr_backend"
 unregister_fn = "unregister_ocr_backend"
 clear_fn = "clear_ocr_backends"
 
 [[crates.trait_bridges]]
 trait_name = "PostProcessor"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_post_processor_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_post_processor_registry"
 register_fn = "register_post_processor"
 unregister_fn = "unregister_post_processor"
 clear_fn = "clear_post_processors"
 
 [[crates.trait_bridges]]
 trait_name = "Validator"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_validator_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_validator_registry"
 register_fn = "register_validator"
 unregister_fn = "unregister_validator"
 clear_fn = "clear_validators"
 
 [[crates.trait_bridges]]
 trait_name = "EmbeddingBackend"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_embedding_backend_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_embedding_backend_registry"
 register_fn = "register_embedding_backend"
 unregister_fn = "unregister_embedding_backend"
 clear_fn = "clear_embedding_backends"
 
 [[crates.trait_bridges]]
 trait_name = "DocumentExtractor"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_document_extractor_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_document_extractor_registry"
 register_fn = "register_document_extractor"
 unregister_fn = "unregister_document_extractor"
 clear_fn = "clear_document_extractors"
@@ -4391,16 +4391,16 @@ ffi_skip_methods = ["as_sync_extractor"]
 
 [[crates.trait_bridges]]
 trait_name = "Renderer"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_renderer_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_renderer_registry"
 register_fn = "register_renderer"
 unregister_fn = "unregister_renderer"
 clear_fn = "clear_renderers"
 
 [[crates.trait_bridges]]
 trait_name = "RerankerBackend"
-super_trait = "kreuzberg::plugins::Plugin"
-registry_getter = "kreuzberg::plugins::registry::get_reranker_backend_registry"
+super_trait = "xberg::plugins::Plugin"
+registry_getter = "xberg::plugins::registry::get_reranker_backend_registry"
 register_fn = "register_reranker_backend"
 unregister_fn = "unregister_reranker_backend"
 clear_fn = "clear_reranker_backends"

@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
 	maxChars := uint(500)
 	overlap := uint(50)
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &overlap,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		log.Fatal(err)
 	}

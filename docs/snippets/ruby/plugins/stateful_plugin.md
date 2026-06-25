@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class StatefulPlugin
   def initialize
@@ -18,12 +18,12 @@ class StatefulPlugin
 end
 
 plugin = StatefulPlugin.new
-Kreuzberg.register_post_processor('counter', plugin)
+Xberg.register_post_processor('counter', plugin)
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-Kreuzberg.extract_file_sync('document.pdf', config: config)
+Xberg.extract_file_sync('document.pdf', config: config)
 puts "Processed: #{plugin.count}"
 ```

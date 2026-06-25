@@ -74,7 +74,7 @@ Any vision-capable liter-llm provider works (see the [VLM OCR provider table](ll
 API-key precedence chain matches [LLM Integration](llm-integration.md#api-key-configuration):
 
 1. `CaptioningConfig.llm.api_key`
-2. `KREUZBERG_LLM_API_KEY`
+2. `XBERG_LLM_API_KEY`
 3. Per-provider env var
 
 Local engines (Ollama, LM Studio with a VLM, vLLM) need no key.

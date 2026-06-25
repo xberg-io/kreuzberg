@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require "kreuzberg"
+require "xberg"
 
 # Custom validator ensuring extracted content meets minimum length requirement
 class MinLengthValidator
@@ -18,13 +18,13 @@ end
 
 # Register the validator with priority
 validator = MinLengthValidator.new(min_length: 100)
-Kreuzberg.register_validator("min_length_validator", validator, 100)
+Xberg.register_validator("min_length_validator", validator, 100)
 
 # Usage in extraction
-config = Kreuzberg::ExtractionConfig.new
+config = Xberg::ExtractionConfig.new
 
 begin
-  result = Kreuzberg.extract_file_sync("document.pdf", config: config)
+  result = Xberg.extract_file_sync("document.pdf", config: config)
   puts "Extraction successful: #{result["content"].length} characters"
 rescue StandardError => e
   puts "Validation failed: #{e.message}"

@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	enableQualityProcessing := true
 
-	config := &kreuzberg.ExtractionConfig{
+	config := &xberg.ExtractionConfig{
 		EnableQualityProcessing: &enableQualityProcessing,
 	}
 
-	result, err := kreuzberg.ExtractFileSync("scanned_document.pdf", config)
+	result, err := xberg.ExtractFileSync("scanned_document.pdf", config)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

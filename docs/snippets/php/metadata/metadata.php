@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Kreuzberg\extract_file;
+use function Xberg\extract_file;
 
 $result = extract_file('document.pdf');
 

@@ -4,14 +4,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxChars := uint(1000)
 	overlap := uint(200)
-	config := kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &overlap,
 		},
@@ -29,28 +29,28 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxChars := uint(500)
 	overlap := uint(50)
 	model := "Xenova/gpt-4o"
-	chunkerType := kreuzberg.ChunkerTypeMarkdown
+	chunkerType := xberg.ChunkerTypeMarkdown
 
-	config := kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &overlap,
 			ChunkerType:   &chunkerType,
-			Sizing: kreuzberg.ChunkSizing{
+			Sizing: xberg.ChunkSizing{
 				Type:  "tokenizer",
 				Model: &model,
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFile("document.md", nil, config)
+	result, err := xberg.ExtractFile("document.md", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
@@ -73,16 +73,16 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxChars := uint(500)
 	overlap := uint(50)
-	chunkerType := kreuzberg.ChunkerTypeMarkdown
+	chunkerType := xberg.ChunkerTypeMarkdown
 
-	config := kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters:         &maxChars,
 			Overlap:               &overlap,
 			ChunkerType:           &chunkerType,
@@ -90,7 +90,7 @@ func main() {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFile("document.md", nil, config)
+	result, err := xberg.ExtractFile("document.md", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

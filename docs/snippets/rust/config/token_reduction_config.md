@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, TokenReductionConfig};
+use xberg::{extract_file, ExtractionConfig, TokenReductionConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         token_reduction: Some(TokenReductionConfig {
             mode: "moderate".to_string(),

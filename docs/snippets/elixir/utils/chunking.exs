@@ -72,11 +72,11 @@ defmodule ChunkingUtils do
 end
 
 # Example usage
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
-{:ok, result} = Kreuzberg.extract_file("doc.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("doc.pdf", nil, config)
 chunks = result.chunks || []
 
 IO.puts("=== Chunk Statistics ===")

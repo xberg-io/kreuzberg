@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/md/code_and_formula.md",
 	"file_type": "md",
 	"file_size": 5538,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

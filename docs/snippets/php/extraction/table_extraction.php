@@ -12,14 +12,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\TesseractConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\TesseractConfig;
 
 $config = new ExtractionConfig(extractTables: true);
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('financial_report.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('financial_report.pdf');
 
 echo "Table Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -74,8 +74,8 @@ $ocrConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($ocrConfig);
-$result = $kreuzberg->extractFile('scanned_table.pdf');
+$xberg = new Xberg($ocrConfig);
+$result = $xberg->extractFile('scanned_table.pdf');
 
 echo "OCR Table Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -126,7 +126,7 @@ function findTablesWithKeyword(array $tables, string $keyword): array
 $salesTables = findTablesWithKeyword($result->tables, 'sales');
 echo "Tables containing 'sales': " . count($salesTables) . "\n";
 
-function tableToAssociativeArray(\Kreuzberg\Types\Table $table): array
+function tableToAssociativeArray(\Xberg\Types\Table $table): array
 {
     $cells = $table->cells;
     if (empty($cells)) {
@@ -147,7 +147,7 @@ function tableToAssociativeArray(\Kreuzberg\Types\Table $table): array
     return $result;
 }
 
-$result = $kreuzberg->extractFile('quarterly_report.pdf');
+$result = $xberg->extractFile('quarterly_report.pdf');
 
 foreach ($result->tables as $index => $table) {
     $data = tableToAssociativeArray($table);

@@ -5,7 +5,7 @@
 # wrap__<symbol> entry registered in extendr_module! to an R-callable
 # function or class env.
 
-#' @useDynLib kreuzberg, .registration = TRUE
+#' @useDynLib xberg, .registration = TRUE
 NULL
 
 #' Extract content from a byte array
@@ -22,10 +22,10 @@ NULL
 #' @return An `ExtractionResult` containing the extracted content and metadata.
 #'
 #' @section Errors:
-#' Returns `KreuzbergError::Validation` if MIME type is invalid.
-#' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
+#' Returns `XbergError::Validation` if MIME type is invalid.
+#' Returns `XbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
-extract_bytes <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "kreuzberg")
+extract_bytes <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "xberg")
 #' Extract content from a file
 #'
 #' This is the main entry point for file-based extraction. It performs the following steps:
@@ -41,10 +41,10 @@ extract_bytes <- function(content, mime_type, config = ExtractionConfig$default(
 #' @return An `ExtractionResult` containing the extracted content and metadata.
 #'
 #' @section Errors:
-#' Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-#' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
+#' Returns `XbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+#' Returns `XbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
-extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
+extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "xberg")
 #' Detect MIME type from raw file bytes
 #'
 #' Uses magic byte signatures to detect file type from content.
@@ -56,19 +56,19 @@ extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$defau
 #' @return The detected MIME type string.
 #'
 #' @section Errors:
-#' Returns `KreuzbergError::UnsupportedFormat` if MIME type cannot be determined.
+#' Returns `XbergError::UnsupportedFormat` if MIME type cannot be determined.
 #' @export
-detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_from_bytes", content, PACKAGE = "kreuzberg")
+detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_from_bytes", content, PACKAGE = "xberg")
 #' Get file extensions for a given MIME type
 #'
 #' Returns all known file extensions that map to the specified MIME type.
 #' @param mime_type The MIME type to look up.
 #' @return A vector of file extensions (without leading dot) for the MIME type.
 #' @export
-get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
+get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "xberg")
 #' List all supported document formats
 #'
-#' Returns every file extension Kreuzberg recognizes together with its
+#' Returns every file extension Xberg recognizes together with its
 #' corresponding MIME type, derived from the central format registry.
 #' Formats that have no registered file extension (such as source code,
 #' which is detected dynamically) are not included.
@@ -76,24 +76,24 @@ get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_m
 #' The list is sorted alphabetically by file extension.
 #' @return A vector of [`SupportedFormat`] entries sorted by extension.
 #' @export
-list_supported_formats <- function() .Call("wrap__list_supported_formats", PACKAGE = "kreuzberg")
+list_supported_formats <- function() .Call("wrap__list_supported_formats", PACKAGE = "xberg")
 #' List the names of all registered embedding backends
 #'
-#' Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+#' Used by `xberg-cli`, the api/mcp endpoints, and generated language
 #' bindings.
 #' @return List of character string.
 #' @export
-list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PACKAGE = "kreuzberg")
+list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PACKAGE = "xberg")
 #' List names of all registered document extractors
 #' @return List of character string.
 #' @export
-list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "kreuzberg")
+list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "xberg")
 #' List all registered OCR backends
 #'
 #' Returns the names of all OCR backends currently registered in the global registry.
 #' @return A vector of OCR backend names.
 #' @export
-list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")
+list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "xberg")
 #' Register every built-in post-processor enabled by the active feature set
 #'
 #' This is the single entry point that callers (including
@@ -103,7 +103,7 @@ list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreu
 #' safe to call on any target.
 #' @return Invisible NULL.
 #' @export
-register_builtin <- function() .Call("wrap__register_builtin", PACKAGE = "kreuzberg")
+register_builtin <- function() .Call("wrap__register_builtin", PACKAGE = "xberg")
 #' List all registered post-processor names
 #'
 #' Returns a vector of all post-processor names currently registered in the
@@ -111,27 +111,27 @@ register_builtin <- function() .Call("wrap__register_builtin", PACKAGE = "kreuzb
 #' @return - `Ok(Vec<String>)` - Vector of post-processor names
 #'   - `Err(...)` if the registry lock is poisoned.
 #' @export
-list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE = "kreuzberg")
+list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE = "xberg")
 #' List names of all registered renderers
 #' @return List of character string.
 #'
 #' @section Errors:
 #' Returns an error if the registry lock is poisoned.
 #' @export
-list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg")
+list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "xberg")
 #' List the names of all registered reranker backends
 #'
-#' Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+#' Used by `xberg-cli`, the api/mcp endpoints, and generated language
 #' bindings.
 #'
 #' Since v5.0.0.
 #' @return List of character string.
 #' @export
-list_reranker_backends <- function() .Call("wrap__list_reranker_backends", PACKAGE = "kreuzberg")
+list_reranker_backends <- function() .Call("wrap__list_reranker_backends", PACKAGE = "xberg")
 #' List names of all registered validators
 #' @return List of character string.
 #' @export
-list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzberg")
+list_validators <- function() .Call("wrap__list_validators", PACKAGE = "xberg")
 #' Run page classification against an extraction result
 #'
 #' Mutates `result.page_classifications` with one entry per non-empty page and
@@ -145,7 +145,7 @@ list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzber
 #' LLM. Partially produced classifications are discarded so callers do not see
 #' a half-populated vector.
 #' @export
-classify_pages <- function(result = ExtractionResult$default(), config) .Call("wrap__classify_pages", result, config, PACKAGE = "kreuzberg")
+classify_pages <- function(result = ExtractionResult$default(), config) .Call("wrap__classify_pages", result, config, PACKAGE = "xberg")
 #' Classify a single piece of text without requiring an `ExtractionResult`
 #'
 #' Use this when the caller already has plain text (e.g. a RAG ingest pipeline
@@ -159,21 +159,21 @@ classify_pages <- function(result = ExtractionResult$default(), config) .Call("w
 #' Same as [`classify_pages`]: a validation error when `config.labels` is empty,
 #' or any error returned by prompt rendering or the underlying LLM call.
 #' @export
-classify_text <- function(text, config) .Call("wrap__classify_text", text, config, PACKAGE = "kreuzberg")
-#' Download a NER model into the kreuzberg cache
+classify_text <- function(text, config) .Call("wrap__classify_text", text, config, PACKAGE = "xberg")
+#' Download a NER model into the xberg cache
 #' @param _name Character string.
 #' @param _cache_dir File path as character string.
 #' @return File path as character string.
 #' @export
-download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
+download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "xberg")
 #' Default NER model identifier
 #' @return Character string.
 #' @export
-default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
-#' All NER models kreuzberg knows about
+default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "xberg")
+#' All NER models xberg knows about
 #' @return List of character string.
 #' @export
-known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
+known_models <- function() .Call("wrap__known_models", PACKAGE = "xberg")
 #' Run pattern redaction (and optional NER-driven redaction) over `result` and
 #'
 #' rewrite every textual field. Populates `result.redaction_report`.
@@ -181,7 +181,7 @@ known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
 #' @param config RedactionConfig object (list with class attribute).
 #' @return Invisible NULL.
 #' @export
-redact <- function(result = ExtractionResult$default(), config = RedactionConfig$default()) .Call("wrap__redact", result, config, PACKAGE = "kreuzberg")
+redact <- function(result = ExtractionResult$default(), config = RedactionConfig$default()) .Call("wrap__redact", result, config, PACKAGE = "xberg")
 #' Score and return the top-N sentences from `text`, joined in original order
 #'
 #' `language` is an ISO 639 (or locale) code used to pick a stopword list;
@@ -193,14 +193,14 @@ redact <- function(result = ExtractionResult$default(), config = RedactionConfig
 #' @param max_tokens Integer.
 #' @return Optional character string. Defaults to NULL.
 #' @export
-summarize <- function(text, language = NULL, max_tokens = NULL) .Call("wrap__summarize", text, language, max_tokens, PACKAGE = "kreuzberg")
+summarize <- function(text, language = NULL, max_tokens = NULL) .Call("wrap__summarize", text, language, max_tokens, PACKAGE = "xberg")
 #' Count whitespace-separated tokens (used for token-budget bookkeeping by
 #'
 #' callers).
 #' @param text Character string.
 #' @return Integer.
 #' @export
-token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzberg")
+token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "xberg")
 #' Translate the extraction result in place
 #'
 #' Populates `result.translation` with the translated `content`, optionally the
@@ -211,7 +211,7 @@ token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzb
 #' @param config TranslationConfig object (list with class attribute).
 #' @return Invisible NULL.
 #' @export
-translate_result <- function(result = ExtractionResult$default(), config) .Call("wrap__translate_result", result, config, PACKAGE = "kreuzberg")
+translate_result <- function(result = ExtractionResult$default(), config) .Call("wrap__translate_result", result, config, PACKAGE = "xberg")
 #' Detect the MIME type of a file at the given path
 #'
 #' Uses the file extension and optionally the file content to determine the MIME type.
@@ -220,7 +220,7 @@ translate_result <- function(result = ExtractionResult$default(), config) .Call(
 #' @param check_exists Logical (TRUE/FALSE).
 #' @return Character string.
 #' @export
-detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "kreuzberg")
+detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "xberg")
 #' register_ocr_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -245,7 +245,7 @@ detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type",
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_ocr_backend <- function(r_backend) .Call("wrap__register_ocr_backend", r_backend, PACKAGE = "kreuzberg")
+register_ocr_backend <- function(r_backend) .Call("wrap__register_ocr_backend", r_backend, PACKAGE = "xberg")
 #' unregister_ocr_backend
 #'
 #' Unregister a previously registered plugin by name.
@@ -254,14 +254,14 @@ register_ocr_backend <- function(r_backend) .Call("wrap__register_ocr_backend", 
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_ocr_backend <- function(name) .Call("wrap__unregister_ocr_backend", name, PACKAGE = "kreuzberg")
+unregister_ocr_backend <- function(name) .Call("wrap__unregister_ocr_backend", name, PACKAGE = "xberg")
 #' clear_ocr_backends
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_ocr_backends <- function() .Call("wrap__clear_ocr_backends", PACKAGE = "kreuzberg")
+clear_ocr_backends <- function() .Call("wrap__clear_ocr_backends", PACKAGE = "xberg")
 #' register_post_processor
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -282,7 +282,7 @@ clear_ocr_backends <- function() .Call("wrap__clear_ocr_backends", PACKAGE = "kr
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_post_processor <- function(r_backend) .Call("wrap__register_post_processor", r_backend, PACKAGE = "kreuzberg")
+register_post_processor <- function(r_backend) .Call("wrap__register_post_processor", r_backend, PACKAGE = "xberg")
 #' unregister_post_processor
 #'
 #' Unregister a previously registered plugin by name.
@@ -291,14 +291,14 @@ register_post_processor <- function(r_backend) .Call("wrap__register_post_proces
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_post_processor <- function(name) .Call("wrap__unregister_post_processor", name, PACKAGE = "kreuzberg")
+unregister_post_processor <- function(name) .Call("wrap__unregister_post_processor", name, PACKAGE = "xberg")
 #' clear_post_processors
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_post_processors <- function() .Call("wrap__clear_post_processors", PACKAGE = "kreuzberg")
+clear_post_processors <- function() .Call("wrap__clear_post_processors", PACKAGE = "xberg")
 #' register_validator
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -317,7 +317,7 @@ clear_post_processors <- function() .Call("wrap__clear_post_processors", PACKAGE
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_validator <- function(r_backend) .Call("wrap__register_validator", r_backend, PACKAGE = "kreuzberg")
+register_validator <- function(r_backend) .Call("wrap__register_validator", r_backend, PACKAGE = "xberg")
 #' unregister_validator
 #'
 #' Unregister a previously registered plugin by name.
@@ -326,14 +326,14 @@ register_validator <- function(r_backend) .Call("wrap__register_validator", r_ba
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_validator <- function(name) .Call("wrap__unregister_validator", name, PACKAGE = "kreuzberg")
+unregister_validator <- function(name) .Call("wrap__unregister_validator", name, PACKAGE = "xberg")
 #' clear_validators
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "kreuzberg")
+clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "xberg")
 #' register_embedding_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -351,7 +351,7 @@ clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "kreuzb
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_embedding_backend <- function(r_backend) .Call("wrap__register_embedding_backend", r_backend, PACKAGE = "kreuzberg")
+register_embedding_backend <- function(r_backend) .Call("wrap__register_embedding_backend", r_backend, PACKAGE = "xberg")
 #' unregister_embedding_backend
 #'
 #' Unregister a previously registered plugin by name.
@@ -360,14 +360,14 @@ register_embedding_backend <- function(r_backend) .Call("wrap__register_embeddin
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_embedding_backend <- function(name) .Call("wrap__unregister_embedding_backend", name, PACKAGE = "kreuzberg")
+unregister_embedding_backend <- function(name) .Call("wrap__unregister_embedding_backend", name, PACKAGE = "xberg")
 #' clear_embedding_backends
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", PACKAGE = "kreuzberg")
+clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", PACKAGE = "xberg")
 #' register_document_extractor
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -388,7 +388,7 @@ clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", P
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_document_extractor <- function(r_backend) .Call("wrap__register_document_extractor", r_backend, PACKAGE = "kreuzberg")
+register_document_extractor <- function(r_backend) .Call("wrap__register_document_extractor", r_backend, PACKAGE = "xberg")
 #' unregister_document_extractor
 #'
 #' Unregister a previously registered plugin by name.
@@ -397,14 +397,14 @@ register_document_extractor <- function(r_backend) .Call("wrap__register_documen
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_document_extractor <- function(name) .Call("wrap__unregister_document_extractor", name, PACKAGE = "kreuzberg")
+unregister_document_extractor <- function(name) .Call("wrap__unregister_document_extractor", name, PACKAGE = "xberg")
 #' clear_document_extractors
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_document_extractors <- function() .Call("wrap__clear_document_extractors", PACKAGE = "kreuzberg")
+clear_document_extractors <- function() .Call("wrap__clear_document_extractors", PACKAGE = "xberg")
 #' register_renderer
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -421,7 +421,7 @@ clear_document_extractors <- function() .Call("wrap__clear_document_extractors",
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_renderer <- function(r_backend) .Call("wrap__register_renderer", r_backend, PACKAGE = "kreuzberg")
+register_renderer <- function(r_backend) .Call("wrap__register_renderer", r_backend, PACKAGE = "xberg")
 #' unregister_renderer
 #'
 #' Unregister a previously registered plugin by name.
@@ -430,14 +430,14 @@ register_renderer <- function(r_backend) .Call("wrap__register_renderer", r_back
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_renderer <- function(name) .Call("wrap__unregister_renderer", name, PACKAGE = "kreuzberg")
+unregister_renderer <- function(name) .Call("wrap__unregister_renderer", name, PACKAGE = "xberg")
 #' clear_renderers
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzberg")
+clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "xberg")
 #' register_reranker_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -454,7 +454,7 @@ clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzber
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-register_reranker_backend <- function(r_backend) .Call("wrap__register_reranker_backend", r_backend, PACKAGE = "kreuzberg")
+register_reranker_backend <- function(r_backend) .Call("wrap__register_reranker_backend", r_backend, PACKAGE = "xberg")
 #' unregister_reranker_backend
 #'
 #' Unregister a previously registered plugin by name.
@@ -463,15 +463,15 @@ register_reranker_backend <- function(r_backend) .Call("wrap__register_reranker_
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-unregister_reranker_backend <- function(name) .Call("wrap__unregister_reranker_backend", name, PACKAGE = "kreuzberg")
+unregister_reranker_backend <- function(name) .Call("wrap__unregister_reranker_backend", name, PACKAGE = "xberg")
 #' clear_reranker_backends
 #'
 #' Remove every registered plugin of this type. Typically used in test teardown.
 #'
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
-clear_reranker_backends <- function() .Call("wrap__clear_reranker_backends", PACKAGE = "kreuzberg")
-#' Aggregate statistics for a kreuzberg cache directory
+clear_reranker_backends <- function() .Call("wrap__clear_reranker_backends", PACKAGE = "xberg")
+#' Aggregate statistics for a xberg cache directory
 #' @field total_files Total number of files currently in the cache directory.
 #' @field total_size_mb Combined size of all cache files in megabytes.
 #' @field available_space_mb Free disk space available on the cache volume, in megabytes.
@@ -499,7 +499,7 @@ CacheStats <- new.env(parent = emptyenv())
 #' @export
 AccelerationConfig <- new.env(parent = emptyenv())
 AccelerationConfig$from_json <- function(json) {
-  .Call("wrap__AccelerationConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__AccelerationConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.AccelerationConfig` <- function(self, name) {
@@ -562,9 +562,9 @@ PageClassificationConfig <- new.env(parent = emptyenv())
 #' @field include_watermarks Include watermark text in extraction output.
 #' @export
 ContentFilterConfig <- new.env(parent = emptyenv())
-ContentFilterConfig$default <- function() .Call("wrap__ContentFilterConfig__default", PACKAGE = "kreuzberg")
+ContentFilterConfig$default <- function() .Call("wrap__ContentFilterConfig__default", PACKAGE = "xberg")
 ContentFilterConfig$from_json <- function(json) {
-  .Call("wrap__ContentFilterConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ContentFilterConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ContentFilterConfig` <- function(self, name) {
@@ -582,7 +582,7 @@ ContentFilterConfig$from_json <- function(json) {
 #' @export
 EmailConfig <- new.env(parent = emptyenv())
 EmailConfig$from_json <- function(json) {
-  .Call("wrap__EmailConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__EmailConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.EmailConfig` <- function(self, name) {
@@ -641,11 +641,11 @@ EmailConfig$from_json <- function(json) {
 #' @field qr_codes Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle
 #' @export
 ExtractionConfig <- new.env(parent = emptyenv())
-ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "kreuzberg")
-ExtractionConfig$needs_image_data <- function(self) .Call("wrap__ExtractionConfig__needs_image_data", self, PACKAGE = "kreuzberg")
-ExtractionConfig$needs_image_processing <- function(self) .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "kreuzberg")
+ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "xberg")
+ExtractionConfig$needs_image_data <- function(self) .Call("wrap__ExtractionConfig__needs_image_data", self, PACKAGE = "xberg")
+ExtractionConfig$needs_image_processing <- function(self) .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "xberg")
 ExtractionConfig$from_json <- function(json) {
-  .Call("wrap__ExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ExtractionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ExtractionConfig` <- function(self, name) {
@@ -702,7 +702,7 @@ needs_image_processing.ExtractionConfig <- function(x, ...) x$needs_image_proces
 #' @export
 FileExtractionConfig <- new.env(parent = emptyenv())
 FileExtractionConfig$from_json <- function(json) {
-  .Call("wrap__FileExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__FileExtractionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.FileExtractionConfig` <- function(self, name) {
@@ -725,9 +725,9 @@ FileExtractionConfig$from_json <- function(json) {
 #' @field render_dpi Target DPI when rasterizing SVG to a pixel-based format (PNG, JPEG, WebP, HEIF).  The tree's
 #' @export
 SvgOptions <- new.env(parent = emptyenv())
-SvgOptions$default <- function() .Call("wrap__SvgOptions__default", PACKAGE = "kreuzberg")
+SvgOptions$default <- function() .Call("wrap__SvgOptions__default", PACKAGE = "xberg")
 SvgOptions$from_json <- function(json) {
-  .Call("wrap__SvgOptions__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__SvgOptions__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.SvgOptions` <- function(self, name) {
@@ -798,9 +798,9 @@ BatchFileItem <- new.env(parent = emptyenv())
 #' @field include_data_base64 When `true`, populate `ExtractedImage::data_base64` with a Base64-encoded copy of the raw
 #' @export
 ImageExtractionConfig <- new.env(parent = emptyenv())
-ImageExtractionConfig$default <- function() .Call("wrap__ImageExtractionConfig__default", PACKAGE = "kreuzberg")
+ImageExtractionConfig$default <- function() .Call("wrap__ImageExtractionConfig__default", PACKAGE = "xberg")
 ImageExtractionConfig$from_json <- function(json) {
-  .Call("wrap__ImageExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ImageExtractionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ImageExtractionConfig` <- function(self, name) {
@@ -818,9 +818,9 @@ ImageExtractionConfig$from_json <- function(json) {
 #' @field preserve_important_words Preserve important words (capitalized, technical terms)
 #' @export
 TokenReductionOptions <- new.env(parent = emptyenv())
-TokenReductionOptions$default <- function() .Call("wrap__TokenReductionOptions__default", PACKAGE = "kreuzberg")
+TokenReductionOptions$default <- function() .Call("wrap__TokenReductionOptions__default", PACKAGE = "xberg")
 TokenReductionOptions$from_json <- function(json) {
-  .Call("wrap__TokenReductionOptions__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TokenReductionOptions__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TokenReductionOptions` <- function(self, name) {
@@ -839,9 +839,9 @@ TokenReductionOptions$from_json <- function(json) {
 #' @field detect_multiple Detect multiple languages in the document
 #' @export
 LanguageDetectionConfig <- new.env(parent = emptyenv())
-LanguageDetectionConfig$default <- function() .Call("wrap__LanguageDetectionConfig__default", PACKAGE = "kreuzberg")
+LanguageDetectionConfig$default <- function() .Call("wrap__LanguageDetectionConfig__default", PACKAGE = "xberg")
 LanguageDetectionConfig$from_json <- function(json) {
-  .Call("wrap__LanguageDetectionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__LanguageDetectionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.LanguageDetectionConfig` <- function(self, name) {
@@ -867,9 +867,9 @@ LanguageDetectionConfig$from_json <- function(json) {
 #' @field embed_css When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening
 #' @export
 HtmlOutputConfig <- new.env(parent = emptyenv())
-HtmlOutputConfig$default <- function() .Call("wrap__HtmlOutputConfig__default", PACKAGE = "kreuzberg")
+HtmlOutputConfig$default <- function() .Call("wrap__HtmlOutputConfig__default", PACKAGE = "xberg")
 HtmlOutputConfig$from_json <- function(json) {
-  .Call("wrap__HtmlOutputConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__HtmlOutputConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.HtmlOutputConfig` <- function(self, name) {
@@ -894,9 +894,9 @@ HtmlOutputConfig$from_json <- function(json) {
 #' @field enable_chart_understanding Route regions classified as charts to the chart-understanding OCR task.
 #' @export
 LayoutDetectionConfig <- new.env(parent = emptyenv())
-LayoutDetectionConfig$default <- function() .Call("wrap__LayoutDetectionConfig__default", PACKAGE = "kreuzberg")
+LayoutDetectionConfig$default <- function() .Call("wrap__LayoutDetectionConfig__default", PACKAGE = "xberg")
 LayoutDetectionConfig$from_json <- function(json) {
-  .Call("wrap__LayoutDetectionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__LayoutDetectionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.LayoutDetectionConfig` <- function(self, name) {
@@ -923,7 +923,7 @@ LayoutDetectionConfig$from_json <- function(json) {
 #' @export
 LlmConfig <- new.env(parent = emptyenv())
 LlmConfig$from_json <- function(json) {
-  .Call("wrap__LlmConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__LlmConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.LlmConfig` <- function(self, name) {
@@ -968,7 +968,7 @@ StructuredExtractionConfig <- new.env(parent = emptyenv())
 #' @export
 NerConfig <- new.env(parent = emptyenv())
 NerConfig$from_json <- function(json) {
-  .Call("wrap__NerConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__NerConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.NerConfig` <- function(self, name) {
@@ -1003,9 +1003,9 @@ NerConfig$from_json <- function(json) {
 #' @field pipeline_min_quality Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the
 #' @export
 OcrQualityThresholds <- new.env(parent = emptyenv())
-OcrQualityThresholds$default <- function() .Call("wrap__OcrQualityThresholds__default", PACKAGE = "kreuzberg")
+OcrQualityThresholds$default <- function() .Call("wrap__OcrQualityThresholds__default", PACKAGE = "xberg")
 OcrQualityThresholds$from_json <- function(json) {
-  .Call("wrap__OcrQualityThresholds__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrQualityThresholds__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrQualityThresholds` <- function(self, name) {
@@ -1059,9 +1059,9 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 #' @field tessdata_path Runtime override for tessdata directory path.
 #' @export
 OcrConfig <- new.env(parent = emptyenv())
-OcrConfig$default <- function() .Call("wrap__OcrConfig__default", PACKAGE = "kreuzberg")
+OcrConfig$default <- function() .Call("wrap__OcrConfig__default", PACKAGE = "xberg")
 OcrConfig$from_json <- function(json) {
-  .Call("wrap__OcrConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrConfig` <- function(self, name) {
@@ -1086,9 +1086,9 @@ OcrConfig$from_json <- function(json) {
 #' @field marker_format Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n"
 #' @export
 PageConfig <- new.env(parent = emptyenv())
-PageConfig$default <- function() .Call("wrap__PageConfig__default", PACKAGE = "kreuzberg")
+PageConfig$default <- function() .Call("wrap__PageConfig__default", PACKAGE = "xberg")
 PageConfig$from_json <- function(json) {
-  .Call("wrap__PageConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PageConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PageConfig` <- function(self, name) {
@@ -1116,9 +1116,9 @@ PageConfig$from_json <- function(json) {
 #' @field reading_order Reorder extracted text by layout-detected reading order.
 #' @export
 PdfConfig <- new.env(parent = emptyenv())
-PdfConfig$default <- function() .Call("wrap__PdfConfig__default", PACKAGE = "kreuzberg")
+PdfConfig$default <- function() .Call("wrap__PdfConfig__default", PACKAGE = "xberg")
 PdfConfig$from_json <- function(json) {
-  .Call("wrap__PdfConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PdfConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PdfConfig` <- function(self, name) {
@@ -1142,9 +1142,9 @@ PdfConfig$from_json <- function(json) {
 #' @field ocr_coverage_threshold OCR coverage threshold for smart OCR triggering (0.0-1.0)
 #' @export
 HierarchyConfig <- new.env(parent = emptyenv())
-HierarchyConfig$default <- function() .Call("wrap__HierarchyConfig__default", PACKAGE = "kreuzberg")
+HierarchyConfig$default <- function() .Call("wrap__HierarchyConfig__default", PACKAGE = "xberg")
 HierarchyConfig$from_json <- function(json) {
-  .Call("wrap__HierarchyConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__HierarchyConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.HierarchyConfig` <- function(self, name) {
@@ -1165,9 +1165,9 @@ HierarchyConfig$from_json <- function(json) {
 #' @field disabled_set Pre-computed AHashSet for O(1) disabled processor lookup
 #' @export
 PostProcessorConfig <- new.env(parent = emptyenv())
-PostProcessorConfig$default <- function() .Call("wrap__PostProcessorConfig__default", PACKAGE = "kreuzberg")
+PostProcessorConfig$default <- function() .Call("wrap__PostProcessorConfig__default", PACKAGE = "xberg")
 PostProcessorConfig$from_json <- function(json) {
-  .Call("wrap__PostProcessorConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PostProcessorConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PostProcessorConfig` <- function(self, name) {
@@ -1204,9 +1204,9 @@ PostProcessorConfig$from_json <- function(json) {
 #' @field table_chunking How to handle markdown tables that exceed the chunk size limit.
 #' @export
 ChunkingConfig <- new.env(parent = emptyenv())
-ChunkingConfig$default <- function() .Call("wrap__ChunkingConfig__default", PACKAGE = "kreuzberg")
+ChunkingConfig$default <- function() .Call("wrap__ChunkingConfig__default", PACKAGE = "xberg")
 ChunkingConfig$from_json <- function(json) {
-  .Call("wrap__ChunkingConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ChunkingConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ChunkingConfig` <- function(self, name) {
@@ -1232,9 +1232,9 @@ ChunkingConfig$from_json <- function(json) {
 #' @field max_embed_duration_secs Maximum wall-clock duration (in seconds) for a single `embed()` call when using
 #' @export
 EmbeddingConfig <- new.env(parent = emptyenv())
-EmbeddingConfig$default <- function() .Call("wrap__EmbeddingConfig__default", PACKAGE = "kreuzberg")
+EmbeddingConfig$default <- function() .Call("wrap__EmbeddingConfig__default", PACKAGE = "xberg")
 EmbeddingConfig$from_json <- function(json) {
-  .Call("wrap__EmbeddingConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__EmbeddingConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.EmbeddingConfig` <- function(self, name) {
@@ -1257,8 +1257,8 @@ EmbeddingConfig$from_json <- function(json) {
 #' @field case_sensitive When `true`, match the value as-is; otherwise match ASCII-case-insensitively.
 #' @export
 RedactionTerm <- new.env(parent = emptyenv())
-RedactionTerm$literal <- function(value) .Call("wrap__RedactionTerm__literal", value, PACKAGE = "kreuzberg")
-RedactionTerm$labeled <- function(label, value) .Call("wrap__RedactionTerm__labeled", label, value, PACKAGE = "kreuzberg")
+RedactionTerm$literal <- function(value) .Call("wrap__RedactionTerm__literal", value, PACKAGE = "xberg")
+RedactionTerm$labeled <- function(label, value) .Call("wrap__RedactionTerm__labeled", label, value, PACKAGE = "xberg")
 #' @export
 `$.RedactionTerm` <- function(self, name) {
   func <- RedactionTerm[[name]]
@@ -1280,7 +1280,7 @@ RedactionTerm$labeled <- function(label, value) .Call("wrap__RedactionTerm__labe
 #' @field case_sensitive When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex.
 #' @export
 RedactionPattern <- new.env(parent = emptyenv())
-RedactionPattern$labeled <- function(label, pattern) .Call("wrap__RedactionPattern__labeled", label, pattern, PACKAGE = "kreuzberg")
+RedactionPattern$labeled <- function(label, pattern) .Call("wrap__RedactionPattern__labeled", label, pattern, PACKAGE = "xberg")
 #' @export
 `$.RedactionPattern` <- function(self, name) {
   func <- RedactionPattern[[name]]
@@ -1307,9 +1307,9 @@ RedactionPattern$labeled <- function(label, pattern) .Call("wrap__RedactionPatte
 #' @field max_rerank_duration_secs Maximum wall-clock duration (in seconds) for a single `rerank()` call when using
 #' @export
 RerankerConfig <- new.env(parent = emptyenv())
-RerankerConfig$default <- function() .Call("wrap__RerankerConfig__default", PACKAGE = "kreuzberg")
+RerankerConfig$default <- function() .Call("wrap__RerankerConfig__default", PACKAGE = "xberg")
 RerankerConfig$from_json <- function(json) {
-  .Call("wrap__RerankerConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__RerankerConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.RerankerConfig` <- function(self, name) {
@@ -1329,7 +1329,7 @@ RerankerConfig$from_json <- function(json) {
 #' @export
 SummarizationConfig <- new.env(parent = emptyenv())
 SummarizationConfig$from_json <- function(json) {
-  .Call("wrap__SummarizationConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__SummarizationConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.SummarizationConfig` <- function(self, name) {
@@ -1344,7 +1344,7 @@ SummarizationConfig$from_json <- function(json) {
 `[[.SummarizationConfig` <- `$.SummarizationConfig`
 #' Configuration for audio/video transcription (speech-to-text)
 #'
-#' When present and `enabled`, Kreuzberg will route audio and video files
+#' When present and `enabled`, Xberg will route audio and video files
 #' (mp3, mp4, m4a, wav, webm, etc.) through the transcription pipeline.
 #'
 #' The heavy dependencies (ORT, hf-hub, symphonia) are only pulled when the
@@ -1371,9 +1371,9 @@ SummarizationConfig$from_json <- function(json) {
 #' @field verify_hash Request SHA256 verification of downloaded model files.
 #' @export
 TranscriptionConfig <- new.env(parent = emptyenv())
-TranscriptionConfig$default <- function() .Call("wrap__TranscriptionConfig__default", PACKAGE = "kreuzberg")
+TranscriptionConfig$default <- function() .Call("wrap__TranscriptionConfig__default", PACKAGE = "xberg")
 TranscriptionConfig$from_json <- function(json) {
-  .Call("wrap__TranscriptionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TranscriptionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TranscriptionConfig` <- function(self, name) {
@@ -1427,9 +1427,9 @@ TranslationConfig <- new.env(parent = emptyenv())
 #' @field process Processing options for code analysis.
 #' @export
 TreeSitterConfig <- new.env(parent = emptyenv())
-TreeSitterConfig$default <- function() .Call("wrap__TreeSitterConfig__default", PACKAGE = "kreuzberg")
+TreeSitterConfig$default <- function() .Call("wrap__TreeSitterConfig__default", PACKAGE = "xberg")
 TreeSitterConfig$from_json <- function(json) {
-  .Call("wrap__TreeSitterConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TreeSitterConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TreeSitterConfig` <- function(self, name) {
@@ -1456,9 +1456,9 @@ TreeSitterConfig$from_json <- function(json) {
 #' @field content_mode Content rendering mode for code extraction.
 #' @export
 TreeSitterProcessConfig <- new.env(parent = emptyenv())
-TreeSitterProcessConfig$default <- function() .Call("wrap__TreeSitterProcessConfig__default", PACKAGE = "kreuzberg")
+TreeSitterProcessConfig$default <- function() .Call("wrap__TreeSitterProcessConfig__default", PACKAGE = "xberg")
 TreeSitterProcessConfig$from_json <- function(json) {
-  .Call("wrap__TreeSitterProcessConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TreeSitterProcessConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TreeSitterProcessConfig` <- function(self, name) {
@@ -1473,7 +1473,7 @@ TreeSitterProcessConfig$from_json <- function(json) {
 `[[.TreeSitterProcessConfig` <- `$.TreeSitterProcessConfig`
 #' A supported document format entry
 #'
-#' Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+#' Represents a file extension and its corresponding MIME type that Xberg can process.
 #' @field extension File extension (without leading dot), e.g., "pdf", "docx"
 #' @field mime_type MIME type string, e.g., "application/pdf"
 #' @export
@@ -1491,7 +1491,7 @@ SupportedFormat <- new.env(parent = emptyenv())
 `[[.SupportedFormat` <- `$.SupportedFormat`
 #' API server configuration
 #'
-#' This struct holds all configuration options for the Kreuzberg API server,
+#' This struct holds all configuration options for the Xberg API server,
 #' including host/port settings, CORS configuration, and upload limits.
 #'
 #' # Defaults
@@ -1508,14 +1508,14 @@ SupportedFormat <- new.env(parent = emptyenv())
 #' @field max_multipart_field_bytes Maximum size of multipart fields in bytes (default: 100 MB)
 #' @export
 ServerConfig <- new.env(parent = emptyenv())
-ServerConfig$default <- function() .Call("wrap__ServerConfig__default", PACKAGE = "kreuzberg")
-ServerConfig$listen_addr <- function(self) .Call("wrap__ServerConfig__listen_addr", self, PACKAGE = "kreuzberg")
-ServerConfig$cors_allows_all <- function(self) .Call("wrap__ServerConfig__cors_allows_all", self, PACKAGE = "kreuzberg")
-ServerConfig$is_origin_allowed <- function(self, origin) .Call("wrap__ServerConfig__is_origin_allowed", self, origin, PACKAGE = "kreuzberg")
-ServerConfig$max_request_body_mb <- function(self) .Call("wrap__ServerConfig__max_request_body_mb", self, PACKAGE = "kreuzberg")
-ServerConfig$max_multipart_field_mb <- function(self) .Call("wrap__ServerConfig__max_multipart_field_mb", self, PACKAGE = "kreuzberg")
+ServerConfig$default <- function() .Call("wrap__ServerConfig__default", PACKAGE = "xberg")
+ServerConfig$listen_addr <- function(self) .Call("wrap__ServerConfig__listen_addr", self, PACKAGE = "xberg")
+ServerConfig$cors_allows_all <- function(self) .Call("wrap__ServerConfig__cors_allows_all", self, PACKAGE = "xberg")
+ServerConfig$is_origin_allowed <- function(self, origin) .Call("wrap__ServerConfig__is_origin_allowed", self, origin, PACKAGE = "xberg")
+ServerConfig$max_request_body_mb <- function(self) .Call("wrap__ServerConfig__max_request_body_mb", self, PACKAGE = "xberg")
+ServerConfig$max_multipart_field_mb <- function(self) .Call("wrap__ServerConfig__max_multipart_field_mb", self, PACKAGE = "xberg")
 ServerConfig$from_json <- function(json) {
-  .Call("wrap__ServerConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ServerConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ServerConfig` <- function(self, name) {
@@ -1578,7 +1578,7 @@ StructuredDataResult <- new.env(parent = emptyenv())
 #' @export
 DocxAppProperties <- new.env(parent = emptyenv())
 DocxAppProperties$from_json <- function(json) {
-  .Call("wrap__DocxAppProperties__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__DocxAppProperties__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.DocxAppProperties` <- function(self, name) {
@@ -1669,7 +1669,7 @@ PptxAppProperties <- new.env(parent = emptyenv())
 #' @export
 CoreProperties <- new.env(parent = emptyenv())
 CoreProperties$from_json <- function(json) {
-  .Call("wrap__CoreProperties__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__CoreProperties__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.CoreProperties` <- function(self, name) {
@@ -1697,9 +1697,9 @@ CoreProperties$from_json <- function(json) {
 #' @field max_table_cells Maximum cells per table (100,000)
 #' @export
 SecurityLimits <- new.env(parent = emptyenv())
-SecurityLimits$default <- function() .Call("wrap__SecurityLimits__default", PACKAGE = "kreuzberg")
+SecurityLimits$default <- function() .Call("wrap__SecurityLimits__default", PACKAGE = "xberg")
 SecurityLimits$from_json <- function(json) {
-  .Call("wrap__SecurityLimits__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__SecurityLimits__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.SecurityLimits` <- function(self, name) {
@@ -1726,9 +1726,9 @@ SecurityLimits$from_json <- function(json) {
 #' @field enable_semantic_clustering Group semantically similar sentences and emit only one per cluster.
 #' @export
 TokenReductionConfig <- new.env(parent = emptyenv())
-TokenReductionConfig$default <- function() .Call("wrap__TokenReductionConfig__default", PACKAGE = "kreuzberg")
+TokenReductionConfig$default <- function() .Call("wrap__TokenReductionConfig__default", PACKAGE = "xberg")
 TokenReductionConfig$from_json <- function(json) {
-  .Call("wrap__TokenReductionConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TokenReductionConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TokenReductionConfig` <- function(self, name) {
@@ -1776,7 +1776,7 @@ PatternMatch <- new.env(parent = emptyenv())
 #' Per-category running counter for [`RedactionStrategy::TokenReplace`]
 #' @export
 TokenCounter <- new.env(parent = emptyenv())
-TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "kreuzberg")
+TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "xberg")
 #' @export
 `$.TokenCounter` <- function(self, name) {
   func <- TokenCounter[[name]]
@@ -1792,10 +1792,10 @@ TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "kreuz
 #' @field parse_citations Whether to parse the structured citation block (default: true).
 #' @export
 FootnoteConfig <- new.env(parent = emptyenv())
-FootnoteConfig$default <- function() .Call("wrap__FootnoteConfig__default", PACKAGE = "kreuzberg")
-FootnoteConfig$with_parse_citations <- function(self, enabled) .Call("wrap__FootnoteConfig__with_parse_citations", self, enabled, PACKAGE = "kreuzberg")
+FootnoteConfig$default <- function() .Call("wrap__FootnoteConfig__default", PACKAGE = "xberg")
+FootnoteConfig$with_parse_citations <- function(self, enabled) .Call("wrap__FootnoteConfig__with_parse_citations", self, enabled, PACKAGE = "xberg")
 FootnoteConfig$from_json <- function(json) {
-  .Call("wrap__FootnoteConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__FootnoteConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.FootnoteConfig` <- function(self, name) {
@@ -2086,7 +2086,7 @@ ProcessingWarning <- new.env(parent = emptyenv())
 #' @export
 LlmUsage <- new.env(parent = emptyenv())
 LlmUsage$from_json <- function(json) {
-  .Call("wrap__LlmUsage__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__LlmUsage__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.LlmUsage` <- function(self, name) {
@@ -2169,7 +2169,7 @@ ChunkMetadata <- new.env(parent = emptyenv())
 #' @export
 BoundingBox <- new.env(parent = emptyenv())
 BoundingBox$from_json <- function(json) {
-  .Call("wrap__BoundingBox__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__BoundingBox__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.BoundingBox` <- function(self, name) {
@@ -2327,9 +2327,9 @@ OcrTableBoundingBox <- new.env(parent = emptyenv())
 #' @field invert_colors Invert colors (white text on black → black on white).
 #' @export
 ImagePreprocessingConfig <- new.env(parent = emptyenv())
-ImagePreprocessingConfig$default <- function() .Call("wrap__ImagePreprocessingConfig__default", PACKAGE = "kreuzberg")
+ImagePreprocessingConfig$default <- function() .Call("wrap__ImagePreprocessingConfig__default", PACKAGE = "xberg")
 ImagePreprocessingConfig$from_json <- function(json) {
-  .Call("wrap__ImagePreprocessingConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ImagePreprocessingConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ImagePreprocessingConfig` <- function(self, name) {
@@ -2370,9 +2370,9 @@ ImagePreprocessingConfig$from_json <- function(json) {
 #' @field thresholding_method Use adaptive thresholding method
 #' @export
 TesseractConfig <- new.env(parent = emptyenv())
-TesseractConfig$default <- function() .Call("wrap__TesseractConfig__default", PACKAGE = "kreuzberg")
+TesseractConfig$default <- function() .Call("wrap__TesseractConfig__default", PACKAGE = "xberg")
 TesseractConfig$from_json <- function(json) {
-  .Call("wrap__TesseractConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__TesseractConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.TesseractConfig` <- function(self, name) {
@@ -2463,9 +2463,9 @@ Formula <- new.env(parent = emptyenv())
 #' @field additional Additional custom fields from postprocessors.
 #' @export
 Metadata <- new.env(parent = emptyenv())
-Metadata$is_empty <- function(self) .Call("wrap__Metadata__is_empty", self, PACKAGE = "kreuzberg")
+Metadata$is_empty <- function(self) .Call("wrap__Metadata__is_empty", self, PACKAGE = "xberg")
 Metadata$from_json <- function(json) {
-  .Call("wrap__Metadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__Metadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.Metadata` <- function(self, name) {
@@ -2489,7 +2489,7 @@ is_empty.Metadata <- function(x, ...) x$is_empty(...)
 #' @export
 ExcelMetadata <- new.env(parent = emptyenv())
 ExcelMetadata$from_json <- function(json) {
-  .Call("wrap__ExcelMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ExcelMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ExcelMetadata` <- function(self, name) {
@@ -2515,7 +2515,7 @@ ExcelMetadata$from_json <- function(json) {
 #' @export
 EmailMetadata <- new.env(parent = emptyenv())
 EmailMetadata$from_json <- function(json) {
-  .Call("wrap__EmailMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__EmailMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.EmailMetadata` <- function(self, name) {
@@ -2539,7 +2539,7 @@ EmailMetadata$from_json <- function(json) {
 #' @export
 ArchiveMetadata <- new.env(parent = emptyenv())
 ArchiveMetadata$from_json <- function(json) {
-  .Call("wrap__ArchiveMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ArchiveMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ArchiveMetadata` <- function(self, name) {
@@ -2562,7 +2562,7 @@ ArchiveMetadata$from_json <- function(json) {
 #' @export
 ImageMetadata <- new.env(parent = emptyenv())
 ImageMetadata$from_json <- function(json) {
-  .Call("wrap__ImageMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ImageMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ImageMetadata` <- function(self, name) {
@@ -2583,7 +2583,7 @@ ImageMetadata$from_json <- function(json) {
 #' @export
 XmlMetadata <- new.env(parent = emptyenv())
 XmlMetadata$from_json <- function(json) {
-  .Call("wrap__XmlMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__XmlMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.XmlMetadata` <- function(self, name) {
@@ -2644,7 +2644,7 @@ StructuredData <- new.env(parent = emptyenv())
 #' @export
 OcrMetadata <- new.env(parent = emptyenv())
 OcrMetadata$from_json <- function(json) {
-  .Call("wrap__OcrMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrMetadata` <- function(self, name) {
@@ -2683,7 +2683,7 @@ ErrorMetadata <- new.env(parent = emptyenv())
 #' @export
 PptxMetadata <- new.env(parent = emptyenv())
 PptxMetadata$from_json <- function(json) {
-  .Call("wrap__PptxMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PptxMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PptxMetadata` <- function(self, name) {
@@ -2706,7 +2706,7 @@ PptxMetadata$from_json <- function(json) {
 #' @export
 DocxMetadata <- new.env(parent = emptyenv())
 DocxMetadata$from_json <- function(json) {
-  .Call("wrap__DocxMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__DocxMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.DocxMetadata` <- function(self, name) {
@@ -2728,7 +2728,7 @@ DocxMetadata$from_json <- function(json) {
 #' @export
 CsvMetadata <- new.env(parent = emptyenv())
 CsvMetadata$from_json <- function(json) {
-  .Call("wrap__CsvMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__CsvMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.CsvMetadata` <- function(self, name) {
@@ -2750,7 +2750,7 @@ CsvMetadata$from_json <- function(json) {
 #' @export
 BibtexMetadata <- new.env(parent = emptyenv())
 BibtexMetadata$from_json <- function(json) {
-  .Call("wrap__BibtexMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__BibtexMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.BibtexMetadata` <- function(self, name) {
@@ -2773,7 +2773,7 @@ BibtexMetadata$from_json <- function(json) {
 #' @export
 CitationMetadata <- new.env(parent = emptyenv())
 CitationMetadata$from_json <- function(json) {
-  .Call("wrap__CitationMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__CitationMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.CitationMetadata` <- function(self, name) {
@@ -2810,7 +2810,7 @@ YearRange <- new.env(parent = emptyenv())
 #' @export
 FictionBookMetadata <- new.env(parent = emptyenv())
 FictionBookMetadata$from_json <- function(json) {
-  .Call("wrap__FictionBookMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__FictionBookMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.FictionBookMetadata` <- function(self, name) {
@@ -2865,7 +2865,7 @@ ContributorRole <- new.env(parent = emptyenv())
 #' @export
 EpubMetadata <- new.env(parent = emptyenv())
 EpubMetadata$from_json <- function(json) {
-  .Call("wrap__EpubMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__EpubMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.EpubMetadata` <- function(self, name) {
@@ -2883,7 +2883,7 @@ EpubMetadata$from_json <- function(json) {
 #' @export
 PstMetadata <- new.env(parent = emptyenv())
 PstMetadata$from_json <- function(json) {
-  .Call("wrap__PstMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PstMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PstMetadata` <- function(self, name) {
@@ -2909,7 +2909,7 @@ PstMetadata$from_json <- function(json) {
 #' @export
 AudioMetadata <- new.env(parent = emptyenv())
 AudioMetadata$from_json <- function(json) {
-  .Call("wrap__AudioMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__AudioMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.AudioMetadata` <- function(self, name) {
@@ -2931,7 +2931,7 @@ AudioMetadata$from_json <- function(json) {
 #' @export
 OcrConfidence <- new.env(parent = emptyenv())
 OcrConfidence$from_json <- function(json) {
-  .Call("wrap__OcrConfidence__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrConfidence__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrConfidence` <- function(self, name) {
@@ -2975,7 +2975,7 @@ OcrRotation <- new.env(parent = emptyenv())
 #' @export
 OcrElement <- new.env(parent = emptyenv())
 OcrElement$from_json <- function(json) {
-  .Call("wrap__OcrElement__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrElement__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrElement` <- function(self, name) {
@@ -2998,7 +2998,7 @@ OcrElement$from_json <- function(json) {
 #' @export
 OcrElementConfig <- new.env(parent = emptyenv())
 OcrElementConfig$from_json <- function(json) {
-  .Call("wrap__OcrElementConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__OcrElementConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.OcrElementConfig` <- function(self, name) {
@@ -3068,7 +3068,7 @@ PageInfo <- new.env(parent = emptyenv())
 #' @export
 LayoutRegion <- new.env(parent = emptyenv())
 LayoutRegion$from_json <- function(json) {
-  .Call("wrap__LayoutRegion__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__LayoutRegion__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.LayoutRegion` <- function(self, name) {
@@ -3306,9 +3306,9 @@ DetectResponse <- new.env(parent = emptyenv())
 #' @field max_content_chars Truncate content to this many characters before diffing.
 #' @export
 DiffOptions <- new.env(parent = emptyenv())
-DiffOptions$default <- function() .Call("wrap__DiffOptions__default", PACKAGE = "kreuzberg")
+DiffOptions$default <- function() .Call("wrap__DiffOptions__default", PACKAGE = "xberg")
 DiffOptions$from_json <- function(json) {
-  .Call("wrap__DiffOptions__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__DiffOptions__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.DiffOptions` <- function(self, name) {
@@ -3435,9 +3435,9 @@ RerankerPreset <- new.env(parent = emptyenv())
 #' @field window_size Window size for co-occurrence analysis (default: 2).
 #' @export
 YakeParams <- new.env(parent = emptyenv())
-YakeParams$default <- function() .Call("wrap__YakeParams__default", PACKAGE = "kreuzberg")
+YakeParams$default <- function() .Call("wrap__YakeParams__default", PACKAGE = "xberg")
 YakeParams$from_json <- function(json) {
-  .Call("wrap__YakeParams__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__YakeParams__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.YakeParams` <- function(self, name) {
@@ -3455,9 +3455,9 @@ YakeParams$from_json <- function(json) {
 #' @field max_words_per_phrase Maximum words in a keyword phrase (default: 3).
 #' @export
 RakeParams <- new.env(parent = emptyenv())
-RakeParams$default <- function() .Call("wrap__RakeParams__default", PACKAGE = "kreuzberg")
+RakeParams$default <- function() .Call("wrap__RakeParams__default", PACKAGE = "xberg")
 RakeParams$from_json <- function(json) {
-  .Call("wrap__RakeParams__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__RakeParams__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.RakeParams` <- function(self, name) {
@@ -3479,9 +3479,9 @@ RakeParams$from_json <- function(json) {
 #' @field rake_params RAKE-specific tuning parameters.
 #' @export
 KeywordConfig <- new.env(parent = emptyenv())
-KeywordConfig$default <- function() .Call("wrap__KeywordConfig__default", PACKAGE = "kreuzberg")
+KeywordConfig$default <- function() .Call("wrap__KeywordConfig__default", PACKAGE = "xberg")
 KeywordConfig$from_json <- function(json) {
-  .Call("wrap__KeywordConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__KeywordConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.KeywordConfig` <- function(self, name) {
@@ -3578,10 +3578,10 @@ ConfidenceSignals <- new.env(parent = emptyenv())
 #' @field schema_compliance Weight assigned to `schema_compliance`. Default 0.40.
 #' @export
 ConfidenceWeights <- new.env(parent = emptyenv())
-ConfidenceWeights$default <- function() .Call("wrap__ConfidenceWeights__default", PACKAGE = "kreuzberg")
-ConfidenceWeights$is_normalized <- function(self) .Call("wrap__ConfidenceWeights__is_normalized", self, PACKAGE = "kreuzberg")
+ConfidenceWeights$default <- function() .Call("wrap__ConfidenceWeights__default", PACKAGE = "xberg")
+ConfidenceWeights$is_normalized <- function(self) .Call("wrap__ConfidenceWeights__is_normalized", self, PACKAGE = "xberg")
 ConfidenceWeights$from_json <- function(json) {
-  .Call("wrap__ConfidenceWeights__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__ConfidenceWeights__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.ConfidenceWeights` <- function(self, name) {
@@ -3634,10 +3634,10 @@ ExtractionConfidence <- new.env(parent = emptyenv())
 #' @field max_pptx_embedded_count Maximum number of OLE-embedded objects extractable from a single PPTX or DOCX.
 #' @export
 HeuristicsConfig <- new.env(parent = emptyenv())
-HeuristicsConfig$default <- function() .Call("wrap__HeuristicsConfig__default", PACKAGE = "kreuzberg")
-HeuristicsConfig$validate <- function(self) .Call("wrap__HeuristicsConfig__validate", self, PACKAGE = "kreuzberg")
+HeuristicsConfig$default <- function() .Call("wrap__HeuristicsConfig__default", PACKAGE = "xberg")
+HeuristicsConfig$validate <- function(self) .Call("wrap__HeuristicsConfig__validate", self, PACKAGE = "xberg")
 HeuristicsConfig$from_json <- function(json) {
-  .Call("wrap__HeuristicsConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__HeuristicsConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.HeuristicsConfig` <- function(self, name) {
@@ -3674,7 +3674,7 @@ ChunkInfo <- new.env(parent = emptyenv())
 #' @field end End page (0-indexed, inclusive).
 #' @export
 PageRange <- new.env(parent = emptyenv())
-PageRange$page_count <- function(self) .Call("wrap__PageRange__page_count", self, PACKAGE = "kreuzberg")
+PageRange$page_count <- function(self) .Call("wrap__PageRange__page_count", self, PACKAGE = "xberg")
 #' @export
 `$.PageRange` <- function(self, name) {
   func <- PageRange[[name]]
@@ -3697,7 +3697,7 @@ page_count.PageRange <- function(x, ...) x$page_count(...)
 #' @field layout_text_density Text density: characters per page area, normalised to `[0.0, 1.0]`.
 #' @export
 PageSignals <- new.env(parent = emptyenv())
-PageSignals$from_page_text <- function(page_number, text, layout_text_density) .Call("wrap__PageSignals__from_page_text", page_number, text, layout_text_density, PACKAGE = "kreuzberg")
+PageSignals$from_page_text <- function(page_number, text, layout_text_density) .Call("wrap__PageSignals__from_page_text", page_number, text, layout_text_density, PACKAGE = "xberg")
 #' @export
 `$.PageSignals` <- function(self, name) {
   func <- PageSignals[[name]]
@@ -3734,9 +3734,9 @@ DocumentBoundary <- new.env(parent = emptyenv())
 #' @field bigram_overlap_min Minimum bigram-overlap ratio below which a density shift is promoted to a `DensityShift`
 #' @export
 MultidocThresholds <- new.env(parent = emptyenv())
-MultidocThresholds$default <- function() .Call("wrap__MultidocThresholds__default", PACKAGE = "kreuzberg")
+MultidocThresholds$default <- function() .Call("wrap__MultidocThresholds__default", PACKAGE = "xberg")
 MultidocThresholds$from_json <- function(json) {
-  .Call("wrap__MultidocThresholds__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__MultidocThresholds__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.MultidocThresholds` <- function(self, name) {
@@ -3751,9 +3751,9 @@ MultidocThresholds$from_json <- function(json) {
 `[[.MultidocThresholds` <- `$.MultidocThresholds`
 #' Signals consumed by the call-mode heuristic
 #'
-#' All fields derive from a prior kreuzberg extraction — no double-work.
+#' All fields derive from a prior xberg extraction — no double-work.
 #' This is a plain DTO; it intentionally has no dependency on internal
-#' kreuzberg extraction types so it can be constructed from any source.
+#' xberg extraction types so it can be constructed from any source.
 #' @field mime_type MIME type, canonicalised to lowercase by the caller.
 #' @field page_count Number of pages in the document.
 #' @field text_coverage Fraction of pages with a real text layer (0.0..=1.0).
@@ -3782,7 +3782,7 @@ StructuredInput <- new.env(parent = emptyenv())
 #'
 #' Construct custom thresholds with struct-update syntax:
 #' ```rust
-#' use kreuzberg::heuristics::StructuredThresholds;
+#' use xberg::heuristics::StructuredThresholds;
 #' let t = StructuredThresholds {
 #'     enable_vision_fallback: true,
 #'     ..StructuredThresholds::default()
@@ -3794,9 +3794,9 @@ StructuredInput <- new.env(parent = emptyenv())
 #' @field enable_vision_fallback When `true`, emit [`StructuredCallMode::TextOnlyWithVisionFallback`] instead of
 #' @export
 StructuredThresholds <- new.env(parent = emptyenv())
-StructuredThresholds$default <- function() .Call("wrap__StructuredThresholds__default", PACKAGE = "kreuzberg")
+StructuredThresholds$default <- function() .Call("wrap__StructuredThresholds__default", PACKAGE = "xberg")
 StructuredThresholds$from_json <- function(json) {
-  .Call("wrap__StructuredThresholds__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__StructuredThresholds__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.StructuredThresholds` <- function(self, name) {
@@ -3812,8 +3812,8 @@ StructuredThresholds$from_json <- function(json) {
 #' Compiled meta-schema validator over `preset.schema.json`
 #' @export
 MetaSchema <- new.env(parent = emptyenv())
-MetaSchema$compile <- function(meta_schema_json) .Call("wrap__MetaSchema__compile", meta_schema_json, PACKAGE = "kreuzberg")
-MetaSchema$parse_preset <- function(self, path, raw) .Call("wrap__MetaSchema__parse_preset", self, path, raw, PACKAGE = "kreuzberg")
+MetaSchema$compile <- function(meta_schema_json) .Call("wrap__MetaSchema__compile", meta_schema_json, PACKAGE = "xberg")
+MetaSchema$parse_preset <- function(self, path, raw) .Call("wrap__MetaSchema__parse_preset", self, path, raw, PACKAGE = "xberg")
 #' @export
 `$.MetaSchema` <- function(self, name) {
   func <- MetaSchema[[name]]
@@ -3830,11 +3830,11 @@ parse_preset.MetaSchema <- function(x, ...) x$parse_preset(...)
 #' Sorted map of preset id → [`Preset`]
 #' @export
 Registry <- new.env(parent = emptyenv())
-Registry$load_embedded <- function() .Call("wrap__Registry__load_embedded", PACKAGE = "kreuzberg")
-Registry$global <- function() .Call("wrap__Registry__global", PACKAGE = "kreuzberg")
-Registry$len <- function(self) .Call("wrap__Registry__len", self, PACKAGE = "kreuzberg")
-Registry$is_empty <- function(self) .Call("wrap__Registry__is_empty", self, PACKAGE = "kreuzberg")
-Registry$extend_from_dir <- function(self, dir) .Call("wrap__Registry__extend_from_dir", self, dir, PACKAGE = "kreuzberg")
+Registry$load_embedded <- function() .Call("wrap__Registry__load_embedded", PACKAGE = "xberg")
+Registry$global <- function() .Call("wrap__Registry__global", PACKAGE = "xberg")
+Registry$len <- function(self) .Call("wrap__Registry__len", self, PACKAGE = "xberg")
+Registry$is_empty <- function(self) .Call("wrap__Registry__is_empty", self, PACKAGE = "xberg")
+Registry$extend_from_dir <- function(self, dir) .Call("wrap__Registry__extend_from_dir", self, dir, PACKAGE = "xberg")
 #' @export
 `$.Registry` <- function(self, name) {
   func <- Registry[[name]]
@@ -3898,7 +3898,7 @@ PresetSample <- new.env(parent = emptyenv())
 #' Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
 #' validates against the meta-schema in `src/presets/preset.schema.json`.
 #'
-#' The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+#' The curated catalog is downstream (xberg-enterprise) and injects presets via
 #' `extend_from_dir`. The embedded OSS library
 #' ships only the `generic_document` toy preset.
 #' @field id Stable, URL-safe preset identifier (lowercase snake_case).
@@ -3971,20 +3971,20 @@ PresetSummary <- new.env(parent = emptyenv())
 #' @field model_tier Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"`
 #' @export
 PaddleOcrConfig <- new.env(parent = emptyenv())
-PaddleOcrConfig$with_cache_dir <- function(self, path) .Call("wrap__PaddleOcrConfig__with_cache_dir", self, path, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_table_detection <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_table_detection", self, enable, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_angle_cls <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_angle_cls", self, enable, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_thresh", self, threshold, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_box_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_box_thresh", self, threshold, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_db_unclip_ratio <- function(self, ratio) .Call("wrap__PaddleOcrConfig__with_det_db_unclip_ratio", self, ratio, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_det_limit_side_len <- function(self, length) .Call("wrap__PaddleOcrConfig__with_det_limit_side_len", self, length, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_rec_batch_num <- function(self, batch_size) .Call("wrap__PaddleOcrConfig__with_rec_batch_num", self, batch_size, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_drop_score <- function(self, score) .Call("wrap__PaddleOcrConfig__with_drop_score", self, score, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_padding <- function(self, padding) .Call("wrap__PaddleOcrConfig__with_padding", self, padding, PACKAGE = "kreuzberg")
-PaddleOcrConfig$with_model_tier <- function(self, tier) .Call("wrap__PaddleOcrConfig__with_model_tier", self, tier, PACKAGE = "kreuzberg")
-PaddleOcrConfig$default <- function() .Call("wrap__PaddleOcrConfig__default", PACKAGE = "kreuzberg")
+PaddleOcrConfig$with_cache_dir <- function(self, path) .Call("wrap__PaddleOcrConfig__with_cache_dir", self, path, PACKAGE = "xberg")
+PaddleOcrConfig$with_table_detection <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_table_detection", self, enable, PACKAGE = "xberg")
+PaddleOcrConfig$with_angle_cls <- function(self, enable) .Call("wrap__PaddleOcrConfig__with_angle_cls", self, enable, PACKAGE = "xberg")
+PaddleOcrConfig$with_det_db_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_thresh", self, threshold, PACKAGE = "xberg")
+PaddleOcrConfig$with_det_db_box_thresh <- function(self, threshold) .Call("wrap__PaddleOcrConfig__with_det_db_box_thresh", self, threshold, PACKAGE = "xberg")
+PaddleOcrConfig$with_det_db_unclip_ratio <- function(self, ratio) .Call("wrap__PaddleOcrConfig__with_det_db_unclip_ratio", self, ratio, PACKAGE = "xberg")
+PaddleOcrConfig$with_det_limit_side_len <- function(self, length) .Call("wrap__PaddleOcrConfig__with_det_limit_side_len", self, length, PACKAGE = "xberg")
+PaddleOcrConfig$with_rec_batch_num <- function(self, batch_size) .Call("wrap__PaddleOcrConfig__with_rec_batch_num", self, batch_size, PACKAGE = "xberg")
+PaddleOcrConfig$with_drop_score <- function(self, score) .Call("wrap__PaddleOcrConfig__with_drop_score", self, score, PACKAGE = "xberg")
+PaddleOcrConfig$with_padding <- function(self, padding) .Call("wrap__PaddleOcrConfig__with_padding", self, padding, PACKAGE = "xberg")
+PaddleOcrConfig$with_model_tier <- function(self, tier) .Call("wrap__PaddleOcrConfig__with_model_tier", self, tier, PACKAGE = "xberg")
+PaddleOcrConfig$default <- function() .Call("wrap__PaddleOcrConfig__default", PACKAGE = "xberg")
 PaddleOcrConfig$from_json <- function(json) {
-  .Call("wrap__PaddleOcrConfig__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PaddleOcrConfig__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PaddleOcrConfig` <- function(self, name) {
@@ -4120,7 +4120,7 @@ EmbeddedFile <- new.env(parent = emptyenv())
 #' @export
 PdfMetadata <- new.env(parent = emptyenv())
 PdfMetadata$from_json <- function(json) {
-  .Call("wrap__PdfMetadata__from_json", json, PACKAGE = "kreuzberg")
+  .Call("wrap__PdfMetadata__from_json", json, PACKAGE = "xberg")
 }
 #' @export
 `$.PdfMetadata` <- function(self, name) {
@@ -4391,7 +4391,7 @@ DiffLine <- new.env(parent = emptyenv())
 #'
 #'
 #' ```
-#' use kreuzberg::enrichment::{EnrichStatus, EnrichResult};
+#' use xberg::enrichment::{EnrichStatus, EnrichResult};
 #'
 #' let s = EnrichStatus::Pending;
 #' let json = serde_json::to_value(&s).unwrap();
@@ -4752,8 +4752,8 @@ LayoutClass  <- function() list() |> structure(class = "LayoutClass")
 #' (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
 #' @export
 ChunkSizing <- new.env(parent = emptyenv())
-ChunkSizing$default <- function() .Call("wrap__ChunkSizing__default", PACKAGE = "kreuzberg")
-ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", json, PACKAGE = "kreuzberg")
+ChunkSizing$default <- function() .Call("wrap__ChunkSizing__default", PACKAGE = "xberg")
+ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.ChunkSizing` <- function(self, name) {
   func <- ChunkSizing[[name]]
@@ -4765,11 +4765,11 @@ ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", js
 }
 #' @export
 `[[.ChunkSizing` <- `$.ChunkSizing`
-#' Embedding model types supported by Kreuzberg
+#' Embedding model types supported by Xberg
 #' @export
 EmbeddingModelType <- new.env(parent = emptyenv())
-EmbeddingModelType$default <- function() .Call("wrap__EmbeddingModelType__default", PACKAGE = "kreuzberg")
-EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__from_json", json, PACKAGE = "kreuzberg")
+EmbeddingModelType$default <- function() .Call("wrap__EmbeddingModelType__default", PACKAGE = "xberg")
+EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.EmbeddingModelType` <- function(self, name) {
   func <- EmbeddingModelType[[name]]
@@ -4781,13 +4781,13 @@ EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__
 }
 #' @export
 `[[.EmbeddingModelType` <- `$.EmbeddingModelType`
-#' Reranker model types supported by Kreuzberg
+#' Reranker model types supported by Xberg
 #'
 #' Since v5.0.0.
 #' @export
 RerankerModelType <- new.env(parent = emptyenv())
-RerankerModelType$default <- function() .Call("wrap__RerankerModelType__default", PACKAGE = "kreuzberg")
-RerankerModelType$from_json <- function(json) .Call("wrap__RerankerModelType__from_json", json, PACKAGE = "kreuzberg")
+RerankerModelType$default <- function() .Call("wrap__RerankerModelType__default", PACKAGE = "xberg")
+RerankerModelType$from_json <- function(json) .Call("wrap__RerankerModelType__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.RerankerModelType` <- function(self, name) {
   func <- RerankerModelType[[name]]
@@ -4805,8 +4805,8 @@ RerankerModelType$from_json <- function(json) .Call("wrap__RerankerModelType__fr
 #' Go/Java/TypeScript bindings.
 #' @export
 NodeContent <- new.env(parent = emptyenv())
-NodeContent$default <- function() .Call("wrap__NodeContent__default", PACKAGE = "kreuzberg")
-NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", json, PACKAGE = "kreuzberg")
+NodeContent$default <- function() .Call("wrap__NodeContent__default", PACKAGE = "xberg")
+NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.NodeContent` <- function(self, name) {
   func <- NodeContent[[name]]
@@ -4821,8 +4821,8 @@ NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", js
 #' Types of inline text annotations
 #' @export
 AnnotationKind <- new.env(parent = emptyenv())
-AnnotationKind$default <- function() .Call("wrap__AnnotationKind__default", PACKAGE = "kreuzberg")
-AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_json", json, PACKAGE = "kreuzberg")
+AnnotationKind$default <- function() .Call("wrap__AnnotationKind__default", PACKAGE = "xberg")
+AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.AnnotationKind` <- function(self, name) {
   func <- AnnotationKind[[name]]
@@ -4840,8 +4840,8 @@ AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_jso
 #' (from PaddleOCR and rotated text detection).
 #' @export
 OcrBoundingGeometry <- new.env(parent = emptyenv())
-OcrBoundingGeometry$default <- function() .Call("wrap__OcrBoundingGeometry__default", PACKAGE = "kreuzberg")
-OcrBoundingGeometry$from_json <- function(json) .Call("wrap__OcrBoundingGeometry__from_json", json, PACKAGE = "kreuzberg")
+OcrBoundingGeometry$default <- function() .Call("wrap__OcrBoundingGeometry__default", PACKAGE = "xberg")
+OcrBoundingGeometry$from_json <- function(json) .Call("wrap__OcrBoundingGeometry__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.OcrBoundingGeometry` <- function(self, name) {
   func <- OcrBoundingGeometry[[name]]
@@ -4856,8 +4856,8 @@ OcrBoundingGeometry$from_json <- function(json) .Call("wrap__OcrBoundingGeometry
 #' Best-effort document location for a revision
 #' @export
 RevisionAnchor <- new.env(parent = emptyenv())
-RevisionAnchor$default <- function() .Call("wrap__RevisionAnchor__default", PACKAGE = "kreuzberg")
-RevisionAnchor$from_json <- function(json) .Call("wrap__RevisionAnchor__from_json", json, PACKAGE = "kreuzberg")
+RevisionAnchor$default <- function() .Call("wrap__RevisionAnchor__default", PACKAGE = "xberg")
+RevisionAnchor$from_json <- function(json) .Call("wrap__RevisionAnchor__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.RevisionAnchor` <- function(self, name) {
   func <- RevisionAnchor[[name]]
@@ -4872,8 +4872,8 @@ RevisionAnchor$from_json <- function(json) .Call("wrap__RevisionAnchor__from_jso
 #' Reason for not chunking a document
 #' @export
 NoChunkingReason <- new.env(parent = emptyenv())
-NoChunkingReason$default <- function() .Call("wrap__NoChunkingReason__default", PACKAGE = "kreuzberg")
-NoChunkingReason$from_json <- function(json) .Call("wrap__NoChunkingReason__from_json", json, PACKAGE = "kreuzberg")
+NoChunkingReason$default <- function() .Call("wrap__NoChunkingReason__default", PACKAGE = "xberg")
+NoChunkingReason$from_json <- function(json) .Call("wrap__NoChunkingReason__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.NoChunkingReason` <- function(self, name) {
   func <- NoChunkingReason[[name]]
@@ -4888,8 +4888,8 @@ NoChunkingReason$from_json <- function(json) .Call("wrap__NoChunkingReason__from
 #' Reason for chunking a document
 #' @export
 ChunkingReason <- new.env(parent = emptyenv())
-ChunkingReason$default <- function() .Call("wrap__ChunkingReason__default", PACKAGE = "kreuzberg")
-ChunkingReason$from_json <- function(json) .Call("wrap__ChunkingReason__from_json", json, PACKAGE = "kreuzberg")
+ChunkingReason$default <- function() .Call("wrap__ChunkingReason__default", PACKAGE = "xberg")
+ChunkingReason$from_json <- function(json) .Call("wrap__ChunkingReason__from_json", json, PACKAGE = "xberg")
 #' @export
 `$.ChunkingReason` <- function(self, name) {
   func <- ChunkingReason[[name]]

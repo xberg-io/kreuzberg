@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{
+use xberg::{
     ExtractionConfig, RedactionConfig, RedactionStrategy, RedactionTerm, RedactionPattern,
 };
 

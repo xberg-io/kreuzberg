@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +34,7 @@ public class VectorDatabaseIntegration
             }
         };
 
-        var result = await Kreuzberg.ExtractFileAsync(documentPath, config);
+        var result = await Xberg.ExtractFileAsync(documentPath, config);
         var chunks = result.Chunks ?? new List<Chunk>();
 
         var vectorRecords = chunks

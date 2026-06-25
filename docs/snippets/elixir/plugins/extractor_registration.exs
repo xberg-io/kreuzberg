@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 defmodule MyApp.MetadataEnricher do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
 
   def process(result, _config) do
     enriched_metadata = result.metadata || %{}
@@ -14,7 +14,7 @@ defmodule MyApp.MetadataEnricher do
 end
 
 defmodule MyApp.LinkExtractor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
 
   def process(result, _config) do
     links = extract_links(result.content)
@@ -35,7 +35,7 @@ defmodule MyApp.LinkExtractor do
 end
 
 defmodule MyApp.QualityValidator do
-  @behaviour Kreuzberg.Plugin.Validator
+  @behaviour Xberg.Plugin.Validator
 
   def validate(result) do
     if String.length(result.content) > 100 do
@@ -53,9 +53,9 @@ defmodule MyApp.QualityValidator do
 end
 
 # Register multiple plugins
-Kreuzberg.Plugin.register_post_processor(:metadata_enricher, MyApp.MetadataEnricher)
-Kreuzberg.Plugin.register_post_processor(:link_extractor, MyApp.LinkExtractor)
-Kreuzberg.Plugin.register_validator(MyApp.QualityValidator)
+Xberg.Plugin.register_post_processor(:metadata_enricher, MyApp.MetadataEnricher)
+Xberg.Plugin.register_post_processor(:link_extractor, MyApp.LinkExtractor)
+Xberg.Plugin.register_validator(MyApp.QualityValidator)
 
 IO.puts("Plugins registered successfully")
 ```

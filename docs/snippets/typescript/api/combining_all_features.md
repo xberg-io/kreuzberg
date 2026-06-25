@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFileSync } from "kreuzberg";
+import { extractFileSync } from "xberg";
 
 const config = {
   // OCR: Tesseract on all pages with English text

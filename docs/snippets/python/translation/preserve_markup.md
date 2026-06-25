@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionConfig, TranslationConfig, LlmConfig
+from xberg import ExtractionConfig, TranslationConfig, LlmConfig
 
 config = ExtractionConfig(
     translation=TranslationConfig(

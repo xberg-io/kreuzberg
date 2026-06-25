@@ -1,8 +1,8 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Load configuration from a JSON file and pass it to extract_file_sync.
-config_json <- paste(readLines("kreuzberg.json"), collapse = "\n")
+config_json <- paste(readLines("xberg.json"), collapse = "\n")
 config <- ExtractionConfig$from_json(config_json)
 
 json <- extract_file_sync("document.pdf", "application/pdf", config)

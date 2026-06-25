@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use function Kreuzberg\extract_file;
-use function Kreuzberg\detect_mime_type_from_path;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use function Xberg\extract_file;
+use function Xberg\detect_mime_type_from_path;
 
 $formats = [
     'PDF' => 'document.pdf',
@@ -31,7 +31,7 @@ $formats = [
 echo "Multi-Format Extraction:\n";
 echo str_repeat('=', 60) . "\n\n";
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 foreach ($formats as $type => $file) {
     if (!file_exists($file)) {
@@ -43,7 +43,7 @@ foreach ($formats as $type => $file) {
     $mimeType = detect_mime_type_from_path($file);
     echo "  MIME type: $mimeType\n";
 
-    $result = $kreuzberg->extractFile($file);
+    $result = $xberg->extractFile($file);
 
     echo "  Content length: " . strlen($result->content) . " chars\n";
     echo "  Tables: " . count($result->tables) . "\n";
@@ -88,7 +88,7 @@ $formatConfigs = [
     'pdf' => new ExtractionConfig(
         extractTables: true,
         extractImages: true,
-        pdf: new \Kreuzberg\Config\PdfConfig(
+        pdf: new \Xberg\Config\PdfConfig(
             extractImages: true,
             imageQuality: 85
         )
@@ -101,7 +101,7 @@ $formatConfigs = [
         extractTables: true  
     ),
     'png' => new ExtractionConfig(
-        ocr: new \Kreuzberg\Config\OcrConfig(
+        ocr: new \Xberg\Config\OcrConfig(
             backend: 'tesseract',
             language: 'eng'
         )
@@ -116,8 +116,8 @@ foreach ($mixedFiles as $file) {
     }
 
     $config = $formatConfigs[$ext];
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile($file);
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile($file);
 
     echo "Processed " . basename($file) . " with $ext config\n";
 }
@@ -130,8 +130,8 @@ function convertToMarkdown(string $inputFile): string
         extractTables: true
     );
 
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile($inputFile);
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile($inputFile);
 
     $markdown = "# " . ($result->metadata->title ?? basename($inputFile)) . "\n\n";
 
@@ -177,12 +177,12 @@ function extractFromArchive(string $archiveFile): array
 
 class UniversalExtractor
 {
-    private Kreuzberg $kreuzberg;
+    private Xberg $xberg;
     private array $formatHandlers = [];
 
     public function __construct()
     {
-        $this->kreuzberg = new Kreuzberg();
+        $this->xberg = new Xberg();
 
         $this->formatHandlers = [
             'application/pdf' => [$this, 'handlePDF'],
@@ -204,8 +204,8 @@ class UniversalExtractor
     private function handlePDF(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(extractTables: true, extractImages: true);
-        $kreuzberg = new Kreuzberg($config);
-        $result = $kreuzberg->extractFile($file);
+        $xberg = new Xberg($config);
+        $result = $xberg->extractFile($file);
 
         return [
             'type' => 'PDF',
@@ -218,7 +218,7 @@ class UniversalExtractor
 
     private function handleDOCX(string $file, string $mimeType): array
     {
-        $result = $this->kreuzberg->extractFile($file);
+        $result = $this->xberg->extractFile($file);
 
         return [
             'type' => 'Word Document',
@@ -231,8 +231,8 @@ class UniversalExtractor
     private function handleXLSX(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(extractTables: true);
-        $kreuzberg = new Kreuzberg($config);
-        $result = $kreuzberg->extractFile($file);
+        $xberg = new Xberg($config);
+        $result = $xberg->extractFile($file);
 
         return [
             'type' => 'Excel Spreadsheet',
@@ -244,10 +244,10 @@ class UniversalExtractor
     private function handleImage(string $file, string $mimeType): array
     {
         $config = new ExtractionConfig(
-            ocr: new \Kreuzberg\Config\OcrConfig(backend: 'tesseract', language: 'eng')
+            ocr: new \Xberg\Config\OcrConfig(backend: 'tesseract', language: 'eng')
         );
-        $kreuzberg = new Kreuzberg($config);
-        $result = $kreuzberg->extractFile($file);
+        $xberg = new Xberg($config);
+        $result = $xberg->extractFile($file);
 
         return [
             'type' => 'Image (OCR)',
@@ -258,7 +258,7 @@ class UniversalExtractor
 
     private function handleGeneric(string $file, string $mimeType): array
     {
-        $result = $this->kreuzberg->extractFile($file);
+        $result = $this->xberg->extractFile($file);
 
         return [
             'type' => 'Generic',

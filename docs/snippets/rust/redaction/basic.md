@@ -1,6 +1,6 @@
 ```rust title="Rust"
 use std::collections::HashSet;
-use kreuzberg::{
+use xberg::{
     extract_file, ExtractionConfig, RedactionConfig, RedactionStrategy,
     types::redaction::PiiCategory,
 };

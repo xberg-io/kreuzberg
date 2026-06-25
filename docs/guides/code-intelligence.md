@@ -1,6 +1,6 @@
 # Code Intelligence
 
-Kreuzberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) (TSLP) to parse and analyze source code files. When you extract a source code file, Kreuzberg automatically detects the programming language and produces structured analysis alongside the raw text content.
+Xberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) (TSLP) to parse and analyze source code files. When you extract a source code file, Xberg automatically detects the programming language and produces structured analysis alongside the raw text content.
 
 ## What You Get
 
@@ -25,7 +25,7 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
 === "Rust"
 
     ```rust title="basic.rs"
-    use kreuzberg::{extract_file_sync, ExtractionConfig};
+    use xberg::{extract_file_sync, ExtractionConfig};
 
     let config = ExtractionConfig::default();
     let result = extract_file_sync("app.py", None, &config)?;
@@ -34,7 +34,7 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
     println!("{}", result.content);
 
     // Code intelligence is in metadata.format
-    if let Some(kreuzberg::types::FormatMetadata::Code(ref code)) = result.metadata.format {
+    if let Some(xberg::types::FormatMetadata::Code(ref code)) = result.metadata.format {
         println!("Language: {}", code.language);
         println!("Structures: {}", code.structure.len());
         println!("Imports: {}", code.imports.len());
@@ -44,10 +44,10 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
 === "Python"
 
     ```python title="basic.py"
-    import kreuzberg
+    import xberg
 
-    config = kreuzberg.ExtractionConfig()
-    result = kreuzberg.extract_file_sync("app.py", config=config)
+    config = xberg.ExtractionConfig()
+    result = xberg.extract_file_sync("app.py", config=config)
 
     # The content field has the raw source text
     print(result.content)
@@ -63,7 +63,7 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
 === "TypeScript"
 
     ```typescript title="basic.ts"
-    import { extractFileSync } from "@kreuzberg/node";
+    import { extractFileSync } from "@xberg/node";
 
     const result = extractFileSync("app.ts");
 
@@ -80,7 +80,7 @@ Code intelligence is enabled by default when the `tree-sitter` feature flag is a
 === "Go"
 
     ```go title="basic.go"
-    result, err := kreuzberg.ExtractFileSync("app.py", nil)
+    result, err := xberg.ExtractFileSync("app.py", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -97,7 +97,7 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 === "Rust"
 
     ```rust title="config.rs"
-    use kreuzberg::{ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
+    use xberg::{ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
 
     let config = ExtractionConfig {
         tree_sitter: Some(TreeSitterConfig {
@@ -121,9 +121,9 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 === "Python"
 
     ```python title="config.py"
-    import kreuzberg
+    import xberg
 
-    config = kreuzberg.ExtractionConfig(
+    config = xberg.ExtractionConfig(
         tree_sitter={
             "process": {
                 "structure": True,
@@ -142,7 +142,7 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 === "TypeScript"
 
     ```typescript title="config.ts"
-    import { ExtractionConfig } from "@kreuzberg/node";
+    import { ExtractionConfig } from "@xberg/node";
 
     const config: ExtractionConfig = {
       treeSitter: {
@@ -162,7 +162,7 @@ Use `TreeSitterConfig` to control which analysis features are enabled. Set `enab
 
 === "TOML"
 
-    ```toml title="kreuzberg.toml"
+    ```toml title="xberg.toml"
     [tree_sitter.process]
     structure = true
     imports = true
@@ -187,13 +187,13 @@ Code intelligence results are returned as a `ProcessResult` from the upstream [`
 Code chunks produced by tree-sitter are semantically aware -- they split at function, class, and module boundaries rather than fixed line counts. This makes them ideal for retrieval-augmented generation (RAG) pipelines:
 
 ```python title="rag_chunking.py"
-import kreuzberg
+import xberg
 
-config = kreuzberg.ExtractionConfig(
+config = xberg.ExtractionConfig(
     tree_sitter={"process": {"chunk_max_size": 2048}}
 )
 
-result = kreuzberg.extract_file_sync("large_module.py", config=config)
+result = xberg.extract_file_sync("large_module.py", config=config)
 
 fmt = result.metadata.get("format")
 if fmt and fmt.get("format_type") == "code":
@@ -213,7 +213,7 @@ if fmt and fmt.get("format_type") == "code":
 
 ## Language Detection
 
-Kreuzberg detects the programming language in two ways:
+Xberg detects the programming language in two ways:
 
 1. **File extension** (fast path) -- when using `extract_file`, the extension is matched against 248 known language extensions
 2. **Shebang line** (fallback) -- when using `extract_bytes` or when the extension is ambiguous, the first line is checked for `#!/usr/bin/env python`, `#!/bin/bash`, and so on.

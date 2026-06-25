@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFile } from "@kreuzberg/node";
+import { extractFile } from "@xberg/node";
 
 const config = {
   chunking: {
@@ -13,7 +13,7 @@ console.log(`Total chunks: ${result.chunks?.length ?? 0}`);
 ```
 
 ```typescript title="TypeScript - Semantic"
-import { extractFile } from "@kreuzberg/node";
+import { extractFile } from "@xberg/node";
 
 const config = {
   chunking: {
@@ -28,7 +28,7 @@ for (const chunk of result.chunks ?? []) {
 ```
 
 ```typescript title="TypeScript - Prepend Heading Context"
-import { extractFile } from "@kreuzberg/node";
+import { extractFile } from "@xberg/node";
 
 const config = {
   chunking: {

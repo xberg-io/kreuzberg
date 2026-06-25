@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure Tesseract OCR settings
 # Includes language selection, page segmentation mode, OCR engine mode, and DPI settings
@@ -16,7 +16,7 @@ config = %ExtractionConfig{
   force_ocr: false
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("Tesseract Configuration Applied:")
 IO.puts("Backend: tesseract")

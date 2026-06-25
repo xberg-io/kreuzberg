@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 use Symfony\Component\Process\Process;
 
-// Start the Kreuzberg MCP server as a background process
-$process = new Process(['kreuzberg', 'mcp']);
+// Start the Xberg MCP server as a background process
+$process = new Process(['xberg', 'mcp']);
 $process->start();
 
 $pid = $process->getPid();

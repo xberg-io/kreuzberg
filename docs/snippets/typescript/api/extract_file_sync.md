@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFileSync } from "kreuzberg";
+import { extractFileSync } from "xberg";
 
 const result = extractFileSync("document.pdf");
 

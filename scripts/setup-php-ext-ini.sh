@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-# Setup temporary php.ini for e2e/php that loads the kreuzberg extension from target/release
+# Setup temporary php.ini for e2e/php that loads the xberg extension from target/release
 # Called from alef.toml before hook for PHP e2e tests
 # Must be run from e2e/php directory
 
 EXT_DIR=$(php -r 'echo ini_get("extension_dir");')
 
 # Look for built extension (relative to e2e/php/)
-for path in ../../target/release/libkreuzberg_php.dylib ../../target/release/libkreuzberg_php.so ../../target/release/kreuzberg_php.dll; do
+for path in ../../target/release/libxberg_php.dylib ../../target/release/libxberg_php.so ../../target/release/xberg_php.dll; do
   if [ -f "$path" ]; then
     BUILT_EXT="$path"
     break
@@ -16,7 +16,7 @@ for path in ../../target/release/libkreuzberg_php.dylib ../../target/release/lib
 done
 
 if [ -z "$BUILT_EXT" ]; then
-  echo "Error: kreuzberg PHP extension not found in target/release/" >&2
+  echo "Error: xberg PHP extension not found in target/release/" >&2
   exit 1
 fi
 
@@ -34,7 +34,7 @@ echo "Extension copied/verified: $TARGET"
 # PHP_INI_SCAN_DIR= (which is recommended in the e2e runner to skip stale
 # conf.d/*.ini entries left behind by sibling projects).
 cat >php.ini <<EOF
-; Temporary PHP INI for e2e tests — loads kreuzberg PHP extension from system extension directory
+; Temporary PHP INI for e2e tests — loads xberg PHP extension from system extension directory
 [PHP]
 extension_dir=$EXT_DIR
 extension=$BASENAME

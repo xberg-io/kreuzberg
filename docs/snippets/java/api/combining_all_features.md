@@ -1,7 +1,7 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.*;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.*;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ ExtractionConfig config = ExtractionConfig.builder()
     .withEnableQualityProcessing(true)
     .build();
 
-ExtractionResult result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), config);
+ExtractionResult result = Xberg.extractFileSync(Paths.get("document.pdf"), config);
 System.out.println("Content: " + result.content().substring(0, 100) + "...");
 if (result.tables() != null) {
     System.out.println("Tables: " + result.tables().size());

@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, ExtractionConfig, ImageExtractionConfig
+from xberg import extract_file_sync, ExtractionConfig, ImageExtractionConfig
 
 config: ExtractionConfig = ExtractionConfig(
     images=ImageExtractionConfig(

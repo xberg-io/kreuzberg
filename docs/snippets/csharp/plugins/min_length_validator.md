@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var validator = new MinimumLengthValidator();
 ValidatorRegistry.Register(validator);
@@ -25,7 +25,7 @@ public class MinimumLengthValidator : IValidator
     {
         if (result.Content.Length < MinimumLength)
         {
-            throw new KreuzbergException(
+            throw new XbergException(
                 $"Content length {result.Content.Length} is below minimum {MinimumLength}",
                 1001
             );

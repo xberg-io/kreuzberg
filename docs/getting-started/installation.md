@@ -1,5 +1,5 @@
 ---
-description: "Install Kreuzberg — pick Python, TypeScript, Rust, Go, Java/Kotlin, CLI/Docker, or another supported SDK."
+description: "Install Xberg — pick Python, TypeScript, Rust, Go, Java/Kotlin, CLI/Docker, or another supported SDK."
 ---
 
 # Installation
@@ -15,38 +15,38 @@ No SDK, no code — just your terminal.
 === "Install script"
 
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/xberg-io/kreuzberg/main/scripts/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/xberg-io/xberg/main/scripts/install.sh | bash
     ```
 
 === "Homebrew"
 
     ```bash
     brew trust xberg-io/tap
-    brew install xberg-io/tap/kreuzberg
+    brew install xberg-io/tap/xberg
     ```
 
 === "Cargo"
 
     ```bash
-    cargo install kreuzberg-cli
+    cargo install xberg-cli
     ```
 
 === "Docker (CLI image)"
 
     ```bash
-    docker pull ghcr.io/xberg-io/kreuzberg-cli:latest
-    docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest extract /data/document.pdf
+    docker pull ghcr.io/xberg-io/xberg-cli:latest
+    docker run -v $(pwd):/data ghcr.io/xberg-io/xberg-cli:latest extract /data/document.pdf
     ```
 
 === "Docker (full image)"
 
     ```bash
-    docker pull ghcr.io/xberg-io/kreuzberg:latest
+    docker pull ghcr.io/xberg-io/xberg:latest
     ```
 
 !!! Note "MCP Server included"
 
-    Prebuilt binaries (Homebrew, install.sh, Docker full) include the MCP server. If building from source with `cargo install kreuzberg-cli`, add `--features mcp` (or `--features mcp-http` for HTTP transport) to include it.
+    Prebuilt binaries (Homebrew, install.sh, Docker full) include the MCP server. If building from source with `cargo install xberg-cli`, add `--features mcp` (or `--features mcp-http` for HTTP transport) to include it.
 
 [CLI Usage](../cli/usage.md){ .install-btn .install-btn--ghost }
 [API Server Guide](../guides/api-server.md){ .install-btn .install-btn--solid }
@@ -55,7 +55,7 @@ No SDK, no code — just your terminal.
 
 !!! Warning "x86_64 CPU — AVX/AVX2 instruction set required"
 
-    The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, **embeddings**, **reranking**, **auto-rotate**, and **transcription**. All other Kreuzberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
+    The bundled ONNX Runtime binaries require **AVX/AVX2** CPU instructions. CPUs without AVX support (e.g. Intel Atom, Celeron N5105/Jasper Lake, older pre-2011 processors) will crash with an `invalid opcode` trap when using ONNX-dependent features. The affected features are **PaddleOCR**, **layout detection**, **embeddings**, **reranking**, **auto-rotate**, and **transcription**. All other Xberg functionality (text extraction, Tesseract OCR, chunking, metadata, etc.) works normally on any x86_64 CPU. ARM platforms (aarch64) are unaffected.
 
 !!! Warning "Windows — ONNX Runtime required for Go, Elixir, and C/C++"
 
@@ -70,7 +70,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  pip install kreuzberg
+  pip install xberg
   ```
 
   [API Reference](../reference/api-python.md){ .install-api-link }
@@ -81,7 +81,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  npm install @kreuzberg/node
+  npm install @xberg/node
   ```
 
   [API Reference](../reference/api-typescript.md){ .install-api-link }
@@ -92,7 +92,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  npm install @kreuzberg/wasm
+  npm install @xberg/wasm
   ```
 
   [API Reference](../reference/api-wasm.md){ .install-api-link }
@@ -103,7 +103,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  cargo add kreuzberg
+  cargo add xberg
   ```
 
   [API Reference](../reference/api-rust.md){ .install-api-link }
@@ -114,7 +114,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  go get github.com/xberg-io/kreuzberg/v5@latest
+  go get github.com/xberg-io/xberg/v5@latest
   ```
 
   [API Reference](../reference/api-go.md){ .install-api-link }
@@ -125,7 +125,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```gradle
-  implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.17'
+  implementation 'dev.xberg:xberg:5.0.0-rc.17'
   ```
 
   [API Reference](../reference/api-java.md){ .install-api-link }
@@ -136,7 +136,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```kotlin
-  implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.17")
+  implementation("dev.xberg:xberg-android:5.0.0-rc.17")
   ```
 
   [API Reference](../reference/api-kotlin-android.md){ .install-api-link }
@@ -147,7 +147,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  gem install kreuzberg
+  gem install xberg
   ```
 
   [API Reference](../reference/api-ruby.md){ .install-api-link }
@@ -158,7 +158,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```swift
-  .package(url: "https://github.com/xberg-io/kreuzberg.git", from: "5.0.0-rc.17")
+  .package(url: "https://github.com/xberg-io/xberg.git", from: "5.0.0-rc.17")
   ```
 
   [API Reference](../reference/api-swift.md){ .install-api-link }
@@ -169,7 +169,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  dotnet add package Kreuzberg
+  dotnet add package Xberg
   ```
 
   [API Reference](../reference/api-csharp.md){ .install-api-link }
@@ -180,7 +180,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  composer require xberg-io/kreuzberg
+  composer require xberg-io/xberg
   ```
 
   [API Reference](../reference/api-php.md){ .install-api-link }
@@ -191,7 +191,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```elixir
-  {:kreuzberg, "~> 5.0.0-rc.17"}
+  {:xberg, "~> 5.0.0-rc.17"}
   ```
 
   [API Reference](../reference/api-elixir.md){ .install-api-link }
@@ -202,7 +202,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```r
-  install.packages("kreuzberg",
+  install.packages("xberg",
     repos = "https://xberg-io.r-universe.dev")
   ```
 
@@ -214,7 +214,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  cargo build -p kreuzberg-ffi
+  cargo build -p xberg-ffi
   ```
 
   [API Reference](../reference/api-c.md){ .install-api-link }
@@ -225,7 +225,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  dart pub add kreuzberg
+  dart pub add xberg
   ```
 
   [API Reference](../reference/api-dart.md){ .install-api-link }
@@ -236,7 +236,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
+  zig fetch --save https://github.com/xberg-io/xberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
   ```
 
   [API Reference](../reference/api-zig.md){ .install-api-link }
@@ -260,7 +260,7 @@ Only relevant if building from source or enabling OCR:
 
 PDF extraction uses pdf_oxide and has no external PDF runtime dependency.
 
-The Wasm package (`@kreuzberg/wasm`) has **zero** system dependencies.
+The Wasm package (`@xberg/wasm`) has **zero** system dependencies.
 
 ### HEIF / HEIC / AVIF support { #heif--heic--avif-support }
 
@@ -276,7 +276,7 @@ Pixel decoding for Apple HEIC photos, HEIF still images, AVIF, HEIC sequences
 Enable the feature when building from source:
 
 ```toml
-kreuzberg = { version = "5", features = ["heic", "ocr"] }
+xberg = { version = "5", features = ["heic", "ocr"] }
 ```
 
 `heic` is included in the `full` aggregate feature. HEIC pixel decoding is
@@ -287,7 +287,7 @@ integration.
 
 ### GPU Acceleration
 
-Kreuzberg bundles a CPU-only ONNX Runtime — ML features (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription) work out of the box on CPU.
+Xberg bundles a CPU-only ONNX Runtime — ML features (PaddleOCR, layout detection, embeddings, reranking, auto-rotate, transcription) work out of the box on CPU.
 
 For GPU acceleration, install a GPU-enabled ONNX Runtime and set `ORT_DYLIB_PATH`:
 
@@ -311,8 +311,8 @@ Two npm packages target different runtimes:
 
 | Package           | Best for                           | Performance    |
 | ----------------- | ---------------------------------- | -------------- |
-| `@kreuzberg/node` | Node.js, Bun — server-side apps    | Native (100%)  |
-| `@kreuzberg/wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
+| `@xberg/node` | Node.js, Bun — server-side apps    | Native (100%)  |
+| `@xberg/wasm` | Browsers, Deno, Cloudflare Workers | Wasm (~60-80%) |
 
 Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
@@ -328,7 +328,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
     ```html
     <script type="module">
-      import { initWasm, extractFromFile } from "@kreuzberg/wasm";
+      import { initWasm, extractFromFile } from "@xberg/wasm";
 
       await initWasm();
 
@@ -345,7 +345,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 ??? Note "Wasm — Deno"
 
     ```typescript
-    import { initWasm, extractFile } from "npm:@kreuzberg/wasm";
+    import { initWasm, extractFile } from "npm:@xberg/wasm";
 
     await initWasm();
     const result = await extractFile("./document.pdf");
@@ -355,7 +355,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 ??? Note "Wasm — Cloudflare Workers"
 
     ```typescript
-    import { initWasm, extractBytes } from "@kreuzberg/wasm";
+    import { initWasm, extractBytes } from "@xberg/wasm";
 
     export default {
       async fetch(request: Request): Promise<Response> {
@@ -389,8 +389,8 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 
     ```xml
     <dependency>
-        <groupId>dev.kreuzberg</groupId>
-        <artifactId>kreuzberg</artifactId>
+        <groupId>dev.xberg</groupId>
+        <artifactId>xberg</artifactId>
         <version>5.0.0-rc.17</version>
     </dependency>
     ```
@@ -398,7 +398,7 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
 === "Gradle"
 
     ```gradle
-    implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.17'
+    implementation 'dev.xberg:xberg:5.0.0-rc.17'
     ```
 
 Requires Java 25+ (FFM/Panama API). Native libraries are bundled in the JAR.
@@ -410,7 +410,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:kreuzberg, "~> 5.0.0-rc.17"}
+    {:xberg, "~> 5.0.0-rc.17"}
   ]
 end
 ```
@@ -428,7 +428,7 @@ Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from
 ### Go
 
 ```bash
-go get github.com/xberg-io/kreuzberg/v5@latest
+go get github.com/xberg-io/xberg/v5@latest
 ```
 
 !!! Warning "Windows"
@@ -445,7 +445,7 @@ Enable features selectively in `Cargo.toml`:
 
 ```toml title="Cargo.toml"
 [dependencies]
-kreuzberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
+xberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
 # Default features are tokio-runtime + simd-utf8; format and analysis features are opt-in.
 ```
 
@@ -454,17 +454,17 @@ kreuzberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
 Build the FFI library from source:
 
 ```bash
-cargo build --release -p kreuzberg-ffi
+cargo build --release -p xberg-ffi
 ```
 
-This produces `libkreuzberg_ffi.a` and a header at `crates/kreuzberg-ffi/kreuzberg.h`. Link into your project:
+This produces `libxberg_ffi.a` and a header at `crates/xberg-ffi/xberg.h`. Link into your project:
 
 ```makefile
-HEADER_DIR = path/to/crates/kreuzberg-ffi
+HEADER_DIR = path/to/crates/xberg-ffi
 LIBDIR     = path/to/target/release
 
 CFLAGS  = -Wall -Wextra -I$(HEADER_DIR)
-LDFLAGS = -L$(LIBDIR) -lkreuzberg_ffi -lpthread -ldl -lm
+LDFLAGS = -L$(LIBDIR) -lxberg_ffi -lpthread -ldl -lm
 
 my_app: my_app.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
@@ -484,27 +484,27 @@ my_app: my_app.c
 
 ### Dart / Flutter { #dart }
 
-Pure-Dart and Flutter consumers share the same package. Dart SDK 3.0 or higher is required. Flutter is supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported because the runtime is a native dynamic library delivered via flutter_rust_bridge. For Flutter projects use `flutter pub add kreuzberg` instead of `dart pub add kreuzberg`.
+Pure-Dart and Flutter consumers share the same package. Dart SDK 3.0 or higher is required. Flutter is supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported because the runtime is a native dynamic library delivered via flutter_rust_bridge. For Flutter projects use `flutter pub add xberg` instead of `dart pub add xberg`.
 
 ### Kotlin { #kotlin }
 
-Kotlin/JVM consumers use the Java artifact (`dev.kreuzberg:kreuzberg`) directly; Kotlin interoperates with the generated Java records and static facade.
+Kotlin/JVM consumers use the Java artifact (`dev.xberg:xberg`) directly; Kotlin interoperates with the generated Java records and static facade.
 
-Kotlin Android uses the Android AAR (`dev.kreuzberg:kreuzberg-android`). It embeds JNI libraries for `arm64-v8a` and `x86_64`, targets Android API 21+, and uses the `android-target` feature set, which excludes ORT-dependent inference features.
+Kotlin Android uses the Android AAR (`dev.xberg:xberg-android`). It embeds JNI libraries for `arm64-v8a` and `x86_64`, targets Android API 21+, and uses the `android-target` feature set, which excludes ORT-dependent inference features.
 
 ### Swift { #swift }
 
-Swift Package Manager from `swift-tools-version: 6.0` upward. Targets macOS 13+ and iOS 16+; Linux is not currently declared in `Package.swift`. Once the package ships its `binaryTarget`, no manual cargo build is needed; in the interim, building the library locally requires `cargo build -p kreuzberg-swift` against the workspace.
+Swift Package Manager from `swift-tools-version: 6.0` upward. Targets macOS 13+ and iOS 16+; Linux is not currently declared in `Package.swift`. Once the package ships its `binaryTarget`, no manual cargo build is needed; in the interim, building the library locally requires `cargo build -p xberg-swift` against the workspace.
 
 ### Zig { #zig }
 
-Requires Zig 0.16.0 or higher (declared via `minimum_zig_version` in `build.zig.zon`). The Zig binding consumes the C FFI surface from `kreuzberg-ffi` via `linkSystemLibrary`; the build expects the consumer to provide a search path to the prebuilt `libkreuzberg_ffi` and the C header `kreuzberg.h`. The `zig fetch` command above pins the source archive in `build.zig.zon`; wire it into `build.zig` via `b.dependency("kreuzberg", ...)`.
+Requires Zig 0.16.0 or higher (declared via `minimum_zig_version` in `build.zig.zon`). The Zig binding consumes the C FFI surface from `xberg-ffi` via `linkSystemLibrary`; the build expects the consumer to provide a search path to the prebuilt `libxberg_ffi` and the C header `xberg.h`. The `zig fetch` command above pins the source archive in `build.zig.zon`; wire it into `build.zig` via `b.dependency("xberg", ...)`.
 
 ---
 
 ## Development setup
 
-For working on the Kreuzberg repository itself:
+For working on the Xberg repository itself:
 
 ```bash
 task setup      # installs all language toolchains

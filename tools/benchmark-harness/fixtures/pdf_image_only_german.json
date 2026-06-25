@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pdf/image_only_german_pdf.pdf",
 	"file_type": "pdf",
 	"file_size": 189884,
-	"expected_frameworks": ["kreuzberg", "kreuzberg-python", "kreuzberg-node", "kreuzberg-wasm", "kreuzberg-ruby"],
+	"expected_frameworks": ["xberg", "xberg-python", "xberg-node", "xberg-wasm", "xberg-ruby"],
 	"metadata": {
 		"requires_ocr": true
 	},

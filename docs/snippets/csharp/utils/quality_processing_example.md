@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig { EnableQualityProcessing = true };
-var result = await KreuzbergLib.ExtractFile("scanned_document.pdf", null, config);
+var result = await XbergLib.ExtractFile("scanned_document.pdf", null, config);
 
 var qualityScore = result.QualityScore ?? 0.0;
 

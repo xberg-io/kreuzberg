@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"kreuzberg"
+	"xberg"
 )
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
 func basicYake() error {
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
 			Algorithm:   "yake",
 			MaxKeywords: 10,
 			MinScore:    0.0,
@@ -20,7 +20,7 @@ func basicYake() error {
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		return err
 	}
@@ -32,21 +32,21 @@ func basicYake() error {
 // Example 2: Advanced YAKE with custom parameters
 // Fine-tunes YAKE with custom window size for co-occurrence analysis
 func advancedYake() error {
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
 			Algorithm:   "yake",
 			MaxKeywords: 15,
 			MinScore:    0.1,
 			NgramRange:  [2]int{1, 2},
 			Language:    "en",
-			YakeParams: &kreuzberg.YakeParams{
+			YakeParams: &xberg.YakeParams{
 				WindowSize: 1,
 			},
 			RakeParams: nil,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		return err
 	}
@@ -58,22 +58,22 @@ func advancedYake() error {
 // Example 3: RAKE configuration
 // Uses RAKE algorithm for rapid keyword extraction with phrase constraints
 func rakeConfig() error {
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
 			Algorithm:   "rake",
 			MaxKeywords: 10,
 			MinScore:    5.0,
 			NgramRange:  [2]int{1, 3},
 			Language:    "en",
 			YakeParams:  nil,
-			RakeParams: &kreuzberg.RakeParams{
+			RakeParams: &xberg.RakeParams{
 				MinWordLength:      1,
 				MaxWordsPerPhrase:  3,
 			},
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+	result, err := xberg.ExtractFileSync("document.pdf", config)
 	if err != nil {
 		return err
 	}

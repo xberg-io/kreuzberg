@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.OcrConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.OcrConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .ocr(OcrConfig.builder()
@@ -11,6 +11,6 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("multilingual.pdf", config);
+ExtractionResult result = Xberg.extractFile("multilingual.pdf", config);
 System.out.println(result.getContent());
 ```

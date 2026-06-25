@@ -1,9 +1,9 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import extract_file, __version__
+from xberg import extract_file, __version__
 
 async def main() -> None:
-    print(f"Kreuzberg version: {__version__}")
+    print(f"Xberg version: {__version__}")
 
     result = await extract_file("document.pdf")
     print(f"Extraction successful: {len(result.content) > 0}")

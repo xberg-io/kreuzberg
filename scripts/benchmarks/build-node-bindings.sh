@@ -22,9 +22,9 @@ setup_all_library_paths "$REPO_ROOT"
 cd "$REPO_ROOT"
 pnpm install
 
-cd "$REPO_ROOT/crates/kreuzberg-node"
+cd "$REPO_ROOT/crates/xberg-node"
 pnpm exec napi build --platform --release --target "${TARGET}"
 pnpm run build:ts
 pkg=$(pnpm pack | tail -n1 | tr -d '\r')
 cd "$REPO_ROOT"
-pnpm add --workspace-root "file:crates/kreuzberg-node/${pkg}"
+pnpm add --workspace-root "file:crates/xberg-node/${pkg}"

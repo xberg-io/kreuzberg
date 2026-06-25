@@ -3,14 +3,14 @@ name: Publish pub.dev
 # pub.dev OIDC trusted publishing rejects tokens originating from `release`
 # events; only `push` and `workflow_dispatch` are accepted.
 #
-# Because the kreuzberg Dart package embeds platform-specific native binaries
+# Because the xberg Dart package embeds platform-specific native binaries
 # (Android JNI, iOS XCFramework, server libs for linux/macos/windows), we
 # cannot just rebuild here — those artifacts are produced by the main
 # `publish.yaml` workflow. Instead, the main workflow's `trigger-pubdev` job
 # dispatches this workflow with the run_id of the main workflow, and this
 # workflow downloads the `dart-package-assembled` artifact from that run.
 #
-# One-time setup: on pub.dev → kreuzberg package → Admin → Automated publishing,
+# One-time setup: on pub.dev → xberg package → Admin → Automated publishing,
 # set the workflow path to `.github/workflows/publish-pubdev.yaml`.
 
 on:

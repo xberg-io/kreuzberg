@@ -3,7 +3,7 @@ use std::process::Command;
 use anyhow::Result;
 
 fn extract_with_config(file_path: &str, config_path: &str) -> Result<serde_json::Value> {
-    let output = Command::new("kreuzberg")
+    let output = Command::new("xberg")
         .args(&[
             "extract",
             file_path,
@@ -24,7 +24,7 @@ fn extract_with_config(file_path: &str, config_path: &str) -> Result<serde_json:
 }
 
 fn main() -> Result<()> {
-    let config_file = "kreuzberg.toml";
+    let config_file = "xberg.toml";
     let document = "document.pdf";
 
     println!("Extracting {} with config {}", document, config_file);

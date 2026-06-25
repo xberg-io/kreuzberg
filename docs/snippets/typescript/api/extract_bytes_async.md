@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractBytes } from "kreuzberg";
+import { extractBytes } from "xberg";
 import { readFileSync } from "fs";
 
 async function main() {

@@ -1,7 +1,7 @@
-name: kreuzberg
+name: xberg
 description: High-performance document intelligence library
-version: 5.0.0-rc.36
-repository: https://github.com/xberg-io/kreuzberg
+version: 1.0.0-rc.1
+repository: https://github.com/xberg-io/xberg
 homepage: https://xberg.io
 environment:
   sdk: '>=3.11.0 <4.0.0'

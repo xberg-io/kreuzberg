@@ -13,7 +13,7 @@ public final class CliWithConfig {
   public static JsonNode extractWithConfig(String filePath, String configPath)
       throws IOException, InterruptedException {
     ProcessBuilder pb = new ProcessBuilder(
-        "kreuzberg",
+        "xberg",
         "extract",
         filePath,
         "--config",
@@ -41,7 +41,7 @@ public final class CliWithConfig {
   }
 
   public static void main(String[] args) throws IOException, InterruptedException {
-    String configFile = "kreuzberg.toml";
+    String configFile = "xberg.toml";
     String document = "document.pdf";
 
     System.out.println("Extracting " + document + " with config " + configFile);

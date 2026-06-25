@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -14,7 +14,7 @@ fun main() {
         .withKeywords(Optional.of(keywords))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("research_paper.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("research_paper.pdf"), null, config)
     result.extractedKeywords()?.let { extracted ->
         println("Keywords: $extracted")
     }

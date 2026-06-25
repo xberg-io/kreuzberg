@@ -6,11 +6,11 @@ priority: critical
 
 # Extraction Pipeline Patterns
 
-**Kreuzberg's format detection -> extraction -> fallback orchestration for 75+ file formats**
+**Xberg's format detection -> extraction -> fallback orchestration for 75+ file formats**
 
 ## Core Pipeline Architecture
 
-The extraction pipeline (`crates/kreuzberg/src/core/pipeline.rs`, `crates/kreuzberg/src/extraction/`) orchestrates:
+The extraction pipeline (`crates/xberg/src/core/pipeline.rs`, `crates/xberg/src/extraction/`) orchestrates:
 
 1. **Format Detection** - MIME type inference + extension validation -> select appropriate extractor
 2. **Intelligent Extraction** - Route to format-specific extractors (PDF, DOCX, Excel, HTML, images, archives, etc.)
@@ -19,7 +19,7 @@ The extraction pipeline (`crates/kreuzberg/src/core/pipeline.rs`, `crates/kreuzb
 
 ## Format Detection Strategy
 
-**Location**: `crates/kreuzberg/src/core/mime.rs`, `crates/kreuzberg/src/core/formats.rs`
+**Location**: `crates/xberg/src/core/mime.rs`, `crates/xberg/src/core/formats.rs`
 
 Pattern: detect via magic bytes, validate extension alignment (prevent spoofing), route to extractor. Multiple extractors for same format -> choose highest confidence/specificity.
 
@@ -71,13 +71,13 @@ run_pipeline(result, config)  // post-processing always runs
 
 ## Configuration Integration
 
-**Location**: `crates/kreuzberg/src/core/config.rs`, `crates/kreuzberg/src/core/config_validation.rs`
+**Location**: `crates/xberg/src/core/config.rs`, `crates/xberg/src/core/config_validation.rs`
 
 `ExtractionConfig` holds format-specific configs (`pdf`, `image`, `html`, `office`), fallback orchestration (`fallback`), and post-processing (`postprocessor`, `chunking`, `keywords`). See struct definition in `config.rs`.
 
 ## Plugin System Integration
 
-**Location**: `crates/kreuzberg/src/plugins/`
+**Location**: `crates/xberg/src/plugins/`
 
 - **CustomExtractor**: Override built-in format extractors
 - **PostProcessor**: Modify results after extraction (Early/Middle/Late stages)
@@ -88,7 +88,7 @@ Plugin registry loaded at startup, cached for zero-cost lookup.
 
 ## Feature Flag Strategy
 
-**Location**: `Cargo.toml` (workspace), `crates/kreuzberg/Cargo.toml`, `FEATURE_MATRIX.md`
+**Location**: `Cargo.toml` (workspace), `crates/xberg/Cargo.toml`, `FEATURE_MATRIX.md`
 
 20+ features across 9 language bindings. Key feature groups:
 

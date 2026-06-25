@@ -9,7 +9,7 @@ on:
       - "packages/swift/rust/**"
       - "packages/elixir/native/**"
       - "packages/r/src/rust/**"
-      - "packages/ruby/ext/kreuzberg_rb/**"
+      - "packages/ruby/ext/xberg_rb/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "rust-toolchain.toml"
@@ -22,7 +22,7 @@ on:
       - "packages/swift/rust/**"
       - "packages/elixir/native/**"
       - "packages/r/src/rust/**"
-      - "packages/ruby/ext/kreuzberg_rb/**"
+      - "packages/ruby/ext/xberg_rb/**"
       - "Cargo.toml"
       - "Cargo.lock"
       - "rust-toolchain.toml"
@@ -50,7 +50,7 @@ permissions:
 jobs:
   rust:
     name: Rust (${{ matrix.os }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -106,12 +106,12 @@ jobs:
           DYLD_FALLBACK_LIBRARY_PATH: ${{ env.DYLD_FALLBACK_LIBRARY_PATH || '' }}
 
       - name: Check no-default-features
-        run: cargo check --locked -p kreuzberg --no-default-features
+        run: cargo check --locked -p xberg --no-default-features
         shell: bash
 
   live-hf:
     name: Live HF preset tests
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     steps:
@@ -147,7 +147,7 @@ jobs:
       - name: Run live HF reranker tests
         run: |
           cargo test --locked \
-            -p kreuzberg \
+            -p xberg \
             --features "reranker,reranker-presets,tokio-runtime" \
             --test reranker_live \
             -- --nocapture

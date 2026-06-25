@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\TesseractConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\TesseractConfig;
 
 echo "Example 1: Basic OCR Configuration\n";
 echo "==================================\n";
@@ -27,8 +27,8 @@ $config1 = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config1);
-$result = $kreuzberg->extractFile('scanned_document.pdf');
+$xberg = new Xberg($config1);
+$result = $xberg->extractFile('scanned_document.pdf');
 echo "Extracted text length: " . strlen($result->content) . " characters\n\n";
 
 echo "Example 2: Multi-Language OCR\n";

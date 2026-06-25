@@ -52,7 +52,7 @@ jobs:
       - name: Build GPU test binary
         uses: xberg-io/actions/build-gpu-test-binary@v1
         with:
-          package: kreuzberg
+          package: xberg
           test-name: gpu_acceleration
           features: "paddle-ocr,layout-detection,embeddings,pdf,ocr,ort-dynamic"
           output-name: gpu-acceleration-test
@@ -100,7 +100,7 @@ jobs:
 
       - name: Clear stale layout model cache (self-hosted runner persistence)
         run: |
-          rm -rf "$HOME/.cache/kreuzberg/layout"
+          rm -rf "$HOME/.cache/xberg/layout"
           echo "Cleared layout model cache"
 
       - name: Run GPU tests
@@ -108,5 +108,5 @@ jobs:
           chmod +x gpu-acceleration-test
           ./gpu-acceleration-test --ignored --nocapture
         env:
-          RUST_LOG: "kreuzberg=debug"
+          RUST_LOG: "xberg=debug"
           TEST_DOCUMENTS_DIR: ${{ github.workspace }}/test_documents

@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig
+from xberg import extract_file, ExtractionConfig
 
 config = ExtractionConfig(qr_codes=True)
 result = await extract_file("ticket.pdf", config=config)

@@ -1,8 +1,8 @@
 # Features
 
-A map of what Kreuzberg can do. Each section links to the guide or reference page with configuration details and code examples.
+A map of what Xberg can do. Each section links to the guide or reference page with configuration details and code examples.
 
-![Kreuzberg features overview -- 96 input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/feature-overview.png)
+![Xberg features overview -- 96 input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/feature-overview.png)
 
 ---
 
@@ -67,13 +67,13 @@ A map of what Kreuzberg can do. Each section links to the guide or reference pag
         [installation guide](getting-started/installation.md#heif--heic--avif-support).
 
     !!! warning "libheif license (LGPL)"
-        `libheif` is licensed under the GNU **LGPL**. Kreuzberg links it
+        `libheif` is licensed under the GNU **LGPL**. Xberg links it
         **dynamically** (via `pkg-config`/system shared library) and never
         statically — the `heic` feature is optional and is omitted from the
         standalone CLI release binaries. Container images redistribute the
         unmodified upstream `libheif` as a separate shared object (`libheif.so`),
         which you may replace with your own build to satisfy LGPL §6. See
-        [`THIRD_PARTY_LICENSES.md`](https://github.com/xberg-io/kreuzberg/blob/main/THIRD_PARTY_LICENSES.md)
+        [`THIRD_PARTY_LICENSES.md`](https://github.com/xberg-io/xberg/blob/main/THIRD_PARTY_LICENSES.md)
         for the full notice and source pointer.
 
 === "Audio and Video"
@@ -171,7 +171,7 @@ flowchart LR
     F --> G[ExtractionResult]
 ```
 
-1. **MIME detection** -- Kreuzberg identifies the file type from magic bytes and extension, then selects the matching native extractor from the registry.
+1. **MIME detection** -- Xberg identifies the file type from magic bytes and extension, then selects the matching native extractor from the registry.
 2. **Format extraction** -- The extractor pulls text, tables, metadata, and optionally images from the file. PDF extraction uses pdf_oxide (pure Rust); Office formats use native XML or OLE/CFB parsers; images pass directly to OCR.
 3. **OCR** -- When the extractor finds no text layer (or `force_ocr` is set), the file is routed to the configured OCR backend. The OCR result replaces or supplements the extracted text.
 4. **Post-processing** -- Validators, quality processing, chunking, embeddings, keyword extraction, and any registered post-processor plugins run in sequence.
@@ -181,7 +181,7 @@ For a deep dive into each stage, see [Extraction Pipeline](concepts/extraction-p
 
 ### Output Formats
 
-Kreuzberg supports five output formats: **Plain text**, **Markdown**, **Djot**, **HTML**, and **Structured (JSON)**. The HTML format includes a styled renderer with semantic `kb-*` CSS classes, five built-in themes, and CSS custom properties for full customization. See [HTML Output](guides/html-output.md) for details.
+Xberg supports five output formats: **Plain text**, **Markdown**, **Djot**, **HTML**, and **Structured (JSON)**. The HTML format includes a styled renderer with semantic `kb-*` CSS classes, five built-in themes, and CSS custom properties for full customization. See [HTML Output](guides/html-output.md) for details.
 
 ---
 
@@ -196,7 +196,7 @@ Three OCR backends, usable individually or chained into a quality-driven fallbac
 | **Languages**      | 100+                                     | 80+ (11 script families)                                           | 80+                              |
 | **Best for**       | General purpose, broad language coverage | CJK, complex scripts, high accuracy                                | GPU-accelerated workloads        |
 | **Platform**       | Native and WASM targets                  | Native ONNX Runtime builds                                         | Python only                      |
-| **Install**        | System package (`tesseract-ocr`)         | Cargo feature `paddle-ocr` (bundled in Python package by v4.8)     | `pip install kreuzberg[easyocr]` |
+| **Install**        | System package (`tesseract-ocr`)         | Cargo feature `paddle-ocr` (bundled in Python package by v4.8)     | `pip install xberg[easyocr]` |
 | **Runtime**        | C library (Tesseract 4.0+)               | ONNX Runtime (models downloaded on first use)                      | PyTorch (optional CUDA)          |
 | **Python version** | Any                                      | Any                                                                | Any                              |
 
@@ -204,7 +204,7 @@ Three OCR backends, usable individually or chained into a quality-driven fallbac
 
 !!! Info "Available by v4.5"
 
-When the `paddle-ocr` feature is enabled, Kreuzberg automatically constructs a fallback pipeline: Tesseract runs first, and if the output falls below configurable quality thresholds (16 tunable parameters), PaddleOCR takes over. You can also define a custom ordering across all three backends.
+When the `paddle-ocr` feature is enabled, Xberg automatically constructs a fallback pipeline: Tesseract runs first, and if the output falls below configurable quality thresholds (16 tunable parameters), PaddleOCR takes over. You can also define a custom ordering across all three backends.
 
 The pipeline supports auto-rotate for page orientation detection (0/90/180/270 degrees) and per-stage language and backend-specific settings.
 
@@ -235,7 +235,7 @@ Pure-Rust VLM OCR via the `candle-glm-ocr` feature. Wraps the zai-org/GLM-OCR 0.
 
 **Feature flag:** `candle-glm-ocr`
 
-**Implies:** `candle-ocr`, `kreuzberg-candle-ocr/glm-ocr`, `layout-detection`
+**Implies:** `candle-ocr`, `xberg-candle-ocr/glm-ocr`, `layout-detection`
 
 **Deployment:**
 
@@ -261,7 +261,7 @@ Pure-Rust VLM OCR via the `candle-hunyuan-ocr` feature. Tencent Hunyuan-OCR visi
 
 **Feature flag:** `candle-hunyuan-ocr`
 
-**Implies:** `candle-ocr`, `kreuzberg-candle-ocr/hunyuan-ocr`
+**Implies:** `candle-ocr`, `xberg-candle-ocr/hunyuan-ocr`
 
 **Deployment:**
 
@@ -278,7 +278,7 @@ Pure-Rust VLM OCR via the `candle-hunyuan-ocr` feature. Tencent Hunyuan-OCR visi
 
 Configure via `--ocr-backend candle-hunyuan-ocr` or `ocr.backend = "candle-hunyuan-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/xberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle DeepSeek-OCR
 
@@ -288,7 +288,7 @@ Pure-Rust VLM OCR via the `candle-deepseek-ocr` feature. DeepSeek-OCR vision-lan
 
 **Feature flag:** `candle-deepseek-ocr`
 
-**Implies:** `candle-ocr`, `kreuzberg-candle-ocr/deepseek-ocr`
+**Implies:** `candle-ocr`, `xberg-candle-ocr/deepseek-ocr`
 
 **Deployment:**
 
@@ -305,7 +305,7 @@ Pure-Rust VLM OCR via the `candle-deepseek-ocr` feature. DeepSeek-OCR vision-lan
 
 Configure via `--ocr-backend candle-deepseek-ocr` or `ocr.backend = "candle-deepseek-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/xberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle PaddleOCR-VL 1.5
 
@@ -315,7 +315,7 @@ Pure-Rust VLM OCR via the `candle-paddleocr-vl-15` feature. PaddleOCR-VL 1.5 vis
 
 **Feature flag:** `candle-paddleocr-vl-15`
 
-**Implies:** `candle-ocr`, `kreuzberg-candle-ocr/paddleocr-vl-15`
+**Implies:** `candle-ocr`, `xberg-candle-ocr/paddleocr-vl-15`
 
 **Deployment:**
 
@@ -332,7 +332,7 @@ Pure-Rust VLM OCR via the `candle-paddleocr-vl-15` feature. PaddleOCR-VL 1.5 vis
 
 Configure via `--ocr-backend candle-paddleocr-vl-15` or `ocr.backend = "candle-paddleocr-vl-15"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/xberg-io/xberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle VLM-OCR Umbrella
 
@@ -360,19 +360,19 @@ Optional post-extraction steps, each configured independently through `Extractio
 
 !!! Info "Available by v4.8"
 
-Kreuzberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/xberg-io/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
+Xberg integrates with 143 LLM providers including local inference (Ollama, LM Studio, vLLM, llama.cpp) via [liter-llm](https://github.com/xberg-io/liter-llm) to unlock three new capabilities that complement the local extraction pipeline.
 
 <details>
 <summary><strong>VLM OCR</strong> -- Vision language models as an OCR backend</summary>
 
-Use OpenAI GPT-4o, Anthropic Claude, Google Gemini, or any vision-capable model as an OCR engine. VLM OCR delivers superior accuracy on low-quality scans, handwriting, Arabic/Farsi scripts, and complex layouts where traditional OCR struggles. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config` in your extraction config or `kreuzberg.toml`.
+Use OpenAI GPT-4o, Anthropic Claude, Google Gemini, or any vision-capable model as an OCR engine. VLM OCR delivers superior accuracy on low-quality scans, handwriting, Arabic/Farsi scripts, and complex layouts where traditional OCR struggles. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config` in your extraction config or `xberg.toml`.
 
 </details>
 
 <details>
 <summary><strong>Structured Extraction</strong> -- Extract typed JSON from documents using a schema</summary>
 
-Provide a JSON schema and an optional Jinja2 prompt template; the LLM returns conforming structured data. Supports strict mode (OpenAI) with automatic `additionalProperties` sanitization for cross-provider compatibility. Available through the `kreuzberg extract-structured` CLI command, `POST /extract-structured` API endpoint, and `extract_structured` MCP tool.
+Provide a JSON schema and an optional Jinja2 prompt template; the LLM returns conforming structured data. Supports strict mode (OpenAI) with automatic `additionalProperties` sanitization for cross-provider compatibility. Available through the `xberg extract-structured` CLI command, `POST /extract-structured` API endpoint, and `extract_structured` MCP tool.
 
 ```json
 {
@@ -410,7 +410,7 @@ Customize the prompts sent to LLMs with Minijinja templates. Available variables
 
 </details>
 
-`LlmConfig` and `StructuredExtractionConfig` types are exposed in Python, Node.js, and PHP bindings. Five new environment variables (`KREUZBERG_LLM_MODEL`, `KREUZBERG_LLM_API_KEY`, `KREUZBERG_LLM_BASE_URL`, `KREUZBERG_VLM_OCR_MODEL`, `KREUZBERG_VLM_EMBEDDING_MODEL`) provide zero-code configuration.
+`LlmConfig` and `StructuredExtractionConfig` types are exposed in Python, Node.js, and PHP bindings. Five new environment variables (`XBERG_LLM_MODEL`, `XBERG_LLM_API_KEY`, `XBERG_LLM_BASE_URL`, `XBERG_VLM_OCR_MODEL`, `XBERG_VLM_EMBEDDING_MODEL`) provide zero-code configuration.
 
 ### Document Enrichment
 
@@ -510,10 +510,10 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 | Mode           | When to Use                                            | Details                                                                                  |
 | -------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
 | **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, Ruby, C#, PHP, Elixir, R, Dart, Swift, Zig, C, or Wasm |
-| **CLI**        | One-off extractions, scripting, CI pipelines           | `kreuzberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
-| **REST API**   | Multi-service architectures, language-agnostic access  | `kreuzberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
-| **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `kreuzberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
-| **Docker**     | Reproducible deployments with all dependencies bundled | `ghcr.io/xberg-io/kreuzberg:latest` -- see [Docker Guide](guides/docker.md)         |
+| **CLI**        | One-off extractions, scripting, CI pipelines           | `xberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
+| **REST API**   | Multi-service architectures, language-agnostic access  | `xberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
+| **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `xberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
+| **Docker**     | Reproducible deployments with all dependencies bundled | `ghcr.io/xberg-io/xberg:latest` -- see [Docker Guide](guides/docker.md)         |
 
 ---
 
@@ -531,8 +531,8 @@ Polyglot bindings share the Rust core and expose the same generated types where 
 
 **TypeScript: Two flavors**
 
-- **Native** (`@kreuzberg/node`) — Full speed, complete feature parity (servers, plugins, config file discovery)
-- **WASM** (`@kreuzberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent inference (`paddle-ocr`, layout detection, embeddings, reranker, auto-rotate, transcription), liter-llm/VLM features, server modes (`api`/`mcp`), CLI binary, and browser filesystem paths. Pure-Rust extraction formats, Tesseract WASM OCR, chunking, keywords, language detection, stopwords, tree-sitter, redaction, summarization, SVG, and QR-code detection are supported.
+- **Native** (`@xberg/node`) — Full speed, complete feature parity (servers, plugins, config file discovery)
+- **WASM** (`@xberg/wasm`) — Browser/edge runtime, 60–80% of native speed, no native dependencies required. Excluded features: ORT-dependent inference (`paddle-ocr`, layout detection, embeddings, reranker, auto-rotate, transcription), liter-llm/VLM features, server modes (`api`/`mcp`), CLI binary, and browser filesystem paths. Pure-Rust extraction formats, Tesseract WASM OCR, chunking, keywords, language detection, stopwords, tree-sitter, redaction, summarization, SVG, and QR-code detection are supported.
 
 Choose Native for server-side Node.js; choose WASM for browser or edge deployments.
 
@@ -553,31 +553,31 @@ Rust builds are modular through Cargo features. The default feature set is `toki
 === "Python"
 
     ```bash
-    pip install kreuzberg                  # Core + Tesseract + PaddleOCR
-    pip install kreuzberg[easyocr]         # + EasyOCR
-    pip install kreuzberg[all]             # Everything
+    pip install xberg                  # Core + Tesseract + PaddleOCR
+    pip install xberg[easyocr]         # + EasyOCR
+    pip install xberg[all]             # Everything
     ```
 
 === "TypeScript"
 
     ```bash
-    npm install @kreuzberg/node            # Native (Node.js/Bun)
-    npm install @kreuzberg/wasm            # WASM (browser/edge)
+    npm install @xberg/node            # Native (Node.js/Bun)
+    npm install @xberg/wasm            # WASM (browser/edge)
     ```
 
 === "Rust"
 
     ```toml
     [dependencies]
-    kreuzberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
+    xberg = { version = "5", features = ["pdf", "ocr", "chunking"] }
     ```
 
 === "Other"
 
     ```bash
-    gem install kreuzberg                  # Ruby
-    go get github.com/xberg-io/kreuzberg/packages/go/v5  # Go
-    dotnet add package Kreuzberg           # C#
+    gem install xberg                  # Ruby
+    go get github.com/xberg-io/xberg/packages/go/v5  # Go
+    dotnet add package Xberg           # C#
     ```
 
 For API details per language, see the [API Reference](reference/api-python.md).
@@ -589,11 +589,11 @@ For API details per language, see the [API Reference](reference/api-python.md).
 Four configuration methods, checked in this order:
 
 1. **Programmatic** -- Construct `ExtractionConfig` objects in code (all bindings)
-2. **TOML** -- `kreuzberg.toml`
-3. **YAML** -- `kreuzberg.yaml`
-4. **JSON** -- `kreuzberg.json`
+2. **TOML** -- `xberg.toml`
+3. **YAML** -- `xberg.yaml`
+4. **JSON** -- `xberg.json`
 
-Config files are auto-discovered from the current directory, `~/.config/kreuzberg/`, and `/etc/kreuzberg/`. Environment variables (`KREUZBERG_CONFIG_PATH`, `KREUZBERG_CACHE_DIR`, `KREUZBERG_OCR_BACKEND`, `KREUZBERG_OCR_LANGUAGE`) override file-based settings.
+Config files are auto-discovered from the current directory, `~/.config/xberg/`, and `/etc/xberg/`. Environment variables (`XBERG_CONFIG_PATH`, `XBERG_CACHE_DIR`, `XBERG_OCR_BACKEND`, `XBERG_OCR_LANGUAGE`) override file-based settings.
 
 For the full configuration schema and examples, see the [Configuration Guide](guides/configuration.md).
 
@@ -603,10 +603,10 @@ For the full configuration schema and examples, see the [Configuration Guide](gu
 
 !!! Info "Added in v4.2"
 
-Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
+Xberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants the complete API across Python, TypeScript, Rust, and CLI. Install it with:
 
 ```bash
-npx skills add xberg-io/kreuzberg
+npx skills add xberg-io/xberg
 ```
 
 Compatible with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any tool supporting the Agent Skills standard. See the [AI Coding Assistants Guide](guides/agent-skills.md).
@@ -615,7 +615,7 @@ Compatible with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo
 
 ## Next Steps
 
-- [Installation](getting-started/installation.md) -- Install Kreuzberg for your language
+- [Installation](getting-started/installation.md) -- Install Xberg for your language
 - [Quick Start](getting-started/quickstart.md) -- Extract your first document in 5 minutes
 - [Architecture](concepts/architecture.md) -- Understand the Rust core and binding layers
 - [Development Workflow](guides/development.md#performance) -- Performance benchmarks and optimization guidance

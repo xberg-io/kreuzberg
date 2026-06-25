@@ -7,9 +7,9 @@
 #   compute-hash.sh --dirs <dir1> <dir2> ...
 #
 # Examples:
-#   compute-hash.sh "crates/kreuzberg/**/*.rs" "crates/kreuzberg-ffi/**/*.rs"
+#   compute-hash.sh "crates/xberg/**/*.rs" "crates/xberg-ffi/**/*.rs"
 #   compute-hash.sh --files Cargo.lock uv.lock
-#   compute-hash.sh --dirs crates/kreuzberg/ crates/kreuzberg-ffi/
+#   compute-hash.sh --dirs crates/xberg/ crates/xberg-ffi/
 
 set -euo pipefail
 
@@ -97,11 +97,11 @@ glob)
     # Convert glob to find path expression
 
     if [[ "$pattern" == *"**"* ]]; then
-      # Handle ** recursive glob (e.g., "crates/kreuzberg/**/*.rs")
+      # Handle ** recursive glob (e.g., "crates/xberg/**/*.rs")
       # Extract the base directory and file extension/name pattern
       base_dir=$(echo "$pattern" | cut -d'*' -f1 | sed 's|/$||')
 
-      # Get the suffix after the ** (e.g., "/*.rs" from "crates/kreuzberg/**/*.rs")
+      # Get the suffix after the ** (e.g., "/*.rs" from "crates/xberg/**/*.rs")
       # Remove everything up to and including **/
       suffix="${pattern#*\*\*/}"
 

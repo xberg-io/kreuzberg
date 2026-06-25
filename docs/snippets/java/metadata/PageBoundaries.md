@@ -1,7 +1,7 @@
-Import dev.kreuzberg.\*;
+Import dev.xberg.\*;
 import java.nio.charset.StandardCharsets;
 
-var result = Kreuzberg.extractFileSync("document.pdf");
+var result = Xberg.extractFileSync("document.pdf");
 
 If (result.metadata().pages() != null &&
 result.metadata().pages().boundaries() != null) {

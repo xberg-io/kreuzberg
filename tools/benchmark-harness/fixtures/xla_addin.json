@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xlsx/data-with-macros.xla",
 	"file_type": "xla",
 	"file_size": 49664,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Excel add-in file with spreadsheet data (XLA extension)",
 		"category": "spreadsheet",

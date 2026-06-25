@@ -8,11 +8,11 @@ priority: critical
 
 **Axum server design for document extraction endpoints, middleware, async processing, and Model Context Protocol integration for AI agents**
 
-## Kreuzberg API Architecture
+## Xberg API Architecture
 
-**Location**: `crates/kreuzberg/src/api/`, `crates/kreuzberg-cli/`
+**Location**: `crates/xberg/src/api/`, `crates/xberg-cli/`
 
-Kreuzberg provides a dual REST API + MCP server built with Axum + Tokio.
+Xberg provides a dual REST API + MCP server built with Axum + Tokio.
 
 ```text
 Request Flow:
@@ -61,7 +61,7 @@ JSON Response / MCP ToolResult
 
 ## Server Setup & Configuration
 
-**Location**: `crates/kreuzberg/src/api/server.rs`
+**Location**: `crates/xberg/src/api/server.rs`
 
 Server initialization pattern: Create `ApiState` (holds `ExtractionConfig` + `ExtractionCache`), build Axum `Router` with all REST + MCP routes, apply middleware layers (body limits, CORS, tracing), serve via `tokio::net::TcpListener`.
 
@@ -73,7 +73,7 @@ Key middleware layers applied in order:
 
 ## Core REST Handlers
 
-**Location**: `crates/kreuzberg/src/api/handlers.rs`
+**Location**: `crates/xberg/src/api/handlers.rs`
 
 | Handler               | Method            | Description                                                                                            |
 | --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------ |
@@ -87,13 +87,13 @@ Key middleware layers applied in order:
 
 ## Caching Strategy
 
-**Location**: `crates/kreuzberg/src/cache/mod.rs`
+**Location**: `crates/xberg/src/cache/mod.rs`
 
 LRU cache keyed by `SHA256(file_content)`, stores `Arc<ExtractionResult>`. Default 1000 entries. Thread-safe via `RwLock`. Tracks hit/miss counters with `AtomicU64` for stats endpoint.
 
 ## Error Handling
 
-**Location**: `crates/kreuzberg/src/api/error.rs`
+**Location**: `crates/xberg/src/api/error.rs`
 
 `ApiError` enum maps to HTTP status codes:
 
@@ -104,9 +104,9 @@ LRU cache keyed by `SHA256(file_content)`, stores `Arc<ExtractionResult>`. Defau
 
 ## MCP Server Implementation
 
-**Location**: `crates/kreuzberg/src/mcp/server.rs`
+**Location**: `crates/xberg/src/mcp/server.rs`
 
-The MCP server allows Claude and other AI agents to call Kreuzberg extraction functions through the Model Context Protocol.
+The MCP server allows Claude and other AI agents to call Xberg extraction functions through the Model Context Protocol.
 
 ### MCP Tools (Callable Functions)
 
@@ -132,9 +132,9 @@ Three tools are registered:
 
 Three resources provide static information to agents:
 
-- `kreuzberg://formats` -- Supported format list as JSON
-- `kreuzberg://features` -- Cross-binding feature matrix (from `FEATURE_MATRIX.md`)
-- `kreuzberg://api-reference` -- Generated API documentation
+- `xberg://formats` -- Supported format list as JSON
+- `xberg://features` -- Cross-binding feature matrix (from `FEATURE_MATRIX.md`)
+- `xberg://api-reference` -- Generated API documentation
 
 ### MCP Prompts (Agent Templates)
 
@@ -153,11 +153,11 @@ Two prompts guide agent extraction workflows:
 ```json
 {
   "mcpServers": {
-    "kreuzberg": {
-      "command": "kreuzberg-mcp",
+    "xberg": {
+      "command": "xberg-mcp",
       "env": {
-        "KREUZBERG_API_BASE": "http://localhost:8000",
-        "KREUZBERG_MCP_TRANSPORT": "stdio"
+        "XBERG_API_BASE": "http://localhost:8000",
+        "XBERG_MCP_TRANSPORT": "stdio"
       }
     }
   }
@@ -172,13 +172,13 @@ Two prompts guide agent extraction workflows:
 
 See `.env.example` for all configurable variables. Key categories:
 
-- **Server**: `KREUZBERG_HOST`, `KREUZBERG_PORT`
-- **Size limits**: `KREUZBERG_MAX_REQUEST_BODY_BYTES` (default 100MB), `KREUZBERG_MAX_MULTIPART_FIELD_BYTES`
-- **Features**: `KREUZBERG_ENABLE_OCR`, `KREUZBERG_ENABLE_EMBEDDINGS`, `KREUZBERG_ENABLE_KEYWORDS`
-- **Cache**: `KREUZBERG_CACHE_ENABLED`, `KREUZBERG_CACHE_SIZE`
+- **Server**: `XBERG_HOST`, `XBERG_PORT`
+- **Size limits**: `XBERG_MAX_REQUEST_BODY_BYTES` (default 100MB), `XBERG_MAX_MULTIPART_FIELD_BYTES`
+- **Features**: `XBERG_ENABLE_OCR`, `XBERG_ENABLE_EMBEDDINGS`, `XBERG_ENABLE_KEYWORDS`
+- **Cache**: `XBERG_CACHE_ENABLED`, `XBERG_CACHE_SIZE`
 - **CORS**: `CORS_ALLOWED_ORIGINS` (comma-separated)
-- **MCP**: `KREUZBERG_MCP_HOST`, `KREUZBERG_MCP_PORT`, `KREUZBERG_MCP_TRANSPORT` (stdio/http)
-- **Logging**: `RUST_LOG=kreuzberg=info,tower_http=debug`
+- **MCP**: `XBERG_MCP_HOST`, `XBERG_MCP_PORT`, `XBERG_MCP_TRANSPORT` (stdio/http)
+- **Logging**: `RUST_LOG=xberg=info,tower_http=debug`
 
 ## Critical Rules
 

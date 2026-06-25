@@ -7,16 +7,16 @@ declare(strict_types=1);
  * ExtractionConfig - Main Configuration
  *
  * The ExtractionConfig class is the primary configuration object that controls
- * all aspects of document extraction. It can be passed to the Kreuzberg constructor
+ * all aspects of document extraction. It can be passed to the Xberg constructor
  * or to individual extraction methods.
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\PdfConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\PdfConfig;
 
 $config = new ExtractionConfig(
     extractImages: true,
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     preserveFormatting: false
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Extracted with images: " . count($result->images ?? []) . "\n";
 echo "Extracted with tables: " . count($result->tables) . "\n\n";
@@ -45,20 +45,20 @@ $advancedConfig = new ExtractionConfig(
     outputFormat: 'markdown'
 );
 
-$kreuzberg = new Kreuzberg($advancedConfig);
-$result = $kreuzberg->extractFile('complex_document.pdf');
+$xberg = new Xberg($advancedConfig);
+$result = $xberg->extractFile('complex_document.pdf');
 
 echo "Advanced extraction complete\n";
 echo "Content format: " . ($advancedConfig->outputFormat ?? 'plain') . "\n";
 echo "Formatting preserved: " . ($advancedConfig->preserveFormatting ? 'Yes' : 'No') . "\n";
 
 $defaultConfig = new ExtractionConfig(extractTables: false);
-$kreuzberg = new Kreuzberg($defaultConfig);
+$xberg = new Xberg($defaultConfig);
 
-$result1 = $kreuzberg->extractFile('doc1.pdf');
+$result1 = $xberg->extractFile('doc1.pdf');
 
 $overrideConfig = new ExtractionConfig(extractTables: true);
-$result2 = $kreuzberg->extractFile('doc2.pdf', config: $overrideConfig);
+$result2 = $xberg->extractFile('doc2.pdf', config: $overrideConfig);
 
 echo "\nDoc1 tables: " . count($result1->tables) . "\n";
 echo "Doc2 tables: " . count($result2->tables) . "\n";

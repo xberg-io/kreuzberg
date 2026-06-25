@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Perform OCR extraction with multiple languages
 # Tesseract can recognize text in multiple languages simultaneously
@@ -20,7 +20,7 @@ config = %ExtractionConfig{
   force_ocr: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("multilingual_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("multilingual_document.pdf", nil, config)
 
 # Results will contain text recognized in all specified languages
 IO.puts("Multi-language OCR Extraction:")

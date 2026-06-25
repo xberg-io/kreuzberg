@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/odt/unicode.odt",
 	"file_type": "odt",
 	"file_size": 11787,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "odt test: unicode",
 		"source": "pandoc-generated",

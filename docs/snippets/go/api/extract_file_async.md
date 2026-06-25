@@ -4,11 +4,11 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
-	result, err := kreuzberg.ExtractFile("document.pdf", nil, kreuzberg.ExtractionConfig{})
+	result, err := xberg.ExtractFile("document.pdf", nil, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

@@ -1,11 +1,11 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
 
 // Extract PDF metadata
-$result = Kreuzberg::extract_file_sync("document.pdf", null, new ExtractionConfig());
+$result = Xberg::extract_file_sync("document.pdf", null, new ExtractionConfig());
 
 if ($result->metadata?->pdf) {
     $pdfMeta = $result->metadata->pdf;
@@ -21,7 +21,7 @@ if ($result->metadata?->pdf) {
 }
 
 // Extract HTML metadata
-$htmlResult = Kreuzberg::extract_file_sync("page.html", null, new ExtractionConfig());
+$htmlResult = Xberg::extract_file_sync("page.html", null, new ExtractionConfig());
 
 if ($htmlResult->metadata?->html) {
     $htmlMeta = $htmlResult->metadata->html;

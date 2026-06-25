@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", nil, xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend: "tesseract",
 		},
 		ForceOcr: true,

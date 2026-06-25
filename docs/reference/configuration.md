@@ -203,7 +203,7 @@ Image extraction configuration.
 | `auto_adjust_dpi` | `bool` | `True` | Automatically adjust DPI based on image content |
 | `min_dpi` | `int` | `72` | Minimum DPI threshold |
 | `max_dpi` | `int` | `600` | Maximum DPI threshold |
-| `max_images_per_page` | `int \| None` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
+| `max_images_per_page` | `int \| None` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes xberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `False` | When `True`, extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. Defaults to `False` — opt in explicitly to avoid unexpected ML overhead. |
 | `include_page_rasters` | `bool` | `False` | When `True`, full-page renders produced during OCR preprocessing are captured and returned as `ImageKind.PageRaster` entries in `ExtractionResult.images`. **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the document-level OCR bypass is active (whole-document backend). When OCR is enabled and this flag is set but the active backend skips per-page rendering, a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`. Defaults to `False`. Enable when downstream consumers need page thumbnails (e.g. citation previews, visual grounding). |
 | `run_ocr_on_images` | `bool` | `True` | Run OCR on extracted images and include the recognized text in the document content. When `True` (default) and `ExtractionConfig.ocr` is configured, extracted images are processed with the configured OCR backend. Set to `False` to extract images without OCR processing, even when OCR is enabled. |
@@ -502,7 +502,7 @@ Requires the `embeddings` feature to be enabled.
 | `normalize` | `bool` | `True` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `batch_size` | `int` | `32` | Batch size for embedding generation |
 | `show_download_progress` | `bool` | `False` | Show model download progress |
-| `cache_dir` | `str \| None` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `cache_dir` | `str \| None` | `None` | Custom cache directory for model files Defaults to `~/.cache/xberg/embeddings/` if not specified. Allows full customization of model download location. |
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 | `max_embed_duration_secs` | `int \| None` | `None` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
@@ -538,7 +538,7 @@ Since v5.0.
 | `top_k` | `int \| None` | `None` | Return at most this many documents. `None` returns all. Applied after sorting by score, so the highest-scoring documents are kept. |
 | `batch_size` | `int` | `32` | Batch size for local ONNX cross-encoder inference. |
 | `show_download_progress` | `bool` | `False` | Show model download progress (local ONNX path only). |
-| `cache_dir` | `str \| None` | `None` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
+| `cache_dir` | `str \| None` | `None` | Custom cache directory for model files. Defaults to `~/.cache/xberg/rerankers/` if not specified. |
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `None` (auto-select per platform). |
 | `max_rerank_duration_secs` | `int \| None` | `None` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
@@ -560,7 +560,7 @@ Configuration for the summarisation post-processor.
 
 Configuration for audio/video transcription (speech-to-text).
 
-When present and `enabled`, Kreuzberg will route audio and video files
+When present and `enabled`, Xberg will route audio and video files
 (mp3, mp4, m4a, wav, webm, etc.) through the transcription pipeline.
 
 The heavy dependencies (ORT, hf-hub, symphonia) are only pulled when the
@@ -585,7 +585,7 @@ model = "tiny"
 | `max_duration_ms` | `int \| None` | `None` | Hard safety limit on input duration (milliseconds). Files longer than this are rejected after decode, before model work. Default: 30 minutes. Set to `None` to disable (not recommended for untrusted input). |
 | `max_bytes` | `int \| None` | `None` | Hard safety limit on input size (bytes). Default: 512 MiB. Protects against pathological or malicious uploads. |
 | `timeout_ms` | `int \| None` | `None` | Wall-clock timeout for the entire transcription operation (ms). Default: 10 minutes. Reserved for timeout enforcement; the current extractor does not enforce this field yet. |
-| `model_cache_dir` | `str \| None` | `None` | Override the directory used for Whisper model cache. When `None`, uses the centralized resolver: `KREUZBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/kreuzberg/whisper` on Linux, etc.). |
+| `model_cache_dir` | `str \| None` | `None` | Override the directory used for Whisper model cache. When `None`, uses the centralized resolver: `XBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/xberg/whisper` on Linux, etc.). |
 | `allow_network` | `bool` | `True` | Allow network access to download models from Hugging Face Hub. When `False`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verify_hash` | `bool` | `True` | Request SHA256 verification of downloaded model files. Reserved for the checksum table follow-up. The current resolver logs a warning and treats this as a no-op. |
 
@@ -657,7 +657,7 @@ Controls which analysis features are enabled when extracting code files.
 
 API server configuration.
 
-This struct holds all configuration options for the Kreuzberg API server,
+This struct holds all configuration options for the Xberg API server,
 including host/port settings, CORS configuration, and upload limits.
 
 ## Defaults
@@ -896,7 +896,7 @@ This is the main result type returned by all extraction functions.
 | `structured_output` | `dict\[str, Any\] \| None` | `None` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `code_intelligence` | `dict\[str, Any\] \| None` | `None` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
 | `llm_usage` | `list\[LlmUsage\] \| None` | `\[\]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `None` when no LLM was used. |
-| `entities` | `list\[Entity\] \| None` | `\[\]` | Named entities detected in `content` by the NER post-processor. `None` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
+| `entities` | `list\[Entity\] \| None` | `\[\]` | Named entities detected in `content` by the NER post-processor. `None` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/xberg/src/text/ner/`). |
 | `summary` | `DocumentSummary \| None` | `None` | Summary of `content` produced by the summarisation post-processor. `None` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
 | `extraction_confidence` | `ExtractionConfidence \| None` | `None` | Confidence score computed by the heuristics pipeline. Populated when the `heuristics` feature is enabled and confidence scoring has been performed.  Combines text-coverage, OCR aggregate confidence, and schema-compliance into a single `\[0, 1\]` value. `None` when confidence scoring is not configured or the feature is absent. |
 | `translation` | `Translation \| None` | `None` | Translation of `content` produced by the translation post-processor. `None` when translation is not configured. |
@@ -954,8 +954,8 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `image_kind` | `ImageKind \| None` | `None` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
 | `kind_confidence` | `float \| None` | `None` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `int \| None` | `None` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
-| `caption` | `str \| None` | `None` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `None` when captioning is disabled or the VLM declined to caption. |
-| `qr_codes` | `list\[QrCode\] \| None` | `\[\]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `None` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
+| `caption` | `str \| None` | `None` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/xberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `None` when captioning is disabled or the VLM declined to caption. |
+| `qr_codes` | `list\[QrCode\] \| None` | `\[\]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/xberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `None` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
 | `data_base64` | `str \| None` | `None` | Base64-encoded copy of `data`; populated when `ImageExtractionConfig.include_data_base64` is `True`. Omitted from JSON by default; use instead of `data` in JSON-only clients. |
 
 ---
@@ -1824,14 +1824,14 @@ reference it unconditionally, without requiring the `diff` Cargo feature.
 
 #### EmbeddingModelType
 
-Embedding model types supported by Kreuzberg.
+Embedding model types supported by Xberg.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
 | `Preset` | `preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
 | `Custom` | `custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
 | `Llm` | `llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
-| `Plugin` | `plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
+| `Plugin` | `plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Xberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
 
 ---
 
@@ -2109,7 +2109,7 @@ Intensity level for the token-reduction pipeline.
 
 #### RerankerModelType
 
-Reranker model types supported by Kreuzberg.
+Reranker model types supported by Xberg.
 
 Since v5.0.
 
@@ -2118,7 +2118,7 @@ Since v5.0.
 | `Preset` | `preset` | Use a preset cross-encoder model (recommended). — Fields: `name`: `String` |
 | `Custom` | `custom` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `String`, `model_file`: `String`, `additional_files`: `Vec<String>`, `max_length`: `i64` |
 | `Llm` | `llm` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `LlmConfig` |
-| `Plugin` | `plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `String` |
+| `Plugin` | `plugin` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Xberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `String` |
 
 ---
 

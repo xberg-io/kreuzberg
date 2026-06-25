@@ -18,7 +18,7 @@ public final class Usage {
   }
 
   public void startContainer(String image) throws IOException, InterruptedException {
-    System.out.println("Starting Kreuzberg Docker container...");
+    System.out.println("Starting Xberg Docker container...");
     ProcessBuilder pb = new ProcessBuilder("docker", "run", "-d",
       "--name", containerName,
       "-p", apiPort + ":8000",
@@ -63,17 +63,17 @@ public final class Usage {
   }
 
   public void stopContainer() throws IOException, InterruptedException {
-    System.out.println("Stopping Kreuzberg Docker container...");
+    System.out.println("Stopping Xberg Docker container...");
     new ProcessBuilder("docker", "stop", containerName).start().waitFor();
     new ProcessBuilder("docker", "rm", containerName).start().waitFor();
     System.out.println("Container stopped and removed");
   }
 
   public static void main(String[] args) throws Exception {
-    Usage docker = new Usage("kreuzberg-api", 8000);
+    Usage docker = new Usage("xberg-api", 8000);
 
     try {
-      docker.startContainer("kreuzberg:latest");
+      docker.startContainer("xberg:latest");
       Thread.sleep(2000);
 
       String content = docker.extractFile("document.pdf");

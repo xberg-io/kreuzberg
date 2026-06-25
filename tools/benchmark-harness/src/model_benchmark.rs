@@ -1,11 +1,11 @@
 //! Layout model A/B benchmark: compare layout detection configurations on rendered PDF pages.
 //!
-//! Replaces `crates/kreuzberg/tests/layout_model_benchmark.rs`.
+//! Replaces `crates/xberg/tests/layout_model_benchmark.rs`.
 //! Compares two table model configurations on cold start, inference latency, and class distribution.
 
 use crate::Result;
 use crate::corpus::{self, CorpusFilter};
-use kreuzberg::core::config::layout::TableModel;
+use xberg::core::config::layout::TableModel;
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -75,9 +75,9 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
 
     for doc in &docs {
         // Model A: extract with layout + table model A
-        let config_a = kreuzberg::ExtractionConfig {
-            output_format: kreuzberg::core::config::OutputFormat::Markdown,
-            layout: Some(kreuzberg::core::config::layout::LayoutDetectionConfig {
+        let config_a = xberg::ExtractionConfig {
+            output_format: xberg::core::config::OutputFormat::Markdown,
+            layout: Some(xberg::core::config::layout::LayoutDetectionConfig {
                 table_model: parse_table_model(&config.model_a),
                 ..Default::default()
             }),
@@ -87,7 +87,7 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         let t = Instant::now();
         let result_a = match tokio::time::timeout(
             std::time::Duration::from_secs(180),
-            kreuzberg::extract_file(&doc.document_path, None, &config_a),
+            xberg::extract_file(&doc.document_path, None, &config_a),
         )
         .await
         {
@@ -100,9 +100,9 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         let model_a_ms = t.elapsed().as_secs_f64() * 1000.0;
 
         // Model B: extract with different table model
-        let config_b = kreuzberg::ExtractionConfig {
-            output_format: kreuzberg::core::config::OutputFormat::Markdown,
-            layout: Some(kreuzberg::core::config::layout::LayoutDetectionConfig {
+        let config_b = xberg::ExtractionConfig {
+            output_format: xberg::core::config::OutputFormat::Markdown,
+            layout: Some(xberg::core::config::layout::LayoutDetectionConfig {
                 table_model: parse_table_model(&config.model_b),
                 ..Default::default()
             }),
@@ -112,7 +112,7 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         let t = Instant::now();
         let result_b = match tokio::time::timeout(
             std::time::Duration::from_secs(180),
-            kreuzberg::extract_file(&doc.document_path, None, &config_b),
+            xberg::extract_file(&doc.document_path, None, &config_b),
         )
         .await
         {

@@ -3,7 +3,7 @@ include: package:lints/recommended.yaml
 analyzer:
   exclude:
     - lib/src/frb/**
-    - lib/src/kreuzberg_bridge_generated/**
+    - lib/src/xberg_bridge_generated/**
     - example/**
     - lib/src/traits.dart
 

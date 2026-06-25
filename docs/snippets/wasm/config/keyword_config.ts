@@ -1,4 +1,4 @@
-import { type ExtractionConfig, extractFile } from "@kreuzberg/wasm";
+import { type ExtractionConfig, extractFile } from "@xberg/wasm";
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering

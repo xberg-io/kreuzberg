@@ -1,4 +1,4 @@
-import { enableOcr, extractBytes, initWasm } from "@kreuzberg/wasm";
+import { enableOcr, extractBytes, initWasm } from "@xberg/wasm";
 
 async function extractWithErrorHandling() {
   try {

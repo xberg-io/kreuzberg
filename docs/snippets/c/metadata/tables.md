@@ -1,11 +1,11 @@
 ```c title="C"
-#include "kreuzberg.h"
+#include "xberg.h"
 #include <stdio.h>
 
 int main(void) {
-    struct CExtractionResult *result = kreuzberg_extract_file_sync("spreadsheet.xlsx");
+    struct CExtractionResult *result = xberg_extract_file_sync("spreadsheet.xlsx");
     if (!result || !result->success) {
-        fprintf(stderr, "Error: %s\n", kreuzberg_get_error_details().message);
+        fprintf(stderr, "Error: %s\n", xberg_get_error_details().message);
         return 1;
     }
 
@@ -15,7 +15,7 @@ int main(void) {
         printf("No tables found\n");
     }
 
-    kreuzberg_free_result(result);
+    xberg_free_result(result);
     return 0;
 }
 ```

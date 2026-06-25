@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.PostProcessor;
-import dev.kreuzberg.KreuzbergException;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.PostProcessor;
+import dev.xberg.XbergException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +19,11 @@ public class WordCountExample {
         };
 
         try {
-            Kreuzberg.registerPostProcessor("word-count", wordCount, 50);
+            Xberg.registerPostProcessor("word-count", wordCount, 50);
 
-            ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+            ExtractionResult result = Xberg.extractFile("document.pdf");
             System.out.println("Word count: " + result.getMetadata().get("word_count"));
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             e.printStackTrace();
         }
     }

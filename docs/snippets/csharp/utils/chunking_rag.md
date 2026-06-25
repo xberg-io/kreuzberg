@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -16,7 +16,7 @@ var config = new ExtractionConfig
     },
 };
 
-var result = await KreuzbergLib.ExtractFile("research_paper.pdf", null, config);
+var result = await XbergLib.ExtractFile("research_paper.pdf", null, config);
 
 var chunksWithEmbeddings = new List<(string Preview, int Dimensions)>();
 foreach (var chunk in result.Chunks ?? new List<Chunk>())

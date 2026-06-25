@@ -1,9 +1,9 @@
 import {
   type ExtractionConfig,
   type HierarchyConfig,
-  Kreuzberg,
+  Xberg,
   type PdfConfig,
-} from "kreuzberg-wasm";
+} from "xberg-wasm";
 
 // Example 1: Basic hierarchy extraction
 // Enabled with default kClusters=6 for standard H1-H6 heading hierarchy.
@@ -23,8 +23,8 @@ const extractionConfigBasic: ExtractionConfig = {
   pdfOptions: pdfConfigBasic,
 };
 
-// const kreuzberg = new Kreuzberg(extractionConfigBasic);
-// const result = await kreuzberg.extractFile("document.pdf");
+// const xberg = new Xberg(extractionConfigBasic);
+// const result = await xberg.extractFile("document.pdf");
 
 // Example 2: Custom kClusters for minimal structure
 // Use 3 clusters for simpler hierarchy with minimal structure.
@@ -44,7 +44,7 @@ const _extractionConfigMinimal: ExtractionConfig = {
   pdfOptions: pdfConfigMinimal,
 };
 
-// const result = await kreuzberg.extractFile("document.pdf");
+// const result = await xberg.extractFile("document.pdf");
 
 // Example 3: With OCR coverage threshold
 // Trigger OCR if less than 50% of text has font data.
@@ -64,16 +64,16 @@ const _extractionConfigOcr: ExtractionConfig = {
   pdfOptions: pdfConfigOcr,
 };
 
-// const result = await kreuzberg.extractFile("document.pdf");
+// const result = await xberg.extractFile("document.pdf");
 
-// Integration with Kreuzberg WASM instance
+// Integration with Xberg WASM instance
 async function _extractWithHierarchy(): Promise<void> {
   const config = extractionConfigBasic;
-  const kreuzberg = new Kreuzberg(config);
+  const xberg = new Xberg(config);
 
   try {
     // Extract from file (requires file input or fetch)
-    const result = await kreuzberg.extractFile("document.pdf");
+    const result = await xberg.extractFile("document.pdf");
     console.log("Extraction complete:", result);
   } catch (error) {
     console.error("Extraction failed:", error);

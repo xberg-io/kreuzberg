@@ -1,6 +1,6 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import extract_bytes, ExtractionConfig
+from xberg import extract_bytes, ExtractionConfig
 
 async def main() -> None:
     with open("document.pdf", "rb") as f:

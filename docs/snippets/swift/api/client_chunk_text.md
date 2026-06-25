@@ -24,7 +24,7 @@ struct App {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            throw NSError(domain: "kreuzberg", code: 1)
+            throw NSError(domain: "xberg", code: 1)
         }
 
         let result = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]

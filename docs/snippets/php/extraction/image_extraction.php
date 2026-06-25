@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ImageExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ImageExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 $config = new ExtractionConfig(
     imageExtraction: new ImageExtractionConfig(
@@ -26,8 +26,8 @@ $config = new ExtractionConfig(
     extractImages: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('presentation.pptx');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('presentation.pptx');
 
 echo "Image Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -63,8 +63,8 @@ $ocrConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($ocrConfig);
-$result = $kreuzberg->extractFile('scanned_images.pdf');
+$xberg = new Xberg($ocrConfig);
+$result = $xberg->extractFile('scanned_images.pdf');
 
 echo "Images with OCR:\n";
 echo str_repeat('=', 60) . "\n";
@@ -90,8 +90,8 @@ $largeImageConfig = new ExtractionConfig(
     extractImages: true
 );
 
-$kreuzberg = new Kreuzberg($largeImageConfig);
-$result = $kreuzberg->extractFile('photo_album.pdf');
+$xberg = new Xberg($largeImageConfig);
+$result = $xberg->extractFile('photo_album.pdf');
 
 echo "Large images (>500x500):\n";
 foreach ($result->images ?? [] as $image) {
@@ -100,7 +100,7 @@ foreach ($result->images ?? [] as $image) {
     echo "Saved: $filename ({$image->width}x{$image->height})\n";
 }
 
-$result = $kreuzberg->extractFile('document.pdf');
+$result = $xberg->extractFile('document.pdf');
 
 $imageTypes = [];
 foreach ($result->images ?? [] as $image) {

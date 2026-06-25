@@ -1,6 +1,6 @@
 ```typescript title="WASM"
-import init from "kreuzberg-wasm";
+import init from "xberg-wasm";
 
 await init();
-console.log("Kreuzberg WASM loaded successfully");
+console.log("Xberg WASM loaded successfully");
 ```

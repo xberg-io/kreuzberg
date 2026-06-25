@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 custom_extractor <- function(path, mime_type) {
   content <- sprintf("Extracted from %s (%s)", path, mime_type)

@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/txt/2305.03393v1.doctags.txt",
 	"file_type": "txt",
 	"file_size": 39960,
-	"expected_frameworks": ["kreuzberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "pandoc", "pymupdf4llm", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

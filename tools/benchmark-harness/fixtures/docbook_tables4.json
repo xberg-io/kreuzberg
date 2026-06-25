@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/docbook/tables.docbook4",
 	"file_type": "docbook",
 	"file_size": 7502,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "DocBook 4 table examples with simple, multiline, and headerless tables",
 		"category": "documentation"

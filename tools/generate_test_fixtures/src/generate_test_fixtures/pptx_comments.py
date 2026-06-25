@@ -5,7 +5,7 @@ building a vanilla 3-slide deck with ``python-pptx`` and then injecting
 ``ppt/commentAuthors.xml`` plus ``ppt/comments/comment{N}.xml`` parts
 into the resulting zip (one comments file per slide that has comments).
 
-Shape mirrors what ``crates/kreuzberg/src/extraction/pptx/comments.rs``
+Shape mirrors what ``crates/xberg/src/extraction/pptx/comments.rs``
 consumes: ``<p:cmAuthor id="…" name="…"/>`` for authors,
 ``<p:cm authorId="…" dt="…" idx="…"><p:text>…</p:text></p:cm>`` for
 comments. The extractor anchors the resulting ``DocumentRevision`` on

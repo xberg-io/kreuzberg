@@ -1,17 +1,16 @@
 {
-	"name": "@kreuzberg/kreuzberg-cli",
+	"name": "@xberg/xberg-cli",
 	"version": "0.0.1",
-	"description": "CLI proxy for kreuzberg — downloads and runs the native kreuzberg binary from GitHub releases.",
+	"description": "CLI proxy for xberg — downloads and runs the native xberg binary from GitHub releases.",
 	"license": "MIT",
 	"author": "Na'aman Hirschfeld",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/xberg-io/kreuzberg.git",
+		"url": "git+https://github.com/xberg-io/xberg.git",
 		"directory": "cli-proxy/npm"
 	},
 	"bin": {
-		"kreuzberg": "bin/kreuzberg.js",
-		"xberg": "bin/kreuzberg.js"
+		"xberg": "bin/xberg.js"
 	},
 	"files": [
 		"bin/",

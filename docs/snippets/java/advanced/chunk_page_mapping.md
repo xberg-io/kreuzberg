@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.PageConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.PageConfig;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build()))
     .build();
 
-var result = Kreuzberg.extractFileSync(Path.of("document.pdf"), config);
+var result = Xberg.extractFileSync(Path.of("document.pdf"), config);
 
 if (result.chunks() != null) {
     for (var chunk : result.chunks()) {

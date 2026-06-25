@@ -4,8 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 
-/* The kreuzberg C FFI does not bundle an MCP client. Drive the kreuzberg
- * CLI's stdio MCP transport from a C host that also links libkreuzberg. */
+/* The xberg C FFI does not bundle an MCP client. Drive the xberg
+ * CLI's stdio MCP transport from a C host that also links libxberg. */
 int main(void) {
     int request_pipe[2];
     int response_pipe[2];
@@ -24,7 +24,7 @@ int main(void) {
         dup2(response_pipe[1], 1);
         close(request_pipe[1]);
         close(response_pipe[0]);
-        execlp("kreuzberg", "kreuzberg", "mcp", (char *)NULL);
+        execlp("xberg", "xberg", "mcp", (char *)NULL);
         perror("execlp");
         _exit(127);
     }
@@ -53,4 +53,4 @@ int main(void) {
 }
 ```
 
-<!-- snippet:syntax-only --> No MCP client is exposed by libkreuzberg; this snippet drives the MCP CLI over stdio.
+<!-- snippet:syntax-only --> No MCP client is exposed by libxberg; this snippet drives the MCP CLI over stdio.

@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.util.concurrent.atomic.AtomicInteger
 
 class PdfMetadataExtractor : IPostProcessor {

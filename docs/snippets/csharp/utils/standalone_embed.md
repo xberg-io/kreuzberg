@@ -1,10 +1,10 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
-var client = new KreuzbergLib();
+var client = new XbergLib();
 
 var config = new EmbeddingConfig { Model = EmbeddingModelType.Preset("balanced"), Normalize = true };
-var texts = new[] { "Hello, world!", "Kreuzberg is fast" };
+var texts = new[] { "Hello, world!", "Xberg is fast" };
 
 // Synchronous
 var embeddings = client.EmbedSync(texts, config).ToList();

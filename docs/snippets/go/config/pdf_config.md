@@ -4,17 +4,17 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	extractMetadata := true
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, kreuzberg.ExtractionConfig{
-		PdfOptions: &kreuzberg.PdfConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", nil, xberg.ExtractionConfig{
+		PdfOptions: &xberg.PdfConfig{
 			ExtractImages:   true,
 			ExtractMetadata: &extractMetadata,
 			Passwords:       []string{"password1", "password2"},
-			Hierarchy:       &kreuzberg.HierarchyConfig{},
+			Hierarchy:       &xberg.HierarchyConfig{},
 		},
 	})
 	if err != nil {

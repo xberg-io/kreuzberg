@@ -1,23 +1,23 @@
 # Open WebUI
 
-![Kreuzberg](https://img.shields.io/badge/kreuzberg-v4.7.0+-blue)
+![Xberg](https://img.shields.io/badge/xberg-v4.7.0+-blue)
 
-Open WebUI supports pluggable content extraction backends. Kreuzberg implements two of those backend APIs — the **docling-serve** endpoint and the **external document loader** endpoint, so it works as a drop-in replacement without patching Open WebUI.
+Open WebUI supports pluggable content extraction backends. Xberg implements two of those backend APIs — the **docling-serve** endpoint and the **external document loader** endpoint, so it works as a drop-in replacement without patching Open WebUI.
 
 ## How it works
 
 1. A user uploads a document (PDF, DOCX, image, etc.) in Open WebUI.
-2. Open WebUI sends the file to Kreuzberg's API endpoint.
-3. Kreuzberg extracts the content — running OCR where needed and returns Markdown.
+2. Open WebUI sends the file to Xberg's API endpoint.
+3. Xberg extracts the content — running OCR where needed and returns Markdown.
 4. Open WebUI stores the Markdown in its vector database for retrieval-augmented generation.
 
-Kreuzberg supports [96 file formats](../reference/formats.md) and requires no GPU.
+Xberg supports [96 file formats](../reference/formats.md) and requires no GPU.
 
 ## Prerequisites
 
 - Docker and Docker Compose (v2)
 - Open WebUI running or ready to deploy
-- No GPU required — Kreuzberg runs entirely on CPU
+- No GPU required — Xberg runs entirely on CPU
 
 ## Setup with Docker Compose
 
@@ -25,15 +25,15 @@ This is the fastest way to get both services running together.
 
 ```yaml title="docker-compose.yaml"
 services:
-  kreuzberg:
-    image: ghcr.io/xberg-io/kreuzberg:latest-core
+  xberg:
+    image: ghcr.io/xberg-io/xberg:latest-core
     ports:
       - "8000:8000"
     command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
-      - kreuzberg-cache:/app/.kreuzberg
+      - xberg-cache:/app/.xberg
     healthcheck:
-      test: ["CMD", "kreuzberg", "version"]
+      test: ["CMD", "xberg", "version"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,13 +44,13 @@ services:
       - "3000:8080"
     environment:
       CONTENT_EXTRACTION_ENGINE: "docling"
-      DOCLING_SERVER_URL: "http://kreuzberg:8000"
+      DOCLING_SERVER_URL: "http://xberg:8000"
     depends_on:
-      kreuzberg:
+      xberg:
         condition: service_healthy
 
 volumes:
-  kreuzberg-cache:
+  xberg-cache:
 ```
 
 Start both services in detached mode:
@@ -61,32 +61,32 @@ docker compose up -d
 
 Open `http://localhost:3000`, create an account, and upload a document. The extracted text will appear in the chat context.
 
-!!! Note "Cache volume" The `kreuzberg-cache` volume persists OCR models and embedding weights across restarts. Without it, models re-download on every container restart (~90 MB–1.2 GB depending on configuration).
+!!! Note "Cache volume" The `xberg-cache` volume persists OCR models and embedding weights across restarts. Without it, models re-download on every container restart (~90 MB–1.2 GB depending on configuration).
 
-!!! Info "Already running Open WebUI?" Start Kreuzberg separately, then point Open WebUI to that Kreuzberg URL.
+!!! Info "Already running Open WebUI?" Start Xberg separately, then point Open WebUI to that Xberg URL.
 
 === "Docker"
 
     ```bash
     docker run -d \
-      --name kreuzberg \
+      --name xberg \
       -p 8000:8000 \
-      -v kreuzberg-cache:/app/.kreuzberg \
-      ghcr.io/xberg-io/kreuzberg:latest-core \
+      -v xberg-cache:/app/.xberg \
+      ghcr.io/xberg-io/xberg:latest-core \
       serve --host 0.0.0.0 --port 8000
     ```
 
 === "CLI (Homebrew / Cargo)"
 
     ```bash
-    kreuzberg serve --host 0.0.0.0 --port 8000
+    xberg serve --host 0.0.0.0 --port 8000
     ```
 
 Then configure Open WebUI using one of the two engine modes below.
 
 ## Choosing an engine mode
 
-Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extracted content. So pick whichever fits your setup.
+Xberg exposes two Open WebUI–compatible APIs. Both return the same extracted content. So pick whichever fits your setup.
 
 |                    | **Docling** (recommended) | **External**                   |
 | ------------------ | ------------------------- | ------------------------------ |
@@ -101,10 +101,10 @@ Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extract
     ```yaml
     environment:
       CONTENT_EXTRACTION_ENGINE: "docling"
-      DOCLING_SERVER_URL: "http://kreuzberg:8000"
+      DOCLING_SERVER_URL: "http://xberg:8000"
     ```
 
-    Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **Docling** → set server URL to `http://kreuzberg:8000`.
+    Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **Docling** → set server URL to `http://xberg:8000`.
 
 === "External"
 
@@ -113,12 +113,12 @@ Kreuzberg exposes two Open WebUI–compatible APIs. Both return the same extract
     ```yaml
     environment:
       CONTENT_EXTRACTION_ENGINE: "external"
-      EXTERNAL_DOCUMENT_LOADER_URL: "http://kreuzberg:8000"
+      EXTERNAL_DOCUMENT_LOADER_URL: "http://xberg:8000"
     ```
 
-    Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **External** → set URL to `http://kreuzberg:8000`.
+    Or via the Admin UI: **Settings → Documents → Content Extraction Engine** → select **External** → set URL to `http://xberg:8000`.
 
-!!! Tip If Kreuzberg runs on a different host or port, replace `http://kreuzberg:8000` with the actual address. Inside Docker Compose, use the service name (`kreuzberg`). Outside Docker, use the host IP or `localhost`.
+!!! Tip If Xberg runs on a different host or port, replace `http://xberg:8000` with the actual address. Inside Docker Compose, use the service name (`xberg`). Outside Docker, use the host IP or `localhost`.
 
 ## Verify it works
 

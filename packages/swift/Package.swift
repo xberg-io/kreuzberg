@@ -1,18 +1,18 @@
 // swift-tools-version: 6.0
 import PackageDescription
 
-// NOTE: Run `cargo build -p kreuzberg-swift` and then rerun `alef generate`
+// NOTE: Run `cargo build -p xberg-swift` and then rerun `alef generate`
 // before `swift build`. Alef materializes the swift-bridge Swift/C outputs into
 // Sources/RustBridge and Sources/RustBridgeC when the Cargo build output exists.
 // See README.md for the full workflow.
 let package = Package(
-  name: "Kreuzberg",
+  name: "Xberg",
   platforms: [
     .macOS(.v13),
     .iOS(.v16),
   ],
   products: [
-    .library(name: "Kreuzberg", targets: ["Kreuzberg"])
+    .library(name: "Xberg", targets: ["Xberg"])
   ],
   targets: [
     // RustBridgeC: pure C/headers target. Swift files in RustBridge import this
@@ -25,8 +25,8 @@ let package = Package(
     ),
     // RustBridge: Swift wrapper around the Rust static library.
     // Depends on RustBridgeC so the generated Swift files can use the C types.
-    // linkerSettings wire the Rust staticlibs (libkreuzberg_swift.a and libkreuzberg_ffi.a)
-    // produced by `cargo build -p kreuzberg-swift` and the FFI crate so
+    // linkerSettings wire the Rust staticlibs (libxberg_swift.a and libxberg_ffi.a)
+    // produced by `cargo build -p xberg-swift` and the FFI crate so
     // `swift build` / `swift test` can resolve the `__swift_bridge__$*` and FFI C symbols.
     // Both target/release and target/debug are searched so either cargo profile works.
     // The FFI library is needed because the generated Swift service API code (App.swift)
@@ -40,19 +40,19 @@ let package = Package(
           "-L../../target/release",
           "-L../../target/debug",
         ]),
-        .linkedLibrary("kreuzberg_swift"),
-        .linkedLibrary("kreuzberg_ffi"),
+        .linkedLibrary("xberg_swift"),
+        .linkedLibrary("xberg_ffi"),
         .linkedFramework("Security", .when(platforms: [.macOS, .iOS])),
         .linkedFramework("CoreFoundation", .when(platforms: [.macOS, .iOS])),
         .linkedFramework("SystemConfiguration", .when(platforms: [.macOS])),
       ]
     ),
     .target(
-      name: "Kreuzberg", dependencies: ["RustBridge"],
-      path: "Sources/Kreuzberg",
+      name: "Xberg", dependencies: ["RustBridge"],
+      path: "Sources/Xberg",
       exclude: ["LICENSE"]),
     .testTarget(
-      name: "KreuzbergTests", dependencies: ["Kreuzberg"],
-      path: "Tests/KreuzbergTests"),
+      name: "XbergTests", dependencies: ["Xberg"],
+      path: "Tests/XbergTests"),
   ]
 )

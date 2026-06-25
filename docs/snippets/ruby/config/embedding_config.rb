@@ -1,13 +1,13 @@
-require 'kreuzberg'
+require 'xberg'
 
 # Example 1: Preset model (recommended)
 # Fast, balanced, or quality preset configurations optimized for common use cases.
-embedding_config = Kreuzberg::EmbeddingConfig.new(
+embedding_config = Xberg::EmbeddingConfig.new(
   model: { type: :preset, name: "balanced" },
   batch_size: 32,
   normalize: true,
   show_download_progress: true,
-  cache_dir: "~/.cache/kreuzberg/embeddings"
+  cache_dir: "~/.cache/xberg/embeddings"
 )
 
 # Available presets:
@@ -19,7 +19,7 @@ embedding_config = Kreuzberg::EmbeddingConfig.new(
 
 # Example 2: Custom ONNX model (requires embeddings feature)
 # Direct access to specific ONNX embedding models from HuggingFace with custom dimensions.
-embedding_config = Kreuzberg::EmbeddingConfig.new(
+embedding_config = Xberg::EmbeddingConfig.new(
   model: {
     type: :custom,
     model_id: "BAAI/bge-small-en-v1.5",
@@ -28,7 +28,7 @@ embedding_config = Kreuzberg::EmbeddingConfig.new(
   batch_size: 32,
   normalize: true,
   show_download_progress: true,
-  cache_dir: nil  # Uses default: .kreuzberg/embeddings/
+  cache_dir: nil  # Uses default: .xberg/embeddings/
 )
 
 # Popular ONNX-compatible models:
@@ -40,7 +40,7 @@ embedding_config = Kreuzberg::EmbeddingConfig.new(
 
 # Example 3: Alternative Custom ONNX Model
 # For advanced users wanting different ONNX embedding models.
-embedding_config = Kreuzberg::EmbeddingConfig.new(
+embedding_config = Xberg::EmbeddingConfig.new(
   model: {
     type: :custom,
     model_id: "sentence-transformers/all-mpnet-base-v2",
@@ -55,18 +55,18 @@ embedding_config = Kreuzberg::EmbeddingConfig.new(
 
 # Integration with ChunkingConfig
 # Add embeddings to your chunking configuration:
-chunking_config = Kreuzberg::ChunkingConfig.new(
+chunking_config = Xberg::ChunkingConfig.new(
   max_characters: 1024,
   overlap: 100,
   preset: "balanced",
-  embedding: Kreuzberg::EmbeddingConfig.new(
+  embedding: Xberg::EmbeddingConfig.new(
     model: { type: :preset, name: "balanced" },
     batch_size: 32,
     normalize: true
   )
 )
 
-extraction_config = Kreuzberg::ExtractionConfig.new(
+extraction_config = Xberg::ExtractionConfig.new(
   chunking: chunking_config
 )
 
@@ -82,7 +82,7 @@ extraction_config = Kreuzberg::ExtractionConfig.new(
 #   - false: Raw embedding values
 #
 # cache_dir: Where to store downloaded models
-#   - nil: Uses .kreuzberg/embeddings/ in current directory
+#   - nil: Uses .xberg/embeddings/ in current directory
 #   - String: Custom directory for model storage
 #
 # show_download_progress: Display download progress bar

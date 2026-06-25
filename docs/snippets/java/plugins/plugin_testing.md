@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.PostProcessor;
+import dev.xberg.ExtractionResult;
+import dev.xberg.PostProcessor;
 import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;

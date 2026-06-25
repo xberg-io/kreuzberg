@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\OcrConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 
 $ocrConfig = new OcrConfig();
 $ocrConfig->setBackend('tesseract');
@@ -14,7 +14,7 @@ $config = new ExtractionConfig();
 $config->setForceOcr(true);
 $config->setOcr($ocrConfig);
 
-$result = Kreuzberg::extractFileSync('scanned.pdf', null, $config);
+$result = Xberg::extractFileSync('scanned.pdf', null, $config);
 
 echo "Content:\n";
 echo $result->getContent();

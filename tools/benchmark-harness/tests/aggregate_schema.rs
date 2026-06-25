@@ -51,7 +51,7 @@ fn make_benchmark_result(
 #[test]
 fn test_schema_version_2_4_0() {
     let results = vec![make_benchmark_result(
-        "kreuzberg-markdown-baseline",
+        "xberg-markdown-baseline",
         OutputFormat::Markdown,
         "test.pdf",
         false,
@@ -75,7 +75,7 @@ fn test_schema_version_2_4_0() {
 fn test_per_fixture_results_populated() {
     let results = vec![
         make_benchmark_result(
-            "kreuzberg-markdown-baseline",
+            "xberg-markdown-baseline",
             OutputFormat::Markdown,
             "fixture_1.pdf",
             false,
@@ -91,7 +91,7 @@ fn test_per_fixture_results_populated() {
             }),
         ),
         make_benchmark_result(
-            "kreuzberg-markdown-baseline",
+            "xberg-markdown-baseline",
             OutputFormat::Markdown,
             "fixture_2.pdf",
             false,
@@ -192,7 +192,7 @@ fn test_plaintext_has_no_layout_percentiles() {
 fn test_output_format_in_aggregation_key() {
     let results = vec![
         make_benchmark_result(
-            "kreuzberg",
+            "xberg",
             OutputFormat::Markdown,
             "test.pdf",
             false,
@@ -208,7 +208,7 @@ fn test_output_format_in_aggregation_key() {
             }),
         ),
         make_benchmark_result(
-            "kreuzberg",
+            "xberg",
             OutputFormat::Plaintext,
             "test.pdf",
             false,
@@ -240,7 +240,7 @@ fn test_plaintext_frameworks_excluded_from_sf1_ranking() {
     let results = vec![
         // Markdown framework for PDF
         make_benchmark_result(
-            "kreuzberg-markdown",
+            "xberg-markdown",
             OutputFormat::Markdown,
             "test.pdf",
             false,
@@ -286,7 +286,7 @@ fn test_plaintext_frameworks_excluded_from_sf1_ranking() {
         .comparison
         .pdf_sf1_ranking_markdown
         .iter()
-        .any(|r| r.framework_mode.contains("kreuzberg-markdown"));
+        .any(|r| r.framework_mode.contains("xberg-markdown"));
     assert!(has_markdown, "Expected markdown framework in SF1 ranking");
 }
 

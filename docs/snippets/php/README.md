@@ -1,6 +1,6 @@
-# Kreuzberg PHP Snippets
+# Xberg PHP Snippets
 
-Comprehensive code examples for the Kreuzberg PHP bindings. These snippets demonstrate all major features and use cases.
+Comprehensive code examples for the Xberg PHP bindings. These snippets demonstrate all major features and use cases.
 
 ## Directory Structure
 
@@ -24,11 +24,11 @@ php/
 
 ### Composer_install.php
 
-Installing Kreuzberg via Composer and verifying the extension is loaded.
+Installing Xberg via Composer and verifying the extension is loaded.
 
 ### Extension_setup.php
 
-Setting up the native PHP extension (kreuzberg.so/.dll) and checking for optional dependencies (Tesseract, ONNX Runtime).
+Setting up the native PHP extension (xberg.so/.dll) and checking for optional dependencies (Tesseract, ONNX Runtime).
 
 ### Requirements_check.php
 
@@ -171,32 +171,32 @@ Benchmark extraction performance across different configurations.
 ### Basic Extraction
 
 ```php title="Basic Extraction"
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
-$kreuzberg = new Kreuzberg();
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg();
+$result = $xberg->extractFile('document.pdf');
 echo $result->content;
 ```
 
 ### With Configuration
 
 ```php title="With Configuration"
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng'),
     extractTables: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned.pdf');
 ```
 
 ### Procedural API
 
 ```php title="Procedural API"
-use function Kreuzberg\extract_file;
+use function Xberg\extract_file;
 
 $result = extract_file('document.pdf');
 echo $result->content;
@@ -205,7 +205,7 @@ echo $result->content;
 ### Batch Processing
 
 ```php title="Batch Processing"
-use function Kreuzberg\batch_extract_files;
+use function Xberg\batch_extract_files;
 
 $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
 $results = batch_extract_files($files);
@@ -246,8 +246,8 @@ Integration with ReactPHP framework using ReactBridge::toPromise().
 ## Requirements
 
 - PHP 8.1.0 or higher
-- Kreuzberg PHP extension (kreuzberg.so/.dll)
-- Composer package: kreuzberg/Kreuzberg
+- Xberg PHP extension (xberg.so/.dll)
+- Composer package: xberg/Xberg
 - Optional: Tesseract OCR (for OCR functionality)
 - Optional: ONNX Runtime (for embeddings)
 
@@ -258,13 +258,13 @@ Each snippet is designed to be self-contained and runnable. To test:
 1. Install dependencies:
 
    ```bash
-   composer require xberg-io/kreuzberg
+   composer require xberg-io/xberg
    ```
 
 2. Ensure the extension is loaded:
 
    ```bash
-   php -m | grep kreuzberg
+   php -m | grep xberg
    ```
 
 3. Run any snippet:
@@ -295,6 +295,6 @@ These snippets follow these conventions:
 ## Links
 
 - **Documentation**: <https://xberg.io>
-- **GitHub**: <https://github.com/xberg-io/Kreuzberg>
-- **Issues**: <https://github.com/xberg-io/kreuzberg/issues>
-- **Package**: <https://packagist.org/packages/kreuzberg/Kreuzberg>
+- **GitHub**: <https://github.com/xberg-io/Xberg>
+- **Issues**: <https://github.com/xberg-io/xberg/issues>
+- **Package**: <https://packagist.org/packages/xberg/Xberg>

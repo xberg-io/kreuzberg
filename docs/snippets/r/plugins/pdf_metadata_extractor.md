@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 extract_pdf_metadata <- function(result) {
   processed_result <- result

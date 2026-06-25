@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.Plugin
+alias Xberg.Plugin
 require Logger
 
 # Plugin with Logging
@@ -7,7 +7,7 @@ require Logger
 # Proper logging helps with debugging and monitoring plugin execution.
 
 defmodule MyApp.Plugins.LoggingProcessor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
   require Logger
 
   @impl true

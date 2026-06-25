@@ -2,10 +2,10 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ChunkingConfig;
-use Kreuzberg\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
+use Xberg\EmbeddingConfig;
 
 class VectorRecord {
     public function __construct(
@@ -31,7 +31,7 @@ function extractAndVectorize(
         )
     );
 
-    $result = Kreuzberg::extractFileSync($documentPath, null, $config);
+    $result = Xberg::extractFileSync($documentPath, null, $config);
 
     $records = [];
     if ($result->getChunks()) {

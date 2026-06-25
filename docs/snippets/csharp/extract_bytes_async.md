@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var data = await File.ReadAllBytesAsync("document.pdf");
-var result = await KreuzbergLib.ExtractBytesAsync(data, "application/pdf");
+var result = await XbergLib.ExtractBytesAsync(data, "application/pdf");
 
 Console.WriteLine(result.Content);
 Console.WriteLine(result.MimeType);

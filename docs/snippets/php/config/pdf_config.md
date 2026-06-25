@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Kreuzberg\extract_file;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PdfConfig;
+use function Xberg\extract_file;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PdfConfig;
 
 /**
  * PDF configuration with hierarchy detection

@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .chunking(ChunkingConfig.builder()
@@ -12,7 +12,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+ExtractionResult result = Xberg.extractFile("document.pdf", config);
 
 System.out.println("Extracted content: " + result.getContent().length() + " characters");
 ```

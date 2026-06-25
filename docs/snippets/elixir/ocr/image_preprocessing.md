@@ -14,6 +14,6 @@ config_json = Jason.encode!(%{
   }
 })
 
-{:ok, result} = Kreuzberg.extract_file_sync("scanned.pdf", "application/pdf", config_json)
+{:ok, result} = Xberg.extract_file_sync("scanned.pdf", "application/pdf", config_json)
 IO.puts(result.content)
 ```

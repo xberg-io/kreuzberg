@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 Future<void> main() async {
-  final process = await Process.start('kreuzberg', <String>['mcp']);
+  final process = await Process.start('xberg', <String>['mcp']);
 
   final request = <String, Object?>{
     'method': 'tools/call',

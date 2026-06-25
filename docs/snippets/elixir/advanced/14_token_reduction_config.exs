@@ -1,5 +1,5 @@
 # Token reduction for different LLM context windows
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # For GPT-4
 config_gpt4 = %ExtractionConfig{

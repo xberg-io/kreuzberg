@@ -1,7 +1,7 @@
 ```rust title="disk_cache.rs"
-use kreuzberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let path = std::env::args()
         .skip(1)
         .find(|a| !a.is_empty() && a != "--")

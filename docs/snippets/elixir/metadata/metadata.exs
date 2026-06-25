@@ -194,11 +194,11 @@ defmodule MetadataUtils do
 end
 
 # Example usage
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("=== Standard Metadata ===")
 IO.inspect(MetadataUtils.extract_standard_metadata(result))

@@ -5,21 +5,21 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const test_step = b.step("test", "Run tests");
-    const ffi_path = b.option([]const u8, "ffi_path", "Path to directory containing libkreuzberg_ffi") orelse "../../target/release";
-    const ffi_include = b.option([]const u8, "ffi_include_path", "Path to directory containing FFI header") orelse "../../crates/kreuzberg-ffi/include";
+    const ffi_path = b.option([]const u8, "ffi_path", "Path to directory containing libxberg_ffi") orelse "../../target/release";
+    const ffi_include = b.option([]const u8, "ffi_include_path", "Path to directory containing FFI header") orelse "../../crates/xberg-ffi/include";
     const ffi_path_abs = b.pathFromRoot(ffi_path);
 
-    const kreuzberg_module = b.addModule("kreuzberg", .{
-        .root_source_file = b.path("../../packages/zig/src/kreuzberg.zig"),
+    const xberg_module = b.addModule("xberg", .{
+        .root_source_file = b.path("../../packages/zig/src/xberg.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
-    kreuzberg_module.addLibraryPath(.{ .cwd_relative = ffi_path });
-    kreuzberg_module.addIncludePath(.{ .cwd_relative = ffi_include });
-    kreuzberg_module.linkSystemLibrary("kreuzberg_ffi", .{});
-    kreuzberg_module.linkSystemLibrary("heif", .{});
-    kreuzberg_module.addRPath(.{ .cwd_relative = ffi_path_abs });
+    xberg_module.addLibraryPath(.{ .cwd_relative = ffi_path });
+    xberg_module.addIncludePath(.{ .cwd_relative = ffi_include });
+    xberg_module.linkSystemLibrary("xberg_ffi", .{});
+    xberg_module.linkSystemLibrary("heif", .{});
+    xberg_module.addRPath(.{ .cwd_relative = ffi_path_abs });
 
     const async_module = b.createModule(.{
         .root_source_file = b.path("src/async_test.zig"),
@@ -27,7 +27,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    async_module.addImport("kreuzberg", kreuzberg_module);
+    async_module.addImport("xberg", xberg_module);
     const async_tests = b.addTest(.{
         .name = "async_test",
         .root_module = async_module,
@@ -44,7 +44,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    batch_module.addImport("kreuzberg", kreuzberg_module);
+    batch_module.addImport("xberg", xberg_module);
     const batch_tests = b.addTest(.{
         .name = "batch_test",
         .root_module = batch_module,
@@ -62,7 +62,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    contract_module.addImport("kreuzberg", kreuzberg_module);
+    contract_module.addImport("xberg", xberg_module);
     const contract_tests = b.addTest(.{
         .name = "contract_test",
         .root_module = contract_module,
@@ -80,7 +80,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    detection_module.addImport("kreuzberg", kreuzberg_module);
+    detection_module.addImport("xberg", xberg_module);
     const detection_tests = b.addTest(.{
         .name = "detection_test",
         .root_module = detection_module,
@@ -98,7 +98,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    document_extractor_management_module.addImport("kreuzberg", kreuzberg_module);
+    document_extractor_management_module.addImport("xberg", xberg_module);
     const document_extractor_management_tests = b.addTest(.{
         .name = "document_extractor_management_test",
         .root_module = document_extractor_management_module,
@@ -116,7 +116,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    embed_async_pending_module.addImport("kreuzberg", kreuzberg_module);
+    embed_async_pending_module.addImport("xberg", xberg_module);
     const embed_async_pending_tests = b.addTest(.{
         .name = "embed_async_pending_test",
         .root_module = embed_async_pending_module,
@@ -134,7 +134,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    embed_extra_module.addImport("kreuzberg", kreuzberg_module);
+    embed_extra_module.addImport("xberg", xberg_module);
     const embed_extra_tests = b.addTest(.{
         .name = "embed_extra_test",
         .root_module = embed_extra_module,
@@ -152,7 +152,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    embedding_backend_management_module.addImport("kreuzberg", kreuzberg_module);
+    embedding_backend_management_module.addImport("xberg", xberg_module);
     const embedding_backend_management_tests = b.addTest(.{
         .name = "embedding_backend_management_test",
         .root_module = embedding_backend_management_module,
@@ -170,7 +170,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    embeddings_module.addImport("kreuzberg", kreuzberg_module);
+    embeddings_module.addImport("xberg", xberg_module);
     const embeddings_tests = b.addTest(.{
         .name = "embeddings_test",
         .root_module = embeddings_module,
@@ -188,7 +188,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    error_module.addImport("kreuzberg", kreuzberg_module);
+    error_module.addImport("xberg", xberg_module);
     const error_tests = b.addTest(.{
         .name = "error_test",
         .root_module = error_module,
@@ -206,7 +206,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    format_specific_module.addImport("kreuzberg", kreuzberg_module);
+    format_specific_module.addImport("xberg", xberg_module);
     const format_specific_tests = b.addTest(.{
         .name = "format_specific_test",
         .root_module = format_specific_module,
@@ -224,7 +224,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    mime_utilities_module.addImport("kreuzberg", kreuzberg_module);
+    mime_utilities_module.addImport("xberg", xberg_module);
     const mime_utilities_tests = b.addTest(.{
         .name = "mime_utilities_test",
         .root_module = mime_utilities_module,
@@ -242,7 +242,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    ocr_backend_management_module.addImport("kreuzberg", kreuzberg_module);
+    ocr_backend_management_module.addImport("xberg", xberg_module);
     const ocr_backend_management_tests = b.addTest(.{
         .name = "ocr_backend_management_test",
         .root_module = ocr_backend_management_module,
@@ -260,7 +260,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    pdf_module.addImport("kreuzberg", kreuzberg_module);
+    pdf_module.addImport("xberg", xberg_module);
     const pdf_tests = b.addTest(.{
         .name = "pdf_test",
         .root_module = pdf_module,
@@ -278,7 +278,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    plugin_api_module.addImport("kreuzberg", kreuzberg_module);
+    plugin_api_module.addImport("xberg", xberg_module);
     const plugin_api_tests = b.addTest(.{
         .name = "plugin_api_test",
         .root_module = plugin_api_module,
@@ -296,7 +296,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    post_processor_management_module.addImport("kreuzberg", kreuzberg_module);
+    post_processor_management_module.addImport("xberg", xberg_module);
     const post_processor_management_tests = b.addTest(.{
         .name = "post_processor_management_test",
         .root_module = post_processor_management_module,
@@ -314,7 +314,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    registry_module.addImport("kreuzberg", kreuzberg_module);
+    registry_module.addImport("xberg", xberg_module);
     const registry_tests = b.addTest(.{
         .name = "registry_test",
         .root_module = registry_module,
@@ -332,7 +332,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    registry_operations_module.addImport("kreuzberg", kreuzberg_module);
+    registry_operations_module.addImport("xberg", xberg_module);
     const registry_operations_tests = b.addTest(.{
         .name = "registry_operations_test",
         .root_module = registry_operations_module,
@@ -350,7 +350,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    renderer_management_module.addImport("kreuzberg", kreuzberg_module);
+    renderer_management_module.addImport("xberg", xberg_module);
     const renderer_management_tests = b.addTest(.{
         .name = "renderer_management_test",
         .root_module = renderer_management_module,
@@ -368,7 +368,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    rerank_module.addImport("kreuzberg", kreuzberg_module);
+    rerank_module.addImport("xberg", xberg_module);
     const rerank_tests = b.addTest(.{
         .name = "rerank_test",
         .root_module = rerank_module,
@@ -386,7 +386,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    rerank_async_pending_module.addImport("kreuzberg", kreuzberg_module);
+    rerank_async_pending_module.addImport("xberg", xberg_module);
     const rerank_async_pending_tests = b.addTest(.{
         .name = "rerank_async_pending_test",
         .root_module = rerank_async_pending_module,
@@ -404,7 +404,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    reranker_backend_management_module.addImport("kreuzberg", kreuzberg_module);
+    reranker_backend_management_module.addImport("xberg", xberg_module);
     const reranker_backend_management_tests = b.addTest(.{
         .name = "reranker_backend_management_test",
         .root_module = reranker_backend_management_module,
@@ -422,7 +422,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    smoke_module.addImport("kreuzberg", kreuzberg_module);
+    smoke_module.addImport("xberg", xberg_module);
     const smoke_tests = b.addTest(.{
         .name = "smoke_test",
         .root_module = smoke_module,
@@ -440,7 +440,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    summarization_module.addImport("kreuzberg", kreuzberg_module);
+    summarization_module.addImport("xberg", xberg_module);
     const summarization_tests = b.addTest(.{
         .name = "summarization_test",
         .root_module = summarization_module,
@@ -458,7 +458,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .link_libc = true,
     });
-    validator_management_module.addImport("kreuzberg", kreuzberg_module);
+    validator_management_module.addImport("xberg", xberg_module);
     const validator_management_tests = b.addTest(.{
         .name = "validator_management_test",
         .root_module = validator_management_module,

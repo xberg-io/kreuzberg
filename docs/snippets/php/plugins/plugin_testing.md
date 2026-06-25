@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 use PHPUnit\Framework\TestCase;
 
 class CustomPluginTest extends TestCase {

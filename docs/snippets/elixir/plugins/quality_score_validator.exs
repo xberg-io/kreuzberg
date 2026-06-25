@@ -1,12 +1,12 @@
 ```elixir title="Elixir"
-alias Kreuzberg.Plugin
+alias Xberg.Plugin
 
 # Quality Score Validator Plugin
 # This validator ensures extracted content meets a minimum quality threshold.
 # It checks the quality_score metadata field and rejects low-quality extractions.
 
 defmodule MyApp.Plugins.QualityScoreValidator do
-  @behaviour Kreuzberg.Plugin.Validator
+  @behaviour Xberg.Plugin.Validator
   require Logger
 
   @impl true

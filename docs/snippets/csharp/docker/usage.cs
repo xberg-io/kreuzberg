@@ -5,7 +5,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-var dockerClient = new DockerKreuzbergLib();
+var dockerClient = new DockerXbergLib();
 
 try
 {
@@ -20,15 +20,15 @@ finally
     await dockerClient.StopContainerAsync();
 }
 
-class DockerKreuzbergLib
+class DockerXbergLib
 {
-    private const string ContainerName = "kreuzberg-api";
-    private const string ContainerImage = "kreuzberg:latest";
+    private const string ContainerName = "xberg-api";
+    private const string ContainerImage = "xberg:latest";
     private const int ApiPort = 8000;
 
     public async Task StartContainerAsync()
     {
-        Console.WriteLine("Starting Kreuzberg Docker container...");
+        Console.WriteLine("Starting Xberg Docker container...");
 
         var processInfo = new ProcessStartInfo
         {
@@ -70,7 +70,7 @@ class DockerKreuzbergLib
 
     public async Task StopContainerAsync()
     {
-        Console.WriteLine("Stopping Kreuzberg Docker container...");
+        Console.WriteLine("Stopping Xberg Docker container...");
 
         var processInfo = new ProcessStartInfo
         {

@@ -1,8 +1,8 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
 fun main() {
     val config = ExtractionConfig.builder().build()
-    println("Kreuzberg loaded: ${config != null}")
+    println("Xberg loaded: ${config != null}")
 }
 ```

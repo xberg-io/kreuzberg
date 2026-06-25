@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Project renamed `kreuzberg` → `xberg`, version line reset to `1.0.0-rc.1`.** This is a full
+  rebrand with no back-compat aliases. The published `kreuzberg` packages stay frozen at the
+  `5.0.0-rc.36` line; `xberg` is a fresh set of registry identities starting at `1.0.0-rc.1`.
+  - **Rust:** crate `kreuzberg` → `xberg` (and every `kreuzberg-*` workspace crate → `xberg-*`); the
+    `kreuzberg::` namespace → `xberg::`; `KreuzbergError` → `XbergError`.
+  - **CLI:** binary `kreuzberg` → `xberg`; config discovery `kreuzberg.{toml,yaml,json}` →
+    `xberg.{toml,yaml,json}`; all `KREUZBERG_*` environment variables → `XBERG_*`; cache dir
+    `.kreuzberg/` → `.xberg/`.
+  - **FFI:** symbol prefix `kreuzberg_*` → `xberg_*`; header `kreuzberg.h` → `xberg.h`; lib
+    `kreuzberg_ffi` → `xberg_ffi`.
+  - **Package coordinates:** PyPI `xberg`, npm `@xberg/*`, RubyGems/Hex/pub.dev `xberg`, Maven
+    `dev.xberg`, NuGet `Xberg`, Packagist `xberg-io/xberg`, Homebrew `xberg`.
+  - **Go:** module `github.com/xberg-io/xberg` with **no `/vN` suffix** (v1); the binding now lives at
+    `packages/go/` (the `packages/go/{v4,v5}` layout is removed).
+  - **Docs:** new docs at `docs.xberg.io`; the frozen v4 site remains at `docs.kreuzberg.dev`.
+  - The `kreuzberg-gliner-rs` / `kreuzberg-orp` fork dependencies keep their names (out of scope).
+
 ## [5.0.0-rc.36] - 2026-06-24
 
 ### Removed

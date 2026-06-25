@@ -2,7 +2,7 @@
 # Extract and process comprehensive PDF metadata
 # Useful for document indexing, cataloging, and metadata-driven workflows
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 defmodule PDFMetadataExtractor do
   @moduledoc """
@@ -20,7 +20,7 @@ defmodule PDFMetadataExtractor do
       use_cache: true
     }
 
-    case Kreuzberg.extract_file(file_path, nil, config) do
+    case Xberg.extract_file(file_path, nil, config) do
       {:ok, result} ->
         process_metadata(result.metadata || %{})
 

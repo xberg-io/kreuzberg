@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.LanguageDetectionConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.LanguageDetectionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .languageDetection(LanguageDetectionConfig.builder()

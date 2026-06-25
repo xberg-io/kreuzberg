@@ -1,5 +1,5 @@
 ```typescript title="WASM - Token Reduction Configuration"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -23,7 +23,7 @@ console.log(`Preview: ${result.content.substring(0, 100)}...`);
 ```
 
 ```typescript title="WASM - Token Reduction Modes"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

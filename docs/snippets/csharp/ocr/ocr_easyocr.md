@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -12,7 +12,7 @@ var config = new ExtractionConfig
 
 // EasyOCR-specific options (use_gpu, beam_width, etc.) can be passed through
 // OcrConfig's EasyocrConfig field if available, or via backend-specific configuration.
-var result = KreuzbergLib.ExtractFileSync("scanned.pdf", null, config);
+var result = XbergLib.ExtractFileSync("scanned.pdf", null, config);
 
 string content = result.Content;
 string preview = content.Length > 100 ? content[..100] : content;

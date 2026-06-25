@@ -1,12 +1,12 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
-let extractors = try Kreuzberg.listDocumentExtractors()
-let renderers = try Kreuzberg.listRenderers()
-let processors = try Kreuzberg.listPostProcessors()
-let ocrBackends = try Kreuzberg.listOcrBackends()
-let validators = try Kreuzberg.listValidators()
-let embeddingBackends = try Kreuzberg.listEmbeddingBackends()
+let extractors = try Xberg.listDocumentExtractors()
+let renderers = try Xberg.listRenderers()
+let processors = try Xberg.listPostProcessors()
+let ocrBackends = try Xberg.listOcrBackends()
+let validators = try Xberg.listValidators()
+let embeddingBackends = try Xberg.listEmbeddingBackends()
 
 print("Extractors: \(extractors)")
 print("Renderers: \(renderers)")

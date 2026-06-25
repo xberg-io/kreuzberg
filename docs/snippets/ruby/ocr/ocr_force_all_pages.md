@@ -1,11 +1,11 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(backend: 'tesseract'),
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(backend: 'tesseract'),
   force_ocr: true
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 puts result.content
 ```

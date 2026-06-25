@@ -1,12 +1,12 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
-import dev.kreuzberg.kt.Kreuzberg
+import dev.xberg.*
+import dev.xberg.kt.Xberg
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Paths
 
 fun main() = runBlocking {
     val config = ExtractionConfig.builder().build()
-    val result = Kreuzberg.extractFile(Paths.get("document.pdf"), null, config)
+    val result = Xberg.extractFile(Paths.get("document.pdf"), null, config)
 
     println(result.content())
     println("MIME type: ${result.mimeType()}")

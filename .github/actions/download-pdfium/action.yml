@@ -1,5 +1,5 @@
 name: Download Pdfium Runtime
-description: Download Pdfium binaries for the current platform and expose the location via KREUZBERG_PDFIUM_PREBUILT
+description: Download Pdfium binaries for the current platform and expose the location via XBERG_PDFIUM_PREBUILT
 inputs:
   pdfium-version:
     description: Pdfium version to download

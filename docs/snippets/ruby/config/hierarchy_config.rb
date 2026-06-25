@@ -1,66 +1,66 @@
-require 'kreuzberg'
+require 'xberg'
 
 # Example 1: Basic hierarchy extraction
 # Enabled with default k_clusters=6 for standard H1-H6 heading hierarchy.
 # Extract bounding box information for spatial layout awareness.
-hierarchy_config_basic = Kreuzberg::HierarchyConfig.new(
+hierarchy_config_basic = Xberg::HierarchyConfig.new(
   enabled: true,
   k_clusters: 6,  # Default: creates 6 font size clusters (H1-H6 structure)
   include_bbox: true,  # Include bounding box coordinates
   ocr_coverage_threshold: nil  # No OCR coverage threshold
 )
 
-pdf_config_basic = Kreuzberg::PdfConfig.new(
+pdf_config_basic = Xberg::PdfConfig.new(
   hierarchy: hierarchy_config_basic
 )
 
-extraction_config_basic = Kreuzberg::ExtractionConfig.new(
+extraction_config_basic = Xberg::ExtractionConfig.new(
   pdf_options: pdf_config_basic
 )
 
-# result = Kreuzberg.extract_file_sync("document.pdf", config: extraction_config_basic)
+# result = Xberg.extract_file_sync("document.pdf", config: extraction_config_basic)
 
 
 # Example 2: Custom k_clusters for minimal structure
 # Use 3 clusters for simpler hierarchy with minimal structure.
 # Useful when you only need major section divisions (Main, Subsection, Detail).
-hierarchy_config_minimal = Kreuzberg::HierarchyConfig.new(
+hierarchy_config_minimal = Xberg::HierarchyConfig.new(
   enabled: true,
   k_clusters: 3,  # Minimal clustering: just 3 levels
   include_bbox: true,
   ocr_coverage_threshold: nil
 )
 
-pdf_config_minimal = Kreuzberg::PdfConfig.new(
+pdf_config_minimal = Xberg::PdfConfig.new(
   hierarchy: hierarchy_config_minimal
 )
 
-extraction_config_minimal = Kreuzberg::ExtractionConfig.new(
+extraction_config_minimal = Xberg::ExtractionConfig.new(
   pdf_options: pdf_config_minimal
 )
 
-# result = Kreuzberg.extract_file_sync("document.pdf", config: extraction_config_minimal)
+# result = Xberg.extract_file_sync("document.pdf", config: extraction_config_minimal)
 
 
 # Example 3: With OCR coverage threshold
 # Trigger OCR if less than 50% of text has font data.
 # Useful for documents with mixed digital and scanned content.
-hierarchy_config_ocr = Kreuzberg::HierarchyConfig.new(
+hierarchy_config_ocr = Xberg::HierarchyConfig.new(
   enabled: true,
   k_clusters: 6,
   include_bbox: true,
   ocr_coverage_threshold: 0.5  # Trigger OCR if text coverage < 50%
 )
 
-pdf_config_ocr = Kreuzberg::PdfConfig.new(
+pdf_config_ocr = Xberg::PdfConfig.new(
   hierarchy: hierarchy_config_ocr
 )
 
-extraction_config_ocr = Kreuzberg::ExtractionConfig.new(
+extraction_config_ocr = Xberg::ExtractionConfig.new(
   pdf_options: pdf_config_ocr
 )
 
-# result = Kreuzberg.extract_file_sync("document.pdf", config: extraction_config_ocr)
+# result = Xberg.extract_file_sync("document.pdf", config: extraction_config_ocr)
 
 
 # Field descriptions:

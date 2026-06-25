@@ -1,4 +1,4 @@
-from kreuzberg import PdfConfig, HierarchyConfig, ExtractionConfig, extract_file_sync
+from xberg import PdfConfig, HierarchyConfig, ExtractionConfig, extract_file_sync
 
 # Example 1: Basic hierarchy extraction
 # Enabled with default k_clusters=6 for standard H1-H6 heading hierarchy.

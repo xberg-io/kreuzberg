@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/email/html_only.eml",
 	"file_type": "eml",
 	"file_size": 1150,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "tika", "unstructured"],
 	"metadata": {
 		"description": "HTML-only email with formatted content",
 		"category": "simple"

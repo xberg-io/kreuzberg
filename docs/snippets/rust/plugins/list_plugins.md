@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::plugins::registry::*;
+use xberg::plugins::registry::*;
 
 let registry = get_document_extractor_registry();
 let extractors = registry.list()?;

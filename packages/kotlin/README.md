@@ -2,49 +2,49 @@
 
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
   <!-- Language Bindings -->
-  <a href="https://crates.io/crates/kreuzberg">
-    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  <a href="https://crates.io/crates/xberg">
+    <img src="https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6" alt="Rust">
   </a>
-  <a href="https://hex.pm/packages/kreuzberg">
-    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  <a href="https://hex.pm/packages/xberg">
+    <img src="https://img.shields.io/hexpm/v/xberg?label=Elixir&color=007ec6" alt="Elixir">
   </a>
-  <a href="https://pypi.org/project/kreuzberg/">
-    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  <a href="https://pypi.org/project/xberg/">
+    <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/node">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg/node">
+    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg/wasm">
+    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
 
-  <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
-    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  <a href="https://central.sonatype.com/artifact/dev.xberg/xberg">
+    <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
+  <a href="https://github.com/xberg-io/xberg/releases">
+    <img src="https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
   </a>
-  <a href="https://www.nuget.org/packages/Kreuzberg/">
-    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  <a href="https://www.nuget.org/packages/Xberg/">
+    <img src="https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6" alt="C#">
   </a>
-  <a href="https://packagist.org/packages/xberg-io/kreuzberg">
-    <img src="https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  <a href="https://packagist.org/packages/xberg-io/xberg">
+    <img src="https://img.shields.io/packagist/v/xberg-io/xberg?label=PHP&color=007ec6" alt="PHP">
   </a>
-  <a href="https://rubygems.org/gems/kreuzberg">
-    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  <a href="https://rubygems.org/gems/xberg">
+    <img src="https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6" alt="Ruby">
   </a>
-  <a href="https://xberg-io.r-universe.dev/kreuzberg">
-    <img src="https://img.shields.io/badge/R-kreuzberg-007ec6" alt="R">
+  <a href="https://xberg-io.r-universe.dev/xberg">
+    <img src="https://img.shields.io/badge/R-xberg-007ec6" alt="R">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg">
+  <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://artifacthub.io/packages/search?repo=kreuzberg">
-    <img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kreuzberg" alt="Artifact Hub">
+  <a href="https://artifacthub.io/packages/search?repo=xberg">
+    <img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/xberg" alt="Artifact Hub">
   </a>
 
   <!-- Project Info -->
-  <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
+  <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
   </a>
   <a href="https://docs.xberg.io">
@@ -53,7 +53,7 @@
   <a href="https://docs.xberg.io/demo.html">
     <img src="https://img.shields.io/badge/%E2%96%B6%EF%B8%8F_Live_Demo-007ec6" alt="Live Demo">
   </a>
-  <a href="https://huggingface.co/Kreuzberg">
+  <a href="https://huggingface.co/Xberg">
     <img src="https://img.shields.io/badge/%F0%9F%A4%97_Hugging_Face-007ec6" alt="Hugging Face">
   </a>
 </div>
@@ -77,15 +77,15 @@ Install via one of the supported package managers:
 **Gradle:**
 
 ```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.0.0'
+implementation 'dev.xberg:xberg:4.0.0'
 ```
 
 **Maven:**
 
 ```xml
 <dependency>
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg</artifactId>
+    <groupId>dev.xberg</groupId>
+    <artifactId>xberg</artifactId>
     <version>4.0.0</version>
 </dependency>
 ```
@@ -231,7 +231,7 @@ Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-l
 
 ## OCR Support
 
-Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+Xberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 - **Tesseract**
 
@@ -249,7 +249,7 @@ This binding provides full async/await support for non-blocking document process
 
 ## Plugin System
 
-Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
+Xberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://xberg.io/guides/plugins/).
 
@@ -279,7 +279,7 @@ For advanced configuration options including language detection, table extractio
 
 ## Contributing
 
-Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/kreuzberg/blob/main/CONTRIBUTING.md).
+Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/xberg/blob/main/CONTRIBUTING.md).
 
 ## License
 
@@ -288,5 +288,5 @@ MIT License - see LICENSE file for details.
 ## Support
 
 - **Discord Community**: [Join our Discord](https://discord.gg/xt9WY3GnKR)
-- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/kreuzberg/issues)
-- **Discussions**: [Ask questions](https://github.com/xberg-io/kreuzberg/discussions)
+- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/xberg/issues)
+- **Discussions**: [Ask questions](https://github.com/xberg-io/xberg/discussions)

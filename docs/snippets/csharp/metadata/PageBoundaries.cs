@@ -1,7 +1,7 @@
-using Kreuzberg;
+using Xberg;
 using System.Text;
 
-var result = Kreuzberg.ExtractFileSync("document.pdf");
+var result = Xberg.ExtractFileSync("document.pdf");
 
 if (result.Metadata.Pages?.Boundaries != null)
 {

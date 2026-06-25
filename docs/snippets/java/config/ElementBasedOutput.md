@@ -1,9 +1,9 @@
 ```java title="Element-Based Output (Java)"
-import io.kreuzberg.Kreuzberg;
-import io.kreuzberg.ExtractionConfig;
-import io.kreuzberg.ExtractionResult;
-import io.kreuzberg.Element;
-import io.kreuzberg.OutputFormat;
+import io.xberg.Xberg;
+import io.xberg.ExtractionConfig;
+import io.xberg.ExtractionResult;
+import io.xberg.Element;
+import io.xberg.OutputFormat;
 
 public class ElementBasedOutput {
     public static void main(String[] args) {
@@ -12,7 +12,7 @@ public class ElementBasedOutput {
         config.setOutputFormat(OutputFormat.ELEMENT_BASED);
 
         // Extract document
-        ExtractionResult result = Kreuzberg.extractFileSync("document.pdf", config);
+        ExtractionResult result = Xberg.extractFileSync("document.pdf", config);
 
         // Access elements
         for (Element element : result.getElements()) {

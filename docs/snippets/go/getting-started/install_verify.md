@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	fmt.Println("Kreuzberg CGO bindings loaded successfully")
+	fmt.Println("Xberg CGO bindings loaded successfully")
 
-	result, err := kreuzberg.ExtractFileSync("sample.pdf", nil)
+	result, err := xberg.ExtractFileSync("sample.pdf", nil)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 // Force OCR on all pages, even those with native text
 // Useful when native text extraction is unreliable or corrupted
@@ -19,8 +19,8 @@ $config = new ExtractionConfig(
     forceOcr: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('mixed_scanned_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('mixed_scanned_document.pdf');
 
 echo "Force OCR Results:\n";
 echo "All pages processed with OCR\n";
@@ -37,8 +37,8 @@ $nativeConfig = new ExtractionConfig(
     forceOcr: false  // Default: use native text extraction when available
 );
 
-$kreuzbergNative = new Kreuzberg($nativeConfig);
-$resultNative = $kreuzbergNative->extractFile('mixed_scanned_document.pdf');
+$xbergNative = new Xberg($nativeConfig);
+$resultNative = $xbergNative->extractFile('mixed_scanned_document.pdf');
 
 echo "\nNative Text Extraction (no force):\n";
 echo "Characters extracted: " . strlen($resultNative->content) . "\n";

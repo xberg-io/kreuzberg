@@ -1,9 +1,9 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\PageConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\PageConfig;
 
 $config = new ExtractionConfig();
 $config->pages = new PageConfig(
@@ -12,7 +12,7 @@ $config->pages = new PageConfig(
     markerFormat: "\n\n=== PAGE {page_num} ===\n\n"
 );
 
-$result = Kreuzberg::extract_file_sync("document.pdf", null, $config);
+$result = Xberg::extract_file_sync("document.pdf", null, $config);
 
 // Content with inline page markers
 echo "Full content with markers:\n";

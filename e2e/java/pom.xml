@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg-e2e-java</artifactId>
+    <groupId>dev.xberg</groupId>
+    <artifactId>xberg-e2e-java</artifactId>
     <version>0.1.0</version>
 
     <properties>
@@ -29,11 +29,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.kreuzberg</groupId>
-            <artifactId>kreuzberg</artifactId>
-            <version>5.0.0-rc.36</version>
+            <groupId>dev.xberg</groupId>
+            <artifactId>xberg</artifactId>
+            <version>1.0.0-rc.1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../../packages/java/target/kreuzberg-5.0.0-rc.36.jar</systemPath>
+            <systemPath>${project.basedir}/../../packages/java/target/xberg-1.0.0-rc.1.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -121,13 +121,13 @@
                                 </condition>
                                 <!-- Build natives RID and library filename -->
                                 <property name="natives.rid" value="${os.name.detected}-${arch.detected}" />
-                                <condition property="native.lib.name" value="libkreuzberg_ffi.dylib">
+                                <condition property="native.lib.name" value="libxberg_ffi.dylib">
                                     <matches string="${os.name.detected}" pattern="(?i)macos" />
                                 </condition>
-                                <condition property="native.lib.name" value="libkreuzberg_ffi.so">
+                                <condition property="native.lib.name" value="libxberg_ffi.so">
                                     <matches string="${os.name.detected}" pattern="(?i)linux" />
                                 </condition>
-                                <condition property="native.lib.name" value="kreuzberg_ffi.dll">
+                                <condition property="native.lib.name" value="xberg_ffi.dll">
                                     <matches string="${os.name.detected}" pattern="(?i)windows" />
                                 </condition>
                                 <!-- Define source and destination paths -->

@@ -1,9 +1,9 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.KeywordConfig;
-import dev.kreuzberg.KeywordAlgorithm;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.KeywordConfig;
+import dev.xberg.KeywordAlgorithm;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +15,7 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .build();
 
-ExtractionResult result = Kreuzberg.extractFile("research_paper.pdf", config);
+ExtractionResult result = Xberg.extractFile("research_paper.pdf", config);
 
 Map<String, Object> metadata = result.getMetadata() != null ? result.getMetadata() : Map.of();
 

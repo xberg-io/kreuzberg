@@ -2,7 +2,7 @@
 
 **Timestamp**: 2026-06-02 13:00:30
 **Sample Size**: 10 documents (CORD v2 `test` split)
-**Strategy**: text-then-llm — `kreuzberg::extract_file` (classical text extraction) → `liter-llm` structured extraction with the dataset schema attached.
+**Strategy**: text-then-llm — `xberg::extract_file` (classical text extraction) → `liter-llm` structured extraction with the dataset schema attached.
 
 | Provider | F1 | Type Corr | Valid % | Tokens | Est. Cost | p50 (ms) | p95 (ms) | Errors |
 |----------|-----|-----------|---------|--------|-----------|----------|----------|--------|
@@ -23,7 +23,7 @@
 ## Next steps to make these numbers meaningful
 
 1. **Numeric-tolerant F1**: dispatch leaf comparison through `json_quality::numeric_match` when both sides are numeric (or stringified numeric); fall back to canonical-string compare otherwise.
-2. **Add `vlm-only` strategy**: render page images and skip kreuzberg's text path. CORD is image-only — text extraction quality dominates the F1 floor today and a VLM may bypass that.
+2. **Add `vlm-only` strategy**: render page images and skip xberg's text path. CORD is image-only — text extraction quality dominates the F1 floor today and a VLM may bypass that.
 3. **Add `fused-text+image` strategy**: feed both the text and the image to the LLM. Expected to lift the F1 ceiling further when receipts have layout ambiguity classical OCR can't resolve.
 4. **Scale to 100+ docs** and bring in SROIE for a second dataset perspective. 10 docs is enough for a sniff test; 100 is enough for a defensible ranking.
 5. **Replay against `claude-sonnet-4-7`** to put anthropic's strongest current sonnet on the curve.

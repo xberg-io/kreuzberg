@@ -1,4 +1,4 @@
-Import { extractFileSync } from '@kreuzberg/node';
+Import { extractFileSync } from '@xberg/node';
 
 Const result = extractFileSync('document.pdf', null, { pages: { extractPages: true } });
 

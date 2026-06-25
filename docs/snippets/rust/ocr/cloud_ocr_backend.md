@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, OcrBackend, OcrBackendType};
-use kreuzberg::{Result, ExtractionResult, OcrConfig, Metadata};
+use xberg::plugins::{Plugin, OcrBackend, OcrBackendType};
+use xberg::{Result, ExtractionResult, OcrConfig, Metadata};
 use async_trait::async_trait;
 use std::path::Path;
 

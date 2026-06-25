@@ -1,5 +1,5 @@
 ```java title="SimpleBenchmark.java"
-import com.kreuzberg.*;
+import com.xberg.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -13,14 +13,14 @@ public final class SimpleBenchmark {
       .useCache(false)
       .build();
 
-    Kreuzberg kreuzberg = new Kreuzberg(config);
+    Xberg xberg = new Xberg(config);
     String filePath = "document.pdf";
     int numRuns = 10;
 
     System.out.println("Sync extraction (" + numRuns + " runs):");
     long start = System.nanoTime();
     for (int i = 0; i < numRuns; i++) {
-      kreuzberg.extractFile(filePath);
+      xberg.extractFile(filePath);
     }
     double syncDuration = (System.nanoTime() - start) / 1_000_000_000.0;
     double avgSync = syncDuration / numRuns;
@@ -30,7 +30,7 @@ public final class SimpleBenchmark {
     System.out.println("\nAsync extraction (" + numRuns + " parallel runs):");
     List<Callable<ExtractionResult>> tasks = new ArrayList<>();
     for (int i = 0; i < numRuns; i++) {
-      tasks.add(() -> kreuzberg.extractFile(filePath));
+      tasks.add(() -> xberg.extractFile(filePath));
     }
 
     start = System.nanoTime();
@@ -43,17 +43,17 @@ public final class SimpleBenchmark {
     ExtractionConfig cacheConfig = new ExtractionConfig.Builder()
       .useCache(true)
       .build();
-    Kreuzberg kreuzbergCached = new Kreuzberg(cacheConfig);
+    Xberg xbergCached = new Xberg(cacheConfig);
 
     System.out.println("\nFirst extraction (populates cache)...");
     start = System.nanoTime();
-    kreuzbergCached.extractFile(filePath);
+    xbergCached.extractFile(filePath);
     double firstDuration = (System.nanoTime() - start) / 1_000_000_000.0;
     System.out.println("  - Time: " + String.format("%.3f", firstDuration) + "s");
 
     System.out.println("Second extraction (from cache)...");
     start = System.nanoTime();
-    kreuzbergCached.extractFile(filePath);
+    xbergCached.extractFile(filePath);
     double cachedDuration = (System.nanoTime() - start) / 1_000_000_000.0;
     System.out.println("  - Time: " + String.format("%.3f", cachedDuration) + "s");
     System.out.println("  - Cache speedup: " + String.format("%.1f", firstDuration / cachedDuration) + "x");

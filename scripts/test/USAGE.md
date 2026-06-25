@@ -19,14 +19,14 @@ Before running tests, build the Docker images:
 cd .
 
 # Build core variant
-docker build -f docker/Dockerfile.core -t kreuzberg:core .
+docker build -f docker/Dockerfile.core -t xberg:core .
 
 # Build full variant
-docker build -f docker/Dockerfile.full -t kreuzberg:full .
+docker build -f docker/Dockerfile.full -t xberg:full .
 
 # Or build both
-docker build -f docker/Dockerfile.core -t kreuzberg:core . && \
-docker build -f docker/Dockerfile.full -t kreuzberg:full .
+docker build -f docker/Dockerfile.core -t xberg:core . && \
+docker build -f docker/Dockerfile.full -t xberg:full .
 ```
 
 ## Running Tests
@@ -73,28 +73,28 @@ Test all variants with default settings:
 
 ## Test Cases Explained
 
-### 1. Volume Mount to /etc/kreuzberg/kreuzberg.toml
+### 1. Volume Mount to /etc/xberg/xberg.toml
 
 **What it tests**: System-wide configuration path (recommended)
 
 **Docker command**:
 
 ```bash
-docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
+docker run -v /local/config.toml:/etc/xberg/xberg.toml:ro xberg:full
 ```
 
 **Expected**: Container reads config from standard system location
 
 ---
 
-### 2. Volume Mount to /app/.config/kreuzberg/config.toml
+### 2. Volume Mount to /app/.config/xberg/config.toml
 
 **What it tests**: User-level configuration path (alternative location)
 
 **Docker command**:
 
 ```bash
-docker run -v /local/config.toml:/app/.config/kreuzberg/config.toml:ro kreuzberg:full
+docker run -v /local/config.toml:/app/.config/xberg/config.toml:ro xberg:full
 ```
 
 **Expected**: Container reads config from user application directory
@@ -110,8 +110,8 @@ docker run -v /local/config.toml:/app/.config/kreuzberg/config.toml:ro kreuzberg
 ```bash
 docker run \
   -v /local/config.toml:/app/custom-config.toml:ro \
-  --entrypoint "/app/kreuzberg" \
-  kreuzberg:full \
+  --entrypoint "/app/xberg" \
+  xberg:full \
   --config /app/custom-config.toml
 ```
 
@@ -127,9 +127,9 @@ docker run \
 
 ```bash
 docker run \
-  -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro \
-  -e KREUZBERG_SERVER_PORT=8000 \
-  kreuzberg:full
+  -v /local/config.toml:/etc/xberg/xberg.toml:ro \
+  -e XBERG_SERVER_PORT=8000 \
+  xberg:full
 ```
 
 **Expected**: Environment variable takes precedence over config file
@@ -209,7 +209,7 @@ ocr:
 **Docker command**:
 
 ```bash
-docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
+docker run -v /local/config.toml:/etc/xberg/xberg.toml:ro xberg:full
 ```
 
 **Expected**: Container works with read-only volumes, application doesn't attempt to modify config
@@ -233,7 +233,7 @@ docker run -v /local/config.toml:/etc/kreuzberg/kreuzberg.toml:ro kreuzberg:full
 
 [INFO] Docker is available
 
-Test 01: Volume mount to /etc/kreuzberg/kreuzberg.toml (variant: core)
+Test 01: Volume mount to /etc/xberg/xberg.toml (variant: core)
 [PASS] Test passed
 ```
 
@@ -243,7 +243,7 @@ Test 01: Volume mount to /etc/kreuzberg/kreuzberg.toml (variant: core)
 Test 02: Custom path with --config flag (variant: core)
 [FAIL] Test failed: Failed to start container with custom --config flag
 [FAIL]   Details: Container logs:
-          /app/kreuzberg: line 123: syntax error: unexpected token
+          /app/xberg: line 123: syntax error: unexpected token
 ```
 
 ### Summary
@@ -259,8 +259,8 @@ Failed Tests:  0
 Pass Rate:     100%
 
 Tested Variants:
-  - kreuzberg:core
-  - kreuzberg:full
+  - xberg:core
+  - xberg:full
 ```
 
 ## Debugging Failed Tests
@@ -288,17 +288,17 @@ Then inspect containers manually:
 
 ```bash
 # List test containers
-docker ps -a | grep kreuzberg-config-test
+docker ps -a | grep xberg-config-test
 
 # View specific container logs
-docker logs kreuzberg-config-test-etc-core-12345
+docker logs xberg-config-test-etc-core-12345
 
 # Execute command in running container
-docker exec kreuzberg-config-test-etc-core-12345 cat /etc/kreuzberg/kreuzberg.toml
+docker exec xberg-config-test-etc-core-12345 cat /etc/xberg/xberg.toml
 
 # Stop container manually
-docker stop kreuzberg-config-test-etc-core-12345
-docker rm kreuzberg-config-test-etc-core-12345
+docker stop xberg-config-test-etc-core-12345
+docker rm xberg-config-test-etc-core-12345
 ```
 
 ### Check Health Endpoint Manually
@@ -308,8 +308,8 @@ docker rm kreuzberg-config-test-etc-core-12345
 docker run -d \
   --name test-container \
   -p 8000:8000 \
-  -v /path/to/config.toml:/etc/kreuzberg/kreuzberg.toml:ro \
-  kreuzberg:full
+  -v /path/to/config.toml:/etc/xberg/xberg.toml:ro \
+  xberg:full
 
 # Wait for startup
 sleep 3
@@ -368,7 +368,7 @@ docker ps
 **Solution**: Build the image
 
 ```bash
-docker build -f docker/Dockerfile.full -t kreuzberg:full .
+docker build -f docker/Dockerfile.full -t xberg:full .
 ```
 
 ### Port Already in Use
@@ -385,7 +385,7 @@ docker build -f docker/Dockerfile.full -t kreuzberg:full .
 lsof -i :18100-18199
 
 # Or just stop all test containers
-docker ps -a --filter "name=kreuzberg-config-test" --format "{{.Names}}" | \
+docker ps -a --filter "name=xberg-config-test" --format "{{.Names}}" | \
   xargs -r docker stop
 ```
 
@@ -400,7 +400,7 @@ docker ps -a --filter "name=kreuzberg-config-test" --format "{{.Names}}" | \
 1. Check container is still running:
 
 ```bash
-docker ps | grep kreuzberg-config-test
+docker ps | grep xberg-config-test
 ```
 
 2. View container logs:
@@ -438,8 +438,8 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -f docker/Dockerfile.core -t kreuzberg:core .
-          docker build -f docker/Dockerfile.full -t kreuzberg:full .
+          docker build -f docker/Dockerfile.core -t xberg:core .
+          docker build -f docker/Dockerfile.full -t xberg:full .
 
       - name: Run configuration tests
         run: ./scripts/test/test-docker-config-local.sh --variant all
@@ -454,8 +454,8 @@ docker-config-tests:
   services:
     - docker:dind
   script:
-    - docker build -f docker/Dockerfile.core -t kreuzberg:core .
-    - docker build -f docker/Dockerfile.full -t kreuzberg:full .
+    - docker build -f docker/Dockerfile.core -t xberg:core .
+    - docker build -f docker/Dockerfile.full -t xberg:full .
     - ./scripts/test/test-docker-config-local.sh --variant all
 ```
 
@@ -501,7 +501,7 @@ To test only one specific scenario, modify the `run_test_suite()` call in `main(
 
 ```bash
 # Comment out unwanted tests
-# test_etc_kreuzberg_mount "$variant"
+# test_etc_xberg_mount "$variant"
 test_app_config_mount "$variant"
 # test_custom_path_with_flag "$variant"
 # ... etc

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stage libkreuzberg_ffi into packages/csharp/Kreuzberg/runtimes/<rid>/native/
+# Stage libxberg_ffi into packages/csharp/Xberg/runtimes/<rid>/native/
 # so dotnet test can locate it via runtime asset resolution.
 #
 # Auto-detects host RID. Idempotent.
@@ -34,17 +34,17 @@ MINGW* | MSYS* | CYGWIN*)
   ;;
 esac
 
-src="target/release/libkreuzberg_ffi.${ext}"
+src="target/release/libxberg_ffi.${ext}"
 if [ "$ext" = "dll" ]; then
-  src="target/release/kreuzberg_ffi.${ext}"
+  src="target/release/xberg_ffi.${ext}"
 fi
 
 if [ ! -f "$src" ]; then
-  echo "ERROR: $src not found. Run: cargo build --release -p kreuzberg-ffi" >&2
+  echo "ERROR: $src not found. Run: cargo build --release -p xberg-ffi" >&2
   exit 1
 fi
 
-dst_dir="packages/csharp/Kreuzberg/runtimes/${rid}/native"
+dst_dir="packages/csharp/Xberg/runtimes/${rid}/native"
 mkdir -p "$dst_dir"
 cp -f "$src" "$dst_dir/"
 

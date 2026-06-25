@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\PostProcessorConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\PostProcessorConfig;
 
 $config = new ExtractionConfig(
     postprocessor: new PostProcessorConfig(
@@ -16,7 +16,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Processed content: " . substr($result->getContent(), 0, 100) . "...\n";
 ?>

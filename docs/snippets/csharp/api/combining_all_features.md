@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -32,12 +32,12 @@ var config = new ExtractionConfig
 
 try
 {
-    var result = await KreuzbergLib.ExtractFile("document.pdf", null, config);
+    var result = await XbergLib.ExtractFile("document.pdf", null, config);
     Console.WriteLine($"Content: {result.Content}");
     Console.WriteLine($"Language: {result.Metadata?.LanguageDetection}");
     Console.WriteLine($"Format: {result.OutputFormat}");
 }
-catch (KreuzbergException ex)
+catch (XbergException ex)
 {
     Console.WriteLine($"Extraction error: {ex.Message}");
 }

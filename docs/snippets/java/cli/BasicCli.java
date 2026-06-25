@@ -7,7 +7,7 @@ public final class BasicCli {
   private BasicCli() {}
 
   public static String extractWithCli(String filePath, String outputFormat) throws IOException, InterruptedException {
-    ProcessBuilder pb = new ProcessBuilder("kreuzberg", "extract", filePath, "--format", outputFormat);
+    ProcessBuilder pb = new ProcessBuilder("xberg", "extract", filePath, "--format", outputFormat);
     pb.redirectErrorStream(true);
 
     Process process = pb.start();

@@ -4,8 +4,8 @@ Custom post-processor implementation is not available in the Elixir binding. Pos
 To implement a word count processor in Rust:
 
 ```rust
-use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+use xberg::{Result, ExtractionResult, ExtractionConfig};
 use async_trait::async_trait;
 
 struct WordCountProcessor;

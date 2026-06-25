@@ -32,28 +32,28 @@ tasks:
   build:dev:
     desc: "Build all Rust crates in debug mode"
     cmds:
-      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # Exclude xberg-candle-ocr from --all-features everywhere: metal pulls
       # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
       # --all-features-built on any CI runner.
-      - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [darwin]
       # Note: exclude benchmark-harness on Windows as jemalloc doesn't build with MSVC
-      - cmd: cargo build --locked --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
+      - cmd: cargo build --locked --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:release:
     desc: "Build all Rust crates in release mode"
     cmds:
-      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # Exclude xberg-candle-ocr from --all-features everywhere: metal pulls
       # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
       # --all-features-built on any CI runner.
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [darwin]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:ci:
@@ -61,14 +61,14 @@ tasks:
     env:
       RUSTFLAGS: "-C debuginfo=2"
     cmds:
-      # Exclude kreuzberg-candle-ocr from --all-features everywhere: metal pulls
+      # Exclude xberg-candle-ocr from --all-features everywhere: metal pulls
       # objc2-metal (Apple-only) and cuda pulls cudarc (needs nvcc) — it cannot be
       # --all-features-built on any CI runner.
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [linux]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude kreuzberg-candle-ocr
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude xberg-candle-ocr
         platforms: [darwin]
-      - cmd: cargo build --locked --release --workspace --all-features --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm --exclude benchmark-harness
+      - cmd: cargo build --locked --release --workspace --all-features --exclude xberg-php --exclude xberg-node --exclude xberg-wasm --exclude benchmark-harness
         platforms: [windows]
 
   build:profiling:
@@ -77,44 +77,44 @@ tasks:
       ENABLE_PROFILING: "true"
       RUSTFLAGS: "-g"
     cmds:
-      - cargo build --locked --workspace --release --features full,profiling,api,mcp,otel --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cargo build --locked --workspace --release --features full,profiling,api,mcp,otel --exclude xberg-php --exclude xberg-node --exclude xberg-wasm
       - cargo build --locked --manifest-path tools/benchmark-harness/Cargo.toml --release --features profiling
 
   cli:build:
     desc: "Build CLI binary"
     cmds:
-      - cargo build --locked --release --package kreuzberg-cli {{if .TARGET}}--target {{.TARGET}}{{end}}
+      - cargo build --locked --release --package xberg-cli {{if .TARGET}}--target {{.TARGET}}{{end}}
 
   cli:build:dev:
     desc: "Build CLI binary in debug mode"
     cmds:
-      - cargo build --locked --package kreuzberg-cli
+      - cargo build --locked --package xberg-cli
 
   cli:install:
     desc: "Install CLI binary"
     cmds:
-      - cargo install --path crates/kreuzberg-cli
+      - cargo install --path crates/xberg-cli
 
   ffi:build:
     desc: "Build FFI library for language bindings"
     cmds:
-      - cargo build --locked --release --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
+      - cargo build --locked --release --package xberg-ffi {{.CARGO_ARGS | default ""}}
 
   ffi:build:dev:
     desc: "Build FFI library in debug mode"
     cmds:
-      - cargo build --locked --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
+      - cargo build --locked --package xberg-ffi {{.CARGO_ARGS | default ""}}
 
   ffi:build:ci:
     desc: "Build FFI library in CI mode (with debug info)"
     env:
       RUSTFLAGS: "-C debuginfo=2"
     cmds:
-      - cargo build --locked --release --package kreuzberg-ffi {{.CARGO_ARGS | default ""}}
+      - cargo build --locked --release --package xberg-ffi {{.CARGO_ARGS | default ""}}
 
   wasm:build:all:
     desc: "Build all WASM targets (web/bundler/nodejs/deno) plus the TypeScript wrapper"
-    dir: crates/kreuzberg-wasm
+    dir: crates/xberg-wasm
     cmds:
       - pnpm run build:all
 
@@ -136,19 +136,19 @@ tasks:
   test:quick:
     desc: "Run fast Rust tests (unit tests only)"
     cmds:
-      - cargo test --locked --lib --workspace --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cargo test --locked --lib --workspace --exclude xberg-php --exclude xberg-node --exclude xberg-wasm
 
   lint:
     desc: "Lint Rust code WITH auto-fix (cargo fmt + cargo clippy --fix)"
     cmds:
       - cargo fmt --all
-      - cargo clippy --workspace --fix --allow-dirty --allow-staged --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm
+      - cargo clippy --workspace --fix --allow-dirty --allow-staged --exclude xberg-php --exclude xberg-node --exclude xberg-wasm
 
   lint:check:
     desc: "Lint Rust code WITHOUT auto-fix (check-only)"
     cmds:
       - cargo fmt --all -- --check
-      - cargo clippy --workspace --exclude kreuzberg-php --exclude kreuzberg-node --exclude kreuzberg-wasm -- -D warnings
+      - cargo clippy --workspace --exclude xberg-php --exclude xberg-node --exclude xberg-wasm -- -D warnings
 
   format:
     desc: "Format Rust code (with modifications)"
@@ -202,7 +202,7 @@ tasks:
     desc: "Update Rust dependencies (compatible only)"
     cmds:
       - cargo update
-      - cmd: cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+      - cmd: cargo update --manifest-path packages/ruby/ext/xberg_rb/native/Cargo.toml
         ignore_error: true
 
   upgrade:
@@ -210,9 +210,9 @@ tasks:
     cmds:
       - cargo upgrade --incompatible
       - cargo update
-      - cmd: cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+      - cmd: cargo upgrade --incompatible --manifest-path packages/ruby/ext/xberg_rb/native/Cargo.toml
         ignore_error: true
-      - cmd: cargo update --manifest-path packages/ruby/ext/kreuzberg_rb/native/Cargo.toml
+      - cmd: cargo update --manifest-path packages/ruby/ext/xberg_rb/native/Cargo.toml
         ignore_error: true
 
   e2e:format:
@@ -233,27 +233,27 @@ tasks:
       - cargo test --locked --manifest-path e2e/rust/Cargo.toml --release
 
   check:android:
-    desc: "cargo check kreuzberg-dart + kreuzberg-ffi for Android ABIs (requires ANDROID_NDK_HOME and cargo-ndk)"
+    desc: "cargo check xberg-dart + xberg-ffi for Android ABIs (requires ANDROID_NDK_HOME and cargo-ndk)"
     preconditions:
       - sh: command -v cargo-ndk
         msg: "cargo-ndk not installed. Run: cargo install cargo-ndk --locked"
       - sh: 'test -n "${ANDROID_NDK_HOME:-}"'
         msg: "ANDROID_NDK_HOME is not set. Install Android NDK and export ANDROID_NDK_HOME=<path-to-ndk>"
     cmds:
-      - cargo ndk --target arm64-v8a --platform 21 -- check --locked -p kreuzberg-dart
-      - cargo ndk --target x86_64 --platform 21 -- check --locked -p kreuzberg-dart
-      - cargo ndk --target arm64-v8a --platform 21 -- check --locked -p kreuzberg-ffi
-      - cargo ndk --target x86_64 --platform 21 -- check --locked -p kreuzberg-ffi
+      - cargo ndk --target arm64-v8a --platform 21 -- check --locked -p xberg-dart
+      - cargo ndk --target x86_64 --platform 21 -- check --locked -p xberg-dart
+      - cargo ndk --target arm64-v8a --platform 21 -- check --locked -p xberg-ffi
+      - cargo ndk --target x86_64 --platform 21 -- check --locked -p xberg-ffi
 
   check:ios:
-    desc: "cargo check kreuzberg-dart + kreuzberg-swift for iOS targets (macOS only)"
+    desc: "cargo check xberg-dart + xberg-swift for iOS targets (macOS only)"
     platforms: [darwin]
     cmds:
       - rustup target add aarch64-apple-ios aarch64-apple-ios-sim
-      - cargo check --locked -p kreuzberg-dart --target aarch64-apple-ios
-      - cargo check --locked -p kreuzberg-dart --target aarch64-apple-ios-sim
-      - cargo check --locked -p kreuzberg-swift --target aarch64-apple-ios
-      - cargo check --locked -p kreuzberg-swift --target aarch64-apple-ios-sim
+      - cargo check --locked -p xberg-dart --target aarch64-apple-ios
+      - cargo check --locked -p xberg-dart --target aarch64-apple-ios-sim
+      - cargo check --locked -p xberg-swift --target aarch64-apple-ios
+      - cargo check --locked -p xberg-swift --target aarch64-apple-ios-sim
 
   check:mobile:
     desc: "cargo check Android + iOS mobile targets"

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System.Net.Http;
 using System.Text.Json;
 
@@ -50,7 +50,7 @@ class Program
     static void Main()
     {
         var backend = new CloudOcrBackend(apiKey: "your-api-key");
-        KreuzbergLib.RegisterOcrBackend(backend);
+        XbergLib.RegisterOcrBackend(backend);
     }
 }
 ```

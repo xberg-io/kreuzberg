@@ -27,9 +27,9 @@ from audio and video files.
 | `LargeV3` | Largest         | Highest memory   | 128      |
 
 Models are downloaded from `onnx-community/whisper-{size}` on HuggingFace Hub
-on first use and cached under `{KREUZBERG_CACHE_DIR}/whisper/{size}/` when
-`KREUZBERG_CACHE_DIR` is set, or under the platform cache directory such as
-`~/.cache/kreuzberg/whisper/{size}/` on Linux.
+on first use and cached under `{XBERG_CACHE_DIR}/whisper/{size}/` when
+`XBERG_CACHE_DIR` is set, or under the platform cache directory such as
+`~/.cache/xberg/whisper/{size}/` on Linux.
 
 ## Configuration knobs
 
@@ -55,7 +55,7 @@ first-time callers do not race. Subsequent calls use the local cache.
 
 Set `allow_network = false` and pre-populate the cache directory if you need
 air-gapped deployments. When the model is absent and `allow_network = false`,
-extraction returns a `KreuzbergError::Transcription` with the message
+extraction returns a `XbergError::Transcription` with the message
 `"network access disabled and model not cached"`.
 
 ## Usage
@@ -63,15 +63,15 @@ extraction returns a `KreuzbergError::Transcription` with the message
 Add the feature to `Cargo.toml`:
 
 ```toml
-kreuzberg = { version = "5", features = ["transcription"] }
+xberg = { version = "5", features = ["transcription"] }
 ```
 
 ### Async
 
 ```rust
-use kreuzberg::extract_bytes;
-use kreuzberg::core::config::ExtractionConfig;
-use kreuzberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
+use xberg::extract_bytes;
+use xberg::core::config::ExtractionConfig;
+use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
 
 let config = ExtractionConfig {
     transcription: Some(TranscriptionConfig {
@@ -91,9 +91,9 @@ println!("{}", result.content); // transcript
 ### Sync
 
 ```rust
-use kreuzberg::extract_bytes_sync;
-use kreuzberg::core::config::ExtractionConfig;
-use kreuzberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
+use xberg::extract_bytes_sync;
+use xberg::core::config::ExtractionConfig;
+use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
 
 let config = ExtractionConfig {
     transcription: Some(TranscriptionConfig {

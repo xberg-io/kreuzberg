@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, OcrConfig, PdfConfig};
+use xberg::{extract_file_sync, ExtractionConfig, OcrConfig, PdfConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "tesseract".to_string(),

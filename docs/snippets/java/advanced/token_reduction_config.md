@@ -1,6 +1,6 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.TokenReductionConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.TokenReductionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .tokenReduction(TokenReductionConfig.builder()

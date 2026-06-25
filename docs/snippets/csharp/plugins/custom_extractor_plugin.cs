@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Text.Json;
 
 // NOTE: IDocumentExtractor interface is not available in C# bindings
@@ -25,7 +25,7 @@ class CustomJsonProcessor
         }
         catch (JsonException ex)
         {
-            throw new KreuzbergParsingException($"Failed to parse JSON: {ex.Message}");
+            throw new XbergParsingException($"Failed to parse JSON: {ex.Message}");
         }
     }
 
@@ -62,7 +62,7 @@ class Program
             Console.WriteLine($"Extracted: {result.Content}");
             Console.WriteLine($"MIME type: {result.MimeType}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

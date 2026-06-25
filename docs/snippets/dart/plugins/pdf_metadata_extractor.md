@@ -1,6 +1,6 @@
 <!-- snippet:skip reason="DocumentExtractor trait has no createDocumentExtractorDartImpl factory; custom extractors must be implemented in Rust." -->
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // Custom document extractors cannot be implemented in Dart. Creating a
@@ -9,7 +9,7 @@ Future<void> main() async {
   // createDocumentExtractorDartImpl factory function.
   //
   // Implement the PDF metadata extractor in Rust and register it via a
-  // Rust shim crate that links kreuzberg before the Dart host loads the
+  // Rust shim crate that links xberg before the Dart host loads the
   // dynamic library.
 }
 ```

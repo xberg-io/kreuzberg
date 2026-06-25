@@ -4,26 +4,26 @@ set -euo pipefail
 destination="${1:?destination required}"
 additional_destinations="${2:-}"
 
-if [ -z "${KREUZBERG_PDFIUM_PREBUILT:-}" ]; then
-  echo "KREUZBERG_PDFIUM_PREBUILT is not set" >&2
+if [ -z "${XBERG_PDFIUM_PREBUILT:-}" ]; then
+  echo "XBERG_PDFIUM_PREBUILT is not set" >&2
   exit 1
 fi
 
 case "${RUNNER_OS:-unknown}" in
 Windows)
-  src_path="$KREUZBERG_PDFIUM_PREBUILT/bin/pdfium.dll"
+  src_path="$XBERG_PDFIUM_PREBUILT/bin/pdfium.dll"
   filename="pdfium.dll"
-  lib_dir="$KREUZBERG_PDFIUM_PREBUILT/lib"
+  lib_dir="$XBERG_PDFIUM_PREBUILT/lib"
   if [ -f "$lib_dir/pdfium.dll.lib" ]; then
     cp -f "$lib_dir/pdfium.dll.lib" "$lib_dir/pdfium.lib"
   fi
   ;;
 macOS)
-  src_path="$KREUZBERG_PDFIUM_PREBUILT/lib/libpdfium.dylib"
+  src_path="$XBERG_PDFIUM_PREBUILT/lib/libpdfium.dylib"
   filename="libpdfium.dylib"
   ;;
 Linux)
-  src_path="$KREUZBERG_PDFIUM_PREBUILT/lib/libpdfium.so"
+  src_path="$XBERG_PDFIUM_PREBUILT/lib/libpdfium.so"
   filename="libpdfium.so"
   ;;
 *)

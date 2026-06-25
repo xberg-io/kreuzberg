@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\LanguageDetectionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\LanguageDetectionConfig;
 
 $config = new ExtractionConfig(
     languageDetection: new LanguageDetectionConfig(
@@ -14,7 +14,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Detected language: " . $result->getLanguage() . "\n";
 echo "Confidence: " . $result->getLanguageConfidence() . "\n";

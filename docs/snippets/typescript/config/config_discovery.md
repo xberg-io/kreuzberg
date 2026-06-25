@@ -3,7 +3,7 @@
 Use `ExtractionConfig.discover()` to automatically find and load configuration files from the current directory or parent directories:
 
 ```typescript title="config_discovery.ts"
-import { ExtractionConfig, extractFile } from "@kreuzberg/node";
+import { ExtractionConfig, extractFile } from "@xberg/node";
 
 const config = ExtractionConfig.discover();
 if (config) {
@@ -17,4 +17,4 @@ if (config) {
 }
 ```
 
-The discovery method looks for `kreuzberg.toml`, `kreuzberg.yaml`, or `kreuzberg.json` files starting in the current directory and searching parent directories up to the filesystem root.
+The discovery method looks for `xberg.toml`, `xberg.yaml`, or `xberg.json` files starting in the current directory and searching parent directories up to the filesystem root.

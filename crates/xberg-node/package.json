@@ -1,0 +1,52 @@
+{
+  "name": "@xberg/node",
+  "version": "1.0.0-rc.1",
+  "description": "High-performance document intelligence library",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xberg-io/xberg.git"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    }
+  },
+  "files": ["index.js", "index.d.ts", "*.node"],
+  "optionalDependencies": {
+    "@xberg/node-linux-x64-gnu": "1.0.0-rc.1",
+    "@xberg/node-linux-arm64-gnu": "1.0.0-rc.1",
+    "@xberg/node-linux-x64-musl": "1.0.0-rc.1",
+    "@xberg/node-linux-arm64-musl": "1.0.0-rc.1",
+    "@xberg/node-darwin-x64": "1.0.0-rc.1",
+    "@xberg/node-darwin-arm64": "1.0.0-rc.1",
+    "@xberg/node-win32-x64-msvc": "1.0.0-rc.1",
+    "@xberg/node-win32-arm64-msvc": "1.0.0-rc.1"
+  },
+  "napi": {
+    "packageName": "@xberg/node",
+    "binaryName": "xberg-node",
+    "targets": [
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "aarch64-unknown-linux-musl",
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc",
+      "aarch64-pc-windows-msvc"
+    ]
+  },
+  "scripts": {
+    "build": "npx --yes -p @napi-rs/cli@^3.6.2 napi build --platform --release",
+    "artifacts": "npx --yes -p @napi-rs/cli@^3.6.2 napi artifacts",
+    "prepublishOnly": "npx --yes -p @napi-rs/cli@^3.6.2 napi prepublish -t npm --skip-optional-publish"
+  },
+  "engines": { "node": ">= 18" },
+  "publishConfig": { "access": "public" },
+  "devDependencies": { "@napi-rs/cli": "^3.6.2" }
+}

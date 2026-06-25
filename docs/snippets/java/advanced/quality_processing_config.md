@@ -1,5 +1,5 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
+import dev.xberg.ExtractionConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .enableQualityProcessing(true)

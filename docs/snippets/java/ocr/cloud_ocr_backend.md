@@ -1,5 +1,5 @@
 ```java title="Java"
-import dev.kreuzberg.*;
+import dev.xberg.*;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -42,11 +42,11 @@ public class CloudOcrExample {
         };
 
         try (Arena arena = Arena.ofConfined()) {
-            Kreuzberg.registerOcrBackend("cloud-ocr", cloudOcr, arena);
+            Xberg.registerOcrBackend("cloud-ocr", cloudOcr, arena);
 
             // Use custom OCR backend in extraction
             // Note: Requires ExtractionConfig with OCR enabled
-            ExtractionResult result = Kreuzberg.extractFileSync("scanned.pdf");
+            ExtractionResult result = Xberg.extractFileSync("scanned.pdf");
         } catch (Exception e) {
             e.printStackTrace();
         }

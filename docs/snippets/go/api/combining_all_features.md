@@ -4,27 +4,27 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
 	trueVal := true
 	maxChars := uint(1000)
 	overlap := uint(200)
-	config := kreuzberg.ExtractionConfig{
+	config := xberg.ExtractionConfig{
 		UseCache:                &trueVal,
 		EnableQualityProcessing: &trueVal,
-		Ocr: &kreuzberg.OcrConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:   "tesseract",
 			Language:  "eng",
 		},
-		Chunking: &kreuzberg.ChunkingConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &overlap,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, config)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -11,7 +11,7 @@ var config = new ExtractionConfig
     },
 };
 
-var result = await KreuzbergLib.ExtractFile("research_paper.pdf", null, config);
+var result = await XbergLib.ExtractFile("research_paper.pdf", null, config);
 
 foreach (var keyword in result.ExtractedKeywords ?? new List<Keyword>())
 {

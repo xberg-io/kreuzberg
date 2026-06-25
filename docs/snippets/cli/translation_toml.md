@@ -1,4 +1,4 @@
-```toml title="kreuzberg.toml"
+```toml title="xberg.toml"
 [translation]
 target_lang = "de"
 preserve_markup = false

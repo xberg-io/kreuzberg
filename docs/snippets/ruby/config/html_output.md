@@ -1,14 +1,14 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   output_format: 'html',
-  html_output: Kreuzberg::HtmlOutputConfig.new(
+  html_output: Xberg::HtmlOutputConfig.new(
     theme: 'git_hub',
     embed_css: true
   )
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', nil, config)
+result = Xberg.extract_file_sync('document.pdf', nil, config)
 puts result.content # HTML with kb-* classes
 ```

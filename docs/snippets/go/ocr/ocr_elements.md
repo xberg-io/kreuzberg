@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	cfg := kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	cfg := xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:  "paddle-ocr",
 			Language: "en",
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("scanned.pdf", nil, cfg)
+	result, err := xberg.ExtractFileSync("scanned.pdf", nil, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

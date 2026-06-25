@@ -1,6 +1,6 @@
 # Creating Plugins
 
-Extend Kreuzberg with custom extractors, post-processors, OCR backends, and
+Extend Xberg with custom extractors, post-processors, OCR backends, and
 validators registered globally for use across all extraction calls.
 
 !!! Note "Wasm" Custom plugins are not supported in Wasm environments. Use Python, Rust, or other native bindings.
@@ -150,12 +150,12 @@ Register the backend and set its name in `OcrConfig`:
 === "Python"
 
     ```python title="Python"
-    from kreuzberg import register_ocr_backend, unregister_ocr_backend
+    from xberg import register_ocr_backend, unregister_ocr_backend
 
     backend = CloudOcrBackend(api_key="your-api-key")
     register_ocr_backend(backend)
 
-    from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig
+    from xberg import extract_file_sync, ExtractionConfig, OcrConfig
 
     config = ExtractionConfig(ocr=OcrConfig(backend="cloud-ocr", language="eng"))
     result = extract_file_sync("scanned.pdf", config=config)

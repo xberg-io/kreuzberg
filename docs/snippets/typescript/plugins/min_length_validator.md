@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { registerValidator, ValidationError, type ExtractionResult } from "@kreuzberg/node";
+import { registerValidator, ValidationError, type ExtractionResult } from "@xberg/node";
 
 class MinLengthValidator {
   private readonly minLength: number;

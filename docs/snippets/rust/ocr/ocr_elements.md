@@ -1,9 +1,9 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, OcrConfig};
-use kreuzberg::types::OcrElementConfig;
+use xberg::{extract_file, ExtractionConfig, OcrConfig};
+use xberg::types::OcrElementConfig;
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "paddleocr".to_string(),

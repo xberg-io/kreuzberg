@@ -47,7 +47,7 @@ Classify each page of a document against a caller-supplied label set. Single-lab
 Override the default classification prompt with a Minijinja template:
 
 ```python title="Python"
-from kreuzberg import ExtractionConfig, PageClassificationConfig, LlmConfig
+from xberg import ExtractionConfig, PageClassificationConfig, LlmConfig
 
 config = ExtractionConfig(
     page_classification=PageClassificationConfig(
@@ -93,7 +93,7 @@ Pick any liter-llm provider. The provider matrix from [LLM Integration](llm-inte
 API-key precedence chain:
 
 1. `PageClassificationConfig.llm.api_key`
-2. `KREUZBERG_LLM_API_KEY`
+2. `XBERG_LLM_API_KEY`
 3. Per-provider env var (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …)
 
 ## Related

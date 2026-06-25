@@ -1,5 +1,5 @@
 ```csharp title="Element-Based Output (C#)"
-using Kreuzberg;
+using Xberg;
 
 // Configure element-based output
 var config = new ExtractionConfig
@@ -8,7 +8,7 @@ var config = new ExtractionConfig
 };
 
 // Extract document
-var result = Kreuzberg.ExtractFileSync("document.pdf", config);
+var result = Xberg.ExtractFileSync("document.pdf", config);
 
 // Access elements
 foreach (var element in result.Elements)

@@ -7,13 +7,13 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -56,18 +56,18 @@ func qualityScoreValidator(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register the validator with priority 50
-	if err := kreuzberg.RegisterValidator("quality_score_validator", 50,
+	if err := xberg.RegisterValidator("quality_score_validator", 50,
 		(C.ValidatorCallback)(C.qualityScoreValidator)); err != nil {
 		log.Fatalf("failed to register validator: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterValidator("quality_score_validator"); err != nil {
+		if err := xberg.UnregisterValidator("quality_score_validator"); err != nil {
 			log.Printf("warning: failed to unregister validator: %v", err)
 		}
 	}()
 
 	// Extract and validate
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extraction or validation failed: %v", err)
 	}

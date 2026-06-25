@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, SummarizationConfig};
-use kreuzberg::types::summary::SummaryStrategy;
+use xberg::{extract_file, ExtractionConfig, SummarizationConfig};
+use xberg::types::summary::SummaryStrategy;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

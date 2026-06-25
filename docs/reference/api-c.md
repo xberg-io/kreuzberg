@@ -2,11 +2,11 @@
 title: "C API Reference"
 ---
 
-## C API Reference <span class="version-badge">v5.0.0-rc.36</span>
+## C API Reference <span class="version-badge">v1.0.0-rc.1</span>
 
 ### Functions
 
-#### kreuzberg_extract_bytes()
+#### xberg_extract_bytes()
 
 Extract content from a byte array.
 
@@ -24,19 +24,19 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Validation` if MIME type is invalid.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `XbergError.Validation` if MIME type is invalid.
+Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_extract_bytes(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_extract_bytes(const uint8_t* content, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_extract_bytes((const uint8_t *)"data", "value", NULL);
+XbergExtractionResult *result = xberg_extract_bytes((const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -45,15 +45,15 @@ KreuzbergExtractionResult *result = kreuzberg_extract_bytes((const uint8_t *)"da
 |------|------|----------|-------------|
 | `content` | `const uint8_t*` | Yes | The byte array to extract |
 | `mime_type` | `const char*` | Yes | MIME type of the content |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_file()
+#### xberg_extract_file()
 
 Extract content from a file.
 
@@ -72,19 +72,19 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `XbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+Returns `XbergError.UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_extract_file(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_extract_file(const char* path, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_extract_file("value", "value", NULL);
+XbergExtractionResult *result = xberg_extract_file("value", "value", NULL);
 ```
 
 **Parameters:**
@@ -93,15 +93,15 @@ KreuzbergExtractionResult *result = kreuzberg_extract_file("value", "value", NUL
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to the file to extract |
 | `mime_type` | `const char**` | No | Optional MIME type override. If None, will be auto-detected |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_file_sync()
+#### xberg_extract_file_sync()
 
 Synchronous wrapper for `extract_file`.
 
@@ -117,13 +117,13 @@ use a truly synchronous extraction approach instead.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_extract_file_sync(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_extract_file_sync(const char* path, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_extract_file_sync("value", "value", NULL);
+XbergExtractionResult *result = xberg_extract_file_sync("value", "value", NULL);
 ```
 
 **Parameters:**
@@ -132,15 +132,15 @@ KreuzbergExtractionResult *result = kreuzberg_extract_file_sync("value", "value"
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to the file |
 | `mime_type` | `const char**` | No | The mime type |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_bytes_sync()
+#### xberg_extract_bytes_sync()
 
 Synchronous wrapper for `extract_bytes`.
 
@@ -153,13 +153,13 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
+XbergExtractionResult *result = xberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -168,15 +168,15 @@ KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t 
 |------|------|----------|-------------|
 | `content` | `const uint8_t*` | Yes | The content to process |
 | `mime_type` | `const char*` | Yes | The mime type |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_bytes_sync()
+#### xberg_extract_bytes_sync()
 
 Synchronous wrapper for `extract_bytes` (WASM-compatible version).
 
@@ -186,13 +186,13 @@ It calls `extract_bytes_sync_impl()` to perform the extraction.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
+XbergExtractionResult *result = xberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -201,15 +201,15 @@ KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t 
 |------|------|----------|-------------|
 | `content` | `const uint8_t*` | Yes | The content to process |
 | `mime_type` | `const char*` | Yes | The mime type |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_batch_extract_files_sync()
+#### xberg_batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
 
@@ -219,29 +219,29 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_batch_extract_files_sync(KreuzbergBatchFileItem* items, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_batch_extract_files_sync(XbergBatchFileItem* items, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult* result = kreuzberg_batch_extract_files_sync(NULL, NULL);
+XbergExtractionResult* result = xberg_batch_extract_files_sync(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `items` | `KreuzbergBatchFileItem*` | Yes | The items |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `items` | `XbergBatchFileItem*` | Yes | The items |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult*`
+**Returns:** `XbergExtractionResult*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_batch_extract_bytes_sync()
+#### xberg_batch_extract_bytes_sync()
 
 Synchronous wrapper for `batch_extract_bytes`.
 
@@ -253,29 +253,29 @@ that iterates through items and calls `extract_bytes_sync()`.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_batch_extract_bytes_sync(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_batch_extract_bytes_sync(XbergBatchBytesItem* items, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes_sync(NULL, NULL);
+XbergExtractionResult* result = xberg_batch_extract_bytes_sync(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `items` | `KreuzbergBatchBytesItem*` | Yes | The items |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `items` | `XbergBatchBytesItem*` | Yes | The items |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult*`
+**Returns:** `XbergExtractionResult*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_batch_extract_bytes_sync()
+#### xberg_batch_extract_bytes_sync()
 
 Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
 
@@ -284,29 +284,29 @@ Iterates through items sequentially, applying per-file config overrides.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_batch_extract_bytes_sync(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_batch_extract_bytes_sync(XbergBatchBytesItem* items, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes_sync(NULL, NULL);
+XbergExtractionResult* result = xberg_batch_extract_bytes_sync(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `items` | `KreuzbergBatchBytesItem*` | Yes | The items |
-| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+| `items` | `XbergBatchBytesItem*` | Yes | The items |
+| `config` | `XbergExtractionConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergExtractionResult*`
+**Returns:** `XbergExtractionResult*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_batch_extract_files()
+#### xberg_batch_extract_files()
 
 Extract content from multiple files concurrently.
 
@@ -340,29 +340,29 @@ Per-file configuration overrides:
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_batch_extract_files(KreuzbergBatchFileItem* items, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_batch_extract_files(XbergBatchFileItem* items, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult* result = kreuzberg_batch_extract_files(NULL, NULL);
+XbergExtractionResult* result = xberg_batch_extract_files(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `items` | `KreuzbergBatchFileItem*` | Yes | Vector of `BatchFileItem` structs, each containing a path and optional |
-| `config` | `KreuzbergExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
+| `items` | `XbergBatchFileItem*` | Yes | Vector of `BatchFileItem` structs, each containing a path and optional |
+| `config` | `XbergExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
 
-**Returns:** `KreuzbergExtractionResult*`
+**Returns:** `XbergExtractionResult*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_batch_extract_bytes()
+#### xberg_batch_extract_bytes()
 
 Extract content from multiple byte arrays concurrently.
 
@@ -390,29 +390,29 @@ Per-item configuration overrides:
 **Signature:**
 
 ```c
-KreuzbergExtractionResult* kreuzberg_batch_extract_bytes(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
+XbergExtractionResult* xberg_batch_extract_bytes(XbergBatchBytesItem* items, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes(NULL, NULL);
+XbergExtractionResult* result = xberg_batch_extract_bytes(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `items` | `KreuzbergBatchBytesItem*` | Yes | Vector of `BatchBytesItem` structs, each containing content bytes, |
-| `config` | `KreuzbergExtractionConfig` | Yes | Batch-level extraction configuration |
+| `items` | `XbergBatchBytesItem*` | Yes | Vector of `BatchBytesItem` structs, each containing content bytes, |
+| `config` | `XbergExtractionConfig` | Yes | Batch-level extraction configuration |
 
-**Returns:** `KreuzbergExtractionResult*`
+**Returns:** `XbergExtractionResult*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_detect_mime_type_from_bytes()
+#### xberg_detect_mime_type_from_bytes()
 
 Detect MIME type from raw file bytes.
 
@@ -428,18 +428,18 @@ The detected MIME type string.
 
 **Errors:**
 
-Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
+Returns `XbergError.UnsupportedFormat` if MIME type cannot be determined.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_detect_mime_type_from_bytes(const uint8_t* content);
+const char* xberg_detect_mime_type_from_bytes(const uint8_t* content);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_detect_mime_type_from_bytes((const uint8_t *)"data");
+const char *result = xberg_detect_mime_type_from_bytes((const uint8_t *)"data");
 ```
 
 **Parameters:**
@@ -454,7 +454,7 @@ const char *result = kreuzberg_detect_mime_type_from_bytes((const uint8_t *)"dat
 
 ---
 
-#### kreuzberg_get_extensions_for_mime()
+#### xberg_get_extensions_for_mime()
 
 Get file extensions for a given MIME type.
 
@@ -467,13 +467,13 @@ A vector of file extensions (without leading dot) for the MIME type.
 **Signature:**
 
 ```c
-const char** kreuzberg_get_extensions_for_mime(const char* mime_type);
+const char** xberg_get_extensions_for_mime(const char* mime_type);
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_get_extensions_for_mime("value");
+const char** result = xberg_get_extensions_for_mime("value");
 ```
 
 **Parameters:**
@@ -488,11 +488,11 @@ const char** result = kreuzberg_get_extensions_for_mime("value");
 
 ---
 
-#### kreuzberg_list_supported_formats()
+#### xberg_list_supported_formats()
 
 List all supported document formats.
 
-Returns every file extension Kreuzberg recognizes together with its
+Returns every file extension Xberg recognizes together with its
 corresponding MIME type, derived from the central format registry.
 Formats that have no registered file extension (such as source code,
 which is detected dynamically) are not included.
@@ -506,20 +506,20 @@ A vector of `SupportedFormat` entries sorted by extension.
 **Signature:**
 
 ```c
-KreuzbergSupportedFormat* kreuzberg_list_supported_formats();
+XbergSupportedFormat* xberg_list_supported_formats();
 ```
 
 **Example:**
 
 ```c
-KreuzbergSupportedFormat* result = kreuzberg_list_supported_formats();
+XbergSupportedFormat* result = xberg_list_supported_formats();
 ```
 
-**Returns:** `KreuzbergSupportedFormat*`
+**Returns:** `XbergSupportedFormat*`
 
 ---
 
-#### kreuzberg_detect_qr_codes()
+#### xberg_detect_qr_codes()
 
 Detect QR codes in the bytes of an `ExtractedImage`.
 
@@ -543,13 +543,13 @@ from the four corner points of the grid.
 **Signature:**
 
 ```c
-KreuzbergQrCode* kreuzberg_detect_qr_codes(const uint8_t* image_bytes, const char* format_hint);
+XbergQrCode* xberg_detect_qr_codes(const uint8_t* image_bytes, const char* format_hint);
 ```
 
 **Example:**
 
 ```c
-KreuzbergQrCode* result = kreuzberg_detect_qr_codes((const uint8_t *)"data", "value");
+XbergQrCode* result = xberg_detect_qr_codes((const uint8_t *)"data", "value");
 ```
 
 **Parameters:**
@@ -559,11 +559,11 @@ KreuzbergQrCode* result = kreuzberg_detect_qr_codes((const uint8_t *)"data", "va
 | `image_bytes` | `const uint8_t*` | Yes | The image bytes |
 | `format_hint` | `const char**` | No | The  format hint |
 
-**Returns:** `KreuzbergQrCode*`
+**Returns:** `XbergQrCode*`
 
 ---
 
-#### kreuzberg_clear_embedding_backends()
+#### xberg_clear_embedding_backends()
 
 Clear all embedding backends from the global registry.
 
@@ -577,13 +577,13 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 **Signature:**
 
 ```c
-void kreuzberg_clear_embedding_backends();
+void xberg_clear_embedding_backends();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_embedding_backends();
+xberg_clear_embedding_backends();
 ```
 
 **Returns:** No return value.
@@ -592,23 +592,23 @@ kreuzberg_clear_embedding_backends();
 
 ---
 
-#### kreuzberg_list_embedding_backends()
+#### xberg_list_embedding_backends()
 
 List the names of all registered embedding backends.
 
-Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+Used by `xberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
 **Signature:**
 
 ```c
-const char** kreuzberg_list_embedding_backends();
+const char** xberg_list_embedding_backends();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_embedding_backends();
+const char** result = xberg_list_embedding_backends();
 ```
 
 **Returns:** `const char**`
@@ -617,20 +617,20 @@ const char** result = kreuzberg_list_embedding_backends();
 
 ---
 
-#### kreuzberg_list_document_extractors()
+#### xberg_list_document_extractors()
 
 List names of all registered document extractors.
 
 **Signature:**
 
 ```c
-const char** kreuzberg_list_document_extractors();
+const char** xberg_list_document_extractors();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_document_extractors();
+const char** result = xberg_list_document_extractors();
 ```
 
 **Returns:** `const char**`
@@ -639,7 +639,7 @@ const char** result = kreuzberg_list_document_extractors();
 
 ---
 
-#### kreuzberg_clear_document_extractors()
+#### xberg_clear_document_extractors()
 
 Clear all document extractors from the global registry.
 
@@ -653,13 +653,13 @@ Calls `shutdown()` on every registered extractor, then empties the registry.
 **Signature:**
 
 ```c
-void kreuzberg_clear_document_extractors();
+void xberg_clear_document_extractors();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_document_extractors();
+xberg_clear_document_extractors();
 ```
 
 **Returns:** No return value.
@@ -668,7 +668,7 @@ kreuzberg_clear_document_extractors();
 
 ---
 
-#### kreuzberg_list_ocr_backends()
+#### xberg_list_ocr_backends()
 
 List all registered OCR backends.
 
@@ -681,13 +681,13 @@ A vector of OCR backend names.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_ocr_backends();
+const char** xberg_list_ocr_backends();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_ocr_backends();
+const char** result = xberg_list_ocr_backends();
 ```
 
 **Returns:** `const char**`
@@ -696,7 +696,7 @@ const char** result = kreuzberg_list_ocr_backends();
 
 ---
 
-#### kreuzberg_clear_ocr_backends()
+#### xberg_clear_ocr_backends()
 
 Clear all OCR backends from the global registry.
 
@@ -710,13 +710,13 @@ Removes all OCR backends and calls their `shutdown()` methods.
 **Signature:**
 
 ```c
-void kreuzberg_clear_ocr_backends();
+void xberg_clear_ocr_backends();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_ocr_backends();
+xberg_clear_ocr_backends();
 ```
 
 **Returns:** No return value.
@@ -725,7 +725,7 @@ kreuzberg_clear_ocr_backends();
 
 ---
 
-#### kreuzberg_register_builtin()
+#### xberg_register_builtin()
 
 Register every built-in post-processor enabled by the active feature set.
 
@@ -738,13 +738,13 @@ safe to call on any target.
 **Signature:**
 
 ```c
-void kreuzberg_register_builtin();
+void xberg_register_builtin();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_register_builtin();
+xberg_register_builtin();
 ```
 
 **Returns:** No return value.
@@ -753,7 +753,7 @@ kreuzberg_register_builtin();
 
 ---
 
-#### kreuzberg_list_post_processors()
+#### xberg_list_post_processors()
 
 List all registered post-processor names.
 
@@ -768,13 +768,13 @@ global registry.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_post_processors();
+const char** xberg_list_post_processors();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_post_processors();
+const char** result = xberg_list_post_processors();
 ```
 
 **Returns:** `const char**`
@@ -783,20 +783,20 @@ const char** result = kreuzberg_list_post_processors();
 
 ---
 
-#### kreuzberg_clear_post_processors()
+#### xberg_clear_post_processors()
 
 Remove all registered post-processors.
 
 **Signature:**
 
 ```c
-void kreuzberg_clear_post_processors();
+void xberg_clear_post_processors();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_post_processors();
+xberg_clear_post_processors();
 ```
 
 **Returns:** No return value.
@@ -805,7 +805,7 @@ kreuzberg_clear_post_processors();
 
 ---
 
-#### kreuzberg_list_renderers()
+#### xberg_list_renderers()
 
 List names of all registered renderers.
 
@@ -816,13 +816,13 @@ Returns an error if the registry lock is poisoned.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_renderers();
+const char** xberg_list_renderers();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_renderers();
+const char** result = xberg_list_renderers();
 ```
 
 **Returns:** `const char**`
@@ -831,7 +831,7 @@ const char** result = kreuzberg_list_renderers();
 
 ---
 
-#### kreuzberg_clear_renderers()
+#### xberg_clear_renderers()
 
 Clear all renderers from the global registry.
 
@@ -846,13 +846,13 @@ Returns an error if the registry lock is poisoned.
 **Signature:**
 
 ```c
-void kreuzberg_clear_renderers();
+void xberg_clear_renderers();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_renderers();
+xberg_clear_renderers();
 ```
 
 **Returns:** No return value.
@@ -861,7 +861,7 @@ kreuzberg_clear_renderers();
 
 ---
 
-#### kreuzberg_clear_reranker_backends()
+#### xberg_clear_reranker_backends()
 
 Clear all reranker backends from the global registry.
 
@@ -877,13 +877,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-void kreuzberg_clear_reranker_backends();
+void xberg_clear_reranker_backends();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_reranker_backends();
+xberg_clear_reranker_backends();
 ```
 
 **Returns:** No return value.
@@ -892,11 +892,11 @@ kreuzberg_clear_reranker_backends();
 
 ---
 
-#### kreuzberg_list_reranker_backends()
+#### xberg_list_reranker_backends()
 
 List the names of all registered reranker backends.
 
-Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
+Used by `xberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
 Since v5.0.
@@ -904,13 +904,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_reranker_backends();
+const char** xberg_list_reranker_backends();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_reranker_backends();
+const char** result = xberg_list_reranker_backends();
 ```
 
 **Returns:** `const char**`
@@ -919,20 +919,20 @@ const char** result = kreuzberg_list_reranker_backends();
 
 ---
 
-#### kreuzberg_list_validators()
+#### xberg_list_validators()
 
 List names of all registered validators.
 
 **Signature:**
 
 ```c
-const char** kreuzberg_list_validators();
+const char** xberg_list_validators();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_validators();
+const char** result = xberg_list_validators();
 ```
 
 **Returns:** `const char**`
@@ -941,20 +941,20 @@ const char** result = kreuzberg_list_validators();
 
 ---
 
-#### kreuzberg_clear_validators()
+#### xberg_clear_validators()
 
 Remove all registered validators.
 
 **Signature:**
 
 ```c
-void kreuzberg_clear_validators();
+void xberg_clear_validators();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_clear_validators();
+xberg_clear_validators();
 ```
 
 **Returns:** No return value.
@@ -963,7 +963,7 @@ kreuzberg_clear_validators();
 
 ---
 
-#### kreuzberg_classify_pages()
+#### xberg_classify_pages()
 
 Run page classification against an extraction result.
 
@@ -979,21 +979,21 @@ a half-populated vector.
 **Signature:**
 
 ```c
-void kreuzberg_classify_pages(KreuzbergExtractionResult result, KreuzbergPageClassificationConfig config);
+void xberg_classify_pages(XbergExtractionResult result, XbergPageClassificationConfig config);
 ```
 
 **Example:**
 
 ```c
-kreuzberg_classify_pages(NULL, NULL);
+xberg_classify_pages(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `config` | `XbergPageClassificationConfig` | Yes | The configuration options |
 
 **Returns:** No return value.
 
@@ -1001,7 +1001,7 @@ kreuzberg_classify_pages(NULL, NULL);
 
 ---
 
-#### kreuzberg_classify_text()
+#### xberg_classify_text()
 
 Classify a single piece of text without requiring an `ExtractionResult`.
 
@@ -1017,13 +1017,13 @@ or any error returned by prompt rendering or the underlying LLM call.
 **Signature:**
 
 ```c
-KreuzbergClassificationLabel* kreuzberg_classify_text(const char* text, KreuzbergPageClassificationConfig config);
+XbergClassificationLabel* xberg_classify_text(const char* text, XbergPageClassificationConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergClassificationLabel* result = kreuzberg_classify_text("value", NULL);
+XbergClassificationLabel* result = xberg_classify_text("value", NULL);
 ```
 
 **Parameters:**
@@ -1031,15 +1031,15 @@ KreuzbergClassificationLabel* result = kreuzberg_classify_text("value", NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text |
-| `config` | `KreuzbergPageClassificationConfig` | Yes | The configuration options |
+| `config` | `XbergPageClassificationConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergClassificationLabel*`
+**Returns:** `XbergClassificationLabel*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_classify_document()
+#### xberg_classify_document()
 
 Classify a single document (as multiple pages or a single text block).
 
@@ -1061,13 +1061,13 @@ Returns an error if `config.labels` is empty or if LLM calls fail.
 **Signature:**
 
 ```c
-KreuzbergClassificationLabel* kreuzberg_classify_document(const char** pages, KreuzbergPageClassificationConfig config);
+XbergClassificationLabel* xberg_classify_document(const char** pages, XbergPageClassificationConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergClassificationLabel* result = kreuzberg_classify_document(NULL, NULL);
+XbergClassificationLabel* result = xberg_classify_document(NULL, NULL);
 ```
 
 **Parameters:**
@@ -1075,31 +1075,31 @@ KreuzbergClassificationLabel* result = kreuzberg_classify_document(NULL, NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `pages` | `const char**` | Yes | Slice of page texts to classify. Each page is classified independently |
-| `config` | `KreuzbergPageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
+| `config` | `XbergPageClassificationConfig` | Yes | Classification configuration including labels and LLM settings. |
 
-**Returns:** `KreuzbergClassificationLabel*`
+**Returns:** `XbergClassificationLabel*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_download_model()
+#### xberg_download_model()
 
-Eagerly download a NER model into the kreuzberg cache.
+Eagerly download a NER model into the xberg cache.
 
 `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
-CLI flag `kreuzberg warm --ner` delegates here.
+CLI flag `xberg warm --ner` delegates here.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+const char* xberg_download_model(const char* name, const char* cache_dir);
 ```
 
 **Example:**
 
 ```c
-const char* result = kreuzberg_download_model("value", "value");
+const char* result = xberg_download_model("value", "value");
 ```
 
 **Parameters:**
@@ -1115,18 +1115,18 @@ const char* result = kreuzberg_download_model("value", "value");
 
 ---
 
-#### kreuzberg_download_model()
+#### xberg_download_model()
 
 **Signature:**
 
 ```c
-const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+const char* xberg_download_model(const char* name, const char* cache_dir);
 ```
 
 **Example:**
 
 ```c
-const char* result = kreuzberg_download_model("value", "value");
+const char* result = xberg_download_model("value", "value");
 ```
 
 **Parameters:**
@@ -1142,96 +1142,96 @@ const char* result = kreuzberg_download_model("value", "value");
 
 ---
 
-#### kreuzberg_default_model_name()
+#### xberg_default_model_name()
 
 Pinned default NER model identifier.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_default_model_name();
+const char* xberg_default_model_name();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_default_model_name();
+const char *result = xberg_default_model_name();
 ```
 
 **Returns:** `const char*`
 
 ---
 
-#### kreuzberg_default_model_name()
+#### xberg_default_model_name()
 
 **Signature:**
 
 ```c
-const char* kreuzberg_default_model_name();
+const char* xberg_default_model_name();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_default_model_name();
+const char *result = xberg_default_model_name();
 ```
 
 **Returns:** `const char*`
 
 ---
 
-#### kreuzberg_known_models()
+#### xberg_known_models()
 
-All NER models kreuzberg knows about (used by `--all-ner-models`).
+All NER models xberg knows about (used by `--all-ner-models`).
 
 **Signature:**
 
 ```c
-const char** kreuzberg_known_models();
+const char** xberg_known_models();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_known_models();
+const char** result = xberg_known_models();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_known_models()
+#### xberg_known_models()
 
 **Signature:**
 
 ```c
-const char** kreuzberg_known_models();
+const char** xberg_known_models();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_known_models();
+const char** result = xberg_known_models();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_download_model()
+#### xberg_download_model()
 
-Download a NER model into the kreuzberg cache.
+Download a NER model into the xberg cache.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+const char* xberg_download_model(const char* name, const char* cache_dir);
 ```
 
 **Example:**
 
 ```c
-const char* result = kreuzberg_download_model("value", "value");
+const char* result = xberg_download_model("value", "value");
 ```
 
 **Parameters:**
@@ -1247,47 +1247,47 @@ const char* result = kreuzberg_download_model("value", "value");
 
 ---
 
-#### kreuzberg_default_model_name()
+#### xberg_default_model_name()
 
 Default NER model identifier.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_default_model_name();
+const char* xberg_default_model_name();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_default_model_name();
+const char *result = xberg_default_model_name();
 ```
 
 **Returns:** `const char*`
 
 ---
 
-#### kreuzberg_known_models()
+#### xberg_known_models()
 
-All NER models kreuzberg knows about.
+All NER models xberg knows about.
 
 **Signature:**
 
 ```c
-const char** kreuzberg_known_models();
+const char** xberg_known_models();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_known_models();
+const char** result = xberg_known_models();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_redact()
+#### xberg_redact()
 
 Run pattern redaction (and optional NER-driven redaction) over `result` and
 rewrite every textual field. Populates `result.redaction_report`.
@@ -1295,21 +1295,21 @@ rewrite every textual field. Populates `result.redaction_report`.
 **Signature:**
 
 ```c
-void kreuzberg_redact(KreuzbergExtractionResult result, KreuzbergRedactionConfig config);
+void xberg_redact(XbergExtractionResult result, XbergRedactionConfig config);
 ```
 
 **Example:**
 
 ```c
-kreuzberg_redact(NULL, NULL);
+xberg_redact(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `config` | `KreuzbergRedactionConfig` | Yes | The configuration options |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `config` | `XbergRedactionConfig` | Yes | The configuration options |
 
 **Returns:** No return value.
 
@@ -1317,7 +1317,7 @@ kreuzberg_redact(NULL, NULL);
 
 ---
 
-#### kreuzberg_summarize()
+#### xberg_summarize()
 
 Score and return the top-N sentences from `text`, joined in original order.
 
@@ -1329,13 +1329,13 @@ pass `NULL` (or an unknown code) to fall back to English.
 **Signature:**
 
 ```c
-const char** kreuzberg_summarize(const char* text, const char* language, uint32_t max_tokens);
+const char** xberg_summarize(const char* text, const char* language, uint32_t max_tokens);
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_summarize("value", "value", 42);
+const char** result = xberg_summarize("value", "value", 42);
 ```
 
 **Parameters:**
@@ -1350,7 +1350,7 @@ const char** result = kreuzberg_summarize("value", "value", 42);
 
 ---
 
-#### kreuzberg_token_count()
+#### xberg_token_count()
 
 Count whitespace-separated tokens (used for token-budget bookkeeping by
 callers).
@@ -1358,13 +1358,13 @@ callers).
 **Signature:**
 
 ```c
-uint32_t kreuzberg_token_count(const char* text);
+uint32_t xberg_token_count(const char* text);
 ```
 
 **Example:**
 
 ```c
-uint32_t result = kreuzberg_token_count("value");
+uint32_t result = xberg_token_count("value");
 ```
 
 **Parameters:**
@@ -1377,7 +1377,7 @@ uint32_t result = kreuzberg_token_count("value");
 
 ---
 
-#### kreuzberg_translate_result()
+#### xberg_translate_result()
 
 Translate the extraction result in place.
 
@@ -1389,21 +1389,21 @@ every chunk's `content` field. Every LLM call's usage is appended to
 **Signature:**
 
 ```c
-void kreuzberg_translate_result(KreuzbergExtractionResult result, KreuzbergTranslationConfig config);
+void xberg_translate_result(XbergExtractionResult result, XbergTranslationConfig config);
 ```
 
 **Example:**
 
 ```c
-kreuzberg_translate_result(NULL, NULL);
+xberg_translate_result(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `config` | `KreuzbergTranslationConfig` | Yes | The configuration options |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `config` | `XbergTranslationConfig` | Yes | The configuration options |
 
 **Returns:** No return value.
 
@@ -1411,7 +1411,7 @@ kreuzberg_translate_result(NULL, NULL);
 
 ---
 
-#### kreuzberg_find_footnote_anchors()
+#### xberg_find_footnote_anchors()
 
 Find all footnote anchor references in markdown text.
 
@@ -1425,13 +1425,13 @@ A vector of `FootnoteAnchor` entries, each with the label and byte offset.
 **Signature:**
 
 ```c
-KreuzbergFootnoteAnchor* kreuzberg_find_footnote_anchors(const char* markdown);
+XbergFootnoteAnchor* xberg_find_footnote_anchors(const char* markdown);
 ```
 
 **Example:**
 
 ```c
-KreuzbergFootnoteAnchor* result = kreuzberg_find_footnote_anchors("value");
+XbergFootnoteAnchor* result = xberg_find_footnote_anchors("value");
 ```
 
 **Parameters:**
@@ -1440,11 +1440,11 @@ KreuzbergFootnoteAnchor* result = kreuzberg_find_footnote_anchors("value");
 |------|------|----------|-------------|
 | `markdown` | `const char*` | Yes | The markdown text to search |
 
-**Returns:** `KreuzbergFootnoteAnchor*`
+**Returns:** `XbergFootnoteAnchor*`
 
 ---
 
-#### kreuzberg_parse_footnote_definitions()
+#### xberg_parse_footnote_definitions()
 
 Parse footnote definitions from markdown text.
 
@@ -1458,13 +1458,13 @@ A vector of `FootnoteDefinition` entries, each with label, content, and byte off
 **Signature:**
 
 ```c
-KreuzbergFootnoteDefinition* kreuzberg_parse_footnote_definitions(const char* markdown);
+XbergFootnoteDefinition* xberg_parse_footnote_definitions(const char* markdown);
 ```
 
 **Example:**
 
 ```c
-KreuzbergFootnoteDefinition* result = kreuzberg_parse_footnote_definitions("value");
+XbergFootnoteDefinition* result = xberg_parse_footnote_definitions("value");
 ```
 
 **Parameters:**
@@ -1473,11 +1473,11 @@ KreuzbergFootnoteDefinition* result = kreuzberg_parse_footnote_definitions("valu
 |------|------|----------|-------------|
 | `markdown` | `const char*` | Yes | The markdown text to search |
 
-**Returns:** `KreuzbergFootnoteDefinition*`
+**Returns:** `XbergFootnoteDefinition*`
 
 ---
 
-#### kreuzberg_find_inference_markers()
+#### xberg_find_inference_markers()
 
 Find inference markers in markdown text.
 
@@ -1490,13 +1490,13 @@ A vector of byte offsets where inference markers appear.
 **Signature:**
 
 ```c
-uintptr_t* kreuzberg_find_inference_markers(const char* markdown);
+uintptr_t* xberg_find_inference_markers(const char* markdown);
 ```
 
 **Example:**
 
 ```c
-uintptr_t* result = kreuzberg_find_inference_markers("value");
+uintptr_t* result = xberg_find_inference_markers("value");
 ```
 
 **Parameters:**
@@ -1509,7 +1509,7 @@ uintptr_t* result = kreuzberg_find_inference_markers("value");
 
 ---
 
-#### kreuzberg_find_unmarked_claims()
+#### xberg_find_unmarked_claims()
 
 Find unmarked claims in markdown text.
 
@@ -1527,13 +1527,13 @@ A vector of trimmed line text strings for unmarked claims.
 **Signature:**
 
 ```c
-const char** kreuzberg_find_unmarked_claims(const char* markdown);
+const char** xberg_find_unmarked_claims(const char* markdown);
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_find_unmarked_claims("value");
+const char** result = xberg_find_unmarked_claims("value");
 ```
 
 **Parameters:**
@@ -1546,7 +1546,7 @@ const char** result = kreuzberg_find_unmarked_claims("value");
 
 ---
 
-#### kreuzberg_parse_citations()
+#### xberg_parse_citations()
 
 Parse the structured citation block from markdown.
 
@@ -1563,13 +1563,13 @@ A vector of `Citation` entries parsed from the citation block.
 **Signature:**
 
 ```c
-KreuzbergCitation* kreuzberg_parse_citations(const char* markdown);
+XbergCitation* xberg_parse_citations(const char* markdown);
 ```
 
 **Example:**
 
 ```c
-KreuzbergCitation* result = kreuzberg_parse_citations("value");
+XbergCitation* result = xberg_parse_citations("value");
 ```
 
 **Parameters:**
@@ -1578,11 +1578,11 @@ KreuzbergCitation* result = kreuzberg_parse_citations("value");
 |------|------|----------|-------------|
 | `markdown` | `const char*` | Yes | The markdown text to search |
 
-**Returns:** `KreuzbergCitation*`
+**Returns:** `XbergCitation*`
 
 ---
 
-#### kreuzberg_verify_excerpt()
+#### xberg_verify_excerpt()
 
 Verify that an excerpt appears verbatim in source text.
 
@@ -1597,13 +1597,13 @@ has irregular spacing.
 **Signature:**
 
 ```c
-bool kreuzberg_verify_excerpt(const char* excerpt, const char* source_text);
+bool xberg_verify_excerpt(const char* excerpt, const char* source_text);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_verify_excerpt("value", "value");
+bool result = xberg_verify_excerpt("value", "value");
 ```
 
 **Parameters:**
@@ -1617,7 +1617,7 @@ bool result = kreuzberg_verify_excerpt("value", "value");
 
 ---
 
-#### kreuzberg_chunk_for_rag()
+#### xberg_chunk_for_rag()
 
 Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 
@@ -1641,13 +1641,13 @@ Propagates any error from the underlying chunker (e.g. invalid overlap).
 **Signature:**
 
 ```c
-KreuzbergChunkingResult* kreuzberg_chunk_for_rag(const char* text, KreuzbergChunkingConfig config);
+XbergChunkingResult* xberg_chunk_for_rag(const char* text, XbergChunkingConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkingResult *result = kreuzberg_chunk_for_rag("value", NULL);
+XbergChunkingResult *result = xberg_chunk_for_rag("value", NULL);
 ```
 
 **Parameters:**
@@ -1655,15 +1655,15 @@ KreuzbergChunkingResult *result = kreuzberg_chunk_for_rag("value", NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text |
-| `config` | `KreuzbergChunkingConfig` | Yes | The configuration options |
+| `config` | `XbergChunkingConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergChunkingResult`
+**Returns:** `XbergChunkingResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_compare()
+#### xberg_compare()
 
 Compare two extraction results and return a structured diff.
 
@@ -1673,28 +1673,28 @@ of `ExtractionDiff` are populated according to the provided `DiffOptions`.
 **Signature:**
 
 ```c
-KreuzbergExtractionDiff* kreuzberg_compare(KreuzbergExtractionResult a, KreuzbergExtractionResult b, KreuzbergDiffOptions opts);
+XbergExtractionDiff* xberg_compare(XbergExtractionResult a, XbergExtractionResult b, XbergDiffOptions opts);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionDiff *result = kreuzberg_compare(NULL, NULL, NULL);
+XbergExtractionDiff *result = xberg_compare(NULL, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `a` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `b` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `opts` | `KreuzbergDiffOptions` | Yes | The options to use |
+| `a` | `XbergExtractionResult` | Yes | The extraction result |
+| `b` | `XbergExtractionResult` | Yes | The extraction result |
+| `opts` | `XbergDiffOptions` | Yes | The options to use |
 
-**Returns:** `KreuzbergExtractionDiff`
+**Returns:** `XbergExtractionDiff`
 
 ---
 
-#### kreuzberg_extract_region_with_vlm()
+#### xberg_extract_region_with_vlm()
 
 Extract content from a pre-cropped image region using a VLM.
 
@@ -1715,13 +1715,13 @@ Extracted Markdown text from the VLM, or an error if the VLM call fails.
 **Signature:**
 
 ```c
-const char* kreuzberg_extract_region_with_vlm(const uint8_t* image_bytes, const char* image_mime, KreuzbergRegionKind region_kind, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+const char* xberg_extract_region_with_vlm(const uint8_t* image_bytes, const char* image_mime, XbergRegionKind region_kind, XbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_extract_region_with_vlm((const uint8_t *)"data", "value", (KreuzbergRegionKind){0}, NULL, "value");
+const char *result = xberg_extract_region_with_vlm((const uint8_t *)"data", "value", (XbergRegionKind){0}, NULL, "value");
 ```
 
 **Parameters:**
@@ -1730,8 +1730,8 @@ const char *result = kreuzberg_extract_region_with_vlm((const uint8_t *)"data", 
 |------|------|----------|-------------|
 | `image_bytes` | `const uint8_t*` | Yes | The image bytes |
 | `image_mime` | `const char*` | Yes | The image mime |
-| `region_kind` | `KreuzbergRegionKind` | Yes | The region kind |
-| `llm_config` | `KreuzbergLlmConfig` | Yes | The llm config |
+| `region_kind` | `XbergRegionKind` | Yes | The region kind |
+| `llm_config` | `XbergLlmConfig` | Yes | The llm config |
 | `custom_prompt` | `const char**` | No | The custom prompt |
 
 **Returns:** `const char*`
@@ -1740,7 +1740,7 @@ const char *result = kreuzberg_extract_region_with_vlm((const uint8_t *)"data", 
 
 ---
 
-#### kreuzberg_rerank_async()
+#### xberg_rerank_async()
 
 Rerank documents asynchronously.
 
@@ -1753,13 +1753,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-KreuzbergRerankedDocument* kreuzberg_rerank_async(const char* query, const char** documents, KreuzbergRerankerConfig config);
+XbergRerankedDocument* xberg_rerank_async(const char* query, const char** documents, XbergRerankerConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
+XbergRerankedDocument* result = xberg_rerank_async("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -1768,15 +1768,15 @@ KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
 |------|------|----------|-------------|
 | `query` | `const char*` | Yes | The query |
 | `documents` | `const char**` | Yes | The documents |
-| `config` | `KreuzbergRerankerConfig` | Yes | The configuration options |
+| `config` | `XbergRerankerConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergRerankedDocument*`
+**Returns:** `XbergRerankedDocument*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_keywords()
+#### xberg_extract_keywords()
 
 Extract keywords from text using the specified algorithm.
 
@@ -1797,13 +1797,13 @@ Returns an error if:
 **Signature:**
 
 ```c
-KreuzbergKeyword* kreuzberg_extract_keywords(const char* text, KreuzbergKeywordConfig config);
+XbergKeyword* xberg_extract_keywords(const char* text, XbergKeywordConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergKeyword* result = kreuzberg_extract_keywords("value", NULL);
+XbergKeyword* result = xberg_extract_keywords("value", NULL);
 ```
 
 **Parameters:**
@@ -1811,15 +1811,15 @@ KreuzbergKeyword* result = kreuzberg_extract_keywords("value", NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text to extract keywords from |
-| `config` | `KreuzbergKeywordConfig` | Yes | Keyword extraction configuration |
+| `config` | `XbergKeywordConfig` | Yes | Keyword extraction configuration |
 
-**Returns:** `KreuzbergKeyword*`
+**Returns:** `XbergKeyword*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_analyze_document()
+#### xberg_analyze_document()
 
 Analyze a document and determine the optimal chunking strategy.
 
@@ -1844,30 +1844,30 @@ cases the function returns a `ChunkingDecision`.
 **Signature:**
 
 ```c
-KreuzbergChunkingDecision* kreuzberg_analyze_document(KreuzbergDocumentMetadata metadata, KreuzbergHeuristicsConfig config, const uint8_t* document_bytes);
+XbergChunkingDecision* xberg_analyze_document(XbergDocumentMetadata metadata, XbergHeuristicsConfig config, const uint8_t* document_bytes);
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkingDecision *result = kreuzberg_analyze_document(NULL, NULL, (const uint8_t *)"data");
+XbergChunkingDecision *result = xberg_analyze_document(NULL, NULL, (const uint8_t *)"data");
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `metadata` | `KreuzbergDocumentMetadata` | Yes | The document metadata |
-| `config` | `KreuzbergHeuristicsConfig` | Yes | The configuration options |
+| `metadata` | `XbergDocumentMetadata` | Yes | The document metadata |
+| `config` | `XbergHeuristicsConfig` | Yes | The configuration options |
 | `document_bytes` | `const uint8_t**` | No | The document bytes |
 
-**Returns:** `KreuzbergChunkingDecision`
+**Returns:** `XbergChunkingDecision`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_analyze_with_user_chunks()
+#### xberg_analyze_with_user_chunks()
 
 Analyze a document with user-specified chunk ranges.
 
@@ -1876,29 +1876,29 @@ Creates a chunk plan based on user-provided page ranges.
 **Signature:**
 
 ```c
-KreuzbergChunkingDecision* kreuzberg_analyze_with_user_chunks(KreuzbergPageRange* user_ranges, uint32_t total_pages, uint64_t size_bytes, KreuzbergHeuristicsConfig config);
+XbergChunkingDecision* xberg_analyze_with_user_chunks(XbergPageRange* user_ranges, uint32_t total_pages, uint64_t size_bytes, XbergHeuristicsConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkingDecision *result = kreuzberg_analyze_with_user_chunks(NULL, 42, 42, NULL);
+XbergChunkingDecision *result = xberg_analyze_with_user_chunks(NULL, 42, 42, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `user_ranges` | `KreuzbergPageRange*` | Yes | The user ranges |
+| `user_ranges` | `XbergPageRange*` | Yes | The user ranges |
 | `total_pages` | `uint32_t` | Yes | The total pages |
 | `size_bytes` | `uint64_t` | Yes | The size bytes |
-| `config` | `KreuzbergHeuristicsConfig` | Yes | The configuration options |
+| `config` | `XbergHeuristicsConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergChunkingDecision`
+**Returns:** `XbergChunkingDecision`
 
 ---
 
-#### kreuzberg_score_confidence()
+#### xberg_score_confidence()
 
 Score a `ConfidenceSignals` triple into an `ExtractionConfidence` using
 the supplied weights.
@@ -1909,27 +1909,27 @@ When `signals.ocr_aggregate` is `NULL`, the OCR weight folds into
 **Signature:**
 
 ```c
-KreuzbergExtractionConfidence* kreuzberg_score_confidence(KreuzbergConfidenceSignals signals, KreuzbergConfidenceWeights weights);
+XbergExtractionConfidence* xberg_score_confidence(XbergConfidenceSignals signals, XbergConfidenceWeights weights);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionConfidence *result = kreuzberg_score_confidence((KreuzbergConfidenceSignals){0}, (KreuzbergConfidenceWeights){0});
+XbergExtractionConfidence *result = xberg_score_confidence((XbergConfidenceSignals){0}, (XbergConfidenceWeights){0});
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `signals` | `KreuzbergConfidenceSignals` | Yes | The confidence signals |
-| `weights` | `KreuzbergConfidenceWeights` | Yes | The confidence weights |
+| `signals` | `XbergConfidenceSignals` | Yes | The confidence signals |
+| `weights` | `XbergConfidenceWeights` | Yes | The confidence weights |
 
-**Returns:** `KreuzbergExtractionConfidence`
+**Returns:** `XbergExtractionConfidence`
 
 ---
 
-#### kreuzberg_check_format_limits()
+#### xberg_check_format_limits()
 
 Decision returned for pre-extraction rejection based on XLSX/PPTX-specific
 resource bounds. Returns `Some(reason)` to reject; `NULL` to proceed.
@@ -1940,13 +1940,13 @@ Callers must provide counts from a pre-extraction peek (e.g. parsing
 **Signature:**
 
 ```c
-const char** kreuzberg_check_format_limits(const char* mime_type, uint32_t sheet_count, uint64_t workbook_cells, uint32_t embedded_count, KreuzbergHeuristicsConfig config);
+const char** xberg_check_format_limits(const char* mime_type, uint32_t sheet_count, uint64_t workbook_cells, uint32_t embedded_count, XbergHeuristicsConfig config);
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_check_format_limits("value", 42, 42, 42, NULL);
+const char** result = xberg_check_format_limits("value", 42, 42, 42, NULL);
 ```
 
 **Parameters:**
@@ -1957,13 +1957,13 @@ const char** result = kreuzberg_check_format_limits("value", 42, 42, 42, NULL);
 | `sheet_count` | `uint32_t*` | No | The sheet count |
 | `workbook_cells` | `uint64_t*` | No | The workbook cells |
 | `embedded_count` | `uint32_t*` | No | The embedded count |
-| `config` | `KreuzbergHeuristicsConfig` | Yes | The configuration options |
+| `config` | `XbergHeuristicsConfig` | Yes | The configuration options |
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_boundaries_from_extraction_result()
+#### xberg_boundaries_from_extraction_result()
 
 Derive document boundaries from an already-produced `ExtractionResult`.
 
@@ -1988,27 +1988,27 @@ higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
 **Signature:**
 
 ```c
-KreuzbergDocumentBoundary* kreuzberg_boundaries_from_extraction_result(KreuzbergExtractionResult result, KreuzbergMultidocThresholds thresholds);
+XbergDocumentBoundary* xberg_boundaries_from_extraction_result(XbergExtractionResult result, XbergMultidocThresholds thresholds);
 ```
 
 **Example:**
 
 ```c
-KreuzbergDocumentBoundary* result = kreuzberg_boundaries_from_extraction_result(NULL, NULL);
+XbergDocumentBoundary* result = xberg_boundaries_from_extraction_result(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `thresholds` | `KreuzbergMultidocThresholds` | Yes | The multidoc thresholds |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `thresholds` | `XbergMultidocThresholds` | Yes | The multidoc thresholds |
 
-**Returns:** `KreuzbergDocumentBoundary*`
+**Returns:** `XbergDocumentBoundary*`
 
 ---
 
-#### kreuzberg_detect_boundaries()
+#### xberg_detect_boundaries()
 
 Detect document boundaries in a multi-document PDF.
 
@@ -2023,27 +2023,27 @@ Ordered list of document boundaries.
 **Signature:**
 
 ```c
-KreuzbergDocumentBoundary* kreuzberg_detect_boundaries(KreuzbergMultidocInput input, KreuzbergMultidocThresholds thresholds);
+XbergDocumentBoundary* xberg_detect_boundaries(XbergMultidocInput input, XbergMultidocThresholds thresholds);
 ```
 
 **Example:**
 
 ```c
-KreuzbergDocumentBoundary* result = kreuzberg_detect_boundaries(NULL, NULL);
+XbergDocumentBoundary* result = xberg_detect_boundaries(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `input` | `KreuzbergMultidocInput` | Yes | Page signals for the PDF |
-| `thresholds` | `KreuzbergMultidocThresholds` | Yes | Detection thresholds |
+| `input` | `XbergMultidocInput` | Yes | Page signals for the PDF |
+| `thresholds` | `XbergMultidocThresholds` | Yes | Detection thresholds |
 
-**Returns:** `KreuzbergDocumentBoundary*`
+**Returns:** `XbergDocumentBoundary*`
 
 ---
 
-#### kreuzberg_choose_call_mode()
+#### xberg_choose_call_mode()
 
 Decide which call mode best fits this document.
 
@@ -2051,7 +2051,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
-   `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
+   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2073,27 +2073,27 @@ After rule selection two post-rule promotions apply (in order):
 **Signature:**
 
 ```c
-KreuzbergStructuredCallMode* kreuzberg_choose_call_mode(KreuzbergStructuredInput input, KreuzbergStructuredThresholds t);
+XbergStructuredCallMode* xberg_choose_call_mode(XbergStructuredInput input, XbergStructuredThresholds t);
 ```
 
 **Example:**
 
 ```c
-KreuzbergStructuredCallMode *result = kreuzberg_choose_call_mode(NULL, NULL);
+XbergStructuredCallMode *result = xberg_choose_call_mode(NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `input` | `KreuzbergStructuredInput` | Yes | The input data |
-| `t` | `KreuzbergStructuredThresholds` | Yes | The structured thresholds |
+| `input` | `XbergStructuredInput` | Yes | The input data |
+| `t` | `XbergStructuredThresholds` | Yes | The structured thresholds |
 
-**Returns:** `KreuzbergStructuredCallMode`
+**Returns:** `XbergStructuredCallMode`
 
 ---
 
-#### kreuzberg_calculate_chunk_plan()
+#### xberg_calculate_chunk_plan()
 
 Calculate a chunking plan for a document.
 
@@ -2104,13 +2104,13 @@ A `ChunkPlan` with optimal chunk boundaries.
 **Signature:**
 
 ```c
-KreuzbergChunkPlan* kreuzberg_calculate_chunk_plan(uint32_t page_count, uint64_t size_bytes, bool needs_ocr, KreuzbergHeuristicsConfig config);
+XbergChunkPlan* xberg_calculate_chunk_plan(uint32_t page_count, uint64_t size_bytes, bool needs_ocr, XbergHeuristicsConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkPlan *result = kreuzberg_calculate_chunk_plan(42, 42, true, NULL);
+XbergChunkPlan *result = xberg_calculate_chunk_plan(42, 42, true, NULL);
 ```
 
 **Parameters:**
@@ -2120,13 +2120,13 @@ KreuzbergChunkPlan *result = kreuzberg_calculate_chunk_plan(42, 42, true, NULL);
 | `page_count` | `uint32_t` | Yes | Total number of pages in the document |
 | `size_bytes` | `uint64_t` | Yes | File size in bytes |
 | `needs_ocr` | `bool` | Yes | Whether OCR will be required |
-| `config` | `KreuzbergHeuristicsConfig` | Yes | Heuristics configuration |
+| `config` | `XbergHeuristicsConfig` | Yes | Heuristics configuration |
 
-**Returns:** `KreuzbergChunkPlan`
+**Returns:** `XbergChunkPlan`
 
 ---
 
-#### kreuzberg_calculate_plan_from_overrides()
+#### xberg_calculate_plan_from_overrides()
 
 Calculate a chunk plan from user-specified page ranges.
 
@@ -2135,42 +2135,42 @@ Validates and processes user overrides into a proper chunk plan.
 **Signature:**
 
 ```c
-KreuzbergChunkPlan* kreuzberg_calculate_plan_from_overrides(KreuzbergPageRange* user_chunks, uint32_t total_pages, uint64_t size_bytes, KreuzbergHeuristicsConfig config);
+XbergChunkPlan* xberg_calculate_plan_from_overrides(XbergPageRange* user_chunks, uint32_t total_pages, uint64_t size_bytes, XbergHeuristicsConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkPlan *result = kreuzberg_calculate_plan_from_overrides(NULL, 42, 42, NULL);
+XbergChunkPlan *result = xberg_calculate_plan_from_overrides(NULL, 42, 42, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `user_chunks` | `KreuzbergPageRange*` | Yes | The user chunks |
+| `user_chunks` | `XbergPageRange*` | Yes | The user chunks |
 | `total_pages` | `uint32_t` | Yes | The total pages |
 | `size_bytes` | `uint64_t` | Yes | The size bytes |
-| `config` | `KreuzbergHeuristicsConfig` | Yes | The configuration options |
+| `config` | `XbergHeuristicsConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergChunkPlan`
+**Returns:** `XbergChunkPlan`
 
 ---
 
-#### kreuzberg_fingerprint()
+#### xberg_fingerprint()
 
 Stable sha256 fingerprint of `raw`, formatted as `sha256:<hex>`.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_fingerprint(const uint8_t* raw);
+const char* xberg_fingerprint(const uint8_t* raw);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_fingerprint((const uint8_t *)"data");
+const char *result = xberg_fingerprint((const uint8_t *)"data");
 ```
 
 **Parameters:**
@@ -2183,7 +2183,7 @@ const char *result = kreuzberg_fingerprint((const uint8_t *)"data");
 
 ---
 
-#### kreuzberg_resolve()
+#### xberg_resolve()
 
 Resolve `(preset, custom_schema_override, context)` into a `ResolvedPreset`.
 
@@ -2194,30 +2194,30 @@ Resolve `(preset, custom_schema_override, context)` into a `ResolvedPreset`.
 **Signature:**
 
 ```c
-KreuzbergResolvedPreset* kreuzberg_resolve(KreuzbergPreset preset, void* custom_schema, void* context);
+XbergResolvedPreset* xberg_resolve(XbergPreset preset, void* custom_schema, void* context);
 ```
 
 **Example:**
 
 ```c
-KreuzbergResolvedPreset *result = kreuzberg_resolve(NULL, NULL, NULL);
+XbergResolvedPreset *result = xberg_resolve(NULL, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `preset` | `KreuzbergPreset` | Yes | The preset |
+| `preset` | `XbergPreset` | Yes | The preset |
 | `custom_schema` | `void**` | No | The custom schema |
 | `context` | `void*` | Yes | The context |
 
-**Returns:** `KreuzbergResolvedPreset`
+**Returns:** `XbergResolvedPreset`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_extract_structured_json()
+#### xberg_extract_structured_json()
 
 Extract structured JSON from a document using JSON-encoded preset spec and options.
 
@@ -2234,19 +2234,19 @@ JSON-serialised `StructuredOutput` on success.
 
 Returns `Validation` when either JSON argument is
 malformed.  All other failures from the underlying
-`extract_structured_sync` call are mapped onto `KreuzbergError`
+`extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_extract_structured_json(const uint8_t* bytes, const char* mime, const char* preset_spec_json, const char* options_json);
+const char* xberg_extract_structured_json(const uint8_t* bytes, const char* mime, const char* preset_spec_json, const char* options_json);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_extract_structured_json((const uint8_t *)"data", "value", "value", "value");
+const char *result = xberg_extract_structured_json((const uint8_t *)"data", "value", "value", "value");
 ```
 
 **Parameters:**
@@ -2264,7 +2264,7 @@ const char *result = kreuzberg_extract_structured_json((const uint8_t *)"data", 
 
 ---
 
-#### kreuzberg_split_and_extract_json()
+#### xberg_split_and_extract_json()
 
 Split a multi-document PDF and extract structured JSON from each segment,
 returning a JSON array of `StructuredOutput` objects.
@@ -2281,19 +2281,19 @@ JSON-serialised `const StructuredOutput*` (a JSON array) on success.
 
 Returns `Validation` when either JSON argument is
 malformed.  All other failures from the underlying
-`split_and_extract_sync` call are mapped onto `KreuzbergError`
+`split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_split_and_extract_json(const uint8_t* bytes, const char* mime, const char* preset_spec_json, const char* options_json);
+const char* xberg_split_and_extract_json(const uint8_t* bytes, const char* mime, const char* preset_spec_json, const char* options_json);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_split_and_extract_json((const uint8_t *)"data", "value", "value", "value");
+const char *result = xberg_split_and_extract_json((const uint8_t *)"data", "value", "value", "value");
 ```
 
 **Parameters:**
@@ -2311,7 +2311,7 @@ const char *result = kreuzberg_split_and_extract_json((const uint8_t *)"data", "
 
 ---
 
-#### kreuzberg_render_pdf_page_to_png()
+#### xberg_render_pdf_page_to_png()
 
 Render a single PDF page to PNG bytes.
 
@@ -2324,19 +2324,19 @@ A warning is logged when this happens.
 
 **Errors:**
 
-Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+Returns `XbergError.Parsing` if the PDF cannot be opened, authenticated,
 or rendered, or if `page_index` is out of range.
 
 **Signature:**
 
 ```c
-const uint8_t* kreuzberg_render_pdf_page_to_png(const uint8_t* pdf_bytes, uintptr_t page_index, int32_t dpi, const char* password);
+const uint8_t* xberg_render_pdf_page_to_png(const uint8_t* pdf_bytes, uintptr_t page_index, int32_t dpi, const char* password);
 ```
 
 **Example:**
 
 ```c
-const uint8_t *result = kreuzberg_render_pdf_page_to_png((const uint8_t *)"data", 42, 42, "value");
+const uint8_t *result = xberg_render_pdf_page_to_png((const uint8_t *)"data", 42, 42, "value");
 ```
 
 **Parameters:**
@@ -2354,7 +2354,7 @@ const uint8_t *result = kreuzberg_render_pdf_page_to_png((const uint8_t *)"data"
 
 ---
 
-#### kreuzberg_pdf_page_count()
+#### xberg_pdf_page_count()
 
 Count the pages in a PDF without rendering any of them.
 
@@ -2364,19 +2364,19 @@ when you only need the count (e.g. to drive a render loop over the pages).
 
 **Errors:**
 
-Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+Returns `XbergError.Parsing` if the PDF cannot be opened, authenticated,
 or its page count read.
 
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_pdf_page_count(const uint8_t* pdf_bytes, const char* password);
+uintptr_t xberg_pdf_page_count(const uint8_t* pdf_bytes, const char* password);
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_pdf_page_count((const uint8_t *)"data", "value");
+uintptr_t result = xberg_pdf_page_count((const uint8_t *)"data", "value");
 ```
 
 **Parameters:**
@@ -2392,7 +2392,7 @@ uintptr_t result = kreuzberg_pdf_page_count((const uint8_t *)"data", "value");
 
 ---
 
-#### kreuzberg_caption_image()
+#### xberg_caption_image()
 
 Caption a single image from bytes.
 
@@ -2409,13 +2409,13 @@ Returns an error if the VLM call fails or if image format detection fails.
 **Signature:**
 
 ```c
-const char* kreuzberg_caption_image(const uint8_t* image_bytes, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+const char* xberg_caption_image(const uint8_t* image_bytes, XbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_caption_image((const uint8_t *)"data", NULL, "value");
+const char *result = xberg_caption_image((const uint8_t *)"data", NULL, "value");
 ```
 
 **Parameters:**
@@ -2423,7 +2423,7 @@ const char *result = kreuzberg_caption_image((const uint8_t *)"data", NULL, "val
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `image_bytes` | `const uint8_t*` | Yes | The image data. |
-| `llm_config` | `KreuzbergLlmConfig` | Yes | LLM configuration for the VLM call. |
+| `llm_config` | `XbergLlmConfig` | Yes | LLM configuration for the VLM call. |
 | `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `const char*`
@@ -2432,7 +2432,7 @@ const char *result = kreuzberg_caption_image((const uint8_t *)"data", NULL, "val
 
 ---
 
-#### kreuzberg_caption_image_file()
+#### xberg_caption_image_file()
 
 Caption a single image from a file path.
 
@@ -2450,13 +2450,13 @@ or if the VLM call fails.
 **Signature:**
 
 ```c
-const char* kreuzberg_caption_image_file(const char* path, KreuzbergLlmConfig llm_config, const char* custom_prompt);
+const char* xberg_caption_image_file(const char* path, XbergLlmConfig llm_config, const char* custom_prompt);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_caption_image_file("value", NULL, "value");
+const char *result = xberg_caption_image_file("value", NULL, "value");
 ```
 
 **Parameters:**
@@ -2464,7 +2464,7 @@ const char *result = kreuzberg_caption_image_file("value", NULL, "value");
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to the image file. |
-| `llm_config` | `KreuzbergLlmConfig` | Yes | LLM configuration for the VLM call. |
+| `llm_config` | `XbergLlmConfig` | Yes | LLM configuration for the VLM call. |
 | `custom_prompt` | `const char**` | No | Optional custom caption prompt. Uses the default |
 
 **Returns:** `const char*`
@@ -2473,7 +2473,7 @@ const char *result = kreuzberg_caption_image_file("value", NULL, "value");
 
 ---
 
-#### kreuzberg_detect_mime_type()
+#### xberg_detect_mime_type()
 
 Detect the MIME type of a file at the given path.
 
@@ -2483,13 +2483,13 @@ Set `check_exists` to `true` to verify the file exists before detection.
 **Signature:**
 
 ```c
-const char* kreuzberg_detect_mime_type(const char* path, bool check_exists);
+const char* xberg_detect_mime_type(const char* path, bool check_exists);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_detect_mime_type("value", true);
+const char *result = xberg_detect_mime_type("value", true);
 ```
 
 **Parameters:**
@@ -2505,18 +2505,18 @@ const char *result = kreuzberg_detect_mime_type("value", true);
 
 ---
 
-#### kreuzberg_embed_texts_async()
+#### xberg_embed_texts_async()
 
 **Signature:**
 
 ```c
-float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
+float** xberg_embed_texts_async(const char** texts, XbergEmbeddingConfig config);
 ```
 
 **Example:**
 
 ```c
-float** result = kreuzberg_embed_texts_async(NULL, NULL);
+float** result = xberg_embed_texts_async(NULL, NULL);
 ```
 
 **Parameters:**
@@ -2524,7 +2524,7 @@ float** result = kreuzberg_embed_texts_async(NULL, NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `texts` | `const char**` | Yes | The  texts |
-| `config` | `KreuzbergEmbeddingConfig` | Yes | The embedding config |
+| `config` | `XbergEmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `float**`
 
@@ -2532,7 +2532,7 @@ float** result = kreuzberg_embed_texts_async(NULL, NULL);
 
 ---
 
-#### kreuzberg_get_embedding_preset()
+#### xberg_get_embedding_preset()
 
 Get an embedding preset by name.
 
@@ -2542,13 +2542,13 @@ clone so the value is safe to pass across FFI boundaries.
 **Signature:**
 
 ```c
-KreuzbergEmbeddingPreset* kreuzberg_get_embedding_preset(const char* name);
+XbergEmbeddingPreset* xberg_get_embedding_preset(const char* name);
 ```
 
 **Example:**
 
 ```c
-KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
+XbergEmbeddingPreset* result = xberg_get_embedding_preset("value");
 ```
 
 **Parameters:**
@@ -2557,11 +2557,11 @@ KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
 |------|------|----------|-------------|
 | `name` | `const char*` | Yes | The name |
 
-**Returns:** `KreuzbergEmbeddingPreset*`
+**Returns:** `XbergEmbeddingPreset*`
 
 ---
 
-#### kreuzberg_list_embedding_presets()
+#### xberg_list_embedding_presets()
 
 List the names of all available embedding presets.
 
@@ -2570,33 +2570,33 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_embedding_presets();
+const char** xberg_list_embedding_presets();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_embedding_presets();
+const char** result = xberg_list_embedding_presets();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_get_embedding_preset()
+#### xberg_get_embedding_preset()
 
 Returns `NULL` for builds without the `embedding-presets` feature.
 
 **Signature:**
 
 ```c
-KreuzbergEmbeddingPreset* kreuzberg_get_embedding_preset(const char* name);
+XbergEmbeddingPreset* xberg_get_embedding_preset(const char* name);
 ```
 
 **Example:**
 
 ```c
-KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
+XbergEmbeddingPreset* result = xberg_get_embedding_preset("value");
 ```
 
 **Parameters:**
@@ -2605,31 +2605,31 @@ KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
 |------|------|----------|-------------|
 | `name` | `const char*` | Yes | The  name |
 
-**Returns:** `KreuzbergEmbeddingPreset*`
+**Returns:** `XbergEmbeddingPreset*`
 
 ---
 
-#### kreuzberg_list_embedding_presets()
+#### xberg_list_embedding_presets()
 
 Returns an empty list for builds without the `embedding-presets` feature.
 
 **Signature:**
 
 ```c
-const char** kreuzberg_list_embedding_presets();
+const char** xberg_list_embedding_presets();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_embedding_presets();
+const char** result = xberg_list_embedding_presets();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_rerank()
+#### xberg_rerank()
 
 Rerank a list of documents by relevance to a query.
 
@@ -2638,22 +2638,22 @@ configured.
 
 **Errors:**
 
-- `KreuzbergError.Validation` if `query` is empty or blank.
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
-- `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+- `XbergError.Validation` if `query` is empty or blank.
+- `XbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
+- `XbergError.Reranking` if the preset is unknown or model download fails.
 
 Since v5.0.
 
 **Signature:**
 
 ```c
-KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** documents, KreuzbergRerankerConfig config);
+XbergRerankedDocument* xberg_rerank(const char* query, const char** documents, XbergRerankerConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
+XbergRerankedDocument* result = xberg_rerank("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -2662,15 +2662,15 @@ KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
 |------|------|----------|-------------|
 | `query` | `const char*` | Yes | The query |
 | `documents` | `const char**` | Yes | The documents |
-| `config` | `KreuzbergRerankerConfig` | Yes | The configuration options |
+| `config` | `XbergRerankerConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergRerankedDocument*`
+**Returns:** `XbergRerankedDocument*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_rerank()
+#### xberg_rerank()
 
 Stub for builds without the `reranker` feature — keeps the symbol available
 on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
@@ -2680,13 +2680,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** documents, KreuzbergRerankerConfig config);
+XbergRerankedDocument* xberg_rerank(const char* query, const char** documents, XbergRerankerConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
+XbergRerankedDocument* result = xberg_rerank("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -2695,15 +2695,15 @@ KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
 |------|------|----------|-------------|
 | `query` | `const char*` | Yes | The  query |
 | `documents` | `const char**` | Yes | The  documents |
-| `config` | `KreuzbergRerankerConfig` | Yes | The reranker config |
+| `config` | `XbergRerankerConfig` | Yes | The reranker config |
 
-**Returns:** `KreuzbergRerankedDocument*`
+**Returns:** `XbergRerankedDocument*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_rerank_async()
+#### xberg_rerank_async()
 
 Stub for builds without the `reranker` feature.
 
@@ -2712,13 +2712,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-KreuzbergRerankedDocument* kreuzberg_rerank_async(const char* query, const char** documents, KreuzbergRerankerConfig config);
+XbergRerankedDocument* xberg_rerank_async(const char* query, const char** documents, XbergRerankerConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
+XbergRerankedDocument* result = xberg_rerank_async("value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -2727,15 +2727,15 @@ KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
 |------|------|----------|-------------|
 | `query` | `const char*` | Yes | The  query |
 | `documents` | `const char**` | Yes | The  documents |
-| `config` | `KreuzbergRerankerConfig` | Yes | The reranker config |
+| `config` | `XbergRerankerConfig` | Yes | The reranker config |
 
-**Returns:** `KreuzbergRerankedDocument*`
+**Returns:** `XbergRerankedDocument*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### kreuzberg_get_reranker_preset()
+#### xberg_get_reranker_preset()
 
 Get a reranker preset by name.
 
@@ -2747,13 +2747,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-KreuzbergRerankerPreset* kreuzberg_get_reranker_preset(const char* name);
+XbergRerankerPreset* xberg_get_reranker_preset(const char* name);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
+XbergRerankerPreset* result = xberg_get_reranker_preset("value");
 ```
 
 **Parameters:**
@@ -2762,11 +2762,11 @@ KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
 |------|------|----------|-------------|
 | `name` | `const char*` | Yes | The name |
 
-**Returns:** `KreuzbergRerankerPreset*`
+**Returns:** `XbergRerankerPreset*`
 
 ---
 
-#### kreuzberg_list_reranker_presets()
+#### xberg_list_reranker_presets()
 
 List the names of all available reranker presets.
 
@@ -2777,20 +2777,20 @@ Since v5.0.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_reranker_presets();
+const char** xberg_list_reranker_presets();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_reranker_presets();
+const char** result = xberg_list_reranker_presets();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_get_reranker_preset()
+#### xberg_get_reranker_preset()
 
 Returns `NULL` for builds without the `reranker-presets` feature.
 
@@ -2799,13 +2799,13 @@ Since v5.0.
 **Signature:**
 
 ```c
-KreuzbergRerankerPreset* kreuzberg_get_reranker_preset(const char* name);
+XbergRerankerPreset* xberg_get_reranker_preset(const char* name);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
+XbergRerankerPreset* result = xberg_get_reranker_preset("value");
 ```
 
 **Parameters:**
@@ -2814,11 +2814,11 @@ KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
 |------|------|----------|-------------|
 | `name` | `const char*` | Yes | The  name |
 
-**Returns:** `KreuzbergRerankerPreset*`
+**Returns:** `XbergRerankerPreset*`
 
 ---
 
-#### kreuzberg_list_reranker_presets()
+#### xberg_list_reranker_presets()
 
 Returns an empty list for builds without the `reranker-presets` feature.
 
@@ -2827,31 +2827,31 @@ Since v5.0.
 **Signature:**
 
 ```c
-const char** kreuzberg_list_reranker_presets();
+const char** xberg_list_reranker_presets();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_list_reranker_presets();
+const char** result = xberg_list_reranker_presets();
 ```
 
 **Returns:** `const char**`
 
 ---
 
-#### kreuzberg_embed_texts_async()
+#### xberg_embed_texts_async()
 
 **Signature:**
 
 ```c
-float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
+float** xberg_embed_texts_async(const char** texts, XbergEmbeddingConfig config);
 ```
 
 **Example:**
 
 ```c
-float** result = kreuzberg_embed_texts_async(NULL, NULL);
+float** result = xberg_embed_texts_async(NULL, NULL);
 ```
 
 **Parameters:**
@@ -2859,7 +2859,7 @@ float** result = kreuzberg_embed_texts_async(NULL, NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `texts` | `const char**` | Yes | The  texts |
-| `config` | `KreuzbergEmbeddingConfig` | Yes | The embedding config |
+| `config` | `XbergEmbeddingConfig` | Yes | The embedding config |
 
 **Returns:** `float**`
 
@@ -2869,7 +2869,7 @@ float** result = kreuzberg_embed_texts_async(NULL, NULL);
 
 ### Types
 
-#### KreuzbergAccelerationConfig
+#### XbergAccelerationConfig
 
 Hardware acceleration configuration for ONNX Runtime models.
 
@@ -2878,12 +2878,12 @@ for inference in layout detection and embedding generation.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `provider` | `KreuzbergExecutionProviderType` | `KREUZBERG_KREUZBERG_AUTO` | Execution provider to use for ONNX inference. |
+| `provider` | `XbergExecutionProviderType` | `XBERG_XBERG_AUTO` | Execution provider to use for ONNX inference. |
 | `device_id` | `uint32_t` | — | GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. |
 
 ---
 
-#### KreuzbergArchiveEntry
+#### XbergArchiveEntry
 
 A single file extracted from an archive.
 
@@ -2894,11 +2894,11 @@ enabled, each processable file produces its own full `ExtractionResult`.
 |-------|------|---------|-------------|
 | `path` | `const char*` | — | Archive-relative file path (e.g. "folder/document.pdf"). |
 | `mime_type` | `const char*` | — | Detected MIME type of the file. |
-| `result` | `KreuzbergExtractionResult` | — | Full extraction result for this file. |
+| `result` | `XbergExtractionResult` | — | Full extraction result for this file. |
 
 ---
 
-#### KreuzbergArchiveMetadata
+#### XbergArchiveMetadata
 
 Archive (ZIP/TAR/7Z) metadata.
 
@@ -2914,7 +2914,7 @@ Extracted from compressed archive files containing file lists and size informati
 
 ---
 
-#### KreuzbergAudioMetadata
+#### XbergAudioMetadata
 
 Audio/video file metadata.
 
@@ -2932,7 +2932,7 @@ PCM decode properties. Available when the `transcription-types` feature is enabl
 
 ---
 
-#### KreuzbergBBox
+#### XbergBBox
 
 Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
 
@@ -2945,7 +2945,7 @@ Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-ri
 
 ---
 
-#### KreuzbergBatchBytesItem
+#### XbergBatchBytesItem
 
 Batch item for byte array extraction.
 
@@ -2956,11 +2956,11 @@ to represent a single item in a batch extraction job.
 |-------|------|---------|-------------|
 | `content` | `const uint8_t*` | — | The content bytes to extract from |
 | `mime_type` | `const char*` | — | MIME type of the content (e.g., "application/pdf", "text/html") |
-| `config` | `KreuzbergFileExtractionConfig*` | `NULL` | Per-item configuration overrides (None uses batch-level defaults) |
+| `config` | `XbergFileExtractionConfig*` | `NULL` | Per-item configuration overrides (None uses batch-level defaults) |
 
 ---
 
-#### KreuzbergBatchFileItem
+#### XbergBatchFileItem
 
 Batch item for file extraction.
 
@@ -2970,11 +2970,11 @@ to represent a single file in a batch extraction job.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `const char*` | — | Path to the file to extract from |
-| `config` | `KreuzbergFileExtractionConfig*` | `NULL` | Per-file configuration overrides (None uses batch-level defaults) |
+| `config` | `XbergFileExtractionConfig*` | `NULL` | Per-file configuration overrides (None uses batch-level defaults) |
 
 ---
 
-#### KreuzbergBibtexMetadata
+#### XbergBibtexMetadata
 
 BibTeX bibliography metadata.
 
@@ -2983,12 +2983,12 @@ BibTeX bibliography metadata.
 | `entry_count` | `uintptr_t` | — | Number of entries in the bibliography. |
 | `citation_keys` | `const char**` | `NULL` | BibTeX citation keys (e.g. `"knuth1984"`) for all entries. |
 | `authors` | `const char**` | `NULL` | Author names collected across all bibliography entries. |
-| `year_range` | `KreuzbergYearRange*` | `NULL` | Earliest and latest publication years found in the bibliography. |
+| `year_range` | `XbergYearRange*` | `NULL` | Earliest and latest publication years found in the bibliography. |
 | `entry_types` | `void**` | `NULL` | Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5). |
 
 ---
 
-#### KreuzbergBoundingBox
+#### XbergBoundingBox
 
 Bounding box coordinates for element positioning.
 
@@ -3001,9 +3001,9 @@ Bounding box coordinates for element positioning.
 
 ---
 
-#### KreuzbergCacheStats
+#### XbergCacheStats
 
-Aggregate statistics for a kreuzberg cache directory.
+Aggregate statistics for a xberg cache directory.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3015,7 +3015,7 @@ Aggregate statistics for a kreuzberg cache directory.
 
 ---
 
-#### KreuzbergCaptioningConfig
+#### XbergCaptioningConfig
 
 **Since:** `v5.0`
 
@@ -3023,13 +3023,13 @@ Configuration for the VLM captioning post-processor.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for the VLM call. |
+| `llm` | `XbergLlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `const char**` | `NULL` | Optional custom caption prompt. `NULL` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
 | `min_image_area` | `uint32_t` | `serde(default = "default_min_image_area")` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
-#### KreuzbergCaptioningEnrichmentConfig
+#### XbergCaptioningEnrichmentConfig
 
 Captioning enrichment knob: which LLM to use for image captions.
 
@@ -3040,12 +3040,12 @@ skipped rather than forwarded to the VLM.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `config` | `KreuzbergLlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
+| `config` | `XbergLlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
 | `custom_prompt` | `const char**` | `NULL` | Optional custom prompt override forwarded to every `caption_image` call. `NULL` uses the default `RegionKind.Caption` prompt. |
 
 ---
 
-#### KreuzbergCellChange
+#### XbergCellChange
 
 A single changed cell within a table.
 
@@ -3062,7 +3062,7 @@ reference it unconditionally, without requiring the `diff` Cargo feature.
 
 ---
 
-#### KreuzbergChunk
+#### XbergChunk
 
 A text chunk with optional embedding and metadata.
 
@@ -3073,25 +3073,25 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `const char*` | — | The text content of this chunk. |
-| `chunk_type` | `KreuzbergChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `chunk_type` | `XbergChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
 | `embedding` | `float**` | `NULL` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
-| `metadata` | `KreuzbergChunkMetadata` | — | Metadata about this chunk's position and properties. |
+| `metadata` | `XbergChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
 ---
 
-#### KreuzbergChunkInfo
+#### XbergChunkInfo
 
 Information about a single chunk.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `index` | `uint32_t` | — | Zero-based chunk index. |
-| `pages` | `KreuzbergPageRange` | — | Page range for this chunk. |
+| `pages` | `XbergPageRange` | — | Page range for this chunk. |
 | `estimated_time_ms` | `uint64_t` | — | Estimated processing time for this chunk in milliseconds. |
 
 ---
 
-#### KreuzbergChunkMetadata
+#### XbergChunkMetadata
 
 Metadata about a chunk's position in the original document.
 
@@ -3104,27 +3104,27 @@ Metadata about a chunk's position in the original document.
 | `total_chunks` | `uintptr_t` | — | Total number of chunks in the document. |
 | `first_page` | `uint32_t*` | `NULL` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `uint32_t*` | `NULL` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `KreuzbergHeadingContext*` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `heading_context` | `XbergHeadingContext*` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
 | `heading_path` | `const char**` | `/* serde(default) */` | Flattened heading trail from document root to this chunk's section. Each element is a heading's text, outermost first. Derived from `heading_context` when present; empty otherwise. Provides a binding-friendly, RAG-shaped breadcrumb without requiring callers to walk the nested `HeadingContext` structure. |
 | `image_indices` | `uint32_t*` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `\[first_page, last_page\]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
-#### KreuzbergChunkPlan
+#### XbergChunkPlan
 
 Complete chunking plan for a document.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `total_chunks` | `uint32_t` | `0` | Total number of chunks. |
-| `chunks` | `KreuzbergChunkInfo*` | `NULL` | Individual chunk information. |
+| `chunks` | `XbergChunkInfo*` | `NULL` | Individual chunk information. |
 | `total_estimated_time_ms` | `uint64_t` | `0` | Estimated total processing time in milliseconds. |
 | `use_disk_processing` | `bool` | `false` | Whether to use disk-based processing for large files. |
-| `reason` | `KreuzbergChunkingReason` | `KREUZBERG_KREUZBERG_LARGE_FILE` | Reason for chunking. |
+| `reason` | `XbergChunkingReason` | `XBERG_XBERG_LARGE_FILE` | Reason for chunking. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 An empty plan (no chunks). The `reason` is a placeholder since an empty plan
 has no chunking rationale; callers always overwrite it when a real plan is built.
@@ -3132,38 +3132,38 @@ has no chunking rationale; callers always overwrite it when a real plan is built
 **Signature:**
 
 ```c
-KreuzbergChunkPlan kreuzberg_default();
+XbergChunkPlan xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkPlan *result = kreuzberg_default();
+XbergChunkPlan *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergChunkPlan`
+**Returns:** `XbergChunkPlan`
 
-###### kreuzberg_total_pages()
+###### xberg_total_pages()
 
 Get the total number of pages across all chunks.
 
 **Signature:**
 
 ```c
-uint32_t kreuzberg_total_pages();
+uint32_t xberg_total_pages();
 ```
 
 **Example:**
 
 ```c
-uint32_t result = kreuzberg_total_pages(instance);
+uint32_t result = xberg_total_pages(instance);
 ```
 
 **Returns:** `uint32_t`
 
 ---
 
-#### KreuzbergChunkingConfig
+#### XbergChunkingConfig
 
 Chunking configuration.
 
@@ -3177,35 +3177,35 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `max_characters` | `uintptr_t` | `1000` | Maximum size per chunk (in units determined by `sizing`). When `sizing` is `Characters` (default), this is the max character count. When using token-based sizing, this is the max token count. Default: 1000 |
 | `overlap` | `uintptr_t` | `200` | Overlap between chunks (in units determined by `sizing`). Default: 200 |
 | `trim` | `bool` | `true` | Whether to trim whitespace from chunk boundaries. Default: true |
-| `chunker_type` | `KreuzbergChunkerType` | `KREUZBERG_KREUZBERG_TEXT` | Type of chunker to use (Text or Markdown). Default: Text |
-| `embedding` | `KreuzbergEmbeddingConfig*` | `NULL` | Optional embedding configuration for chunk embeddings. |
+| `chunker_type` | `XbergChunkerType` | `XBERG_XBERG_TEXT` | Type of chunker to use (Text or Markdown). Default: Text |
+| `embedding` | `XbergEmbeddingConfig*` | `NULL` | Optional embedding configuration for chunk embeddings. |
 | `preset` | `const char**` | `NULL` | Use a preset configuration (overrides individual settings if provided). |
-| `sizing` | `KreuzbergChunkSizing` | `KREUZBERG_KREUZBERG_CHARACTERS` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
+| `sizing` | `XbergChunkSizing` | `XBERG_XBERG_CHARACTERS` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
 | `prepend_heading_context` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topic_threshold` | `float*` | `NULL` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
-| `table_chunking` | `KreuzbergTableChunkingMode` | `KREUZBERG_KREUZBERG_SPLIT` | How to handle markdown tables that exceed the chunk size limit. Only applies when `chunker_type` is `Markdown`. - `Split` (default) — tables are split at row boundaries; continuation chunks do not repeat the header. - `RepeatHeader` — the table header row and separator are prepended to every continuation chunk so each chunk is self-contained. Default: `Split` |
+| `table_chunking` | `XbergTableChunkingMode` | `XBERG_XBERG_SPLIT` | How to handle markdown tables that exceed the chunk size limit. Only applies when `chunker_type` is `Markdown`. - `Split` (default) — tables are split at row boundaries; continuation chunks do not repeat the header. - `RepeatHeader` — the table header row and separator are prepended to every continuation chunk so each chunk is self-contained. Default: `Split` |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergChunkingConfig kreuzberg_default();
+XbergChunkingConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergChunkingConfig *result = kreuzberg_default();
+XbergChunkingConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergChunkingConfig`
+**Returns:** `XbergChunkingConfig`
 
 ---
 
-#### KreuzbergChunkingResult
+#### XbergChunkingResult
 
 Result of a text chunking operation.
 
@@ -3213,12 +3213,12 @@ Contains the generated chunks and metadata about the chunking.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `chunks` | `KreuzbergChunk*` | — | List of text chunks |
+| `chunks` | `XbergChunk*` | — | List of text chunks |
 | `chunk_count` | `uintptr_t` | — | Total number of chunks generated |
 
 ---
 
-#### KreuzbergCitation
+#### XbergCitation
 
 A structured citation from a citation block.
 
@@ -3234,7 +3234,7 @@ Parsed from entries like:
 
 ---
 
-#### KreuzbergCitationMetadata
+#### XbergCitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
 
@@ -3243,23 +3243,23 @@ Citation file metadata (RIS, PubMed, EndNote).
 | `citation_count` | `uintptr_t` | — | Total number of citation records in the file. |
 | `format` | `const char**` | `NULL` | Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`). |
 | `authors` | `const char**` | `NULL` | Author names collected across all citation records. |
-| `year_range` | `KreuzbergYearRange*` | `NULL` | Earliest and latest publication years found in the file. |
+| `year_range` | `XbergYearRange*` | `NULL` | Earliest and latest publication years found in the file. |
 | `dois` | `const char**` | `NULL` | DOI identifiers found in the citation records. |
 | `keywords` | `const char**` | `NULL` | Keywords collected from all citation records. |
 
 ---
 
-#### KreuzbergClassificationEnrichmentConfig
+#### XbergClassificationEnrichmentConfig
 
 Classification enrichment knob: how to label the document.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `config` | `KreuzbergPageClassificationConfig` | — | Label set and LLM settings for the classification stage. |
+| `config` | `XbergPageClassificationConfig` | — | Label set and LLM settings for the classification stage. |
 
 ---
 
-#### KreuzbergClassificationLabel
+#### XbergClassificationLabel
 
 A single label + confidence pair.
 
@@ -3270,7 +3270,7 @@ A single label + confidence pair.
 
 ---
 
-#### KreuzbergConfidenceSignals
+#### XbergConfidenceSignals
 
 Input signals for confidence scoring.
 
@@ -3280,11 +3280,11 @@ Caller fills these from the extraction result and the LLM response.
 |-------|------|---------|-------------|
 | `text_coverage` | `float` | — | Fraction of pages with usable text in `\[0, 1\]`. |
 | `ocr_aggregate` | `float*` | `NULL` | Mean OCR per-element recognition confidence; `NULL` when OCR did not run. |
-| `schema_compliance` | `KreuzbergSchemaCompliance` | — | Schema-validation result of the merged output. |
+| `schema_compliance` | `XbergSchemaCompliance` | — | Schema-validation result of the merged output. |
 
 ##### Methods
 
-###### kreuzberg_from_extraction_result()
+###### xberg_from_extraction_result()
 
 Build `ConfidenceSignals` from an `ExtractionResult`.
 
@@ -3300,28 +3300,28 @@ The `ocr_aggregate` is computed as the arithmetic mean of all
 **Signature:**
 
 ```c
-KreuzbergConfidenceSignals kreuzberg_from_extraction_result(KreuzbergExtractionResult result, KreuzbergSchemaCompliance schema_compliance, float text_coverage);
+XbergConfidenceSignals xberg_from_extraction_result(XbergExtractionResult result, XbergSchemaCompliance schema_compliance, float text_coverage);
 ```
 
 **Example:**
 
 ```c
-KreuzbergConfidenceSignals *result = kreuzberg_from_extraction_result(NULL, (KreuzbergSchemaCompliance){0}, 0.5);
+XbergConfidenceSignals *result = xberg_from_extraction_result(NULL, (XbergSchemaCompliance){0}, 0.5);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `schema_compliance` | `KreuzbergSchemaCompliance` | Yes | The schema compliance |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `schema_compliance` | `XbergSchemaCompliance` | Yes | The schema compliance |
 | `text_coverage` | `float` | Yes | The text coverage |
 
-**Returns:** `KreuzbergConfidenceSignals`
+**Returns:** `XbergConfidenceSignals`
 
 ---
 
-#### KreuzbergConfidenceWeights
+#### XbergConfidenceWeights
 
 Tunable weights for the confidence scoring formula.
 
@@ -3335,43 +3335,43 @@ Defaults picked by inspection; callers tune them via config.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergConfidenceWeights kreuzberg_default();
+XbergConfidenceWeights xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergConfidenceWeights *result = kreuzberg_default();
+XbergConfidenceWeights *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergConfidenceWeights`
+**Returns:** `XbergConfidenceWeights`
 
-###### kreuzberg_is_normalized()
+###### xberg_is_normalized()
 
 Validate that weights sum to approximately 1.0.
 
 **Signature:**
 
 ```c
-bool kreuzberg_is_normalized();
+bool xberg_is_normalized();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_is_normalized(instance);
+bool result = xberg_is_normalized(instance);
 ```
 
 **Returns:** `bool`
 
 ---
 
-#### KreuzbergContentFilterConfig
+#### XbergContentFilterConfig
 
 Cross-extractor content filtering configuration.
 
@@ -3392,25 +3392,25 @@ default behavior unchanged.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergContentFilterConfig kreuzberg_default();
+XbergContentFilterConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergContentFilterConfig *result = kreuzberg_default();
+XbergContentFilterConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergContentFilterConfig`
+**Returns:** `XbergContentFilterConfig`
 
 ---
 
-#### KreuzbergContributorRole
+#### XbergContributorRole
 
 JATS contributor with role.
 
@@ -3421,7 +3421,7 @@ JATS contributor with role.
 
 ---
 
-#### KreuzbergCoreProperties
+#### XbergCoreProperties
 
 Dublin Core metadata from docProps/core.xml
 
@@ -3448,7 +3448,7 @@ and Office-specific extensions.
 
 ---
 
-#### KreuzbergCsvMetadata
+#### XbergCsvMetadata
 
 CSV/TSV file metadata.
 
@@ -3462,7 +3462,7 @@ CSV/TSV file metadata.
 
 ---
 
-#### KreuzbergDbfFieldInfo
+#### XbergDbfFieldInfo
 
 dBASE field information.
 
@@ -3473,7 +3473,7 @@ dBASE field information.
 
 ---
 
-#### KreuzbergDbfMetadata
+#### XbergDbfMetadata
 
 dBASE (DBF) file metadata.
 
@@ -3481,11 +3481,11 @@ dBASE (DBF) file metadata.
 |-------|------|---------|-------------|
 | `record_count` | `uintptr_t` | — | Total number of data records in the DBF file. |
 | `field_count` | `uintptr_t` | — | Number of field (column) definitions. |
-| `fields` | `KreuzbergDbfFieldInfo*` | `NULL` | Descriptor for each field in the table schema. |
+| `fields` | `XbergDbfFieldInfo*` | `NULL` | Descriptor for each field in the table schema. |
 
 ---
 
-#### KreuzbergDetectResponse
+#### XbergDetectResponse
 
 MIME type detection response.
 
@@ -3496,7 +3496,7 @@ MIME type detection response.
 
 ---
 
-#### KreuzbergDetectionResult
+#### XbergDetectionResult
 
 Page-level detection result containing all detections and page metadata.
 
@@ -3504,11 +3504,11 @@ Page-level detection result containing all detections and page metadata.
 |-------|------|---------|-------------|
 | `page_width` | `uint32_t` | — | Page width in pixels (as seen by the model). |
 | `page_height` | `uint32_t` | — | Page height in pixels (as seen by the model). |
-| `detections` | `KreuzbergLayoutDetection*` | — | All layout detections on this page after postprocessing. |
+| `detections` | `XbergLayoutDetection*` | — | All layout detections on this page after postprocessing. |
 
 ---
 
-#### KreuzbergDiffHunk
+#### XbergDiffHunk
 
 A single contiguous hunk in a unified diff.
 
@@ -3518,11 +3518,11 @@ A single contiguous hunk in a unified diff.
 | `from_count` | `uintptr_t` | — | Number of lines from the old content in this hunk. |
 | `to_line` | `uintptr_t` | — | Starting line number in the new content (0-indexed). |
 | `to_count` | `uintptr_t` | — | Number of lines from the new content in this hunk. |
-| `lines` | `KreuzbergDiffLine*` | — | Lines that make up this hunk. |
+| `lines` | `XbergDiffLine*` | — | Lines that make up this hunk. |
 
 ---
 
-#### KreuzbergDiffOptions
+#### XbergDiffOptions
 
 Options controlling how two `ExtractionResult` values are compared.
 
@@ -3534,25 +3534,25 @@ Options controlling how two `ExtractionResult` values are compared.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergDiffOptions kreuzberg_default();
+XbergDiffOptions xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergDiffOptions *result = kreuzberg_default();
+XbergDiffOptions *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergDiffOptions`
+**Returns:** `XbergDiffOptions`
 
 ---
 
-#### KreuzbergDjotContent
+#### XbergDjotContent
 
 Comprehensive Djot document structure with semantic preservation.
 
@@ -3570,16 +3570,16 @@ Available when the `djot` feature is enabled.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `plain_text` | `const char*` | — | Plain text representation for backwards compatibility |
-| `blocks` | `KreuzbergFormattedBlock*` | — | Structured block-level content |
-| `metadata` | `KreuzbergMetadata` | — | Metadata from YAML frontmatter |
-| `tables` | `KreuzbergTable*` | — | Extracted tables as structured data |
-| `images` | `KreuzbergDjotImage*` | — | Extracted images with metadata |
-| `links` | `KreuzbergDjotLink*` | — | Extracted links with URLs |
-| `footnotes` | `KreuzbergFootnote*` | — | Footnote definitions |
+| `blocks` | `XbergFormattedBlock*` | — | Structured block-level content |
+| `metadata` | `XbergMetadata` | — | Metadata from YAML frontmatter |
+| `tables` | `XbergTable*` | — | Extracted tables as structured data |
+| `images` | `XbergDjotImage*` | — | Extracted images with metadata |
+| `links` | `XbergDjotLink*` | — | Extracted links with URLs |
+| `footnotes` | `XbergFootnote*` | — | Footnote definitions |
 
 ---
 
-#### KreuzbergDjotImage
+#### XbergDjotImage
 
 Image element in Djot.
 
@@ -3591,7 +3591,7 @@ Image element in Djot.
 
 ---
 
-#### KreuzbergDjotLink
+#### XbergDjotLink
 
 Link element in Djot.
 
@@ -3603,7 +3603,7 @@ Link element in Djot.
 
 ---
 
-#### KreuzbergDocumentBoundary
+#### XbergDocumentBoundary
 
 Detected document boundary within a PDF.
 
@@ -3612,11 +3612,11 @@ Detected document boundary within a PDF.
 | `start_page` | `uint32_t` | — | 1-indexed start page (inclusive). |
 | `end_page` | `uint32_t` | — | 1-indexed end page (inclusive). |
 | `confidence` | `float` | — | Confidence in this boundary, `\[0.0, 1.0\]`. |
-| `reason` | `KreuzbergBoundaryReason` | — | Reason for the boundary detection. |
+| `reason` | `XbergBoundaryReason` | — | Reason for the boundary detection. |
 
 ---
 
-#### KreuzbergDocumentExtractor
+#### XbergDocumentExtractor
 
 Trait for document extractor plugins.
 
@@ -3646,7 +3646,7 @@ Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
 ##### Methods
 
-###### kreuzberg_extract_bytes()
+###### xberg_extract_bytes()
 
 Extract content from a byte array.
 
@@ -3659,21 +3659,21 @@ The pipeline will convert this into the public `ExtractionResult`.
 
 **Errors:**
 
-- `KreuzbergError.Parsing` - Document parsing failed
-- `KreuzbergError.Validation` - Invalid document structure
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
-- `KreuzbergError.MissingDependency` - Required dependency not available
+- `XbergError.Parsing` - Document parsing failed
+- `XbergError.Validation` - Invalid document structure
+- `XbergError.Io` - I/O errors (these always bubble up)
+- `XbergError.MissingDependency` - Required dependency not available
 
 **Signature:**
 
 ```c
-KreuzbergInternalDocument kreuzberg_extract_bytes(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
+XbergInternalDocument xberg_extract_bytes(const uint8_t* content, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergInternalDocument *result = kreuzberg_extract_bytes(instance, (const uint8_t *)"data", "value", NULL);
+XbergInternalDocument *result = xberg_extract_bytes(instance, (const uint8_t *)"data", "value", NULL);
 ```
 
 **Parameters:**
@@ -3682,13 +3682,13 @@ KreuzbergInternalDocument *result = kreuzberg_extract_bytes(instance, (const uin
 |------|------|----------|-------------|
 | `content` | `const uint8_t*` | Yes | Raw document bytes |
 | `mime_type` | `const char*` | Yes | MIME type of the document (already validated) |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
-**Returns:** `KreuzbergInternalDocument`
+**Returns:** `XbergInternalDocument`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_extract_file()
+###### xberg_extract_file()
 
 Extract content from a file.
 
@@ -3706,13 +3706,13 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```c
-KreuzbergInternalDocument kreuzberg_extract_file(const char* path, const char* mime_type, KreuzbergExtractionConfig config);
+XbergInternalDocument xberg_extract_file(const char* path, const char* mime_type, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergInternalDocument *result = kreuzberg_extract_file(instance, "value", "value", NULL);
+XbergInternalDocument *result = xberg_extract_file(instance, "value", "value", NULL);
 ```
 
 **Parameters:**
@@ -3721,13 +3721,13 @@ KreuzbergInternalDocument *result = kreuzberg_extract_file(instance, "value", "v
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to the document file |
 | `mime_type` | `const char*` | Yes | MIME type of the document (already validated) |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
-**Returns:** `KreuzbergInternalDocument`
+**Returns:** `XbergInternalDocument`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_supported_mime_types()
+###### xberg_supported_mime_types()
 
 Get the list of MIME types supported by this extractor.
 
@@ -3743,18 +3743,18 @@ A slice of MIME type strings.
 **Signature:**
 
 ```c
-const char** kreuzberg_supported_mime_types();
+const char** xberg_supported_mime_types();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_supported_mime_types(instance);
+const char** result = xberg_supported_mime_types(instance);
 ```
 
 **Returns:** `const char**`
 
-###### kreuzberg_priority()
+###### xberg_priority()
 
 Get the priority of this extractor.
 
@@ -3776,18 +3776,18 @@ Priority value (default: 50)
 **Signature:**
 
 ```c
-int32_t kreuzberg_priority();
+int32_t xberg_priority();
 ```
 
 **Example:**
 
 ```c
-int32_t result = kreuzberg_priority(instance);
+int32_t result = xberg_priority(instance);
 ```
 
 **Returns:** `int32_t`
 
-###### kreuzberg_can_handle()
+###### xberg_can_handle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -3801,13 +3801,13 @@ Defaults to `true` (rely on MIME type matching).
 **Signature:**
 
 ```c
-bool kreuzberg_can_handle(const char* path, const char* mime_type);
+bool xberg_can_handle(const char* path, const char* mime_type);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_can_handle(instance, "value", "value");
+bool result = xberg_can_handle(instance, "value", "value");
 ```
 
 **Parameters:**
@@ -3821,7 +3821,7 @@ bool result = kreuzberg_can_handle(instance, "value", "value");
 
 ---
 
-#### KreuzbergDocumentMetadata
+#### XbergDocumentMetadata
 
 Metadata about a document for analysis.
 
@@ -3831,12 +3831,12 @@ Metadata about a document for analysis.
 | `size_bytes` | `uint64_t` | — | File size in bytes. |
 | `page_count` | `uint32_t*` | `NULL` | Page count (if known, e.g., from previous analysis). |
 | `force_ocr` | `bool` | — | Whether OCR is forced regardless of text layer. |
-| `user_chunk_config` | `KreuzbergUserChunkConfig*` | `NULL` | User-provided chunk configuration overrides. |
+| `user_chunk_config` | `XbergUserChunkConfig*` | `NULL` | User-provided chunk configuration overrides. |
 | `chunking_enabled` | `bool` | — | Whether chunking is enabled for this job. |
 
 ---
 
-#### KreuzbergDocumentNode
+#### XbergDocumentNode
 
 A single node in the document tree.
 
@@ -3845,19 +3845,19 @@ for tree structure, and metadata like page number, bounding box, and content lay
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `KreuzbergNodeContent` | — | Node content — tagged enum, type-specific data only. |
+| `content` | `XbergNodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `parent` | `uint32_t*` | `NULL` | Parent node index (`NULL` = root-level node). |
 | `children` | `uint32_t*` | `/* serde(default) */` | Child node indices in reading order. |
-| `content_layer` | `KreuzbergContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#\[serde(default)\]` covers the missing-field case on inbound JSON. |
+| `content_layer` | `XbergContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#\[serde(default)\]` covers the missing-field case on inbound JSON. |
 | `page` | `uint32_t*` | `NULL` | Page number where this node starts (1-indexed). |
 | `page_end` | `uint32_t*` | `NULL` | Page number where this node ends (for multi-page tables/sections). |
-| `bbox` | `KreuzbergBoundingBox*` | `NULL` | Bounding box in document coordinates. |
-| `annotations` | `KreuzbergTextAnnotation*` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `bbox` | `XbergBoundingBox*` | `NULL` | Bounding box in document coordinates. |
+| `annotations` | `XbergTextAnnotation*` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `attributes` | `void**` | `NULL` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
 
-#### KreuzbergDocumentRelationship
+#### XbergDocumentRelationship
 
 A resolved relationship between two nodes in the document tree.
 
@@ -3865,11 +3865,11 @@ A resolved relationship between two nodes in the document tree.
 |-------|------|---------|-------------|
 | `source` | `uint32_t` | — | Source node index (the referencing node). |
 | `target` | `uint32_t` | — | Target node index (the referenced node). |
-| `kind` | `KreuzbergRelationshipKind` | — | Semantic kind of the relationship. |
+| `kind` | `XbergRelationshipKind` | — | Semantic kind of the relationship. |
 
 ---
 
-#### KreuzbergDocumentRevision
+#### XbergDocumentRevision
 
 A single tracked change embedded in a document.
 
@@ -3883,13 +3883,13 @@ format-specific implementation is added.
 | `revision_id` | `const char*` | — | Format-specific revision identifier. For DOCX this is the `w:id` attribute value on the change element (e.g. `"42"`). When the attribute is absent a synthetic fallback is generated (`"docx-ins-0"`, `"docx-del-3"`, …). |
 | `author` | `const char**` | `NULL` | Display name of the author who made this change, when available. |
 | `timestamp` | `const char**` | `NULL` | ISO-8601 timestamp of the change, when available. Stored as a plain string so this type remains FFI-friendly and unconditionally available without the `chrono` optional dep. DOCX populates this from the `w:date` attribute (e.g. `"2024-03-15T10:30:00Z"`). |
-| `kind` | `KreuzbergRevisionKind` | — | Semantic kind of this revision. |
-| `anchor` | `KreuzbergRevisionAnchor*` | `NULL` | Best-effort document location for this revision. Resolution is format-dependent and may be `NULL` when the location cannot be determined (e.g. changes inside table cells before table-cell anchor support is added). |
-| `delta` | `KreuzbergRevisionDelta` | — | The content changes that make up this revision. |
+| `kind` | `XbergRevisionKind` | — | Semantic kind of this revision. |
+| `anchor` | `XbergRevisionAnchor*` | `NULL` | Best-effort document location for this revision. Resolution is format-dependent and may be `NULL` when the location cannot be determined (e.g. changes inside table cells before table-cell anchor support is added). |
+| `delta` | `XbergRevisionDelta` | — | The content changes that make up this revision. |
 
 ---
 
-#### KreuzbergDocumentStructure
+#### XbergDocumentStructure
 
 Top-level structured document representation.
 
@@ -3904,14 +3904,14 @@ and parent-child relationships are bidirectionally consistent.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `nodes` | `KreuzbergDocumentNode*` | `NULL` | All nodes in document/reading order. |
+| `nodes` | `XbergDocumentNode*` | `NULL` | All nodes in document/reading order. |
 | `source_format` | `const char**` | `NULL` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
-| `relationships` | `KreuzbergDocumentRelationship*` | `NULL` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
+| `relationships` | `XbergDocumentRelationship*` | `NULL` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `const char**` | `NULL` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
 ##### Methods
 
-###### kreuzberg_finalize_node_types()
+###### xberg_finalize_node_types()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -3921,66 +3921,66 @@ construction paths (builder, derivation) call this automatically.
 **Signature:**
 
 ```c
-void kreuzberg_finalize_node_types();
+void xberg_finalize_node_types();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_finalize_node_types(instance);
+xberg_finalize_node_types(instance);
 ```
 
 **Returns:** No return value.
 
-###### kreuzberg_is_empty()
+###### xberg_is_empty()
 
 Check if the document structure is empty.
 
 **Signature:**
 
 ```c
-bool kreuzberg_is_empty();
+bool xberg_is_empty();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_is_empty(instance);
+bool result = xberg_is_empty(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergDocumentStructure kreuzberg_default();
+XbergDocumentStructure xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergDocumentStructure *result = kreuzberg_default();
+XbergDocumentStructure *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergDocumentStructure`
+**Returns:** `XbergDocumentStructure`
 
 ---
 
-#### KreuzbergDocumentSummary
+#### XbergDocumentSummary
 
 Summary of an extracted document.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `const char*` | — | Summary text (plain prose). |
-| `strategy` | `KreuzbergSummaryStrategy` | — | Strategy that produced this summary. |
+| `strategy` | `XbergSummaryStrategy` | — | Strategy that produced this summary. |
 | `token_count` | `uint32_t*` | `NULL` | Approximate token count of the summary, when known. |
 
 ---
 
-#### KreuzbergDocxAppProperties
+#### XbergDocxAppProperties
 
 Application properties from docProps/app.xml for DOCX
 
@@ -4007,7 +4007,7 @@ Contains Word-specific document statistics and metadata.
 
 ---
 
-#### KreuzbergDocxMetadata
+#### XbergDocxMetadata
 
 Word document metadata.
 
@@ -4016,13 +4016,13 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `KreuzbergCoreProperties*` | `NULL` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `KreuzbergDocxAppProperties*` | `NULL` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `core_properties` | `XbergCoreProperties*` | `NULL` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `XbergDocxAppProperties*` | `NULL` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `custom_properties` | `void**` | `NULL` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
 
 ---
 
-#### KreuzbergElement
+#### XbergElement
 
 Semantic element extracted from document.
 
@@ -4031,13 +4031,13 @@ unique identifier, and metadata for tracking origin and position.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `element_type` | `KreuzbergElementType` | — | Semantic type of this element |
+| `element_type` | `XbergElementType` | — | Semantic type of this element |
 | `text` | `const char*` | — | Text content of the element |
-| `metadata` | `KreuzbergElementMetadata` | — | Metadata about the element |
+| `metadata` | `XbergElementMetadata` | — | Metadata about the element |
 
 ---
 
-#### KreuzbergElementMetadata
+#### XbergElementMetadata
 
 Metadata for a semantic element.
 
@@ -4045,13 +4045,13 @@ Metadata for a semantic element.
 |-------|------|---------|-------------|
 | `page_number` | `uint32_t*` | `NULL` | Page number (1-indexed) |
 | `filename` | `const char**` | `NULL` | Source filename or document name |
-| `coordinates` | `KreuzbergBoundingBox*` | `NULL` | Bounding box coordinates if available |
+| `coordinates` | `XbergBoundingBox*` | `NULL` | Bounding box coordinates if available |
 | `element_index` | `uintptr_t*` | `NULL` | Position index in the element sequence |
 | `additional` | `void*` | — | Additional custom metadata |
 
 ---
 
-#### KreuzbergEmailAttachment
+#### XbergEmailAttachment
 
 Email attachment representation.
 
@@ -4068,7 +4068,7 @@ Contains metadata and optionally the content of an email attachment.
 
 ---
 
-#### KreuzbergEmailConfig
+#### XbergEmailConfig
 
 Configuration for email extraction.
 
@@ -4078,7 +4078,7 @@ Configuration for email extraction.
 
 ---
 
-#### KreuzbergEmailExtractionResult
+#### XbergEmailExtractionResult
 
 Email extraction result.
 
@@ -4097,12 +4097,12 @@ including headers, body content, and attachments.
 | `plain_text` | `const char**` | `NULL` | Plain text version of the email body |
 | `html_content` | `const char**` | `NULL` | HTML version of the email body |
 | `content` | `const char*` | — | Cleaned/processed text content. Aliased as `cleaned_text` for back-compat. |
-| `attachments` | `KreuzbergEmailAttachment*` | — | List of email attachments |
+| `attachments` | `XbergEmailAttachment*` | — | List of email attachments |
 | `metadata` | `void*` | — | Additional email headers and metadata |
 
 ---
 
-#### KreuzbergEmailMetadata
+#### XbergEmailMetadata
 
 Email metadata extracted from .eml and .msg files.
 
@@ -4120,30 +4120,30 @@ Includes sender/recipient information, message ID, and attachment list.
 
 ---
 
-#### KreuzbergEmbeddedChanges
+#### XbergEmbeddedChanges
 
 Changes to embedded archive children between two results.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `added` | `KreuzbergArchiveEntry*` | `NULL` | Children present in `b` but not in `a` (matched by `path`). |
-| `removed` | `KreuzbergArchiveEntry*` | `NULL` | Children present in `a` but not in `b` (matched by `path`). |
-| `changed` | `KreuzbergEmbeddedDiff*` | `NULL` | Children present in both but with differing content (matched by `path`). Each entry holds the diff of the nested `ExtractionResult`. |
+| `added` | `XbergArchiveEntry*` | `NULL` | Children present in `b` but not in `a` (matched by `path`). |
+| `removed` | `XbergArchiveEntry*` | `NULL` | Children present in `a` but not in `b` (matched by `path`). |
+| `changed` | `XbergEmbeddedDiff*` | `NULL` | Children present in both but with differing content (matched by `path`). Each entry holds the diff of the nested `ExtractionResult`. |
 
 ---
 
-#### KreuzbergEmbeddedDiff
+#### XbergEmbeddedDiff
 
 Diff for a single embedded archive entry that appears in both results.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `const char*` | — | Archive-relative path identifying this entry. |
-| `diff` | `KreuzbergExtractionDiff` | — | The recursive diff of the entry's extraction result. |
+| `diff` | `XbergExtractionDiff` | — | The recursive diff of the entry's extraction result. |
 
 ---
 
-#### KreuzbergEmbeddedFile
+#### XbergEmbeddedFile
 
 Embedded file descriptor extracted from the PDF name tree.
 
@@ -4156,7 +4156,7 @@ Embedded file descriptor extracted from the PDF name tree.
 
 ---
 
-#### KreuzbergEmbeddingBackend
+#### XbergEmbeddingBackend
 
 Trait for in-process embedding backend plugins.
 
@@ -4169,7 +4169,7 @@ equivalent to satisfy the async signature.
 ##### Thread safety
 
 Backends must be `Send + Sync + 'static`. They are stored in
-`Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
+`Arc<dyn EmbeddingBackend>` and called concurrently from xberg's chunking
 pipeline. If the backend's underlying model isn't thread-safe, the backend
 itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
@@ -4178,7 +4178,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
   `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
   validates this before returning to downstream consumers; a non-conforming
-  backend surfaces as a `KreuzbergError.Validation`, not a panic.
+  backend surfaces as a `XbergError.Validation`, not a panic.
 
 - `embed` may be called from any thread. Its future must be `Send`
   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
@@ -4188,7 +4188,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
   used for all subsequent shape validation. Lazy-loading implementations can
   defer model loading into `initialize()` and report the real dimension
   afterwards. Later mutations of the backend's reported dimension are not
-  observed by kreuzberg — implementations that need to change dimension
+  observed by xberg — implementations that need to change dimension
   must unregister and re-register.
 
 - `shutdown()` (inherited from `Plugin`) may be invoked
@@ -4208,7 +4208,7 @@ or `tokio.runtime.Builder.new_current_thread()`) must use
 
 ##### Methods
 
-###### kreuzberg_dimensions()
+###### xberg_dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -4216,18 +4216,18 @@ every vector returned by `embed`.
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_dimensions();
+uintptr_t xberg_dimensions();
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_dimensions(instance);
+uintptr_t result = xberg_dimensions(instance);
 ```
 
 **Returns:** `uintptr_t`
 
-###### kreuzberg_embed()
+###### xberg_embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -4240,13 +4240,13 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```c
-float** kreuzberg_embed(const char** texts);
+float** xberg_embed(const char** texts);
 ```
 
 **Example:**
 
 ```c
-float** result = kreuzberg_embed(instance, NULL);
+float** result = xberg_embed(instance, NULL);
 ```
 
 **Parameters:**
@@ -4261,7 +4261,7 @@ float** result = kreuzberg_embed(instance, NULL);
 
 ---
 
-#### KreuzbergEmbeddingConfig
+#### XbergEmbeddingConfig
 
 Embedding configuration for text chunks.
 
@@ -4270,35 +4270,35 @@ Requires the `embeddings` feature to be enabled.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | `KreuzbergEmbeddingModelType` | `KREUZBERG_KREUZBERG_PRESET` | The embedding model to use (defaults to "balanced" preset if not specified) |
+| `model` | `XbergEmbeddingModelType` | `XBERG_XBERG_PRESET` | The embedding model to use (defaults to "balanced" preset if not specified) |
 | `normalize` | `bool` | `true` | Whether to normalize embedding vectors (recommended for cosine similarity) |
 | `batch_size` | `uintptr_t` | `32` | Batch size for embedding generation |
 | `show_download_progress` | `bool` | `false` | Show model download progress |
-| `cache_dir` | `const char**` | `NULL` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
-| `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
+| `cache_dir` | `const char**` | `NULL` | Custom cache directory for model files Defaults to `~/.cache/xberg/embeddings/` if not specified. Allows full customization of model download location. |
+| `acceleration` | `XbergAccelerationConfig*` | `NULL` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
 | `max_embed_duration_secs` | `uint64_t*` | `NULL` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `NULL` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergEmbeddingConfig kreuzberg_default();
+XbergEmbeddingConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergEmbeddingConfig *result = kreuzberg_default();
+XbergEmbeddingConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergEmbeddingConfig`
+**Returns:** `XbergEmbeddingConfig`
 
 ---
 
-#### KreuzbergEmbeddingPreset
+#### XbergEmbeddingPreset
 
 Preset configurations for common RAG use cases.
 
@@ -4321,7 +4321,7 @@ are safe to clone and pass across language boundaries.
 
 ---
 
-#### KreuzbergEnrichOptions
+#### XbergEnrichOptions
 
 Which enrichment passes to run on a piece of text.
 
@@ -4335,7 +4335,7 @@ All fields default to `false` / empty so callers can opt in precisely.
 
 ---
 
-#### KreuzbergEnrichResult
+#### XbergEnrichResult
 
 Structured output produced by a completed enrichment pass.
 
@@ -4344,18 +4344,18 @@ Fields are populated only when the corresponding `EnrichOptions` flag was set.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `keywords` | `const char**` | `NULL` | Salient terms extracted from the text. Populated when `EnrichOptions.keywords` was `true`. The ordering is backend-defined (typically by descending relevance score). |
-| `entities` | `KreuzbergEntity*` | `NULL` | Named entities found in the text. Populated when `EnrichOptions.entities` was `true`. Uses the shared OSS entity schema (`Entity` / `EntityCategory`) so consumers can pattern-match on entity categories without JSON gymnastics. |
+| `entities` | `XbergEntity*` | `NULL` | Named entities found in the text. Populated when `EnrichOptions.entities` was `true`. Uses the shared OSS entity schema (`Entity` / `EntityCategory`) so consumers can pattern-match on entity categories without JSON gymnastics. |
 | `labels` | `const char**` | `NULL` | Caller-supplied labels echoed from `EnrichOptions.labels`. |
 
 ---
 
-#### KreuzbergEntity
+#### XbergEntity
 
 A single named entity detected in the extracted text.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `category` | `KreuzbergEntityCategory` | — | Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.). |
+| `category` | `XbergEntityCategory` | — | Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.). |
 | `text` | `const char*` | — | Raw mention text exactly as it appeared in the source. |
 | `start` | `uint32_t` | — | Byte-offset span in `ExtractionResult.content` where the mention starts. |
 | `end` | `uint32_t` | — | Byte-offset span in `ExtractionResult.content` where the mention ends (exclusive). |
@@ -4363,7 +4363,7 @@ A single named entity detected in the extracted text.
 
 ---
 
-#### KreuzbergEpubMetadata
+#### XbergEpubMetadata
 
 EPUB metadata (Dublin Core extensions).
 
@@ -4378,7 +4378,7 @@ EPUB metadata (Dublin Core extensions).
 
 ---
 
-#### KreuzbergErrorMetadata
+#### XbergErrorMetadata
 
 Error metadata (for batch operations).
 
@@ -4389,7 +4389,7 @@ Error metadata (for batch operations).
 
 ---
 
-#### KreuzbergExcelMetadata
+#### XbergExcelMetadata
 
 Excel/spreadsheet format metadata.
 
@@ -4403,7 +4403,7 @@ discriminant. Sheet count and sheet names are stored inside this struct.
 
 ---
 
-#### KreuzbergExcelSheet
+#### XbergExcelSheet
 
 Single Excel worksheet.
 
@@ -4421,7 +4421,7 @@ converted to Markdown format and dimensional statistics.
 
 ---
 
-#### KreuzbergExcelWorkbook
+#### XbergExcelWorkbook
 
 Excel workbook representation.
 
@@ -4430,13 +4430,13 @@ extracted content and metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `sheets` | `KreuzbergExcelSheet*` | — | All sheets in the workbook |
+| `sheets` | `XbergExcelSheet*` | — | All sheets in the workbook |
 | `metadata` | `void*` | — | Workbook-level metadata (author, creation date, etc.) |
-| `revisions` | `KreuzbergDocumentRevision**` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `NULL`/empty for v1 (per-cell log parsing is a follow-up). `NULL` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `revisions` | `XbergDocumentRevision**` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `NULL`/empty for v1 (per-cell log parsing is a follow-up). `NULL` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
-#### KreuzbergExtractedImage
+#### XbergExtractedImage
 
 Extracted image from a document.
 
@@ -4456,19 +4456,19 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `bits_per_component` | `uint32_t*` | `NULL` | Bits per color component (e.g., 8, 16) |
 | `is_mask` | `bool` | — | Whether this image is a mask image |
 | `description` | `const char**` | `NULL` | Optional description of the image |
-| `ocr_result` | `KreuzbergExtractionResult*` | `NULL` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
-| `bounding_box` | `KreuzbergBoundingBox*` | `NULL` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
+| `ocr_result` | `XbergExtractionResult*` | `NULL` | Nested OCR extraction result (if image was OCRed) When OCR is performed on this image, the result is embedded here rather than in a separate collection, making the relationship explicit. |
+| `bounding_box` | `XbergBoundingBox*` | `NULL` | Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor. |
 | `source_path` | `const char**` | `NULL` | Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted. |
-| `image_kind` | `KreuzbergImageKind*` | `NULL` | Heuristic classification of what this image likely depicts. `NULL` if classification was disabled or inconclusive. |
+| `image_kind` | `XbergImageKind*` | `NULL` | Heuristic classification of what this image likely depicts. `NULL` if classification was disabled or inconclusive. |
 | `kind_confidence` | `float*` | `NULL` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `uint32_t*` | `NULL` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `NULL` for singletons. |
-| `caption` | `const char**` | `NULL` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `NULL` when captioning is disabled or the VLM declined to caption. |
-| `qr_codes` | `KreuzbergQrCode**` | `NULL` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `NULL` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
+| `caption` | `const char**` | `NULL` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/xberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `NULL` when captioning is disabled or the VLM declined to caption. |
+| `qr_codes` | `XbergQrCode**` | `NULL` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/xberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `NULL` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
 | `data_base64` | `const char**` | `NULL` | Base64-encoded copy of `data`; populated when `ImageExtractionConfig.include_data_base64` is `true`. Omitted from JSON by default; use instead of `data` in JSON-only clients. |
 
 ---
 
-#### KreuzbergExtractedUri
+#### XbergExtractedUri
 
 A URI extracted from a document.
 
@@ -4481,11 +4481,11 @@ optional human-readable display text.
 | `url` | `const char*` | — | The URL or path string. |
 | `label` | `const char**` | `NULL` | Optional display text / label for the link. |
 | `page` | `uint32_t*` | `NULL` | Optional page number where the URI was found (1-indexed). |
-| `kind` | `KreuzbergUriKind` | — | Semantic classification of the URI. |
+| `kind` | `XbergUriKind` | — | Semantic classification of the URI. |
 
 ---
 
-#### KreuzbergExtractionConfidence
+#### XbergExtractionConfidence
 
 Combined confidence on `[0, 1]`.
 
@@ -4496,12 +4496,12 @@ so the weighted sum still totals 1.0.
 |-------|------|---------|-------------|
 | `text_coverage` | `float` | — | Fraction of pages with a usable text layer. |
 | `ocr_aggregate` | `float*` | `NULL` | Mean OCR per-element recognition confidence when OCR ran; `NULL` when it did not. |
-| `schema_compliance` | `KreuzbergSchemaCompliance` | — | Whether the merged output validates against the preset schema. |
+| `schema_compliance` | `XbergSchemaCompliance` | — | Whether the merged output validates against the preset schema. |
 | `combined` | `float` | — | Weighted blend in `\[0, 1\]`.  The value compared against the fallback threshold. |
 
 ---
 
-#### KreuzbergExtractionConfig
+#### XbergExtractionConfig
 
 Main extraction configuration.
 
@@ -4512,64 +4512,64 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 |-------|------|---------|-------------|
 | `use_cache` | `bool` | `true` | Enable caching of extraction results |
 | `enable_quality_processing` | `bool` | `true` | Enable quality post-processing |
-| `ocr` | `KreuzbergOcrConfig*` | `NULL` | OCR configuration (None = OCR disabled) |
+| `ocr` | `XbergOcrConfig*` | `NULL` | OCR configuration (None = OCR disabled) |
 | `force_ocr` | `bool` | `false` | Force OCR even for searchable PDFs |
 | `force_ocr_pages` | `uint32_t**` | `NULL` | Force OCR on specific pages only (1-indexed page numbers, must be >= 1). When set, only the listed pages are OCR'd regardless of text layer quality. Unlisted pages use native text extraction. Ignored when `force_ocr` is `true`. Only applies to PDF documents. Duplicates are automatically deduplicated. An `ocr` config is recommended for backend/language selection; defaults are used if absent. |
 | `disable_ocr` | `bool` | `false` | Disable OCR entirely, even for images. When `true`, OCR is skipped for all document types. Images return metadata only (dimensions, format, EXIF) without text extraction. PDFs use only native text extraction without OCR fallback. Cannot be `true` simultaneously with `force_ocr`. *Added in v4.7.0.* |
-| `chunking` | `KreuzbergChunkingConfig*` | `NULL` | Text chunking configuration (None = chunking disabled) |
-| `content_filter` | `KreuzbergContentFilterConfig*` | `NULL` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
-| `images` | `KreuzbergImageExtractionConfig*` | `NULL` | Image extraction configuration (None = no image extraction) |
-| `pdf_options` | `KreuzbergPdfConfig*` | `NULL` | PDF-specific options (None = use defaults) |
-| `token_reduction` | `KreuzbergTokenReductionOptions*` | `NULL` | Token reduction configuration (None = no token reduction) |
-| `language_detection` | `KreuzbergLanguageDetectionConfig*` | `NULL` | Language detection configuration (None = no language detection) |
-| `pages` | `KreuzbergPageConfig*` | `NULL` | Page extraction configuration (None = no page tracking) |
-| `keywords` | `KreuzbergKeywordConfig*` | `NULL` | Keyword extraction configuration (None = no keyword extraction) |
-| `postprocessor` | `KreuzbergPostProcessorConfig*` | `NULL` | Post-processor configuration (None = use defaults) |
-| `html_output` | `KreuzbergHtmlOutputConfig*` | `NULL` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `NULL`, the existing plain comrak-based HTML renderer is used. |
+| `chunking` | `XbergChunkingConfig*` | `NULL` | Text chunking configuration (None = chunking disabled) |
+| `content_filter` | `XbergContentFilterConfig*` | `NULL` | Content filtering configuration (None = use extractor defaults). Controls whether document "furniture" (headers, footers, watermarks, repeating text) is included in or stripped from extraction results. See `ContentFilterConfig` for per-field documentation. |
+| `images` | `XbergImageExtractionConfig*` | `NULL` | Image extraction configuration (None = no image extraction) |
+| `pdf_options` | `XbergPdfConfig*` | `NULL` | PDF-specific options (None = use defaults) |
+| `token_reduction` | `XbergTokenReductionOptions*` | `NULL` | Token reduction configuration (None = no token reduction) |
+| `language_detection` | `XbergLanguageDetectionConfig*` | `NULL` | Language detection configuration (None = no language detection) |
+| `pages` | `XbergPageConfig*` | `NULL` | Page extraction configuration (None = no page tracking) |
+| `keywords` | `XbergKeywordConfig*` | `NULL` | Keyword extraction configuration (None = no keyword extraction) |
+| `postprocessor` | `XbergPostProcessorConfig*` | `NULL` | Post-processor configuration (None = use defaults) |
+| `html_output` | `XbergHtmlOutputConfig*` | `NULL` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `NULL`, the existing plain comrak-based HTML renderer is used. |
 | `extraction_timeout_secs` | `uint64_t*` | `NULL` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. Defaults to `Some(60)` to prevent pathological files (e.g. deeply nested archives, documents with millions of cells) from running indefinitely and exhausting caller resources. Set to `NULL` to disable the timeout for trusted input or long-running workloads. |
 | `max_concurrent_extractions` | `uintptr_t*` | `NULL` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
-| `result_format` | `KreuzbergResultFormat` | `KREUZBERG_KREUZBERG_UNIFIED` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
-| `security_limits` | `KreuzbergSecurityLimits*` | `NULL` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, total content size, and table cell count for every extraction path that ingests user-controlled bytes. When `NULL`, default limits are used. |
+| `result_format` | `XbergResultFormat` | `XBERG_XBERG_UNIFIED` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
+| `security_limits` | `XbergSecurityLimits*` | `NULL` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, total content size, and table cell count for every extraction path that ingests user-controlled bytes. When `NULL`, default limits are used. |
 | `max_embedded_file_bytes` | `uint64_t*` | `NULL` | Maximum uncompressed size in bytes for a single embedded file before recursive extraction is attempted (default: 50 MiB). Applies to embedded objects inside OOXML containers (DOCX, PPTX) and to email attachments processed via recursive extraction. Files that exceed this limit are skipped with a `ProcessingWarning` rather than passed to the extraction pipeline, preventing a single oversized embedded object from consuming unbounded memory or time. Set to `NULL` to disable the per-embedded-file cap (falls back to `security_limits.max_archive_size` as the only guard). |
-| `output_format` | `KreuzbergOutputFormat` | `KREUZBERG_KREUZBERG_PLAIN` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
-| `layout` | `KreuzbergLayoutDetectionConfig*` | `NULL` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
-| `transcription` | `KreuzbergTranscriptionConfig*` | `NULL` | Transcription (speech-to-text) configuration for audio/video files. When set and `enabled`, files with audio/video MIME types (mp3, mp4, m4a, wav, webm, etc.) are routed to the Whisper-based transcription pipeline. The actual heavy dependencies are only active under the `transcription` feature; the field is visible under `transcription-types` (including on WASM and Android targets that use the no-ORT preset). Default: `NULL` (transcription disabled). This is an additive, non-breaking change. |
+| `output_format` | `XbergOutputFormat` | `XBERG_XBERG_PLAIN` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
+| `layout` | `XbergLayoutDetectionConfig*` | `NULL` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `transcription` | `XbergTranscriptionConfig*` | `NULL` | Transcription (speech-to-text) configuration for audio/video files. When set and `enabled`, files with audio/video MIME types (mp3, mp4, m4a, wav, webm, etc.) are routed to the Whisper-based transcription pipeline. The actual heavy dependencies are only active under the `transcription` feature; the field is visible under `transcription-types` (including on WASM and Android targets that use the no-ORT preset). Default: `NULL` (transcription disabled). This is an additive, non-breaking change. |
 | `use_layout_for_markdown` | `bool` | `false` | Run layout detection on the non-OCR PDF markdown path. When `true` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Significantly improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `NULL`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
+| `acceleration` | `XbergAccelerationConfig*` | `NULL` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `NULL`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
 | `cache_namespace` | `const char**` | `NULL` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cache_ttl_secs` | `uint64_t*` | `NULL` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `NULL`, the global TTL applies. |
-| `email` | `KreuzbergEmailConfig*` | `NULL` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
+| `email` | `XbergEmailConfig*` | `NULL` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
 | `max_archive_depth` | `uintptr_t` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
-| `tree_sitter` | `KreuzbergTreeSitterConfig*` | `NULL` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
-| `structured_extraction` | `KreuzbergStructuredExtractionConfig*` | `NULL` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
-| `ner` | `KreuzbergNerConfig*` | `NULL` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult.entities`. |
-| `redaction` | `KreuzbergRedactionConfig*` | `NULL` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult.redaction_report`. |
-| `summarization` | `KreuzbergSummarizationConfig*` | `NULL` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult.summary`. |
-| `translation` | `KreuzbergTranslationConfig*` | `NULL` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult.translation`. |
-| `page_classification` | `KreuzbergPageClassificationConfig*` | `NULL` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
-| `captioning` | `KreuzbergCaptioningConfig*` | `NULL` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
+| `tree_sitter` | `XbergTreeSitterConfig*` | `NULL` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
+| `structured_extraction` | `XbergStructuredExtractionConfig*` | `NULL` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
+| `ner` | `XbergNerConfig*` | `NULL` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult.entities`. |
+| `redaction` | `XbergRedactionConfig*` | `NULL` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult.redaction_report`. |
+| `summarization` | `XbergSummarizationConfig*` | `NULL` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult.summary`. |
+| `translation` | `XbergTranslationConfig*` | `NULL` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult.translation`. |
+| `page_classification` | `XbergPageClassificationConfig*` | `NULL` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
+| `captioning` | `XbergCaptioningConfig*` | `NULL` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qr_codes` | `bool*` | `NULL` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergExtractionConfig kreuzberg_default();
+XbergExtractionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionConfig *result = kreuzberg_default();
+XbergExtractionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergExtractionConfig`
+**Returns:** `XbergExtractionConfig`
 
-###### kreuzberg_needs_image_data()
+###### xberg_needs_image_data()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -4591,18 +4591,18 @@ also requested `images` extraction.
 **Signature:**
 
 ```c
-bool kreuzberg_needs_image_data();
+bool xberg_needs_image_data();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_needs_image_data(instance);
+bool result = xberg_needs_image_data(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_needs_image_processing()
+###### xberg_needs_image_processing()
 
 Returns `true` when any image processing is needed during extraction.
 
@@ -4615,35 +4615,35 @@ image I/O and processing when results won't be used.
 **Signature:**
 
 ```c
-bool kreuzberg_needs_image_processing();
+bool xberg_needs_image_processing();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_needs_image_processing(instance);
+bool result = xberg_needs_image_processing(instance);
 ```
 
 **Returns:** `bool`
 
 ---
 
-#### KreuzbergExtractionDiff
+#### XbergExtractionDiff
 
 The complete diff between two `ExtractionResult` values.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content_diff` | `KreuzbergDiffHunk*` | `NULL` | Unified-diff hunks for the `content` field. Empty when the content is identical. |
-| `tables_added` | `KreuzbergTable*` | `NULL` | Tables present in `b` but not in `a` (by index position, excess right-side tables). |
-| `tables_removed` | `KreuzbergTable*` | `NULL` | Tables present in `a` but not in `b` (by index position, excess left-side tables). |
-| `tables_changed` | `KreuzbergTableDiff*` | `NULL` | Cell-level changes for table pairs that share the same index and dimensions. |
+| `content_diff` | `XbergDiffHunk*` | `NULL` | Unified-diff hunks for the `content` field. Empty when the content is identical. |
+| `tables_added` | `XbergTable*` | `NULL` | Tables present in `b` but not in `a` (by index position, excess right-side tables). |
+| `tables_removed` | `XbergTable*` | `NULL` | Tables present in `a` but not in `b` (by index position, excess left-side tables). |
+| `tables_changed` | `XbergTableDiff*` | `NULL` | Cell-level changes for table pairs that share the same index and dimensions. |
 | `metadata_changed` | `void*` | — | Metadata difference, encoded as a JSON object with three top-level keys: `added` (keys present in `b` but not `a`), `removed` (keys present in `a` but not `b`), and `changed` (keys whose values differ — each entry is `{ "from": <value-in-a>, "to": <value-in-b> }`). This is NOT RFC 6902 JSON Patch — we deliberately chose a flatter shape to avoid pulling in a json-patch crate. If you need RFC 6902 semantics (with JSON Pointer paths) feed `a.metadata` and `b.metadata` to your preferred json-patch impl directly. |
-| `embedded_changes` | `KreuzbergEmbeddedChanges` | — | Changes to embedded archive children. |
+| `embedded_changes` | `XbergEmbeddedChanges` | — | Changes to embedded archive children. |
 
 ---
 
-#### KreuzbergExtractionResult
+#### XbergExtractionResult
 
 General extraction result used by the core extraction API.
 
@@ -4653,66 +4653,66 @@ This is the main result type returned by all extraction functions.
 |-------|------|---------|-------------|
 | `content` | `const char*` | — | Plain-text representation of the extracted document content. |
 | `mime_type` | `const char*` | — | MIME type of the source document (e.g. `"application/pdf"`). |
-| `metadata` | `KreuzbergMetadata` | — | Document-level metadata (author, title, dates, format-specific fields). |
-| `extraction_method` | `KreuzbergExtractionMethod*` | `NULL` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
-| `tables` | `KreuzbergTable*` | `NULL` | Tables extracted from the document, each with structured cell data. |
+| `metadata` | `XbergMetadata` | — | Document-level metadata (author, title, dates, format-specific fields). |
+| `extraction_method` | `XbergExtractionMethod*` | `NULL` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
+| `tables` | `XbergTable*` | `NULL` | Tables extracted from the document, each with structured cell data. |
 | `detected_languages` | `const char***` | `NULL` | ISO 639-1 language codes detected in the document content. |
-| `chunks` | `KreuzbergChunk**` | `NULL` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
-| `images` | `KreuzbergExtractedImage**` | `NULL` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
-| `pages` | `KreuzbergPageContent**` | `NULL` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
-| `elements` | `KreuzbergElement**` | `NULL` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
-| `djot_content` | `KreuzbergDjotContent*` | `NULL` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `NULL` for non-Djot documents. |
-| `ocr_elements` | `KreuzbergOcrElement**` | `NULL` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
-| `document` | `KreuzbergDocumentStructure*` | `NULL` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
-| `extracted_keywords` | `KreuzbergKeyword**` | `NULL` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional\["keywords"\]`. |
+| `chunks` | `XbergChunk**` | `NULL` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
+| `images` | `XbergExtractedImage**` | `NULL` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
+| `pages` | `XbergPageContent**` | `NULL` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
+| `elements` | `XbergElement**` | `NULL` | Semantic elements when element-based result format is enabled. When result_format is set to ElementBased, this field contains semantic elements with type classification, unique identifiers, and metadata for Unstructured-compatible element-based processing. |
+| `djot_content` | `XbergDjotContent*` | `NULL` | Rich Djot content structure (when extracting Djot documents). When extracting Djot documents with structured extraction enabled, this field contains the full semantic structure including: - Block-level elements with nesting - Inline formatting with attributes - Links, images, footnotes - Math expressions - Complete attribute information The `content` field still contains plain text for backward compatibility. Always `NULL` for non-Djot documents. |
+| `ocr_elements` | `XbergOcrElement**` | `NULL` | OCR elements with full spatial and confidence metadata. When OCR is performed with element extraction enabled, this field contains the structured representation of detected text including: - Bounding geometry (rectangles or quadrilaterals) - Confidence scores (detection and recognition) - Rotation information - Hierarchical relationships (Tesseract only) This field preserves all metadata that would otherwise be lost when converting to plain text or markdown output formats. Only populated when `OcrElementConfig.include_elements` is true. |
+| `document` | `XbergDocumentStructure*` | `NULL` | Structured document tree (when document structure extraction is enabled). When `include_document_structure` is true in `ExtractionConfig`, this field contains the full hierarchical representation of the document including: - Heading-driven section nesting - Table grids with cell-level metadata - Content layer classification (body, header, footer, footnote) - Inline text annotations (formatting, links) - Bounding boxes and page numbers Independent of `result_format` — can be combined with Unified or ElementBased. |
+| `extracted_keywords` | `XbergKeyword**` | `NULL` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional\["keywords"\]`. |
 | `quality_score` | `double*` | `NULL` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional\["quality_score"\]`. |
-| `processing_warnings` | `KreuzbergProcessingWarning*` | `NULL` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
-| `annotations` | `KreuzbergPdfAnnotation**` | `NULL` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
-| `children` | `KreuzbergArchiveEntry**` | `NULL` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `NULL` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
-| `uris` | `KreuzbergExtractedUri**` | `NULL` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
-| `revisions` | `KreuzbergDocumentRevision**` | `NULL` | Tracked changes embedded in the source document. Populated by per-format extractors that understand change-tracking metadata (DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every extractor defaults to `NULL` until its format-specific implementation is added. Extractors that do populate this field follow the "accepted-changes" convention: inserted text is present in `content`, deleted text is absent — the revision list is the separate audit trail. |
+| `processing_warnings` | `XbergProcessingWarning*` | `NULL` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
+| `annotations` | `XbergPdfAnnotation**` | `NULL` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `children` | `XbergArchiveEntry**` | `NULL` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `NULL` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
+| `uris` | `XbergExtractedUri**` | `NULL` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
+| `revisions` | `XbergDocumentRevision**` | `NULL` | Tracked changes embedded in the source document. Populated by per-format extractors that understand change-tracking metadata (DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every extractor defaults to `NULL` until its format-specific implementation is added. Extractors that do populate this field follow the "accepted-changes" convention: inserted text is present in `content`, deleted text is absent — the revision list is the separate audit trail. |
 | `structured_output` | `void**` | `NULL` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
 | `code_intelligence` | `void**` | `NULL` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
-| `llm_usage` | `KreuzbergLlmUsage**` | `NULL` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `NULL` when no LLM was used. |
-| `entities` | `KreuzbergEntity**` | `NULL` | Named entities detected in `content` by the NER post-processor. `NULL` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
-| `summary` | `KreuzbergDocumentSummary*` | `NULL` | Summary of `content` produced by the summarisation post-processor. `NULL` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
-| `extraction_confidence` | `KreuzbergExtractionConfidence*` | `NULL` | Confidence score computed by the heuristics pipeline. Populated when the `heuristics` feature is enabled and confidence scoring has been performed.  Combines text-coverage, OCR aggregate confidence, and schema-compliance into a single `\[0, 1\]` value. `NULL` when confidence scoring is not configured or the feature is absent. |
-| `translation` | `KreuzbergTranslation*` | `NULL` | Translation of `content` produced by the translation post-processor. `NULL` when translation is not configured. |
-| `page_classifications` | `KreuzbergPageClassification**` | `NULL` | Per-page classifications produced by the page-classification post-processor. `NULL` when classification is not configured. |
-| `redaction_report` | `KreuzbergRedactionReport*` | `NULL` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `NULL` when redaction is not configured. |
-| `formulas` | `KreuzbergFormula*` | `NULL` | Mathematical formulas recognized in the document. Populated by the layout-guided formula pipeline when the `layout-detection` feature is enabled and the document contains regions classified as formulas. Empty otherwise. |
-| `form_fields` | `KreuzbergPdfFormField*` | `NULL` | Form fields extracted from a PDF's AcroForm or XFA structure. Populated by the PDF extractor when `PdfConfig.extract_form_fields` is enabled (default) and the document is a fillable form. Empty otherwise. |
+| `llm_usage` | `XbergLlmUsage**` | `NULL` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `NULL` when no LLM was used. |
+| `entities` | `XbergEntity**` | `NULL` | Named entities detected in `content` by the NER post-processor. `NULL` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/xberg/src/text/ner/`). |
+| `summary` | `XbergDocumentSummary*` | `NULL` | Summary of `content` produced by the summarisation post-processor. `NULL` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
+| `extraction_confidence` | `XbergExtractionConfidence*` | `NULL` | Confidence score computed by the heuristics pipeline. Populated when the `heuristics` feature is enabled and confidence scoring has been performed.  Combines text-coverage, OCR aggregate confidence, and schema-compliance into a single `\[0, 1\]` value. `NULL` when confidence scoring is not configured or the feature is absent. |
+| `translation` | `XbergTranslation*` | `NULL` | Translation of `content` produced by the translation post-processor. `NULL` when translation is not configured. |
+| `page_classifications` | `XbergPageClassification**` | `NULL` | Per-page classifications produced by the page-classification post-processor. `NULL` when classification is not configured. |
+| `redaction_report` | `XbergRedactionReport*` | `NULL` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `NULL` when redaction is not configured. |
+| `formulas` | `XbergFormula*` | `NULL` | Mathematical formulas recognized in the document. Populated by the layout-guided formula pipeline when the `layout-detection` feature is enabled and the document contains regions classified as formulas. Empty otherwise. |
+| `form_fields` | `XbergPdfFormField*` | `NULL` | Form fields extracted from a PDF's AcroForm or XFA structure. Populated by the PDF extractor when `PdfConfig.extract_form_fields` is enabled (default) and the document is a fillable form. Empty otherwise. |
 | `formatted_content` | `const char**` | `NULL` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 
 ##### Methods
 
-###### kreuzberg_from_ocr()
+###### xberg_from_ocr()
 
 Convert from an OCR result.
 
 **Signature:**
 
 ```c
-KreuzbergExtractionResult kreuzberg_from_ocr(KreuzbergOcrExtractionResult ocr);
+XbergExtractionResult xberg_from_ocr(XbergOcrExtractionResult ocr);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_from_ocr((KreuzbergOcrExtractionResult){0});
+XbergExtractionResult *result = xberg_from_ocr((XbergOcrExtractionResult){0});
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `ocr` | `KreuzbergOcrExtractionResult` | Yes | The ocr extraction result |
+| `ocr` | `XbergOcrExtractionResult` | Yes | The ocr extraction result |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 ---
 
-#### KreuzbergFictionBookMetadata
+#### XbergFictionBookMetadata
 
 FictionBook (FB2) metadata.
 
@@ -4724,7 +4724,7 @@ FictionBook (FB2) metadata.
 
 ---
 
-#### KreuzbergFileExtractionConfig
+#### XbergFileExtractionConfig
 
 Per-file extraction configuration overrides for batch processing.
 
@@ -4746,42 +4746,42 @@ cannot be overridden per file:
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enable_quality_processing` | `bool*` | `NULL` | Override quality post-processing for this file. |
-| `ocr` | `KreuzbergOcrConfig*` | `NULL` | Override OCR configuration for this file (None in the Option = use batch default). |
+| `ocr` | `XbergOcrConfig*` | `NULL` | Override OCR configuration for this file (None in the Option = use batch default). |
 | `force_ocr` | `bool*` | `NULL` | Override force OCR for this file. |
 | `force_ocr_pages` | `uint32_t**` | `NULL` | Override force OCR pages for this file (1-indexed page numbers). |
 | `disable_ocr` | `bool*` | `NULL` | Override disable OCR for this file. |
-| `chunking` | `KreuzbergChunkingConfig*` | `NULL` | Override chunking configuration for this file. |
-| `content_filter` | `KreuzbergContentFilterConfig*` | `NULL` | Override content filtering configuration for this file. |
-| `images` | `KreuzbergImageExtractionConfig*` | `NULL` | Override image extraction configuration for this file. |
-| `pdf_options` | `KreuzbergPdfConfig*` | `NULL` | Override PDF options for this file. |
-| `token_reduction` | `KreuzbergTokenReductionOptions*` | `NULL` | Override token reduction for this file. |
-| `language_detection` | `KreuzbergLanguageDetectionConfig*` | `NULL` | Override language detection for this file. |
-| `pages` | `KreuzbergPageConfig*` | `NULL` | Override page extraction for this file. |
-| `keywords` | `KreuzbergKeywordConfig*` | `NULL` | Override keyword extraction for this file. |
-| `postprocessor` | `KreuzbergPostProcessorConfig*` | `NULL` | Override post-processor for this file. |
-| `result_format` | `KreuzbergResultFormat*` | `NULL` | Override result format for this file. |
-| `output_format` | `KreuzbergOutputFormat*` | `NULL` | Override output content format for this file. |
+| `chunking` | `XbergChunkingConfig*` | `NULL` | Override chunking configuration for this file. |
+| `content_filter` | `XbergContentFilterConfig*` | `NULL` | Override content filtering configuration for this file. |
+| `images` | `XbergImageExtractionConfig*` | `NULL` | Override image extraction configuration for this file. |
+| `pdf_options` | `XbergPdfConfig*` | `NULL` | Override PDF options for this file. |
+| `token_reduction` | `XbergTokenReductionOptions*` | `NULL` | Override token reduction for this file. |
+| `language_detection` | `XbergLanguageDetectionConfig*` | `NULL` | Override language detection for this file. |
+| `pages` | `XbergPageConfig*` | `NULL` | Override page extraction for this file. |
+| `keywords` | `XbergKeywordConfig*` | `NULL` | Override keyword extraction for this file. |
+| `postprocessor` | `XbergPostProcessorConfig*` | `NULL` | Override post-processor for this file. |
+| `result_format` | `XbergResultFormat*` | `NULL` | Override result format for this file. |
+| `output_format` | `XbergOutputFormat*` | `NULL` | Override output content format for this file. |
 | `include_document_structure` | `bool*` | `NULL` | Override document structure output for this file. |
-| `layout` | `KreuzbergLayoutDetectionConfig*` | `NULL` | Override layout detection for this file. |
-| `transcription` | `KreuzbergTranscriptionConfig*` | `NULL` | Transcription configuration (see ExtractionConfig for docs). |
+| `layout` | `XbergLayoutDetectionConfig*` | `NULL` | Override layout detection for this file. |
+| `transcription` | `XbergTranscriptionConfig*` | `NULL` | Transcription configuration (see ExtractionConfig for docs). |
 | `timeout_secs` | `uint64_t*` | `NULL` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
-| `tree_sitter` | `KreuzbergTreeSitterConfig*` | `NULL` | Override tree-sitter configuration for this file. |
-| `structured_extraction` | `KreuzbergStructuredExtractionConfig*` | `NULL` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
+| `tree_sitter` | `XbergTreeSitterConfig*` | `NULL` | Override tree-sitter configuration for this file. |
+| `structured_extraction` | `XbergStructuredExtractionConfig*` | `NULL` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
 
 ---
 
-#### KreuzbergFootnote
+#### XbergFootnote
 
 Footnote in Djot.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `label` | `const char*` | — | Footnote label |
-| `content` | `KreuzbergFormattedBlock*` | — | Footnote content blocks |
+| `content` | `XbergFormattedBlock*` | — | Footnote content blocks |
 
 ---
 
-#### KreuzbergFootnoteAnchor
+#### XbergFootnoteAnchor
 
 A footnote anchor reference in markdown text.
 
@@ -4794,7 +4794,7 @@ Represents a `[^label]` use-site (not a definition).
 
 ---
 
-#### KreuzbergFootnoteConfig
+#### XbergFootnoteConfig
 
 Configuration for markdown footnote and citation parsing.
 
@@ -4804,36 +4804,36 @@ Configuration for markdown footnote and citation parsing.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergFootnoteConfig kreuzberg_default();
+XbergFootnoteConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergFootnoteConfig *result = kreuzberg_default();
+XbergFootnoteConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergFootnoteConfig`
+**Returns:** `XbergFootnoteConfig`
 
-###### kreuzberg_with_parse_citations()
+###### xberg_with_parse_citations()
 
 Set whether to parse the citation block.
 
 **Signature:**
 
 ```c
-KreuzbergFootnoteConfig kreuzberg_with_parse_citations(bool enabled);
+XbergFootnoteConfig xberg_with_parse_citations(bool enabled);
 ```
 
 **Example:**
 
 ```c
-KreuzbergFootnoteConfig *result = kreuzberg_with_parse_citations(instance, true);
+XbergFootnoteConfig *result = xberg_with_parse_citations(instance, true);
 ```
 
 **Parameters:**
@@ -4842,11 +4842,11 @@ KreuzbergFootnoteConfig *result = kreuzberg_with_parse_citations(instance, true)
 |------|------|----------|-------------|
 | `enabled` | `bool` | Yes | The enabled |
 
-**Returns:** `KreuzbergFootnoteConfig`
+**Returns:** `XbergFootnoteConfig`
 
 ---
 
-#### KreuzbergFootnoteDefinition
+#### XbergFootnoteDefinition
 
 A footnote definition from markdown text.
 
@@ -4860,7 +4860,7 @@ Represents `[^label]: content` declarations (including multi-line continuations)
 
 ---
 
-#### KreuzbergFormattedBlock
+#### XbergFormattedBlock
 
 Block-level element in a Djot document.
 
@@ -4868,16 +4868,16 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `block_type` | `KreuzbergBlockType` | — | Type of block element |
+| `block_type` | `XbergBlockType` | — | Type of block element |
 | `level` | `uintptr_t*` | `NULL` | Heading level (1-6) for headings, or nesting level for lists |
-| `inline_content` | `KreuzbergInlineElement*` | — | Inline content within the block |
+| `inline_content` | `XbergInlineElement*` | — | Inline content within the block |
 | `language` | `const char**` | `NULL` | Language identifier for code blocks |
 | `code` | `const char**` | `NULL` | Raw code content for code blocks |
-| `children` | `KreuzbergFormattedBlock*` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
+| `children` | `XbergFormattedBlock*` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
-#### KreuzbergFormula
+#### XbergFormula
 
 A mathematical formula detected and recognized in a document.
 
@@ -4891,12 +4891,12 @@ formula regions.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `latex` | `const char*` | — | LaTeX source of the recognized formula, without surrounding `$$` delimiters. This field contains the raw LaTeX code as produced by the OCR backend. To render the formula in Markdown or other formats, wrap with `$$..$$` delimiters as needed. |
-| `bbox` | `KreuzbergBoundingBox` | — | Bounding box of the formula region on its page, in rendered-image pixel coordinates. The coordinates are in the space of the OCR-rendered page image at the OCR DPI (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from native PDF text extraction, which use PDF point coordinates. |
+| `bbox` | `XbergBoundingBox` | — | Bounding box of the formula region on its page, in rendered-image pixel coordinates. The coordinates are in the space of the OCR-rendered page image at the OCR DPI (typically 300 DPI). These coordinates are NOT comparable to bounding boxes from native PDF text extraction, which use PDF point coordinates. |
 | `page` | `uint32_t` | — | 1-indexed page number the formula appears on in the document. This is set by the extraction pipeline based on which page the formula was found on. |
 
 ---
 
-#### KreuzbergGridCell
+#### XbergGridCell
 
 Individual grid cell with position and span metadata.
 
@@ -4908,11 +4908,11 @@ Individual grid cell with position and span metadata.
 | `row_span` | `uint32_t` | `serde(default = "default_span")` | Number of rows this cell spans. |
 | `col_span` | `uint32_t` | `serde(default = "default_span")` | Number of columns this cell spans. |
 | `is_header` | `bool` | `/* serde(default) */` | Whether this is a header cell. |
-| `bbox` | `KreuzbergBoundingBox*` | `NULL` | Bounding box for this cell (if available). |
+| `bbox` | `XbergBoundingBox*` | `NULL` | Bounding box for this cell (if available). |
 
 ---
 
-#### KreuzbergHeaderMetadata
+#### XbergHeaderMetadata
 
 Header/heading element metadata.
 
@@ -4926,7 +4926,7 @@ Header/heading element metadata.
 
 ---
 
-#### KreuzbergHeadingContext
+#### XbergHeadingContext
 
 Heading context for a chunk within a Markdown document.
 
@@ -4934,11 +4934,11 @@ Contains the heading hierarchy from document root to this chunk's section.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `headings` | `KreuzbergHeadingLevel*` | — | The heading hierarchy from document root to this chunk's section. Index 0 is the outermost (h1), last element is the most specific. |
+| `headings` | `XbergHeadingLevel*` | — | The heading hierarchy from document root to this chunk's section. Index 0 is the outermost (h1), last element is the most specific. |
 
 ---
 
-#### KreuzbergHeadingLevel
+#### XbergHeadingLevel
 
 A single heading in the hierarchy.
 
@@ -4949,7 +4949,7 @@ A single heading in the hierarchy.
 
 ---
 
-#### KreuzbergHeuristicsConfig
+#### XbergHeuristicsConfig
 
 Configuration for document chunking and analysis heuristics.
 
@@ -4972,23 +4972,23 @@ struct-update syntax: `HeuristicsConfig { text_layer_threshold: 0.5, ..the defau
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergHeuristicsConfig kreuzberg_default();
+XbergHeuristicsConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergHeuristicsConfig *result = kreuzberg_default();
+XbergHeuristicsConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergHeuristicsConfig`
+**Returns:** `XbergHeuristicsConfig`
 
-###### kreuzberg_validate()
+###### xberg_validate()
 
 Validate the configuration.
 
@@ -5003,13 +5003,13 @@ Returns `HeuristicsError.ConfigError` when:
 **Signature:**
 
 ```c
-void kreuzberg_validate();
+void xberg_validate();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_validate(instance);
+xberg_validate(instance);
 ```
 
 **Returns:** No return value.
@@ -5018,7 +5018,7 @@ kreuzberg_validate(instance);
 
 ---
 
-#### KreuzbergHierarchicalBlock
+#### XbergHierarchicalBlock
 
 A text block with hierarchy level assignment.
 
@@ -5033,7 +5033,7 @@ font size clustering and hierarchical analysis.
 
 ---
 
-#### KreuzbergHierarchyConfig
+#### XbergHierarchyConfig
 
 Hierarchy extraction configuration for PDF text structure analysis.
 
@@ -5050,25 +5050,25 @@ included in page content.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergHierarchyConfig kreuzberg_default();
+XbergHierarchyConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergHierarchyConfig *result = kreuzberg_default();
+XbergHierarchyConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergHierarchyConfig`
+**Returns:** `XbergHierarchyConfig`
 
 ---
 
-#### KreuzbergHtmlMetadata
+#### XbergHtmlMetadata
 
 HTML metadata extracted from HTML documents.
 
@@ -5084,18 +5084,18 @@ and extracted structural elements (headers, links, images, structured data).
 | `canonical_url` | `const char**` | `NULL` | Canonical URL from `<link rel="canonical">` tag |
 | `base_href` | `const char**` | `NULL` | Base URL from `<base href="">` tag for resolving relative URLs |
 | `language` | `const char**` | `NULL` | Document language from `lang` attribute |
-| `text_direction` | `KreuzbergTextDirection*` | `NULL` | Document text direction from `dir` attribute |
+| `text_direction` | `XbergTextDirection*` | `NULL` | Document text direction from `dir` attribute |
 | `open_graph` | `void*` | `NULL` | Open Graph metadata (og:* properties) for social media Keys like "title", "description", "image", "url", etc. |
 | `twitter_card` | `void*` | `NULL` | Twitter Card metadata (twitter:* properties) Keys like "card", "site", "creator", "title", "description", "image", etc. |
 | `meta_tags` | `void*` | `NULL` | Additional meta tags not covered by specific fields Keys are meta name/property attributes, values are content |
-| `headers` | `KreuzbergHeaderMetadata*` | `NULL` | Extracted header elements with hierarchy |
-| `links` | `KreuzbergLinkMetadata*` | `NULL` | Extracted hyperlinks with type classification |
-| `images` | `KreuzbergImageMetadataType*` | `NULL` | Extracted images with source and dimensions |
-| `structured_data` | `KreuzbergStructuredData*` | `NULL` | Extracted structured data blocks |
+| `headers` | `XbergHeaderMetadata*` | `NULL` | Extracted header elements with hierarchy |
+| `links` | `XbergLinkMetadata*` | `NULL` | Extracted hyperlinks with type classification |
+| `images` | `XbergImageMetadataType*` | `NULL` | Extracted images with source and dimensions |
+| `structured_data` | `XbergStructuredData*` | `NULL` | Extracted structured data blocks |
 
 ---
 
-#### KreuzbergHtmlOutputConfig
+#### XbergHtmlOutputConfig
 
 Configuration for styled HTML output.
 
@@ -5108,31 +5108,31 @@ the plain comrak-based renderer.
 |-------|------|---------|-------------|
 | `css` | `const char**` | `NULL` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
 | `css_file` | `const char**` | `NULL` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
-| `theme` | `KreuzbergHtmlTheme` | `KREUZBERG_KREUZBERG_UNSTYLED` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
+| `theme` | `XbergHtmlTheme` | `XBERG_XBERG_UNSTYLED` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
 | `class_prefix` | `const char*` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergHtmlOutputConfig kreuzberg_default();
+XbergHtmlOutputConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergHtmlOutputConfig *result = kreuzberg_default();
+XbergHtmlOutputConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergHtmlOutputConfig`
+**Returns:** `XbergHtmlOutputConfig`
 
 ---
 
-#### KreuzbergImageExtractionConfig
+#### XbergImageExtractionConfig
 
 Image extraction configuration.
 
@@ -5145,37 +5145,37 @@ Image extraction configuration.
 | `auto_adjust_dpi` | `bool` | `true` | Automatically adjust DPI based on image content |
 | `min_dpi` | `int32_t` | `72` | Minimum DPI threshold |
 | `max_dpi` | `int32_t` | `600` | Maximum DPI threshold |
-| `max_images_per_page` | `uint32_t*` | `NULL` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `NULL` (default) means no limit — all images are extracted. |
+| `max_images_per_page` | `uint32_t*` | `NULL` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes xberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `NULL` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `false` | When `true`, extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. Defaults to `false` — opt in explicitly to avoid unexpected ML overhead. |
 | `include_page_rasters` | `bool` | `false` | When `true`, full-page renders produced during OCR preprocessing are captured and returned as `ImageKind.PageRaster` entries in `ExtractionResult.images`. **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the document-level OCR bypass is active (whole-document backend). When OCR is enabled and this flag is set but the active backend skips per-page rendering, a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`. Defaults to `false`. Enable when downstream consumers need page thumbnails (e.g. citation previews, visual grounding). |
 | `run_ocr_on_images` | `bool` | `true` | Run OCR on extracted images and include the recognized text in the document content. When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images are processed with the configured OCR backend. Set to `false` to extract images without OCR processing, even when OCR is enabled. |
 | `ocr_text_only` | `bool` | `false` | When `true`, image OCR results are rendered as plain text without the `!\[...\](...)` markdown placeholder. Only takes effect when `run_ocr_on_images` is also `true`. |
 | `append_ocr_text` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
-| `output_format` | `KreuzbergImageOutputFormat` | `KREUZBERG_KREUZBERG_NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
-| `svg` | `KreuzbergSvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
+| `output_format` | `XbergImageOutputFormat` | `XBERG_XBERG_NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
+| `svg` | `XbergSvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
 | `include_data_base64` | `bool` | `false` | When `true`, populate `ExtractedImage.data_base64` with a Base64-encoded copy of the raw image bytes. Useful for JSON-only clients that cannot efficiently parse the default integer-array serialization of `data`. Defaults to `false`; enabling it doubles the in-memory image representation for the duration of the response. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergImageExtractionConfig kreuzberg_default();
+XbergImageExtractionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergImageExtractionConfig *result = kreuzberg_default();
+XbergImageExtractionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergImageExtractionConfig`
+**Returns:** `XbergImageExtractionConfig`
 
 ---
 
-#### KreuzbergImageMetadata
+#### XbergImageMetadata
 
 Image metadata extracted from image files.
 
@@ -5190,7 +5190,7 @@ Includes dimensions, format, and EXIF data.
 
 ---
 
-#### KreuzbergImageMetadataType
+#### XbergImageMetadataType
 
 Image element metadata.
 
@@ -5199,11 +5199,11 @@ Image element metadata.
 | `src` | `const char*` | — | Image source (URL, data URI, or SVG content) |
 | `alt` | `const char**` | `NULL` | Alternative text from alt attribute |
 | `title` | `const char**` | `NULL` | Title attribute |
-| `image_type` | `KreuzbergImageType` | — | Image type classification |
+| `image_type` | `XbergImageType` | — | Image type classification |
 
 ---
 
-#### KreuzbergImagePreprocessingConfig
+#### XbergImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
 
@@ -5223,25 +5223,25 @@ for different document types.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergImagePreprocessingConfig kreuzberg_default();
+XbergImagePreprocessingConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergImagePreprocessingConfig *result = kreuzberg_default();
+XbergImagePreprocessingConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergImagePreprocessingConfig`
+**Returns:** `XbergImagePreprocessingConfig`
 
 ---
 
-#### KreuzbergImagePreprocessingMetadata
+#### XbergImagePreprocessingMetadata
 
 Image preprocessing metadata.
 
@@ -5262,7 +5262,7 @@ including DPI normalization, resizing, and resampling.
 
 ---
 
-#### KreuzbergInlineElement
+#### XbergInlineElement
 
 Inline element within a block.
 
@@ -5270,13 +5270,13 @@ Represents text with formatting, links, images, etc.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `element_type` | `KreuzbergInlineType` | — | Type of inline element |
+| `element_type` | `XbergInlineType` | — | Type of inline element |
 | `content` | `const char*` | — | Text content |
 | `metadata` | `void**` | `NULL` | Additional metadata (e.g., href for links, src/alt for images) |
 
 ---
 
-#### KreuzbergJatsMetadata
+#### XbergJatsMetadata
 
 JATS (Journal Article Tag Suite) metadata.
 
@@ -5285,11 +5285,11 @@ JATS (Journal Article Tag Suite) metadata.
 | `copyright` | `const char**` | `NULL` | Copyright statement from the article's `<permissions>` element. |
 | `license` | `const char**` | `NULL` | Open-access license URI from the article's `<license>` element. |
 | `history_dates` | `void*` | `NULL` | Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`). |
-| `contributor_roles` | `KreuzbergContributorRole*` | `NULL` | Authors and contributors with their stated roles. |
+| `contributor_roles` | `XbergContributorRole*` | `NULL` | Authors and contributors with their stated roles. |
 
 ---
 
-#### KreuzbergKeyword
+#### XbergKeyword
 
 Extracted keyword with metadata.
 
@@ -5297,45 +5297,45 @@ Extracted keyword with metadata.
 |-------|------|---------|-------------|
 | `text` | `const char*` | — | The keyword text. |
 | `score` | `float` | — | Relevance score (higher is better, algorithm-specific range). |
-| `algorithm` | `KreuzbergKeywordAlgorithm` | — | Algorithm that extracted this keyword. |
+| `algorithm` | `XbergKeywordAlgorithm` | — | Algorithm that extracted this keyword. |
 | `positions` | `uintptr_t**` | `NULL` | Optional positions where keyword appears in text (character offsets). |
 
 ---
 
-#### KreuzbergKeywordConfig
+#### XbergKeywordConfig
 
 Keyword extraction configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `algorithm` | `KreuzbergKeywordAlgorithm` | `KREUZBERG_KREUZBERG_YAKE` | Algorithm to use for extraction. |
+| `algorithm` | `XbergKeywordAlgorithm` | `XBERG_XBERG_YAKE` | Algorithm to use for extraction. |
 | `max_keywords` | `uintptr_t` | `10` | Maximum number of keywords to extract (default: 10). |
 | `min_score` | `float` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
 | `language` | `const char**` | `NULL` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
-| `yake_params` | `KreuzbergYakeParams*` | `NULL` | YAKE-specific tuning parameters. |
-| `rake_params` | `KreuzbergRakeParams*` | `NULL` | RAKE-specific tuning parameters. |
+| `yake_params` | `XbergYakeParams*` | `NULL` | YAKE-specific tuning parameters. |
+| `rake_params` | `XbergRakeParams*` | `NULL` | RAKE-specific tuning parameters. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergKeywordConfig kreuzberg_default();
+XbergKeywordConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergKeywordConfig *result = kreuzberg_default();
+XbergKeywordConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergKeywordConfig`
+**Returns:** `XbergKeywordConfig`
 
 ---
 
-#### KreuzbergLanguageDetectionConfig
+#### XbergLanguageDetectionConfig
 
 Language detection configuration.
 
@@ -5347,37 +5347,37 @@ Language detection configuration.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergLanguageDetectionConfig kreuzberg_default();
+XbergLanguageDetectionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergLanguageDetectionConfig *result = kreuzberg_default();
+XbergLanguageDetectionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergLanguageDetectionConfig`
+**Returns:** `XbergLanguageDetectionConfig`
 
 ---
 
-#### KreuzbergLayoutDetection
+#### XbergLayoutDetection
 
 A single layout detection result.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class_name` | `KreuzbergLayoutClass` | — | Detected layout class (e.g. `Table`, `Text`, `Title`). |
+| `class_name` | `XbergLayoutClass` | — | Detected layout class (e.g. `Table`, `Text`, `Title`). |
 | `confidence` | `float` | — | Detection confidence score in `\[0.0, 1.0\]`. |
-| `bbox` | `KreuzbergBBox` | — | Bounding box in image pixel coordinates. |
+| `bbox` | `XbergBBox` | — | Bounding box in image pixel coordinates. |
 
 ---
 
-#### KreuzbergLayoutDetectionConfig
+#### XbergLayoutDetectionConfig
 
 Layout detection configuration.
 
@@ -5389,31 +5389,31 @@ is enabled for PDF extraction.
 |-------|------|---------|-------------|
 | `confidence_threshold` | `float*` | `NULL` | Confidence threshold override (None = use model default). |
 | `apply_heuristics` | `bool` | `true` | Whether to apply postprocessing heuristics (default: true). |
-| `table_model` | `KreuzbergTableModel` | `KREUZBERG_KREUZBERG_TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
-| `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
+| `table_model` | `XbergTableModel` | `XBERG_XBERG_TATR` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
+| `acceleration` | `XbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `NULL` (auto-select per platform). |
 | `enable_chart_understanding` | `bool` | `false` | Route regions classified as charts to the chart-understanding OCR task. When `true`, layout regions detected as charts are sent to the VLM chart task (data-series/axis recovery) instead of being treated as generic image regions. Defaults to `false` — chart understanding is opt-in and has no effect on standard text/table extraction scores. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergLayoutDetectionConfig kreuzberg_default();
+XbergLayoutDetectionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergLayoutDetectionConfig *result = kreuzberg_default();
+XbergLayoutDetectionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergLayoutDetectionConfig`
+**Returns:** `XbergLayoutDetectionConfig`
 
 ---
 
-#### KreuzbergLayoutRegion
+#### XbergLayoutRegion
 
 A detected layout region on a page.
 
@@ -5425,12 +5425,12 @@ with confidence scores and spatial positions.
 |-------|------|---------|-------------|
 | `class_name` | `const char*` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
 | `confidence` | `double` | — | Confidence score from the layout detection model (0.0 to 1.0). |
-| `bounding_box` | `KreuzbergBoundingBox` | — | Bounding box in document coordinate space. |
+| `bounding_box` | `XbergBoundingBox` | — | Bounding box in document coordinate space. |
 | `area_fraction` | `double` | — | Fraction of the page area covered by this region (0.0 to 1.0). |
 
 ---
 
-#### KreuzbergLinkMetadata
+#### XbergLinkMetadata
 
 Link element metadata.
 
@@ -5439,53 +5439,53 @@ Link element metadata.
 | `href` | `const char*` | — | The href URL value |
 | `text` | `const char*` | — | Link text content (normalized) |
 | `title` | `const char**` | `NULL` | Optional title attribute |
-| `link_type` | `KreuzbergLinkType` | — | Link type classification |
+| `link_type` | `XbergLinkType` | — | Link type classification |
 | `rel` | `const char**` | — | Rel attribute values |
 
 ---
 
-#### KreuzbergLlmBackend
+#### XbergLlmBackend
 
 liter-llm-backed NER backend.
 
 ##### Methods
 
-###### kreuzberg_new()
+###### xberg_new()
 
 Create a new LLM-backed NER backend with the given LLM configuration.
 
 **Signature:**
 
 ```c
-KreuzbergLlmBackend kreuzberg_new(KreuzbergLlmConfig config);
+XbergLlmBackend xberg_new(XbergLlmConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergLlmBackend *result = kreuzberg_new((KreuzbergLlmConfig){0});
+XbergLlmBackend *result = xberg_new((XbergLlmConfig){0});
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `config` | `KreuzbergLlmConfig` | Yes | The configuration options |
+| `config` | `XbergLlmConfig` | Yes | The configuration options |
 
-**Returns:** `KreuzbergLlmBackend`
+**Returns:** `XbergLlmBackend`
 
-###### kreuzberg_detect()
+###### xberg_detect()
 
 **Signature:**
 
 ```c
-KreuzbergEntity* kreuzberg_detect(const char* text, KreuzbergEntityCategory* categories);
+XbergEntity* xberg_detect(const char* text, XbergEntityCategory* categories);
 ```
 
 **Example:**
 
 ```c
-KreuzbergEntity* result = kreuzberg_detect(instance, "value", NULL);
+XbergEntity* result = xberg_detect(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -5493,24 +5493,24 @@ KreuzbergEntity* result = kreuzberg_detect(instance, "value", NULL);
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text |
-| `categories` | `KreuzbergEntityCategory*` | Yes | The categories |
+| `categories` | `XbergEntityCategory*` | Yes | The categories |
 
-**Returns:** `KreuzbergEntity*`
+**Returns:** `XbergEntity*`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_detect_with_custom()
+###### xberg_detect_with_custom()
 
 **Signature:**
 
 ```c
-KreuzbergEntity* kreuzberg_detect_with_custom(const char* text, KreuzbergEntityCategory* categories, const char** custom_labels);
+XbergEntity* xberg_detect_with_custom(const char* text, XbergEntityCategory* categories, const char** custom_labels);
 ```
 
 **Example:**
 
 ```c
-KreuzbergEntity* result = kreuzberg_detect_with_custom(instance, "value", NULL, NULL);
+XbergEntity* result = xberg_detect_with_custom(instance, "value", NULL, NULL);
 ```
 
 **Parameters:**
@@ -5518,16 +5518,16 @@ KreuzbergEntity* result = kreuzberg_detect_with_custom(instance, "value", NULL, 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `text` | `const char*` | Yes | The text |
-| `categories` | `KreuzbergEntityCategory*` | Yes | The categories |
+| `categories` | `XbergEntityCategory*` | Yes | The categories |
 | `custom_labels` | `const char**` | Yes | The custom labels |
 
-**Returns:** `KreuzbergEntity*`
+**Returns:** `XbergEntity*`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### KreuzbergLlmConfig
+#### XbergLlmConfig
 
 Configuration for an LLM provider/model via liter-llm.
 
@@ -5546,7 +5546,7 @@ its own `LlmConfig`, allowing different providers per feature.
 
 ---
 
-#### KreuzbergLlmUsage
+#### XbergLlmUsage
 
 Token usage and cost data for a single LLM call made during extraction.
 
@@ -5566,26 +5566,26 @@ within one extraction (e.g. VLM OCR + structured extraction).
 
 ---
 
-#### KreuzbergMetaSchema
+#### XbergMetaSchema
 
 Compiled meta-schema validator over `preset.schema.json`.
 
 ##### Methods
 
-###### kreuzberg_compile()
+###### xberg_compile()
 
 Compile the given JSON text as a Draft 2020-12 meta-schema.
 
 **Signature:**
 
 ```c
-KreuzbergMetaSchema kreuzberg_compile(const char* meta_schema_json);
+XbergMetaSchema xberg_compile(const char* meta_schema_json);
 ```
 
 **Example:**
 
 ```c
-KreuzbergMetaSchema *result = kreuzberg_compile("value");
+XbergMetaSchema *result = xberg_compile("value");
 ```
 
 **Parameters:**
@@ -5594,11 +5594,11 @@ KreuzbergMetaSchema *result = kreuzberg_compile("value");
 |------|------|----------|-------------|
 | `meta_schema_json` | `const char*` | Yes | The meta schema json |
 
-**Returns:** `KreuzbergMetaSchema`
+**Returns:** `XbergMetaSchema`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_parse_preset()
+###### xberg_parse_preset()
 
 Validate `raw` against the meta-schema and deserialize into a `Preset`,
 stamping the fingerprint over the canonical file bytes.
@@ -5606,13 +5606,13 @@ stamping the fingerprint over the canonical file bytes.
 **Signature:**
 
 ```c
-KreuzbergPreset kreuzberg_parse_preset(const char* path, const uint8_t* raw);
+XbergPreset xberg_parse_preset(const char* path, const uint8_t* raw);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPreset *result = kreuzberg_parse_preset(instance, "value", (const uint8_t *)"data");
+XbergPreset *result = xberg_parse_preset(instance, "value", (const uint8_t *)"data");
 ```
 
 **Parameters:**
@@ -5622,13 +5622,13 @@ KreuzbergPreset *result = kreuzberg_parse_preset(instance, "value", (const uint8
 | `path` | `const char*` | Yes | Path to the file |
 | `raw` | `const uint8_t*` | Yes | The raw |
 
-**Returns:** `KreuzbergPreset`
+**Returns:** `XbergPreset`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### KreuzbergMetadata
+#### XbergMetadata
 
 Extraction result metadata.
 
@@ -5646,11 +5646,11 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `modified_at` | `const char**` | `NULL` | Last modification timestamp (ISO 8601 format) |
 | `created_by` | `const char**` | `NULL` | User who created the document |
 | `modified_by` | `const char**` | `NULL` | User who last modified the document |
-| `pages` | `KreuzbergPageStructure*` | `NULL` | Page/slide/sheet structure with boundaries |
-| `format` | `KreuzbergFormatMetadata*` | `NULL` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
-| `image_preprocessing` | `KreuzbergImagePreprocessingMetadata*` | `NULL` | Image preprocessing metadata (when OCR preprocessing was applied) |
+| `pages` | `XbergPageStructure*` | `NULL` | Page/slide/sheet structure with boundaries |
+| `format` | `XbergFormatMetadata*` | `NULL` | Format-specific metadata (discriminated union) Contains detailed metadata specific to the document format. Serialized as a nested `"format"` object with a `format_type` discriminator field. |
+| `image_preprocessing` | `XbergImagePreprocessingMetadata*` | `NULL` | Image preprocessing metadata (when OCR preprocessing was applied) |
 | `json_schema` | `void**` | `NULL` | JSON schema (for structured data extraction) |
-| `error` | `KreuzbergErrorMetadata*` | `NULL` | Error metadata (for batch operations) |
+| `error` | `XbergErrorMetadata*` | `NULL` | Error metadata (for batch operations) |
 | `extraction_duration_ms` | `uint64_t*` | `NULL` | Extraction duration in milliseconds (for benchmarking). This field is populated by batch extraction to provide per-file timing information. It's `NULL` for single-file extraction (which uses external timing). |
 | `category` | `const char**` | `NULL` | Document category (from frontmatter or classification). |
 | `tags` | `const char***` | `NULL` | Document tags (from frontmatter). |
@@ -5662,7 +5662,7 @@ via a discriminated union, and additional custom fields from postprocessors.
 
 ##### Methods
 
-###### kreuzberg_is_empty()
+###### xberg_is_empty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -5670,20 +5670,20 @@ additional postprocessor fields are populated.
 **Signature:**
 
 ```c
-bool kreuzberg_is_empty();
+bool xberg_is_empty();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_is_empty(instance);
+bool result = xberg_is_empty(instance);
 ```
 
 **Returns:** `bool`
 
 ---
 
-#### KreuzbergModelPaths
+#### XbergModelPaths
 
 Combined paths to all models needed for OCR (backward compatibility).
 
@@ -5696,18 +5696,18 @@ Combined paths to all models needed for OCR (backward compatibility).
 
 ---
 
-#### KreuzbergMultidocInput
+#### XbergMultidocInput
 
 Input signals for multi-document boundary detection.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `page_count` | `uint32_t` | — | Total number of pages in the PDF. |
-| `pages` | `KreuzbergPageSignals*` | — | Per-page signals extracted from the PDF. |
+| `pages` | `XbergPageSignals*` | — | Per-page signals extracted from the PDF. |
 
 ---
 
-#### KreuzbergMultidocThresholds
+#### XbergMultidocThresholds
 
 Thresholds for multi-document boundary detection.
 
@@ -5720,25 +5720,25 @@ All fields are public; callers override any subset via struct-update syntax.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergMultidocThresholds kreuzberg_default();
+XbergMultidocThresholds xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergMultidocThresholds *result = kreuzberg_default();
+XbergMultidocThresholds *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergMultidocThresholds`
+**Returns:** `XbergMultidocThresholds`
 
 ---
 
-#### KreuzbergNerConfig
+#### XbergNerConfig
 
 **Since:** `v5.0`
 
@@ -5746,15 +5746,15 @@ Configuration for the NER post-processor.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `backend` | `KreuzbergNerBackendKind` | `KREUZBERG_KREUZBERG_ONNX` | Backend that runs the entity detection. |
-| `categories` | `KreuzbergEntityCategory*` | `NULL` | Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty. |
+| `backend` | `XbergNerBackendKind` | `XBERG_XBERG_ONNX` | Backend that runs the entity detection. |
+| `categories` | `XbergEntityCategory*` | `NULL` | Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty. |
 | `model` | `const char**` | `NULL` | Override the default model — only used by `NerBackendKind.Onnx`. `NULL` lets the backend pick its pinned default (`urchade/gliner_multi-v2.1` for gline-rs). |
-| `llm` | `KreuzbergLlmConfig*` | `NULL` | Optional LLM configuration — only used by `NerBackendKind.Llm`. Token usage for LLM backends is recorded in `ExtractionResult.llm_usage`. |
+| `llm` | `XbergLlmConfig*` | `NULL` | Optional LLM configuration — only used by `NerBackendKind.Llm`. Token usage for LLM backends is recorded in `ExtractionResult.llm_usage`. |
 | `custom_labels` | `const char**` | `NULL` | Arbitrary user-supplied entity labels for zero-shot detection. gline-rs natively supports zero-shot inference over caller-supplied labels — this is the primary value of GLiNER. The LLM backend also honours these labels by including them in the structured-output schema. Custom labels surface as `EntityCategory.Custom` in the resulting `Entity` stream. Use this when you need domain-specific entity types (e.g. `"Treatment"`, `"Product"`, `"Vessel"`) without forking GLiNER's taxonomy. |
 
 ---
 
-#### KreuzbergOcrBackend
+#### XbergOcrBackend
 
 Trait for OCR backend plugins.
 
@@ -5770,7 +5770,7 @@ OCR backends must be thread-safe (`Send + Sync`) to support concurrent processin
 
 ##### Methods
 
-###### kreuzberg_process_image()
+###### xberg_process_image()
 
 Process an image and extract text via OCR.
 
@@ -5780,9 +5780,9 @@ An `ExtractionResult` containing the extracted text and metadata.
 
 **Errors:**
 
-- `KreuzbergError.Ocr` - OCR processing failed
-- `KreuzbergError.Validation` - Invalid image format or configuration
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
+- `XbergError.Ocr` - OCR processing failed
+- `XbergError.Validation` - Invalid image format or configuration
+- `XbergError.Io` - I/O errors (these always bubble up)
 
 ##### Reading `backend_options`
 
@@ -5793,13 +5793,13 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult kreuzberg_process_image(const uint8_t* image_bytes, KreuzbergOcrConfig config);
+XbergExtractionResult xberg_process_image(const uint8_t* image_bytes, XbergOcrConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_process_image(instance, (const uint8_t *)"data", NULL);
+XbergExtractionResult *result = xberg_process_image(instance, (const uint8_t *)"data", NULL);
 ```
 
 **Parameters:**
@@ -5807,13 +5807,13 @@ KreuzbergExtractionResult *result = kreuzberg_process_image(instance, (const uin
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `image_bytes` | `const uint8_t*` | Yes | Raw image data (JPEG, PNG, TIFF, etc.) |
-| `config` | `KreuzbergOcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
+| `config` | `XbergOcrConfig` | Yes | OCR configuration (language, PSM mode, etc.) |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_process_image_file()
+###### xberg_process_image_file()
 
 Process a file and extract text via OCR.
 
@@ -5827,13 +5827,13 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult kreuzberg_process_image_file(const char* path, KreuzbergOcrConfig config);
+XbergExtractionResult xberg_process_image_file(const char* path, XbergOcrConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_process_image_file(instance, "value", NULL);
+XbergExtractionResult *result = xberg_process_image_file(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -5841,13 +5841,13 @@ KreuzbergExtractionResult *result = kreuzberg_process_image_file(instance, "valu
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to the image file |
-| `config` | `KreuzbergOcrConfig` | Yes | OCR configuration |
+| `config` | `XbergOcrConfig` | Yes | OCR configuration |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_supports_language()
+###### xberg_supports_language()
 
 Check if this backend supports a given language code.
 
@@ -5858,13 +5858,13 @@ Check if this backend supports a given language code.
 **Signature:**
 
 ```c
-bool kreuzberg_supports_language(const char* lang);
+bool xberg_supports_language(const char* lang);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_supports_language(instance, "value");
+bool result = xberg_supports_language(instance, "value");
 ```
 
 **Parameters:**
@@ -5875,7 +5875,7 @@ bool result = kreuzberg_supports_language(instance, "value");
 
 **Returns:** `bool`
 
-###### kreuzberg_backend_type()
+###### xberg_backend_type()
 
 Get the backend type identifier.
 
@@ -5886,18 +5886,18 @@ The backend type enum value.
 **Signature:**
 
 ```c
-KreuzbergOcrBackendType kreuzberg_backend_type();
+XbergOcrBackendType xberg_backend_type();
 ```
 
 **Example:**
 
 ```c
-KreuzbergOcrBackendType *result = kreuzberg_backend_type(instance);
+XbergOcrBackendType *result = xberg_backend_type(instance);
 ```
 
-**Returns:** `KreuzbergOcrBackendType`
+**Returns:** `XbergOcrBackendType`
 
-###### kreuzberg_supported_languages()
+###### xberg_supported_languages()
 
 Optional: Get a list of all supported languages.
 
@@ -5906,18 +5906,18 @@ Defaults to empty list. Override to provide comprehensive language support info.
 **Signature:**
 
 ```c
-const char** kreuzberg_supported_languages();
+const char** xberg_supported_languages();
 ```
 
 **Example:**
 
 ```c
-const char** result = kreuzberg_supported_languages(instance);
+const char** result = xberg_supported_languages(instance);
 ```
 
 **Returns:** `const char**`
 
-###### kreuzberg_supports_table_detection()
+###### xberg_supports_table_detection()
 
 Optional: Check if the backend supports table detection.
 
@@ -5926,18 +5926,18 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 **Signature:**
 
 ```c
-bool kreuzberg_supports_table_detection();
+bool xberg_supports_table_detection();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_supports_table_detection(instance);
+bool result = xberg_supports_table_detection(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_supports_document_processing()
+###### xberg_supports_document_processing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -5946,18 +5946,18 @@ Defaults to `false`. Override if the backend has optimized document processing.
 **Signature:**
 
 ```c
-bool kreuzberg_supports_document_processing();
+bool xberg_supports_document_processing();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_supports_document_processing(instance);
+bool result = xberg_supports_document_processing(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_emits_structured_markdown()
+###### xberg_emits_structured_markdown()
 
 Declare that this backend emits structured markdown directly (tables, headings, lists)
 and downstream layout reconstruction should be skipped.
@@ -5969,18 +5969,18 @@ emit markdown in one forward pass and should override this to `true`.
 **Signature:**
 
 ```c
-bool kreuzberg_emits_structured_markdown();
+bool xberg_emits_structured_markdown();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_emits_structured_markdown(instance);
+bool result = xberg_emits_structured_markdown(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_process_document()
+###### xberg_process_document()
 
 Process a document file directly via OCR.
 
@@ -5989,13 +5989,13 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```c
-KreuzbergExtractionResult kreuzberg_process_document(const char* path, KreuzbergOcrConfig config);
+XbergExtractionResult xberg_process_document(const char* path, XbergOcrConfig config);
 ```
 
 **Example:**
 
 ```c
-KreuzbergExtractionResult *result = kreuzberg_process_document(instance, "value", NULL);
+XbergExtractionResult *result = xberg_process_document(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -6003,15 +6003,15 @@ KreuzbergExtractionResult *result = kreuzberg_process_document(instance, "value"
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | The  path |
-| `config` | `KreuzbergOcrConfig` | Yes | The ocr config |
+| `config` | `XbergOcrConfig` | Yes | The ocr config |
 
-**Returns:** `KreuzbergExtractionResult`
+**Returns:** `XbergExtractionResult`
 
 **Errors:** Returns `NULL` on error.
 
 ---
 
-#### KreuzbergOcrConfidence
+#### XbergOcrConfidence
 
 Confidence scores for an OCR element.
 
@@ -6025,7 +6025,7 @@ from recognition confidence (how confident about the actual text content).
 
 ---
 
-#### KreuzbergOcrConfig
+#### XbergOcrConfig
 
 OCR configuration.
 
@@ -6034,42 +6034,42 @@ OCR configuration.
 | `enabled` | `bool` | `true` | Whether OCR is enabled. Setting `enabled: false` is a shorthand for `disable_ocr: true` on the parent `ExtractionConfig`. Images return metadata only; PDFs use native text extraction without OCR fallback. Defaults to `true`. When `false`, all other OCR settings are ignored. |
 | `backend` | `const char*` | — | OCR backend: tesseract, easyocr, paddleocr |
 | `language` | `const char**` | `NULL` | Language code(s) for OCR recognition. Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). Defaults to \["eng"\]. For Tesseract, languages are joined with "+". |
-| `tesseract_config` | `KreuzbergTesseractConfig*` | `NULL` | Tesseract-specific configuration (optional) |
-| `output_format` | `KreuzbergOutputFormat*` | `NULL` | Output format for OCR results (optional, for format conversion) |
+| `tesseract_config` | `XbergTesseractConfig*` | `NULL` | Tesseract-specific configuration (optional) |
+| `output_format` | `XbergOutputFormat*` | `NULL` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `void**` | `NULL` | PaddleOCR-specific configuration (optional, JSON passthrough) |
 | `backend_options` | `void**` | `NULL` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `NULL`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
-| `element_config` | `KreuzbergOcrElementConfig*` | `NULL` | OCR element extraction configuration |
-| `quality_thresholds` | `KreuzbergOcrQualityThresholds*` | `NULL` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
-| `pipeline` | `KreuzbergOcrPipelineConfig*` | `NULL` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
+| `element_config` | `XbergOcrElementConfig*` | `NULL` | OCR element extraction configuration |
+| `quality_thresholds` | `XbergOcrQualityThresholds*` | `NULL` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
+| `pipeline` | `XbergOcrPipelineConfig*` | `NULL` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `auto_rotate` | `bool` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlm_fallback` | `KreuzbergVlmFallbackPolicy` | `KREUZBERG_KREUZBERG_DISABLED` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy.Disabled` and `OcrConfig.pipeline` is `NULL`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy.OnLowQuality` → `\[classical_stage, vlm_stage\]` with the `quality_threshold` mapped onto `OcrQualityThresholds.pipeline_min_quality`. - `VlmFallbackPolicy.Always` → `\[vlm_stage\]` only. Requires `OcrConfig.vlm_config` to be `Some` when not `Disabled`. When `OcrConfig.pipeline` is explicitly set, this field is ignored. |
-| `vlm_config` | `KreuzbergLlmConfig*` | `NULL` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy.Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_fallback` | `XbergVlmFallbackPolicy` | `XBERG_XBERG_DISABLED` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy.Disabled` and `OcrConfig.pipeline` is `NULL`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy.OnLowQuality` → `\[classical_stage, vlm_stage\]` with the `quality_threshold` mapped onto `OcrQualityThresholds.pipeline_min_quality`. - `VlmFallbackPolicy.Always` → `\[vlm_stage\]` only. Requires `OcrConfig.vlm_config` to be `Some` when not `Disabled`. When `OcrConfig.pipeline` is explicitly set, this field is ignored. |
+| `vlm_config` | `XbergLlmConfig*` | `NULL` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy.Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
 | `vlm_prompt` | `const char**` | `NULL` | Custom Jinja2 prompt template for VLM OCR. When `NULL`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
-| `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
+| `acceleration` | `XbergAccelerationConfig*` | `NULL` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `void**` | `NULL` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 | `tessdata_path` | `const char**` | `NULL` | Runtime override for tessdata directory path. When set, uses this path as the highest-priority tessdata location, bypassing environment variables and cache directories. Useful for embedding pre-installed tessdata in applications. When `NULL`, uses the standard resolution chain: TESSDATA_PREFIX env, cache dir, system paths. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergOcrConfig kreuzberg_default();
+XbergOcrConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergOcrConfig *result = kreuzberg_default();
+XbergOcrConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergOcrConfig`
+**Returns:** `XbergOcrConfig`
 
 ---
 
-#### KreuzbergOcrElement
+#### XbergOcrElement
 
 A unified OCR element representing detected text with full metadata.
 
@@ -6079,17 +6079,17 @@ from both Tesseract and PaddleOCR backends.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `const char*` | — | The recognized text content. |
-| `geometry` | `KreuzbergOcrBoundingGeometry` | `KREUZBERG_KREUZBERG_RECTANGLE` | Bounding geometry (rectangle or quadrilateral). |
-| `confidence` | `KreuzbergOcrConfidence` | — | Confidence scores for detection and recognition. |
-| `level` | `KreuzbergOcrElementLevel` | `KREUZBERG_KREUZBERG_LINE` | Hierarchical level (word, line, block, page). |
-| `rotation` | `KreuzbergOcrRotation*` | `NULL` | Rotation information (if detected). |
+| `geometry` | `XbergOcrBoundingGeometry` | `XBERG_XBERG_RECTANGLE` | Bounding geometry (rectangle or quadrilateral). |
+| `confidence` | `XbergOcrConfidence` | — | Confidence scores for detection and recognition. |
+| `level` | `XbergOcrElementLevel` | `XBERG_XBERG_LINE` | Hierarchical level (word, line, block, page). |
+| `rotation` | `XbergOcrRotation*` | `NULL` | Rotation information (if detected). |
 | `page_number` | `uint32_t` | — | Page number (1-indexed). |
 | `parent_id` | `const char**` | `NULL` | Parent element ID for hierarchical relationships. Only used for Tesseract output which has word -> line -> block hierarchy. |
 | `backend_metadata` | `void*` | `NULL` | Backend-specific metadata that doesn't fit the unified schema. |
 
 ---
 
-#### KreuzbergOcrElementConfig
+#### XbergOcrElementConfig
 
 Configuration for OCR element extraction.
 
@@ -6098,13 +6098,13 @@ Controls how OCR elements are extracted and filtered.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `include_elements` | `bool` | — | Whether to include OCR elements in the extraction result. When true, the `ocr_elements` field in `ExtractionResult` will be populated. |
-| `min_level` | `KreuzbergOcrElementLevel` | `KREUZBERG_KREUZBERG_LINE` | Minimum hierarchical level to include. Elements below this level (e.g., words when min_level is Line) will be excluded. |
+| `min_level` | `XbergOcrElementLevel` | `XBERG_XBERG_LINE` | Minimum hierarchical level to include. Elements below this level (e.g., words when min_level is Line) will be excluded. |
 | `min_confidence` | `double` | — | Minimum recognition confidence threshold (0.0-1.0). Elements with confidence below this threshold will be filtered out. |
 | `build_hierarchy` | `bool` | — | Whether to build hierarchical relationships between elements. When true, `parent_id` fields will be populated based on spatial containment. Only meaningful for Tesseract output. |
 
 ---
 
-#### KreuzbergOcrExtractionResult
+#### XbergOcrExtractionResult
 
 OCR extraction result.
 
@@ -6116,12 +6116,12 @@ including recognized text and detected tables.
 | `content` | `const char*` | — | Recognized text content |
 | `mime_type` | `const char*` | — | Original MIME type of the processed image |
 | `metadata` | `void*` | — | OCR processing metadata (confidence scores, language, etc.) |
-| `tables` | `KreuzbergOcrTable*` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `KreuzbergOcrElement**` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `tables` | `XbergOcrTable*` | — | Tables detected and extracted via OCR |
+| `ocr_elements` | `XbergOcrElement**` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 
 ---
 
-#### KreuzbergOcrMetadata
+#### XbergOcrMetadata
 
 OCR processing metadata.
 
@@ -6138,7 +6138,7 @@ Captures information about OCR processing configuration and results.
 
 ---
 
-#### KreuzbergOcrPipelineConfig
+#### XbergOcrPipelineConfig
 
 Multi-backend OCR pipeline with quality-based fallback.
 
@@ -6148,12 +6148,12 @@ the result is accepted. Otherwise the next backend is tried.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `stages` | `KreuzbergOcrPipelineStage*` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `KreuzbergOcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `stages` | `XbergOcrPipelineStage*` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
+| `quality_thresholds` | `XbergOcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
-#### KreuzbergOcrPipelineStage
+#### XbergOcrPipelineStage
 
 A single backend stage in the OCR pipeline.
 
@@ -6162,14 +6162,14 @@ A single backend stage in the OCR pipeline.
 | `backend` | `const char*` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
 | `priority` | `uint32_t` | `serde(default = "default_priority")` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
 | `language` | `const char***` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). Accepts either a single language code ("eng") or a list (\["eng", "deu"\]). |
-| `tesseract_config` | `KreuzbergTesseractConfig*` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
+| `tesseract_config` | `XbergTesseractConfig*` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `paddle_ocr_config` | `void**` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `KreuzbergLlmConfig*` | `/* serde(default) */` | VLM config override for this pipeline stage. |
+| `vlm_config` | `XbergLlmConfig*` | `/* serde(default) */` | VLM config override for this pipeline stage. |
 | `backend_options` | `void**` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
-#### KreuzbergOcrQualityThresholds
+#### XbergOcrQualityThresholds
 
 Quality thresholds for OCR fallback decisions and pipeline quality gating.
 
@@ -6197,25 +6197,25 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergOcrQualityThresholds kreuzberg_default();
+XbergOcrQualityThresholds xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergOcrQualityThresholds *result = kreuzberg_default();
+XbergOcrQualityThresholds *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergOcrQualityThresholds`
+**Returns:** `XbergOcrQualityThresholds`
 
 ---
 
-#### KreuzbergOcrRotation
+#### XbergOcrRotation
 
 Rotation information for an OCR element.
 
@@ -6226,7 +6226,7 @@ Rotation information for an OCR element.
 
 ---
 
-#### KreuzbergOcrTable
+#### XbergOcrTable
 
 Table detected via OCR.
 
@@ -6237,11 +6237,11 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `const char***` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `const char*` | — | Markdown representation of the table |
 | `page_number` | `uint32_t` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `KreuzbergOcrTableBoundingBox*` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `XbergOcrTableBoundingBox*` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
-#### KreuzbergOcrTableBoundingBox
+#### XbergOcrTableBoundingBox
 
 Bounding box for an OCR-detected table in pixel coordinates.
 
@@ -6254,7 +6254,7 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### KreuzbergOrientationResult
+#### XbergOrientationResult
 
 Document orientation detection result.
 
@@ -6265,7 +6265,7 @@ Document orientation detection result.
 
 ---
 
-#### KreuzbergPaddleOcrConfig
+#### XbergPaddleOcrConfig
 
 Configuration for PaddleOCR backend.
 
@@ -6289,20 +6289,20 @@ Uses a builder pattern for convenient configuration.
 
 ##### Methods
 
-###### kreuzberg_with_cache_dir()
+###### xberg_with_cache_dir()
 
 Sets a custom cache directory for model files.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_cache_dir(const char* path);
+XbergPaddleOcrConfig xberg_with_cache_dir(const char* path);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_cache_dir(instance, "value");
+XbergPaddleOcrConfig *result = xberg_with_cache_dir(instance, "value");
 ```
 
 **Parameters:**
@@ -6311,22 +6311,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_cache_dir(instance, "value");
 |------|------|----------|-------------|
 | `path` | `const char*` | Yes | Path to cache directory |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_table_detection()
+###### xberg_with_table_detection()
 
 Enables or disables table structure detection.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_table_detection(bool enable);
+XbergPaddleOcrConfig xberg_with_table_detection(bool enable);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_table_detection(instance, true);
+XbergPaddleOcrConfig *result = xberg_with_table_detection(instance, true);
 ```
 
 **Parameters:**
@@ -6335,22 +6335,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_table_detection(instance, true
 |------|------|----------|-------------|
 | `enable` | `bool` | Yes | Whether to enable table detection |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_angle_cls()
+###### xberg_with_angle_cls()
 
 Enables or disables angle classification for rotated text.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_angle_cls(bool enable);
+XbergPaddleOcrConfig xberg_with_angle_cls(bool enable);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_angle_cls(instance, true);
+XbergPaddleOcrConfig *result = xberg_with_angle_cls(instance, true);
 ```
 
 **Parameters:**
@@ -6359,22 +6359,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_angle_cls(instance, true);
 |------|------|----------|-------------|
 | `enable` | `bool` | Yes | Whether to enable angle classification |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_det_db_thresh()
+###### xberg_with_det_db_thresh()
 
 Sets the database threshold for text detection.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_det_db_thresh(float threshold);
+XbergPaddleOcrConfig xberg_with_det_db_thresh(float threshold);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_thresh(instance, 0.5);
+XbergPaddleOcrConfig *result = xberg_with_det_db_thresh(instance, 0.5);
 ```
 
 **Parameters:**
@@ -6383,22 +6383,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_thresh(instance, 0.5);
 |------|------|----------|-------------|
 | `threshold` | `float` | Yes | Detection threshold (0.0-1.0) |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_det_db_box_thresh()
+###### xberg_with_det_db_box_thresh()
 
 Sets the box threshold for text bounding box refinement.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_det_db_box_thresh(float threshold);
+XbergPaddleOcrConfig xberg_with_det_db_box_thresh(float threshold);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_box_thresh(instance, 0.5);
+XbergPaddleOcrConfig *result = xberg_with_det_db_box_thresh(instance, 0.5);
 ```
 
 **Parameters:**
@@ -6407,22 +6407,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_box_thresh(instance, 0.
 |------|------|----------|-------------|
 | `threshold` | `float` | Yes | Box threshold (0.0-1.0) |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_det_db_unclip_ratio()
+###### xberg_with_det_db_unclip_ratio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_det_db_unclip_ratio(float ratio);
+XbergPaddleOcrConfig xberg_with_det_db_unclip_ratio(float ratio);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_unclip_ratio(instance, 0.5);
+XbergPaddleOcrConfig *result = xberg_with_det_db_unclip_ratio(instance, 0.5);
 ```
 
 **Parameters:**
@@ -6431,22 +6431,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_db_unclip_ratio(instance, 
 |------|------|----------|-------------|
 | `ratio` | `float` | Yes | Unclip ratio (typically 1.5-2.0) |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_det_limit_side_len()
+###### xberg_with_det_limit_side_len()
 
 Sets the maximum side length for detection images.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_det_limit_side_len(uint32_t length);
+XbergPaddleOcrConfig xberg_with_det_limit_side_len(uint32_t length);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_limit_side_len(instance, 42);
+XbergPaddleOcrConfig *result = xberg_with_det_limit_side_len(instance, 42);
 ```
 
 **Parameters:**
@@ -6455,22 +6455,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_det_limit_side_len(instance, 4
 |------|------|----------|-------------|
 | `length` | `uint32_t` | Yes | Maximum side length in pixels |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_rec_batch_num()
+###### xberg_with_rec_batch_num()
 
 Sets the batch size for recognition inference.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_rec_batch_num(uint32_t batch_size);
+XbergPaddleOcrConfig xberg_with_rec_batch_num(uint32_t batch_size);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_rec_batch_num(instance, 42);
+XbergPaddleOcrConfig *result = xberg_with_rec_batch_num(instance, 42);
 ```
 
 **Parameters:**
@@ -6479,22 +6479,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_rec_batch_num(instance, 42);
 |------|------|----------|-------------|
 | `batch_size` | `uint32_t` | Yes | Number of text regions to process simultaneously |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_drop_score()
+###### xberg_with_drop_score()
 
 Sets the minimum recognition confidence threshold.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_drop_score(float score);
+XbergPaddleOcrConfig xberg_with_drop_score(float score);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_drop_score(instance, 0.5);
+XbergPaddleOcrConfig *result = xberg_with_drop_score(instance, 0.5);
 ```
 
 **Parameters:**
@@ -6503,22 +6503,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_drop_score(instance, 0.5);
 |------|------|----------|-------------|
 | `score` | `float` | Yes | Minimum confidence (0.0-1.0), text below this is dropped |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_padding()
+###### xberg_with_padding()
 
 Sets padding in pixels added around images before detection.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_padding(uint32_t padding);
+XbergPaddleOcrConfig xberg_with_padding(uint32_t padding);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_padding(instance, 42);
+XbergPaddleOcrConfig *result = xberg_with_padding(instance, 42);
 ```
 
 **Parameters:**
@@ -6527,22 +6527,22 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_padding(instance, 42);
 |------|------|----------|-------------|
 | `padding` | `uint32_t` | Yes | Padding in pixels (0-100) |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_with_model_tier()
+###### xberg_with_model_tier()
 
 Sets the model tier controlling detection/recognition model size.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_with_model_tier(const char* tier);
+XbergPaddleOcrConfig xberg_with_model_tier(const char* tier);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_with_model_tier(instance, "value");
+XbergPaddleOcrConfig *result = xberg_with_model_tier(instance, "value");
 ```
 
 **Parameters:**
@@ -6551,29 +6551,29 @@ KreuzbergPaddleOcrConfig *result = kreuzberg_with_model_tier(instance, "value");
 |------|------|----------|-------------|
 | `tier` | `const char*` | Yes | `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents) |
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
-###### kreuzberg_default()
+###### xberg_default()
 
 Creates a default configuration with English language support.
 
 **Signature:**
 
 ```c
-KreuzbergPaddleOcrConfig kreuzberg_default();
+XbergPaddleOcrConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergPaddleOcrConfig *result = kreuzberg_default();
+XbergPaddleOcrConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergPaddleOcrConfig`
+**Returns:** `XbergPaddleOcrConfig`
 
 ---
 
-#### KreuzbergPageBoundary
+#### XbergPageBoundary
 
 Byte offset boundary for a page.
 
@@ -6589,18 +6589,18 @@ at valid UTF-8 character boundaries when using standard String methods (push_str
 
 ---
 
-#### KreuzbergPageClassification
+#### XbergPageClassification
 
 Classification result for a single page.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `page_number` | `uint32_t` | — | 1-indexed page number this classification belongs to. |
-| `labels` | `KreuzbergClassificationLabel*` | — | Labels assigned to the page. Single-label classification yields exactly one entry; multi-label classification yields any subset of the configured label set. |
+| `labels` | `XbergClassificationLabel*` | — | Labels assigned to the page. Single-label classification yields exactly one entry; multi-label classification yields any subset of the configured label set. |
 
 ---
 
-#### KreuzbergPageClassificationConfig
+#### XbergPageClassificationConfig
 
 **Since:** `v5.0`
 
@@ -6611,11 +6611,11 @@ Configuration for the page-classification post-processor.
 | `prompt_template` | `const char**` | `NULL` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `NULL` lets the backend pick a sensible default. |
 | `labels` | `const char**` | — | The set of labels the classifier may emit. Must contain at least one entry. |
 | `multi_label` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
-| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for classification. |
+| `llm` | `XbergLlmConfig` | — | LLM configuration used for classification. |
 
 ---
 
-#### KreuzbergPageConfig
+#### XbergPageConfig
 
 Page extraction and tracking configuration.
 
@@ -6633,25 +6633,25 @@ when page boundaries are available and chunking is configured.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergPageConfig kreuzberg_default();
+XbergPageConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergPageConfig *result = kreuzberg_default();
+XbergPageConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergPageConfig`
+**Returns:** `XbergPageConfig`
 
 ---
 
-#### KreuzbergPageContent
+#### XbergPageContent
 
 Content for a single page/slide.
 
@@ -6673,18 +6673,18 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `page_number` | `uint32_t` | — | Page number (1-indexed) |
 | `content` | `const char*` | — | Text content for this page |
-| `tables` | `KreuzbergTable*` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as const Table* for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
+| `tables` | `XbergTable*` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as const Table* for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
 | `image_indices` | `uint32_t*` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
-| `hierarchy` | `KreuzbergPageHierarchy*` | `NULL` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
+| `hierarchy` | `XbergPageHierarchy*` | `NULL` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `is_blank` | `bool*` | `NULL` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
-| `layout_regions` | `KreuzbergLayoutRegion**` | `NULL` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
+| `layout_regions` | `XbergLayoutRegion**` | `NULL` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
 | `speaker_notes` | `const char**` | `NULL` | Speaker notes for this slide (PPTX only). Contains the text from the slide's notes pane (`ppt/notesSlides/notesSlide{N}.xml`). Only populated when the source is a PPTX file and notes are present. |
 | `section_name` | `const char**` | `NULL` | Section name this slide belongs to (PPTX only). PowerPoint sections group slides into logical chapters (`<p:sectionLst>` in `ppt/presentation.xml`). Only populated when the source is a PPTX file and the slide belongs to a named section. |
 | `sheet_name` | `const char**` | `NULL` | Sheet name for this page (XLSX/ODS only). Each spreadsheet sheet maps to one `PageContent` entry. This field carries the sheet's display name as it appears in the workbook. `NULL` for all non-spreadsheet formats and for sheets with an empty name. |
 
 ---
 
-#### KreuzbergPageHierarchy
+#### XbergPageHierarchy
 
 Page hierarchy structure containing heading levels and block information.
 
@@ -6694,11 +6694,11 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `uint32_t` | — | Number of hierarchy blocks on this page |
-| `blocks` | `KreuzbergHierarchicalBlock*` | `/* serde(default) */` | Hierarchical blocks with heading levels |
+| `blocks` | `XbergHierarchicalBlock*` | `/* serde(default) */` | Hierarchical blocks with heading levels |
 
 ---
 
-#### KreuzbergPageInfo
+#### XbergPageInfo
 
 Metadata for individual page/slide/sheet.
 
@@ -6717,7 +6717,7 @@ and visibility state (for presentations).
 
 ---
 
-#### KreuzbergPageRange
+#### XbergPageRange
 
 Page range for a chunk (0-indexed, inclusive).
 
@@ -6728,27 +6728,27 @@ Page range for a chunk (0-indexed, inclusive).
 
 ##### Methods
 
-###### kreuzberg_page_count()
+###### xberg_page_count()
 
 Get the number of pages in this range.
 
 **Signature:**
 
 ```c
-uint32_t kreuzberg_page_count();
+uint32_t xberg_page_count();
 ```
 
 **Example:**
 
 ```c
-uint32_t result = kreuzberg_page_count(instance);
+uint32_t result = xberg_page_count(instance);
 ```
 
 **Returns:** `uint32_t`
 
 ---
 
-#### KreuzbergPageSignals
+#### XbergPageSignals
 
 Per-page signals extracted from PDF content.
 
@@ -6763,7 +6763,7 @@ Per-page signals extracted from PDF content.
 
 ##### Methods
 
-###### kreuzberg_from_page_text()
+###### xberg_from_page_text()
 
 Derive signals from raw page text.
 
@@ -6782,13 +6782,13 @@ inline.  They err on the side of fewer false positives; tune thresholds via
 **Signature:**
 
 ```c
-KreuzbergPageSignals kreuzberg_from_page_text(uint32_t page_number, const char* text, float layout_text_density);
+XbergPageSignals xberg_from_page_text(uint32_t page_number, const char* text, float layout_text_density);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPageSignals *result = kreuzberg_from_page_text(42, "value", 0.5);
+XbergPageSignals *result = xberg_from_page_text(42, "value", 0.5);
 ```
 
 **Parameters:**
@@ -6799,11 +6799,11 @@ KreuzbergPageSignals *result = kreuzberg_from_page_text(42, "value", 0.5);
 | `text` | `const char*` | Yes | The text |
 | `layout_text_density` | `float` | Yes | The layout text density |
 
-**Returns:** `KreuzbergPageSignals`
+**Returns:** `XbergPageSignals`
 
 ---
 
-#### KreuzbergPageStructure
+#### XbergPageStructure
 
 Unified page structure for documents.
 
@@ -6813,13 +6813,13 @@ with character offset boundaries for chunk-to-page mapping.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `total_count` | `uint32_t` | — | Total number of pages/slides/sheets |
-| `unit_type` | `KreuzbergPageUnitType` | — | Type of paginated unit |
-| `boundaries` | `KreuzbergPageBoundary**` | `NULL` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
-| `pages` | `KreuzbergPageInfo**` | `NULL` | Detailed per-page metadata (optional, only when needed) |
+| `unit_type` | `XbergPageUnitType` | — | Type of paginated unit |
+| `boundaries` | `XbergPageBoundary**` | `NULL` | Character offset boundaries for each page Maps character ranges in the extracted content to page numbers. Used for chunk page range calculation. |
+| `pages` | `XbergPageInfo**` | `NULL` | Detailed per-page metadata (optional, only when needed) |
 
 ---
 
-#### KreuzbergPatternMatch
+#### XbergPatternMatch
 
 One detected PII span in the input text.
 
@@ -6827,25 +6827,25 @@ One detected PII span in the input text.
 |-------|------|---------|-------------|
 | `start` | `uintptr_t` | — | Inclusive byte-offset start of the match in the source text. |
 | `end` | `uintptr_t` | — | Exclusive byte-offset end of the match. |
-| `category` | `KreuzbergPiiCategory` | — | Category the match belongs to. |
+| `category` | `XbergPiiCategory` | — | Category the match belongs to. |
 | `text` | `const char*` | — | Matched substring (owned copy — pattern engine returns owned data so the caller can free the original text if needed before replacement). |
 
 ---
 
-#### KreuzbergPdfAnnotation
+#### XbergPdfAnnotation
 
 A PDF annotation extracted from a document page.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `annotation_type` | `KreuzbergPdfAnnotationType` | — | The type of annotation. |
+| `annotation_type` | `XbergPdfAnnotationType` | — | The type of annotation. |
 | `content` | `const char**` | `NULL` | Text content of the annotation (e.g., comment text, link URL). |
 | `page_number` | `uint32_t` | — | Page number where the annotation appears (1-indexed). |
-| `bounding_box` | `KreuzbergBoundingBox*` | `NULL` | Bounding box of the annotation on the page. |
+| `bounding_box` | `XbergBoundingBox*` | `NULL` | Bounding box of the annotation on the page. |
 
 ---
 
-#### KreuzbergPdfConfig
+#### XbergPdfConfig
 
 PDF-specific configuration.
 
@@ -6855,7 +6855,7 @@ PDF-specific configuration.
 | `extract_tables` | `bool` | `true` | Extract tables from PDF. When `true` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf.oxide.table.extract_tables_heuristic`. Set to `false` to skip both passes — `tables` will then be empty in the result. |
 | `passwords` | `const char***` | `NULL` | List of passwords to try when opening encrypted PDFs |
 | `extract_metadata` | `bool` | `true` | Extract PDF metadata |
-| `hierarchy` | `KreuzbergHierarchyConfig*` | `NULL` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
+| `hierarchy` | `XbergHierarchyConfig*` | `NULL` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `extract_annotations` | `bool` | `false` | Extract PDF annotations (text notes, highlights, links, stamps). Default: false |
 | `top_margin_fraction` | `float*` | `NULL` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
 | `bottom_margin_fraction` | `float*` | `NULL` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
@@ -6866,25 +6866,25 @@ PDF-specific configuration.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergPdfConfig kreuzberg_default();
+XbergPdfConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergPdfConfig *result = kreuzberg_default();
+XbergPdfConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergPdfConfig`
+**Returns:** `XbergPdfConfig`
 
 ---
 
-#### KreuzbergPdfFormField
+#### XbergPdfFormField
 
 A form field extracted from a PDF's AcroForm or XFA structure.
 
@@ -6900,18 +6900,18 @@ The collection is empty for non-form PDFs and for non-PDF formats.
 |-------|------|---------|-------------|
 | `name` | `const char*` | — | Partial field name (the leaf name within the field hierarchy). |
 | `full_name` | `const char*` | — | Fully-qualified field name (dotted path from the form root). |
-| `field_type` | `KreuzbergFormFieldType` | — | Classified field type. |
+| `field_type` | `XbergFormFieldType` | — | Classified field type. |
 | `value` | `const char**` | `/* serde(default) */` | Current field value, if any. |
 | `default_value` | `const char**` | `/* serde(default) */` | Default field value, if any. |
 | `flags` | `uint32_t` | `/* serde(default) */` | Raw field-flags bitmask (read-only, required, multiline, …). |
 | `page` | `uint32_t*` | `/* serde(default) */` | 1-indexed page the field's widget appears on. Currently always `NULL` for AcroForm fields; page assignment is a deferred enhancement requiring spatial analysis of widget annotations per page. |
-| `bbox` | `KreuzbergBoundingBox*` | `/* serde(default) */` | Widget bounding box on its page, if known. |
+| `bbox` | `XbergBoundingBox*` | `/* serde(default) */` | Widget bounding box on its page, if known. |
 | `max_length` | `uint32_t*` | `/* serde(default) */` | Maximum input length for text fields, if specified. |
 | `tooltip` | `const char**` | `/* serde(default) */` | Tooltip / alternate field description, if present. |
 
 ---
 
-#### KreuzbergPdfMetadata
+#### XbergPdfMetadata
 
 PDF-specific metadata.
 
@@ -6930,7 +6930,7 @@ are at the `Metadata` level.
 
 ---
 
-#### KreuzbergPlugin
+#### XbergPlugin
 
 Base trait that all plugins must implement.
 
@@ -6943,7 +6943,7 @@ All plugins must be `Send + Sync` to support concurrent usage across threads.
 
 ##### Methods
 
-###### kreuzberg_name()
+###### xberg_name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -6956,40 +6956,40 @@ The name should be:
 **Signature:**
 
 ```c
-const char* kreuzberg_name();
+const char* xberg_name();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_name(instance);
+const char *result = xberg_name(instance);
 ```
 
 **Returns:** `const char*`
 
-###### kreuzberg_version()
+###### xberg_version()
 
 Returns the semantic version of this plugin.
 
 Should follow semver format: `MAJOR.MINOR.PATCH`
 
-Defaults to the kreuzberg crate version.
+Defaults to the xberg crate version.
 
 **Signature:**
 
 ```c
-const char* kreuzberg_version();
+const char* xberg_version();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_version(instance);
+const char *result = xberg_version(instance);
 ```
 
 **Returns:** `const char*`
 
-###### kreuzberg_initialize()
+###### xberg_initialize()
 
 Initialize the plugin.
 
@@ -7015,20 +7015,20 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```c
-void kreuzberg_initialize();
+void xberg_initialize();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_initialize(instance);
+xberg_initialize(instance);
 ```
 
 **Returns:** No return value.
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_shutdown()
+###### xberg_shutdown()
 
 Shutdown the plugin.
 
@@ -7054,20 +7054,20 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```c
-void kreuzberg_shutdown();
+void xberg_shutdown();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_shutdown(instance);
+xberg_shutdown(instance);
 ```
 
 **Returns:** No return value.
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_description()
+###### xberg_description()
 
 Optional plugin description for debugging and logging.
 
@@ -7076,18 +7076,18 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```c
-const char* kreuzberg_description();
+const char* xberg_description();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_description(instance);
+const char *result = xberg_description(instance);
 ```
 
 **Returns:** `const char*`
 
-###### kreuzberg_author()
+###### xberg_author()
 
 Optional plugin author information.
 
@@ -7096,20 +7096,20 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```c
-const char* kreuzberg_author();
+const char* xberg_author();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_author(instance);
+const char *result = xberg_author(instance);
 ```
 
 **Returns:** `const char*`
 
 ---
 
-#### KreuzbergPostProcessor
+#### XbergPostProcessor
 
 Trait for post-processor plugins.
 
@@ -7143,7 +7143,7 @@ Post-processors must be thread-safe (`Send + Sync`).
 
 ##### Methods
 
-###### kreuzberg_process()
+###### xberg_process()
 
 Process an extraction result.
 
@@ -7175,27 +7175,27 @@ result in place.
 **Signature:**
 
 ```c
-void kreuzberg_process(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
+void xberg_process(XbergExtractionResult result, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-kreuzberg_process(instance, NULL, NULL);
+xberg_process(instance, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | Mutable reference to the extraction result to process |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `result` | `XbergExtractionResult` | Yes | Mutable reference to the extraction result to process |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** No return value.
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_processing_stage()
+###### xberg_processing_stage()
 
 Get the processing stage for this post-processor.
 
@@ -7208,18 +7208,18 @@ The `ProcessingStage` (Early, Middle, or Late).
 **Signature:**
 
 ```c
-KreuzbergProcessingStage kreuzberg_processing_stage();
+XbergProcessingStage xberg_processing_stage();
 ```
 
 **Example:**
 
 ```c
-KreuzbergProcessingStage *result = kreuzberg_processing_stage(instance);
+XbergProcessingStage *result = xberg_processing_stage(instance);
 ```
 
-**Returns:** `KreuzbergProcessingStage`
+**Returns:** `XbergProcessingStage`
 
-###### kreuzberg_should_process()
+###### xberg_should_process()
 
 Optional: Check if this processor should run for a given result.
 
@@ -7233,25 +7233,25 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```c
-bool kreuzberg_should_process(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
+bool xberg_should_process(XbergExtractionResult result, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_should_process(instance, NULL, NULL);
+bool result = xberg_should_process(instance, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `config` | `KreuzbergExtractionConfig` | Yes | The extraction config |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `config` | `XbergExtractionConfig` | Yes | The extraction config |
 
 **Returns:** `bool`
 
-###### kreuzberg_estimated_duration_ms()
+###### xberg_estimated_duration_ms()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -7264,24 +7264,24 @@ Estimated processing time in milliseconds.
 **Signature:**
 
 ```c
-uint64_t kreuzberg_estimated_duration_ms(KreuzbergExtractionResult result);
+uint64_t xberg_estimated_duration_ms(XbergExtractionResult result);
 ```
 
 **Example:**
 
 ```c
-uint64_t result = kreuzberg_estimated_duration_ms(instance, NULL);
+uint64_t result = xberg_estimated_duration_ms(instance, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
 
 **Returns:** `uint64_t`
 
-###### kreuzberg_priority()
+###### xberg_priority()
 
 Execution priority within the processing stage.
 
@@ -7292,20 +7292,20 @@ for high-priority processors that should run early in their stage.
 **Signature:**
 
 ```c
-int32_t kreuzberg_priority();
+int32_t xberg_priority();
 ```
 
 **Example:**
 
 ```c
-int32_t result = kreuzberg_priority(instance);
+int32_t result = xberg_priority(instance);
 ```
 
 **Returns:** `int32_t`
 
 ---
 
-#### KreuzbergPostProcessorConfig
+#### XbergPostProcessorConfig
 
 Post-processor configuration.
 
@@ -7319,25 +7319,25 @@ Post-processor configuration.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergPostProcessorConfig kreuzberg_default();
+XbergPostProcessorConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergPostProcessorConfig *result = kreuzberg_default();
+XbergPostProcessorConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergPostProcessorConfig`
+**Returns:** `XbergPostProcessorConfig`
 
 ---
 
-#### KreuzbergPptxAppProperties
+#### XbergPptxAppProperties
 
 Application properties from docProps/app.xml for PPTX
 
@@ -7363,7 +7363,7 @@ Contains PowerPoint-specific document metadata.
 
 ---
 
-#### KreuzbergPptxExtractionResult
+#### XbergPptxExtractionResult
 
 PowerPoint (PPTX) extraction result.
 
@@ -7372,20 +7372,20 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `const char*` | — | Extracted text content from all slides |
-| `metadata` | `KreuzbergPptxMetadata` | — | Presentation metadata |
+| `metadata` | `XbergPptxMetadata` | — | Presentation metadata |
 | `slide_count` | `uintptr_t` | — | Total number of slides |
 | `image_count` | `uintptr_t` | — | Total number of embedded images |
 | `table_count` | `uintptr_t` | — | Total number of tables |
-| `images` | `KreuzbergExtractedImage*` | — | Extracted images from the presentation |
-| `page_structure` | `KreuzbergPageStructure*` | `NULL` | Slide structure with boundaries (when page tracking is enabled) |
-| `page_contents` | `KreuzbergPageContent**` | `NULL` | Per-slide content (when page tracking is enabled) |
-| `document` | `KreuzbergDocumentStructure*` | `NULL` | Structured document representation |
+| `images` | `XbergExtractedImage*` | — | Extracted images from the presentation |
+| `page_structure` | `XbergPageStructure*` | `NULL` | Slide structure with boundaries (when page tracking is enabled) |
+| `page_contents` | `XbergPageContent**` | `NULL` | Per-slide content (when page tracking is enabled) |
+| `document` | `XbergDocumentStructure*` | `NULL` | Structured document representation |
 | `office_metadata` | `void*` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `revisions` | `KreuzbergDocumentRevision**` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `NULL` when no comment XML parts exist. |
+| `revisions` | `XbergDocumentRevision**` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `NULL` when no comment XML parts exist. |
 
 ---
 
-#### KreuzbergPptxMetadata
+#### XbergPptxMetadata
 
 PowerPoint presentation metadata.
 
@@ -7400,14 +7400,14 @@ Extracted from PPTX files containing slide counts and presentation details.
 
 ---
 
-#### KreuzbergPreset
+#### XbergPreset
 
 A curated structured-extraction preset loaded from the embedded library.
 
 Each preset is a JSON file under `src/presets/library/<id>/v1.json` that
 validates against the meta-schema in `src/presets/preset.schema.json`.
 
-The curated catalog is downstream (kreuzberg-cloud) and injects presets via
+The curated catalog is downstream (xberg-enterprise) and injects presets via
 `extend_from_dir`. The embedded OSS library
 ships only the `generic_document` toy preset.
 
@@ -7417,20 +7417,20 @@ ships only the `generic_document` toy preset.
 | `version` | `const char*` | — | Monotonic version string (e.g. `v1`). |
 | `schema_name` | `const char*` | — | Human-readable schema name forwarded to the LLM as the response/tool name. |
 | `description` | `const char*` | — | One-line preset description shown in the registry UI. |
-| `category` | `KreuzbergPresetCategory` | — | Top-level category for grouping in the playground. |
+| `category` | `XbergPresetCategory` | — | Top-level category for grouping in the playground. |
 | `tags` | `const char**` | `/* serde(default) */` | Free-form tags used for search/filtering. May be empty. |
 | `schema` | `void*` | — | JSON Schema (Draft 2020-12) describing the structured output shape. |
 | `system_prompt` | `const char*` | — | Instruction primer sent to the model. |
 | `context_template` | `const char**` | `/* serde(default) */` | Optional mustache-style template merged with caller-supplied context. |
-| `merge_mode` | `KreuzbergMergeMode` | — | Strategy for merging per-batch outputs across paginated calls. |
-| `preferred_call_mode` | `KreuzbergCallMode` | — | Default call mode suggested for this preset; heuristics may override. |
+| `merge_mode` | `XbergMergeMode` | — | Strategy for merging per-batch outputs across paginated calls. |
+| `preferred_call_mode` | `XbergCallMode` | — | Default call mode suggested for this preset; heuristics may override. |
 | `emit_citations` | `bool` | — | When true, the prompt asks the model to wrap each field as `{value, page, bbox, confidence}` for downstream citation overlays. |
-| `sample` | `KreuzbergPresetSample*` | `/* serde(default) */` | Optional bundled sample (input file + reference output) for preview. |
+| `sample` | `XbergPresetSample*` | `/* serde(default) */` | Optional bundled sample (input file + reference output) for preview. |
 | `fingerprint` | `const char*` | `/* serde(default) */` | Stable sha256 fingerprint of the canonical preset file contents. Populated at registry load — not present in the on-disk JSON files. Used as a cache-invalidation token by the worker pipeline. |
 
 ---
 
-#### KreuzbergPresetSample
+#### XbergPresetSample
 
 Pointer to a sample input + its reference output bundled with the preset.
 
@@ -7441,7 +7441,7 @@ Pointer to a sample input + its reference output bundled with the preset.
 
 ---
 
-#### KreuzbergPresetSummary
+#### XbergPresetSummary
 
 Lightweight projection of `Preset` used by the registry list endpoint
 (omits the full schema and prompt to keep the payload small).
@@ -7452,15 +7452,15 @@ Lightweight projection of `Preset` used by the registry list endpoint
 | `version` | `const char*` | — | Preset version matching `Preset.version`. |
 | `schema_name` | `const char*` | — | Schema name matching `Preset.schema_name`. |
 | `description` | `const char*` | — | One-line preset description. |
-| `category` | `KreuzbergPresetCategory` | — | Top-level category. |
+| `category` | `XbergPresetCategory` | — | Top-level category. |
 | `tags` | `const char**` | — | Free-form tags. |
-| `preferred_call_mode` | `KreuzbergCallMode` | — | Default call mode. |
+| `preferred_call_mode` | `XbergCallMode` | — | Default call mode. |
 | `emit_citations` | `bool` | — | Whether the preset prompts the model for citations. |
 | `fingerprint` | `const char*` | — | Stable fingerprint matching `Preset.fingerprint`. |
 
 ---
 
-#### KreuzbergProcessingWarning
+#### XbergProcessingWarning
 
 A non-fatal warning from a processing pipeline stage.
 
@@ -7474,7 +7474,7 @@ but may indicate degraded results.
 
 ---
 
-#### KreuzbergPstMetadata
+#### XbergPstMetadata
 
 Outlook PST archive metadata.
 
@@ -7484,7 +7484,7 @@ Outlook PST archive metadata.
 
 ---
 
-#### KreuzbergQrBoundingBox
+#### XbergQrBoundingBox
 
 Pixel-space bounding box of a QR code inside its source image.
 
@@ -7497,7 +7497,7 @@ Pixel-space bounding box of a QR code inside its source image.
 
 ---
 
-#### KreuzbergQrCode
+#### XbergQrCode
 
 One QR code decoded from an extracted image.
 
@@ -7505,11 +7505,11 @@ One QR code decoded from an extracted image.
 |-------|------|---------|-------------|
 | `payload` | `const char*` | — | Decoded payload (text, URL, vCard string, …). |
 | `confidence` | `float*` | `NULL` | Detector-reported confidence in `\[0.0, 1.0\]`. `NULL` when the decoder does not expose confidence (the default `rqrr` backend always reports `Some` because successful decode implies high confidence). |
-| `bbox` | `KreuzbergQrBoundingBox*` | `NULL` | Bounding box of the QR code inside the source image, in pixel coordinates (`x`, `y` of the top-left corner; `width`, `height` of the rectangle). `NULL` if the decoder did not report a bounding box. |
+| `bbox` | `XbergQrBoundingBox*` | `NULL` | Bounding box of the QR code inside the source image, in pixel coordinates (`x`, `y` of the top-left corner; `width`, `height` of the rectangle). `NULL` if the decoder did not report a bounding box. |
 
 ---
 
-#### KreuzbergRakeParams
+#### XbergRakeParams
 
 RAKE-specific parameters.
 
@@ -7520,25 +7520,25 @@ RAKE-specific parameters.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergRakeParams kreuzberg_default();
+XbergRakeParams xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergRakeParams *result = kreuzberg_default();
+XbergRakeParams *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergRakeParams`
+**Returns:** `XbergRakeParams`
 
 ---
 
-#### KreuzbergRecognizedTable
+#### XbergRecognizedTable
 
 Pre-computed table markdown for a table detection region.
 
@@ -7549,13 +7549,13 @@ the type in their own code.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `detection_bbox` | `KreuzbergBBox` | — | Detection bbox that this table corresponds to (for matching). |
+| `detection_bbox` | `XbergBBox` | — | Detection bbox that this table corresponds to (for matching). |
 | `cells` | `const char***` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `const char*` | — | Rendered markdown table. |
 
 ---
 
-#### KreuzbergRedactionConfig
+#### XbergRedactionConfig
 
 **Since:** `v5.0`
 
@@ -7563,32 +7563,32 @@ Configuration for the redaction post-processor.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `categories` | `KreuzbergPiiCategory*` | `NULL` | Categories to redact. Empty means "every category supported by the engine." |
-| `strategy` | `KreuzbergRedactionStrategy` | `KREUZBERG_KREUZBERG_MASK` | Strategy applied to every match. |
-| `ner` | `KreuzbergNerConfig*` | `NULL` | Optional NER backend — required to redact PERSON / ORGANIZATION / LOCATION categories (the pure-Rust pattern engine only covers regex-detectable PII). |
+| `categories` | `XbergPiiCategory*` | `NULL` | Categories to redact. Empty means "every category supported by the engine." |
+| `strategy` | `XbergRedactionStrategy` | `XBERG_XBERG_MASK` | Strategy applied to every match. |
+| `ner` | `XbergNerConfig*` | `NULL` | Optional NER backend — required to redact PERSON / ORGANIZATION / LOCATION categories (the pure-Rust pattern engine only covers regex-detectable PII). |
 | `preserve_offsets` | `bool` | `true` | When `true`, chunk byte ranges are kept consistent with the rewritten content by adjusting `byte_start` / `byte_end` after replacement. When `false`, chunk byte ranges still refer to the *original* content offsets — useful when downstream consumers want to map findings back to the original document. |
-| `custom_terms` | `KreuzbergRedactionTerm*` | `NULL` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
-| `custom_patterns` | `KreuzbergRedactionPattern*` | `NULL` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
+| `custom_terms` | `XbergRedactionTerm*` | `NULL` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
+| `custom_patterns` | `XbergRedactionPattern*` | `NULL` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergRedactionConfig kreuzberg_default();
+XbergRedactionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergRedactionConfig *result = kreuzberg_default();
+XbergRedactionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergRedactionConfig`
+**Returns:** `XbergRedactionConfig`
 
-###### kreuzberg_validate()
+###### xberg_validate()
 
 Validate user-supplied terms and patterns at config-construction time.
 
@@ -7601,13 +7601,13 @@ still rejects empty values to avoid degenerate zero-length matches.
 **Signature:**
 
 ```c
-void kreuzberg_validate();
+void xberg_validate();
 ```
 
 **Example:**
 
 ```c
-kreuzberg_validate(instance);
+xberg_validate(instance);
 ```
 
 **Returns:** No return value.
@@ -7616,7 +7616,7 @@ kreuzberg_validate(instance);
 
 ---
 
-#### KreuzbergRedactionFinding
+#### XbergRedactionFinding
 
 One redaction event: which span was rewritten, why, and with what.
 
@@ -7624,13 +7624,13 @@ One redaction event: which span was rewritten, why, and with what.
 |-------|------|---------|-------------|
 | `start` | `uint32_t` | — | Byte-offset start in the original (pre-redaction) `ExtractionResult.content`. |
 | `end` | `uint32_t` | — | Byte-offset end (exclusive) in the original `ExtractionResult.content`. |
-| `category` | `KreuzbergPiiCategory` | — | PII category that fired this redaction. |
-| `strategy` | `KreuzbergRedactionStrategy` | — | Strategy applied to this finding (mask, hash, token-replace, drop). |
+| `category` | `XbergPiiCategory` | — | PII category that fired this redaction. |
+| `strategy` | `XbergRedactionStrategy` | — | Strategy applied to this finding (mask, hash, token-replace, drop). |
 | `replacement_token` | `const char*` | — | String that replaced the original mention. Always present; for `Drop` the replacement is the empty string. |
 
 ---
 
-#### KreuzbergRedactionPattern
+#### XbergRedactionPattern
 
 One user-supplied regex pattern to redact.
 
@@ -7646,20 +7646,20 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 
 ##### Methods
 
-###### kreuzberg_labeled()
+###### xberg_labeled()
 
 Build a pattern with the given label (case-insensitive by default).
 
 **Signature:**
 
 ```c
-KreuzbergRedactionPattern kreuzberg_labeled(const char* label, const char* pattern);
+XbergRedactionPattern xberg_labeled(const char* label, const char* pattern);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRedactionPattern *result = kreuzberg_labeled("value", "value");
+XbergRedactionPattern *result = xberg_labeled("value", "value");
 ```
 
 **Parameters:**
@@ -7669,11 +7669,11 @@ KreuzbergRedactionPattern *result = kreuzberg_labeled("value", "value");
 | `label` | `const char*` | Yes | The label |
 | `pattern` | `const char*` | Yes | The pattern |
 
-**Returns:** `KreuzbergRedactionPattern`
+**Returns:** `XbergRedactionPattern`
 
 ---
 
-#### KreuzbergRedactionReport
+#### XbergRedactionReport
 
 Audit report describing what the redaction processor found and how it replaced it.
 
@@ -7684,12 +7684,12 @@ bytes are dropped at the end of the pipeline.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `findings` | `KreuzbergRedactionFinding*` | — | Individual redaction findings in original-source byte order. |
+| `findings` | `XbergRedactionFinding*` | — | Individual redaction findings in original-source byte order. |
 | `total_redacted` | `uint32_t` | — | Total number of redactions applied across the document. |
 
 ---
 
-#### KreuzbergRedactionTerm
+#### XbergRedactionTerm
 
 One user-supplied literal term to redact.
 
@@ -7705,20 +7705,20 @@ metacharacters themselves). Case-insensitive by default — set
 
 ##### Methods
 
-###### kreuzberg_literal()
+###### xberg_literal()
 
 Build a term whose label is the literal value itself (case-insensitive).
 
 **Signature:**
 
 ```c
-KreuzbergRedactionTerm kreuzberg_literal(const char* value);
+XbergRedactionTerm xberg_literal(const char* value);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRedactionTerm *result = kreuzberg_literal("value");
+XbergRedactionTerm *result = xberg_literal("value");
 ```
 
 **Parameters:**
@@ -7727,22 +7727,22 @@ KreuzbergRedactionTerm *result = kreuzberg_literal("value");
 |------|------|----------|-------------|
 | `value` | `const char*` | Yes | The value |
 
-**Returns:** `KreuzbergRedactionTerm`
+**Returns:** `XbergRedactionTerm`
 
-###### kreuzberg_labeled()
+###### xberg_labeled()
 
 Build a term with a custom label.
 
 **Signature:**
 
 ```c
-KreuzbergRedactionTerm kreuzberg_labeled(const char* label, const char* value);
+XbergRedactionTerm xberg_labeled(const char* label, const char* value);
 ```
 
 **Example:**
 
 ```c
-KreuzbergRedactionTerm *result = kreuzberg_labeled("value", "value");
+XbergRedactionTerm *result = xberg_labeled("value", "value");
 ```
 
 **Parameters:**
@@ -7752,17 +7752,17 @@ KreuzbergRedactionTerm *result = kreuzberg_labeled("value", "value");
 | `label` | `const char*` | Yes | The label |
 | `value` | `const char*` | Yes | The value |
 
-**Returns:** `KreuzbergRedactionTerm`
+**Returns:** `XbergRedactionTerm`
 
 ---
 
-#### KreuzbergRegistry
+#### XbergRegistry
 
 Sorted map of preset id → `Preset`.
 
 ##### Methods
 
-###### kreuzberg_load_embedded()
+###### xberg_load_embedded()
 
 Build the registry from preset files embedded at compile time under
 `src/presets/library/`. Validates every file against the meta-schema.
@@ -7770,20 +7770,20 @@ Build the registry from preset files embedded at compile time under
 **Signature:**
 
 ```c
-KreuzbergRegistry kreuzberg_load_embedded();
+XbergRegistry xberg_load_embedded();
 ```
 
 **Example:**
 
 ```c
-KreuzbergRegistry *result = kreuzberg_load_embedded();
+XbergRegistry *result = xberg_load_embedded();
 ```
 
-**Returns:** `KreuzbergRegistry`
+**Returns:** `XbergRegistry`
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_global()
+###### xberg_global()
 
 Return the global registry, loading it on first access.
 
@@ -7796,31 +7796,31 @@ indicates a build artifact problem, not a runtime error.
 **Signature:**
 
 ```c
-KreuzbergRegistry kreuzberg_global();
+XbergRegistry xberg_global();
 ```
 
 **Example:**
 
 ```c
-KreuzbergRegistry *result = kreuzberg_global();
+XbergRegistry *result = xberg_global();
 ```
 
-**Returns:** `KreuzbergRegistry`
+**Returns:** `XbergRegistry`
 
-###### kreuzberg_get()
+###### xberg_get()
 
 Look up a preset by its identifier.
 
 **Signature:**
 
 ```c
-KreuzbergPreset* kreuzberg_get(const char* id);
+XbergPreset* xberg_get(const char* id);
 ```
 
 **Example:**
 
 ```c
-KreuzbergPreset* result = kreuzberg_get(instance, "value");
+XbergPreset* result = xberg_get(instance, "value");
 ```
 
 **Parameters:**
@@ -7829,63 +7829,63 @@ KreuzbergPreset* result = kreuzberg_get(instance, "value");
 |------|------|----------|-------------|
 | `id` | `const char*` | Yes | The id |
 
-**Returns:** `KreuzbergPreset*`
+**Returns:** `XbergPreset*`
 
-###### kreuzberg_summaries()
+###### xberg_summaries()
 
 Materialize a `PresetSummary` list for the public registry endpoint.
 
 **Signature:**
 
 ```c
-KreuzbergPresetSummary* kreuzberg_summaries();
+XbergPresetSummary* xberg_summaries();
 ```
 
 **Example:**
 
 ```c
-KreuzbergPresetSummary* result = kreuzberg_summaries(instance);
+XbergPresetSummary* result = xberg_summaries(instance);
 ```
 
-**Returns:** `KreuzbergPresetSummary*`
+**Returns:** `XbergPresetSummary*`
 
-###### kreuzberg_len()
+###### xberg_len()
 
 Number of presets currently loaded.
 
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_len();
+uintptr_t xberg_len();
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_len(instance);
+uintptr_t result = xberg_len(instance);
 ```
 
 **Returns:** `uintptr_t`
 
-###### kreuzberg_is_empty()
+###### xberg_is_empty()
 
 Whether the registry contains zero presets.
 
 **Signature:**
 
 ```c
-bool kreuzberg_is_empty();
+bool xberg_is_empty();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_is_empty(instance);
+bool result = xberg_is_empty(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_sample_bytes()
+###### xberg_sample_bytes()
 
 Read raw sample bytes for `<preset_id>` from
 `library/<id>/samples/<name>`. Returns `NULL` when the file is absent.
@@ -7893,13 +7893,13 @@ Read raw sample bytes for `<preset_id>` from
 **Signature:**
 
 ```c
-const uint8_t** kreuzberg_sample_bytes(const char* preset_id, const char* name);
+const uint8_t** xberg_sample_bytes(const char* preset_id, const char* name);
 ```
 
 **Example:**
 
 ```c
-const uint8_t** result = kreuzberg_sample_bytes(instance, "value", "value");
+const uint8_t** result = xberg_sample_bytes(instance, "value", "value");
 ```
 
 **Parameters:**
@@ -7911,7 +7911,7 @@ const uint8_t** result = kreuzberg_sample_bytes(instance, "value", "value");
 
 **Returns:** `const uint8_t**`
 
-###### kreuzberg_extend_from_dir()
+###### xberg_extend_from_dir()
 
 Load additional preset files from a runtime directory and insert them
 into this registry.
@@ -7926,20 +7926,20 @@ Returns the number of presets successfully loaded from `dir`.
 
 ##### Use case
 
-This is the injection point for downstream catalogs: kreuzberg-cloud
+This is the injection point for downstream catalogs: xberg-enterprise
 calls this once at startup to add its 20+ curated presets on top of the
 single embedded OSS preset.
 
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_extend_from_dir(const char* dir);
+uintptr_t xberg_extend_from_dir(const char* dir);
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_extend_from_dir(instance, "value");
+uintptr_t result = xberg_extend_from_dir(instance, "value");
 ```
 
 **Parameters:**
@@ -7954,7 +7954,7 @@ uintptr_t result = kreuzberg_extend_from_dir(instance, "value");
 
 ---
 
-#### KreuzbergRenderer
+#### XbergRenderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
 
@@ -7974,7 +7974,7 @@ Renderers must be `Send + Sync` (inherited from `Plugin`).
 
 ##### Methods
 
-###### kreuzberg_render()
+###### xberg_render()
 
 Render an `InternalDocument` to the output format.
 
@@ -7989,20 +7989,20 @@ Returns an error if rendering fails.
 **Signature:**
 
 ```c
-const char* kreuzberg_render(KreuzbergInternalDocument doc);
+const char* xberg_render(XbergInternalDocument doc);
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_render(instance, NULL);
+const char *result = xberg_render(instance, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `doc` | `KreuzbergInternalDocument` | Yes | The internal document to render |
+| `doc` | `XbergInternalDocument` | Yes | The internal document to render |
 
 **Returns:** `const char*`
 
@@ -8010,7 +8010,7 @@ const char *result = kreuzberg_render(instance, NULL);
 
 ---
 
-#### KreuzbergRerankedDocument
+#### XbergRerankedDocument
 
 A single document returned by the reranker, with its position in the input and score.
 
@@ -8027,7 +8027,7 @@ Since v5.0.
 
 ---
 
-#### KreuzbergRerankerBackend
+#### XbergRerankerBackend
 
 Trait for in-process reranker backend plugins.
 
@@ -8043,7 +8043,7 @@ host callables in `spawn_blocking` or the equivalent.
 ##### Thread safety
 
 Backends must be `Send + Sync + 'static`. They are stored in
-`Arc<dyn RerankerBackend>` and may be called concurrently from kreuzberg's
+`Arc<dyn RerankerBackend>` and may be called concurrently from xberg's
 dispatcher. If the backend's underlying model is not thread-safe, the
 backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
@@ -8051,7 +8051,7 @@ backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
 - `rerank(query, documents)` MUST return exactly `documents.len()` scores.
   The dispatcher validates this before sorting and returning to callers;
-  a non-conforming backend surfaces as a `KreuzbergError.Validation`, not
+  a non-conforming backend surfaces as a `XbergError.Validation`, not
   a panic.
 
 - Scores are raw logits in any range — callers must NOT assume `[0, 1]`.
@@ -8077,7 +8077,7 @@ Since v5.0.
 
 ##### Methods
 
-###### kreuzberg_rerank()
+###### xberg_rerank()
 
 Score a list of documents against a query.
 
@@ -8093,13 +8093,13 @@ against `documents.len()` before sorting.
 **Signature:**
 
 ```c
-float* kreuzberg_rerank(const char* query, const char** documents);
+float* xberg_rerank(const char* query, const char** documents);
 ```
 
 **Example:**
 
 ```c
-float* result = kreuzberg_rerank(instance, "value", NULL);
+float* result = xberg_rerank(instance, "value", NULL);
 ```
 
 **Parameters:**
@@ -8115,7 +8115,7 @@ float* result = kreuzberg_rerank(instance, "value", NULL);
 
 ---
 
-#### KreuzbergRerankerConfig
+#### XbergRerankerConfig
 
 Configuration for the reranking pipeline.
 
@@ -8126,35 +8126,35 @@ Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | `KreuzbergRerankerModelType` | `KREUZBERG_KREUZBERG_PRESET` | The reranker model to use (defaults to "balanced" preset if not specified). |
+| `model` | `XbergRerankerModelType` | `XBERG_XBERG_PRESET` | The reranker model to use (defaults to "balanced" preset if not specified). |
 | `top_k` | `uintptr_t*` | `NULL` | Return at most this many documents. `NULL` returns all. Applied after sorting by score, so the highest-scoring documents are kept. |
 | `batch_size` | `uintptr_t` | `32` | Batch size for local ONNX cross-encoder inference. |
 | `show_download_progress` | `bool` | `false` | Show model download progress (local ONNX path only). |
-| `cache_dir` | `const char**` | `NULL` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
-| `acceleration` | `KreuzbergAccelerationConfig*` | `NULL` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `NULL` (auto-select per platform). |
+| `cache_dir` | `const char**` | `NULL` | Custom cache directory for model files. Defaults to `~/.cache/xberg/rerankers/` if not specified. |
+| `acceleration` | `XbergAccelerationConfig*` | `NULL` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `NULL` (auto-select per platform). |
 | `max_rerank_duration_secs` | `uint64_t*` | `NULL` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `NULL` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergRerankerConfig kreuzberg_default();
+XbergRerankerConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergRerankerConfig *result = kreuzberg_default();
+XbergRerankerConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergRerankerConfig`
+**Returns:** `XbergRerankerConfig`
 
 ---
 
-#### KreuzbergRerankerPreset
+#### XbergRerankerPreset
 
 Metadata for a bundled reranker preset.
 
@@ -8174,7 +8174,7 @@ Since v5.0.
 
 ---
 
-#### KreuzbergResolvedPreset
+#### XbergResolvedPreset
 
 A preset merged with caller-supplied overrides (custom schema, prompt suffix,
 context map). Output is what the pipeline orchestrator consumes.
@@ -8187,13 +8187,13 @@ context map). Output is what the pipeline orchestrator consumes.
 | `schema_name` | `const char*` | — | Schema name forwarded to the LLM. |
 | `schema` | `void*` | — | Effective JSON Schema (caller override or the preset's own). |
 | `system_prompt` | `const char*` | — | System prompt with rendered context appended. |
-| `merge_mode` | `KreuzbergMergeMode` | — | Merge strategy for paginated outputs. |
-| `preferred_call_mode` | `KreuzbergCallMode` | — | Preferred call mode. |
+| `merge_mode` | `XbergMergeMode` | — | Merge strategy for paginated outputs. |
+| `preferred_call_mode` | `XbergCallMode` | — | Preferred call mode. |
 | `emit_citations` | `bool` | — | Whether the prompt asks for per-field citations. |
 
 ---
 
-#### KreuzbergRevisionDelta
+#### XbergRevisionDelta
 
 The content changes that make up a single revision.
 
@@ -8204,12 +8204,12 @@ later enrichment pass.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `KreuzbergDiffLine*` | `NULL` | Line-level content changes for this revision. |
-| `table_changes` | `KreuzbergCellChange*` | `NULL` | Cell-level table changes for this revision. |
+| `content` | `XbergDiffLine*` | `NULL` | Line-level content changes for this revision. |
+| `table_changes` | `XbergCellChange*` | `NULL` | Cell-level table changes for this revision. |
 
 ---
 
-#### KreuzbergSecurityLimits
+#### XbergSecurityLimits
 
 Configuration for security limits across extractors.
 
@@ -8230,29 +8230,29 @@ while still supporting legitimate documents.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergSecurityLimits kreuzberg_default();
+XbergSecurityLimits xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergSecurityLimits *result = kreuzberg_default();
+XbergSecurityLimits *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergSecurityLimits`
+**Returns:** `XbergSecurityLimits`
 
 ---
 
-#### KreuzbergServerConfig
+#### XbergServerConfig
 
 API server configuration.
 
-This struct holds all configuration options for the Kreuzberg API server,
+This struct holds all configuration options for the Xberg API server,
 including host/port settings, CORS configuration, and upload limits.
 
 ##### Defaults
@@ -8273,41 +8273,41 @@ including host/port settings, CORS configuration, and upload limits.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergServerConfig kreuzberg_default();
+XbergServerConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergServerConfig *result = kreuzberg_default();
+XbergServerConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergServerConfig`
+**Returns:** `XbergServerConfig`
 
-###### kreuzberg_listen_addr()
+###### xberg_listen_addr()
 
 Get the server listen address (host:port).
 
 **Signature:**
 
 ```c
-const char* kreuzberg_listen_addr();
+const char* xberg_listen_addr();
 ```
 
 **Example:**
 
 ```c
-const char *result = kreuzberg_listen_addr(instance);
+const char *result = xberg_listen_addr(instance);
 ```
 
 **Returns:** `const char*`
 
-###### kreuzberg_cors_allows_all()
+###### xberg_cors_allows_all()
 
 Check if CORS allows all origins.
 
@@ -8317,18 +8317,18 @@ are allowed. Returns `false` if specific origins are configured.
 **Signature:**
 
 ```c
-bool kreuzberg_cors_allows_all();
+bool xberg_cors_allows_all();
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_cors_allows_all(instance);
+bool result = xberg_cors_allows_all(instance);
 ```
 
 **Returns:** `bool`
 
-###### kreuzberg_is_origin_allowed()
+###### xberg_is_origin_allowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -8340,13 +8340,13 @@ Returns `true` if:
 **Signature:**
 
 ```c
-bool kreuzberg_is_origin_allowed(const char* origin);
+bool xberg_is_origin_allowed(const char* origin);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_is_origin_allowed(instance, "value");
+bool result = xberg_is_origin_allowed(instance, "value");
 ```
 
 **Parameters:**
@@ -8357,57 +8357,57 @@ bool result = kreuzberg_is_origin_allowed(instance, "value");
 
 **Returns:** `bool`
 
-###### kreuzberg_max_request_body_mb()
+###### xberg_max_request_body_mb()
 
 Get maximum request body size in megabytes (rounded up).
 
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_max_request_body_mb();
+uintptr_t xberg_max_request_body_mb();
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_max_request_body_mb(instance);
+uintptr_t result = xberg_max_request_body_mb(instance);
 ```
 
 **Returns:** `uintptr_t`
 
-###### kreuzberg_max_multipart_field_mb()
+###### xberg_max_multipart_field_mb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
 **Signature:**
 
 ```c
-uintptr_t kreuzberg_max_multipart_field_mb();
+uintptr_t xberg_max_multipart_field_mb();
 ```
 
 **Example:**
 
 ```c
-uintptr_t result = kreuzberg_max_multipart_field_mb(instance);
+uintptr_t result = xberg_max_multipart_field_mb(instance);
 ```
 
 **Returns:** `uintptr_t`
 
 ---
 
-#### KreuzbergStructuredData
+#### XbergStructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `data_type` | `KreuzbergStructuredDataType` | — | Type of structured data |
+| `data_type` | `XbergStructuredDataType` | — | Type of structured data |
 | `raw_json` | `const char*` | — | Raw JSON string representation |
 | `schema_type` | `const char**` | `NULL` | Schema type if detectable (e.g., "Article", "Event", "Product") |
 
 ---
 
-#### KreuzbergStructuredDataResult
+#### XbergStructuredDataResult
 
 Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 
@@ -8420,7 +8420,7 @@ Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 
 ---
 
-#### KreuzbergStructuredExtractionConfig
+#### XbergStructuredExtractionConfig
 
 Configuration for LLM-based structured data extraction.
 
@@ -8434,17 +8434,17 @@ returning structured data that conforms to the schema.
 | `schema_description` | `const char**` | `/* serde(default) */` | Optional schema description for the LLM. |
 | `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
 | `prompt` | `const char**` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `NULL`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
-| `llm` | `KreuzbergLlmConfig` | — | LLM configuration for the extraction. |
+| `llm` | `XbergLlmConfig` | — | LLM configuration for the extraction. |
 
 ---
 
-#### KreuzbergStructuredInput
+#### XbergStructuredInput
 
 Signals consumed by the call-mode heuristic.
 
-All fields derive from a prior kreuzberg extraction — no double-work.
+All fields derive from a prior xberg extraction — no double-work.
 This is a plain DTO; it intentionally has no dependency on internal
-kreuzberg extraction types so it can be constructed from any source.
+xberg extraction types so it can be constructed from any source.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -8457,7 +8457,7 @@ kreuzberg extraction types so it can be constructed from any source.
 
 ---
 
-#### KreuzbergStructuredThresholds
+#### XbergStructuredThresholds
 
 Thresholds for the structured-extraction call-mode heuristic.
 
@@ -8477,25 +8477,25 @@ Construct custom thresholds with struct-update syntax:
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergStructuredThresholds kreuzberg_default();
+XbergStructuredThresholds xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergStructuredThresholds *result = kreuzberg_default();
+XbergStructuredThresholds *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergStructuredThresholds`
+**Returns:** `XbergStructuredThresholds`
 
 ---
 
-#### KreuzbergSummarizationConfig
+#### XbergSummarizationConfig
 
 **Since:** `v5.0`
 
@@ -8503,17 +8503,17 @@ Configuration for the summarisation post-processor.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `strategy` | `KreuzbergSummaryStrategy` | `KREUZBERG_KREUZBERG_EXTRACTIVE` | Summarisation strategy. |
+| `strategy` | `XbergSummaryStrategy` | `XBERG_XBERG_EXTRACTIVE` | Summarisation strategy. |
 | `max_tokens` | `uint32_t*` | `NULL` | Maximum summary length in tokens. `NULL` lets the backend pick a default. |
-| `llm` | `KreuzbergLlmConfig*` | `NULL` | LLM configuration for the abstractive backend. Ignored when `strategy = Extractive`. Required when `strategy = Abstractive`. |
+| `llm` | `XbergLlmConfig*` | `NULL` | LLM configuration for the abstractive backend. Ignored when `strategy = Extractive`. Required when `strategy = Abstractive`. |
 
 ---
 
-#### KreuzbergSupportedFormat
+#### XbergSupportedFormat
 
 A supported document format entry.
 
-Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+Represents a file extension and its corresponding MIME type that Xberg can process.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -8522,7 +8522,7 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 
 ---
 
-#### KreuzbergSvgOptions
+#### XbergSvgOptions
 
 SVG-specific configuration for the image-encode pipeline.
 
@@ -8538,25 +8538,25 @@ Used via `ImageExtractionConfig.svg`.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergSvgOptions kreuzberg_default();
+XbergSvgOptions xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergSvgOptions *result = kreuzberg_default();
+XbergSvgOptions *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergSvgOptions`
+**Returns:** `XbergSvgOptions`
 
 ---
 
-#### KreuzbergTable
+#### XbergTable
 
 Extracted table structure.
 
@@ -8568,11 +8568,11 @@ Tables are converted to both structured cell data and Markdown format.
 | `cells` | `const char***` | `NULL` | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `const char*` | — | Markdown representation of the table |
 | `page_number` | `uint32_t` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `KreuzbergBoundingBox*` | `NULL` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
+| `bounding_box` | `XbergBoundingBox*` | `NULL` | Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted tables when position data is available. |
 
 ---
 
-#### KreuzbergTableCell
+#### XbergTableCell
 
 Individual table cell with content and optional styling.
 
@@ -8587,7 +8587,7 @@ Future extension point for rich table support with cell-level metadata.
 
 ---
 
-#### KreuzbergTableDiff
+#### XbergTableDiff
 
 Cell-level changes for a pair of tables that share the same index.
 
@@ -8595,11 +8595,11 @@ Cell-level changes for a pair of tables that share the same index.
 |-------|------|---------|-------------|
 | `from_index` | `uintptr_t` | — | Zero-based index of the table in both `a.tables` and `b.tables`. |
 | `to_index` | `uintptr_t` | — | Zero-based index in `b.tables` (equal to `from_index` for same-dimension tables). |
-| `cell_changes` | `KreuzbergCellChange*` | — | Cell-level changes within the table. |
+| `cell_changes` | `XbergCellChange*` | — | Cell-level changes within the table. |
 
 ---
 
-#### KreuzbergTableGrid
+#### XbergTableGrid
 
 Structured table grid with cell-level metadata.
 
@@ -8609,11 +8609,11 @@ Stores row/column dimensions and a flat list of cells with position info.
 |-------|------|---------|-------------|
 | `rows` | `uint32_t` | — | Number of rows in the table. |
 | `cols` | `uint32_t` | — | Number of columns in the table. |
-| `cells` | `KreuzbergGridCell*` | `NULL` | All cells in row-major order. |
+| `cells` | `XbergGridCell*` | `NULL` | All cells in row-major order. |
 
 ---
 
-#### KreuzbergTesseractConfig
+#### XbergTesseractConfig
 
 Tesseract OCR configuration.
 
@@ -8628,7 +8628,7 @@ for specific document types (invoices, handwriting, etc.).
 | `output_format` | `const char*` | `"markdown"` | Output format ("text" or "markdown") |
 | `oem` | `int32_t` | `3` | OCR Engine Mode (0-3). - 0: Legacy engine only - 1: Neural nets (LSTM) only (usually best) - 2: Legacy + LSTM - 3: Default (based on what's available) |
 | `min_confidence` | `double` | `0` | Minimum confidence threshold (0.0-100.0). Words with confidence below this threshold may be rejected or flagged. |
-| `preprocessing` | `KreuzbergImagePreprocessingConfig*` | `NULL` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
+| `preprocessing` | `XbergImagePreprocessingConfig*` | `NULL` | Image preprocessing configuration. Controls how images are preprocessed before OCR. Can significantly improve quality for scanned documents or low-quality images. |
 | `enable_table_detection` | `bool` | `true` | Enable automatic table detection and reconstruction |
 | `table_min_confidence` | `double` | `0` | Minimum confidence threshold for table detection (0.0-1.0) |
 | `table_column_threshold` | `int32_t` | `50` | Column threshold for table detection (pixels) |
@@ -8647,25 +8647,25 @@ for specific document types (invoices, handwriting, etc.).
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTesseractConfig kreuzberg_default();
+XbergTesseractConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTesseractConfig *result = kreuzberg_default();
+XbergTesseractConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTesseractConfig`
+**Returns:** `XbergTesseractConfig`
 
 ---
 
-#### KreuzbergTextAnnotation
+#### XbergTextAnnotation
 
 Inline text annotation — byte-range based formatting and links.
 
@@ -8676,11 +8676,11 @@ enabling precise identification of formatted regions.
 |-------|------|---------|-------------|
 | `start` | `uint32_t` | — | Start byte offset in the node's text content (inclusive). |
 | `end` | `uint32_t` | — | End byte offset in the node's text content (exclusive). |
-| `kind` | `KreuzbergAnnotationKind` | — | Annotation type. |
+| `kind` | `XbergAnnotationKind` | — | Annotation type. |
 
 ---
 
-#### KreuzbergTextExtractionResult
+#### XbergTextExtractionResult
 
 Plain text and Markdown extraction result.
 
@@ -8697,7 +8697,7 @@ for Markdown files, structural elements like headers and links.
 
 ---
 
-#### KreuzbergTextMetadata
+#### XbergTextMetadata
 
 Text/Markdown metadata.
 
@@ -8713,39 +8713,39 @@ for Markdown, structural elements like headers and links.
 
 ---
 
-#### KreuzbergTokenCounter
+#### XbergTokenCounter
 
 Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 ##### Methods
 
-###### kreuzberg_new()
+###### xberg_new()
 
 Create a fresh counter with no previous state.
 
 **Signature:**
 
 ```c
-KreuzbergTokenCounter kreuzberg_new();
+XbergTokenCounter xberg_new();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTokenCounter *result = kreuzberg_new();
+XbergTokenCounter *result = xberg_new();
 ```
 
-**Returns:** `KreuzbergTokenCounter`
+**Returns:** `XbergTokenCounter`
 
 ---
 
-#### KreuzbergTokenReductionConfig
+#### XbergTokenReductionConfig
 
 Configuration for the token-reduction pipeline.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `level` | `KreuzbergReductionLevel` | `KREUZBERG_KREUZBERG_MODERATE` | Reduction intensity level. |
+| `level` | `XbergReductionLevel` | `XBERG_XBERG_MODERATE` | Reduction intensity level. |
 | `language_hint` | `const char**` | `NULL` | ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`). |
 | `preserve_markdown` | `bool` | `false` | Preserve Markdown formatting tokens during reduction. |
 | `preserve_code` | `bool` | `true` | Preserve code block contents unchanged. |
@@ -8759,25 +8759,25 @@ Configuration for the token-reduction pipeline.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTokenReductionConfig kreuzberg_default();
+XbergTokenReductionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTokenReductionConfig *result = kreuzberg_default();
+XbergTokenReductionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTokenReductionConfig`
+**Returns:** `XbergTokenReductionConfig`
 
 ---
 
-#### KreuzbergTokenReductionOptions
+#### XbergTokenReductionOptions
 
 Token reduction configuration.
 
@@ -8788,29 +8788,29 @@ Token reduction configuration.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTokenReductionOptions kreuzberg_default();
+XbergTokenReductionOptions xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTokenReductionOptions *result = kreuzberg_default();
+XbergTokenReductionOptions *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTokenReductionOptions`
+**Returns:** `XbergTokenReductionOptions`
 
 ---
 
-#### KreuzbergTranscriptionConfig
+#### XbergTranscriptionConfig
 
 Configuration for audio/video transcription (speech-to-text).
 
-When present and `enabled`, Kreuzberg will route audio and video files
+When present and `enabled`, Xberg will route audio and video files
 (mp3, mp4, m4a, wav, webm, etc.) through the transcription pipeline.
 
 The heavy dependencies (ORT, hf-hub, symphonia) are only pulled when the
@@ -8829,37 +8829,37 @@ model = "tiny"
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `bool` | `true` | Master switch. When false the block is ignored and audio files fall back to the normal "unsupported format" path. |
-| `model` | `KreuzbergWhisperModel` | `KREUZBERG_KREUZBERG_TINY` | Whisper model size to use. Smaller = faster + lower memory. `tiny` is the pragmatic default for first-time users and CI. |
+| `model` | `XbergWhisperModel` | `XBERG_XBERG_TINY` | Whisper model size to use. Smaller = faster + lower memory. `tiny` is the pragmatic default for first-time users and CI. |
 | `language` | `const char**` | `NULL` | Optional language hint (ISO-639-1 code, e.g. "en", "de"). When `NULL` (default), the current engine falls back to English. For deterministic production output, always set this explicitly. |
 | `timestamps` | `bool` | `false` | Whether to request segment-level timestamps. Accepted for forward compatibility. The current engine always uses `<\|notimestamps\|>` and does not emit segment metadata yet. |
 | `max_duration_ms` | `uint64_t*` | `NULL` | Hard safety limit on input duration (milliseconds). Files longer than this are rejected after decode, before model work. Default: 30 minutes. Set to `NULL` to disable (not recommended for untrusted input). |
 | `max_bytes` | `uint64_t*` | `NULL` | Hard safety limit on input size (bytes). Default: 512 MiB. Protects against pathological or malicious uploads. |
 | `timeout_ms` | `uint64_t*` | `NULL` | Wall-clock timeout for the entire transcription operation (ms). Default: 10 minutes. Reserved for timeout enforcement; the current extractor does not enforce this field yet. |
-| `model_cache_dir` | `const char**` | `NULL` | Override the directory used for Whisper model cache. When `NULL`, uses the centralized resolver: `KREUZBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/kreuzberg/whisper` on Linux, etc.). |
+| `model_cache_dir` | `const char**` | `NULL` | Override the directory used for Whisper model cache. When `NULL`, uses the centralized resolver: `XBERG_CACHE_DIR/whisper` or the platform default (`~/.cache/xberg/whisper` on Linux, etc.). |
 | `allow_network` | `bool` | `true` | Allow network access to download models from Hugging Face Hub. When `false`, only previously cached models may be used. Useful for air-gapped or fully offline deployments. |
 | `verify_hash` | `bool` | `true` | Request SHA256 verification of downloaded model files. Reserved for the checksum table follow-up. The current resolver logs a warning and treats this as a no-op. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTranscriptionConfig kreuzberg_default();
+XbergTranscriptionConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTranscriptionConfig *result = kreuzberg_default();
+XbergTranscriptionConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTranscriptionConfig`
+**Returns:** `XbergTranscriptionConfig`
 
 ---
 
-#### KreuzbergTranslation
+#### XbergTranslation
 
 Translation of the extracted content.
 
@@ -8877,7 +8877,7 @@ than duplicated here.
 
 ---
 
-#### KreuzbergTranslationConfig
+#### XbergTranslationConfig
 
 **Since:** `v5.0`
 
@@ -8888,11 +8888,11 @@ Configuration for the translation post-processor.
 | `target_lang` | `const char*` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `const char**` | `NULL` | Optional explicit source language. `NULL` asks the backend to auto-detect. |
 | `preserve_markup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
-| `llm` | `KreuzbergLlmConfig` | — | LLM configuration used for translation. |
+| `llm` | `XbergLlmConfig` | — | LLM configuration used for translation. |
 
 ---
 
-#### KreuzbergTreeSitterConfig
+#### XbergTreeSitterConfig
 
 Configuration for tree-sitter language pack integration.
 
@@ -8917,29 +8917,29 @@ docstrings = true
 | `cache_dir` | `const char**` | `NULL` | Custom cache directory for downloaded grammars. When `NULL`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`. |
 | `languages` | `const char***` | `NULL` | Languages to pre-download on init (e.g., `\["python", "rust"\]`). |
 | `groups` | `const char***` | `NULL` | Language groups to pre-download (e.g., `\["web", "systems", "scripting"\]`). |
-| `process` | `KreuzbergTreeSitterProcessConfig` | — | Processing options for code analysis. |
+| `process` | `XbergTreeSitterProcessConfig` | — | Processing options for code analysis. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTreeSitterConfig kreuzberg_default();
+XbergTreeSitterConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTreeSitterConfig *result = kreuzberg_default();
+XbergTreeSitterConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTreeSitterConfig`
+**Returns:** `XbergTreeSitterConfig`
 
 ---
 
-#### KreuzbergTreeSitterProcessConfig
+#### XbergTreeSitterProcessConfig
 
 Processing options for tree-sitter code analysis.
 
@@ -8955,42 +8955,42 @@ Controls which analysis features are enabled when extracting code files.
 | `symbols` | `bool` | `false` | Extract symbol definitions. Default: false. |
 | `diagnostics` | `bool` | `false` | Include parse diagnostics. Default: false. |
 | `chunk_max_size` | `uintptr_t*` | `NULL` | Maximum chunk size in bytes. `NULL` disables chunking. |
-| `content_mode` | `KreuzbergCodeContentMode` | `KREUZBERG_KREUZBERG_CHUNKS` | Content rendering mode for code extraction. |
+| `content_mode` | `XbergCodeContentMode` | `XBERG_XBERG_CHUNKS` | Content rendering mode for code extraction. |
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergTreeSitterProcessConfig kreuzberg_default();
+XbergTreeSitterProcessConfig xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergTreeSitterProcessConfig *result = kreuzberg_default();
+XbergTreeSitterProcessConfig *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergTreeSitterProcessConfig`
+**Returns:** `XbergTreeSitterProcessConfig`
 
 ---
 
-#### KreuzbergUserChunkConfig
+#### XbergUserChunkConfig
 
 User-provided chunk configuration.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `page_ranges` | `KreuzbergPageRange**` | `NULL` | User-specified page ranges (overrides automatic chunking). |
+| `page_ranges` | `XbergPageRange**` | `NULL` | User-specified page ranges (overrides automatic chunking). |
 | `pages_per_chunk` | `uint32_t*` | `NULL` | User-specified pages per chunk (overrides automatic calculation). |
 | `force_chunking` | `bool` | — | Force chunking even for small documents. |
 | `disable_chunking` | `bool` | — | Disable chunking even for large documents. |
 
 ---
 
-#### KreuzbergValidator
+#### XbergValidator
 
 Trait for validator plugins.
 
@@ -9019,7 +9019,7 @@ Validators must be thread-safe (`Send + Sync`).
 
 ##### Methods
 
-###### kreuzberg_validate()
+###### xberg_validate()
 
 Validate an extraction result.
 
@@ -9033,7 +9033,7 @@ if validation fails.
 
 **Errors:**
 
-- `KreuzbergError.Validation` - Validation failed
+- `XbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
 ##### Example - Content Length Validation
@@ -9045,27 +9045,27 @@ if validation fails.
 **Signature:**
 
 ```c
-void kreuzberg_validate(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
+void xberg_validate(XbergExtractionResult result, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-kreuzberg_validate(instance, NULL, NULL);
+xberg_validate(instance, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result to validate |
-| `config` | `KreuzbergExtractionConfig` | Yes | Extraction configuration |
+| `result` | `XbergExtractionResult` | Yes | The extraction result to validate |
+| `config` | `XbergExtractionConfig` | Yes | Extraction configuration |
 
 **Returns:** No return value.
 
 **Errors:** Returns `NULL` on error.
 
-###### kreuzberg_should_validate()
+###### xberg_should_validate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -9079,25 +9079,25 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```c
-bool kreuzberg_should_validate(KreuzbergExtractionResult result, KreuzbergExtractionConfig config);
+bool xberg_should_validate(XbergExtractionResult result, XbergExtractionConfig config);
 ```
 
 **Example:**
 
 ```c
-bool result = kreuzberg_should_validate(instance, NULL, NULL);
+bool result = xberg_should_validate(instance, NULL, NULL);
 ```
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `result` | `KreuzbergExtractionResult` | Yes | The extraction result |
-| `config` | `KreuzbergExtractionConfig` | Yes | The extraction config |
+| `result` | `XbergExtractionResult` | Yes | The extraction result |
+| `config` | `XbergExtractionConfig` | Yes | The extraction config |
 
 **Returns:** `bool`
 
-###### kreuzberg_priority()
+###### xberg_priority()
 
 Optional: Get the validation priority.
 
@@ -9113,20 +9113,20 @@ Priority value (higher = runs earlier).
 **Signature:**
 
 ```c
-int32_t kreuzberg_priority();
+int32_t xberg_priority();
 ```
 
 **Example:**
 
 ```c
-int32_t result = kreuzberg_priority(instance);
+int32_t result = xberg_priority(instance);
 ```
 
 **Returns:** `int32_t`
 
 ---
 
-#### KreuzbergXlsxAppProperties
+#### XbergXlsxAppProperties
 
 Application properties from docProps/app.xml for XLSX
 
@@ -9146,7 +9146,7 @@ Contains Excel-specific document metadata.
 
 ---
 
-#### KreuzbergXmlExtractionResult
+#### XbergXmlExtractionResult
 
 XML extraction result.
 
@@ -9161,7 +9161,7 @@ structural statistics about the XML document.
 
 ---
 
-#### KreuzbergXmlMetadata
+#### XbergXmlMetadata
 
 XML metadata extracted during XML parsing.
 
@@ -9174,7 +9174,7 @@ Provides statistics about XML document structure.
 
 ---
 
-#### KreuzbergYakeParams
+#### XbergYakeParams
 
 YAKE-specific parameters.
 
@@ -9184,25 +9184,25 @@ YAKE-specific parameters.
 
 ##### Methods
 
-###### kreuzberg_default()
+###### xberg_default()
 
 **Signature:**
 
 ```c
-KreuzbergYakeParams kreuzberg_default();
+XbergYakeParams xberg_default();
 ```
 
 **Example:**
 
 ```c
-KreuzbergYakeParams *result = kreuzberg_default();
+XbergYakeParams *result = xberg_default();
 ```
 
-**Returns:** `KreuzbergYakeParams`
+**Returns:** `XbergYakeParams`
 
 ---
 
-#### KreuzbergYearRange
+#### XbergYearRange
 
 Year range for bibliographic metadata.
 
@@ -9216,7 +9216,7 @@ Year range for bibliographic metadata.
 
 ### Enums
 
-#### KreuzbergExecutionProviderType
+#### XbergExecutionProviderType
 
 ONNX Runtime execution provider type.
 
@@ -9225,15 +9225,15 @@ Determines which hardware backend is used for model inference.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_AUTO` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
-| `KREUZBERG_CPU` | CPU execution provider (always available). |
-| `KREUZBERG_CORE_ML` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
-| `KREUZBERG_CUDA` | NVIDIA CUDA GPU acceleration. |
-| `KREUZBERG_TENSOR_RT` | NVIDIA TensorRT (optimized CUDA inference). |
+| `XBERG_AUTO` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
+| `XBERG_CPU` | CPU execution provider (always available). |
+| `XBERG_CORE_ML` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
+| `XBERG_CUDA` | NVIDIA CUDA GPU acceleration. |
+| `XBERG_TENSOR_RT` | NVIDIA TensorRT (optimized CUDA inference). |
 
 ---
 
-#### KreuzbergImageOutputFormat
+#### XbergImageOutputFormat
 
 Target format for re-encoding extracted images.
 
@@ -9253,16 +9253,16 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_NATIVE` | Preserve whatever format the extractor produced (default). No re-encode pass is performed. `ExtractedImage.format` reflects the source format: JPEG for embedded PDF images, PNG for rasterised content, or the native container format from office documents. |
-| `KREUZBERG_PNG` | Re-encode all extracted images as PNG (lossless). |
-| `KREUZBERG_JPEG` | Re-encode all extracted images as JPEG at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. Higher values produce larger files with less artefacting; 85 is a reasonable default. — Fields: `quality`: `uint8_t` |
-| `KREUZBERG_WEBP` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
-| `KREUZBERG_HEIF` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
-| `KREUZBERG_SVG` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
+| `XBERG_NATIVE` | Preserve whatever format the extractor produced (default). No re-encode pass is performed. `ExtractedImage.format` reflects the source format: JPEG for embedded PDF images, PNG for rasterised content, or the native container format from office documents. |
+| `XBERG_PNG` | Re-encode all extracted images as PNG (lossless). |
+| `XBERG_JPEG` | Re-encode all extracted images as JPEG at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. Higher values produce larger files with less artefacting; 85 is a reasonable default. — Fields: `quality`: `uint8_t` |
+| `XBERG_WEBP` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
+| `XBERG_HEIF` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `uint8_t` |
+| `XBERG_SVG` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
 
 ---
 
-#### KreuzbergOutputFormat
+#### XbergOutputFormat
 
 Output format for extraction results.
 
@@ -9274,31 +9274,31 @@ boxes and confidence scores.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PLAIN` | Plain text content only (default) |
-| `KREUZBERG_MARKDOWN` | Markdown format |
-| `KREUZBERG_DJOT` | Djot markup format |
-| `KREUZBERG_HTML` | HTML format |
-| `KREUZBERG_JSON` | JSON tree format with heading-driven sections. |
-| `KREUZBERG_STRUCTURED` | Structured JSON format with full OCR element metadata. |
-| `KREUZBERG_CUSTOM` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `0`: `const char*` |
+| `XBERG_PLAIN` | Plain text content only (default) |
+| `XBERG_MARKDOWN` | Markdown format |
+| `XBERG_DJOT` | Djot markup format |
+| `XBERG_HTML` | HTML format |
+| `XBERG_JSON` | JSON tree format with heading-driven sections. |
+| `XBERG_STRUCTURED` | Structured JSON format with full OCR element metadata. |
+| `XBERG_CUSTOM` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `0`: `const char*` |
 
 ---
 
-#### KreuzbergHtmlTheme
+#### XbergHtmlTheme
 
 Built-in HTML theme selection.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_DEFAULT` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
-| `KREUZBERG_GIT_HUB` | GitHub Markdown-inspired palette and spacing. |
-| `KREUZBERG_DARK` | Dark background, light text. |
-| `KREUZBERG_LIGHT` | Minimal light theme with generous whitespace. |
-| `KREUZBERG_UNSTYLED` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
+| `XBERG_DEFAULT` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
+| `XBERG_GIT_HUB` | GitHub Markdown-inspired palette and spacing. |
+| `XBERG_DARK` | Dark background, light text. |
+| `XBERG_LIGHT` | Minimal light theme with generous whitespace. |
+| `XBERG_UNSTYLED` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
 
 ---
 
-#### KreuzbergTableModel
+#### XbergTableModel
 
 Which table structure recognition model to use.
 
@@ -9308,16 +9308,16 @@ YAML).
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TATR` | TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. |
-| `KREUZBERG_SLANET_WIRED` | SLANeXT wired variant -- 365MB, optimized for bordered tables. |
-| `KREUZBERG_SLANET_WIRELESS` | SLANeXT wireless variant -- 365MB, optimized for borderless tables. |
-| `KREUZBERG_SLANET_PLUS` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
-| `KREUZBERG_SLANET_AUTO` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
-| `KREUZBERG_DISABLED` | Disable table structure model inference entirely; use heuristic path only. |
+| `XBERG_TATR` | TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. |
+| `XBERG_SLANET_WIRED` | SLANeXT wired variant -- 365MB, optimized for bordered tables. |
+| `XBERG_SLANET_WIRELESS` | SLANeXT wireless variant -- 365MB, optimized for borderless tables. |
+| `XBERG_SLANET_PLUS` | SLANet-plus -- 7.78MB, lightweight general-purpose. |
+| `XBERG_SLANET_AUTO` | Classifier-routed SLANeXT: auto-select wired/wireless per table. Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total). |
+| `XBERG_DISABLED` | Disable table structure model inference entirely; use heuristic path only. |
 
 ---
 
-#### KreuzbergCallMode
+#### XbergCallMode
 
 How a structured-extraction preset is dispatched to the model.
 
@@ -9329,13 +9329,13 @@ type is the stable, serializable surface presets and bindings depend on.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT_ONLY` | Use the extracted text only. |
-| `KREUZBERG_VISION_ONLY` | Use rasterized page images only. |
-| `KREUZBERG_TEXT_PLUS_VISION` | Provide both extracted text and page images to the model. |
+| `XBERG_TEXT_ONLY` | Use the extracted text only. |
+| `XBERG_VISION_ONLY` | Use rasterized page images only. |
+| `XBERG_TEXT_PLUS_VISION` | Provide both extracted text and page images to the model. |
 
 ---
 
-#### KreuzbergMergeMode
+#### XbergMergeMode
 
 How partial results from multiple model calls (e.g. per page batch) are combined.
 
@@ -9345,24 +9345,24 @@ type across the crate — do not introduce a second.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_OBJECT_MERGE` | Deep-merge JSON objects field by field (later calls fill missing fields). |
-| `KREUZBERG_ARRAY_CONCAT` | Concatenate top-level arrays across calls. |
-| `KREUZBERG_OBJECT_FIRST` | Keep the first non-empty result; ignore subsequent calls. |
+| `XBERG_OBJECT_MERGE` | Deep-merge JSON objects field by field (later calls fill missing fields). |
+| `XBERG_ARRAY_CONCAT` | Concatenate top-level arrays across calls. |
+| `XBERG_OBJECT_FIRST` | Keep the first non-empty result; ignore subsequent calls. |
 
 ---
 
-#### KreuzbergNerBackendKind
+#### XbergNerBackendKind
 
 NER backend selector.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_ONNX` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download.hf_download`. |
-| `KREUZBERG_LLM` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
+| `XBERG_ONNX` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download.hf_download`. |
+| `XBERG_LLM` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
 
 ---
 
-#### KreuzbergVlmFallbackPolicy
+#### XbergVlmFallbackPolicy
 
 Policy controlling when VLM (Vision Language Model) OCR is used as a fallback.
 
@@ -9389,13 +9389,13 @@ detected by `OcrConfig.validate` and will surface as a
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_DISABLED` | No VLM fallback (default). Behaves identically to the pre-policy single-backend mode. |
-| `KREUZBERG_ON_LOW_QUALITY` | Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the page to the VLM. `quality_threshold` is in the `\[0.0, 1.0\]` range produced by `calculate_quality_score`. A value of `0.5` is a reasonable starting point; calibrate with the Stage 0 benchmark harness. — Fields: `quality_threshold`: `double` |
-| `KREUZBERG_ALWAYS` | Skip the classical OCR backend entirely. Every page is sent to the VLM. |
+| `XBERG_DISABLED` | No VLM fallback (default). Behaves identically to the pre-policy single-backend mode. |
+| `XBERG_ON_LOW_QUALITY` | Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the page to the VLM. `quality_threshold` is in the `\[0.0, 1.0\]` range produced by `calculate_quality_score`. A value of `0.5` is a reasonable starting point; calibrate with the Stage 0 benchmark harness. — Fields: `quality_threshold`: `double` |
+| `XBERG_ALWAYS` | Skip the classical OCR backend entirely. Every page is sent to the VLM. |
 
 ---
 
-#### KreuzbergTableChunkingMode
+#### XbergTableChunkingMode
 
 Controls how markdown tables are handled when they exceed the chunk size limit.
 
@@ -9414,12 +9414,12 @@ Only applies when `chunker_type` is `Markdown`.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_SPLIT` | Split tables at row boundaries (default). Continuation chunks have no header. |
-| `KREUZBERG_REPEAT_HEADER` | Prepend the table header to every chunk that continues a split table. |
+| `XBERG_SPLIT` | Split tables at row boundaries (default). Continuation chunks have no header. |
+| `XBERG_REPEAT_HEADER` | Prepend the table header to every chunk that continues a split table. |
 
 ---
 
-#### KreuzbergChunkerType
+#### XbergChunkerType
 
 Type of text chunker to use.
 
@@ -9438,14 +9438,14 @@ Type of text chunker to use.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Generic whitespace- and punctuation-aware text splitter (default). |
-| `KREUZBERG_MARKDOWN` | Markdown-aware splitter that preserves heading and code-block boundaries. |
-| `KREUZBERG_YAML` | YAML-aware splitter that creates one chunk per top-level key. |
-| `KREUZBERG_SEMANTIC` | Topic-aware chunker that splits at embedding-based topic shifts. |
+| `XBERG_TEXT` | Generic whitespace- and punctuation-aware text splitter (default). |
+| `XBERG_MARKDOWN` | Markdown-aware splitter that preserves heading and code-block boundaries. |
+| `XBERG_YAML` | YAML-aware splitter that creates one chunk per top-level key. |
+| `XBERG_SEMANTIC` | Topic-aware chunker that splits at embedding-based topic shifts. |
 
 ---
 
-#### KreuzbergChunkSizing
+#### XbergChunkSizing
 
 How chunk size is measured.
 
@@ -9458,40 +9458,40 @@ available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_CHARACTERS` | Size measured in Unicode characters (default). |
-| `KREUZBERG_TOKENIZER` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `const char*`, `cache_dir`: `const char*` |
+| `XBERG_CHARACTERS` | Size measured in Unicode characters (default). |
+| `XBERG_TOKENIZER` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `const char*`, `cache_dir`: `const char*` |
 
 ---
 
-#### KreuzbergEmbeddingModelType
+#### XbergEmbeddingModelType
 
-Embedding model types supported by Kreuzberg.
+Embedding model types supported by Xberg.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PRESET` | Use a preset model configuration (recommended) — Fields: `name`: `const char*` |
-| `KREUZBERG_CUSTOM` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `const char*`, `dimensions`: `uintptr_t` |
-| `KREUZBERG_LLM` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `KreuzbergLlmConfig` |
-| `KREUZBERG_PLUGIN` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `const char*` |
+| `XBERG_PRESET` | Use a preset model configuration (recommended) — Fields: `name`: `const char*` |
+| `XBERG_CUSTOM` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `const char*`, `dimensions`: `uintptr_t` |
+| `XBERG_LLM` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `XbergLlmConfig` |
+| `XBERG_PLUGIN` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Xberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `const char*` |
 
 ---
 
-#### KreuzbergRerankerModelType
+#### XbergRerankerModelType
 
-Reranker model types supported by Kreuzberg.
+Reranker model types supported by Xberg.
 
 Since v5.0.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PRESET` | Use a preset cross-encoder model (recommended). — Fields: `name`: `const char*` |
-| `KREUZBERG_CUSTOM` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `const char*`, `model_file`: `const char*`, `additional_files`: `const char**`, `max_length`: `int64_t` |
-| `KREUZBERG_LLM` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `KreuzbergLlmConfig` |
-| `KREUZBERG_PLUGIN` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Kreuzberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `const char*` |
+| `XBERG_PRESET` | Use a preset cross-encoder model (recommended). — Fields: `name`: `const char*` |
+| `XBERG_CUSTOM` | Use a custom ONNX cross-encoder from HuggingFace. — Fields: `model_id`: `const char*`, `model_file`: `const char*`, `additional_files`: `const char**`, `max_length`: `int64_t` |
+| `XBERG_LLM` | Provider-hosted reranker via liter-llm (e.g. Cohere, Jina, Voyage). The model in the nested `LlmConfig` must be a rerank-capable model ID (e.g. `"cohere/rerank-english-v3.0"`). — Fields: `llm`: `XbergLlmConfig` |
+| `XBERG_PLUGIN` | In-process reranker registered via the plugin system. The caller registers a `RerankerBackend` once (e.g. a wrapper around a `sentence-transformers` cross-encoder or a provider client), then references it by name in config. Xberg calls back into the registered backend — no HuggingFace download, no ONNX Runtime requirement. When this variant is selected, only `max_rerank_duration_secs` applies. Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. See `register_reranker_backend`. — Fields: `name`: `const char*` |
 
 ---
 
-#### KreuzbergWhisperModel
+#### XbergWhisperModel
 
 Supported Whisper model sizes.
 
@@ -9501,15 +9501,15 @@ transcription engine.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TINY` | Smallest, fastest, lowest quality. Good default for development and CI. |
-| `KREUZBERG_BASE` | Reasonable quality/speed tradeoff. |
-| `KREUZBERG_SMALL` | Better accuracy with higher memory and cache use. |
-| `KREUZBERG_MEDIUM` | High quality; slower and more memory-intensive. |
-| `KREUZBERG_LARGE_V3` | Best quality (large-v3). Use only when latency and memory use are acceptable. |
+| `XBERG_TINY` | Smallest, fastest, lowest quality. Good default for development and CI. |
+| `XBERG_BASE` | Reasonable quality/speed tradeoff. |
+| `XBERG_SMALL` | Better accuracy with higher memory and cache use. |
+| `XBERG_MEDIUM` | High quality; slower and more memory-intensive. |
+| `XBERG_LARGE_V3` | Best quality (large-v3). Use only when latency and memory use are acceptable. |
 
 ---
 
-#### KreuzbergCodeContentMode
+#### XbergCodeContentMode
 
 Content rendering mode for code extraction.
 
@@ -9518,40 +9518,40 @@ of `ExtractionResult`.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_CHUNKS` | Use TSLP semantic chunks as content (default). |
-| `KREUZBERG_RAW` | Use raw source code as content. |
-| `KREUZBERG_STRUCTURE` | Emit function/class headings + docstrings (no code bodies). |
+| `XBERG_CHUNKS` | Use TSLP semantic chunks as content (default). |
+| `XBERG_RAW` | Use raw source code as content. |
+| `XBERG_STRUCTURE` | Emit function/class headings + docstrings (no code bodies). |
 
 ---
 
-#### KreuzbergListType
+#### XbergListType
 
 Type of list detection.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_BULLET` | Bullet points (-, *, •, etc.) |
-| `KREUZBERG_NUMBERED` | Numbered lists (1., 2., etc.) |
-| `KREUZBERG_LETTERED` | Lettered lists (a., b., A., B., etc.) |
-| `KREUZBERG_INDENTED` | Indented items |
+| `XBERG_BULLET` | Bullet points (-, *, •, etc.) |
+| `XBERG_NUMBERED` | Numbered lists (1., 2., etc.) |
+| `XBERG_LETTERED` | Lettered lists (a., b., A., B., etc.) |
+| `XBERG_INDENTED` | Indented items |
 
 ---
 
-#### KreuzbergOcrBackendType
+#### XbergOcrBackendType
 
 OCR backend types.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TESSERACT` | Tesseract OCR (native Rust binding) |
-| `KREUZBERG_EASY_OCR` | EasyOCR (Python-based, via FFI) |
-| `KREUZBERG_PADDLE_OCR` | PaddleOCR (Python-based, via FFI) |
-| `KREUZBERG_CANDLE` | Candle-based VLM OCR (TrOCR, PaddleOCR-VL). |
-| `KREUZBERG_CUSTOM` | Custom/third-party OCR backend |
+| `XBERG_TESSERACT` | Tesseract OCR (native Rust binding) |
+| `XBERG_EASY_OCR` | EasyOCR (Python-based, via FFI) |
+| `XBERG_PADDLE_OCR` | PaddleOCR (Python-based, via FFI) |
+| `XBERG_CANDLE` | Candle-based VLM OCR (TrOCR, PaddleOCR-VL). |
+| `XBERG_CUSTOM` | Custom/third-party OCR backend |
 
 ---
 
-#### KreuzbergProcessingStage
+#### XbergProcessingStage
 
 Processing stages for post-processors.
 
@@ -9560,109 +9560,109 @@ Use stages to control the order of post-processing operations.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_EARLY` | Early stage - foundational processing. Use for: - Language detection - Character encoding normalization - Entity extraction (NER) - Text quality scoring |
-| `KREUZBERG_MIDDLE` | Middle stage - content transformation. Use for: - Keyword extraction - Token reduction - Text summarization - Semantic analysis |
-| `KREUZBERG_LATE` | Late stage - final enrichment. Use for: - Custom user hooks - Analytics/logging - Final validation - Output formatting |
+| `XBERG_EARLY` | Early stage - foundational processing. Use for: - Language detection - Character encoding normalization - Entity extraction (NER) - Text quality scoring |
+| `XBERG_MIDDLE` | Middle stage - content transformation. Use for: - Keyword extraction - Token reduction - Text summarization - Semantic analysis |
+| `XBERG_LATE` | Late stage - final enrichment. Use for: - Custom user hooks - Analytics/logging - Final validation - Output formatting |
 
 ---
 
-#### KreuzbergReductionLevel
+#### XbergReductionLevel
 
 Intensity level for the token-reduction pipeline.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_OFF` | No reduction applied; text is returned as-is. |
-| `KREUZBERG_LIGHT` | Remove only the most common stopwords. |
-| `KREUZBERG_MODERATE` | Balanced stopword removal and redundancy filtering. |
-| `KREUZBERG_AGGRESSIVE` | Aggressive filtering; may remove less common content words. |
-| `KREUZBERG_MAXIMUM` | Maximum compression; prioritizes brevity over completeness. |
+| `XBERG_OFF` | No reduction applied; text is returned as-is. |
+| `XBERG_LIGHT` | Remove only the most common stopwords. |
+| `XBERG_MODERATE` | Balanced stopword removal and redundancy filtering. |
+| `XBERG_AGGRESSIVE` | Aggressive filtering; may remove less common content words. |
+| `XBERG_MAXIMUM` | Maximum compression; prioritizes brevity over completeness. |
 
 ---
 
-#### KreuzbergPdfAnnotationType
+#### XbergPdfAnnotationType
 
 Type of PDF annotation.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Sticky note / text annotation |
-| `KREUZBERG_HIGHLIGHT` | Highlighted text region |
-| `KREUZBERG_LINK` | Hyperlink annotation |
-| `KREUZBERG_STAMP` | Rubber stamp annotation |
-| `KREUZBERG_UNDERLINE` | Underline text markup |
-| `KREUZBERG_STRIKE_OUT` | Strikeout text markup |
-| `KREUZBERG_OTHER` | Any other annotation type |
+| `XBERG_TEXT` | Sticky note / text annotation |
+| `XBERG_HIGHLIGHT` | Highlighted text region |
+| `XBERG_LINK` | Hyperlink annotation |
+| `XBERG_STAMP` | Rubber stamp annotation |
+| `XBERG_UNDERLINE` | Underline text markup |
+| `XBERG_STRIKE_OUT` | Strikeout text markup |
+| `XBERG_OTHER` | Any other annotation type |
 
 ---
 
-#### KreuzbergBlockType
+#### XbergBlockType
 
 Types of block-level elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PARAGRAPH` | Standard prose paragraph. |
-| `KREUZBERG_HEADING` | Section heading (level stored in `FormattedBlock.level`). |
-| `KREUZBERG_BLOCKQUOTE` | Block quotation container. |
-| `KREUZBERG_CODE_BLOCK` | Fenced or indented code block. |
-| `KREUZBERG_LIST_ITEM` | Individual item within a list. |
-| `KREUZBERG_ORDERED_LIST` | Numbered (ordered) list container. |
-| `KREUZBERG_BULLET_LIST` | Unnumbered (bullet) list container. |
-| `KREUZBERG_TASK_LIST` | Task / checkbox list container. |
-| `KREUZBERG_DEFINITION_LIST` | Definition list container. |
-| `KREUZBERG_DEFINITION_TERM` | Term part of a definition list entry. |
-| `KREUZBERG_DEFINITION_DESCRIPTION` | Description / definition part of a definition list entry. |
-| `KREUZBERG_DIV` | Generic `div` container with optional attributes. |
-| `KREUZBERG_SECTION` | Logical section container, often associated with a heading. |
-| `KREUZBERG_THEMATIC_BREAK` | Horizontal rule / thematic break. |
-| `KREUZBERG_RAW_BLOCK` | Raw content block in a specified format (e.g. HTML, LaTeX). |
-| `KREUZBERG_MATH_DISPLAY` | Display-mode mathematical expression. |
+| `XBERG_PARAGRAPH` | Standard prose paragraph. |
+| `XBERG_HEADING` | Section heading (level stored in `FormattedBlock.level`). |
+| `XBERG_BLOCKQUOTE` | Block quotation container. |
+| `XBERG_CODE_BLOCK` | Fenced or indented code block. |
+| `XBERG_LIST_ITEM` | Individual item within a list. |
+| `XBERG_ORDERED_LIST` | Numbered (ordered) list container. |
+| `XBERG_BULLET_LIST` | Unnumbered (bullet) list container. |
+| `XBERG_TASK_LIST` | Task / checkbox list container. |
+| `XBERG_DEFINITION_LIST` | Definition list container. |
+| `XBERG_DEFINITION_TERM` | Term part of a definition list entry. |
+| `XBERG_DEFINITION_DESCRIPTION` | Description / definition part of a definition list entry. |
+| `XBERG_DIV` | Generic `div` container with optional attributes. |
+| `XBERG_SECTION` | Logical section container, often associated with a heading. |
+| `XBERG_THEMATIC_BREAK` | Horizontal rule / thematic break. |
+| `XBERG_RAW_BLOCK` | Raw content block in a specified format (e.g. HTML, LaTeX). |
+| `XBERG_MATH_DISPLAY` | Display-mode mathematical expression. |
 
 ---
 
-#### KreuzbergInlineType
+#### XbergInlineType
 
 Types of inline elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Plain text run. |
-| `KREUZBERG_STRONG` | Bold / strong emphasis. |
-| `KREUZBERG_EMPHASIS` | Italic / regular emphasis. |
-| `KREUZBERG_HIGHLIGHT` | Highlighted text (marker pen). |
-| `KREUZBERG_SUBSCRIPT` | Subscript text. |
-| `KREUZBERG_SUPERSCRIPT` | Superscript text. |
-| `KREUZBERG_INSERT` | Inserted text (tracked change). |
-| `KREUZBERG_DELETE` | Deleted text (tracked change). |
-| `KREUZBERG_CODE` | Inline code span. |
-| `KREUZBERG_LINK` | Hyperlink with URL. |
-| `KREUZBERG_IMAGE` | Inline image reference. |
-| `KREUZBERG_SPAN` | Generic inline span with optional attributes. |
-| `KREUZBERG_MATH` | Inline mathematical expression. |
-| `KREUZBERG_RAW_INLINE` | Raw inline content in a specified format. |
-| `KREUZBERG_FOOTNOTE_REF` | Footnote reference marker. |
-| `KREUZBERG_SYMBOL` | Named symbol or emoji shortcode. |
+| `XBERG_TEXT` | Plain text run. |
+| `XBERG_STRONG` | Bold / strong emphasis. |
+| `XBERG_EMPHASIS` | Italic / regular emphasis. |
+| `XBERG_HIGHLIGHT` | Highlighted text (marker pen). |
+| `XBERG_SUBSCRIPT` | Subscript text. |
+| `XBERG_SUPERSCRIPT` | Superscript text. |
+| `XBERG_INSERT` | Inserted text (tracked change). |
+| `XBERG_DELETE` | Deleted text (tracked change). |
+| `XBERG_CODE` | Inline code span. |
+| `XBERG_LINK` | Hyperlink with URL. |
+| `XBERG_IMAGE` | Inline image reference. |
+| `XBERG_SPAN` | Generic inline span with optional attributes. |
+| `XBERG_MATH` | Inline mathematical expression. |
+| `XBERG_RAW_INLINE` | Raw inline content in a specified format. |
+| `XBERG_FOOTNOTE_REF` | Footnote reference marker. |
+| `XBERG_SYMBOL` | Named symbol or emoji shortcode. |
 
 ---
 
-#### KreuzbergRelationshipKind
+#### XbergRelationshipKind
 
 Semantic kind of a relationship between document elements.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_FOOTNOTE_REFERENCE` | Footnote marker -> footnote definition. |
-| `KREUZBERG_CITATION_REFERENCE` | Citation marker -> bibliography entry. |
-| `KREUZBERG_INTERNAL_LINK` | Internal anchor link (`#id`) -> target heading/element. |
-| `KREUZBERG_CAPTION` | Caption paragraph -> figure/table it describes. |
-| `KREUZBERG_LABEL` | Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`). |
-| `KREUZBERG_TOC_ENTRY` | TOC entry -> target section. |
-| `KREUZBERG_CROSS_REFERENCE` | Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field). |
+| `XBERG_FOOTNOTE_REFERENCE` | Footnote marker -> footnote definition. |
+| `XBERG_CITATION_REFERENCE` | Citation marker -> bibliography entry. |
+| `XBERG_INTERNAL_LINK` | Internal anchor link (`#id`) -> target heading/element. |
+| `XBERG_CAPTION` | Caption paragraph -> figure/table it describes. |
+| `XBERG_LABEL` | Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`). |
+| `XBERG_TOC_ENTRY` | TOC entry -> target section. |
+| `XBERG_CROSS_REFERENCE` | Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field). |
 
 ---
 
-#### KreuzbergContentLayer
+#### XbergContentLayer
 
 Content layer classification for document nodes.
 
@@ -9670,14 +9670,14 @@ Replaces separate body/furniture arrays with per-node granularity.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_BODY` | Main document body content. |
-| `KREUZBERG_HEADER` | Page/section header (running header). |
-| `KREUZBERG_FOOTER` | Page/section footer (running footer). |
-| `KREUZBERG_FOOTNOTE` | Footnote content. |
+| `XBERG_BODY` | Main document body content. |
+| `XBERG_HEADER` | Page/section header (running header). |
+| `XBERG_FOOTER` | Page/section footer (running footer). |
+| `XBERG_FOOTNOTE` | Footnote content. |
 
 ---
 
-#### KreuzbergNodeContent
+#### XbergNodeContent
 
 Tagged enum for node content. Each variant carries only type-specific data.
 
@@ -9686,51 +9686,51 @@ Go/Java/TypeScript bindings.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TITLE` | Document title. — Fields: `text`: `const char*` |
-| `KREUZBERG_HEADING` | Section heading with level (1-6). — Fields: `level`: `uint8_t`, `text`: `const char*` |
-| `KREUZBERG_PARAGRAPH` | Body text paragraph. — Fields: `text`: `const char*` |
-| `KREUZBERG_LIST` | List container — children are `ListItem` nodes. — Fields: `ordered`: `bool` |
-| `KREUZBERG_LIST_ITEM` | Individual list item. — Fields: `text`: `const char*` |
-| `KREUZBERG_TABLE` | Table with structured cell grid. — Fields: `grid`: `KreuzbergTableGrid` |
-| `KREUZBERG_IMAGE` | Image reference. — Fields: `description`: `const char*`, `image_index`: `uint32_t`, `src`: `const char*` |
-| `KREUZBERG_CODE` | Code block. — Fields: `text`: `const char*`, `language`: `const char*` |
-| `KREUZBERG_QUOTE` | Block quote — container, children carry the quoted content. |
-| `KREUZBERG_FORMULA` | Mathematical formula / equation. — Fields: `text`: `const char*` |
-| `KREUZBERG_FOOTNOTE` | Footnote reference content. — Fields: `text`: `const char*` |
-| `KREUZBERG_GROUP` | Logical grouping container (section, key-value area). `heading_level` + `heading_text` capture the section heading directly rather than relying on a first-child positional convention. — Fields: `label`: `const char*`, `heading_level`: `uint8_t`, `heading_text`: `const char*` |
-| `KREUZBERG_PAGE_BREAK` | Page break marker. |
-| `KREUZBERG_SLIDE` | Presentation slide container — children are the slide's content nodes. — Fields: `number`: `uint32_t`, `title`: `const char*` |
-| `KREUZBERG_DEFINITION_LIST` | Definition list container — children are `DefinitionItem` nodes. |
-| `KREUZBERG_DEFINITION_ITEM` | Individual definition list entry with term and definition. — Fields: `term`: `const char*`, `definition`: `const char*` |
-| `KREUZBERG_CITATION` | Citation or bibliographic reference. — Fields: `key`: `const char*`, `text`: `const char*` |
-| `KREUZBERG_ADMONITION` | Admonition / callout container (note, warning, tip, etc.). Children carry the admonition body content. — Fields: `kind`: `const char*`, `title`: `const char*` |
-| `KREUZBERG_RAW_BLOCK` | Raw block preserved verbatim from the source format. Used for content that cannot be mapped to a semantic node type (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML). — Fields: `format`: `const char*`, `content`: `const char*` |
-| `KREUZBERG_METADATA_BLOCK` | Structured metadata block (email headers, YAML frontmatter, etc.). |
+| `XBERG_TITLE` | Document title. — Fields: `text`: `const char*` |
+| `XBERG_HEADING` | Section heading with level (1-6). — Fields: `level`: `uint8_t`, `text`: `const char*` |
+| `XBERG_PARAGRAPH` | Body text paragraph. — Fields: `text`: `const char*` |
+| `XBERG_LIST` | List container — children are `ListItem` nodes. — Fields: `ordered`: `bool` |
+| `XBERG_LIST_ITEM` | Individual list item. — Fields: `text`: `const char*` |
+| `XBERG_TABLE` | Table with structured cell grid. — Fields: `grid`: `XbergTableGrid` |
+| `XBERG_IMAGE` | Image reference. — Fields: `description`: `const char*`, `image_index`: `uint32_t`, `src`: `const char*` |
+| `XBERG_CODE` | Code block. — Fields: `text`: `const char*`, `language`: `const char*` |
+| `XBERG_QUOTE` | Block quote — container, children carry the quoted content. |
+| `XBERG_FORMULA` | Mathematical formula / equation. — Fields: `text`: `const char*` |
+| `XBERG_FOOTNOTE` | Footnote reference content. — Fields: `text`: `const char*` |
+| `XBERG_GROUP` | Logical grouping container (section, key-value area). `heading_level` + `heading_text` capture the section heading directly rather than relying on a first-child positional convention. — Fields: `label`: `const char*`, `heading_level`: `uint8_t`, `heading_text`: `const char*` |
+| `XBERG_PAGE_BREAK` | Page break marker. |
+| `XBERG_SLIDE` | Presentation slide container — children are the slide's content nodes. — Fields: `number`: `uint32_t`, `title`: `const char*` |
+| `XBERG_DEFINITION_LIST` | Definition list container — children are `DefinitionItem` nodes. |
+| `XBERG_DEFINITION_ITEM` | Individual definition list entry with term and definition. — Fields: `term`: `const char*`, `definition`: `const char*` |
+| `XBERG_CITATION` | Citation or bibliographic reference. — Fields: `key`: `const char*`, `text`: `const char*` |
+| `XBERG_ADMONITION` | Admonition / callout container (note, warning, tip, etc.). Children carry the admonition body content. — Fields: `kind`: `const char*`, `title`: `const char*` |
+| `XBERG_RAW_BLOCK` | Raw block preserved verbatim from the source format. Used for content that cannot be mapped to a semantic node type (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML). — Fields: `format`: `const char*`, `content`: `const char*` |
+| `XBERG_METADATA_BLOCK` | Structured metadata block (email headers, YAML frontmatter, etc.). |
 
 ---
 
-#### KreuzbergAnnotationKind
+#### XbergAnnotationKind
 
 Types of inline text annotations.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_BOLD` | Bold (strong) text formatting. |
-| `KREUZBERG_ITALIC` | Italic (emphasis) text formatting. |
-| `KREUZBERG_UNDERLINE` | Underlined text. |
-| `KREUZBERG_STRIKETHROUGH` | Strikethrough text. |
-| `KREUZBERG_CODE` | Inline code span. |
-| `KREUZBERG_SUBSCRIPT` | Subscript text. |
-| `KREUZBERG_SUPERSCRIPT` | Superscript text. |
-| `KREUZBERG_LINK` | Hyperlink annotation. — Fields: `url`: `const char*`, `title`: `const char*` |
-| `KREUZBERG_HIGHLIGHT` | Highlighted text (PDF highlights, HTML `<mark>`). |
-| `KREUZBERG_COLOR` | Text color (CSS-compatible value, e.g. "#ff0000", "red"). — Fields: `value`: `const char*` |
-| `KREUZBERG_FONT_SIZE` | Font size with units (e.g. "12pt", "1.2em", "16px"). — Fields: `value`: `const char*` |
-| `KREUZBERG_CUSTOM` | Extensible annotation for format-specific styling. — Fields: `name`: `const char*`, `value`: `const char*` |
+| `XBERG_BOLD` | Bold (strong) text formatting. |
+| `XBERG_ITALIC` | Italic (emphasis) text formatting. |
+| `XBERG_UNDERLINE` | Underlined text. |
+| `XBERG_STRIKETHROUGH` | Strikethrough text. |
+| `XBERG_CODE` | Inline code span. |
+| `XBERG_SUBSCRIPT` | Subscript text. |
+| `XBERG_SUPERSCRIPT` | Superscript text. |
+| `XBERG_LINK` | Hyperlink annotation. — Fields: `url`: `const char*`, `title`: `const char*` |
+| `XBERG_HIGHLIGHT` | Highlighted text (PDF highlights, HTML `<mark>`). |
+| `XBERG_COLOR` | Text color (CSS-compatible value, e.g. "#ff0000", "red"). — Fields: `value`: `const char*` |
+| `XBERG_FONT_SIZE` | Font size with units (e.g. "12pt", "1.2em", "16px"). — Fields: `value`: `const char*` |
+| `XBERG_CUSTOM` | Extensible annotation for format-specific styling. — Fields: `name`: `const char*`, `value`: `const char*` |
 
 ---
 
-#### KreuzbergEntityCategory
+#### XbergEntityCategory
 
 Standard entity categories produced by built-in NER backends.
 
@@ -9739,33 +9739,33 @@ schemas) flow through without losing fidelity to the consumer.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PERSON` | A person's name. |
-| `KREUZBERG_ORGANIZATION` | A company, institution, or organisation name. |
-| `KREUZBERG_LOCATION` | A geographic location (city, country, address). |
-| `KREUZBERG_DATE` | A calendar date. |
-| `KREUZBERG_TIME` | A time of day or duration. |
-| `KREUZBERG_MONEY` | A monetary amount with optional currency. |
-| `KREUZBERG_PERCENT` | A percentage value. |
-| `KREUZBERG_EMAIL` | An email address. |
-| `KREUZBERG_PHONE` | A phone number. |
-| `KREUZBERG_URL` | A URL or URI. |
-| `KREUZBERG_CUSTOM` | A caller-supplied custom category label. — Fields: `0`: `const char*` |
+| `XBERG_PERSON` | A person's name. |
+| `XBERG_ORGANIZATION` | A company, institution, or organisation name. |
+| `XBERG_LOCATION` | A geographic location (city, country, address). |
+| `XBERG_DATE` | A calendar date. |
+| `XBERG_TIME` | A time of day or duration. |
+| `XBERG_MONEY` | A monetary amount with optional currency. |
+| `XBERG_PERCENT` | A percentage value. |
+| `XBERG_EMAIL` | An email address. |
+| `XBERG_PHONE` | A phone number. |
+| `XBERG_URL` | A URL or URI. |
+| `XBERG_CUSTOM` | A caller-supplied custom category label. — Fields: `0`: `const char*` |
 
 ---
 
-#### KreuzbergExtractionMethod
+#### XbergExtractionMethod
 
 How the extracted text was produced.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_NATIVE` | Text extracted directly from the document's native format (no OCR). |
-| `KREUZBERG_OCR` | All text was obtained via OCR (e.g. scanned image-only PDF). |
-| `KREUZBERG_MIXED` | Text came from a combination of native extraction and OCR. |
+| `XBERG_NATIVE` | Text extracted directly from the document's native format (no OCR). |
+| `XBERG_OCR` | All text was obtained via OCR (e.g. scanned image-only PDF). |
+| `XBERG_MIXED` | Text came from a combination of native extraction and OCR. |
 
 ---
 
-#### KreuzbergChunkType
+#### XbergChunkType
 
 Semantic structural classification of a text chunk.
 
@@ -9775,44 +9775,44 @@ Designed to be extended in future versions without breaking changes.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_HEADING` | Section heading or document title. |
-| `KREUZBERG_PARTY_LIST` | Party list: names, addresses, and signatories. |
-| `KREUZBERG_DEFINITIONS` | Definition clause ("X means…", "X shall mean…"). |
-| `KREUZBERG_OPERATIVE_CLAUSE` | Operative clause containing legal/contractual action verbs. |
-| `KREUZBERG_SIGNATURE_BLOCK` | Signature block with signatures, names, and dates. |
-| `KREUZBERG_SCHEDULE` | Schedule, annex, appendix, or exhibit section. |
-| `KREUZBERG_TABLE_LIKE` | Table-like content with aligned columns or repeated patterns. |
-| `KREUZBERG_FORMULA` | Mathematical formula or equation. |
-| `KREUZBERG_CODE_BLOCK` | Code block or preformatted content. |
-| `KREUZBERG_IMAGE` | Embedded or referenced image content. |
-| `KREUZBERG_ORG_CHART` | Organizational chart or hierarchy diagram. |
-| `KREUZBERG_DIAGRAM` | Diagram, figure, or visual illustration. |
-| `KREUZBERG_UNKNOWN` | Unclassified or mixed content. |
+| `XBERG_HEADING` | Section heading or document title. |
+| `XBERG_PARTY_LIST` | Party list: names, addresses, and signatories. |
+| `XBERG_DEFINITIONS` | Definition clause ("X means…", "X shall mean…"). |
+| `XBERG_OPERATIVE_CLAUSE` | Operative clause containing legal/contractual action verbs. |
+| `XBERG_SIGNATURE_BLOCK` | Signature block with signatures, names, and dates. |
+| `XBERG_SCHEDULE` | Schedule, annex, appendix, or exhibit section. |
+| `XBERG_TABLE_LIKE` | Table-like content with aligned columns or repeated patterns. |
+| `XBERG_FORMULA` | Mathematical formula or equation. |
+| `XBERG_CODE_BLOCK` | Code block or preformatted content. |
+| `XBERG_IMAGE` | Embedded or referenced image content. |
+| `XBERG_ORG_CHART` | Organizational chart or hierarchy diagram. |
+| `XBERG_DIAGRAM` | Diagram, figure, or visual illustration. |
+| `XBERG_UNKNOWN` | Unclassified or mixed content. |
 
 ---
 
-#### KreuzbergImageKind
+#### XbergImageKind
 
 Heuristic classification of what an image likely depicts.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PHOTOGRAPH` | Photographic image (natural scene, photograph) |
-| `KREUZBERG_DIAGRAM` | Technical or schematic diagram |
-| `KREUZBERG_CHART` | Chart, graph, or plot |
-| `KREUZBERG_DRAWING` | Freehand or technical drawing |
-| `KREUZBERG_TEXT_BLOCK` | Text-heavy image (scanned text, document) |
-| `KREUZBERG_DECORATION` | Decorative element or border |
-| `KREUZBERG_LOGO` | Logo or brand mark |
-| `KREUZBERG_ICON` | Small icon |
-| `KREUZBERG_TILE_FRAGMENT` | Fragment of a larger tiled image (tile of a technical drawing) |
-| `KREUZBERG_MASK` | Mask or transparency map |
-| `KREUZBERG_PAGE_RASTER` | Full-page render produced during OCR preprocessing; used as a citation thumbnail. |
-| `KREUZBERG_UNKNOWN` | Could not classify with reasonable confidence |
+| `XBERG_PHOTOGRAPH` | Photographic image (natural scene, photograph) |
+| `XBERG_DIAGRAM` | Technical or schematic diagram |
+| `XBERG_CHART` | Chart, graph, or plot |
+| `XBERG_DRAWING` | Freehand or technical drawing |
+| `XBERG_TEXT_BLOCK` | Text-heavy image (scanned text, document) |
+| `XBERG_DECORATION` | Decorative element or border |
+| `XBERG_LOGO` | Logo or brand mark |
+| `XBERG_ICON` | Small icon |
+| `XBERG_TILE_FRAGMENT` | Fragment of a larger tiled image (tile of a technical drawing) |
+| `XBERG_MASK` | Mask or transparency map |
+| `XBERG_PAGE_RASTER` | Full-page render produced during OCR preprocessing; used as a citation thumbnail. |
+| `XBERG_UNKNOWN` | Could not classify with reasonable confidence |
 
 ---
 
-#### KreuzbergResultFormat
+#### XbergResultFormat
 
 Result-shape selection for extraction results.
 
@@ -9822,12 +9822,12 @@ blob vs. an element-based decomposition.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_UNIFIED` | Unified format with all content in `content` field |
-| `KREUZBERG_ELEMENT_BASED` | Element-based format with semantic element extraction |
+| `XBERG_UNIFIED` | Unified format with all content in `content` field |
+| `XBERG_ELEMENT_BASED` | Element-based format with semantic element extraction |
 
 ---
 
-#### KreuzbergElementType
+#### XbergElementType
 
 Semantic element type classification.
 
@@ -9836,21 +9836,21 @@ Supports the element types commonly found in Unstructured documents.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TITLE` | Document title |
-| `KREUZBERG_NARRATIVE_TEXT` | Main narrative text body |
-| `KREUZBERG_HEADING` | Section heading |
-| `KREUZBERG_LIST_ITEM` | List item (bullet, numbered, etc.) |
-| `KREUZBERG_TABLE` | Table element |
-| `KREUZBERG_IMAGE` | Image element |
-| `KREUZBERG_PAGE_BREAK` | Page break marker |
-| `KREUZBERG_CODE_BLOCK` | Code block |
-| `KREUZBERG_BLOCK_QUOTE` | Block quote |
-| `KREUZBERG_FOOTER` | Footer text |
-| `KREUZBERG_HEADER` | Header text |
+| `XBERG_TITLE` | Document title |
+| `XBERG_NARRATIVE_TEXT` | Main narrative text body |
+| `XBERG_HEADING` | Section heading |
+| `XBERG_LIST_ITEM` | List item (bullet, numbered, etc.) |
+| `XBERG_TABLE` | Table element |
+| `XBERG_IMAGE` | Image element |
+| `XBERG_PAGE_BREAK` | Page break marker |
+| `XBERG_CODE_BLOCK` | Code block |
+| `XBERG_BLOCK_QUOTE` | Block quote |
+| `XBERG_FOOTER` | Footer text |
+| `XBERG_HEADER` | Header text |
 
 ---
 
-#### KreuzbergFormFieldType
+#### XbergFormFieldType
 
 Kind of a PDF form field.
 
@@ -9859,17 +9859,17 @@ type across the binding surface.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Single- or multi-line text input. |
-| `KREUZBERG_CHECKBOX` | Checkbox (on/off toggle). |
-| `KREUZBERG_RADIO` | Radio-button group member. |
-| `KREUZBERG_CHOICE` | Choice field (dropdown or list box). |
-| `KREUZBERG_SIGNATURE` | Digital-signature field. |
-| `KREUZBERG_BUTTON` | Push button. |
-| `KREUZBERG_UNKNOWN` | Field type that could not be classified. |
+| `XBERG_TEXT` | Single- or multi-line text input. |
+| `XBERG_CHECKBOX` | Checkbox (on/off toggle). |
+| `XBERG_RADIO` | Radio-button group member. |
+| `XBERG_CHOICE` | Choice field (dropdown or list box). |
+| `XBERG_SIGNATURE` | Digital-signature field. |
+| `XBERG_BUTTON` | Push button. |
+| `XBERG_UNKNOWN` | Field type that could not be classified. |
 
 ---
 
-#### KreuzbergFormatMetadata
+#### XbergFormatMetadata
 
 Format-specific metadata (discriminated union).
 
@@ -9878,83 +9878,83 @@ type-safe, clean metadata without nested optionals.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PDF` | Metadata extracted from a PDF document. — Fields: `0`: `KreuzbergPdfMetadata` |
-| `KREUZBERG_DOCX` | Metadata extracted from a DOCX Word document. — Fields: `0`: `KreuzbergDocxMetadata` |
-| `KREUZBERG_EXCEL` | Metadata extracted from an Excel spreadsheet. — Fields: `0`: `KreuzbergExcelMetadata` |
-| `KREUZBERG_EMAIL` | Metadata extracted from an email message (EML/MSG). — Fields: `0`: `KreuzbergEmailMetadata` |
-| `KREUZBERG_PPTX` | Metadata extracted from a PowerPoint presentation. — Fields: `0`: `KreuzbergPptxMetadata` |
-| `KREUZBERG_ARCHIVE` | Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). — Fields: `0`: `KreuzbergArchiveMetadata` |
-| `KREUZBERG_IMAGE` | Metadata extracted from a raster or vector image. — Fields: `0`: `KreuzbergImageMetadata` |
-| `KREUZBERG_XML` | Metadata extracted from an XML document. — Fields: `0`: `KreuzbergXmlMetadata` |
-| `KREUZBERG_TEXT` | Metadata extracted from a plain-text file. — Fields: `0`: `KreuzbergTextMetadata` |
-| `KREUZBERG_HTML` | Metadata extracted from an HTML document. — Fields: `0`: `KreuzbergHtmlMetadata` |
-| `KREUZBERG_OCR` | Metadata produced by an OCR pipeline. — Fields: `0`: `KreuzbergOcrMetadata` |
-| `KREUZBERG_CSV` | Metadata extracted from a CSV or TSV file. — Fields: `0`: `KreuzbergCsvMetadata` |
-| `KREUZBERG_BIBTEX` | Metadata extracted from a BibTeX bibliography file. — Fields: `0`: `KreuzbergBibtexMetadata` |
-| `KREUZBERG_CITATION` | Metadata extracted from a citation file (RIS, PubMed, EndNote). — Fields: `0`: `KreuzbergCitationMetadata` |
-| `KREUZBERG_FICTION_BOOK` | Metadata extracted from a FictionBook (FB2) e-book. — Fields: `0`: `KreuzbergFictionBookMetadata` |
-| `KREUZBERG_DBF` | Metadata extracted from a dBASE (DBF) database file. — Fields: `0`: `KreuzbergDbfMetadata` |
-| `KREUZBERG_JATS` | Metadata extracted from a JATS (Journal Article Tag Suite) XML file. — Fields: `0`: `KreuzbergJatsMetadata` |
-| `KREUZBERG_EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `KreuzbergEpubMetadata` |
-| `KREUZBERG_PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `KreuzbergPstMetadata` |
-| `KREUZBERG_AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `KreuzbergAudioMetadata` |
-| `KREUZBERG_CODE` | Code (tree-sitter analyzable source). The structured analysis result is exposed via `ExtractionResult.code_intelligence`; this variant only tags the format. |
+| `XBERG_PDF` | Metadata extracted from a PDF document. — Fields: `0`: `XbergPdfMetadata` |
+| `XBERG_DOCX` | Metadata extracted from a DOCX Word document. — Fields: `0`: `XbergDocxMetadata` |
+| `XBERG_EXCEL` | Metadata extracted from an Excel spreadsheet. — Fields: `0`: `XbergExcelMetadata` |
+| `XBERG_EMAIL` | Metadata extracted from an email message (EML/MSG). — Fields: `0`: `XbergEmailMetadata` |
+| `XBERG_PPTX` | Metadata extracted from a PowerPoint presentation. — Fields: `0`: `XbergPptxMetadata` |
+| `XBERG_ARCHIVE` | Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). — Fields: `0`: `XbergArchiveMetadata` |
+| `XBERG_IMAGE` | Metadata extracted from a raster or vector image. — Fields: `0`: `XbergImageMetadata` |
+| `XBERG_XML` | Metadata extracted from an XML document. — Fields: `0`: `XbergXmlMetadata` |
+| `XBERG_TEXT` | Metadata extracted from a plain-text file. — Fields: `0`: `XbergTextMetadata` |
+| `XBERG_HTML` | Metadata extracted from an HTML document. — Fields: `0`: `XbergHtmlMetadata` |
+| `XBERG_OCR` | Metadata produced by an OCR pipeline. — Fields: `0`: `XbergOcrMetadata` |
+| `XBERG_CSV` | Metadata extracted from a CSV or TSV file. — Fields: `0`: `XbergCsvMetadata` |
+| `XBERG_BIBTEX` | Metadata extracted from a BibTeX bibliography file. — Fields: `0`: `XbergBibtexMetadata` |
+| `XBERG_CITATION` | Metadata extracted from a citation file (RIS, PubMed, EndNote). — Fields: `0`: `XbergCitationMetadata` |
+| `XBERG_FICTION_BOOK` | Metadata extracted from a FictionBook (FB2) e-book. — Fields: `0`: `XbergFictionBookMetadata` |
+| `XBERG_DBF` | Metadata extracted from a dBASE (DBF) database file. — Fields: `0`: `XbergDbfMetadata` |
+| `XBERG_JATS` | Metadata extracted from a JATS (Journal Article Tag Suite) XML file. — Fields: `0`: `XbergJatsMetadata` |
+| `XBERG_EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `XbergEpubMetadata` |
+| `XBERG_PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `XbergPstMetadata` |
+| `XBERG_AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `XbergAudioMetadata` |
+| `XBERG_CODE` | Code (tree-sitter analyzable source). The structured analysis result is exposed via `ExtractionResult.code_intelligence`; this variant only tags the format. |
 
 ---
 
-#### KreuzbergTextDirection
+#### XbergTextDirection
 
 Text direction enumeration for HTML documents.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_LEFT_TO_RIGHT` | Left-to-right text direction |
-| `KREUZBERG_RIGHT_TO_LEFT` | Right-to-left text direction |
-| `KREUZBERG_AUTO` | Automatic text direction detection |
+| `XBERG_LEFT_TO_RIGHT` | Left-to-right text direction |
+| `XBERG_RIGHT_TO_LEFT` | Right-to-left text direction |
+| `XBERG_AUTO` | Automatic text direction detection |
 
 ---
 
-#### KreuzbergLinkType
+#### XbergLinkType
 
 Link type classification.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_ANCHOR` | Anchor link (#section) |
-| `KREUZBERG_INTERNAL` | Internal link (same domain) |
-| `KREUZBERG_EXTERNAL` | External link (different domain) |
-| `KREUZBERG_EMAIL` | Email link (mailto:) |
-| `KREUZBERG_PHONE` | Phone link (tel:) |
-| `KREUZBERG_OTHER` | Other link type |
+| `XBERG_ANCHOR` | Anchor link (#section) |
+| `XBERG_INTERNAL` | Internal link (same domain) |
+| `XBERG_EXTERNAL` | External link (different domain) |
+| `XBERG_EMAIL` | Email link (mailto:) |
+| `XBERG_PHONE` | Phone link (tel:) |
+| `XBERG_OTHER` | Other link type |
 
 ---
 
-#### KreuzbergImageType
+#### XbergImageType
 
 Image type classification.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_DATA_URI` | Data URI image |
-| `KREUZBERG_INLINE_SVG` | Inline SVG |
-| `KREUZBERG_EXTERNAL` | External image URL |
-| `KREUZBERG_RELATIVE` | Relative path image |
+| `XBERG_DATA_URI` | Data URI image |
+| `XBERG_INLINE_SVG` | Inline SVG |
+| `XBERG_EXTERNAL` | External image URL |
+| `XBERG_RELATIVE` | Relative path image |
 
 ---
 
-#### KreuzbergStructuredDataType
+#### XbergStructuredDataType
 
 Structured data type classification.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_JSON_LD` | JSON-LD structured data |
-| `KREUZBERG_MICRODATA` | Microdata |
-| `KREUZBERG_RDFA` | RDFa |
+| `XBERG_JSON_LD` | JSON-LD structured data |
+| `XBERG_MICRODATA` | Microdata |
+| `XBERG_RDFA` | RDFa |
 
 ---
 
-#### KreuzbergOcrBoundingGeometry
+#### XbergOcrBoundingGeometry
 
 Bounding geometry for an OCR element.
 
@@ -9963,12 +9963,12 @@ Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilateral
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_RECTANGLE` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `uint32_t`, `top`: `uint32_t`, `width`: `uint32_t`, `height`: `uint32_t` |
-| `KREUZBERG_QUADRILATERAL` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `\[top_left, top_right, bottom_right, bottom_left\]` |
+| `XBERG_RECTANGLE` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `uint32_t`, `top`: `uint32_t`, `width`: `uint32_t`, `height`: `uint32_t` |
+| `XBERG_QUADRILATERAL` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `\[top_left, top_right, bottom_right, bottom_left\]` |
 
 ---
 
-#### KreuzbergOcrElementLevel
+#### XbergOcrElementLevel
 
 Hierarchical level of an OCR element.
 
@@ -9977,14 +9977,14 @@ equivalent semantics for PaddleOCR.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_WORD` | Individual word |
-| `KREUZBERG_LINE` | Line of text (default for PaddleOCR) |
-| `KREUZBERG_BLOCK` | Paragraph or text block |
-| `KREUZBERG_PAGE` | Page-level element |
+| `XBERG_WORD` | Individual word |
+| `XBERG_LINE` | Line of text (default for PaddleOCR) |
+| `XBERG_BLOCK` | Paragraph or text block |
+| `XBERG_PAGE` | Page-level element |
 
 ---
 
-#### KreuzbergPageUnitType
+#### XbergPageUnitType
 
 Type of paginated unit in a document.
 
@@ -9992,48 +9992,48 @@ Distinguishes between different types of "pages" (PDF pages, presentation slides
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PAGE` | Standard document pages (PDF, DOCX, images) |
-| `KREUZBERG_SLIDE` | Presentation slides (PPTX, ODP) |
-| `KREUZBERG_SHEET` | Spreadsheet sheets (XLSX, ODS) |
+| `XBERG_PAGE` | Standard document pages (PDF, DOCX, images) |
+| `XBERG_SLIDE` | Presentation slides (PPTX, ODP) |
+| `XBERG_SHEET` | Spreadsheet sheets (XLSX, ODS) |
 
 ---
 
-#### KreuzbergRedactionStrategy
+#### XbergRedactionStrategy
 
 Strategy applied when a PII match is rewritten.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_MASK` | Replace the matched span with a fixed mask token (default `"\[REDACTED\]"`). |
-| `KREUZBERG_HASH` | Replace with a SHA-256 hash of the original value (truncated to 16 hex chars). Lets downstream consumers do equality joins without recovering the source. |
-| `KREUZBERG_TOKEN_REPLACE` | Replace with a per-category running token (`"\[PERSON_1\]"`, `"\[PERSON_2\]"`, …) so the same person referenced twice gets the same token within the document. |
-| `KREUZBERG_DROP` | Delete the matched span entirely. |
+| `XBERG_MASK` | Replace the matched span with a fixed mask token (default `"\[REDACTED\]"`). |
+| `XBERG_HASH` | Replace with a SHA-256 hash of the original value (truncated to 16 hex chars). Lets downstream consumers do equality joins without recovering the source. |
+| `XBERG_TOKEN_REPLACE` | Replace with a per-category running token (`"\[PERSON_1\]"`, `"\[PERSON_2\]"`, …) so the same person referenced twice gets the same token within the document. |
+| `XBERG_DROP` | Delete the matched span entirely. |
 
 ---
 
-#### KreuzbergPiiCategory
+#### XbergPiiCategory
 
 PII categories the pattern engine recognises.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_EMAIL` | Email address (e.g. `user@example.com`). |
-| `KREUZBERG_PHONE` | Phone number in any common format. |
-| `KREUZBERG_SSN` | US Social Security Number. |
-| `KREUZBERG_CREDIT_CARD` | Payment card number (Visa, Mastercard, Amex, etc.). |
-| `KREUZBERG_POSTAL_CODE` | Postal / ZIP code. |
-| `KREUZBERG_IP_ADDRESS` | IPv4 or IPv6 address. |
-| `KREUZBERG_IBAN` | International Bank Account Number. |
-| `KREUZBERG_SWIFT_BIC` | SWIFT / BIC bank identifier code. |
-| `KREUZBERG_DATE_OF_BIRTH` | Date of birth. |
-| `KREUZBERG_PERSON` | Person name, surfaced by the optional NER backend. |
-| `KREUZBERG_ORGANIZATION` | Organization name, surfaced by the optional NER backend. |
-| `KREUZBERG_LOCATION` | Location, surfaced by the optional NER backend. |
-| `KREUZBERG_CUSTOM` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig.custom_terms` or `RedactionConfig.custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `const char*` |
+| `XBERG_EMAIL` | Email address (e.g. `user@example.com`). |
+| `XBERG_PHONE` | Phone number in any common format. |
+| `XBERG_SSN` | US Social Security Number. |
+| `XBERG_CREDIT_CARD` | Payment card number (Visa, Mastercard, Amex, etc.). |
+| `XBERG_POSTAL_CODE` | Postal / ZIP code. |
+| `XBERG_IP_ADDRESS` | IPv4 or IPv6 address. |
+| `XBERG_IBAN` | International Bank Account Number. |
+| `XBERG_SWIFT_BIC` | SWIFT / BIC bank identifier code. |
+| `XBERG_DATE_OF_BIRTH` | Date of birth. |
+| `XBERG_PERSON` | Person name, surfaced by the optional NER backend. |
+| `XBERG_ORGANIZATION` | Organization name, surfaced by the optional NER backend. |
+| `XBERG_LOCATION` | Location, surfaced by the optional NER backend. |
+| `XBERG_CUSTOM` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig.custom_terms` or `RedactionConfig.custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `const char*` |
 
 ---
 
-#### KreuzbergDiffLine
+#### XbergDiffLine
 
 A single line in a unified-diff hunk.
 
@@ -10043,66 +10043,66 @@ reference it unconditionally, without requiring the `diff` Cargo feature.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_CONTEXT` | Unchanged context line. — Fields: `0`: `const char*` |
-| `KREUZBERG_ADDED` | Line added in the "after" version. — Fields: `0`: `const char*` |
-| `KREUZBERG_REMOVED` | Line removed from the "before" version. — Fields: `0`: `const char*` |
+| `XBERG_CONTEXT` | Unchanged context line. — Fields: `0`: `const char*` |
+| `XBERG_ADDED` | Line added in the "after" version. — Fields: `0`: `const char*` |
+| `XBERG_REMOVED` | Line removed from the "before" version. — Fields: `0`: `const char*` |
 
 ---
 
-#### KreuzbergRevisionKind
+#### XbergRevisionKind
 
 Semantic classification of a tracked change.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_INSERTION` | Text or content was inserted. |
-| `KREUZBERG_DELETION` | Text or content was deleted. |
-| `KREUZBERG_FORMAT_CHANGE` | Run-level formatting (font, size, colour, …) was changed. |
-| `KREUZBERG_COMMENT` | A reviewer comment or annotation. |
+| `XBERG_INSERTION` | Text or content was inserted. |
+| `XBERG_DELETION` | Text or content was deleted. |
+| `XBERG_FORMAT_CHANGE` | Run-level formatting (font, size, colour, …) was changed. |
+| `XBERG_COMMENT` | A reviewer comment or annotation. |
 
 ---
 
-#### KreuzbergRevisionAnchor
+#### XbergRevisionAnchor
 
 Best-effort document location for a revision.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PARAGRAPH` | Body paragraph, identified by its zero-based index in the document flow. — Fields: `index`: `uintptr_t` |
-| `KREUZBERG_TABLE_CELL` | Cell inside a table. — Fields: `row`: `uintptr_t`, `col`: `uintptr_t`, `table_index`: `uintptr_t` |
-| `KREUZBERG_PAGE` | Page, identified by its zero-based index. — Fields: `index`: `uintptr_t` |
-| `KREUZBERG_SLIDE` | Presentation slide, identified by its zero-based index. — Fields: `index`: `uintptr_t` |
-| `KREUZBERG_SHEET` | Spreadsheet cell or range, identified by sheet index and optional name. — Fields: `index`: `uintptr_t`, `name`: `const char*` |
+| `XBERG_PARAGRAPH` | Body paragraph, identified by its zero-based index in the document flow. — Fields: `index`: `uintptr_t` |
+| `XBERG_TABLE_CELL` | Cell inside a table. — Fields: `row`: `uintptr_t`, `col`: `uintptr_t`, `table_index`: `uintptr_t` |
+| `XBERG_PAGE` | Page, identified by its zero-based index. — Fields: `index`: `uintptr_t` |
+| `XBERG_SLIDE` | Presentation slide, identified by its zero-based index. — Fields: `index`: `uintptr_t` |
+| `XBERG_SHEET` | Spreadsheet cell or range, identified by sheet index and optional name. — Fields: `index`: `uintptr_t`, `name`: `const char*` |
 
 ---
 
-#### KreuzbergSummaryStrategy
+#### XbergSummaryStrategy
 
 Summarisation strategy.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_EXTRACTIVE` | Pure-Rust extractive summary (TextRank over the chunk graph). Deterministic, fast, no external service required. |
-| `KREUZBERG_ABSTRACTIVE` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult.llm_usage`. |
+| `XBERG_EXTRACTIVE` | Pure-Rust extractive summary (TextRank over the chunk graph). Deterministic, fast, no external service required. |
+| `XBERG_ABSTRACTIVE` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult.llm_usage`. |
 
 ---
 
-#### KreuzbergUriKind
+#### XbergUriKind
 
 Semantic classification of an extracted URI.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_HYPERLINK` | A clickable hyperlink (web URL, file link). |
-| `KREUZBERG_IMAGE` | An image or media resource reference. |
-| `KREUZBERG_ANCHOR` | An internal anchor or cross-reference target. |
-| `KREUZBERG_CITATION` | A citation or bibliographic reference (DOI, academic ref). |
-| `KREUZBERG_REFERENCE` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
-| `KREUZBERG_EMAIL` | An email address (`mailto:` link or bare email). |
+| `XBERG_HYPERLINK` | A clickable hyperlink (web URL, file link). |
+| `XBERG_IMAGE` | An image or media resource reference. |
+| `XBERG_ANCHOR` | An internal anchor or cross-reference target. |
+| `XBERG_CITATION` | A citation or bibliographic reference (DOI, academic ref). |
+| `XBERG_REFERENCE` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
+| `XBERG_EMAIL` | An email address (`mailto:` link or bare email). |
 
 ---
 
-#### KreuzbergRegionKind
+#### XbergRegionKind
 
 Classification of a detected layout region that warrants VLM extraction.
 
@@ -10112,25 +10112,25 @@ extraction provides a clear quality benefit over classical suppression.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_FIGURE` | A figure, diagram, chart, or image region. VLM prompt: describe the diagram / chart, including axis labels, legend entries, and any embedded text. |
-| `KREUZBERG_DENSE_TABLE` | A densely formatted or complex table that classical extraction garbles. VLM prompt: extract the table as GitHub-Flavoured Markdown. |
-| `KREUZBERG_COMPLEX_LAYOUT` | A region whose layout the classical pipeline cannot handle (multi-column insets, heavily annotated forms, mixed text+diagram). VLM prompt: extract all text and structure as markdown, preserving reading order. |
-| `KREUZBERG_CAPTION` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage.caption`. |
+| `XBERG_FIGURE` | A figure, diagram, chart, or image region. VLM prompt: describe the diagram / chart, including axis labels, legend entries, and any embedded text. |
+| `XBERG_DENSE_TABLE` | A densely formatted or complex table that classical extraction garbles. VLM prompt: extract the table as GitHub-Flavoured Markdown. |
+| `XBERG_COMPLEX_LAYOUT` | A region whose layout the classical pipeline cannot handle (multi-column insets, heavily annotated forms, mixed text+diagram). VLM prompt: extract all text and structure as markdown, preserving reading order. |
+| `XBERG_CAPTION` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage.caption`. |
 
 ---
 
-#### KreuzbergKeywordAlgorithm
+#### XbergKeywordAlgorithm
 
 Keyword algorithm selection.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_YAKE` | YAKE (Yet Another Keyword Extractor) - statistical approach |
-| `KREUZBERG_RAKE` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
+| `XBERG_YAKE` | YAKE (Yet Another Keyword Extractor) - statistical approach |
+| `XBERG_RAKE` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
 
 ---
 
-#### KreuzbergEnrichStatus
+#### XbergEnrichStatus
 
 Async lifecycle status for an enrichment job.
 
@@ -10149,13 +10149,13 @@ Uses an internally-tagged `"status"` field with `snake_case` variants:
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PENDING` | Job submitted; processing has not yet started or is in progress. |
-| `KREUZBERG_COMPLETED` | Processing completed successfully. — Fields: `result`: `KreuzbergEnrichResult` |
-| `KREUZBERG_FAILED` | Processing failed. — Fields: `error`: `const char*` |
+| `XBERG_PENDING` | Job submitted; processing has not yet started or is in progress. |
+| `XBERG_COMPLETED` | Processing completed successfully. — Fields: `result`: `XbergEnrichResult` |
+| `XBERG_FAILED` | Processing failed. — Fields: `error`: `const char*` |
 
 ---
 
-#### KreuzbergSchemaCompliance
+#### XbergSchemaCompliance
 
 Schema-validation outcome surfaced as one of three buckets.
 
@@ -10164,67 +10164,67 @@ error types.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_ALL_VALID` | Every batch validated against the schema. |
-| `KREUZBERG_PARTIAL_VALID` | At least one batch validated; at least one did not. |
-| `KREUZBERG_ALL_INVALID` | No batch validated. |
+| `XBERG_ALL_VALID` | Every batch validated against the schema. |
+| `XBERG_PARTIAL_VALID` | At least one batch validated; at least one did not. |
+| `XBERG_ALL_INVALID` | No batch validated. |
 
 ---
 
-#### KreuzbergChunkingDecision
+#### XbergChunkingDecision
 
 The chunking decision made by the analyzer.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_NO_CHUNKING` | Process without chunking (small file, text layer detected, etc.) — Fields: `reason`: `KreuzbergNoChunkingReason` |
-| `KREUZBERG_CHUNK` | Chunk according to plan. — Fields: `0`: `KreuzbergChunkPlan` |
-| `KREUZBERG_USE_OVERRIDES` | Use user-provided chunk overrides. — Fields: `user_chunks`: `KreuzbergPageRange*` |
+| `XBERG_NO_CHUNKING` | Process without chunking (small file, text layer detected, etc.) — Fields: `reason`: `XbergNoChunkingReason` |
+| `XBERG_CHUNK` | Chunk according to plan. — Fields: `0`: `XbergChunkPlan` |
+| `XBERG_USE_OVERRIDES` | Use user-provided chunk overrides. — Fields: `user_chunks`: `XbergPageRange*` |
 
 ---
 
-#### KreuzbergNoChunkingReason
+#### XbergNoChunkingReason
 
 Reason for not chunking a document.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_SMALL_FILE` | File is below size threshold. — Fields: `size_bytes`: `uint64_t`, `threshold_bytes`: `uint64_t` |
-| `KREUZBERG_FEW_PAGES` | Document has fewer pages than threshold. — Fields: `page_count`: `uint32_t`, `threshold`: `uint32_t` |
-| `KREUZBERG_TEXT_LAYER_DETECTED` | PDF has substantial text layer (OCR not needed). — Fields: `text_coverage`: `float`, `avg_chars_per_page`: `uint32_t` |
-| `KREUZBERG_FORMAT_NOT_CHUNKABLE` | Document format does not support chunking. — Fields: `mime_type`: `const char*` |
-| `KREUZBERG_CHUNKING_DISABLED` | Chunking is disabled by configuration. |
-| `KREUZBERG_FAST_TEXT_EXTRACTION` | Force OCR is disabled and text extraction is fast. |
+| `XBERG_SMALL_FILE` | File is below size threshold. — Fields: `size_bytes`: `uint64_t`, `threshold_bytes`: `uint64_t` |
+| `XBERG_FEW_PAGES` | Document has fewer pages than threshold. — Fields: `page_count`: `uint32_t`, `threshold`: `uint32_t` |
+| `XBERG_TEXT_LAYER_DETECTED` | PDF has substantial text layer (OCR not needed). — Fields: `text_coverage`: `float`, `avg_chars_per_page`: `uint32_t` |
+| `XBERG_FORMAT_NOT_CHUNKABLE` | Document format does not support chunking. — Fields: `mime_type`: `const char*` |
+| `XBERG_CHUNKING_DISABLED` | Chunking is disabled by configuration. |
+| `XBERG_FAST_TEXT_EXTRACTION` | Force OCR is disabled and text extraction is fast. |
 
 ---
 
-#### KreuzbergChunkingReason
+#### XbergChunkingReason
 
 Reason for chunking a document.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_LARGE_FILE` | File exceeds size threshold. — Fields: `size_bytes`: `uint64_t`, `threshold_bytes`: `uint64_t` |
-| `KREUZBERG_MANY_PAGES` | Document has many pages. — Fields: `page_count`: `uint32_t`, `threshold`: `uint32_t` |
-| `KREUZBERG_OCR_REQUIRED` | PDF requires OCR and is large. — Fields: `page_count`: `uint32_t`, `force_ocr`: `bool` |
-| `KREUZBERG_LARGE_AND_MANY_PAGES` | Both size and page count exceed thresholds. — Fields: `size_bytes`: `uint64_t`, `page_count`: `uint32_t` |
+| `XBERG_LARGE_FILE` | File exceeds size threshold. — Fields: `size_bytes`: `uint64_t`, `threshold_bytes`: `uint64_t` |
+| `XBERG_MANY_PAGES` | Document has many pages. — Fields: `page_count`: `uint32_t`, `threshold`: `uint32_t` |
+| `XBERG_OCR_REQUIRED` | PDF requires OCR and is large. — Fields: `page_count`: `uint32_t`, `force_ocr`: `bool` |
+| `XBERG_LARGE_AND_MANY_PAGES` | Both size and page count exceed thresholds. — Fields: `size_bytes`: `uint64_t`, `page_count`: `uint32_t` |
 
 ---
 
-#### KreuzbergBoundaryReason
+#### XbergBoundaryReason
 
 Reason for boundary detection.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_START` | Start of PDF. |
-| `KREUZBERG_PAGE_ONE_MARKER` | Page-one marker ("Page 1", "1 of N") detected. |
-| `KREUZBERG_LETTERHEAD_RESET` | Letterhead reset after signature block. |
-| `KREUZBERG_DENSITY_SHIFT` | Text density shift with low bigram overlap. |
-| `KREUZBERG_END` | End of PDF. |
+| `XBERG_START` | Start of PDF. |
+| `XBERG_PAGE_ONE_MARKER` | Page-one marker ("Page 1", "1 of N") detected. |
+| `XBERG_LETTERHEAD_RESET` | Letterhead reset after signature block. |
+| `XBERG_DENSITY_SHIFT` | Text density shift with low bigram overlap. |
+| `XBERG_END` | End of PDF. |
 
 ---
 
-#### KreuzbergStructuredCallMode
+#### XbergStructuredCallMode
 
 Outcome of the structured-extraction call-mode heuristic.
 
@@ -10235,51 +10235,51 @@ pipeline.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_SKIP` | Document is unsupported or not worth invoking the pipeline. |
-| `KREUZBERG_TEXT_ONLY` | Send extracted text only; no vision model call. |
-| `KREUZBERG_VISION_ONLY` | Send page rasters only; no extracted text payload. |
-| `KREUZBERG_TEXT_PLUS_VISION` | Fuse extracted text with page rasters in a single multimodal call. |
-| `KREUZBERG_TEXT_ONLY_WITH_VISION_FALLBACK` | Try text-only first; escalate to vision on low confidence score. |
+| `XBERG_SKIP` | Document is unsupported or not worth invoking the pipeline. |
+| `XBERG_TEXT_ONLY` | Send extracted text only; no vision model call. |
+| `XBERG_VISION_ONLY` | Send page rasters only; no extracted text payload. |
+| `XBERG_TEXT_PLUS_VISION` | Fuse extracted text with page rasters in a single multimodal call. |
+| `XBERG_TEXT_ONLY_WITH_VISION_FALLBACK` | Try text-only first; escalate to vision on low confidence score. |
 
 ---
 
-#### KreuzbergPresetCategory
+#### XbergPresetCategory
 
 High-level category used to group presets in the registry UI.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_FINANCE` | Invoices, receipts, statements, purchase orders, W-9. |
-| `KREUZBERG_IDENTITY` | Passports, drivers licenses, insurance cards. |
-| `KREUZBERG_LEGAL` | Contracts, NDAs, agreements. |
-| `KREUZBERG_LOGISTICS` | Bills of lading, customs declarations, packing lists. |
-| `KREUZBERG_MEDICAL` | Clinical records, lab reports. |
-| `KREUZBERG_HR` | Pay stubs, resumes, employment offers. |
-| `KREUZBERG_OTHER` | Catch-all for documents that don't fit the other categories. |
+| `XBERG_FINANCE` | Invoices, receipts, statements, purchase orders, W-9. |
+| `XBERG_IDENTITY` | Passports, drivers licenses, insurance cards. |
+| `XBERG_LEGAL` | Contracts, NDAs, agreements. |
+| `XBERG_LOGISTICS` | Bills of lading, customs declarations, packing lists. |
+| `XBERG_MEDICAL` | Clinical records, lab reports. |
+| `XBERG_HR` | Pay stubs, resumes, employment offers. |
+| `XBERG_OTHER` | Catch-all for documents that don't fit the other categories. |
 
 ---
 
-#### KreuzbergPsmMode
+#### XbergPsmMode
 
 Page Segmentation Mode for Tesseract OCR.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_OSD_ONLY` | Orientation and script detection only. |
-| `KREUZBERG_AUTO_OSD` | Automatic page segmentation with OSD. |
-| `KREUZBERG_AUTO_ONLY` | Automatic page segmentation without OSD or OCR. |
-| `KREUZBERG_AUTO` | Fully automatic page segmentation with no OSD (default). |
-| `KREUZBERG_SINGLE_COLUMN` | Assume a single column of text of variable sizes. |
-| `KREUZBERG_SINGLE_BLOCK_VERTICAL` | Assume a single uniform block of vertically aligned text. |
-| `KREUZBERG_SINGLE_BLOCK` | Assume a single uniform block of text. |
-| `KREUZBERG_SINGLE_LINE` | Treat the image as a single text line. |
-| `KREUZBERG_SINGLE_WORD` | Treat the image as a single word. |
-| `KREUZBERG_CIRCLE_WORD` | Treat the image as a single word in a circle. |
-| `KREUZBERG_SINGLE_CHAR` | Treat the image as a single character. |
+| `XBERG_OSD_ONLY` | Orientation and script detection only. |
+| `XBERG_AUTO_OSD` | Automatic page segmentation with OSD. |
+| `XBERG_AUTO_ONLY` | Automatic page segmentation without OSD or OCR. |
+| `XBERG_AUTO` | Fully automatic page segmentation with no OSD (default). |
+| `XBERG_SINGLE_COLUMN` | Assume a single column of text of variable sizes. |
+| `XBERG_SINGLE_BLOCK_VERTICAL` | Assume a single uniform block of vertically aligned text. |
+| `XBERG_SINGLE_BLOCK` | Assume a single uniform block of text. |
+| `XBERG_SINGLE_LINE` | Treat the image as a single text line. |
+| `XBERG_SINGLE_WORD` | Treat the image as a single word. |
+| `XBERG_CIRCLE_WORD` | Treat the image as a single word in a circle. |
+| `XBERG_SINGLE_CHAR` | Treat the image as a single character. |
 
 ---
 
-#### KreuzbergPaddleLanguage
+#### XbergPaddleLanguage
 
 Supported languages in PaddleOCR.
 
@@ -10287,26 +10287,26 @@ Maps user-friendly language codes to paddle-ocr-rs language identifiers.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_ENGLISH` | English |
-| `KREUZBERG_CHINESE` | Simplified Chinese |
-| `KREUZBERG_JAPANESE` | Japanese |
-| `KREUZBERG_KOREAN` | Korean |
-| `KREUZBERG_GERMAN` | German |
-| `KREUZBERG_FRENCH` | French |
-| `KREUZBERG_LATIN` | Latin script (covers most European languages) |
-| `KREUZBERG_CYRILLIC` | Cyrillic (Russian and related) |
-| `KREUZBERG_TRADITIONAL_CHINESE` | Traditional Chinese |
-| `KREUZBERG_THAI` | Thai |
-| `KREUZBERG_GREEK` | Greek |
-| `KREUZBERG_EAST_SLAVIC` | East Slavic (Russian, Ukrainian, Belarusian) |
-| `KREUZBERG_ARABIC` | Arabic (Arabic, Persian, Urdu) |
-| `KREUZBERG_DEVANAGARI` | Devanagari (Hindi, Marathi, Sanskrit, Nepali) |
-| `KREUZBERG_TAMIL` | Tamil |
-| `KREUZBERG_TELUGU` | Telugu |
+| `XBERG_ENGLISH` | English |
+| `XBERG_CHINESE` | Simplified Chinese |
+| `XBERG_JAPANESE` | Japanese |
+| `XBERG_KOREAN` | Korean |
+| `XBERG_GERMAN` | German |
+| `XBERG_FRENCH` | French |
+| `XBERG_LATIN` | Latin script (covers most European languages) |
+| `XBERG_CYRILLIC` | Cyrillic (Russian and related) |
+| `XBERG_TRADITIONAL_CHINESE` | Traditional Chinese |
+| `XBERG_THAI` | Thai |
+| `XBERG_GREEK` | Greek |
+| `XBERG_EAST_SLAVIC` | East Slavic (Russian, Ukrainian, Belarusian) |
+| `XBERG_ARABIC` | Arabic (Arabic, Persian, Urdu) |
+| `XBERG_DEVANAGARI` | Devanagari (Hindi, Marathi, Sanskrit, Nepali) |
+| `XBERG_TAMIL` | Tamil |
+| `XBERG_TELUGU` | Telugu |
 
 ---
 
-#### KreuzbergLayoutClass
+#### XbergLayoutClass
 
 The 18 canonical document layout classes.
 
@@ -10318,34 +10318,34 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_CAPTION` | Figure or table caption text. |
-| `KREUZBERG_CHART` | Chart or graph visualization. |
-| `KREUZBERG_FOOTNOTE` | Footnote or endnote text. |
-| `KREUZBERG_FORMULA` | Mathematical formula or equation. |
-| `KREUZBERG_LIST_ITEM` | A single item in a bulleted or numbered list. |
-| `KREUZBERG_PAGE_FOOTER` | Running footer at the bottom of a page. |
-| `KREUZBERG_PAGE_HEADER` | Running header at the top of a page. |
-| `KREUZBERG_PICTURE` | Image, chart, or other graphical element. |
-| `KREUZBERG_SECTION_HEADER` | Section heading. |
-| `KREUZBERG_TABLE` | Data table. |
-| `KREUZBERG_TEXT` | Body text paragraph. |
-| `KREUZBERG_TITLE` | Document or chapter title. |
-| `KREUZBERG_DOCUMENT_INDEX` | Table of contents or index. |
-| `KREUZBERG_CODE` | Source code block. |
-| `KREUZBERG_CHECKBOX_SELECTED` | Checkbox in selected state. |
-| `KREUZBERG_CHECKBOX_UNSELECTED` | Checkbox in unselected state. |
-| `KREUZBERG_FORM` | Form field or form element. |
-| `KREUZBERG_KEY_VALUE_REGION` | Key-value pair region (e.g. label + value in a form). |
+| `XBERG_CAPTION` | Figure or table caption text. |
+| `XBERG_CHART` | Chart or graph visualization. |
+| `XBERG_FOOTNOTE` | Footnote or endnote text. |
+| `XBERG_FORMULA` | Mathematical formula or equation. |
+| `XBERG_LIST_ITEM` | A single item in a bulleted or numbered list. |
+| `XBERG_PAGE_FOOTER` | Running footer at the bottom of a page. |
+| `XBERG_PAGE_HEADER` | Running header at the top of a page. |
+| `XBERG_PICTURE` | Image, chart, or other graphical element. |
+| `XBERG_SECTION_HEADER` | Section heading. |
+| `XBERG_TABLE` | Data table. |
+| `XBERG_TEXT` | Body text paragraph. |
+| `XBERG_TITLE` | Document or chapter title. |
+| `XBERG_DOCUMENT_INDEX` | Table of contents or index. |
+| `XBERG_CODE` | Source code block. |
+| `XBERG_CHECKBOX_SELECTED` | Checkbox in selected state. |
+| `XBERG_CHECKBOX_UNSELECTED` | Checkbox in unselected state. |
+| `XBERG_FORM` | Form field or form element. |
+| `XBERG_KEY_VALUE_REGION` | Key-value pair region (e.g. label + value in a form). |
 
 ---
 
 ### Errors
 
-#### KreuzbergKreuzbergError
+#### XbergXbergError
 
-Main error type for all Kreuzberg operations.
+Main error type for all Xberg operations.
 
-All errors in Kreuzberg use this enum, which preserves error chains
+All errors in Xberg use this enum, which preserves error chains
 and provides context for debugging.
 
 ### Variants
@@ -10365,59 +10365,59 @@ and provides context for debugging.
 
 | Variant | Description |
 |---------|-------------|
-| `KREUZBERG_IO` | A file system or I/O operation failed. These errors always bubble up unchanged. |
-| `KREUZBERG_PARSING` | Document parsing failed (e.g. corrupt file, unsupported format feature). |
-| `KREUZBERG_OCR` | An OCR engine returned an error or produced unusable output. |
-| `KREUZBERG_VALIDATION` | Invalid configuration or input parameters were supplied. |
-| `KREUZBERG_CACHE` | A cache read or write operation failed. |
-| `KREUZBERG_IMAGE_PROCESSING` | An image manipulation operation (resize, decode, DPI conversion) failed. |
-| `KREUZBERG_SERIALIZATION` | JSON or MessagePack serialization/deserialization failed. |
-| `KREUZBERG_MISSING_DEPENDENCY` | A required optional system dependency (e.g. `tesseract`) was not found. |
-| `KREUZBERG_PLUGIN` | A registered plugin returned an error during extraction. |
-| `KREUZBERG_LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
-| `KREUZBERG_UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
-| `KREUZBERG_EMBEDDING` | The embedding model or embedding pipeline returned an error. |
-| `KREUZBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0. |
-| `KREUZBERG_TRANSCRIPTION` | Audio/video transcription failed. |
-| `KREUZBERG_TIMEOUT` | The extraction operation exceeded the configured time limit. |
-| `KREUZBERG_CANCELLED` | The extraction was cancelled via a `CancellationToken`. |
-| `KREUZBERG_SECURITY` | A security policy was violated (e.g. zip bomb, oversized archive). |
-| `KREUZBERG_OTHER` | A catch-all for uncommon errors that do not fit another variant. |
+| `XBERG_IO` | A file system or I/O operation failed. These errors always bubble up unchanged. |
+| `XBERG_PARSING` | Document parsing failed (e.g. corrupt file, unsupported format feature). |
+| `XBERG_OCR` | An OCR engine returned an error or produced unusable output. |
+| `XBERG_VALIDATION` | Invalid configuration or input parameters were supplied. |
+| `XBERG_CACHE` | A cache read or write operation failed. |
+| `XBERG_IMAGE_PROCESSING` | An image manipulation operation (resize, decode, DPI conversion) failed. |
+| `XBERG_SERIALIZATION` | JSON or MessagePack serialization/deserialization failed. |
+| `XBERG_MISSING_DEPENDENCY` | A required optional system dependency (e.g. `tesseract`) was not found. |
+| `XBERG_PLUGIN` | A registered plugin returned an error during extraction. |
+| `XBERG_LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
+| `XBERG_UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
+| `XBERG_EMBEDDING` | The embedding model or embedding pipeline returned an error. |
+| `XBERG_RERANKING` | The reranker model or reranking pipeline returned an error. Since v5.0. |
+| `XBERG_TRANSCRIPTION` | Audio/video transcription failed. |
+| `XBERG_TIMEOUT` | The extraction operation exceeded the configured time limit. |
+| `XBERG_CANCELLED` | The extraction was cancelled via a `CancellationToken`. |
+| `XBERG_SECURITY` | A security policy was violated (e.g. zip bomb, oversized archive). |
+| `XBERG_OTHER` | A catch-all for uncommon errors that do not fit another variant. |
 
 ---
 
-#### KreuzbergHeuristicsError
+#### XbergHeuristicsError
 
 Errors that can occur during heuristics analysis.
 
 | Variant | Description |
 |---------|-------------|
-| `KREUZBERG_CONFIG_ERROR` | Invalid configuration value. |
-| `KREUZBERG_PDF_ANALYSIS_ERROR` | PDF analysis step failed (only when `heuristics-pdf` feature is active). |
+| `XBERG_CONFIG_ERROR` | Invalid configuration value. |
+| `XBERG_PDF_ANALYSIS_ERROR` | PDF analysis step failed (only when `heuristics-pdf` feature is active). |
 
 ---
 
-#### KreuzbergLoadError
+#### XbergLoadError
 
 Errors produced while loading or validating a preset file.
 
 | Variant | Description |
 |---------|-------------|
-| `KREUZBERG_PARSE` | The file is not valid JSON. |
-| `KREUZBERG_SCHEMA_VALIDATION` | The file parses as JSON but does not validate against the meta-schema. |
-| `KREUZBERG_DESERIALIZE` | The file validates but cannot be deserialized into `Preset`. |
-| `KREUZBERG_ID_MISMATCH` | The preset's declared `id` does not match its file-system location. |
-| `KREUZBERG_BAD_META_SCHEMA` | The meta-schema itself failed to compile. |
-| `KREUZBERG_IO` | A filesystem I/O error occurred while reading a preset directory. |
+| `XBERG_PARSE` | The file is not valid JSON. |
+| `XBERG_SCHEMA_VALIDATION` | The file parses as JSON but does not validate against the meta-schema. |
+| `XBERG_DESERIALIZE` | The file validates but cannot be deserialized into `Preset`. |
+| `XBERG_ID_MISMATCH` | The preset's declared `id` does not match its file-system location. |
+| `XBERG_BAD_META_SCHEMA` | The meta-schema itself failed to compile. |
+| `XBERG_IO` | A filesystem I/O error occurred while reading a preset directory. |
 
 ---
 
-#### KreuzbergResolveError
+#### XbergResolveError
 
 Errors produced while resolving a preset against caller overrides.
 
 | Variant | Description |
 |---------|-------------|
-| `KREUZBERG_SCHEMA_NOT_OBJECT` | A custom schema override was supplied but is not a JSON object. |
+| `XBERG_SCHEMA_NOT_OBJECT` | A custom schema override was supplied but is not a JSON object. |
 
 ---

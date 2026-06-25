@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         chunking: Some(ChunkingConfig {
             max_characters: 1000,
@@ -22,10 +22,10 @@ async fn main() -> kreuzberg::Result<()> {
 ```
 
 ```rust title="Rust - Markdown with Heading Context"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig, ChunkerType, ChunkSizing};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig, ChunkerType, ChunkSizing};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         chunking: Some(ChunkingConfig {
             max_characters: 500,
@@ -54,10 +54,10 @@ async fn main() -> kreuzberg::Result<()> {
 ```
 
 ```rust title="Rust - Prepend Heading Context"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig, ChunkerType};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig, ChunkerType};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         chunking: Some(ChunkingConfig {
             max_characters: 500,

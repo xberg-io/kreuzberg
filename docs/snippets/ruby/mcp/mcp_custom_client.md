@@ -2,7 +2,7 @@
 require 'json'
 require 'open3'
 
-Open3.popen3('kreuzberg', 'mcp') do |stdin, stdout, stderr, wait_thr|
+Open3.popen3('xberg', 'mcp') do |stdin, stdout, stderr, wait_thr|
   request = {
     method: 'tools/call',
     params: {

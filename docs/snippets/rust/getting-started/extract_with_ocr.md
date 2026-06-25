@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, OcrConfig};
+use xberg::{extract_file_sync, ExtractionConfig, OcrConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         force_ocr: true,
         ocr: Some(OcrConfig {

@@ -5,7 +5,7 @@ public class ApiServer {
     public static void main(String[] args) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                "kreuzberg", "serve", "-H", "0.0.0.0", "-p", "8000"
+                "xberg", "serve", "-H", "0.0.0.0", "-p", "8000"
             );
             pb.inheritIO();
             Process process = pb.start();

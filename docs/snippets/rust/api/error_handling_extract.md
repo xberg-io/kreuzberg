@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_bytes_sync, ExtractionConfig, KreuzbergError, Result};
+use xberg::{extract_bytes_sync, ExtractionConfig, XbergError, Result};
 
 fn extract_text(bytes: &[u8], mime_type: &str) -> Result<String> {
     let config = ExtractionConfig::default();
@@ -11,10 +11,10 @@ fn main() {
     let bytes = std::fs::read("document.pdf").unwrap_or_default();
     match extract_text(&bytes, "application/pdf") {
         Ok(text) => println!("Extracted {} chars", text.len()),
-        Err(KreuzbergError::UnsupportedFormat(mime)) => {
+        Err(XbergError::UnsupportedFormat(mime)) => {
             eprintln!("Format not supported: {mime}");
         }
-        Err(KreuzbergError::Ocr { message, .. }) => {
+        Err(XbergError::Ocr { message, .. }) => {
             eprintln!("OCR failed: {message}");
         }
         Err(e) => eprintln!("Error: {e}"),

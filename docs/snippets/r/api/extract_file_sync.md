@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 json <- extract_file_sync(
   path = "document.pdf",

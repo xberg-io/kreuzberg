@@ -1,7 +1,7 @@
 ```rust title="Rust"
-use kreuzberg::{batch_extract_bytes_sync, BatchBytesItem, ExtractionConfig};
+use xberg::{batch_extract_bytes_sync, BatchBytesItem, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let items = vec![
         BatchBytesItem {

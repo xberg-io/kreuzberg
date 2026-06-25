@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/email/msg_with_attachments_alt.msg",
 	"file_type": "msg",
 	"file_size": 272896,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "MSG format email with multiple attachments",
 		"category": "attachments"

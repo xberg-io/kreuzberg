@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.KreuzbergException;
-import dev.kreuzberg.*;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.XbergException;
+import dev.xberg.*;
 import java.io.IOException;
 
 public class Main {
@@ -28,12 +28,12 @@ public class Main {
                 .enableQualityProcessing(true)
                 .build();
 
-            ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+            ExtractionResult result = Xberg.extractFile("document.pdf", config);
 
             if (!result.getDetectedLanguages().isEmpty()) {
                 System.out.println("Languages: " + result.getDetectedLanguages());
             }
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
         }
     }

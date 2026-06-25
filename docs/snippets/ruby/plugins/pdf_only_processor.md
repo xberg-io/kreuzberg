@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class PdfOnlyProcessor
   def call(result)
@@ -11,12 +11,12 @@ class PdfOnlyProcessor
 end
 
 processor = PdfOnlyProcessor.new
-Kreuzberg.register_post_processor('pdf_only', processor)
+Xberg.register_post_processor('pdf_only', processor)
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 puts "Metadata: #{result.metadata.inspect}"
 ```

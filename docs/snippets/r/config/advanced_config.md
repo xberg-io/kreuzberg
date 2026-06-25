@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   ocr = list(backend = "tesseract", language = "eng"),

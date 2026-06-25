@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\LlmConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\LlmConfig;
 
 // Cloud-based OCR using Vision Language Model (VLM)
 // Requires API key and model configuration
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Cloud OCR Results:\n";
 echo "Content length: " . strlen($result->content) . " characters\n";

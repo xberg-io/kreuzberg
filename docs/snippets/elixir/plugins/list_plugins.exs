@@ -1,8 +1,8 @@
 ```elixir title="Elixir"
 # List all registered plugins
-{:ok, post_processors} = Kreuzberg.Plugin.list_post_processors()
-{:ok, validators} = Kreuzberg.Plugin.list_validators()
-{:ok, ocr_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, post_processors} = Xberg.Plugin.list_post_processors()
+{:ok, validators} = Xberg.Plugin.list_validators()
+{:ok, ocr_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Post-processors:")
 Enum.each(post_processors, fn {name, module} ->

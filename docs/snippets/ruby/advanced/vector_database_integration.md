@@ -1,16 +1,16 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class VectorDatabaseIntegration
   VectorRecord = Struct.new(:id, :embedding, :content, :metadata, keyword_init: true)
 
   def extract_and_vectorize(document_path, document_id)
-    config = Kreuzberg::ExtractionConfig.new(
-      chunking: Kreuzberg::ChunkingConfig.new(
+    config = Xberg::ExtractionConfig.new(
+      chunking: Xberg::ChunkingConfig.new(
         max_characters: 512,
         overlap: 50,
-        embedding: Kreuzberg::EmbeddingConfig.new(
-          model: Kreuzberg::EmbeddingModelType.new(
+        embedding: Xberg::EmbeddingConfig.new(
+          model: Xberg::EmbeddingModelType.new(
             type: 'preset',
             name: 'balanced'
           ),
@@ -20,7 +20,7 @@ class VectorDatabaseIntegration
       )
     )
 
-    result = Kreuzberg.extract_file_sync(document_path, config: config)
+    result = Xberg.extract_file_sync(document_path, config: config)
     chunks = result.chunks || []
 
     vector_records = chunks.map.with_index do |chunk, idx|

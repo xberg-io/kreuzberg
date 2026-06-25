@@ -1,17 +1,17 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.EmbeddingBackendBridge;
-import dev.kreuzberg.EmbeddingConfig;
-import dev.kreuzberg.EmbeddingModelType;
-import dev.kreuzberg.IEmbeddingBackend;
-import dev.kreuzberg.KreuzbergRsException;
+import dev.xberg.Xberg;
+import dev.xberg.EmbeddingBackendBridge;
+import dev.xberg.EmbeddingConfig;
+import dev.xberg.EmbeddingModelType;
+import dev.xberg.IEmbeddingBackend;
+import dev.xberg.XbergRsException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmbeddingBackendExample {
 
     /**
-     * Wrap an already-loaded embedder so kreuzberg can call back into it during
+     * Wrap an already-loaded embedder so xberg can call back into it during
      * chunking and standalone embed requests.
      */
     static final class MyEmbedder implements IEmbeddingBackend {
@@ -67,9 +67,9 @@ public class EmbeddingBackendExample {
                 .build();
 
             List<String> texts = List.of("Hello, world!", "Second text");
-            List<List<Float>> vectors = Kreuzberg.embedTexts(texts, config);
+            List<List<Float>> vectors = Xberg.embedTexts(texts, config);
             System.out.println("Generated " + vectors.size() + " vectors");
-        } catch (KreuzbergRsException e) {
+        } catch (XbergRsException e) {
             e.printStackTrace();
         } finally {
             EmbeddingBackendBridge.unregisterEmbeddingBackend("my-embedder");

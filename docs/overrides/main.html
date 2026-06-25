@@ -86,10 +86,10 @@ on the wrapper for theme JS. #} {% block container %}
     {% if page and ( page.is_homepage | default(false) or (page.url | default("")) == ""
     or (page.url | default("")) == "/" or (page.url | default("")) == "." ) %}
     <div class="hero-banner">
-      <a href="https://xberg.io/" title="Kreuzberg.dev">
+      <a href="https://xberg.io/" title="Xberg.io">
         <img
           src="{{ 'assets/docs_top_banner.svg' | url }}"
-          alt="Kreuzberg.dev"
+          alt="Xberg.io"
           width="800"
           height="200"
           decoding="async"
@@ -113,10 +113,10 @@ on the wrapper for theme JS. #} {% block container %}
     {% endif %} {% if page and ( page.is_homepage | default(false) or (page.url | default("")) == ""
     or (page.url | default("")) == "/" or (page.url | default("")) == "." ) %}
     <div class="cloud-banner">
-      <a href="https://xberg.io/" title="Kreuzberg.dev">
+      <a href="https://xberg.io/" title="Xberg.io">
         <img
           src="{{ 'assets/docs_bottom_banner.svg' | url }}"
-          alt="Kreuzberg.dev"
+          alt="Xberg.io"
           width="800"
           height="200"
           loading="lazy"

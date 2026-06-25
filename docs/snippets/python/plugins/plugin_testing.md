@@ -1,6 +1,6 @@
 ```python title="Python"
 import pytest
-from kreuzberg import ExtractionResult
+from xberg import ExtractionResult
 
 def test_custom_extractor() -> None:
     extractor = CustomJsonExtractor()

@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -23,8 +23,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('long_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('long_document.pdf');
 
 echo "Document Chunking Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -53,8 +53,8 @@ foreach ($sizes as $name => $size) {
         )
     );
 
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile('document.pdf');
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile('document.pdf');
 
     echo "$name chunks:\n";
     echo "  Total: " . count($result->chunks ?? []) . "\n";
@@ -75,8 +75,8 @@ $sentenceConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($sentenceConfig);
-$result = $kreuzberg->extractFile('article.pdf');
+$xberg = new Xberg($sentenceConfig);
+$result = $xberg->extractFile('article.pdf');
 
 echo "Sentence-respecting chunks:\n";
 echo str_repeat('=', 60) . "\n";
@@ -97,8 +97,8 @@ $paragraphConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($paragraphConfig);
-$result = $kreuzberg->extractFile('essay.pdf');
+$xberg = new Xberg($paragraphConfig);
+$result = $xberg->extractFile('essay.pdf');
 
 echo "Paragraph-respecting chunks:\n";
 echo str_repeat('=', 60) . "\n";
@@ -117,8 +117,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('knowledge_base.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('knowledge_base.pdf');
 
 $chunksForDb = [];
 foreach ($result->chunks ?? [] as $chunk) {

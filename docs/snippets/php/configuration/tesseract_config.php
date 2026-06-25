@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\TesseractConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\TesseractConfig;
 
 echo "Example 1: Default Tesseract Configuration\n";
 echo "==========================================\n";
@@ -98,8 +98,8 @@ $config3 = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config3);
-$result = $kreuzberg->extractFile('scanned_invoice.pdf');
+$xberg = new Xberg($config3);
+$result = $xberg->extractFile('scanned_invoice.pdf');
 
 echo "Table detection enabled\n";
 echo "Best for: Forms, invoices, spreadsheets, reports\n";

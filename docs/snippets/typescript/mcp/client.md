@@ -3,14 +3,14 @@ import { spawn } from "node:child_process";
 import * as readline from "node:readline";
 
 /**
- * MCP Client for Kreuzberg
- * Communicates with Kreuzberg MCP server via stdio
+ * MCP Client for Xberg
+ * Communicates with Xberg MCP server via stdio
  * @example
- * const client = new KreuzbergMcpClient();
+ * const client = new XbergMcpClient();
  * await client.connect();
  * const result = await client.callTool("extract_file", { path: "doc.pdf" });
  */
-class KreuzbergMcpClient {
+class XbergMcpClient {
   private process: ReturnType<typeof spawn> | null = null;
   private rl: readline.Interface | null = null;
   private requestId: number = 0;
@@ -26,7 +26,7 @@ class KreuzbergMcpClient {
    * Connect to MCP server
    */
   async connect(): Promise<void> {
-    this.process = spawn("kreuzberg", ["mcp"]);
+    this.process = spawn("xberg", ["mcp"]);
 
     this.rl = readline.createInterface({
       input: this.process.stdout,
@@ -141,12 +141,12 @@ class KreuzbergMcpClient {
 
 // Usage example
 async function main(): Promise<void> {
-  const client = new KreuzbergMcpClient();
+  const client = new XbergMcpClient();
 
   try {
     // Connect to MCP server
     await client.connect();
-    console.log("Connected to Kreuzberg MCP server");
+    console.log("Connected to Xberg MCP server");
 
     // List available tools
     const tools = await client.listTools();
@@ -170,5 +170,5 @@ if (require.main === module) {
   main();
 }
 
-export { KreuzbergMcpClient };
+export { XbergMcpClient };
 ```

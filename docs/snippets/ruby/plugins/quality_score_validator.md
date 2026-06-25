@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require "kreuzberg"
+require "xberg"
 
 # Custom validator checking document quality score
 class QualityScoreValidator
@@ -19,15 +19,15 @@ end
 
 # Register with default minimum score of 0.5
 validator = QualityScoreValidator.new(min_score: 0.5)
-Kreuzberg.register_validator("quality_score_check", validator)
+Xberg.register_validator("quality_score_check", validator)
 
 # Usage with quality processing enabled
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   enable_quality_processing: true
 )
 
 begin
-  result = Kreuzberg.extract_file_sync("document.pdf", config: config)
+  result = Xberg.extract_file_sync("document.pdf", config: config)
   puts "Document quality verified: #{result.quality_score}"
 rescue StandardError => e
   puts "Quality check failed: #{e.message}"

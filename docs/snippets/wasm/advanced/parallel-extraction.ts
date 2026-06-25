@@ -1,4 +1,4 @@
-import { detectRuntime, extractBytes, hasWorkers, initWasm } from "@kreuzberg/wasm";
+import { detectRuntime, extractBytes, hasWorkers, initWasm } from "@xberg/wasm";
 
 async function extractInParallel(documents: Uint8Array[], mimeTypes: string[]) {
   await initWasm();

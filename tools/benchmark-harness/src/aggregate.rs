@@ -27,8 +27,8 @@
 //!
 //! Keys in `by_framework_mode` differ by framework family:
 //!
-//! - **kreuzberg** (`kreuzberg-*`): `{framework_name}:{mode}` — the output format is already
-//!   encoded in the framework name (e.g. `kreuzberg-markdown-baseline`), so repeating it in
+//! - **xberg** (`xberg-*`): `{framework_name}:{mode}` — the output format is already
+//!   encoded in the framework name (e.g. `xberg-markdown-baseline`), so repeating it in
 //!   the key would be redundant.
 //! - **competitors** (all other frameworks): `{framework}:{output_format}:{mode}` — format is
 //!   not encoded in the name, so the key must carry it explicitly.
@@ -126,7 +126,7 @@ pub struct ComparisonData {
 /// A framework entry in a ranking
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RankedFramework {
-    /// Framework:mode key (e.g., "kreuzberg-markdown-baseline:single" or "docling:markdown:single")
+    /// Framework:mode key (e.g., "xberg-markdown-baseline:single" or "docling:markdown:single")
     pub framework_mode: String,
     /// Rank (1-based)
     pub rank: usize,
@@ -333,7 +333,7 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
     // Group results by their aggregate key and file type.
     //
     // Key format differs by family (see module-level doc):
-    //   kreuzberg-*  →  "{framework_name}:{mode}"
+    //   xberg-*  →  "{framework_name}:{mode}"
     //   competitors  →  "{framework}:{output_format}:{mode}"
     for result in results {
         let (framework, mode) = extract_framework_and_mode(&result.framework);
@@ -357,7 +357,7 @@ pub fn aggregate_new_format(results: &[BenchmarkResult]) -> NewConsolidatedResul
     // Aggregate each key combination.
     //
     // Key shapes (see make_aggregate_key):
-    //   kreuzberg-* →  "framework_name:mode"          (2 colon-separated parts)
+    //   xberg-* →  "framework_name:mode"          (2 colon-separated parts)
     //   competitors →  "framework:output_format:mode" (3 colon-separated parts)
     let mut aggregated_by_framework_mode = HashMap::new();
 
@@ -769,11 +769,11 @@ fn extract_framework_and_mode(framework_name: &str) -> (&str, &str) {
 
 /// Build the `by_framework_mode` map key for a result.
 ///
-/// - `kreuzberg-*` frameworks already encode the output format in their name, so the key is
+/// - `xberg-*` frameworks already encode the output format in their name, so the key is
 ///   `"{framework}:{mode}"` — no redundant format component.
 /// - All other (competitor) frameworks use `"{framework}:{output_format}:{mode}"`.
 fn make_aggregate_key(framework: &str, output_format: OutputFormat, mode: &str) -> String {
-    if framework.starts_with("kreuzberg-") {
+    if framework.starts_with("xberg-") {
         format!("{framework}:{mode}")
     } else {
         format!("{framework}:{output_format}:{mode}")
@@ -783,12 +783,12 @@ fn make_aggregate_key(framework: &str, output_format: OutputFormat, mode: &str) 
 /// Parse an aggregate key back into `(framework, mode)`.
 ///
 /// Handles both key shapes produced by [`make_aggregate_key`]:
-/// - `"framework:mode"` (kreuzberg family, 2 parts)
+/// - `"framework:mode"` (xberg family, 2 parts)
 /// - `"framework:output_format:mode"` (competitors, 3 parts)
 fn parse_aggregate_key(key: &str) -> (&str, &str) {
     let mut parts = key.rsplitn(2, ':');
     let mode = parts.next().unwrap_or("single");
-    // For kreuzberg keys the remainder is just the framework name.
+    // For xberg keys the remainder is just the framework name.
     // For competitor keys the remainder is "framework:output_format" — we want only the
     // framework portion, which is everything before the first colon.
     let remainder = parts.next().unwrap_or(key);
@@ -1122,43 +1122,43 @@ mod tests {
 
     #[test]
     fn test_extract_framework_and_mode() {
-        // Current kreuzberg pipeline naming (format encoded in name)
+        // Current xberg pipeline naming (format encoded in name)
         assert_eq!(
-            extract_framework_and_mode("kreuzberg-markdown-baseline"),
-            ("kreuzberg-markdown-baseline", "single")
+            extract_framework_and_mode("xberg-markdown-baseline"),
+            ("xberg-markdown-baseline", "single")
         );
         assert_eq!(
-            extract_framework_and_mode("kreuzberg-plaintext-paddle-ocr"),
-            ("kreuzberg-plaintext-paddle-ocr", "single")
+            extract_framework_and_mode("xberg-plaintext-paddle-ocr"),
+            ("xberg-plaintext-paddle-ocr", "single")
         );
         assert_eq!(
-            extract_framework_and_mode("kreuzberg-markdown-baseline-batch"),
-            ("kreuzberg-markdown-baseline", "batch")
+            extract_framework_and_mode("xberg-markdown-baseline-batch"),
+            ("xberg-markdown-baseline", "batch")
         );
 
         // Legacy -sync/-async suffixes are still stripped for backward compatibility
-        assert_eq!(extract_framework_and_mode("kreuzberg-sync"), ("kreuzberg", "single"));
-        assert_eq!(extract_framework_and_mode("kreuzberg-async"), ("kreuzberg", "single"));
+        assert_eq!(extract_framework_and_mode("xberg-sync"), ("xberg", "single"));
+        assert_eq!(extract_framework_and_mode("xberg-async"), ("xberg", "single"));
 
         // Batch mode is preserved
-        assert_eq!(extract_framework_and_mode("kreuzberg-batch"), ("kreuzberg", "batch"));
+        assert_eq!(extract_framework_and_mode("xberg-batch"), ("xberg", "batch"));
         assert_eq!(extract_framework_and_mode("python-batch"), ("python", "batch"));
 
         // No suffix defaults to single mode
-        assert_eq!(extract_framework_and_mode("kreuzberg"), ("kreuzberg", "single"));
+        assert_eq!(extract_framework_and_mode("xberg"), ("xberg", "single"));
         assert_eq!(extract_framework_and_mode("docling"), ("docling", "single"));
     }
 
     #[test]
-    fn test_make_aggregate_key_kreuzberg_family() {
-        // kreuzberg-* frameworks get slim keys (no redundant format component)
+    fn test_make_aggregate_key_xberg_family() {
+        // xberg-* frameworks get slim keys (no redundant format component)
         assert_eq!(
-            make_aggregate_key("kreuzberg-markdown-baseline", OutputFormat::Markdown, "single"),
-            "kreuzberg-markdown-baseline:single"
+            make_aggregate_key("xberg-markdown-baseline", OutputFormat::Markdown, "single"),
+            "xberg-markdown-baseline:single"
         );
         assert_eq!(
-            make_aggregate_key("kreuzberg-plaintext-layout", OutputFormat::Plaintext, "batch"),
-            "kreuzberg-plaintext-layout:batch"
+            make_aggregate_key("xberg-plaintext-layout", OutputFormat::Plaintext, "batch"),
+            "xberg-plaintext-layout:batch"
         );
     }
 
@@ -1176,11 +1176,11 @@ mod tests {
     }
 
     #[test]
-    fn test_aggregate_new_format_kreuzberg_key_shape() {
-        // kreuzberg-markdown-baseline results should produce slim keys
+    fn test_aggregate_new_format_xberg_key_shape() {
+        // xberg-markdown-baseline results should produce slim keys
         let results = vec![
             create_test_result(
-                "kreuzberg-markdown-baseline",
+                "xberg-markdown-baseline",
                 "pdf",
                 OcrStatus::NotUsed,
                 100,
@@ -1188,7 +1188,7 @@ mod tests {
                 10_000_000,
             ),
             create_test_result(
-                "kreuzberg-markdown-baseline-batch",
+                "xberg-markdown-baseline-batch",
                 "pdf",
                 OcrStatus::NotUsed,
                 80,
@@ -1203,16 +1203,16 @@ mod tests {
         assert!(
             aggregated
                 .by_framework_mode
-                .contains_key("kreuzberg-markdown-baseline:single")
+                .contains_key("xberg-markdown-baseline:single")
         );
         assert!(
             aggregated
                 .by_framework_mode
-                .contains_key("kreuzberg-markdown-baseline:batch")
+                .contains_key("xberg-markdown-baseline:batch")
         );
 
-        let single_agg = &aggregated.by_framework_mode["kreuzberg-markdown-baseline:single"];
-        assert_eq!(single_agg.framework, "kreuzberg-markdown-baseline");
+        let single_agg = &aggregated.by_framework_mode["xberg-markdown-baseline:single"];
+        assert_eq!(single_agg.framework, "xberg-markdown-baseline");
         assert_eq!(single_agg.mode, "single");
     }
 
@@ -1229,16 +1229,16 @@ mod tests {
     fn test_aggregate_new_format() {
         let results = vec![
             create_test_result(
-                "kreuzberg-sync",
+                "xberg-sync",
                 "pdf",
                 OcrStatus::NotUsed,
                 100,
                 1_000_000.0,
                 10_000_000,
             ),
-            create_test_result("kreuzberg-sync", "pdf", OcrStatus::Used, 200, 500_000.0, 20_000_000),
+            create_test_result("xberg-sync", "pdf", OcrStatus::Used, 200, 500_000.0, 20_000_000),
             create_test_result(
-                "kreuzberg-batch",
+                "xberg-batch",
                 "docx",
                 OcrStatus::NotUsed,
                 150,
@@ -1250,12 +1250,12 @@ mod tests {
         let aggregated = aggregate_new_format(&results);
 
         assert_eq!(aggregated.by_framework_mode.len(), 2);
-        // "kreuzberg-sync" is normalized to "kreuzberg:markdown:single"
-        assert!(aggregated.by_framework_mode.contains_key("kreuzberg:markdown:single"));
-        assert!(aggregated.by_framework_mode.contains_key("kreuzberg:markdown:batch"));
+        // "xberg-sync" is normalized to "xberg:markdown:single"
+        assert!(aggregated.by_framework_mode.contains_key("xberg:markdown:single"));
+        assert!(aggregated.by_framework_mode.contains_key("xberg:markdown:batch"));
 
-        let single_agg = &aggregated.by_framework_mode["kreuzberg:markdown:single"];
-        assert_eq!(single_agg.framework, "kreuzberg");
+        let single_agg = &aggregated.by_framework_mode["xberg:markdown:single"];
+        assert_eq!(single_agg.framework, "xberg");
         assert_eq!(single_agg.mode, "single");
         assert!(single_agg.cold_start.is_some());
 
@@ -1270,9 +1270,9 @@ mod tests {
     #[test]
     fn test_calculate_percentiles() {
         let results = [
-            create_test_result("kreuzberg", "pdf", OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000),
-            create_test_result("kreuzberg", "pdf", OcrStatus::NotUsed, 200, 2_000_000.0, 20_000_000),
-            create_test_result("kreuzberg", "pdf", OcrStatus::NotUsed, 300, 3_000_000.0, 30_000_000),
+            create_test_result("xberg", "pdf", OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000),
+            create_test_result("xberg", "pdf", OcrStatus::NotUsed, 200, 2_000_000.0, 20_000_000),
+            create_test_result("xberg", "pdf", OcrStatus::NotUsed, 300, 3_000_000.0, 30_000_000),
         ];
 
         let refs: Vec<&BenchmarkResult> = results.iter().collect();
@@ -1289,8 +1289,8 @@ mod tests {
     #[test]
     fn test_aggregate_cold_starts() {
         let results = [
-            create_test_result("kreuzberg", "pdf", OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000),
-            create_test_result("kreuzberg", "pdf", OcrStatus::NotUsed, 200, 2_000_000.0, 20_000_000),
+            create_test_result("xberg", "pdf", OcrStatus::NotUsed, 100, 1_000_000.0, 10_000_000),
+            create_test_result("xberg", "pdf", OcrStatus::NotUsed, 200, 2_000_000.0, 20_000_000),
         ];
 
         let refs: Vec<&BenchmarkResult> = results.iter().collect();
@@ -1592,7 +1592,7 @@ mod tests {
     fn test_aggregate_new_format_extraction_duration_preserved() {
         // Test: aggregate_new_format preserves extraction_duration statistics
         let mut result1 = create_test_result(
-            "kreuzberg-sync",
+            "xberg-sync",
             "pdf",
             OcrStatus::NotUsed,
             100,
@@ -1602,7 +1602,7 @@ mod tests {
         result1.extraction_duration = Some(Duration::from_millis(80));
 
         let mut result2 = create_test_result(
-            "kreuzberg-sync",
+            "xberg-sync",
             "pdf",
             OcrStatus::NotUsed,
             150,
@@ -1614,7 +1614,7 @@ mod tests {
         let results = vec![result1, result2];
         let aggregated = aggregate_new_format(&results);
 
-        let framework_mode = aggregated.by_framework_mode.get("kreuzberg:markdown:single").unwrap();
+        let framework_mode = aggregated.by_framework_mode.get("xberg:markdown:single").unwrap();
         let pdf_stats = framework_mode.by_file_type.get("pdf").unwrap();
         let no_ocr = pdf_stats.no_ocr.as_ref().unwrap();
 

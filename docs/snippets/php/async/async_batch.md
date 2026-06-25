@@ -3,14 +3,14 @@
 
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use function Kreuzberg\batch_extract_files_async;
+use Xberg\Xberg;
+use function Xberg\batch_extract_files_async;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 // Async batch file extraction
 $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
-$deferred = $kreuzberg->batchExtractFilesAsync($files);
+$deferred = $xberg->batchExtractFilesAsync($files);
 
 // Do other work while extraction runs...
 processOtherTasks();
@@ -23,7 +23,7 @@ foreach ($results as $i => $result) {
 }
 
 // With timeout
-$deferred = $kreuzberg->batchExtractFilesAsync($files);
+$deferred = $xberg->batchExtractFilesAsync($files);
 $results = $deferred->waitBatch(10000); // 10 second timeout
 
 if ($results !== null) {

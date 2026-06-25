@@ -46,10 +46,10 @@ fn default_output_format() -> OutputFormat {
     OutputFormat::Markdown
 }
 
-/// Kreuzberg extraction pipeline variant
+/// Xberg extraction pipeline variant
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum KreuzbergPipeline {
+pub enum XbergPipeline {
     /// Baseline: text extraction without layout or OCR
     Baseline,
     /// Layout: layout detection and structure preservation
@@ -77,47 +77,47 @@ pub enum KreuzbergPipeline {
     CandlePaddleocrVl15,
 }
 
-impl KreuzbergPipeline {
+impl XbergPipeline {
     /// Get the string representation of the pipeline
     pub fn as_str(self) -> &'static str {
         match self {
-            KreuzbergPipeline::Baseline => "baseline",
-            KreuzbergPipeline::Layout => "layout",
-            KreuzbergPipeline::PaddleOcr => "paddle-ocr",
-            KreuzbergPipeline::CandleTrocr => "candle-trocr",
-            KreuzbergPipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
-            KreuzbergPipeline::CandleGlmOcr => "candle-glm-ocr",
-            KreuzbergPipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
-            KreuzbergPipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
-            KreuzbergPipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
+            XbergPipeline::Baseline => "baseline",
+            XbergPipeline::Layout => "layout",
+            XbergPipeline::PaddleOcr => "paddle-ocr",
+            XbergPipeline::CandleTrocr => "candle-trocr",
+            XbergPipeline::CandlePaddleocrVl => "candle-paddleocr-vl",
+            XbergPipeline::CandleGlmOcr => "candle-glm-ocr",
+            XbergPipeline::CandleHunyuanOcr => "candle-hunyuan-ocr",
+            XbergPipeline::CandleDeepseekOcr => "candle-deepseek-ocr",
+            XbergPipeline::CandlePaddleocrVl15 => "candle-paddleocr-vl-15",
         }
     }
 }
 
-impl std::fmt::Display for KreuzbergPipeline {
+impl std::fmt::Display for XbergPipeline {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
 
-impl FromStr for KreuzbergPipeline {
+impl FromStr for XbergPipeline {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "baseline" => Ok(KreuzbergPipeline::Baseline),
-            "layout" => Ok(KreuzbergPipeline::Layout),
-            "paddle-ocr" | "paddle_ocr" | "paddleocr" => Ok(KreuzbergPipeline::PaddleOcr),
-            "candle-trocr" | "candle_trocr" | "trocr" => Ok(KreuzbergPipeline::CandleTrocr),
-            "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Ok(KreuzbergPipeline::CandlePaddleocrVl),
-            "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Ok(KreuzbergPipeline::CandleGlmOcr),
-            "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Ok(KreuzbergPipeline::CandleHunyuanOcr),
-            "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Ok(KreuzbergPipeline::CandleDeepseekOcr),
+            "baseline" => Ok(XbergPipeline::Baseline),
+            "layout" => Ok(XbergPipeline::Layout),
+            "paddle-ocr" | "paddle_ocr" | "paddleocr" => Ok(XbergPipeline::PaddleOcr),
+            "candle-trocr" | "candle_trocr" | "trocr" => Ok(XbergPipeline::CandleTrocr),
+            "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Ok(XbergPipeline::CandlePaddleocrVl),
+            "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Ok(XbergPipeline::CandleGlmOcr),
+            "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Ok(XbergPipeline::CandleHunyuanOcr),
+            "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Ok(XbergPipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {
-                Ok(KreuzbergPipeline::CandlePaddleocrVl15)
+                Ok(XbergPipeline::CandlePaddleocrVl15)
             }
             _ => Err(format!(
-                "unknown Kreuzberg pipeline: {}. Valid: baseline, layout, paddle-ocr, candle-trocr, candle-paddleocr-vl, candle-glm-ocr, candle-hunyuan-ocr, candle-deepseek-ocr, candle-paddleocr-vl-15",
+                "unknown Xberg pipeline: {}. Valid: baseline, layout, paddle-ocr, candle-trocr, candle-paddleocr-vl, candle-glm-ocr, candle-hunyuan-ocr, candle-deepseek-ocr, candle-paddleocr-vl-15",
                 s
             )),
         }
@@ -242,7 +242,7 @@ pub struct BenchmarkResult {
 impl BenchmarkResult {
     /// Create a framework key combining framework name, output format, and execution mode
     /// Format: "{framework}:{output_format}:{execution_mode}"
-    /// Example: "kreuzberg-rust:markdown:batch"
+    /// Example: "xberg-rust:markdown:batch"
     pub fn framework_key(&self, execution_mode: &str) -> String {
         format!("{}:{}:{}", self.framework, self.output_format, execution_mode)
     }

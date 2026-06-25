@@ -1,6 +1,6 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-Kreuzberg.clear_post_processors
-Kreuzberg.clear_validators
+Xberg.clear_post_processors
+Xberg.clear_validators
 ```

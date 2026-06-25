@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, OcrConfig};
-use kreuzberg::types::TesseractConfig;
+use xberg::{extract_file_sync, ExtractionConfig, OcrConfig};
+use xberg::types::TesseractConfig;
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "tesseract".to_string(),

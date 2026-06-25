@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -8,7 +8,7 @@ fun main() {
         .withEnableQualityProcessing(true)
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("scanned_document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("scanned_document.pdf"), null, config)
 
     val score = result.qualityScore()
     if (score != null) {

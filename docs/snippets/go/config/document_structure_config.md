@@ -3,15 +3,15 @@ package main
 
 import (
     "fmt"
-    kreuzberg "github.com/xberg-io/kreuzberg/packages/go/v5"
+    xberg "github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-    config := kreuzberg.NewExtractionConfig(
-        kreuzberg.WithIncludeDocumentStructure(true),
+    config := xberg.NewExtractionConfig(
+        xberg.WithIncludeDocumentStructure(true),
     )
 
-    result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+    result, err := xberg.ExtractFileSync("document.pdf", config)
     if err != nil {
         panic(err)
     }

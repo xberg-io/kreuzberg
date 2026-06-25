@@ -1,7 +1,7 @@
 ```go title="Go"
 package main
 
-import "github.com/xberg-io/kreuzberg/packages/go/v5"
+import "github.com/xberg-io/xberg/packages/go/v5"
 
 func main() {
 	enabled := true
@@ -11,10 +11,10 @@ func main() {
 	threshold := float32(0.8)
 
 	// Basic hierarchy configuration
-	config := kreuzberg.ExtractionConfig{
-		PdfOptions: &kreuzberg.PdfConfig{
+	config := xberg.ExtractionConfig{
+		PdfOptions: &xberg.PdfConfig{
 			ExtractImages: true,
-			Hierarchy: &kreuzberg.HierarchyConfig{
+			Hierarchy: &xberg.HierarchyConfig{
 				Enabled:              &enabled,
 				KClusters:            &kClusters,
 				IncludeBbox:          &includeBbox,
@@ -24,10 +24,10 @@ func main() {
 	}
 
 	// Advanced hierarchy configuration with more clusters
-	advancedConfig := kreuzberg.ExtractionConfig{
-		PdfOptions: &kreuzberg.PdfConfig{
+	advancedConfig := xberg.ExtractionConfig{
+		PdfOptions: &xberg.PdfConfig{
 			ExtractImages: true,
-			Hierarchy: &kreuzberg.HierarchyConfig{
+			Hierarchy: &xberg.HierarchyConfig{
 				Enabled:              &enabled,
 				KClusters:            &kClustersAdvanced,
 				IncludeBbox:          &includeBbox,

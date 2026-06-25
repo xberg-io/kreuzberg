@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class ContentQualityValidator implements Validator {
     private int $minLength = 10;
@@ -46,7 +46,7 @@ class ContentQualityValidator implements Validator {
 
 // Register the validator
 $validator = new ContentQualityValidator();
-Kreuzberg::registerValidator($validator);
+Xberg::registerValidator($validator);
 
 echo "Content quality validator registered\n";
 ```

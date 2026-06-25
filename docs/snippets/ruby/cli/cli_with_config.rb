@@ -4,7 +4,7 @@ require 'open3'
 
 def extract_with_config(file_path, config_path)
   stdout, stderr, status = Open3.capture3(
-    'kreuzberg', 'extract', file_path, '--config', config_path, '--format', 'json'
+    'xberg', 'extract', file_path, '--config', config_path, '--format', 'json'
   )
 
   unless status.success?
@@ -15,7 +15,7 @@ def extract_with_config(file_path, config_path)
   JSON.parse(stdout)
 end
 
-config_file = 'kreuzberg.toml'
+config_file = 'xberg.toml'
 document = 'document.pdf'
 
 puts "Extracting #{document} with config #{config_file}"

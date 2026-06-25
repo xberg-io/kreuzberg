@@ -13,7 +13,7 @@ impl Validator for QualityValidator {
             .unwrap_or(0.0);
 
         if score < 0.5 {
-            return Err(KreuzbergError::validation(format!(
+            return Err(XbergError::validation(format!(
                 "Quality score too low: {:.2} < 0.50",
                 score
             )));

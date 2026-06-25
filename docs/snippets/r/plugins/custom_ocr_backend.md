@@ -1,5 +1,5 @@
 ```r
-library(kreuzberg)
+library(xberg)
 
 # List available OCR backends
 backends <- list_ocr_backends()

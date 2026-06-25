@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/* The kreuzberg C FFI does not embed the MCP server. Spawn the kreuzberg
- * CLI from a host process that uses libkreuzberg for in-process extraction. */
+/* The xberg C FFI does not embed the MCP server. Spawn the xberg
+ * CLI from a host process that uses libxberg for in-process extraction. */
 int main(void) {
     pid_t pid = fork();
     if (pid < 0) {
@@ -12,7 +12,7 @@ int main(void) {
         return 1;
     }
     if (pid == 0) {
-        execlp("kreuzberg", "kreuzberg", "mcp", (char *)NULL);
+        execlp("xberg", "xberg", "mcp", (char *)NULL);
         perror("execlp");
         _exit(127);
     }
@@ -26,4 +26,4 @@ int main(void) {
 }
 ```
 
-<!-- snippet:syntax-only --> The MCP server is exposed only through the kreuzberg CLI; libkreuzberg's C FFI offers no MCP entry point. This snippet spawns the CLI from a host that already links against libkreuzberg.
+<!-- snippet:syntax-only --> The MCP server is exposed only through the xberg CLI; libxberg's C FFI offers no MCP entry point. This snippet spawns the CLI from a host that already links against libxberg.

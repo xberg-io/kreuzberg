@@ -1,9 +1,9 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Load configuration from file
 # Automatically discovers and loads configuration from the user's config directory
-config_path = Path.expand("~/.kreuzberg/config.json")
+config_path = Path.expand("~/.xberg/config.json")
 
 config = if File.exists?(config_path) do
   config_data = config_path |> File.read!() |> Jason.decode!()
@@ -18,7 +18,7 @@ IO.puts("OCR Enabled: #{inspect(config.ocr["enabled"])}")
 IO.puts("Chunking Max Characters: #{inspect(config.chunking["max_characters"])}")
 IO.puts("Use Cache: #{inspect(config.use_cache)}")
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("Document extraction complete")
 IO.puts("Content length: #{byte_size(result.content)} bytes")

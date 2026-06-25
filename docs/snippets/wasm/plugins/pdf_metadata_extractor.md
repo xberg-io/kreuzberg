@@ -3,7 +3,7 @@
 Register a post-processor that extracts and enriches extraction results with PDF metadata.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extractBytes } from "kreuzberg-wasm";
+import init, { registerPostProcessor, extractBytes } from "xberg-wasm";
 
 await init();
 

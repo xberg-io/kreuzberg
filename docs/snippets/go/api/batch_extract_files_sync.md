@@ -4,17 +4,17 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/v5"
+	"github.com/xberg-io/xberg/v5"
 )
 
 func main() {
-	items := []kreuzberg.BatchFileItem{
+	items := []xberg.BatchFileItem{
 		{Path: "doc1.pdf"},
 		{Path: "doc2.docx"},
 		{Path: "doc3.pptx"},
 	}
 
-	results, err := kreuzberg.BatchExtractFilesSync(items, kreuzberg.ExtractionConfig{})
+	results, err := xberg.BatchExtractFilesSync(items, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("batch extraction failed: %v", err)
 	}

@@ -1,10 +1,10 @@
 ```elixir title="Elixir"
-# Basic CLI Tool - Simple command-line interface for Kreuzberg
+# Basic CLI Tool - Simple command-line interface for Xberg
 # Demonstrates how to build a CLI for document extraction
 
-defmodule KreuzbergCLI do
+defmodule XbergCLI do
   @moduledoc """
-  Command-line interface for Kreuzberg document extraction.
+  Command-line interface for Xberg document extraction.
 
   Provides a simple, user-friendly CLI for extracting documents
   from the command line with progress feedback.
@@ -118,7 +118,7 @@ defmodule KreuzbergCLI do
     IO.puts("Extracting: #{file_path}")
     start_time = System.monotonic_time(:millisecond)
 
-    case Kreuzberg.extract_file(file_path, mime_type, config) do
+    case Xberg.extract_file(file_path, mime_type, config) do
       {:ok, result} ->
         elapsed = System.monotonic_time(:millisecond) - start_time
 
@@ -158,7 +158,7 @@ defmodule KreuzbergCLI do
             IO.write("  [#{idx}/#{length(files)}] ")
             start_time = System.monotonic_time(:millisecond)
 
-            case Kreuzberg.extract_file(file, nil, config) do
+            case Xberg.extract_file(file, nil, config) do
               {:ok, result} ->
                 elapsed = System.monotonic_time(:millisecond) - start_time
                 IO.puts("#{Path.basename(file)} (#{elapsed}ms)")
@@ -177,7 +177,7 @@ defmodule KreuzbergCLI do
   end
 
   defp build_config(opts) do
-    %Kreuzberg.ExtractionConfig{
+    %Xberg.ExtractionConfig{
       ocr:
         if(Map.get(opts, :enable_ocr),
           do: %{"enabled" => true, "backend" => "tesseract"},
@@ -268,12 +268,12 @@ defmodule KreuzbergCLI do
 
   defp print_help do
     IO.puts("""
-    Kreuzberg CLI - Document Extraction Tool
+    Xberg CLI - Document Extraction Tool
 
     USAGE:
-      kreuzberg extract <file> [OPTIONS]
-      kreuzberg batch <directory> [OPTIONS]
-      kreuzberg help
+      xberg extract <file> [OPTIONS]
+      xberg batch <directory> [OPTIONS]
+      xberg help
 
     COMMANDS:
       extract <file>        Extract content from a single document
@@ -288,17 +288,17 @@ defmodule KreuzbergCLI do
       --chunks              Enable document chunking for RAG
 
     EXAMPLES:
-      kreuzberg extract document.pdf
-      kreuzberg extract document.pdf --output results.json
-      kreuzberg batch ./documents --ocr --chunks
-      kreuzberg batch ./documents -v --output summary.json
+      xberg extract document.pdf
+      xberg extract document.pdf --output results.json
+      xberg batch ./documents --ocr --chunks
+      xberg batch ./documents -v --output summary.json
     """)
   end
 end
 
 # Entry point for escript
 def main(args) do
-  case KreuzbergCLI.main(args) do
+  case XbergCLI.main(args) do
     :ok -> 0
     :error -> 1
   end

@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\KeywordConfig;
-use Kreuzberg\Enums\KeywordAlgorithm;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\KeywordConfig;
+use Xberg\Enums\KeywordAlgorithm;
 
 $config = new ExtractionConfig(
     keywords: new KeywordConfig(
@@ -25,8 +25,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('research_paper.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('research_paper.pdf');
 
 echo "Keyword Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -75,8 +75,8 @@ foreach ($algorithms as $name => $algorithm) {
         )
     );
 
-    $kreuzberg = new Kreuzberg($algoConfig);
-    $result = $kreuzberg->extractFile('article.pdf');
+    $xberg = new Xberg($algoConfig);
+    $result = $xberg->extractFile('article.pdf');
 
     $keywords = $result->metadata['keywords'] ?? [];
 
@@ -143,7 +143,7 @@ $keywordConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($keywordConfig);
+$xberg = new Xberg($keywordConfig);
 
 echo "Batch Keyword Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -154,7 +154,7 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
     $keywords = $result->metadata['keywords'] ?? [];
 
     echo basename($document) . ":\n";
@@ -180,7 +180,7 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
     $keywords = $result->metadata['keywords'] ?? [];
 
     foreach ($keywords as $keyword) {

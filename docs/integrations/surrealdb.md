@@ -1,28 +1,28 @@
 # SurrealDB
 
-The `kreuzberg-surrealdb` package connects Kreuzberg's document extraction pipeline to [SurrealDB](https://surrealdb.com/). It handles schema creation, content deduplication, optional chunking and embedding, and index configuration.
+The `xberg-surrealdb` package connects Xberg's document extraction pipeline to [SurrealDB](https://surrealdb.com/). It handles schema creation, content deduplication, optional chunking and embedding, and index configuration.
 
-[![PyPI](https://img.shields.io/pypi/v/kreuzberg-surrealdb)](https://pypi.org/project/kreuzberg-surrealdb/)
-[![Python](https://img.shields.io/pypi/pyversions/kreuzberg-surrealdb)](https://pypi.org/project/kreuzberg-surrealdb/)
-[![License](https://img.shields.io/pypi/l/kreuzberg-surrealdb)](https://github.com/xberg-io/kreuzberg-surrealdb/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/xberg-surrealdb)](https://pypi.org/project/xberg-surrealdb/)
+[![Python](https://img.shields.io/pypi/pyversions/xberg-surrealdb)](https://pypi.org/project/xberg-surrealdb/)
+[![License](https://img.shields.io/pypi/l/xberg-surrealdb)](https://github.com/xberg-io/xberg-surrealdb/blob/main/LICENSE)
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    Input[Documents] --> Kreuzberg[Kreuzberg Extraction]
-    Kreuzberg --> Connector[Integration Connector]
+    Input[Documents] --> Xberg[Xberg Extraction]
+    Xberg --> Connector[Integration Connector]
     Connector --> Schema[Auto Schema Setup]
     Connector --> Dedup[Content Deduplication]
     Connector --> Store[Storage & Indexing]
     Store --> Search[Search & Retrieval]
 
-    style Kreuzberg fill:#87CEEB
+    style Xberg fill:#87CEEB
     style Connector fill:#FFD700
     style Search fill:#90EE90
 ```
 
-1. **Extract** — Kreuzberg parses the source documents and runs OCR where needed.
+1. **Extract** — Xberg parses the source documents and runs OCR where needed.
 2. **Connect** — The connector receives the extracted output and manages the SurrealDB connection.
 3. **Store** — Each document is hashed (SHA-256) for deduplication, optionally chunked and embedded, then written to SurrealDB under an auto-generated schema.
 4. **Search** — Full-text (BM25), vector (HNSW), and hybrid (RRF) search are available immediately after ingestion.
@@ -32,13 +32,13 @@ flowchart LR
 - **Schema management** — `setup_schema()` creates tables, indices, and analyzers. No manual DDL required.
 - **Deduplication** — Deterministic record IDs derived from content hashes prevent duplicate rows across ingestion runs.
 - **Flexible ingestion** — Single files, file lists, directories (with glob), or raw bytes.
-- **Extraction control** — Pass Kreuzberg's `ExtractionConfig` to set OCR behavior, output format, and quality processing.
+- **Extraction control** — Pass Xberg's `ExtractionConfig` to set OCR behavior, output format, and quality processing.
 - **Batch tuning** — Adjust `insert_batch_size` to balance throughput against memory usage.
 
 ## Installation
 
 ```bash
-pip install kreuzberg-surrealdb
+pip install xberg-surrealdb
 ```
 
 Requires Python 3.10+. You also need a running SurrealDB instance:
@@ -50,7 +50,7 @@ docker run --rm -p 8000:8000 surrealdb/surrealdb:latest start --allow-all --user
 ## Quick start
 
 ```python
-from kreuzberg_surrealdb import DocumentPipeline
+from xberg_surrealdb import DocumentPipeline
 
 pipeline = DocumentPipeline(db=db, embed=True, embedding_model="balanced")
 await pipeline.setup_schema()
@@ -68,4 +68,4 @@ The package provides two entry points. Choose based on whether you need chunking
 | Indices    | BM25 on documents                   | BM25 + HNSW on chunks                 | BM25 on chunks                  |
 | Best for   | Keyword search over whole documents | Semantic or hybrid search over chunks | Keyword search over chunks      |
 
-For the complete API reference, embedding model options, chunking configuration, and database schema details, see the [kreuzberg-surrealdb readme](https://github.com/xberg-io/kreuzberg-surrealdb). For general SurrealDB usage, see the [SurrealDB docs](https://surrealdb.com/docs).
+For the complete API reference, embedding model options, chunking configuration, and database schema details, see the [xberg-surrealdb readme](https://github.com/xberg-io/xberg-surrealdb). For general SurrealDB usage, see the [SurrealDB docs](https://surrealdb.com/docs).

@@ -1,11 +1,11 @@
 ```elixir title="Elixir"
-alias Kreuzberg.Plugin
+alias Xberg.Plugin
 
 # Plugin Testing Example
 # This demonstrates how to test custom plugins with various scenarios.
 
 defmodule MyApp.Plugins.CustomJsonExtractor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
   require Logger
 
   @impl true

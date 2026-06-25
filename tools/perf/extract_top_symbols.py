@@ -5,7 +5,7 @@ Usage:
     python3 tools/perf/extract_top_symbols.py flamegraphs/<sha>/baseline.svg [N=15]
 
 Reports the top-N functions by aggregate sample count, filtered to drop
-system / dependency frames so kreuzberg::* hotspots surface clearly.
+system / dependency frames so xberg::* hotspots surface clearly.
 
 The SVG is the standard pprof flamegraph output; each rectangle has a
 `<title>fn (samples, percent%)</title>` element. We aggregate per-function
@@ -22,7 +22,7 @@ from collections import Counter
 from pathlib import Path
 
 # Filter out stack frames that are dependencies, the runtime, or system noise.
-# The remaining frames are kreuzberg's own code (or close enough to be actionable).
+# The remaining frames are xberg's own code (or close enough to be actionable).
 EXCLUDE_PREFIXES = (
     "__",  # __mh_execute_header, __os_lock_..., __pthread_...
     "_",  # _open$NOCANCEL, _os_cpu_..., _pthread_...
@@ -47,8 +47,8 @@ EXCLUDE_PREFIXES = (
 ADDRESS_PATTERN = re.compile(r"^\d+$|^0x[0-9a-f]+$")
 
 
-def is_kreuzberg_or_application(symbol: str) -> bool:
-    """Return True if the symbol is application-level (likely kreuzberg crate)."""
+def is_xberg_or_application(symbol: str) -> bool:
+    """Return True if the symbol is application-level (likely xberg crate)."""
     if not symbol:
         return False
     if ADDRESS_PATTERN.match(symbol):
@@ -92,7 +92,7 @@ def main() -> int:
 
     # Application-level symbols, ranked by aggregate samples.
     app_ranked = sorted(
-        ((fn, s) for fn, s in samples_per_fn.items() if is_kreuzberg_or_application(fn)),
+        ((fn, s) for fn, s in samples_per_fn.items() if is_xberg_or_application(fn)),
         key=lambda x: -x[1],
     )
 

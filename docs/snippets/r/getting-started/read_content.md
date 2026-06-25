@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Extract a document
 result <- extract_file_sync("document.docx")

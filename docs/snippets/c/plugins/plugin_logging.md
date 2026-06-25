@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,7 +64,7 @@ static int32_t priority_fn(const void *user_data) {
 }
 
 int main(void) {
-    KREUZBERGKreuzbergPostProcessorVTable vtable = {0};
+    XBERGXbergPostProcessorVTable vtable = {0};
     vtable.initialize_fn = initialize_fn;
     vtable.shutdown_fn = shutdown_fn;
     vtable.process = process_fn;
@@ -72,7 +72,7 @@ int main(void) {
     vtable.priority = priority_fn;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_post_processor(
+    int32_t rc = xberg_register_post_processor(
         "logging-demo",
         vtable,
         NULL,
@@ -81,7 +81,7 @@ int main(void) {
     if (rc != 0) {
         fprintf(stderr, "[ERROR] register post-processor failed: %s\n",
                 err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 

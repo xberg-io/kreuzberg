@@ -8,7 +8,7 @@ class ApiServer
     {
         var processInfo = new ProcessStartInfo
         {
-            FileName = "kreuzberg",
+            FileName = "xberg",
             Arguments = "serve -H 0.0.0.0 -p 8000",
             UseShellExecute = false,
             RedirectStandardOutput = true,

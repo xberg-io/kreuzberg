@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,12 +47,12 @@ static int32_t priority_fn(const void *user_data) {
 }
 
 int main(void) {
-    KREUZBERGKreuzbergValidatorVTable vtable = {0};
+    XBERGXbergValidatorVTable vtable = {0};
     vtable.validate = validate_fn;
     vtable.priority = priority_fn;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_validator(
+    int32_t rc = xberg_register_validator(
         "quality-score-validator",
         vtable,
         NULL,
@@ -60,7 +60,7 @@ int main(void) {
     );
     if (rc != 0) {
         fprintf(stderr, "register validator failed: %s\n", err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 

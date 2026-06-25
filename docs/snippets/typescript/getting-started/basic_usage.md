@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFileSync } from "@kreuzberg/node";
+import { extractFileSync } from "@xberg/node";
 
 const config = {
   useCache: true,

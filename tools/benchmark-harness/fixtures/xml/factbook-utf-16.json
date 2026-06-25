@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/unstructured/xml/factbook-utf-16.xml",
 	"file_type": "xml",
 	"file_size": 1341,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "markitdown", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from unstructured test suite",
 		"source": "unstructured",

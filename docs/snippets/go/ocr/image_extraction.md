@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	targetDpi := int32(200)
 	maxDim := int32(2048)
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, kreuzberg.ExtractionConfig{
-		Images: &kreuzberg.ImageExtractionConfig{
+	result, err := xberg.ExtractFileSync("document.pdf", nil, xberg.ExtractionConfig{
+		Images: &xberg.ImageExtractionConfig{
 			ExtractImages:      &extractImages,
 			TargetDpi:          &targetDpi,
 			MaxImageDimension:  &maxDim,

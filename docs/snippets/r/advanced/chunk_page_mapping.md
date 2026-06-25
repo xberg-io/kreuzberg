@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config <- list(
   chunking = list(max_characters = 500L, overlap = 50L),

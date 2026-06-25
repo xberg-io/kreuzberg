@@ -5,22 +5,22 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxKeywords := int32(10)
 	minScore := 0.3
 
-	config := &kreuzberg.ExtractionConfig{
-		Keywords: &kreuzberg.KeywordConfig{
-			Algorithm:   kreuzberg.KeywordAlgorithm_YAKE,
+	config := &xberg.ExtractionConfig{
+		Keywords: &xberg.KeywordConfig{
+			Algorithm:   xberg.KeywordAlgorithm_YAKE,
 			MaxKeywords: &maxKeywords,
 			MinScore:    &minScore,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("research_paper.pdf", config)
+	result, err := xberg.ExtractFileSync("research_paper.pdf", config)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

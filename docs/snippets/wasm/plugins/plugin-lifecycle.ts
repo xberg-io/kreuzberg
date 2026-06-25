@@ -1,4 +1,4 @@
-import { initWasm, TesseractWasmBackend } from "@kreuzberg/wasm";
+import { initWasm, TesseractWasmBackend } from "@xberg/wasm";
 
 class PluginManager {
   private plugins: Map<string, any> = new Map();

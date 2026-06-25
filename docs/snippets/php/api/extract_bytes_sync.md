@@ -2,12 +2,12 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
 
 $content = file_get_contents('document.pdf');
 $config = new ExtractionConfig();
-$result = Kreuzberg::extractBytesSync($content, 'application/pdf', $config);
+$result = Xberg::extractBytesSync($content, 'application/pdf', $config);
 
 echo $result->getContent();
 echo 'Tables: ' . count($result->getTables()) . "\n";

@@ -1,10 +1,10 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ChunkingConfig;
-use Kreuzberg\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
+use Xberg\EmbeddingConfig;
 
 // Configure chunking with embedding generation for vector database
 $chunkConfig = new ChunkingConfig(
@@ -23,7 +23,7 @@ $config = new ExtractionConfig();
 $config->chunking = $chunkConfig;
 $config->embeddings = $embeddingConfig;
 
-$result = Kreuzberg::extract_file_sync("document.pdf", null, $config);
+$result = Xberg::extract_file_sync("document.pdf", null, $config);
 
 // Store chunks and embeddings for vector database
 if ($result->chunks !== null) {

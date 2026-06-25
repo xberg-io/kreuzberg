@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ort_version="${1:?ort-version required}"
-dest_dir="${2:-crates/kreuzberg-node}"
+dest_dir="${2:-crates/xberg-node}"
 arch_id="${3:-}"
 strategy="${4:-system}"
 

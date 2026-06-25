@@ -4,12 +4,12 @@ use anyhow::Result;
 use reqwest::multipart;
 use std::fs;
 
-struct DockerKreuzbergClient {
+struct DockerXbergClient {
     container_name: String,
     api_port: u16,
 }
 
-impl DockerKreuzbergClient {
+impl DockerXbergClient {
     fn new(container_name: &str, api_port: u16) -> Self {
         Self {
             container_name: container_name.to_string(),
@@ -18,7 +18,7 @@ impl DockerKreuzbergClient {
     }
 
     fn start_container(&self, image: &str) -> Result<()> {
-        println!("Starting Kreuzberg Docker container...");
+        println!("Starting Xberg Docker container...");
         let status = Command::new("docker")
             .args(&[
                 "run",
@@ -58,7 +58,7 @@ impl DockerKreuzbergClient {
     }
 
     fn stop_container(&self) -> Result<()> {
-        println!("Stopping Kreuzberg Docker container...");
+        println!("Stopping Xberg Docker container...");
         Command::new("docker")
             .args(&["stop", &self.container_name])
             .status()?;
@@ -72,9 +72,9 @@ impl DockerKreuzbergClient {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let docker_client = DockerKreuzbergClient::new("kreuzberg-api", 8000);
+    let docker_client = DockerXbergClient::new("xberg-api", 8000);
 
-    docker_client.start_container("kreuzberg:latest")?;
+    docker_client.start_container("xberg:latest")?;
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
 
     let content = docker_client.extract_file("document.pdf").await?;

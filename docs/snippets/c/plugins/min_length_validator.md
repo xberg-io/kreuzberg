@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,13 +65,13 @@ int main(void) {
     MinLengthState *state = (MinLengthState *)malloc(sizeof(MinLengthState));
     state->min_length = 100;
 
-    KREUZBERGKreuzbergValidatorVTable vtable = {0};
+    XBERGXbergValidatorVTable vtable = {0};
     vtable.validate = validate_fn;
     vtable.priority = priority_fn;
     vtable.free_user_data = free_user_data;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_validator(
+    int32_t rc = xberg_register_validator(
         "min-length-validator",
         vtable,
         state,
@@ -79,7 +79,7 @@ int main(void) {
     );
     if (rc != 0) {
         fprintf(stderr, "register validator failed: %s\n", err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         free(state);
         return 1;
     }

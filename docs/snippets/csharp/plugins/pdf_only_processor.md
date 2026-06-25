@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 public class PdfOnlyProcessor : IPostProcessor
 {

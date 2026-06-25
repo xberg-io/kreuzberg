@@ -6,7 +6,7 @@ import {
   isBun,
   isDeno,
   isNode,
-} from "@kreuzberg/wasm";
+} from "@xberg/wasm";
 
 async function setupForRuntime() {
   const runtime = detectRuntime();

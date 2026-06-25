@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\LanguageDetectionConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\LanguageDetectionConfig;
 
 $config = new ExtractionConfig(
     languageDetection: new LanguageDetectionConfig(
@@ -22,8 +22,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('multilingual.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('multilingual.pdf');
 
 echo "Detected languages:\n";
 foreach ($result->detectedLanguages ?? [] as $lang) {
@@ -39,8 +39,8 @@ $advancedConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($advancedConfig);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($advancedConfig);
+$result = $xberg->extractFile('document.pdf');
 
 if (!empty($result->detectedLanguages)) {
     echo "High-confidence languages detected:\n";
@@ -49,14 +49,14 @@ if (!empty($result->detectedLanguages)) {
     echo "No languages detected with sufficient confidence\n\n";
 }
 
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Config\OcrConfig;
 
 $detectConfig = new ExtractionConfig(
     languageDetection: new LanguageDetectionConfig(enabled: true)
 );
 
-$kreuzberg = new Kreuzberg($detectConfig);
-$result = $kreuzberg->extractFile('scanned.pdf');
+$xberg = new Xberg($detectConfig);
+$result = $xberg->extractFile('scanned.pdf');
 
 if (!empty($result->detectedLanguages)) {
     $primaryLanguage = $result->detectedLanguages[0];
@@ -70,8 +70,8 @@ if (!empty($result->detectedLanguages)) {
         )
     );
 
-    $kreuzberg = new Kreuzberg($ocrConfig);
-    $result = $kreuzberg->extractFile('scanned.pdf');
+    $xberg = new Xberg($ocrConfig);
+    $result = $xberg->extractFile('scanned.pdf');
     echo "OCR extraction complete\n";
 }
 
@@ -81,7 +81,7 @@ $languageMap = [];
 foreach ($files as $file) {
     if (!file_exists($file)) continue;
 
-    $result = $kreuzberg->extractFile($file);
+    $result = $xberg->extractFile($file);
     $lang = $result->detectedLanguages[0] ?? 'unknown';
 
     if (!isset($languageMap[$lang])) {

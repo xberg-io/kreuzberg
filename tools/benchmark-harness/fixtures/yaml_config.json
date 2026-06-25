@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/yaml/sample_config.yaml",
 	"file_type": "yaml",
 	"file_size": 270,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "YAML configuration file",
 		"category": "config"

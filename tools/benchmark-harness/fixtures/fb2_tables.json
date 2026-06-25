@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/tables.fb2",
 	"file_type": "fb2",
 	"file_size": 3949,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "FictionBook document with multiple table examples including simple, multiline, and headerless tables",
 		"category": "literature"

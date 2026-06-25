@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/writer.fb2",
 	"file_type": "fb2",
 	"file_size": 16415,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Larger FictionBook document with rich content",
 		"category": "literature"

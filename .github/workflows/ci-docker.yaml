@@ -17,7 +17,7 @@ permissions:
 jobs:
   docker:
     name: Docker (${{ matrix.variant }})
-    if: github.repository == 'xberg-io/kreuzberg' && github.actor != 'dependabot[bot]'
+    if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -40,7 +40,7 @@ jobs:
           file: docker/Dockerfile.${{ matrix.variant }}
           push: false
           load: true
-          tags: kreuzberg:${{ matrix.variant }}
+          tags: xberg:${{ matrix.variant }}
           build-args: ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }}
           cache-from: type=gha,scope=ci-docker-${{ matrix.variant }}
           cache-to: type=gha,mode=max,scope=ci-docker-${{ matrix.variant }}
@@ -49,13 +49,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p /tmp
-          docker save kreuzberg:${{ matrix.variant }} | gzip > /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
-          ls -lh /tmp/kreuzberg-${{ matrix.variant }}.tar.gz
+          docker save xberg:${{ matrix.variant }} | gzip > /tmp/xberg-${{ matrix.variant }}.tar.gz
+          ls -lh /tmp/xberg-${{ matrix.variant }}.tar.gz
 
       - name: Check image size
         uses: xberg-io/actions/check-docker-image-size@v1
         with:
-          image: kreuzberg:${{ matrix.variant }}
+          image: xberg:${{ matrix.variant }}
           warn-mb: ${{ matrix.variant == 'cli' && '200' || '' }}
           label: "${{ matrix.variant }} image"
 
@@ -71,7 +71,7 @@ jobs:
         if: matrix.variant != 'cli'
         uses: xberg-io/actions/run-api-contract-tests@v1
         with:
-          image: kreuzberg:${{ matrix.variant }}
+          image: xberg:${{ matrix.variant }}
           port: "8000"
 
       - name: Run CLI tests

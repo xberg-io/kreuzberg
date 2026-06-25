@@ -1,5 +1,5 @@
 ```typescript title="WASM - Enable Quality Processing"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -20,7 +20,7 @@ if (result.qualityScore && result.qualityScore < 0.5) {
 ```
 
 ```typescript title="WASM - Quality Monitoring"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 
@@ -62,7 +62,7 @@ if (quality.assessedAs === "low") {
 ```
 
 ```typescript title="WASM - Quality with OCR Fallback"
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

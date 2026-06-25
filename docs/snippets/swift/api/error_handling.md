@@ -1,9 +1,9 @@
 ```swift title="Swift"
 import Foundation
-import Kreuzberg
+import Xberg
 import RustBridge
 
-// The Swift binding throws `RustString` (not `KreuzbergError`) for every
+// The Swift binding throws `RustString` (not `XbergError`) for every
 // failure surfaced from the Rust core. The string preserves the original
 // error variant name and message (e.g. "UnsupportedFormat: ...",
 // "MissingDependency: ...", "Parsing: ...") so callers can pattern-match

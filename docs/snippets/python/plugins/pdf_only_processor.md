@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionResult, register_post_processor
+from xberg import ExtractionResult, register_post_processor
 
 class PdfOnlyProcessor:
     def name(self) -> str:

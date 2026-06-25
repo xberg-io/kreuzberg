@@ -8,7 +8,7 @@ defmodule ConfiguredDocumentClient do
   Supports OCR, chunking, language detection, and custom error handling.
   """
 
-  alias Kreuzberg.{ExtractionConfig, ExtractionResult}
+  alias Xberg.{ExtractionConfig, ExtractionResult}
 
   @doc """
   Extract with OCR enabled for scanned documents.
@@ -31,8 +31,8 @@ defmodule ConfiguredDocumentClient do
     mime_type = Keyword.get(opts, :mime_type, nil)
 
     case is_file do
-      true -> Kreuzberg.extract_file(input, mime_type, config)
-      false -> Kreuzberg.extract(input, mime_type || "application/pdf", config)
+      true -> Xberg.extract_file(input, mime_type, config)
+      false -> Xberg.extract(input, mime_type || "application/pdf", config)
     end
   end
 
@@ -53,7 +53,7 @@ defmodule ConfiguredDocumentClient do
 
     mime_type = Keyword.get(opts, :mime_type, nil)
 
-    case Kreuzberg.extract_file(path, mime_type, config) do
+    case Xberg.extract_file(path, mime_type, config) do
       {:ok, result} ->
         chunks = result.chunks || []
 
@@ -85,7 +85,7 @@ defmodule ConfiguredDocumentClient do
 
     mime_type = Keyword.get(opts, :mime_type, nil)
 
-    case Kreuzberg.extract_file(path, mime_type, config) do
+    case Xberg.extract_file(path, mime_type, config) do
       {:ok, result} ->
         {:ok,
          %{
@@ -131,7 +131,7 @@ defmodule ConfiguredDocumentClient do
 
     mime_type = Keyword.get(opts, :mime_type, nil)
 
-    case Kreuzberg.extract_file(path, mime_type, config) do
+    case Xberg.extract_file(path, mime_type, config) do
       {:ok, result} ->
         summary = %{
           file_path: path,
@@ -164,7 +164,7 @@ defmodule ConfiguredDocumentClient do
         {:error, "File not found: #{path}"}
 
       true ->
-        case Kreuzberg.detect_mime_type_from_path(path) do
+        case Xberg.detect_mime_type_from_path(path) do
           {:ok, _mime_type} ->
             :ok
 

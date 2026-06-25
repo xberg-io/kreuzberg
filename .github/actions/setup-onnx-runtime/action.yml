@@ -7,7 +7,7 @@ inputs:
   dest-dir:
     description: Directory (relative to workspace) where libraries should be copied
     required: false
-    default: crates/kreuzberg-node
+    default: crates/xberg-node
   arch-id:
     description: Override architecture (x64|arm64). Defaults to runner architecture.
     required: false

@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ExtractionConfig, TokenReductionConfig};
+use xberg::{ExtractionConfig, TokenReductionConfig};
 
 fn main() {
     let config = ExtractionConfig {

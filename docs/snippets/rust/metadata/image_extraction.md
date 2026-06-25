@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ExtractionConfig, ImageExtractionConfig};
+use xberg::{ExtractionConfig, ImageExtractionConfig};
 
 fn main() {
     let config = ExtractionConfig {

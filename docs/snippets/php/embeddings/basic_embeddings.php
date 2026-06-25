@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
+use Xberg\Config\EmbeddingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -28,8 +28,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Embedding Generation Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -66,9 +66,9 @@ foreach ($models as $model) {
         )
     );
 
-    $kreuzberg = new Kreuzberg($config);
+    $xberg = new Xberg($config);
     $start = microtime(true);
-    $result = $kreuzberg->extractFile('test_doc.pdf');
+    $result = $xberg->extractFile('test_doc.pdf');
     $elapsed = microtime(true) - $start;
 
     $chunk = ($result->chunks ?? [])[0] ?? null;
@@ -99,8 +99,8 @@ $config = new ExtractionConfig(
     embedding: new EmbeddingConfig(model: 'all-MiniLM-L6-v2', normalize: true)
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Chunk Similarity Analysis:\n";
 echo str_repeat('=', 60) . "\n";
@@ -175,7 +175,7 @@ $files = ['doc1.pdf', 'doc2.pdf', 'doc3.pdf'];
 foreach ($files as $file) {
     if (!file_exists($file)) continue;
 
-    $result = $kreuzberg->extractFile($file);
+    $result = $xberg->extractFile($file);
 
     foreach ($result->chunks ?? [] as $chunk) {
         if ($chunk->embedding) {
@@ -193,8 +193,8 @@ $config = new ExtractionConfig(
     embedding: new EmbeddingConfig(model: 'all-MiniLM-L6-v2', normalize: true)
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('export_doc.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('export_doc.pdf');
 
 $exportData = [];
 foreach ($result->chunks ?? [] as $chunk) {

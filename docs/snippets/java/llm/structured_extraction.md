@@ -1,9 +1,9 @@
 ```java title="Java"
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.LlmConfig;
-import dev.kreuzberg.StructuredExtractionConfig;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ExtractionResult;
+import dev.xberg.Xberg;
+import dev.xberg.LlmConfig;
+import dev.xberg.StructuredExtractionConfig;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -39,7 +39,7 @@ public class StructuredExtractionExample {
             .withStructuredExtraction(java.util.Optional.of(structured))
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile(Path.of("paper.pdf"), config);
+        ExtractionResult result = Xberg.extractFile(Path.of("paper.pdf"), config);
         System.out.println(result.structuredOutput());
     }
 }

@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class PdfOnlyProcessor implements PostProcessor {
     public function name(): string {
@@ -60,7 +60,7 @@ class PdfOnlyProcessor implements PostProcessor {
 
 // Register the PDF-only processor
 $processor = new PdfOnlyProcessor();
-Kreuzberg::registerPostProcessor($processor);
+Xberg::registerPostProcessor($processor);
 
 echo "PDF-only processor registered\n";
 ```

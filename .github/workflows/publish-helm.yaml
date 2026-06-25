@@ -67,22 +67,22 @@ jobs:
         uses: azure/setup-helm@v5
 
       - name: Lint chart
-        run: helm lint --strict charts/kreuzberg/
+        run: helm lint --strict charts/xberg/
 
       - name: Update Chart.yaml version
         run: |
-          sed -i "s/^version:.*/version: ${{ steps.meta.outputs.version }}/" charts/kreuzberg/Chart.yaml
-          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.meta.outputs.version }}\"/" charts/kreuzberg/Chart.yaml
+          sed -i "s/^version:.*/version: ${{ steps.meta.outputs.version }}/" charts/xberg/Chart.yaml
+          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.meta.outputs.version }}\"/" charts/xberg/Chart.yaml
           {
             echo "### Chart.yaml"
             echo '```yaml'
-            cat charts/kreuzberg/Chart.yaml
+            cat charts/xberg/Chart.yaml
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Package chart
         run: |
-          helm package charts/kreuzberg/ --destination .helm-packages/
+          helm package charts/xberg/ --destination .helm-packages/
           echo "### Packaged" >> "$GITHUB_STEP_SUMMARY"
           ls -lh .helm-packages/ >> "$GITHUB_STEP_SUMMARY"
 
@@ -97,12 +97,12 @@ jobs:
       - name: Push chart to GHCR
         if: ${{ steps.meta.outputs.dry_run != 'true' }}
         run: |
-          helm push .helm-packages/kreuzberg-${{ steps.meta.outputs.version }}.tgz oci://ghcr.io/xberg-io/charts
+          helm push .helm-packages/xberg-${{ steps.meta.outputs.version }}.tgz oci://ghcr.io/xberg-io/charts
           echo "### Published" >> "$GITHUB_STEP_SUMMARY"
-          echo "Chart pushed to \`oci://ghcr.io/xberg-io/charts/kreuzberg:${{ steps.meta.outputs.version }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Chart pushed to \`oci://ghcr.io/xberg-io/charts/xberg:${{ steps.meta.outputs.version }}\`" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Dry-run summary
         if: ${{ steps.meta.outputs.dry_run == 'true' }}
         run: |
           echo "### Dry Run" >> "$GITHUB_STEP_SUMMARY"
-          echo "Would have pushed \`kreuzberg-${{ steps.meta.outputs.version }}.tgz\` to \`oci://ghcr.io/xberg-io/charts\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Would have pushed \`xberg-${{ steps.meta.outputs.version }}.tgz\` to \`oci://ghcr.io/xberg-io/charts\`" >> "$GITHUB_STEP_SUMMARY"

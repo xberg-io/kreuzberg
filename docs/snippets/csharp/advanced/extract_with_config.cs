@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -71,7 +71,7 @@ class Program
                 }
             };
 
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "document.pdf",
                 config
             );
@@ -90,7 +90,7 @@ class Program
                 Console.WriteLine($"Created {result.Chunks.Count} chunks");
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction error: {ex.Message}");
         }

@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class LoggingPostProcessor implements PostProcessor {
     public function name(): string {
@@ -47,7 +47,7 @@ class LoggingPostProcessor implements PostProcessor {
 
 // Register the logging post-processor
 $processor = new LoggingPostProcessor();
-Kreuzberg::registerPostProcessor($processor);
+Xberg::registerPostProcessor($processor);
 
 error_log("Logging post-processor registered");
 ```

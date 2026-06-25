@@ -1,11 +1,11 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
     val config = ExtractionConfig.builder().build()
-    val result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("document.pdf"), null, config)
 
     val metadata = result.metadata()
     metadata.title()?.let { println("Title: $it") }
@@ -19,7 +19,7 @@ fun main() {
     }
 
     // Access HTML metadata
-    val htmlResult = Kreuzberg.extractFileSync(Paths.get("page.html"), null, config)
+    val htmlResult = Xberg.extractFileSync(Paths.get("page.html"), null, config)
     htmlResult.metadata().format()?.html()?.let { html ->
         html.title()?.let { println("Title: $it") }
         html.description()?.let { println("Description: $it") }

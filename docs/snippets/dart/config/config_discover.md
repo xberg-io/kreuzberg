@@ -1,9 +1,9 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // Dart bindings do not expose config-file discovery. Build a default
-  // ExtractionConfig in code and pass it explicitly to KreuzbergBridge.extractFile.
+  // ExtractionConfig in code and pass it explicitly to XbergBridge.extractFile.
   final config = ExtractionConfig(
     useCache: true,
     enableQualityProcessing: true,
@@ -16,7 +16,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('document.pdf', null, config);
+  final result = await XbergBridge.extractFile('document.pdf', null, config);
   print(result.content);
 }
 ```

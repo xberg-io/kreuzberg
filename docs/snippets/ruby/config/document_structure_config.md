@@ -1,9 +1,9 @@
 ```ruby title="Document Structure Config (Ruby)"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(include_document_structure: true)
+config = Xberg::ExtractionConfig.new(include_document_structure: true)
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 
 if result.document
   result.document['nodes'].each do |node|

@@ -114,12 +114,12 @@ async fn run_form_fields(args: &Args) -> Result<()> {
 
         // Extract the document — form fields are on by default in PdfConfig
         let doc_path = fixture.resolve_document_path(fixture_dir);
-        let extraction_config = kreuzberg::ExtractionConfig {
-            pdf_options: Some(kreuzberg::PdfConfig::default()),
+        let extraction_config = xberg::ExtractionConfig {
+            pdf_options: Some(xberg::PdfConfig::default()),
             ..Default::default()
         };
 
-        let result = kreuzberg::extract_file(&doc_path, None, &extraction_config)
+        let result = xberg::extract_file(&doc_path, None, &extraction_config)
             .await
             .with_context(|| format!("extraction failed for {}", doc_path.display()))?;
 
@@ -185,7 +185,7 @@ async fn run_formula(args: &Args) -> Result<()> {
         let doc_path = fixture.resolve_document_path(fixture_dir);
         let extraction_config = build_layout_config();
 
-        let result = kreuzberg::extract_file(&doc_path, None, &extraction_config)
+        let result = xberg::extract_file(&doc_path, None, &extraction_config)
             .await
             .with_context(|| format!("extraction failed for {}", doc_path.display()))?;
 
@@ -267,9 +267,9 @@ async fn run_structured(args: &Args) -> Result<()> {
     let mut rows: Vec<FixtureRow> = Vec::new();
 
     for fixture in &fixtures {
-        let extraction_config = kreuzberg::ExtractionConfig::default();
+        let extraction_config = xberg::ExtractionConfig::default();
 
-        let result = match kreuzberg::extract_file(&fixture.document_path, None, &extraction_config).await {
+        let result = match xberg::extract_file(&fixture.document_path, None, &extraction_config).await {
             Ok(r) => r,
             Err(e) => {
                 eprintln!("  ERROR {}: {}", fixture.document_path.display(), e);
@@ -400,22 +400,22 @@ fn parse_formulas_array(value: &serde_json::Value, path: &Path) -> Result<Vec<St
 
 /// Build a layout-enabled `ExtractionConfig` for formula extraction.
 ///
-/// The harness depends on `kreuzberg` with `features = ["full"]`, which includes
+/// The harness depends on `xberg` with `features = ["full"]`, which includes
 /// `layout-detection`, so the layout config is always available.
 /// Config for formula extraction: GLM-OCR paired mode populates
 /// `ExtractionResult.formulas` only when layout detection runs over OCR'd pages,
 /// so force OCR through the `candle-glm-ocr` backend (mirrors the
 /// `CandleGlmOcrLayout` benchmark pipeline). Requires the harness to be built
 /// with `--features glm-ocr-bench`.
-fn build_layout_config() -> kreuzberg::ExtractionConfig {
-    kreuzberg::ExtractionConfig {
+fn build_layout_config() -> xberg::ExtractionConfig {
+    xberg::ExtractionConfig {
         force_ocr: true,
-        ocr: Some(kreuzberg::core::config::OcrConfig {
+        ocr: Some(xberg::core::config::OcrConfig {
             backend: "candle-glm-ocr".to_string(),
             language: vec!["en".to_string()],
             ..Default::default()
         }),
-        layout: Some(kreuzberg::LayoutDetectionConfig::default()),
+        layout: Some(xberg::LayoutDetectionConfig::default()),
         // GLM-OCR inference on CPU is slow; 10 minutes is sufficient for
         // multi-page formula documents without risking infinite hangs.
         extraction_timeout_secs: Some(600),

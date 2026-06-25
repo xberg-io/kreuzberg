@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xml/data_dashboard.svg",
 	"file_type": "svg",
 	"file_size": 3035,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "SVG bar chart dashboard with quarterly revenue figures",
 		"category": "technical"

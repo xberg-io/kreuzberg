@@ -2,7 +2,7 @@
 //!
 //! When a document scores below the diagnostic threshold, this module generates
 //! detailed diagnostics showing unmatched blocks, missing/extra tokens, cross-type
-//! matches, and noise issues. Results are written to `/tmp/kreuzberg_diagnose/`.
+//! matches, and noise issues. Results are written to `/tmp/xberg_diagnose/`.
 
 use crate::noise_detection::DiagnosticReport;
 use serde::Serialize;
@@ -146,7 +146,7 @@ pub fn diagnose_document(
     }
 }
 
-/// Write diagnostic files to `/tmp/kreuzberg_diagnose/{doc_name}/`.
+/// Write diagnostic files to `/tmp/xberg_diagnose/{doc_name}/`.
 ///
 /// Creates the directory and writes:
 /// - `gt.md` — ground truth markdown (if available)
@@ -157,7 +157,7 @@ pub fn write_diagnostic_files(
     gt_markdown: Option<&str>,
     extracted_content: &str,
 ) -> std::io::Result<()> {
-    let dir = std::path::PathBuf::from("/tmp/kreuzberg_diagnose").join(format!("{}_{}", diag.doc_name, diag.file_type));
+    let dir = std::path::PathBuf::from("/tmp/xberg_diagnose").join(format!("{}_{}", diag.doc_name, diag.file_type));
     std::fs::create_dir_all(&dir)?;
 
     if let Some(md) = gt_markdown {
@@ -217,7 +217,7 @@ mod tests {
         let result = write_diagnostic_files(&diag, Some("# GT"), "extracted text");
         assert!(result.is_ok());
 
-        let dir = std::path::PathBuf::from("/tmp/kreuzberg_diagnose/write_test_pdf");
+        let dir = std::path::PathBuf::from("/tmp/xberg_diagnose/write_test_pdf");
         assert!(dir.join("gt.md").exists());
         assert!(dir.join("extracted.md").exists());
         assert!(dir.join("diagnostic.json").exists());

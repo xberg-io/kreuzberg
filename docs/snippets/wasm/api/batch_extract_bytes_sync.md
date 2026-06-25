@@ -1,6 +1,6 @@
 ```typescript title="WASM"
 // WASM has no batch helper; await extractBytes for each input (in parallel via Promise.all).
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

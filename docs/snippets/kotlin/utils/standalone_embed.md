@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.util.Optional
 
 fun main() {
@@ -8,8 +8,8 @@ fun main() {
         .withNormalize(true)
         .build()
 
-    val texts = listOf("Hello, world!", "Kreuzberg is fast")
-    val embeddings = Kreuzberg.embedTexts(texts, config)
+    val texts = listOf("Hello, world!", "Xberg is fast")
+    val embeddings = Xberg.embedTexts(texts, config)
 
     println("Texts embedded: ${embeddings.size}")
     println("Dimensions: ${embeddings[0].size}")

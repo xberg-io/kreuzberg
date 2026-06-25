@@ -3,11 +3,11 @@ set -euo pipefail
 
 tarball="${1:?package tarball (file or directory) required}"
 
-if [[ -n "${KREUZBERG_PDFIUM_PREBUILT:-}" ]]; then
+if [[ -n "${XBERG_PDFIUM_PREBUILT:-}" ]]; then
   case "${RUNNER_OS:-unknown}" in
-  Linux) export LD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${LD_LIBRARY_PATH:-}" ;;
-  macOS) export DYLD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${DYLD_LIBRARY_PATH:-}" ;;
-  Windows) export PATH="$KREUZBERG_PDFIUM_PREBUILT/bin;${PATH:-}" ;;
+  Linux) export LD_LIBRARY_PATH="$XBERG_PDFIUM_PREBUILT/lib:${LD_LIBRARY_PATH:-}" ;;
+  macOS) export DYLD_LIBRARY_PATH="$XBERG_PDFIUM_PREBUILT/lib:${DYLD_LIBRARY_PATH:-}" ;;
+  Windows) export PATH="$XBERG_PDFIUM_PREBUILT/bin;${PATH:-}" ;;
   esac
 fi
 
@@ -27,20 +27,20 @@ echo "Using tarball: $tarball"
 tmp="$(mktemp -d)"
 cp -R e2e/smoke/node/. "$tmp"/
 pushd "$tmp" >/dev/null
-cp "$tarball" ./kreuzberg-node.tgz
-cp -R "${GITHUB_WORKSPACE}/crates/kreuzberg-node" ./kreuzberg-node-pkg
+cp "$tarball" ./xberg-node.tgz
+cp -R "${GITHUB_WORKSPACE}/crates/xberg-node" ./xberg-node-pkg
 
 node -e "
   const fs = require('fs');
-  const pkg = JSON.parse(fs.readFileSync('kreuzberg-node-pkg/package.json', 'utf8'));
-  fs.writeFileSync('kreuzberg-node-pkg/package.json', JSON.stringify(pkg, null, 2) + '\n');
+  const pkg = JSON.parse(fs.readFileSync('xberg-node-pkg/package.json', 'utf8'));
+  fs.writeFileSync('xberg-node-pkg/package.json', JSON.stringify(pkg, null, 2) + '\n');
   const smokePkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   smokePkg.dependencies ||= {};
-  smokePkg.dependencies['@kreuzberg/node'] = 'file:./kreuzberg-node-pkg';
+  smokePkg.dependencies['@xberg/node'] = 'file:./xberg-node-pkg';
   fs.writeFileSync('package.json', JSON.stringify(smokePkg, null, 2) + '\n');
 "
 
-pushd kreuzberg-node-pkg >/dev/null
+pushd xberg-node-pkg >/dev/null
 pnpm install --no-frozen-lockfile
 pnpm build:ts
 popd >/dev/null

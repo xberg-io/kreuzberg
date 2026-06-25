@@ -1,12 +1,12 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   use_cache: false,
   enable_quality_processing: true
 )
 
-result = Kreuzberg.extract_file_async('document.pdf', config: config)
+result = Xberg.extract_file_async('document.pdf', config: config)
 
 puts "Async extraction complete"
 puts "Extracted #{result.content.length} characters"

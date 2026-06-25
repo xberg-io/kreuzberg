@@ -1,7 +1,7 @@
 ```rust title="Rust"
 use async_trait::async_trait;
-use kreuzberg::plugins::{Plugin, RerankerBackend, register_reranker_backend};
-use kreuzberg::{rerank, KreuzbergError, RerankerConfig, RerankerModelType, Result};
+use xberg::plugins::{Plugin, RerankerBackend, register_reranker_backend};
+use xberg::{rerank, XbergError, RerankerConfig, RerankerModelType, Result};
 use std::sync::Arc;
 
 struct MyReranker;
@@ -28,5 +28,5 @@ let config = RerankerConfig {
     ..Default::default()
 };
 let _ = rerank("query".to_string(), vec!["doc".to_string()], &config)?;
-# Ok::<(), KreuzbergError>(())
+# Ok::<(), XbergError>(())
 ```

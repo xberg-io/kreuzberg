@@ -1,5 +1,5 @@
 ```r
-library(kreuzberg)
+library(xberg)
 
 # Batch extract from multiple files
 files <- c("report.pdf", "slides.pptx", "data.xlsx")

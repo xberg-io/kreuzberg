@@ -4,7 +4,7 @@ priority: high
 
 # Feature Flag Policy
 
-All features in `crates/kreuzberg/Cargo.toml`.
+All features in `crates/xberg/Cargo.toml`.
 
 ## ORT-Incompatible Targets (WASM, Android x86_64 emulator)
 
@@ -43,9 +43,9 @@ The `no-ort-target` aggregate is the shared no-ORT base used by both `wasm-targe
 
 ## Platform-Conditional
 
-- `kreuzberg-paddle-ocr`, `hf-hub`, `pprof` — excluded on `wasm32`
+- `xberg-paddle-ocr`, `hf-hub`, `pprof` — excluded on `wasm32`
 - `ureq`: `rustls` on non-Windows; `native-tls` on Windows
-- `kreuzberg-ffi` and `kreuzberg-dart` cargo dependencies are target-conditional: `cfg(all(target_os = "android", target_arch = "x86_64"))` selects `android-target`; all other targets (including arm64 Android phones) get the full ORT-enabled feature set.
+- `xberg-ffi` and `xberg-dart` cargo dependencies are target-conditional: `cfg(all(target_os = "android", target_arch = "x86_64"))` selects `android-target`; all other targets (including arm64 Android phones) get the full ORT-enabled feature set.
 
 ## Aggregate Sets
 
@@ -61,5 +61,5 @@ The `no-ort-target` aggregate is the shared no-ORT base used by both `wasm-targe
 
 - `release` — LTO thin, codegen-units=1, strip
 - `profiling` — inherits release, retains debug info
-- `kreuzberg-wasm` override: `opt-level="z"` (size-optimized)
+- `xberg-wasm` override: `opt-level="z"` (size-optimized)
 - `sevenz-rust2`, `zip` override: `opt-level=2` (prevents SIGBUS on macOS ARM64)

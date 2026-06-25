@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 require 'logger'
 
 logger = Logger.new($stdout)
@@ -22,8 +22,8 @@ end
 processor = LoggingPostProcessor.new
 validator = LoggingValidator.new
 
-Kreuzberg.register_post_processor('logging-proc', processor)
-Kreuzberg.register_validator('logging-val', validator)
+Xberg.register_post_processor('logging-proc', processor)
+Xberg.register_validator('logging-val', validator)
 
 logger.info('Plugins registered')
 ```

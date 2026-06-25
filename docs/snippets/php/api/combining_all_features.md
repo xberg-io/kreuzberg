@@ -2,13 +2,13 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\OcrConfig;
-use Kreuzberg\ChunkingConfig;
-use Kreuzberg\ChunkSizing;
-use Kreuzberg\ImageExtractionConfig;
-use Kreuzberg\OutputFormat;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ChunkingConfig;
+use Xberg\ChunkSizing;
+use Xberg\ImageExtractionConfig;
+use Xberg\OutputFormat;
 
 // Build config with OCR, chunking, and image extraction
 $config = new ExtractionConfig(
@@ -60,7 +60,7 @@ $imageConfig = new ImageExtractionConfig(
 );
 $config->setImages($imageConfig);
 
-$result = Kreuzberg::extractFileSync('report.pdf', null, $config);
+$result = Xberg::extractFileSync('report.pdf', null, $config);
 
 echo "Content (" . strlen($result->getContent()) . " chars):\n";
 echo substr($result->getContent(), 0, 200) . "\n\n";

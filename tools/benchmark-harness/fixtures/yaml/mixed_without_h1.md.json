@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/yaml/mixed_without_h1.md.yaml",
 	"file_type": "yaml",
 	"file_size": 2329,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

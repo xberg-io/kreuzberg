@@ -1,5 +1,5 @@
 ```csharp title="detect_language.cs"
-using Kreuzberg;
+using Xberg;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +13,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+var result = XbergLib.ExtractFileSync("document.pdf", config);
 
 Console.WriteLine("Detected Language:");
 foreach (var lang in result.DetectedLanguages)
@@ -31,7 +31,7 @@ var multiLangConfig = new ExtractionConfig
     }
 };
 
-var multiResult = KreuzbergLib.ExtractFileSync("multilingual_document.pdf", multiLangConfig);
+var multiResult = XbergLib.ExtractFileSync("multilingual_document.pdf", multiLangConfig);
 
 Console.WriteLine("Detected Languages:");
 foreach (var lang in multiResult.DetectedLanguages)

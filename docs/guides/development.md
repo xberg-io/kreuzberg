@@ -1,12 +1,12 @@
 # Development Workflow
 
-Everything you need to build, test, and debug Kreuzberg locally. This guide assumes you've already followed the [Contributing Guide](../contributing.md) to fork and clone the repository.
+Everything you need to build, test, and debug Xberg locally. This guide assumes you've already followed the [Contributing Guide](../contributing.md) to fork and clone the repository.
 
 ---
 
 ## The Task Runner
 
-Kreuzberg uses [Task](https://taskfile.dev/) for all build and test workflows. One command to bootstrap everything:
+Xberg uses [Task](https://taskfile.dev/) for all build and test workflows. One command to bootstrap everything:
 
 ```bash title="Terminal"
 task setup
@@ -48,14 +48,14 @@ task check                # Lint + format check across the whole repo
 
 ### Rust
 
-The core lives in `crates/kreuzberg/`. Most changes start here.
+The core lives in `crates/xberg/`. Most changes start here.
 
 ```bash title="Terminal"
 task rust:test
 
-cargo test -p kreuzberg test_pdf_extraction -- --nocapture
+cargo test -p xberg test_pdf_extraction -- --nocapture
 
-RUST_LOG=debug cargo test -p kreuzberg test_name -- --nocapture
+RUST_LOG=debug cargo test -p xberg test_name -- --nocapture
 ```
 
 ### Python
@@ -106,7 +106,7 @@ task wasm:build && task wasm:test
 
 ### Testing the live browser demo
 
-The demo at `docs/demo.html` loads `@kreuzberg/wasm` from a CDN. To test local changes against it, use:
+The demo at `docs/demo.html` loads `@xberg/wasm` from a CDN. To test local changes against it, use:
 
 ```bash title="Terminal"
 task demo:dev
@@ -173,8 +173,8 @@ Measure extraction performance with the benchmark harness in `tools/benchmark-ha
 ### Quick Start
 
 ```bash title="Terminal"
-task benchmark:run FRAMEWORK=kreuzberg MODE=single-file
-task benchmark:run FRAMEWORK=kreuzberg MODE=batch
+task benchmark:run FRAMEWORK=xberg MODE=single-file
+task benchmark:run FRAMEWORK=xberg MODE=batch
 ```
 
 ### Common Modes
@@ -189,7 +189,7 @@ task benchmark:run FRAMEWORK=kreuzberg MODE=batch
 Generate flamegraphs to see where time is spent:
 
 ```bash title="Terminal"
-task benchmark:profile FRAMEWORK=kreuzberg MODE=single-file
+task benchmark:profile FRAMEWORK=xberg MODE=single-file
 ```
 
 Results appear in the `flamegraphs/` directory as interactive SVGs.
@@ -260,8 +260,8 @@ Inline `code` and command-style monospace in light mode use the text token **`#2
 ### Rust Panics
 
 ```bash title="Terminal"
-RUST_BACKTRACE=1 cargo test -p kreuzberg test_name
-RUST_BACKTRACE=full cargo test -p kreuzberg test_name
+RUST_BACKTRACE=1 cargo test -p xberg test_name
+RUST_BACKTRACE=full cargo test -p xberg test_name
 ```
 
 ### Python FFI Problems
@@ -269,7 +269,7 @@ RUST_BACKTRACE=full cargo test -p kreuzberg test_name
 When something goes wrong in the Rust core during a Python call, the error introspection API gives you the details:
 
 ```python title="debug_ffi.py"
-from kreuzberg import get_last_error_code, get_error_details, get_last_panic_context
+from xberg import get_last_error_code, get_error_details, get_last_panic_context
 
 details = get_error_details()
 print(f"Error: {details['message']}")
@@ -330,7 +330,7 @@ task test:all:ci        # Everything
 
 ## Performance
 
-Kreuzberg's core is written in Rust, which enables zero-copy memory handling, SIMD acceleration, and true multi-core parallelism — all at compile time with no garbage collection.
+Xberg's core is written in Rust, which enables zero-copy memory handling, SIMD acceleration, and true multi-core parallelism — all at compile time with no garbage collection.
 
 ### Why Rust Matters
 

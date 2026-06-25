@@ -20,7 +20,7 @@ type MCPParams struct {
 }
 
 func main() {
-	cmd := exec.Command("kreuzberg", "mcp")
+	cmd := exec.Command("xberg", "mcp")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		log.Fatalf("create stdin pipe: %v", err)

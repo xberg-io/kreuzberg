@@ -15,7 +15,7 @@ type ExtractionResult struct {
 
 func extractWithConfig(filePath string, configPath string) (*ExtractionResult, error) {
 	cmd := exec.Command(
-		"kreuzberg",
+		"xberg",
 		"extract",
 		filePath,
 		"--config",
@@ -38,7 +38,7 @@ func extractWithConfig(filePath string, configPath string) (*ExtractionResult, e
 }
 
 func main() {
-	configFile := "kreuzberg.toml"
+	configFile := "xberg.toml"
 	document := "document.pdf"
 
 	fmt.Printf("Extracting %s with config %s\n", document, configFile)

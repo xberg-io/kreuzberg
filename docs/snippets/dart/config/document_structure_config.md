@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -14,7 +14,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('document.pdf', null, config);
+  final result = await XbergBridge.extractFile('document.pdf', null, config);
   final document = result.document;
   if (document != null) {
     print('Document nodes: ${document.nodes.length}');

@@ -1,12 +1,12 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 pdf_bytes = File.read('document.pdf')
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   enable_quality_processing: true
 )
 
-result = Kreuzberg.extract_bytes_async(
+result = Xberg.extract_bytes_async(
   pdf_bytes,
   'application/pdf',
   config: config

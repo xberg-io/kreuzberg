@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 let names = [
     "custom-json-extractor",
@@ -8,10 +8,10 @@ let names = [
     "min_length_validator",
 ]
 
-try Kreuzberg.unregisterDocumentExtractor(names[0])
-try Kreuzberg.unregisterPostProcessor(names[1])
-try Kreuzberg.unregisterOcrBackend(names[2])
-try Kreuzberg.unregisterValidator(names[3])
+try Xberg.unregisterDocumentExtractor(names[0])
+try Xberg.unregisterPostProcessor(names[1])
+try Xberg.unregisterOcrBackend(names[2])
+try Xberg.unregisterValidator(names[3])
 
 print("Plugins unregistered")
 ```

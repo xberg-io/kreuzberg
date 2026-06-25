@@ -1,11 +1,11 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Files
 import java.nio.file.Paths
 
 fun extractText(bytes: ByteArray, mimeType: String): String {
     val config = ExtractionConfig.builder().build()
-    val result = Kreuzberg.extractBytesSync(bytes, mimeType, config)
+    val result = Xberg.extractBytesSync(bytes, mimeType, config)
     return result.content()
 }
 
@@ -19,7 +19,7 @@ fun main() {
     try {
         val text = extractText(bytes, "application/pdf")
         println("Extracted ${text.length} chars")
-    } catch (e: KreuzbergRsException) {
+    } catch (e: XbergRsException) {
         System.err.println("Extraction error (code=${e.code}): ${e.message}")
     } catch (e: Exception) {
         System.err.println("Unexpected error: ${e.message}")

@@ -1,5 +1,5 @@
 ```r
-library(kreuzberg)
+library(xberg)
 
 # Configure OCR with Tesseract
 config <- list(

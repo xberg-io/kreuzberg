@@ -1,8 +1,8 @@
 """PDF incremental-update fixture generator.
 
 Produces a PDF with multiple historical ``xref`` sections, each carrying a
-``trailer << /Prev <previous-xref-offset> >>``. The kreuzberg PDF revisions
-walker (``crates/kreuzberg/src/pdf/xref_revisions.rs``) discovers them by
+``trailer << /Prev <previous-xref-offset> >>``. The xberg PDF revisions
+walker (``crates/xberg/src/pdf/xref_revisions.rs``) discovers them by
 scanning backwards for ``%%EOF`` markers and following ``/Prev`` from the
 latest xref.
 

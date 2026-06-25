@@ -1,4 +1,4 @@
-```toml title="kreuzberg.toml"
+```toml title="xberg.toml"
 [redaction]
 categories = ["email", "phone", "ssn", "credit_card", "iban"]
 strategy = "mask"

@@ -1,11 +1,11 @@
 ```rust title="Rust"
-use kreuzberg::{
+use xberg::{
     extract_file, ExtractionConfig, LlmConfig, StructuredExtractionConfig,
 };
 use serde_json::json;
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         structured_extraction: Some(StructuredExtractionConfig {
             schema: json!({

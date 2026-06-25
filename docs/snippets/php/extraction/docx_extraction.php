@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use function Kreuzberg\extract_file;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use function Xberg\extract_file;
 
 $result = extract_file('document.docx');
 
@@ -36,8 +36,8 @@ $config = new ExtractionConfig(
     preserveFormatting: true
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('report.docx');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('report.docx');
 
 foreach ($result->tables as $index => $table) {
     echo "Table " . ($index + 1) . ":\n";
@@ -63,15 +63,15 @@ foreach ($conversions as $name => $format) {
         preserveFormatting: $format !== null
     );
 
-    $kreuzberg = new Kreuzberg($config);
-    $result = $kreuzberg->extractFile('document.docx');
+    $xberg = new Xberg($config);
+    $result = $xberg->extractFile('document.docx');
 
     $outputFile = "output_$name.txt";
     file_put_contents($outputFile, $result->content);
     echo "Saved $name format to: $outputFile\n";
 }
 
-use function Kreuzberg\batch_extract_files;
+use function Xberg\batch_extract_files;
 
 $docxFiles = glob('*.docx');
 if (!empty($docxFiles)) {

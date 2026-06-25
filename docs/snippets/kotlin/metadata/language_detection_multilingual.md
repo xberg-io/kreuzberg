@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -14,7 +14,7 @@ fun main() {
         .withLanguageDetection(Optional.of(languageDetection))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("multilingual_document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("multilingual_document.pdf"), null, config)
 
     val detected = result.detectedLanguages() ?: emptyList()
     println("Detected languages: $detected")

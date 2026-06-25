@@ -5,7 +5,7 @@ import Foundation
 
 let process = Process()
 process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-process.arguments = ["kreuzberg", "mcp"]
+process.arguments = ["xberg", "mcp"]
 
 let stdin = Pipe()
 let stdout = Pipe()

@@ -1,9 +1,9 @@
 ```python title="Python"
-from kreuzberg import register_embedding_backend, EmbeddingConfig, embed_texts
+from xberg import register_embedding_backend, EmbeddingConfig, embed_texts
 from sentence_transformers import SentenceTransformer
 
 # Wrap an already-loaded embedder (e.g. sentence-transformers, llama-cpp-python,
-# or a tuned ONNX session) so kreuzberg can call back into it during chunking
+# or a tuned ONNX session) so xberg can call back into it during chunking
 # and standalone embed requests.
 class MyEmbedder:
     def __init__(self):

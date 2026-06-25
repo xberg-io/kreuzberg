@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const QualityScoreValidator = struct {
     threshold: f64,
@@ -28,7 +28,7 @@ const QualityScoreValidator = struct {
 
 pub fn main() !void {
     var instance = QualityScoreValidator{ .threshold = 0.5 };
-    var vtable = kreuzberg.make_validator_vtable(QualityScoreValidator, &instance);
+    var vtable = xberg.make_validator_vtable(QualityScoreValidator, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -44,6 +44,6 @@ pub fn main() !void {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    _ = kreuzberg.register_validator("quality-score-validator", vtable, &instance, &out_error);
+    _ = xberg.register_validator("quality-score-validator", vtable, &instance, &out_error);
 }
 ```

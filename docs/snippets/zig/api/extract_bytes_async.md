@@ -2,7 +2,7 @@
 
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 // Note: the Zig binding is sync-only. There is no `extract_bytes` async variant —
 // the FFI surface exposes blocking entry points that internally drive the global
@@ -16,7 +16,7 @@ pub fn main() !void {
     defer allocator.free(content);
 
     const config_json = "{}";
-    const result_json = try kreuzberg.extract_bytes_sync(content, "application/pdf", config_json);
+    const result_json = try xberg.extract_bytes_sync(content, "application/pdf", config_json);
     defer std.heap.c_allocator.free(result_json);
 
     const stdout = std.io.getStdOut().writer();

@@ -4,12 +4,12 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
-	result, err := kreuzberg.ExtractFileSync("multilingual.pdf", nil, kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	result, err := xberg.ExtractFileSync("multilingual.pdf", nil, xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:  "tesseract",
 			Language: "eng+deu+fra",
 		},

@@ -1,5 +1,5 @@
-import type { ExtractionResult } from "@kreuzberg/wasm";
-import { extractBytes, initWasm } from "@kreuzberg/wasm";
+import type { ExtractionResult } from "@xberg/wasm";
+import { extractBytes, initWasm } from "@xberg/wasm";
 
 class ExtractionCache {
   private cache = new Map<string, ExtractionResult>();

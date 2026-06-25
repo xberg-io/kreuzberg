@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const StatefulProcessor = struct {
     call_count: std.atomic.Value(usize) = std.atomic.Value(usize).init(0),
@@ -37,7 +37,7 @@ const StatefulProcessor = struct {
 
 pub fn main() !void {
     var instance = StatefulProcessor{};
-    var vtable = kreuzberg.make_post_processor_vtable(StatefulProcessor, &instance);
+    var vtable = xberg.make_post_processor_vtable(StatefulProcessor, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -62,6 +62,6 @@ pub fn main() !void {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    _ = kreuzberg.register_post_processor("stateful-processor", vtable, &instance, &out_error);
+    _ = xberg.register_post_processor("stateful-processor", vtable, &instance, &out_error);
 }
 ```

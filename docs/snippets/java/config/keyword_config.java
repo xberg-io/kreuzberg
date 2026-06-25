@@ -1,9 +1,9 @@
-import com.kreuzberg.Kreuzberg;
-import com.kreuzberg.config.ExtractionConfig;
-import com.kreuzberg.config.KeywordConfig;
-import com.kreuzberg.keywords.YakeParams;
-import com.kreuzberg.keywords.RakeParams;
-import com.kreuzberg.result.ExtractionResult;
+import com.xberg.Xberg;
+import com.xberg.config.ExtractionConfig;
+import com.xberg.config.KeywordConfig;
+import com.xberg.keywords.YakeParams;
+import com.xberg.keywords.RakeParams;
+import com.xberg.result.ExtractionResult;
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
@@ -22,7 +22,7 @@ public class KeywordConfigExample {
                 .build())
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+        ExtractionResult result = Xberg.extractFile("document.pdf", config);
         System.out.println("Keywords: " + result.getKeywords());
     }
 
@@ -43,7 +43,7 @@ public class KeywordConfigExample {
                 .build())
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+        ExtractionResult result = Xberg.extractFile("document.pdf", config);
         System.out.println("Keywords: " + result.getKeywords());
     }
 
@@ -65,7 +65,7 @@ public class KeywordConfigExample {
                 .build())
             .build();
 
-        ExtractionResult result = Kreuzberg.extractFile("document.pdf", config);
+        ExtractionResult result = Xberg.extractFile("document.pdf", config);
         System.out.println("Keywords: " + result.getKeywords());
     }
 

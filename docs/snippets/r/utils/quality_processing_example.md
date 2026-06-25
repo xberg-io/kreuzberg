@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 config <- list(enable_quality_processing = TRUE)
 json <- extract_file_sync("scanned_document.pdf", "application/pdf", config)

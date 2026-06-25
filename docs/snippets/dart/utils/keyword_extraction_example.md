@@ -1,7 +1,7 @@
 ```dart title="Dart"
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart' show Int64List;
 
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -22,7 +22,7 @@ Future<void> main() async {
     maxArchiveDepth: 3,
   );
 
-  final result = await KreuzbergBridge.extractFile('research_paper.pdf', null, config);
+  final result = await XbergBridge.extractFile('research_paper.pdf', null, config);
   final keywords = result.extractedKeywords;
   if (keywords != null) {
     for (final keyword in keywords) {

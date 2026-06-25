@@ -1,4 +1,4 @@
-// Glibc-2.28 loadability smoke test for the @kreuzberg/node prebuilds.
+// Glibc-2.28 loadability smoke test for the @xberg/node prebuilds.
 //
 // Runs inside redhat/ubi8 (glibc 2.28) against an extracted node-bindings-*.tar.gz.
 // Loads the .node directly via process.dlopen so this script has no
@@ -80,7 +80,7 @@ check("listSupportedFormats returns non-empty array", () => {
 });
 
 check("blake3HashBytes returns non-empty hex string", () => {
-	const hash = native.blake3HashBytes(Array.from(Buffer.from("kreuzberg-glibc-228-smoke")));
+	const hash = native.blake3HashBytes(Array.from(Buffer.from("xberg-glibc-228-smoke")));
 	if (typeof hash !== "string" || hash.length === 0) {
 		throw new Error(`got ${typeof hash} length=${hash?.length}`);
 	}

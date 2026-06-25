@@ -1,7 +1,7 @@
-import kreuzberg.config.EmbeddingConfig;
-import kreuzberg.config.EmbeddingModelType;
-import kreuzberg.config.ChunkingConfig;
-import kreuzberg.config.ExtractionConfig;
+import xberg.config.EmbeddingConfig;
+import xberg.config.EmbeddingModelType;
+import xberg.config.ChunkingConfig;
+import xberg.config.ExtractionConfig;
 
 public class EmbeddingConfigExample {
     public static void main(String[] args) {
@@ -12,7 +12,7 @@ public class EmbeddingConfigExample {
             .batchSize(32)
             .normalize(true)
             .showDownloadProgress(true)
-            .cacheDir("~/.cache/kreuzberg/embeddings")
+            .cacheDir("~/.cache/xberg/embeddings")
             .build();
 
         // Available presets:
@@ -29,7 +29,7 @@ public class EmbeddingConfigExample {
             .batchSize(32)
             .normalize(true)
             .showDownloadProgress(true)
-            .cacheDir(null)  // Uses default: .kreuzberg/embeddings/
+            .cacheDir(null)  // Uses default: .xberg/embeddings/
             .build();
 
         // Popular ONNX-compatible models:
@@ -80,7 +80,7 @@ public class EmbeddingConfigExample {
 //   - false: Raw embedding values
 //
 // cacheDir: Where to store downloaded models
-//   - null: Uses .kreuzberg/embeddings/ in current directory
+//   - null: Uses .xberg/embeddings/ in current directory
 //   - String path: Custom directory for model storage
 //
 // showDownloadProgress: Display download progress bar

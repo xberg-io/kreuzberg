@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -9,7 +9,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", null, config);
+var result = XbergLib.ExtractFileSync("document.pdf", null, config);
 
 if (result.Pages != null)
 {

@@ -1,4 +1,4 @@
-"""Paired ``v1`` / ``v2`` fixtures for ``kreuzberg::diff::compare``.
+"""Paired ``v1`` / ``v2`` fixtures for ``xberg::diff::compare``.
 
 Two scenarios:
 
@@ -13,7 +13,7 @@ GT sidecars carry the same shape from ``gt_schema.diff_expectation``: the
 relative paths to both halves of the pair, the substring assertions for
 added/removed lines, and the expected ``CellChange`` entries (row/col/
 from/to). Integration tests load BOTH halves, run extraction
-independently, then call ``kreuzberg::diff::compare`` and assert against
+independently, then call ``xberg::diff::compare`` and assert against
 the GT.
 """
 

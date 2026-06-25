@@ -50,7 +50,7 @@ When the `svg` feature is active and `output_format` is set to `Svg`:
 === "Python"
 
     ```python
-    from kreuzberg import ExtractionConfig, ImageExtractionConfig, ImageOutputFormat
+    from xberg import ExtractionConfig, ImageExtractionConfig, ImageOutputFormat
 
     # Normalize all images to WebP at quality 80
     config = ExtractionConfig(
@@ -63,7 +63,7 @@ When the `svg` feature is active and `output_format` is set to `Svg`:
 === "TypeScript"
 
     ```typescript
-    import { ExtractionConfig, ImageOutputFormat } from "@kreuzberg/node";
+    import { ExtractionConfig, ImageOutputFormat } from "@xberg/node";
 
     const config: ExtractionConfig = {
       images: {
@@ -75,7 +75,7 @@ When the `svg` feature is active and `output_format` is set to `Svg`:
 === "Rust"
 
     ```rust
-    use kreuzberg::{ExtractionConfig, ImageExtractionConfig, ImageOutputFormat};
+    use xberg::{ExtractionConfig, ImageExtractionConfig, ImageOutputFormat};
 
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
@@ -93,7 +93,7 @@ Enable or disable SVG security filtering:
 === "Python"
 
     ```python
-    from kreuzberg import ExtractionConfig, ImageExtractionConfig, ImageOutputFormat, SvgOptions
+    from xberg import ExtractionConfig, ImageExtractionConfig, ImageOutputFormat, SvgOptions
 
     # Re-encode SVG with sanitization disabled
     config = ExtractionConfig(
@@ -107,7 +107,7 @@ Enable or disable SVG security filtering:
 === "Rust"
 
     ```rust
-    use kreuzberg::{ExtractionConfig, ImageExtractionConfig, ImageOutputFormat, SvgOptions};
+    use xberg::{ExtractionConfig, ImageExtractionConfig, ImageOutputFormat, SvgOptions};
 
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
@@ -223,7 +223,7 @@ for title in titles:
 
 If you're migrating from Unstructured.io, element-based output follows a similar structure with these key differences:
 
-| Aspect      | Unstructured.io                       | Kreuzberg                                   |
+| Aspect      | Unstructured.io                       | Xberg                                   |
 | ----------- | ------------------------------------- | ------------------------------------------- |
 | Type names  | PascalCase (`Title`, `NarrativeText`) | snake_case (`title`, `narrative_text`)      |
 | Element IDs | Not always present                    | Always present (deterministic hash)         |

@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig};
+use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
+use xberg::{Result, ExtractionResult, ExtractionConfig};
 use async_trait::async_trait;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -67,7 +67,7 @@ impl PostProcessor for PdfMetadataExtractor {
     }
 }
 
-use kreuzberg::plugins::registry::get_post_processor_registry;
+use xberg::plugins::registry::get_post_processor_registry;
 use std::sync::Arc;
 
 fn register() -> Result<()> {

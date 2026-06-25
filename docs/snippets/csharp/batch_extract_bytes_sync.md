@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var documents = new[]
 {
@@ -7,7 +7,7 @@ var documents = new[]
     new BytesWithMime(await File.ReadAllBytesAsync("doc2.docx"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
 };
 
-var results = KreuzbergLib.BatchExtractBytesSync(documents, new ExtractionConfig());
+var results = XbergLib.BatchExtractBytesSync(documents, new ExtractionConfig());
 
 Console.WriteLine($"Processed {results.Count} documents");
 ```

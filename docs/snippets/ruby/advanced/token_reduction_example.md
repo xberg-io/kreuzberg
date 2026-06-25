@@ -1,14 +1,14 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  token_reduction: Kreuzberg::TokenReductionConfig.new(
+config = Xberg::ExtractionConfig.new(
+  token_reduction: Xberg::TokenReductionConfig.new(
     mode: 'moderate',
     preserve_markdown: true
   )
 )
 
-result = Kreuzberg.extract_file_sync('verbose_document.pdf', config: config)
+result = Xberg.extract_file_sync('verbose_document.pdf', config: config)
 
 original_tokens = result.metadata&.dig('original_token_count') || 0
 reduced_tokens = result.metadata&.dig('token_count') || 0

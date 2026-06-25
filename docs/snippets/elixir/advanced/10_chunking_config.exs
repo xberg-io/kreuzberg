@@ -2,7 +2,7 @@
 # This example shows how to configure sophisticated document chunking strategies
 # with fine-grained control over chunk size, overlap, and boundary respect.
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Advanced chunking configuration with multiple parameters
 config = %ExtractionConfig{
@@ -17,7 +17,7 @@ config = %ExtractionConfig{
 }
 
 # Use the configuration for extraction
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Process the chunked results
 chunks = result.chunks || []
@@ -41,7 +41,7 @@ config_with_headings = %ExtractionConfig{
   }
 }
 
-{:ok, result_headings} = Kreuzberg.extract_file("document.md", nil, config_with_headings)
+{:ok, result_headings} = Xberg.extract_file("document.md", nil, config_with_headings)
 
 if result_headings.chunks do
   IO.puts("Generated #{length(result_headings.chunks)} chunks with prepended headings")

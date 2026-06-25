@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
     <meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless" />
-    <title>Kreuzberg | Live Demo</title>
+    <title>Xberg | Live Demo</title>
     <!-- SEO Meta Tags -->
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
     <meta
       name="description"
       content="Extract text, tables, and metadata from 96 file formats directly in your browser using WebAssembly. No uploading to a server required."
     />
-    <meta property="og:title" content="Kreuzberg | Live Demo" />
+    <meta property="og:title" content="Xberg | Live Demo" />
     <meta
       property="og:description"
       content="Secure, in-browser document intelligence and text extraction."
@@ -134,7 +134,7 @@
         <a href="/" aria-label="Go to home" class="justify-self-start">
           <img
             src="./assets/icons/mobile-logo.svg"
-            alt="Kreuzberg Logo"
+            alt="Xberg Logo"
             class="h-10 w-10 lg:h-[65px] lg:w-[65px]"
           />
         </a>
@@ -154,7 +154,7 @@
           </a>
 
           <a
-            href="https://github.com/xberg-io/kreuzberg/"
+            href="https://github.com/xberg-io/xberg/"
             rel="noopener noreferrer"
             target="_blank"
             aria-label="View on GitHub"
@@ -183,7 +183,7 @@
               Live Demo
             </h1>
             <p class="text-base md:text-2xl font-light text-grey-50 px-4 md:px-0">
-              Drop a file. Kreuzberg extracts text, tables, and metadata - no server, no upload, no
+              Drop a file. Xberg extracts text, tables, and metadata - no server, no upload, no
               API <br class="hidden md:block" />
               key. Everything runs in your browser via WASM.
             </p>
@@ -336,7 +336,7 @@
         href="https://xberg.io"
         class="font-normal text-sm text-green hover:underline transition-all"
       >
-        Join Kreuzberg Cloud Waitlist
+        Join Xberg Enterprise Waitlist
       </a>
     </footer>
 
@@ -349,11 +349,11 @@
       const btnBack = document.getElementById("btn-back");
 
       // ── Structured logger ──────────────────────────────────────────────────
-      // All demo output is prefixed with [kreuzberg/wasm] so you can filter
+      // All demo output is prefixed with [xberg/wasm] so you can filter
       // the DevTools console to that string and see only demo events.
       // Use console.time labels to measure phases; timing shows in DevTools.
       const log = (() => {
-        const NS = "[kreuzberg/wasm]";
+        const NS = "[xberg/wasm]";
         return {
           info:  (msg, data)  => console.info( `${NS} ${msg}`, ...(data !== undefined ? [data] : [])),
           warn:  (msg, data)  => console.warn( `${NS} ${msg}`, ...(data !== undefined ? [data] : [])),
@@ -375,7 +375,7 @@
       // Worker, so the Worker always loads from the same origin as the main thread.
       // In production the origin stays @latest; after version is confirmed we pin
       // to the exact version so the Worker and the version log agree.
-      const WASM_CDN_ORIGIN = "https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@latest";
+      const WASM_CDN_ORIGIN = "https://cdn.jsdelivr.net/npm/@xberg/wasm@latest";
       let resolvedVersion = null;
       let wasmCdnBase = null;
       try {
@@ -388,14 +388,14 @@
         t.end();
         resolvedVersion = pkg.version;
         if (!resolvedVersion || typeof resolvedVersion !== "string")
-          throw new Error("Invalid version in @kreuzberg/wasm package.json");
+          throw new Error("Invalid version in @xberg/wasm package.json");
         // Dev: keep localhost base as-is. Prod: pin to resolved version so the
         // Worker loads the exact same release that was verified above.
         // NOTE: string concatenation (not a template literal) is intentional —
         // the patch regex stops at '"' so the prod URL is never misreplaced.
         wasmCdnBase = WASM_CDN_ORIGIN.startsWith("http://localhost")
           ? WASM_CDN_ORIGIN
-          : "https://cdn.jsdelivr.net/npm/@kreuzberg/wasm@" + resolvedVersion;
+          : "https://cdn.jsdelivr.net/npm/@xberg/wasm@" + resolvedVersion;
         log.info("CDN version resolved", { version: resolvedVersion, base: wasmCdnBase });
       } catch (e) {
         log.error("version resolution failed", e);
@@ -550,7 +550,7 @@
                 self.postMessage({ type: 'progress', msg: 'Loading WASM module…' });
                 const mod = await import(cdnBase + '/dist/index.js');
                 self.postMessage({ type: 'progress', msg: 'Initializing…' });
-                await mod.initWasm(cdnBase + '/dist/pkg/kreuzberg_wasm_bg.wasm');
+                await mod.initWasm(cdnBase + '/dist/pkg/xberg_wasm_bg.wasm');
                 await mod.enableOcr();
                 self.postMessage({ type: 'progress', msg: 'Extracting content…' });
                 const blob = new Blob([new Uint8Array(fileBytes)]);

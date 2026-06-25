@@ -24,7 +24,7 @@ saved_rustflags="${RUSTFLAGS:-}"
 unset RUSTFLAGS
 
 pnpm install
-pnpm -C crates/kreuzberg-wasm run build
+pnpm -C crates/xberg-wasm run build
 
 if [ -n "$saved_rustflags" ]; then
   export RUSTFLAGS="$saved_rustflags"

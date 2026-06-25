@@ -24,7 +24,7 @@ import init, {
   unregisterValidator,
   listValidators,
   clearValidators,
-} from "kreuzberg-wasm";
+} from "xberg-wasm";
 
 await init();
 

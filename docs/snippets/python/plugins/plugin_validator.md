@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import (
+from xberg import (
     ExtractionResult,
     ValidationError,
     extract_file_sync,

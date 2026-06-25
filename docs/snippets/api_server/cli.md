@@ -1,11 +1,11 @@
 ```bash title="Bash"
 # Default: http://127.0.0.1:8000
-kreuzberg serve
+xberg serve
 
 # Custom host and port
-kreuzberg serve -H 0.0.0.0 -p 3000
+xberg serve -H 0.0.0.0 -p 3000
 
 # With configuration file
-kreuzberg serve --config kreuzberg.toml
+xberg serve --config xberg.toml
 
 ```

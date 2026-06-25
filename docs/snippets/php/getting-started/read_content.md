@@ -2,13 +2,13 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ChunkingConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
 
 $config = new ExtractionConfig();
 $config->setChunking(new ChunkingConfig());
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Total content length: " . strlen($result->getContent()) . "\n";
 

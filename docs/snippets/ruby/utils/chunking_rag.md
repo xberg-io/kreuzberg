@@ -1,12 +1,12 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_characters: 500,
     overlap: 50,
-    embedding: Kreuzberg::EmbeddingConfig.new(
-      model: Kreuzberg::EmbeddingModelType.new(
+    embedding: Xberg::EmbeddingConfig.new(
+      model: Xberg::EmbeddingModelType.new(
         type: 'preset',
         name: 'balanced'
       ),
@@ -15,7 +15,7 @@ config = Kreuzberg::ExtractionConfig.new(
   )
 )
 
-result = Kreuzberg.extract_file_sync('research_paper.pdf', config: config)
+result = Xberg.extract_file_sync('research_paper.pdf', config: config)
 
 result.chunks.each_with_index do |chunk, i|
   puts "Chunk #{i + 1}/#{result.chunks.length}"

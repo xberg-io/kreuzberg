@@ -7,13 +7,13 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../../crates/kreuzberg-ffi
-#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lkreuzberg_ffi
-#include "../../../crates/kreuzberg-ffi/kreuzberg.h"
+#cgo CFLAGS: -I${SRCDIR}/../../../crates/xberg-ffi
+#cgo LDFLAGS: -L${SRCDIR}/../../../target/release -L${SRCDIR}/../../../target/debug -lxberg_ffi
+#include "../../../crates/xberg-ffi/xberg.h"
 #include <stdlib.h>
 */
 import "C"
@@ -51,18 +51,18 @@ func minLengthValidator(resultJSON *C.char) *C.char {
 
 func main() {
 	// Register the validator with priority 100 (runs early)
-	if err := kreuzberg.RegisterValidator("min_length_validator", 100,
+	if err := xberg.RegisterValidator("min_length_validator", 100,
 		(C.ValidatorCallback)(C.minLengthValidator)); err != nil {
 		log.Fatalf("failed to register validator: %v", err)
 	}
 	defer func() {
-		if err := kreuzberg.UnregisterValidator("min_length_validator"); err != nil {
+		if err := xberg.UnregisterValidator("min_length_validator"); err != nil {
 			log.Printf("warning: failed to unregister validator: %v", err)
 		}
 	}()
 
 	// Extract and validate
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil)
+	result, err := xberg.ExtractFileSync("document.pdf", nil)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}

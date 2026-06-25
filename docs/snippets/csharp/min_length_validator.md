@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var validator = new MinLengthValidator(minLength: 100);
-KreuzbergLib.RegisterValidator(validator);
+XbergLib.RegisterValidator(validator);
 
 public class MinLengthValidator : IValidator
 {

@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/data_formats/sample.nbib",
 	"file_type": "nbib",
 	"file_size": 385,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "NBIB/PubMed citation format with article metadata",
 		"category": "citation",

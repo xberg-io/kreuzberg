@@ -13,7 +13,7 @@ async function extractWithCli(
   outputFormat: string = "text"
 ): Promise<string | ExtractionResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn("kreuzberg", ["extract", filePath, "--format", outputFormat]);
+    const child = spawn("xberg", ["extract", filePath, "--format", outputFormat]);
 
     let stdout = "";
     let stderr = "";

@@ -3,17 +3,17 @@ package main
 
 import (
     "fmt"
-    "kreuzberg"
+    "xberg"
 )
 
 func main() {
     // Configure element-based output
-    config := &kreuzberg.ExtractionConfig{
+    config := &xberg.ExtractionConfig{
         OutputFormat: "element_based",
     }
 
     // Extract document
-    result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+    result, err := xberg.ExtractFileSync("document.pdf", config)
     if err != nil {
         panic(err)
     }
@@ -42,7 +42,7 @@ func main() {
     }
 
     // Filter by element type
-    var titles []kreuzberg.Element
+    var titles []xberg.Element
     for _, element := range result.Elements {
         if element.ElementType == "title" {
             titles = append(titles, element)

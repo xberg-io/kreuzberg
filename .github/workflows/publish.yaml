@@ -1,6 +1,6 @@
 name: Publish Release
 
-# Action-first kreuzberg release pipeline.
+# Action-first xberg release pipeline.
 #
 # Orchestrates 16 alef language targets:
 #   crates · python · node · wasm · ruby · php · cli · homebrew · go · c-ffi
@@ -97,7 +97,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -109,8 +109,8 @@ jobs:
 
       - name: Configure git identity
         run: |
-          git config user.name "kreuzberg-dev-publisher[bot]"
-          git config user.email "291994444+kreuzberg-dev-publisher[bot]@users.noreply.github.com"
+          git config user.name "xberg-dev-publisher[bot]"
+          git config user.email "291994444+xberg-dev-publisher[bot]@users.noreply.github.com"
 
       - name: Retag for republish
         if: ${{ inputs.republish == true || github.event.client_payload.republish == true }}
@@ -165,7 +165,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: pypi
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-npm:
@@ -181,10 +181,10 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: npm
-          package: "@kreuzberg/node"
+          package: "@xberg/node"
           version: ${{ needs.prepare.outputs.version }}
           extra-packages: |
-            wasm_exists=@kreuzberg/wasm
+            wasm_exists=@xberg/wasm
 
   check-rubygems:
     name: Check RubyGems for existing version
@@ -198,7 +198,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: rubygems
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-maven:
@@ -214,10 +214,10 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: maven
-          package: "dev.kreuzberg:kreuzberg"
+          package: "dev.xberg:xberg"
           version: ${{ needs.prepare.outputs.version }}
           extra-packages: |
-            kotlin_exists=dev.kreuzberg:kreuzberg-android
+            kotlin_exists=dev.xberg:xberg-android
 
   check-nuget:
     name: Check NuGet for existing version
@@ -231,7 +231,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: nuget
-          package: Kreuzberg
+          package: Xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-packagist:
@@ -246,7 +246,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: packagist
-          package: kreuzberg/kreuzberg
+          package: xberg/xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-cratesio:
@@ -255,7 +255,7 @@ jobs:
     if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_crates == 'true' }}
     runs-on: ubuntu-latest
     outputs:
-      kreuzberg_exists: ${{ steps.check.outputs.exists }}
+      xberg_exists: ${{ steps.check.outputs.exists }}
       tesseract_exists: ${{ steps.check.outputs.tesseract_exists }}
       paddle_exists: ${{ steps.check.outputs.paddle_exists }}
       candle_exists: ${{ steps.check.outputs.candle_exists }}
@@ -267,14 +267,14 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: cratesio
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
           extra-packages: |
-            tesseract_exists=kreuzberg-tesseract
-            paddle_exists=kreuzberg-paddle-ocr
-            candle_exists=kreuzberg-candle-ocr
-            libheif_exists=kreuzberg-libheif
-            cli_exists=kreuzberg-cli
+            tesseract_exists=xberg-tesseract
+            paddle_exists=xberg-paddle-ocr
+            candle_exists=xberg-candle-ocr
+            libheif_exists=xberg-libheif
+            cli_exists=xberg-cli
 
       - id: derive
         # Inline: aggregate four check-registry outputs into a single boolean
@@ -303,7 +303,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: hex
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-pub:
@@ -318,7 +318,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: pub
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
 
   check-zig:
@@ -338,10 +338,10 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: github-release
-          package: kreuzberg-zig-v${{ needs.prepare.outputs.version }}.tar.gz
+          package: xberg-zig-v${{ needs.prepare.outputs.version }}.tar.gz
           version: ${{ needs.prepare.outputs.version }}
           repo: ${{ github.repository }}
-          assets: kreuzberg-zig-v${{ needs.prepare.outputs.version }}.tar.gz
+          assets: xberg-zig-v${{ needs.prepare.outputs.version }}.tar.gz
 
   check-homebrew:
     name: Check Homebrew tap for formula
@@ -355,7 +355,7 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: homebrew
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
           tap-repo: xberg-io/homebrew-tap
 
@@ -371,13 +371,13 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: github-release
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
-          repo: xberg-io/kreuzberg
+          repo: xberg-io/xberg
           tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzberg-cli-
+          asset-prefix: xberg-cli-
           assets: |
-            kreuzberg-cli-aarch64-apple-darwin.tar.gz,kreuzberg-cli-aarch64-unknown-linux-gnu.tar.gz,kreuzberg-cli-aarch64-unknown-linux-musl.tar.gz,kreuzberg-cli-x86_64-unknown-linux-gnu.tar.gz,kreuzberg-cli-x86_64-unknown-linux-musl.tar.gz,kreuzberg-cli-x86_64-pc-windows-msvc.zip
+            xberg-cli-aarch64-apple-darwin.tar.gz,xberg-cli-aarch64-unknown-linux-gnu.tar.gz,xberg-cli-aarch64-unknown-linux-musl.tar.gz,xberg-cli-x86_64-unknown-linux-gnu.tar.gz,xberg-cli-x86_64-unknown-linux-musl.tar.gz,xberg-cli-x86_64-pc-windows-msvc.zip
 
   check-go:
     name: Check GitHub Release for Go FFI assets
@@ -391,11 +391,11 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: github-release
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
-          repo: xberg-io/kreuzberg
+          repo: xberg-io/xberg
           tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzberg-go-
+          asset-prefix: xberg-go-
 
   check-c-ffi:
     name: Check GitHub Release for C FFI assets
@@ -409,11 +409,11 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: github-release
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
-          repo: xberg-io/kreuzberg
+          repo: xberg-io/xberg
           tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzberg-ffi-
+          asset-prefix: xberg-ffi-
 
   check-elixir-release:
     name: Check GitHub Release for Elixir NIF assets
@@ -427,11 +427,11 @@ jobs:
         uses: xberg-io/actions/check-registry@v1
         with:
           registry: github-release
-          package: kreuzberg
+          package: xberg
           version: ${{ needs.prepare.outputs.version }}
-          repo: xberg-io/kreuzberg
+          repo: xberg-io/xberg
           tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: libkreuzberg_nif-
+          asset-prefix: libxberg_nif-
 
   # ─── Build matrix jobs ────────────────────────────────────────────────
 
@@ -473,7 +473,7 @@ jobs:
           # PyO3 abi3-py310 → one wheel per platform covers Python 3.10+.
           cibw-build: "cp310-*"
           upload-artifact: "false"
-          # kreuzberg links libheif-sys, so opt in to the in-container libheif build.
+          # xberg links libheif-sys, so opt in to the in-container libheif build.
           build-libheif: "true"
           # AlmaLinux 8 base ships OpenSSL 1.1.1 (CentOS 7 base of manylinux2014
           # ships 1.0.2k which openssl-sys 0.9.115+ rejects).
@@ -541,8 +541,8 @@ jobs:
         with:
           python-version: "3.13"
 
-      # kreuzberg uses a split layout: pyproject.toml lives in packages/python/
-      # while the PyO3 crate is at crates/kreuzberg-py/. Passing manifest-path
+      # xberg uses a split layout: pyproject.toml lives in packages/python/
+      # while the PyO3 crate is at crates/xberg-py/. Passing manifest-path
       # routes the action to its single-tree branch which cd's into the Rust crate
       # dir and runs `maturin sdist`, then fails with "pyproject.toml not found".
       # Default package-dir=packages/python triggers the split-layout fallback
@@ -609,14 +609,14 @@ jobs:
       - name: Build NAPI binding
         uses: xberg-io/actions/build-node-napi@v1
         with:
-          crate-dir: crates/kreuzberg-node
+          crate-dir: crates/xberg-node
           build-command: pnpm exec napi build --release --target ${{ matrix.target }} --platform
           use-napi-cross: ${{ contains(matrix.target, '-linux-gnu') }}
 
       - uses: actions/upload-artifact@v7
         with:
           name: node-bindings-${{ matrix.target }}
-          path: crates/kreuzberg-node/*.node
+          path: crates/xberg-node/*.node
           retention-days: 14
 
   node-bindings-musl:
@@ -658,7 +658,7 @@ jobs:
     needs: [prepare, check-npm]
     if: ${{ needs.prepare.outputs.release_wasm == 'true' && (needs.check-npm.outputs.wasm_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
-    # WASM cold-build of kreuzberg-wasm compiles 100+ tree-sitter parsers for wasm32-unknown-unknown
+    # WASM cold-build of xberg-wasm compiles 100+ tree-sitter parsers for wasm32-unknown-unknown
     # via clang. A SINGLE large parser (ABL/Java) peaks at ~13-14 GB clang RSS, so the standard
     # ~16 GB GHA runner OOMs. CARGO_BUILD_JOBS=1 serializes compilation (cc-rs reads NUM_JOBS) so
     # only one ~13-14 GB clang runs at a time — j>=2 would run two in parallel (~26 GB) and OOM
@@ -695,7 +695,7 @@ jobs:
 
       - uses: xberg-io/actions/build-wasm-package@v1
         with:
-          crate-dir: crates/kreuzberg-wasm
+          crate-dir: crates/xberg-wasm
           pack-tarball: "true"
 
       - uses: actions/upload-artifact@v7
@@ -703,14 +703,14 @@ jobs:
           name: wasm-bundle
           # pkg/ holds the wasm-pack output that package.json's main/module/types
           # point at (pkg/nodejs/…, pkg/web/…); it MUST ship in the artifact or the
-          # published @kreuzberg/wasm tarball has missing entry points. package.json
+          # published @xberg/wasm tarball has missing entry points. package.json
           # is included so the publish job uses the build-stamped manifest.
           path: |
-            crates/kreuzberg-wasm/dist/**
-            crates/kreuzberg-wasm/dist-node/**
-            crates/kreuzberg-wasm/dist-web/**
-            crates/kreuzberg-wasm/pkg/**
-            crates/kreuzberg-wasm/package.json
+            crates/xberg-wasm/dist/**
+            crates/xberg-wasm/dist-node/**
+            crates/xberg-wasm/dist-web/**
+            crates/xberg-wasm/pkg/**
+            crates/xberg-wasm/package.json
           retention-days: 14
 
   ruby-gem:
@@ -734,7 +734,7 @@ jobs:
           - { os: macos-latest, label: macos-arm64 }
           # Ruby on Windows is MinGW (rb-sys → x86_64-pc-windows-gnu) but ort-sys
           # only ships msvc prebuilts; the ABIs are incompatible. Skip until ORT
-          # publishes mingw binaries or kreuzberg moves to ort-tract on Ruby/Win.
+          # publishes mingw binaries or xberg moves to ort-tract on Ruby/Win.
     steps:
       - uses: actions/checkout@v6
         with:
@@ -828,8 +828,8 @@ jobs:
 
       - uses: xberg-io/actions/build-php-extension@v1
         with:
-          crate-name: kreuzberg-php
-          lib-name: kreuzberg_php
+          crate-name: xberg-php
+          lib-name: xberg_php
           php-version: ${{ matrix.php }}
           php-ts: nts
 
@@ -891,11 +891,11 @@ jobs:
       - uses: xberg-io/actions/build-rust-cli@v1
         id: build
         with:
-          package-name: kreuzberg-cli
-          binary-name: kreuzberg
+          package-name: xberg-cli
+          binary-name: xberg
           target: ${{ matrix.target }}
-          # Ship the server surface in prebuilt binaries so `kreuzberg mcp` /
-          # `kreuzberg mcp --transport http` / `kreuzberg api` work from
+          # Ship the server surface in prebuilt binaries so `xberg mcp` /
+          # `xberg mcp --transport http` / `xberg api` work from
           # install.sh + Homebrew (the CLI `default` features omit these). `heic`
           # is deliberately excluded — it needs vcpkg libheif on the Windows
           # release target. Docker images already build with `--features all`.
@@ -909,13 +909,13 @@ jobs:
           TARGET: ${{ matrix.target }}
         shell: bash
         run: |
-          STAGE="kreuzberg-cli-${TARGET}"
+          STAGE="xberg-cli-${TARGET}"
           mkdir -p "$STAGE"
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            cp "$BINARY_PATH" "$STAGE/kreuzberg.exe"
+            cp "$BINARY_PATH" "$STAGE/xberg.exe"
             7z a "${STAGE}.zip" "$STAGE" >/dev/null
           else
-            cp "$BINARY_PATH" "$STAGE/kreuzberg"
+            cp "$BINARY_PATH" "$STAGE/xberg"
             tar -czf "${STAGE}.tar.gz" "$STAGE"
           fi
 
@@ -923,8 +923,8 @@ jobs:
         with:
           name: cli-${{ matrix.target }}
           path: |
-            kreuzberg-cli-${{ matrix.target }}.tar.gz
-            kreuzberg-cli-${{ matrix.target }}.zip
+            xberg-cli-${{ matrix.target }}.tar.gz
+            xberg-cli-${{ matrix.target }}.zip
           if-no-files-found: ignore
           retention-days: 14
 
@@ -960,18 +960,18 @@ jobs:
           TARGET: ${{ matrix.target }}
         shell: bash
         run: |
-          STAGE="kreuzberg-cli-${TARGET}"
+          STAGE="xberg-cli-${TARGET}"
           mkdir -p "$STAGE/lib"
-          cp build-output/kreuzberg "$STAGE/kreuzberg"
-          cp build-output/kreuzberg.bin "$STAGE/kreuzberg.bin"
+          cp build-output/xberg "$STAGE/xberg"
+          cp build-output/xberg.bin "$STAGE/xberg.bin"
           cp -a build-output/lib/. "$STAGE/lib/"
-          chmod +x "$STAGE/kreuzberg"
+          chmod +x "$STAGE/xberg"
           tar -czf "${STAGE}.tar.gz" "$STAGE"
 
       - uses: actions/upload-artifact@v7
         with:
           name: cli-${{ matrix.target }}
-          path: kreuzberg-cli-${{ matrix.target }}.tar.gz
+          path: xberg-cli-${{ matrix.target }}.tar.gz
           if-no-files-found: error
           retention-days: 14
 
@@ -1014,10 +1014,10 @@ jobs:
       - uses: xberg-io/actions/build-go-ffi@v1
         with:
           target: ${{ matrix.target }}
-          crate-name: kreuzberg-ffi
-          lib-name: kreuzberg_ffi
-          header-path: crates/kreuzberg-ffi/include/kreuzberg.h
-          archive-name: kreuzberg-go-${{ matrix.platform }}.tar.gz
+          crate-name: xberg-ffi
+          lib-name: xberg_ffi
+          header-path: crates/xberg-ffi/include/xberg.h
+          archive-name: xberg-go-${{ matrix.platform }}.tar.gz
           output-dir: dist/go-ffi
           glibc-version: "2.28"
       - uses: actions/upload-artifact@v7
@@ -1065,7 +1065,7 @@ jobs:
 
       - uses: xberg-io/actions/build-rust-ffi@v1
         with:
-          crate-name: kreuzberg-ffi
+          crate-name: xberg-ffi
           target: ${{ matrix.target }}
           glibc-version: ${{ contains(matrix.target, '-linux-gnu') && '2.28' || '' }}
 
@@ -1077,12 +1077,12 @@ jobs:
           PLATFORM: ${{ matrix.platform }}
         shell: bash
         run: |
-          STAGE="kreuzberg-ffi-${PLATFORM}"
+          STAGE="xberg-ffi-${PLATFORM}"
           mkdir -p "$STAGE/lib" "$STAGE/include"
           find "target/${TARGET}/release" -maxdepth 1 -type f \
-            \( -name 'libkreuzberg_ffi.*' -o -name 'kreuzberg_ffi.dll' \) \
+            \( -name 'libxberg_ffi.*' -o -name 'xberg_ffi.dll' \) \
             -exec cp {} "$STAGE/lib/" \;
-          cp crates/kreuzberg-ffi/include/kreuzberg.h "$STAGE/include/"
+          cp crates/xberg-ffi/include/xberg.h "$STAGE/include/"
           cp LICENSE "$STAGE/" 2>/dev/null || true
           mkdir -p dist/c-ffi
           tar -czf "dist/c-ffi/${STAGE}.tar.gz" "$STAGE"
@@ -1133,8 +1133,8 @@ jobs:
       - uses: xberg-io/actions/build-java-natives@v1
         with:
           target: ${{ matrix.target }}
-          crate-name: kreuzberg-ffi
-          lib-name: kreuzberg_ffi
+          crate-name: xberg-ffi
+          lib-name: xberg_ffi
           classifier: ${{ matrix.classifier }}
           glibc-version: ${{ contains(matrix.target, '-linux-gnu') && '2.28' || '' }}
 
@@ -1164,7 +1164,7 @@ jobs:
           fetch-depth: 0
 
           submodules: recursive
-      - name: Build kreuzberg-ffi via Alpine Docker
+      - name: Build xberg-ffi via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-ffi \
             --output type=local,dest=./build-output .
@@ -1174,7 +1174,7 @@ jobs:
           CLASSIFIER: ${{ matrix.classifier }}
         run: |
           mkdir -p "dist/java-natives/${CLASSIFIER}"
-          cp build-output/libkreuzberg_ffi.so "dist/java-natives/${CLASSIFIER}/libkreuzberg_ffi.so"
+          cp build-output/libxberg_ffi.so "dist/java-natives/${CLASSIFIER}/libxberg_ffi.so"
 
       - uses: actions/upload-artifact@v7
         with:
@@ -1206,11 +1206,11 @@ jobs:
 
       - uses: xberg-io/actions/build-android-natives@v1
         with:
-          crate-name: kreuzberg-ffi
+          crate-name: xberg-ffi
           abis: ${{ matrix.abi }}
           # Android uses the no-ORT feature set: ort-sys has no prebuilt for
           # x86_64-linux-android and the dep is android-target for all Android
-          # arches (see kreuzberg-ffi Cargo.toml). Mirrors ci-mobile.yaml.
+          # arches (see xberg-ffi Cargo.toml). Mirrors ci-mobile.yaml.
           features: android-target
           no-default-features: "true"
       - uses: actions/upload-artifact@v7
@@ -1264,8 +1264,8 @@ jobs:
       - uses: xberg-io/actions/build-csharp-natives@v1
         with:
           target: ${{ matrix.target }}
-          crate-name: kreuzberg-ffi
-          lib-name: kreuzberg_ffi
+          crate-name: xberg-ffi
+          lib-name: xberg_ffi
           rid: ${{ matrix.rid }}
           glibc-version: ${{ contains(matrix.target, '-linux-gnu') && '2.28' || '' }}
 
@@ -1295,7 +1295,7 @@ jobs:
           fetch-depth: 0
 
           submodules: recursive
-      - name: Build kreuzberg-ffi via Alpine Docker
+      - name: Build xberg-ffi via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-ffi \
             --output type=local,dest=./build-output .
@@ -1305,7 +1305,7 @@ jobs:
           RID: ${{ matrix.rid }}
         run: |
           mkdir -p "dist/csharp-natives/runtimes/${RID}/native"
-          cp build-output/libkreuzberg_ffi.so "dist/csharp-natives/runtimes/${RID}/native/libkreuzberg_ffi.so"
+          cp build-output/libxberg_ffi.so "dist/csharp-natives/runtimes/${RID}/native/libxberg_ffi.so"
 
       - uses: actions/upload-artifact@v7
         with:
@@ -1391,8 +1391,8 @@ jobs:
       - uses: xberg-io/actions/build-elixir-natives@v1
         with:
           target: ${{ matrix.target }}
-          nif-crate-name: kreuzberg_nif
-          nif-crate-path: packages/elixir/native/kreuzberg_nif
+          nif-crate-name: xberg_nif
+          nif-crate-path: packages/elixir/native/xberg_nif
           package-dir: packages/elixir
           nif-version: ${{ needs.prepare.outputs.version }}
           nif-api-version: ${{ matrix.nif }}
@@ -1434,7 +1434,7 @@ jobs:
           fetch-depth: 0
 
           submodules: recursive
-      - name: Build kreuzberg_nif via Alpine Docker
+      - name: Build xberg_nif via Alpine Docker
         run: |
           docker build -f docker/Dockerfile.musl-rustler \
             --output type=local,dest=./build-output .
@@ -1448,9 +1448,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist/elixir-natives staging
-          cp build-output/libkreuzberg_nif.so staging/libkreuzberg_nif.so
-          TARBALL="libkreuzberg_nif-v${NIF_VERSION}-nif-${NIF_API}-${TARGET}.so.tar.gz"
-          tar -czf "dist/elixir-natives/${TARBALL}" -C staging libkreuzberg_nif.so
+          cp build-output/libxberg_nif.so staging/libxberg_nif.so
+          TARBALL="libxberg_nif-v${NIF_VERSION}-nif-${NIF_API}-${TARGET}.so.tar.gz"
+          tar -czf "dist/elixir-natives/${TARBALL}" -C staging libxberg_nif.so
           ( cd dist/elixir-natives && sha256sum "${TARBALL}" >"${TARBALL}.sha256" )
 
       - uses: actions/upload-artifact@v7
@@ -1483,11 +1483,11 @@ jobs:
 
       - uses: xberg-io/actions/build-android-natives@v1
         with:
-          crate-name: kreuzberg-dart
+          crate-name: xberg-dart
           abis: ${{ matrix.abi }}
           # Android uses the no-ORT feature set: ort-sys has no prebuilt for
           # x86_64-linux-android and the dep is android-target for all Android
-          # arches (see kreuzberg-dart Cargo.toml). Mirrors ci-mobile.yaml.
+          # arches (see xberg-dart Cargo.toml). Mirrors ci-mobile.yaml.
           features: android-target
           no-default-features: "true"
       - uses: actions/upload-artifact@v7
@@ -1514,7 +1514,7 @@ jobs:
 
       - uses: xberg-io/actions/build-ios-xcframework@v1
         with:
-          crate-name: kreuzberg-dart
+          crate-name: xberg-dart
       - uses: actions/upload-artifact@v7
         with:
           name: dart-ios-xcframework
@@ -1535,25 +1535,25 @@ jobs:
               os: ubuntu-latest,
               target: x86_64-unknown-linux-gnu,
               blob: linux-x86_64,
-              lib: libkreuzberg_dart.so,
+              lib: libxberg_dart.so,
             }
           - {
               os: ubuntu-24.04-arm,
               target: aarch64-unknown-linux-gnu,
               blob: linux-aarch64,
-              lib: libkreuzberg_dart.so,
+              lib: libxberg_dart.so,
             }
           - {
               os: macos-latest,
               target: aarch64-apple-darwin,
               blob: macos-arm64,
-              lib: libkreuzberg_dart.dylib,
+              lib: libxberg_dart.dylib,
             }
           - {
               os: windows-latest,
               target: x86_64-pc-windows-msvc,
               blob: windows-x86_64,
-              lib: kreuzberg_dart.dll,
+              lib: xberg_dart.dll,
             }
     steps:
       - uses: actions/checkout@v6
@@ -1592,7 +1592,7 @@ jobs:
             TARGET_ARG="${TARGET}.2.28"
             echo "[publish] glibc floor: 2.28 (target: ${TARGET_ARG})"
           fi
-          ${BUILD_CMD} --locked -p kreuzberg-dart --release --target "${TARGET_ARG}"
+          ${BUILD_CMD} --locked -p xberg-dart --release --target "${TARGET_ARG}"
       - name: Stage native library
         shell: bash
         env:
@@ -1629,7 +1629,7 @@ jobs:
         with:
           # flutter_rust_bridge.yaml lives in packages/dart/rust/, where rust_root: .
           package-dir: packages/dart/rust
-          crate-name: kreuzberg-dart
+          crate-name: xberg-dart
 
       - uses: actions/upload-artifact@v7
         with:
@@ -1655,8 +1655,8 @@ jobs:
       - uses: xberg-io/actions/build-swift-artifactbundle@v1
         id: bundle
         with:
-          crate-name: kreuzberg-swift
-          artifact-name: KreuzbergSwift
+          crate-name: xberg-swift
+          artifact-name: XbergSwift
           include-macos-x86_64: "false"
           include-ios-x86_64: "false"
       - uses: actions/upload-artifact@v7
@@ -1692,7 +1692,7 @@ jobs:
       - uses: xberg-io/actions/build-swift-package@v1
         with:
           package-dir: packages/swift
-          crate-name: kreuzberg-swift
+          crate-name: xberg-swift
 
       - uses: actions/upload-artifact@v7
         with:
@@ -1711,7 +1711,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/checkout@v6
         with:
@@ -1741,8 +1741,8 @@ jobs:
 
       - name: Commit and push Package.swift
         run: |
-          git config user.name "kreuzberg-dev-publisher[bot]"
-          git config user.email "291994444+kreuzberg-dev-publisher[bot]@users.noreply.github.com"
+          git config user.name "xberg-dev-publisher[bot]"
+          git config user.email "291994444+xberg-dev-publisher[bot]@users.noreply.github.com"
           git add Package.swift
           git commit -m "chore(swift): update Package.swift with checksum for v${{ needs.prepare.outputs.version }}"
           git tag -f "${{ needs.prepare.outputs.tag }}"
@@ -1772,7 +1772,7 @@ jobs:
 
       - uses: xberg-io/actions/build-zig-package@v1
         with:
-          ffi-crate: kreuzberg-ffi
+          ffi-crate: xberg-ffi
           package-dir: packages/zig
 
   # ─── CLI proxy wheels (platform-specific, with bundled binary) ──────────
@@ -1817,10 +1817,10 @@ jobs:
           TARGET="${{ matrix.target }}"
 
           # Find the binary artifact
-          if [ -f "dist-cli-binaries/kreuzberg-cli-${TARGET}.tar.gz" ]; then
-            ARTIFACT="dist-cli-binaries/kreuzberg-cli-${TARGET}.tar.gz"
-          elif [ -f "dist-cli-binaries/kreuzberg-cli-${TARGET}.zip" ]; then
-            ARTIFACT="dist-cli-binaries/kreuzberg-cli-${TARGET}.zip"
+          if [ -f "dist-cli-binaries/xberg-cli-${TARGET}.tar.gz" ]; then
+            ARTIFACT="dist-cli-binaries/xberg-cli-${TARGET}.tar.gz"
+          elif [ -f "dist-cli-binaries/xberg-cli-${TARGET}.zip" ]; then
+            ARTIFACT="dist-cli-binaries/xberg-cli-${TARGET}.zip"
           else
             echo "Error: No binary found for ${TARGET}"
             ls -la dist-cli-binaries/ || true
@@ -1828,8 +1828,8 @@ jobs:
           fi
 
           # Extract to repo root so hatch_build.py can find it
-          cp "$ARTIFACT" "kreuzberg-cli-${TARGET}.$([ "${ARTIFACT##*.}" = "gz" ] && echo tar.gz || echo zip)"
-          echo "Binary prepared: kreuzberg-cli-${TARGET}.*"
+          cp "$ARTIFACT" "xberg-cli-${TARGET}.$([ "${ARTIFACT##*.}" = "gz" ] && echo tar.gz || echo zip)"
+          echo "Binary prepared: xberg-cli-${TARGET}.*"
 
       - name: Build wheel with bundled binary
         shell: bash
@@ -1837,7 +1837,7 @@ jobs:
         env:
           # The build host is always ubuntu/amd64; the hook cannot infer the triple
           # from platform.*, so pass the matrix target explicitly.
-          KREUZBERG_CLI_TARGET: ${{ matrix.target }}
+          XBERG_CLI_TARGET: ${{ matrix.target }}
         run: |
           pip install hatchling build
           python -m build --wheel
@@ -1862,7 +1862,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -1877,8 +1877,8 @@ jobs:
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
           assets: |
-            kreuzberg-cli-*.tar.gz
-            kreuzberg-cli-*.zip
+            xberg-cli-*.tar.gz
+            xberg-cli-*.zip
 
   upload-go-release:
     name: Upload Go FFI archives to GitHub Release
@@ -1891,7 +1891,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -1905,7 +1905,7 @@ jobs:
           working-directory: dist/go-ffi
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
-          assets: kreuzberg-go-*.tar.gz
+          assets: xberg-go-*.tar.gz
 
   upload-c-ffi-release:
     name: Upload C FFI archives to GitHub Release
@@ -1918,7 +1918,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -1932,7 +1932,7 @@ jobs:
           working-directory: dist/c-ffi
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
-          assets: kreuzberg-ffi-*.tar.gz
+          assets: xberg-ffi-*.tar.gz
 
   upload-elixir-release:
     name: Upload Elixir NIF archives to GitHub Release
@@ -1945,7 +1945,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -1959,7 +1959,7 @@ jobs:
           working-directory: dist/elixir
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
-          assets: libkreuzberg_nif-*.tar.gz
+          assets: libxberg_nif-*.tar.gz
 
   upload-php-pie-release:
     name: Upload PHP PIE archives to GitHub Release
@@ -1972,7 +1972,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -2003,7 +2003,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/download-artifact@v8
         with:
@@ -2037,14 +2037,14 @@ jobs:
           tag: ${{ needs.prepare.outputs.tag }}
           expected-assets: |
             # CLI
-            kreuzberg-cli-*.tar.gz
-            kreuzberg-cli-*.zip
+            xberg-cli-*.tar.gz
+            xberg-cli-*.zip
             # Go FFI
-            kreuzberg-go-*.tar.gz
+            xberg-go-*.tar.gz
             # C FFI
-            kreuzberg-ffi-*.tar.gz
+            xberg-ffi-*.tar.gz
             # Elixir NIF
-            libkreuzberg_nif-*.tar.gz
+            libxberg_nif-*.tar.gz
 
   # ─── Publish jobs ─────────────────────────────────────────────────────
 
@@ -2069,7 +2069,7 @@ jobs:
 
       - uses: xberg-io/actions/publish-crates@v1
         with:
-          crates: kreuzberg-libheif kreuzberg-tesseract kreuzberg-paddle-ocr kreuzberg-candle-ocr kreuzberg kreuzberg-cli
+          crates: xberg-libheif xberg-tesseract xberg-paddle-ocr xberg-candle-ocr xberg xberg-cli
           version: ${{ needs.prepare.outputs.version }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
 
@@ -2098,7 +2098,7 @@ jobs:
         with:
           language: python
           artifact-path: dist
-          package-name: kreuzberg
+          package-name: xberg
           # Per-archive patterns don't apply uniformly: wheels carry the
           # native .so/.dylib/.dll but sdist doesn't; sdist carries the
           # source tree the wheels strip. The basic `python` allowlist also
@@ -2148,7 +2148,7 @@ jobs:
         with:
           language: python
           artifact-path: dist
-          package-name: kreuzberg-cli
+          package-name: xberg-cli
           strict: "false"
 
       - uses: xberg-io/actions/publish-pypi@v1
@@ -2171,7 +2171,7 @@ jobs:
           path: dist
           # Keep each artifact in its own `dist/rubygems-<label>/` subdir (no
           # merge-multiple): the canonical linux-x86_64 builder also ships the
-          # fallback source gem `kreuzberg-<version>.gem`, whose basename would
+          # fallback source gem `xberg-<version>.gem`, whose basename would
           # collide across runners under merge-multiple. publish-rubygems globs
           # recursively and dedupes via its already-published guard, so the
           # per-platform gems and the single source gem all publish.
@@ -2193,7 +2193,7 @@ jobs:
         with:
           language: ruby
           artifact-path: dist
-          package-name: kreuzberg
+          package-name: xberg
 
       - uses: xberg-io/actions/publish-rubygems@v1
         with:
@@ -2217,7 +2217,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           pattern: node-bindings-*
-          path: crates/kreuzberg-node/artifacts
+          path: crates/xberg-node/artifacts
           merge-multiple: true
 
       - uses: xberg-io/actions/setup-node-workspace@v1
@@ -2228,7 +2228,7 @@ jobs:
       - name: Stage platform packages with napi
         # Inline: napi artifacts → per-platform npm/ subpackages. Equivalent
         # of `napi create-npm-dirs && napi artifacts`; trivially small.
-        working-directory: crates/kreuzberg-node
+        working-directory: crates/xberg-node
         run: |
           pnpm exec napi create-npm-dirs
           pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
@@ -2238,7 +2238,7 @@ jobs:
         # `publish-npm packages-dir` mode expects *.tgz inputs; napi only
         # stages the per-platform directories. Run `npm pack` in each so
         # the publish action has tarballs to upload (or dry-run).
-        working-directory: crates/kreuzberg-node
+        working-directory: crates/xberg-node
         shell: bash
         run: |
           for d in npm/*/; do
@@ -2250,10 +2250,10 @@ jobs:
         uses: xberg-io/actions/verify-package-contents@v1
         with:
           language: node-platform
-          artifact-path: crates/kreuzberg-node/npm
-          package-name: "@kreuzberg/node"
+          artifact-path: crates/xberg-node/npm
+          package-name: "@xberg/node"
           # NAPI scaffolds stub package.json dirs for every platform in
-          # crates/kreuzberg-node/package.json's `napi.triples.additional`,
+          # crates/xberg-node/package.json's `napi.triples.additional`,
           # not just the targets we build (e.g. darwin-x64, win32-arm64-msvc
           # are listed but not built — their npm/*.tgz contains no .node).
           # Use strict=false so verify reports stubs without failing the job.
@@ -2262,7 +2262,7 @@ jobs:
       - name: Publish platform sub-packages
         uses: xberg-io/actions/publish-npm@v1
         with:
-          packages-dir: crates/kreuzberg-node/npm
+          packages-dir: crates/xberg-node/npm
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           provenance: "true"
@@ -2272,13 +2272,13 @@ jobs:
       # Wait for the platform sub-packages to be resolvable on npm before
       # publishing the main package, whose optionalDependencies reference them.
       # Without this the main package can land before its platform deps index,
-      # leaving a window where `npm install @kreuzberg/node` fails.
+      # leaving a window where `npm install @xberg/node` fails.
       - name: Wait for npm indexing (node-linux-x64-gnu)
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
         uses: xberg-io/actions/wait-for-package@v1
         with:
           registry: npm
-          package: "@kreuzberg/node-linux-x64-gnu"
+          package: "@xberg/node-linux-x64-gnu"
           version: ${{ needs.prepare.outputs.version }}
           max-attempts: "60"
 
@@ -2287,14 +2287,14 @@ jobs:
         uses: xberg-io/actions/wait-for-package@v1
         with:
           registry: npm
-          package: "@kreuzberg/node-linux-arm64-gnu"
+          package: "@xberg/node-linux-arm64-gnu"
           version: ${{ needs.prepare.outputs.version }}
           max-attempts: "60"
 
-      - name: Publish main @kreuzberg/node package
+      - name: Publish main @xberg/node package
         uses: xberg-io/actions/publish-npm@v1
         with:
-          package-dir: crates/kreuzberg-node
+          package-dir: crates/xberg-node
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           provenance: "true"
@@ -2318,7 +2318,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: wasm-bundle
-          path: crates/kreuzberg-wasm
+          path: crates/xberg-wasm
 
       - uses: xberg-io/actions/setup-node-workspace@v1
         with:
@@ -2327,7 +2327,7 @@ jobs:
 
       - uses: xberg-io/actions/publish-npm@v1
         with:
-          package-dir: crates/kreuzberg-wasm
+          package-dir: crates/xberg-wasm
           npm-tag: ${{ needs.prepare.outputs.npm_tag }}
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           provenance: "true"
@@ -2342,10 +2342,10 @@ jobs:
     steps:
       - uses: xberg-io/actions/publish-packagist@v1
         with:
-          packagist-username: kreuzberg-dev
-          package-name: kreuzberg/kreuzberg
+          packagist-username: xberg-dev
+          package-name: xberg/xberg
           version: ${{ needs.prepare.outputs.version }}
-          repository-url: https://github.com/xberg-io/kreuzberg
+          repository-url: https://github.com/xberg-io/xberg
           dry-run: ${{ needs.prepare.outputs.dry_run }}
         env:
           PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
@@ -2373,7 +2373,7 @@ jobs:
           required-classifiers: >-
             linux-x86_64 linux-aarch64 macos-arm64 windows-x86_64
             linux-musl-x86_64 linux-musl-aarch64
-          lib-name: kreuzberg_ffi
+          lib-name: xberg_ffi
 
       - uses: actions/setup-java@v5
         with:
@@ -2422,7 +2422,7 @@ jobs:
           for abi in arm64-v8a x86_64; do
             dest="packages/kotlin-android/src/main/jniLibs/${abi}"
             mkdir -p "$dest"
-            src="kotlin-android-artifacts/${abi}/libkreuzberg_ffi.so"
+            src="kotlin-android-artifacts/${abi}/libxberg_ffi.so"
             if [[ -f "$src" ]]; then
               cp -v "$src" "$dest/"
             fi
@@ -2467,11 +2467,11 @@ jobs:
         # Inline: NuGet expects native libs in runtimes/<rid>/native/ adjacent
         # to the .csproj. Copy from artifact tree into project.
         run: |
-          mkdir -p packages/csharp/Kreuzberg/runtimes
+          mkdir -p packages/csharp/Xberg/runtimes
           for dir in csharp-natives/runtimes/*/; do
             rid="$(basename "$dir")"
-            mkdir -p "packages/csharp/Kreuzberg/runtimes/${rid}/native"
-            cp -v "${dir}native/"* "packages/csharp/Kreuzberg/runtimes/${rid}/native/"
+            mkdir -p "packages/csharp/Xberg/runtimes/${rid}/native"
+            cp -v "${dir}native/"* "packages/csharp/Xberg/runtimes/${rid}/native/"
           done
         shell: bash
 
@@ -2482,7 +2482,7 @@ jobs:
       - name: Pack NuGet package
         # Inline: dotnet pack with the version override; one-liner.
         run: |
-          dotnet pack packages/csharp/Kreuzberg/Kreuzberg.csproj \
+          dotnet pack packages/csharp/Xberg/Xberg.csproj \
             -c Release \
             -p:Version=${{ needs.prepare.outputs.version }} \
             -o dist/nuget
@@ -2514,7 +2514,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: xberg-io/actions/finalize-release@v1
         with:
@@ -2542,22 +2542,22 @@ jobs:
       - name: Generate NIF checksum file
         uses: xberg-io/actions/generate-elixir-checksums@v1
         with:
-          github-repo: xberg-io/kreuzberg
+          github-repo: xberg-io/xberg
           tag: ${{ needs.prepare.outputs.tag }}
           version: ${{ needs.prepare.outputs.version }}
-          lib-name: kreuzberg_nif
+          lib-name: xberg_nif
           # elixir-natives builds NIF API 2.16 AND 2.17; include both so the
           # checksum file covers every uploaded artifact.
           nif-versions: "2.16,2.17"
           targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-pc-windows-msvc
-          output-path: packages/elixir/checksum-Elixir.Kreuzberg.Native.exs
+          output-path: packages/elixir/checksum-Elixir.Xberg.Native.exs
 
       - name: Build Elixir Hex tarball with dependency rewrite
         id: build-hex
         uses: xberg-io/actions/build-elixir-hex@v1
         with:
           package-dir: packages/elixir
-          nif-crate-path: packages/elixir/native/kreuzberg_nif
+          nif-crate-path: packages/elixir/native/xberg_nif
           rewrite-native-deps: "true"
           dry-run: ${{ needs.prepare.outputs.dry_run }}
 
@@ -2633,7 +2633,7 @@ jobs:
           for abi in arm64-v8a x86_64; do
             dest="packages/dart/android/src/main/jniLibs/${abi}"
             mkdir -p "$dest"
-            src="dart-android-artifacts/${abi}/libkreuzberg_dart.so"
+            src="dart-android-artifacts/${abi}/libxberg_dart.so"
             [[ -f "$src" ]] && cp -v "$src" "$dest/"
           done
           # iOS XCFramework
@@ -2642,7 +2642,7 @@ jobs:
             [[ -d "$xcf" ]] && cp -r "$xcf" packages/dart/ios/Frameworks/
           done
           # Server blobs
-          for entry in "linux-x86_64:libkreuzberg_dart.so" "linux-aarch64:libkreuzberg_dart.so" "macos-arm64:libkreuzberg_dart.dylib" "windows-x86_64:kreuzberg_dart.dll"; do
+          for entry in "linux-x86_64:libxberg_dart.so" "linux-aarch64:libxberg_dart.so" "macos-arm64:libxberg_dart.dylib" "windows-x86_64:xberg_dart.dll"; do
             blob="${entry%%:*}"
             lib="${entry##*:}"
             dest="packages/dart/blobs/${blob}"
@@ -2666,7 +2666,7 @@ jobs:
     if: ${{ needs.prepare.outputs.release_dart == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
     # `gh workflow run` requires `actions: write` on whichever token it uses.
-    # The job below mints a kreuzberg-dev-publisher App token, but that path
+    # The job below mints a xberg-dev-publisher App token, but that path
     # 403'd on rc.10. Adding explicit job-level permissions covers the fallback
     # when GITHUB_TOKEN is used; the App also needs `actions: write` configured
     # on github.com/organizations/xberg-io/settings/apps.
@@ -2679,7 +2679,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - name: Dispatch publish-pubdev workflow
         env:
@@ -2703,7 +2703,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/checkout@v6
         with:
@@ -2725,8 +2725,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # kreuzberg c-ffi tarballs are named by platform label (no version):
-          # kreuzberg-ffi-<platform>.tar.gz, each containing <stage>/lib/* and
+          # xberg c-ffi tarballs are named by platform label (no version):
+          # xberg-ffi-<platform>.tar.gz, each containing <stage>/lib/* and
           # <stage>/include/*.h. Map each platform to the publish-zig RID layout.
           declare -A RID_FOR=(
             ["linux-x86_64"]="linux-x64"
@@ -2736,10 +2736,10 @@ jobs:
           )
           out="ffi-artifacts"
           mkdir -p "$out/include"
-          for art in dist/c-ffi-downloaded/*/kreuzberg-ffi-*.tar.gz; do
+          for art in dist/c-ffi-downloaded/*/xberg-ffi-*.tar.gz; do
             [ -f "$art" ] || continue
             platform="$(basename "$art" .tar.gz)"
-            platform="${platform#kreuzberg-ffi-}"
+            platform="${platform#xberg-ffi-}"
             rid="${RID_FOR[$platform]:-}"
             if [ -z "$rid" ]; then
               echo "::warning::Unknown C FFI platform '$platform' — skipping"
@@ -2760,19 +2760,19 @@ jobs:
         with:
           working-directory: packages/zig
           tag: ${{ needs.prepare.outputs.tag }}
-          # Override the auto-detected package-name (`.kreuzberg` from
+          # Override the auto-detected package-name (`.xberg` from
           # build.zig.zon) to match the alef-emitted test_app URL pattern
           # `{crate-name}-zig-v{version}.tar.gz`. Without this, the asset
-          # uploads as `kreuzberg-v{version}.tar.gz` while test_apps/zig
-          # fetches `kreuzberg-zig-v{version}.tar.gz` → 404 + consumer
+          # uploads as `xberg-v{version}.tar.gz` while test_apps/zig
+          # fetches `xberg-zig-v{version}.tar.gz` → 404 + consumer
           # build.zig.zon TODO hash.
-          package-name: kreuzberg-zig
+          package-name: xberg-zig
           # Bundle the per-target FFI libraries + header into the published
           # tarball so consumers can `zig fetch --save` and link without
           # downloading anything else.
           multi-platform-ffi-dir: ffi-artifacts
-          module-name: kreuzberg
-          ffi-lib-name: kreuzberg_ffi
+          module-name: xberg
+          ffi-lib-name: xberg_ffi
           update-release-notes: "true"
           update-existing: "true"
           dry-run: ${{ needs.prepare.outputs.dry_run }}
@@ -2797,14 +2797,14 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/create-github-app-token@v2
         id: tap-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
           repositories: homebrew-tap
 
       - name: Checkout source repo
@@ -2823,7 +2823,7 @@ jobs:
           persist-credentials: true
 
       - name: Update formula files
-        # Inline: bumps url/sha256/version in Formula/kreuzberg.rb. Equivalent
+        # Inline: bumps url/sha256/version in Formula/xberg.rb. Equivalent
         # of html-to-markdown's scripts/publish/update-homebrew-formula.sh.
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -2840,14 +2840,14 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.tap-token.outputs.token }}
         run: |
-          git config user.name "kreuzberg-dev-publisher[bot]"
-          git config user.email "291994444+kreuzberg-dev-publisher[bot]@users.noreply.github.com"
+          git config user.name "xberg-dev-publisher[bot]"
+          git config user.email "291994444+xberg-dev-publisher[bot]@users.noreply.github.com"
           if git diff --quiet Formula/; then
             echo "No formula changes; skipping commit."
             exit 0
           fi
-          git add Formula/kreuzberg.rb
-          git commit -m "kreuzberg ${{ needs.prepare.outputs.version }}"
+          git add Formula/xberg.rb
+          git commit -m "xberg ${{ needs.prepare.outputs.version }}"
           git push origin HEAD
         shell: bash
 
@@ -2872,7 +2872,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: actions/checkout@v5
         with:
@@ -2890,9 +2890,9 @@ jobs:
           version: ${{ needs.prepare.outputs.version }}
           tap: xberg-io/homebrew-tap
           formulas: |
-            kreuzberg
+            xberg
           out-dir: ${{ github.workspace }}/bottle-json
-          github-repo: xberg-io/kreuzberg
+          github-repo: xberg-io/xberg
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/upload-artifact@v7
@@ -2913,7 +2913,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
           repositories: homebrew-tap
 
       - uses: actions/checkout@v6
@@ -2942,8 +2942,8 @@ jobs:
           tap-dir: ${{ github.workspace }}/homebrew-tap
           json-dir: ${{ github.workspace }}/bottle-json
           formulas: |
-            kreuzberg
-          github-repo: xberg-io/kreuzberg
+            xberg
+          github-repo: xberg-io/xberg
 
       - name: Commit and push bottle DSL
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
@@ -2953,14 +2953,14 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.tap-token.outputs.token }}
         run: |
-          git config user.name "kreuzberg-dev-publisher[bot]"
-          git config user.email "291994444+kreuzberg-dev-publisher[bot]@users.noreply.github.com"
+          git config user.name "xberg-dev-publisher[bot]"
+          git config user.email "291994444+xberg-dev-publisher[bot]@users.noreply.github.com"
           if git diff --quiet Formula/; then
             echo "No bottle DSL changes; skipping commit."
             exit 0
           fi
-          git add Formula/kreuzberg.rb
-          git commit -m "kreuzberg ${{ needs.prepare.outputs.version }}: add bottle DSL"
+          git add Formula/xberg.rb
+          git commit -m "xberg ${{ needs.prepare.outputs.version }}: add bottle DSL"
           git push origin HEAD
         shell: bash
 
@@ -2999,7 +2999,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: xberg-io/actions/finalize-release@v1
         with:
@@ -3052,13 +3052,13 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: kreuzberg-dev
+          owner: xberg-dev
 
       - uses: xberg-io/actions/announce-release-discord@v1
         with:
           tag: ${{ needs.prepare.outputs.tag }}
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          project-name: kreuzberg
+          project-name: xberg
           token: ${{ steps.app-token.outputs.token }}
 
   cli-proxy:

@@ -1,14 +1,14 @@
 //! Framework adapter implementations
 
 pub mod external;
-pub mod kreuzberg;
+pub mod xberg;
 pub mod subprocess;
 
 pub use external::{
     create_docling_adapter, create_liteparse_adapter, create_markitdown_adapter, create_mineru_adapter,
     create_pymupdf4llm_adapter, create_tika_adapter, create_unstructured_adapter,
 };
-pub use kreuzberg::create_kreuzberg_adapter;
+pub use xberg::create_xberg_adapter;
 pub use subprocess::SubprocessAdapter;
 
 /// Returns the OCR flag string based on the provided boolean

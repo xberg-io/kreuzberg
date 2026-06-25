@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Build comprehensive configuration for all features
 config = %ExtractionConfig{
@@ -29,7 +29,7 @@ config = %ExtractionConfig{
 }
 
 # Extract file with full configuration
-case Kreuzberg.extract_file("document.pdf", nil, config) do
+case Xberg.extract_file("document.pdf", nil, config) do
   {:ok, result} ->
     IO.puts("=== Extraction Successful ===\n")
 

@@ -1,8 +1,8 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var extractor = new CustomTextExtractor();
-KreuzbergLib.RegisterDocumentExtractor(extractor);
+XbergLib.RegisterDocumentExtractor(extractor);
 
 public class CustomTextExtractor : IDocumentExtractor
 {

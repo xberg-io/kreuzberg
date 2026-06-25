@@ -1,7 +1,7 @@
 ```r title="R"
-# The kreuzberg R bindings ship no MCP client. Drive the kreuzberg CLI's
+# The xberg R bindings ship no MCP client. Drive the xberg CLI's
 # stdio MCP transport from R using a piped subprocess.
-mcp <- pipe("kreuzberg mcp", open = "w+")
+mcp <- pipe("xberg mcp", open = "w+")
 on.exit(close(mcp), add = TRUE)
 
 request <- list(

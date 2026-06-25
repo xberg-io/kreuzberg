@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Net.Http;
 using System.Text.Json;
 
@@ -45,7 +45,7 @@ class CloudOcrBackend : IOcrBackend
             }
             catch (HttpRequestException ex)
             {
-                throw new KreuzbergOcrException($"Cloud OCR service error: {ex.Message}");
+                throw new XbergOcrException($"Cloud OCR service error: {ex.Message}");
             }
         }).GetAwaiter().GetResult();
     }
@@ -61,7 +61,7 @@ class Program
     static void Main()
     {
         using var backend = new CloudOcrBackend("your-api-key");
-        KreuzbergLib.RegisterOcrBackend(backend);
+        XbergLib.RegisterOcrBackend(backend);
 
         try
         {
@@ -73,10 +73,10 @@ class Program
                 }
             };
 
-            var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+            var result = XbergLib.ExtractFileSync("document.pdf", config);
             Console.WriteLine($"OCR text: {result.Content}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

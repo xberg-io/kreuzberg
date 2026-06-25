@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, LanguageDetectionConfig};
+use xberg::{extract_file, ExtractionConfig, LanguageDetectionConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         language_detection: Some(LanguageDetectionConfig {
             enabled: true,

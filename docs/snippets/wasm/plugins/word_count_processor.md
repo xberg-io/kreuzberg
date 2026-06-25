@@ -3,7 +3,7 @@
 Register a post-processor that computes word count and other text statistics.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extractBytes } from "kreuzberg-wasm";
+import init, { registerPostProcessor, extractBytes } from "xberg-wasm";
 
 await init();
 

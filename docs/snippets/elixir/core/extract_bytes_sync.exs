@@ -3,7 +3,7 @@
 {:ok, file_content} = File.read("document.pdf")
 
 # Extract from bytes/binary data
-{:ok, result} = Kreuzberg.extract(file_content, "application/pdf")
+{:ok, result} = Xberg.extract(file_content, "application/pdf")
 
 content = result.content
 IO.puts("Extracted content:")

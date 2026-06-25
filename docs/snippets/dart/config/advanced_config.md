@@ -1,7 +1,7 @@
 ```dart title="Dart"
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart' show Int64List;
 
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -53,7 +53,7 @@ Future<void> main() async {
     maxArchiveDepth: 3,
   );
 
-  final result = await KreuzbergBridge.extractFile('document.pdf', null, config);
+  final result = await XbergBridge.extractFile('document.pdf', null, config);
   print('Content: ${result.content}');
   if (result.detectedLanguages != null) {
     print('Languages: ${result.detectedLanguages}');

@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var validator = new ContentTypeValidator("application/pdf", "text/plain");
 ValidatorRegistry.Register(validator);
@@ -30,7 +30,7 @@ public class ContentTypeValidator : IValidator
     {
         if (!_allowedMimeTypes.Contains(result.MimeType))
         {
-            throw new KreuzbergException(
+            throw new XbergException(
                 $"MIME type {result.MimeType} not allowed. Allowed types: {string.Join(", ", _allowedMimeTypes)}",
                 1002
             );

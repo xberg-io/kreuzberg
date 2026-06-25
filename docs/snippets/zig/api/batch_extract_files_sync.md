@@ -1,6 +1,6 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 pub fn main() !void {
     // Batch items are passed as a JSON-encoded array across the FFI boundary.
@@ -13,7 +13,7 @@ pub fn main() !void {
     ;
     const config_json = "{}";
 
-    const results_json = try kreuzberg.batch_extract_files_sync(items_json, config_json);
+    const results_json = try xberg.batch_extract_files_sync(items_json, config_json);
     defer std.heap.c_allocator.free(results_json);
 
     const stdout = std.io.getStdOut().writer();

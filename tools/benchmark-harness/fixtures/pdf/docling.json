@@ -3,7 +3,7 @@
 	"file_type": "pdf",
 	"file_size": 5566575,
 	"expected_frameworks": [
-		"kreuzberg",
+		"xberg",
 		"docling",
 		"markitdown",
 		"mineru",
@@ -17,7 +17,7 @@
 	],
 	"metadata": {
 		"description": "Docling technical paper PDF",
-		"source": "kreuzberg",
+		"source": "xberg",
 		"size_category": "large"
 	},
 	"ground_truth": {

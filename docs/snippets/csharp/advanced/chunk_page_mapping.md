@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -20,7 +20,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "document.pdf",
                 config
             ).ConfigureAwait(false);
@@ -43,7 +43,7 @@ class Program
                 }
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

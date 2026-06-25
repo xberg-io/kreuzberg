@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Configure post-processing pipeline
 # Applies transformations to extracted content after initial processing
@@ -17,7 +17,7 @@ config = %ExtractionConfig{
   force_ocr: false
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 IO.puts("Post-Processing Configuration Applied:")
 IO.puts("Remove Whitespace: true")

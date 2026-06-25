@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -32,7 +32,7 @@ var config = new ExtractionConfig
     },
 };
 
-var result = await KreuzbergLib.ExtractFile("paper.pdf", null, config);
+var result = await XbergLib.ExtractFile("paper.pdf", null, config);
 
 if (result.StructuredOutput is not null)
 {

@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 require 'net/http'
 
 class CloudOcrBackend
@@ -24,9 +24,9 @@ class CloudOcrBackend
   end
 end
 
-Kreuzberg.register_ocr_backend(CloudOcrBackend.new)
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(backend: 'cloud-ocr')
+Xberg.register_ocr_backend(CloudOcrBackend.new)
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(backend: 'cloud-ocr')
 )
-Kreuzberg.extract_file_sync('doc.pdf', config: config)
+Xberg.extract_file_sync('doc.pdf', config: config)
 ```

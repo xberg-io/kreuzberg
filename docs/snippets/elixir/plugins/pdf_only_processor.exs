@@ -1,12 +1,12 @@
 ```elixir title="Elixir"
-alias Kreuzberg.Plugin
+alias Xberg.Plugin
 
 # PDF-Only Post-Processor Plugin
 # This conditional post-processor only processes PDF files.
 # It can be used to apply PDF-specific transformations.
 
 defmodule MyApp.Plugins.PdfOnlyProcessor do
-  @behaviour Kreuzberg.Plugin.PostProcessor
+  @behaviour Xberg.Plugin.PostProcessor
   require Logger
 
   @impl true

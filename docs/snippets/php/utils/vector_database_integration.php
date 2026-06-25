@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\EmbeddingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\ChunkingConfig;
+use Xberg\Config\EmbeddingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -28,8 +28,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('document.pdf');
 
 echo "Vector Database Integration:\n";
 echo str_repeat('=', 60) . "\n";
@@ -186,7 +186,7 @@ $vectorConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($vectorConfig);
+$xberg = new Xberg($vectorConfig);
 
 foreach ($documents as $document) {
     if (!file_exists($document)) {
@@ -194,7 +194,7 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $kreuzberg->extractFile($document);
+    $result = $xberg->extractFile($document);
 
     echo basename($document) . ":\n";
     echo "  Chunks: " . count($result->chunks ?? []) . "\n";

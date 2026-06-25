@@ -8,7 +8,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Email processor post-processor
   defmodule EmailPostProcessor do
-    @behaviour Kreuzberg.Plugin.PostProcessor
+    @behaviour Xberg.Plugin.PostProcessor
 
     @impl true
     def name, do: "email_processor"
@@ -41,7 +41,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Phone number processor post-processor
   defmodule PhonePostProcessor do
-    @behaviour Kreuzberg.Plugin.PostProcessor
+    @behaviour Xberg.Plugin.PostProcessor
 
     @impl true
     def name, do: "phone_processor"
@@ -74,7 +74,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # URL processor post-processor
   defmodule URLPostProcessor do
-    @behaviour Kreuzberg.Plugin.PostProcessor
+    @behaviour Xberg.Plugin.PostProcessor
 
     @impl true
     def name, do: "url_processor"
@@ -107,7 +107,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Strict length validator
   defmodule StrictLengthValidator do
-    @behaviour Kreuzberg.Plugin.Validator
+    @behaviour Xberg.Plugin.Validator
 
     @impl true
     def name, do: "strict_length_validator"
@@ -153,7 +153,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Encoding validator
   defmodule EncodingValidator do
-    @behaviour Kreuzberg.Plugin.Validator
+    @behaviour Xberg.Plugin.Validator
 
     @impl true
     def name, do: "encoding_validator"
@@ -191,7 +191,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Basic OCR backend
   defmodule BasicOCR do
-    @behaviour Kreuzberg.Plugin.OcrBackend
+    @behaviour Xberg.Plugin.OcrBackend
 
     @impl true
     def name, do: "basic_ocr"
@@ -229,7 +229,7 @@ defmodule MyApp.Plugins.UnregisterExample do
 
   # Advanced OCR backend
   defmodule AdvancedOCR do
-    @behaviour Kreuzberg.Plugin.OcrBackend
+    @behaviour Xberg.Plugin.OcrBackend
 
     @impl true
     def name, do: "advanced_ocr"
@@ -282,20 +282,20 @@ IO.puts("=== Plugin Unregistration Example ===\n")
 
 # Register multiple plugins of each type
 IO.puts("Registering plugins...")
-:ok = Kreuzberg.Plugin.register_post_processor(:emails, MyApp.Plugins.UnregisterExample.EmailPostProcessor)
-:ok = Kreuzberg.Plugin.register_post_processor(:phones, MyApp.Plugins.UnregisterExample.PhonePostProcessor)
-:ok = Kreuzberg.Plugin.register_post_processor(:urls, MyApp.Plugins.UnregisterExample.URLPostProcessor)
+:ok = Xberg.Plugin.register_post_processor(:emails, MyApp.Plugins.UnregisterExample.EmailPostProcessor)
+:ok = Xberg.Plugin.register_post_processor(:phones, MyApp.Plugins.UnregisterExample.PhonePostProcessor)
+:ok = Xberg.Plugin.register_post_processor(:urls, MyApp.Plugins.UnregisterExample.URLPostProcessor)
 
-:ok = Kreuzberg.Plugin.register_validator(MyApp.Plugins.UnregisterExample.StrictLengthValidator)
-:ok = Kreuzberg.Plugin.register_validator(MyApp.Plugins.UnregisterExample.EncodingValidator)
+:ok = Xberg.Plugin.register_validator(MyApp.Plugins.UnregisterExample.StrictLengthValidator)
+:ok = Xberg.Plugin.register_validator(MyApp.Plugins.UnregisterExample.EncodingValidator)
 
-:ok = Kreuzberg.Plugin.register_ocr_backend(MyApp.Plugins.UnregisterExample.BasicOCR)
-:ok = Kreuzberg.Plugin.register_ocr_backend(MyApp.Plugins.UnregisterExample.AdvancedOCR)
+:ok = Xberg.Plugin.register_ocr_backend(MyApp.Plugins.UnregisterExample.BasicOCR)
+:ok = Xberg.Plugin.register_ocr_backend(MyApp.Plugins.UnregisterExample.AdvancedOCR)
 
 # List all registered plugins
-{:ok, procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, vals} = Kreuzberg.Plugin.list_validators()
-{:ok, backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, procs} = Xberg.Plugin.list_post_processors()
+{:ok, vals} = Xberg.Plugin.list_validators()
+{:ok, backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Initial registration:")
 IO.puts("  Post-processors: #{length(procs)} - #{inspect(Enum.map(procs, &elem(&1, 0)))}")
@@ -304,38 +304,38 @@ IO.puts("  OCR backends: #{length(backends)} - #{inspect(Enum.map(backends, &(el
 
 # Unregister individual post-processor
 IO.puts("Unregistering post-processor ':phones'...")
-:ok = Kreuzberg.Plugin.unregister_post_processor(:phones)
-{:ok, procs_after1} = Kreuzberg.Plugin.list_post_processors()
+:ok = Xberg.Plugin.unregister_post_processor(:phones)
+{:ok, procs_after1} = Xberg.Plugin.list_post_processors()
 IO.puts("Post-processors: #{length(procs_after1)} - #{inspect(Enum.map(procs_after1, &elem(&1, 0)))}\n")
 
 # Unregister another post-processor
 IO.puts("Unregistering post-processor ':urls'...")
-:ok = Kreuzberg.Plugin.unregister_post_processor(:urls)
-{:ok, procs_after2} = Kreuzberg.Plugin.list_post_processors()
+:ok = Xberg.Plugin.unregister_post_processor(:urls)
+{:ok, procs_after2} = Xberg.Plugin.list_post_processors()
 IO.puts("Post-processors: #{length(procs_after2)} - #{inspect(Enum.map(procs_after2, &elem(&1, 0)))}\n")
 
 # Unregister a validator
 IO.puts("Unregistering validator 'EncodingValidator'...")
-:ok = Kreuzberg.Plugin.unregister_validator(MyApp.Plugins.UnregisterExample.EncodingValidator)
-{:ok, vals_after} = Kreuzberg.Plugin.list_validators()
+:ok = Xberg.Plugin.unregister_validator(MyApp.Plugins.UnregisterExample.EncodingValidator)
+{:ok, vals_after} = Xberg.Plugin.list_validators()
 IO.puts("Validators: #{length(vals_after)}\n")
 
 # Unregister an OCR backend
 IO.puts("Unregistering OCR backend 'BasicOCR'...")
-:ok = Kreuzberg.Plugin.unregister_ocr_backend(MyApp.Plugins.UnregisterExample.BasicOCR)
-{:ok, backends_after} = Kreuzberg.Plugin.list_ocr_backends()
+:ok = Xberg.Plugin.unregister_ocr_backend(MyApp.Plugins.UnregisterExample.BasicOCR)
+{:ok, backends_after} = Xberg.Plugin.list_ocr_backends()
 IO.puts("OCR backends: #{length(backends_after)}\n")
 
 # Idempotent unregistration - unregistering non-existent plugin
 IO.puts("Unregistering already-unregistered plugin ':phones' (idempotent)...")
-:ok = Kreuzberg.Plugin.unregister_post_processor(:phones)
+:ok = Xberg.Plugin.unregister_post_processor(:phones)
 IO.puts("Still returns :ok\n")
 
 # Final state
 IO.puts("=== Final State ===")
-{:ok, final_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, final_vals} = Kreuzberg.Plugin.list_validators()
-{:ok, final_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, final_procs} = Xberg.Plugin.list_post_processors()
+{:ok, final_vals} = Xberg.Plugin.list_validators()
+{:ok, final_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Remaining post-processors: #{length(final_procs)}")
 IO.puts("Remaining validators: #{length(final_vals)}")
@@ -343,13 +343,13 @@ IO.puts("Remaining OCR backends: #{length(final_backends)}\n")
 
 # Cleanup - unregister remaining plugins
 IO.puts("=== Cleanup ===")
-:ok = Kreuzberg.Plugin.unregister_post_processor(:emails)
-:ok = Kreuzberg.Plugin.unregister_validator(MyApp.Plugins.UnregisterExample.StrictLengthValidator)
-:ok = Kreuzberg.Plugin.unregister_ocr_backend(MyApp.Plugins.UnregisterExample.AdvancedOCR)
+:ok = Xberg.Plugin.unregister_post_processor(:emails)
+:ok = Xberg.Plugin.unregister_validator(MyApp.Plugins.UnregisterExample.StrictLengthValidator)
+:ok = Xberg.Plugin.unregister_ocr_backend(MyApp.Plugins.UnregisterExample.AdvancedOCR)
 
-{:ok, final_clean_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, final_clean_vals} = Kreuzberg.Plugin.list_validators()
-{:ok, final_clean_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, final_clean_procs} = Xberg.Plugin.list_post_processors()
+{:ok, final_clean_vals} = Xberg.Plugin.list_validators()
+{:ok, final_clean_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("After cleanup:")
 IO.puts("  Post-processors: #{length(final_clean_procs)}")

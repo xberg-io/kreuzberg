@@ -1,7 +1,7 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-result = Kreuzberg.extract_file_sync('document.pdf')
+result = Xberg.extract_file_sync('document.pdf')
 puts "Extracted content:"
 puts result.content[0...200]
 ```

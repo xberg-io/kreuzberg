@@ -9,7 +9,7 @@ pub fn main() !void {
     const file_bytes = try std.fs.cwd().readFileAlloc(allocator, "document.pdf", 64 * 1024 * 1024);
     defer allocator.free(file_bytes);
 
-    const boundary = "----kreuzberg-zig-boundary";
+    const boundary = "----xberg-zig-boundary";
     var body = std.ArrayList(u8).init(allocator);
     defer body.deinit();
 

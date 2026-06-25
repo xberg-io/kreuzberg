@@ -1,7 +1,7 @@
 <!-- snippet:syntax-only -->
 
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 library(httr2)
 
 response <- request("http://localhost:8000/extract") |>

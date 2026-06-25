@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\ImagePreprocessingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\ImagePreprocessingConfig;
 
 // Enhance OCR accuracy with image preprocessing
 $config = new ExtractionConfig(
@@ -26,8 +26,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('scanned_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('scanned_document.pdf');
 
 echo "Preprocessed OCR Results:\n";
 echo "Characters extracted: " . strlen($result->content) . "\n";

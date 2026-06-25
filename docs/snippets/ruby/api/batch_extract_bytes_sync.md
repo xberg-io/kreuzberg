@@ -1,24 +1,24 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 items = [
-  Kreuzberg::BatchBytesItem.new(
+  Xberg::BatchBytesItem.new(
     content: File.read('doc1.pdf'),
     mime_type: 'application/pdf'
   ),
-  Kreuzberg::BatchBytesItem.new(
+  Xberg::BatchBytesItem.new(
     content: File.read('doc2.docx'),
     mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ),
-  Kreuzberg::BatchBytesItem.new(
+  Xberg::BatchBytesItem.new(
     content: File.read('doc3.xlsx'),
     mime_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   )
 ]
 
-config = Kreuzberg::ExtractionConfig.new(use_cache: true)
+config = Xberg::ExtractionConfig.new(use_cache: true)
 
-results = Kreuzberg.batch_extract_bytes_sync(items, config: config)
+results = Xberg.batch_extract_bytes_sync(items, config: config)
 
 results.each { |result| puts "Extracted: #{result.content.length} chars" }
 ```

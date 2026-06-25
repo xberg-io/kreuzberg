@@ -1,6 +1,6 @@
 # Performance Iteration Log
 
-Per-iteration tracker for Kreuzberg perf optimization rounds. Append one row per accepted or rejected candidate. Follows the protocol in `profiling.md`. The institutional memory replacement for the `feedback_perf_subagent_verification.md` failure-mode warning.
+Per-iteration tracker for Xberg perf optimization rounds. Append one row per accepted or rejected candidate. Follows the protocol in `profiling.md`. The institutional memory replacement for the `feedback_perf_subagent_verification.md` failure-mode warning.
 
 ## Format
 
@@ -30,15 +30,15 @@ Per-iteration tracker for Kreuzberg perf optimization rounds. Append one row per
 
 | rank | self-time | function                                                                        |
 | ---- | --------- | ------------------------------------------------------------------------------- |
-| 1    | 0.50%     | `kreuzberg::pdf::oxide::table::extract_tables_native`                           |
-| 2    | 0.33%     | `kreuzberg::pdf::oxide::text::extract_text_fast_path`                           |
-| 3    | 0.14%     | `kreuzberg::pdf::oxide::hierarchy::extract_all_segments`                        |
-| 4    | 0.12%     | `kreuzberg::cache::core::GenericCache::set`                                     |
-| 5    | 0.11%     | `kreuzberg::pdf::oxide::images::extract_image_positions`                        |
-| 6    | 0.11%     | `kreuzberg::pdf::structure::pipeline::extract_document_structure_from_segments` |
-| 7    | 0.09%     | `kreuzberg::cache::cleanup::scan_cache_directory`                               |
-| 8    | 0.08%     | `kreuzberg::pdf::structure::classify::mark_arxiv_noise`                         |
-| 9    | 0.02%     | `kreuzberg::rendering::markdown::render_markdown`                               |
+| 1    | 0.50%     | `xberg::pdf::oxide::table::extract_tables_native`                           |
+| 2    | 0.33%     | `xberg::pdf::oxide::text::extract_text_fast_path`                           |
+| 3    | 0.14%     | `xberg::pdf::oxide::hierarchy::extract_all_segments`                        |
+| 4    | 0.12%     | `xberg::cache::core::GenericCache::set`                                     |
+| 5    | 0.11%     | `xberg::pdf::oxide::images::extract_image_positions`                        |
+| 6    | 0.11%     | `xberg::pdf::structure::pipeline::extract_document_structure_from_segments` |
+| 7    | 0.09%     | `xberg::cache::cleanup::scan_cache_directory`                               |
+| 8    | 0.08%     | `xberg::pdf::structure::classify::mark_arxiv_noise`                         |
+| 9    | 0.02%     | `xberg::rendering::markdown::render_markdown`                               |
 
 **Breakdown by crate (aggregate, 88,524 total samples):**
 
@@ -47,20 +47,20 @@ Per-iteration tracker for Kreuzberg perf optimization rounds. Append one row per
 - Benchmark_harness (quality scorer): 9.9%
 - Pdf_oxide: 9.3%
 - Rayon: 3.7%
-- **Kreuzberg: 3.4%**
+- **Xberg: 3.4%**
 - Tokio: 0.1%
 
-**Stopping condition:** Kreuzberg layer accounts for only 3.4% of total wall time. The previous queue candidates (fuse_paragraphs, text_repair, normalize_key, classify::merge_consecutive_pages) do not appear in the top-25 Kreuzberg frames — confirmed not hot on the baseline pipeline path. Dominant cost is pdf_oxide text/table extraction (9.3%) + system allocator + OS overhead (48.4%) — these are outside kreuzberg's optimization surface.
+**Stopping condition:** Xberg layer accounts for only 3.4% of total wall time. The previous queue candidates (fuse_paragraphs, text_repair, normalize_key, classify::merge_consecutive_pages) do not appear in the top-25 Xberg frames — confirmed not hot on the baseline pipeline path. Dominant cost is pdf_oxide text/table extraction (9.3%) + system allocator + OS overhead (48.4%) — these are outside xberg's optimization surface.
 
-**Further kreuzberg-layer CPU gains require upstream pdf_oxide work** (table extraction at 0.50% is the single largest kreuzberg-visible hotspot; it delegates to pdf_oxide). Cache I/O (scan_cache_directory) at 0.09% is the next actionable target if cache efficiency becomes a priority, but it's below the noise floor for extraction pipelines.
+**Further xberg-layer CPU gains require upstream pdf_oxide work** (table extraction at 0.50% is the single largest xberg-visible hotspot; it delegates to pdf_oxide). Cache I/O (scan_cache_directory) at 0.09% is the next actionable target if cache efficiency becomes a priority, but it's below the noise floor for extraction pipelines.
 
 ### Previous blockers resolved
 
-- Symbol-strip blocker from `flamegraphs/61170f7f6/baseline.svg` is fixed: `.task/workflows/benchmark.yml` patched from `--features full` → `--features all` (kreuzberg-cli has no `full` feature). The `fa356cb7e` flamegraph has 87 Kreuzberg symbols resolved.
+- Symbol-strip blocker from `flamegraphs/61170f7f6/baseline.svg` is fixed: `.task/workflows/benchmark.yml` patched from `--features full` → `--features all` (xberg-cli has no `full` feature). The `fa356cb7e` flamegraph has 87 Xberg symbols resolved.
 
 ### Post-M RSS anchor
 
-Measured 2026-05-11 on `target/profiling/kreuzberg` (post-M, `--features all`, `--profile profiling`):
+Measured 2026-05-11 on `target/profiling/xberg` (post-M, `--features all`, `--profile profiling`):
 
 - **Fixture**: `test_documents/pdf/proof_of_concept_or_gtfo_v13_october_18th_2016.pdf` (60 MB, plain extraction, no layout detection)
 - **Peak RSS**: 292 MB (`maximum resident set size: 305,954,816 bytes`)

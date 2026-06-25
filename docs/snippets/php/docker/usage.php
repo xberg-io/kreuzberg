@@ -4,13 +4,13 @@
 declare(strict_types=1);
 
 /**
- * Docker Kreuzberg Client
+ * Docker Xberg Client
  *
- * This example demonstrates how to interact with Kreuzberg running in a Docker container.
+ * This example demonstrates how to interact with Xberg running in a Docker container.
  * It shows how to start a container, extract content from files via the API, and cleanup.
  */
 
-class DockerKreuzbergClient
+class DockerXbergClient
 {
     private string $containerName;
     private string $containerImage;
@@ -18,8 +18,8 @@ class DockerKreuzbergClient
     private string $apiUrl;
 
     public function __construct(
-        string $containerName = 'kreuzberg-api',
-        string $containerImage = 'kreuzberg:latest',
+        string $containerName = 'xberg-api',
+        string $containerImage = 'xberg:latest',
         int $apiPort = 8000
     ) {
         $this->containerName = $containerName;
@@ -29,13 +29,13 @@ class DockerKreuzbergClient
     }
 
     /**
-     * Start the Kreuzberg Docker container
+     * Start the Xberg Docker container
      *
      * @throws RuntimeException if container fails to start
      */
     public function startContainer(): void
     {
-        echo "Starting Kreuzberg Docker container...\n";
+        echo "Starting Xberg Docker container...\n";
 
         $cmd = sprintf(
             'docker run -d --name %s -p %d:8000 %s',
@@ -115,7 +115,7 @@ class DockerKreuzbergClient
      */
     public function stopContainer(): void
     {
-        echo "Stopping Kreuzberg Docker container...\n";
+        echo "Stopping Xberg Docker container...\n";
 
         exec(sprintf('docker stop %s', escapeshellarg($this->containerName)), $output, $returnCode);
         exec(sprintf('docker rm %s', escapeshellarg($this->containerName)), $output, $returnCode);
@@ -124,7 +124,7 @@ class DockerKreuzbergClient
     }
 }
 
-$dockerClient = new DockerKreuzbergClient();
+$dockerClient = new DockerXbergClient();
 
 try {
     $dockerClient->startContainer();

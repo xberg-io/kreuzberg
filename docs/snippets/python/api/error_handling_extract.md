@@ -1,9 +1,9 @@
 ```python title="Python"
-from kreuzberg import (
+from xberg import (
     batch_extract_files_sync,
     BatchFileItem,
     ExtractionConfig,
-    KreuzbergError,
+    XbergError,
 )
 
 items = [
@@ -21,7 +21,7 @@ try:
             print(f"Document {i}: ERROR - {result.metadata.error}")
         else:
             print(f"Document {i}: {len(result.content)} chars, {len(result.tables)} tables")
-except KreuzbergError as e:
+except XbergError as e:
     print(f"Batch extraction failed: {e}")
     raise
 ```

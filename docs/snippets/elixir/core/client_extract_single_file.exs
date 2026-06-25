@@ -8,7 +8,7 @@ defmodule DocumentClient do
   Provides a consistent interface for extracting content from files.
   """
 
-  alias Kreuzberg.ExtractionResult
+  alias Xberg.ExtractionResult
 
   @doc """
   Extract content from a single file.
@@ -32,7 +32,7 @@ defmodule DocumentClient do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
 
-    case Kreuzberg.extract_file(path, mime_type, config) do
+    case Xberg.extract_file(path, mime_type, config) do
       {:ok, result} ->
         IO.debug("Successfully extracted file: #{path}")
         {:ok, result}
@@ -46,14 +46,14 @@ defmodule DocumentClient do
   @doc """
   Extract content from a file, raising on error.
 
-  Raises Kreuzberg.Error if extraction fails.
+  Raises Xberg.Error if extraction fails.
   """
   @spec extract_file!(String.t(), keyword()) :: ExtractionResult.t()
   def extract_file!(path, opts \\ []) do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
 
-    Kreuzberg.extract_file!(path, mime_type, config)
+    Xberg.extract_file!(path, mime_type, config)
   end
 
   @doc """

@@ -101,22 +101,22 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 Kotlin DSL (`build.gradle.kts`):
 
 ```kotlin
-implementation("dev.kreuzberg:kreuzberg-android:5.0.0-rc.36")
+implementation("dev.xberg:xberg-android:1.0.0-rc.1")
 ```
 
 Groovy DSL (`build.gradle`):
 
 ```groovy
-implementation 'dev.kreuzberg:kreuzberg-android:5.0.0-rc.36'
+implementation 'dev.xberg:xberg-android:1.0.0-rc.1'
 ```
 
 Add to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>dev.kreuzberg</groupId>
-    <artifactId>kreuzberg-android</artifactId>
-    <version>5.0.0-rc.36</version>
+    <groupId>dev.xberg</groupId>
+    <artifactId>xberg-android</artifactId>
+    <version>1.0.0-rc.1</version>
 </dependency>
 ```
 
@@ -316,7 +316,7 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 
 ## Part of Kreuzberg.dev
 
-- [Kreuzberg Cloud](https://github.com/xberg-io/kreuzberg-cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
 - [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.

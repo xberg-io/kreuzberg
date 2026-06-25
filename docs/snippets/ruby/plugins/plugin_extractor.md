@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class CustomPostProcessor
   def call(result)
@@ -18,6 +18,6 @@ end
 processor = CustomPostProcessor.new
 validator = CustomValidator.new
 
-Kreuzberg.register_post_processor('custom', processor)
-Kreuzberg.register_validator('custom', validator)
+Xberg.register_post_processor('custom', processor)
+Xberg.register_validator('custom', validator)
 ```

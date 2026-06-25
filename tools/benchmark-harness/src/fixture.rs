@@ -9,8 +9,8 @@
 //!   "document": "path/to/document.pdf",
 //!   "file_type": "pdf",
 //!   "file_size": 1024000,
-//!   "expected_frameworks": ["kreuzberg", "docling"],
-//!   // Note: frameworks can be Kreuzberg language bindings or open source extraction alternatives
+//!   "expected_frameworks": ["xberg", "docling"],
+//!   // Note: frameworks can be Xberg language bindings or open source extraction alternatives
 //!   "metadata": {
 //!     "title": "Test Document",
 //!     "pages": 10,
@@ -41,7 +41,7 @@ pub struct Fixture {
     pub file_size: u64,
 
     /// Extraction frameworks that should be able to process this file
-    /// (can be Kreuzberg language bindings or open source extraction alternatives)
+    /// (can be Xberg language bindings or open source extraction alternatives)
     #[serde(default)]
     pub expected_frameworks: Vec<String>,
 
@@ -473,7 +473,7 @@ mod tests {
             document: PathBuf::from("test.pdf"),
             file_type: "pdf".to_string(),
             file_size: 1024,
-            expected_frameworks: vec!["kreuzberg".to_string()],
+            expected_frameworks: vec!["xberg".to_string()],
             metadata: HashMap::new(),
             ground_truth: None,
         };

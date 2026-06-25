@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,14 +89,14 @@ static void version_fn(const void *user_data, char **out_version) {
 }
 
 int main(void) {
-    KREUZBERGKreuzbergEmbeddingBackendVTable vtable = {0};
+    XBERGXbergEmbeddingBackendVTable vtable = {0};
     vtable.name_fn = name_fn;
     vtable.version_fn = version_fn;
     vtable.dimensions = dimensions_fn;
     vtable.embed = embed_fn;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_embedding_backend(
+    int32_t rc = xberg_register_embedding_backend(
         "my-embedder",
         vtable,
         NULL,
@@ -105,7 +105,7 @@ int main(void) {
     if (rc != 0) {
         fprintf(stderr, "register embedding backend failed: %s\n",
                 err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 

@@ -7,7 +7,7 @@ import (
 )
 
 func extractWithCli(filePath string, outputFormat string) (string, error) {
-	cmd := exec.Command("kreuzberg", "extract", filePath, "--format", outputFormat)
+	cmd := exec.Command("xberg", "extract", filePath, "--format", outputFormat)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

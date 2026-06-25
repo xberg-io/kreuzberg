@@ -1,7 +1,7 @@
 ```zig title="Zig"
 const std = @import("std");
 const testing = std.testing;
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 const NoopValidator = struct {
     pub fn validate(self: *NoopValidator, result: [*c]const u8, config: [*c]const u8) !void {
@@ -25,7 +25,7 @@ const NoopValidator = struct {
 
 test "register and unregister validator" {
     var instance = NoopValidator{};
-    var vtable = kreuzberg.make_validator_vtable(NoopValidator, &instance);
+    var vtable = xberg.make_validator_vtable(NoopValidator, &instance);
 
     vtable.name_fn = struct {
         fn thunk(user_data: ?*anyopaque, out_name: ?*?[*c]u8) callconv(.C) void {
@@ -41,12 +41,12 @@ test "register and unregister validator" {
     }.thunk;
 
     var out_error: ?[*c]u8 = null;
-    try testing.expectEqual(@as(i32, 0), kreuzberg.register_validator("noop-validator", vtable, &instance, &out_error));
+    try testing.expectEqual(@as(i32, 0), xberg.register_validator("noop-validator", vtable, &instance, &out_error));
 
-    const validators = try kreuzberg.list_validators();
+    const validators = try xberg.list_validators();
     defer std.heap.c_allocator.free(validators);
     try testing.expect(std.mem.indexOf(u8, validators, "noop-validator") != null);
 
-    try testing.expectEqual(@as(i32, 0), kreuzberg.unregister_validator("noop-validator", &out_error));
+    try testing.expectEqual(@as(i32, 0), xberg.unregister_validator("noop-validator", &out_error));
 }
 ```

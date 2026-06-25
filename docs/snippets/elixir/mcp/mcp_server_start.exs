@@ -1,17 +1,17 @@
 ```elixir title="Elixir"
-# MCP Server Integration - Start a Kreuzberg MCP server
+# MCP Server Integration - Start a Xberg MCP server
 # Demonstrates how to set up and manage an MCP server for remote document extraction
 
-defmodule KreuzbergMCPServer do
+defmodule XbergMCPServer do
   @moduledoc """
-  MCP (Model Context Protocol) server for Kreuzberg document extraction.
+  MCP (Model Context Protocol) server for Xberg document extraction.
 
   Provides a standardized interface for remote clients to extract documents
-  using the Kreuzberg library via the Model Context Protocol.
+  using the Xberg library via the Model Context Protocol.
   """
 
   require Logger
-  alias Kreuzberg.ExtractionConfig
+  alias Xberg.ExtractionConfig
 
   @doc """
   Start the MCP server on the specified host and port.
@@ -30,11 +30,11 @@ defmodule KreuzbergMCPServer do
     port = Keyword.get(opts, :port, 8080)
     max_connections = Keyword.get(opts, :max_connections, 10)
 
-    Logger.info("Starting Kreuzberg MCP server on #{host}:#{port}")
+    Logger.info("Starting Xberg MCP server on #{host}:#{port}")
 
     {:ok, _pid} =
       :cowboy.start_clear(
-        :kreuzberg_http,
+        :xberg_http,
         [{:port, port}],
         %{
           env: [
@@ -42,9 +42,9 @@ defmodule KreuzbergMCPServer do
              [
                {:_,
                 [
-                  {"/extract", KreuzbergMCPServer.Handler, []},
-                  {"/extract/file", KreuzbergMCPServer.FileHandler, []},
-                  {"/health", KreuzbergMCPServer.HealthHandler, []}
+                  {"/extract", XbergMCPServer.Handler, []},
+                  {"/extract/file", XbergMCPServer.FileHandler, []},
+                  {"/health", XbergMCPServer.HealthHandler, []}
                 ]}
              ]}
           ]
@@ -59,15 +59,15 @@ defmodule KreuzbergMCPServer do
   Stop the MCP server gracefully.
   """
   def stop_server do
-    Logger.info("Stopping Kreuzberg MCP server")
-    :cowboy.stop_listener(:kreuzberg_http)
+    Logger.info("Stopping Xberg MCP server")
+    :cowboy.stop_listener(:xberg_http)
     Logger.info("MCP server stopped")
     :ok
   end
 end
 
 # Handler for extraction requests
-defmodule KreuzbergMCPServer.Handler do
+defmodule XbergMCPServer.Handler do
   @moduledoc """
   HTTP handler for MCP extraction requests.
   Processes incoming extraction requests with optional configuration.
@@ -115,7 +115,7 @@ defmodule KreuzbergMCPServer.Handler do
     else
       config = build_config(config_opts)
 
-      case Kreuzberg.extract_file(file_path, mime_type, config) do
+      case Xberg.extract_file(file_path, mime_type, config) do
         {:ok, result} ->
           response_data = %{
             success: true,
@@ -137,7 +137,7 @@ defmodule KreuzbergMCPServer.Handler do
   end
 
   defp build_config(opts) when is_map(opts) do
-    %Kreuzberg.ExtractionConfig{
+    %Xberg.ExtractionConfig{
       ocr: opts["ocr"],
       chunking: opts["chunking"],
       quality_processing: opts["quality_processing"],
@@ -181,7 +181,7 @@ defmodule KreuzbergMCPServer.Handler do
 end
 
 # Health check handler
-defmodule KreuzbergMCPServer.HealthHandler do
+defmodule XbergMCPServer.HealthHandler do
   @moduledoc """
   Health check endpoint for the MCP server.
   """
@@ -189,7 +189,7 @@ defmodule KreuzbergMCPServer.HealthHandler do
   def init(req, state) do
     response = Jason.encode!(%{
       status: "healthy",
-      service: "kreuzberg-mcp",
+      service: "xberg-mcp",
       timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
     })
 
@@ -206,7 +206,7 @@ defmodule KreuzbergMCPServer.HealthHandler do
 end
 
 # File upload handler
-defmodule KreuzbergMCPServer.FileHandler do
+defmodule XbergMCPServer.FileHandler do
   @moduledoc """
   Handler for multipart file uploads for extraction.
   """
@@ -222,13 +222,13 @@ defmodule KreuzbergMCPServer.FileHandler do
 
   defp handle_file_upload(req, state) do
     # Store uploaded file temporarily
-    temp_path = "/tmp/kreuzberg_#{System.unique_integer([:positive])}"
+    temp_path = "/tmp/xberg_#{System.unique_integer([:positive])}"
 
     case :cowboy_req.read_body(req) do
       {:ok, body, req} ->
         File.write!(temp_path, body)
 
-        case Kreuzberg.extract_file(temp_path) do
+        case Xberg.extract_file(temp_path) do
           {:ok, result} ->
             response = Jason.encode!(%{
               success: true,
@@ -280,9 +280,9 @@ defmodule KreuzbergMCPServer.FileHandler do
 end
 
 # Usage example - start the server
-IO.puts("=== Kreuzberg MCP Server ===\n")
+IO.puts("=== Xberg MCP Server ===\n")
 
-case KreuzbergMCPServer.start_server(port: 8080) do
+case XbergMCPServer.start_server(port: 8080) do
   {:ok, message} ->
     IO.puts(message)
     IO.puts("\nServer is running and ready to accept requests:")

@@ -1,10 +1,10 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
-    tesseract_config: Kreuzberg::TesseractConfig.new(
-      preprocessing: Kreuzberg::ImagePreprocessingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
+    tesseract_config: Xberg::TesseractConfig.new(
+      preprocessing: Xberg::ImagePreprocessingConfig.new(
         target_dpi: 300,
         denoise: true,
         deskew: true,

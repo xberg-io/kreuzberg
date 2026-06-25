@@ -1,19 +1,19 @@
 ```ruby title="Ruby"
-require "kreuzberg"
+require "xberg"
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   use_cache: true,
-  ocr: Kreuzberg::OcrConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: "tesseract",
     language: "eng+deu",
-    tesseract: Kreuzberg::TesseractConfig.new(psm: 6)
+    tesseract: Xberg::TesseractConfig.new(psm: 6)
   ),
-  chunking: Kreuzberg::ChunkingConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_characters: 1000,
     overlap: 200
   )
 )
 
-result = Kreuzberg.extract_file_sync("document.pdf", config)
+result = Xberg.extract_file_sync("document.pdf", config)
 puts "Content length: #{result.content.length}"
 ```

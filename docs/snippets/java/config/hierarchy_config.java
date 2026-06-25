@@ -1,7 +1,7 @@
-import kreuzberg.config.HierarchyConfig;
-import kreuzberg.config.PdfConfig;
-import kreuzberg.config.ExtractionConfig;
-import kreuzberg.Kreuzberg;
+import xberg.config.HierarchyConfig;
+import xberg.config.PdfConfig;
+import xberg.config.ExtractionConfig;
+import xberg.Xberg;
 
 public class HierarchyConfigExample {
     public static void main(String[] args) throws Exception {
@@ -23,8 +23,8 @@ public class HierarchyConfigExample {
             .pdfOptions(pdfConfigBasic)
             .build();
 
-        Kreuzberg kreuzberg = new Kreuzberg(extractionConfigBasic);
-        // var result = kreuzberg.extractFileSync("document.pdf");
+        Xberg xberg = new Xberg(extractionConfigBasic);
+        // var result = xberg.extractFileSync("document.pdf");
 
 
         // Example 2: Custom kClusters for minimal structure

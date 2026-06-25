@@ -1,5 +1,5 @@
 ```swift title="Swift"
-import Kreuzberg
+import Xberg
 
 final class PdfOnlyProcessor: PostProcessor {
     func name() -> String {
@@ -42,5 +42,5 @@ final class PdfOnlyProcessor: PostProcessor {
 }
 
 let processor = PdfOnlyProcessor()
-try Kreuzberg.registerPostProcessor(processor)
+try Xberg.registerPostProcessor(processor)
 ```

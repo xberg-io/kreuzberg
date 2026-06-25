@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class MinLengthValidator : IValidator
 {
@@ -16,7 +16,7 @@ class MinLengthValidator : IValidator
     {
         if (result.Content.Length < _minLength)
         {
-            throw new KreuzbergValidationException(
+            throw new XbergValidationException(
                 $"Content too short: {result.Content.Length} < {_minLength}"
             );
         }
@@ -41,7 +41,7 @@ class QualityScoreValidator : IValidator
 
         if (score < _minScore)
         {
-            throw new KreuzbergValidationException(
+            throw new XbergValidationException(
                 $"Quality score too low: {score:F2} < {_minScore:F2}"
             );
         }
@@ -57,12 +57,12 @@ class ContentValidValidator : IValidator
     {
         if (string.IsNullOrWhiteSpace(result.Content))
         {
-            throw new KreuzbergValidationException("Extracted content is empty or whitespace");
+            throw new XbergValidationException("Extracted content is empty or whitespace");
         }
 
         if (result.Content.Length < 10)
         {
-            throw new KreuzbergValidationException("Extracted content is too short (minimum 10 characters)");
+            throw new XbergValidationException("Extracted content is too short (minimum 10 characters)");
         }
     }
 }
@@ -75,9 +75,9 @@ class Program
         var qualityValidator = new QualityScoreValidator(minScore: 0.7);
         var contentValidator = new ContentValidValidator();
 
-        KreuzbergLib.RegisterValidator(minLengthValidator);
-        KreuzbergLib.RegisterValidator(qualityValidator);
-        KreuzbergLib.RegisterValidator(contentValidator);
+        XbergLib.RegisterValidator(minLengthValidator);
+        XbergLib.RegisterValidator(qualityValidator);
+        XbergLib.RegisterValidator(contentValidator);
 
         try
         {
@@ -86,16 +86,16 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+            var result = XbergLib.ExtractFileSync("document.pdf", config);
 
             Console.WriteLine("All validations passed");
             Console.WriteLine($"Content length: {result.Content.Length}");
         }
-        catch (KreuzbergValidationException ex)
+        catch (XbergValidationException ex)
         {
             Console.WriteLine($"Validation failed: {ex.Message}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

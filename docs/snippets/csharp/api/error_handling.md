@@ -1,12 +1,12 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 try
 {
-    var result = KreuzbergLib.ExtractFileSync("nonexistent.pdf", null, null);
+    var result = XbergLib.ExtractFileSync("nonexistent.pdf", null, null);
     Console.WriteLine(result.Content);
 }
-catch (KreuzbergException ex)
+catch (XbergException ex)
 {
     Console.WriteLine($"Error Code: {ex.Code}");
     Console.WriteLine($"Error Message: {ex.Message}");

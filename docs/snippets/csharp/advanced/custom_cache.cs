@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 using System.Collections.Generic;
 
 class CustomCacheBackend
@@ -17,7 +17,7 @@ class CustomCacheBackend
             return cachedResult;
         }
 
-        var result = await KreuzbergLib.ExtractFileAsync(filePath, config);
+        var result = await XbergLib.ExtractFileAsync(filePath, config);
 
         _cache[cacheKey] = result;
         Console.WriteLine("Result cached");
@@ -55,7 +55,7 @@ class Program
 
             cacheBackend.ClearCache();
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

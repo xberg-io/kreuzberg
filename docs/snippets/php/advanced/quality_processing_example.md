@@ -2,14 +2,14 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
 
 $config = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$result = Kreuzberg::extractFileSync('scanned_document.pdf', null, $config);
+$result = Xberg::extractFileSync('scanned_document.pdf', null, $config);
 
 if ($result->getQualityScore() !== null) {
     $score = $result->getQualityScore();

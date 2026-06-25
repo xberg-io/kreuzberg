@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,7 +72,7 @@ int main(void) {
     }
     atomic_init(&state->call_count, 0);
 
-    KREUZBERGKreuzbergPostProcessorVTable vtable = {0};
+    XBERGXbergPostProcessorVTable vtable = {0};
     vtable.initialize_fn = initialize_fn;
     vtable.shutdown_fn = shutdown_fn;
     vtable.process = process_fn;
@@ -81,7 +81,7 @@ int main(void) {
     vtable.free_user_data = free_user_data;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_post_processor(
+    int32_t rc = xberg_register_post_processor(
         "stateful-plugin",
         vtable,
         state,
@@ -90,7 +90,7 @@ int main(void) {
     if (rc != 0) {
         fprintf(stderr, "register post-processor failed: %s\n",
                 err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         free(state);
         return 1;
     }

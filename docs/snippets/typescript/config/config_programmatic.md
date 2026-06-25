@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFileSync, type ExtractionConfig } from "@kreuzberg/node";
+import { extractFileSync, type ExtractionConfig } from "@xberg/node";
 
 const config: ExtractionConfig = {
   useCache: true,

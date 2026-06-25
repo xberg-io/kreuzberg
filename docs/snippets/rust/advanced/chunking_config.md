@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{ExtractionConfig, ChunkingConfig};
+use xberg::{ExtractionConfig, ChunkingConfig};
 
 let config = ExtractionConfig {
     chunking: Some(ChunkingConfig {
@@ -12,7 +12,7 @@ let config = ExtractionConfig {
 ```
 
 ```rust title="Rust - Semantic"
-use kreuzberg::{ExtractionConfig, ChunkingConfig, ChunkerType};
+use xberg::{ExtractionConfig, ChunkingConfig, ChunkerType};
 
 let config = ExtractionConfig {
     chunking: Some(ChunkingConfig {
@@ -24,7 +24,7 @@ let config = ExtractionConfig {
 ```
 
 ```rust title="Rust - Prepend Heading Context"
-use kreuzberg::{ExtractionConfig, ChunkingConfig, ChunkerType};
+use xberg::{ExtractionConfig, ChunkingConfig, ChunkerType};
 
 let config = ExtractionConfig {
     chunking: Some(ChunkingConfig {

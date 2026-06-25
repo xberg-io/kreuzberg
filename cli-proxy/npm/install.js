@@ -1,4 +1,4 @@
-// postinstall: download, verify, and extract the native kreuzberg binary
+// postinstall: download, verify, and extract the native xberg binary
 // into ./bin so the launcher can exec it. All diagnostics go to stderr.
 import fs from "node:fs";
 import os from "node:os";
@@ -8,11 +8,11 @@ import crypto from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync, execFileSync } from "node:child_process";
 
-const REPO = "xberg-io/kreuzberg";
-const BIN_NAME = "kreuzberg";
-const PKG_NAME = "kreuzberg-cli";
-const VERSION_ENV = "KREUZBERG_CLI_VERSION";
-const USER_AGENT = "kreuzberg-cli-npm-proxy";
+const REPO = "xberg-io/xberg";
+const BIN_NAME = "xberg";
+const PKG_NAME = "xberg-cli";
+const VERSION_ENV = "XBERG_CLI_VERSION";
+const USER_AGENT = "xberg-cli-npm-proxy";
 
 // Map Node's platform/arch to the Rust target triple embedded in asset names.
 function targetTriple() {
@@ -138,7 +138,7 @@ export function selectArchiveName(names, triple) {
 	return survivors[0];
 }
 
-// Resolve the release (honoring KREUZBERG_CLI_VERSION to pin a tag) and pick the
+// Resolve the release (honoring XBERG_CLI_VERSION to pin a tag) and pick the
 // archive asset for this platform plus an optional SHA256SUMS asset.
 //
 // Selection: among assets whose name contains the target triple, ends in

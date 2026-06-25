@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PageConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PageConfig;
 
 $config = new ExtractionConfig(
     page: new PageConfig(
@@ -24,8 +24,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('report.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('report.pdf');
 
 echo "Content with page markers:\n";
 echo str_repeat('=', 60) . "\n";
@@ -38,8 +38,8 @@ $pageConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($pageConfig);
-$result = $kreuzberg->extractFile('multi_page.pdf');
+$xberg = new Xberg($pageConfig);
+$result = $xberg->extractFile('multi_page.pdf');
 
 foreach ($result->pages ?? [] as $page) {
     echo "Page {$page->pageNumber}:\n";
@@ -57,8 +57,8 @@ $customConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($customConfig);
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg($customConfig);
+$result = $xberg->extractFile('document.pdf');
 
 $pages = preg_split('/={10} PAGE \d+ ={10}/', $result->content);
 echo "Split into " . count($pages) . " sections\n";
@@ -67,8 +67,8 @@ $allPagesConfig = new ExtractionConfig(
     page: new PageConfig(extractPages: true)
 );
 
-$kreuzberg = new Kreuzberg($allPagesConfig);
-$result = $kreuzberg->extractFile('large_doc.pdf');
+$xberg = new Xberg($allPagesConfig);
+$result = $xberg->extractFile('large_doc.pdf');
 
 $selectedPages = array_filter(
     $result->pages ?? [],

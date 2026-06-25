@@ -1,4 +1,4 @@
-Import dev.kreuzberg.\*;
+Import dev.xberg.\*;
 
 var config = ExtractionConfig.builder()
 .chunking(ChunkingConfig.builder()
@@ -10,7 +10,7 @@ var config = ExtractionConfig.builder()
 .build())
 .build();
 
-var result = Kreuzberg.extractFileSync("document.pdf", config);
+var result = Xberg.extractFileSync("document.pdf", config);
 
 If (result.chunks() != null) {
 for (var chunk : result.chunks()) {

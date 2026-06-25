@@ -5,7 +5,7 @@ import {
   unregisterOcrBackend,
   unregisterPostProcessor,
   unregisterValidator,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 
 // Remove plugins by their registered name.
 unregisterPostProcessor("metadata-enrichment-processor");

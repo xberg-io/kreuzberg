@@ -1,5 +1,5 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 class WordCountProcessor
   def call(result)
@@ -12,12 +12,12 @@ class WordCountProcessor
 end
 
 processor = WordCountProcessor.new
-Kreuzberg.register_post_processor('word_count', processor, 10)
+Xberg.register_post_processor('word_count', processor, 10)
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-result = Kreuzberg.extract_file_sync('document.pdf', config: config)
+result = Xberg.extract_file_sync('document.pdf', config: config)
 puts "Words: #{result.metadata['word_count']}"
 ```

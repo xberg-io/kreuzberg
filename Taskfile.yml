@@ -1,7 +1,7 @@
 version: "3"
 
 # ============================================================================
-# kreuzberg — Root Taskfile
+# xberg — Root Taskfile
 # ============================================================================
 # Primary development interface. Rust core tasks delegate to .task/languages/rust.yml.
 # All binding language operations (setup, build, test, lint, format, clean,
@@ -131,7 +131,7 @@ tasks:
       - task: build:bindings
 
   build:cli:
-    desc: "Build the kreuzberg CLI binary"
+    desc: "Build the xberg CLI binary"
     cmds:
       - task: rust:cli:build
 
@@ -192,12 +192,12 @@ tasks:
       - task: lint:check
 
   check:android:
-    desc: "cargo check kreuzberg-dart + kreuzberg-ffi for Android ABIs"
+    desc: "cargo check xberg-dart + xberg-ffi for Android ABIs"
     cmds:
       - task: rust:check:android
 
   check:ios:
-    desc: "cargo check kreuzberg-dart + kreuzberg-swift for iOS targets (macOS only)"
+    desc: "cargo check xberg-dart + xberg-swift for iOS targets (macOS only)"
     cmds:
       - task: rust:check:ios
 
@@ -349,12 +349,12 @@ tasks:
       - alef test --e2e --lang rust
 
   python:e2e:
-    desc: "Run Python e2e tests (builds kreuzberg-py via maturin first)"
+    desc: "Run Python e2e tests (builds xberg-py via maturin first)"
     cmds:
       - alef test --e2e --lang python
 
   go:e2e:
-    desc: "Run Go e2e tests (builds kreuzberg-ffi first)"
+    desc: "Run Go e2e tests (builds xberg-ffi first)"
     cmds:
       - alef test --e2e --lang go
 
@@ -384,12 +384,12 @@ tasks:
       - alef test --e2e --lang elixir
 
   java:e2e:
-    desc: "Run Java e2e tests (builds kreuzberg-ffi first)"
+    desc: "Run Java e2e tests (builds xberg-ffi first)"
     cmds:
       - alef test --e2e --lang java
 
   csharp:e2e:
-    desc: "Run C# e2e tests (builds kreuzberg-ffi first)"
+    desc: "Run C# e2e tests (builds xberg-ffi first)"
     cmds:
       - alef test --e2e --lang csharp
 
@@ -432,7 +432,7 @@ tasks:
     internal: true
     cmds:
       - alef e2e generate --lang swift
-      - cargo build --locked --release -p kreuzberg-swift
+      - cargo build --locked --release -p xberg-swift
       - bash scripts/setup-swift-bridge.sh
 
   _swift:e2e:test:
@@ -489,9 +489,9 @@ tasks:
     dir: packages/ruby
 
   php:build:
-    desc: "Build the kreuzberg-php native extension (cdylib)"
+    desc: "Build the xberg-php native extension (cdylib)"
     cmds:
-      - cargo build --locked --release -p kreuzberg-php
+      - cargo build --locked --release -p xberg-php
 
   php:format:
     desc: "Format PHP binding with php-cs-fixer"
@@ -564,7 +564,7 @@ tasks:
   kotlin-android:test:
     desc: "Run Kotlin/Android binding tests"
     cmds:
-      - cargo build --locked --release -p kreuzberg-ffi
+      - cargo build --locked --release -p xberg-ffi
       - gradle test --no-daemon
     dir: packages/kotlin
 
@@ -622,7 +622,7 @@ tasks:
   zig:test:
     desc: "Run Zig binding tests"
     cmds:
-      - cargo build --locked --release -p kreuzberg-ffi
+      - cargo build --locked --release -p xberg-ffi
       - zig build test
     dir: packages/zig
 

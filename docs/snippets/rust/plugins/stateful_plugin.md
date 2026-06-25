@@ -1,7 +1,7 @@
 ```rust title="Rust"
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use kreuzberg::KreuzbergError;
+use xberg::XbergError;
 
 struct StatefulPlugin {
     call_count: AtomicUsize,
@@ -34,7 +34,7 @@ impl PostProcessor for StatefulPlugin {
         self.call_count.fetch_add(1, Ordering::AcqRel);
 
         let mut cache = self.cache.lock()
-            .map_err(|_| KreuzbergError::plugin("Cache lock poisoned"))?;
+            .map_err(|_| XbergError::plugin("Cache lock poisoned"))?;
         cache.insert("last_mime".to_string(), result.mime_type.clone());
 
         Ok(())

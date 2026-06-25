@@ -12,14 +12,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
 
 echo "Example 1: Basic Excel Extraction\n";
 echo "=================================\n";
 
-$kreuzberg = new Kreuzberg();
-$result = $kreuzberg->extractFile('financial_report.xlsx');
+$xberg = new Xberg();
+$result = $xberg->extractFile('financial_report.xlsx');
 
 echo "Content:\n";
 echo $result->content . "\n\n";
@@ -37,7 +37,7 @@ $config2 = new ExtractionConfig(
     extractTables: true  
 );
 
-$result2 = (new Kreuzberg($config2))->extractFile('data.xlsx');
+$result2 = (new Xberg($config2))->extractFile('data.xlsx');
 
 if (count($result2->tables) > 0) {
     echo "Found " . count($result2->tables) . " table(s)\n\n";
@@ -55,7 +55,7 @@ if (count($result2->tables) > 0) {
 echo "Example 3: Convert Excel to CSV\n";
 echo "===============================\n";
 
-$result3 = $kreuzberg->extractFile('spreadsheet.xlsx');
+$result3 = $xberg->extractFile('spreadsheet.xlsx');
 
 foreach ($result3->tables as $i => $table) {
     $csvFilename = "sheet_{$i}.csv";
@@ -74,7 +74,7 @@ echo "\n";
 echo "Example 4: Convert Excel to JSON\n";
 echo "================================\n";
 
-$result4 = $kreuzberg->extractFile('data.xlsx');
+$result4 = $xberg->extractFile('data.xlsx');
 
 foreach ($result4->tables as $i => $table) {
     $jsonData = [];
@@ -106,7 +106,7 @@ echo "\n";
 echo "Example 5: Process Multiple Sheets\n";
 echo "==================================\n";
 
-$result5 = $kreuzberg->extractFile('multi_sheet_workbook.xlsx');
+$result5 = $xberg->extractFile('multi_sheet_workbook.xlsx');
 
 echo "Total sheets/tables: " . count($result5->tables) . "\n\n";
 
@@ -155,7 +155,7 @@ foreach ($result5->tables as $i => $table) {
 echo "Example 6: Extract Specific Data\n";
 echo "================================\n";
 
-$result6 = $kreuzberg->extractFile('budget.xlsx');
+$result6 = $xberg->extractFile('budget.xlsx');
 
 if (count($result6->tables) > 0) {
     $table = $result6->tables[0];
@@ -187,7 +187,7 @@ $excelFiles = [
     'march_sales.xlsx',
 ];
 
-$results = $kreuzberg->batchExtractFiles($excelFiles);
+$results = $xberg->batchExtractFiles($excelFiles);
 
 $totalSheets = 0;
 foreach ($results as $i => $result) {
@@ -204,7 +204,7 @@ echo "Total sheets across all files: {$totalSheets}\n\n";
 echo "Example 8: Convert Excel to HTML\n";
 echo "================================\n";
 
-$result8 = $kreuzberg->extractFile('report.xlsx');
+$result8 = $xberg->extractFile('report.xlsx');
 
 foreach ($result8->tables as $i => $table) {
     $html = "<table border='1'>\n";
@@ -234,7 +234,7 @@ echo "\n";
 echo "Example 9: Excel Metadata Extraction\n";
 echo "====================================\n";
 
-$result9 = $kreuzberg->extractFile('workbook.xlsx');
+$result9 = $xberg->extractFile('workbook.xlsx');
 
 echo "File Metadata:\n";
 echo "- Title: " . ($result9->metadata->title ?? 'N/A') . "\n";
@@ -257,12 +257,12 @@ echo "\n";
 echo "Example 10: Error Handling\n";
 echo "=========================\n";
 
-use Kreuzberg\Exceptions\KreuzbergException;
+use Xberg\Exceptions\XbergException;
 
 try {
-    $result = $kreuzberg->extractFile('protected.xlsx');
+    $result = $xberg->extractFile('protected.xlsx');
     echo "Success: Extracted " . count($result->tables) . " sheets\n";
-} catch (KreuzbergException $e) {
+} catch (XbergException $e) {
     echo "Error: {$e->getMessage()}\n";
     echo "Note: Password-protected files may require special handling\n";
 }

@@ -1,10 +1,10 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.ExtractionConfig;
-import dev.kreuzberg.ChunkingConfig;
-import dev.kreuzberg.EmbeddingConfig;
-import dev.kreuzberg.EmbeddingModelType;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.ExtractionConfig;
+import dev.xberg.ChunkingConfig;
+import dev.xberg.EmbeddingConfig;
+import dev.xberg.EmbeddingModelType;
 import java.util.List;
 
 ExtractionConfig config = ExtractionConfig.builder()
@@ -20,7 +20,7 @@ ExtractionConfig config = ExtractionConfig.builder()
     .build();
 
 try {
-    ExtractionResult result = Kreuzberg.extractFile("research_paper.pdf", config);
+    ExtractionResult result = Xberg.extractFile("research_paper.pdf", config);
 
     List<Object> chunks = result.getChunks() != null ? result.getChunks() : List.of();
     System.out.println("Found " + chunks.size() + " chunks for RAG pipeline");

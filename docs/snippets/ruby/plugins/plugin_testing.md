@@ -1,22 +1,22 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 require 'rspec'
 
 describe 'Plugin Testing' do
   it 'registers and calls post-processor' do
     processor = ->(result) { result['metadata'] ||= {}; result }
-    Kreuzberg.register_post_processor('test', processor)
-    expect(Kreuzberg.list_post_processors).to include('test')
-    Kreuzberg.unregister_post_processor('test')
+    Xberg.register_post_processor('test', processor)
+    expect(Xberg.list_post_processors).to include('test')
+    Xberg.unregister_post_processor('test')
   end
 
   it 'registers and validates' do
     validator = ->(result) do
       raise StandardError, 'Too short' if result['content'].length < 10
     end
-    Kreuzberg.register_validator('test-val', validator)
-    expect(Kreuzberg.list_validators).to include('test-val')
-    Kreuzberg.unregister_validator('test-val')
+    Xberg.register_validator('test-val', validator)
+    expect(Xberg.list_validators).to include('test-val')
+    Xberg.unregister_validator('test-val')
   end
 end
 ```

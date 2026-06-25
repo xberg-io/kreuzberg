@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -22,7 +22,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "document.pdf",
                 config
             ).ConfigureAwait(false);
@@ -37,7 +37,7 @@ class Program
                 }
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
@@ -46,7 +46,7 @@ class Program
 ```
 
 ```csharp title="C# - Markdown with Heading Context"
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -68,7 +68,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "document.md",
                 config
             ).ConfigureAwait(false);
@@ -85,7 +85,7 @@ class Program
                 }
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
@@ -94,7 +94,7 @@ class Program
 ```
 
 ```csharp title="C# - Prepend Heading Context"
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -112,7 +112,7 @@ class Program
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync(
+            var result = await XbergLib.ExtractFileAsync(
                 "document.md",
                 config
             ).ConfigureAwait(false);
@@ -123,7 +123,7 @@ class Program
                 Console.WriteLine(chunk.Content[..Math.Min(100, chunk.Content.Length)]);
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }

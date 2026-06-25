@@ -1,17 +1,17 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var processor = new UnregisterableProcessor();
 PostProcessorRegistry.Register(processor);
 
 Console.WriteLine("Processor registered");
-var processors = KreuzbergLib.ListPostProcessors();
+var processors = XbergLib.ListPostProcessors();
 Console.WriteLine($"Active processors: {string.Join(", ", processors)}");
 
 PostProcessorRegistry.Unregister(processor.Name);
 Console.WriteLine("Processor unregistered");
 
-processors = KreuzbergLib.ListPostProcessors();
+processors = XbergLib.ListPostProcessors();
 Console.WriteLine($"Active processors: {string.Join(", ", processors)}");
 
 public class UnregisterableProcessor : IPostProcessor

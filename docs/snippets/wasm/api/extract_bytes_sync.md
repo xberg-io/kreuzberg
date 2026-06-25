@@ -1,6 +1,6 @@
 ```typescript title="WASM"
 // WASM exposes only async extractBytes; await it from any async context.
-import init, { extractBytes } from "kreuzberg-wasm";
+import init, { extractBytes } from "xberg-wasm";
 
 await init();
 

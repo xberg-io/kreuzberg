@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler"
-Bundler::GemHelper.install_tasks name: "kreuzberg"
+Bundler::GemHelper.install_tasks name: "xberg"
 require "rb_sys/extensiontask"
 require "rspec/core/rake_task"
 
@@ -9,7 +9,7 @@ require "rspec/core/rake_task"
 # the gemspec and the native extension's Cargo manifest.
 GEM_ROOT = __dir__
 # Loaded gemspec used by Rake::ExtensionTask to compile the native extension.
-GEMSPEC = Gem::Specification.load(File.expand_path("kreuzberg.gemspec", GEM_ROOT))
+GEMSPEC = Gem::Specification.load(File.expand_path("xberg.gemspec", GEM_ROOT))
 
 # Set of supported platform identifiers for native gem cross-compilation.
 # Used by `rb_sys/extensiontask` to drive the `rake compile:<platform>` tasks
@@ -31,7 +31,7 @@ CROSS_PLATFORMS = %w[
 # cwd, breaking the compile pipeline. Patch Cargo::Metadata#cargo_metadata to add
 # the explicit `--manifest-path` pointing at the crate's Cargo.toml so the lookup
 # is unambiguous regardless of cwd.
-MANIFEST_PATH = File.expand_path("ext/kreuzberg_rb/native/Cargo.toml", GEM_ROOT)
+MANIFEST_PATH = File.expand_path("ext/xberg_rb/native/Cargo.toml", GEM_ROOT)
 
 # @!visibility private
 module RbSys
@@ -62,9 +62,9 @@ module RbSys
   end
 end
 
-RbSys::ExtensionTask.new("kreuzberg-rb", GEMSPEC) do |ext|
+RbSys::ExtensionTask.new("xberg-rb", GEMSPEC) do |ext|
   ext.lib_dir = "lib"
-  ext.ext_dir = "ext/kreuzberg_rb/native"
+  ext.ext_dir = "ext/xberg_rb/native"
   ext.source_pattern = "*.{}"
   ext.platform = "ruby"
   ext.cross_compile = true

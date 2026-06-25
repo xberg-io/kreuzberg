@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -18,7 +18,7 @@ fun main() {
         .withOcr(Optional.of(ocr))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("scanned.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("scanned.pdf"), null, config)
 
     result.ocrElements()?.forEach { element ->
         println("Text: ${element.text()}")

@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 ocr_backends <- list_ocr_backends()
 cat(sprintf("OCR backends: %s\n", paste(ocr_backends, collapse=", ")))

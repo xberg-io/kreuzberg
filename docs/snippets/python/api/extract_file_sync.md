@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, ExtractionConfig
+from xberg import extract_file_sync, ExtractionConfig
 
 result = extract_file_sync("document.pdf", config=ExtractionConfig())
 

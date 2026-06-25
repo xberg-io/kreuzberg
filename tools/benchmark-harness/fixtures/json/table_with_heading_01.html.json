@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/json/table_with_heading_01.html.json",
 	"file_type": "json",
 	"file_size": 5001,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+	"expected_frameworks": ["xberg", "markitdown", "tika"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/xlsx/test_xlsb.xlsb",
 	"file_type": "xlsb",
 	"file_size": 9429,
-	"expected_frameworks": ["kreuzberg", "tika"],
+	"expected_frameworks": ["xberg", "tika"],
 	"metadata": {
 		"description": "Excel Binary Spreadsheet with 3 sheets and tabular data",
 		"category": "xlsb",

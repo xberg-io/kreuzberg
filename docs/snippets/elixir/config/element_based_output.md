@@ -1,11 +1,11 @@
 ```elixir title="Element-Based Output (Elixir)"
 # Configure element-based output
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   output_format: :element_based
 }
 
 # Extract document
-{:ok, result} = Kreuzberg.extract_file_sync("document.pdf", config)
+{:ok, result} = Xberg.extract_file_sync("document.pdf", config)
 
 # Access elements
 Enum.each(result.elements, fn element ->

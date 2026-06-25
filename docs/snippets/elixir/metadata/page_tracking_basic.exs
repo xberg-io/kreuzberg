@@ -2,14 +2,14 @@
 # Track which pages content originated from during extraction
 # Useful for cross-referencing extracted content back to source documents
 
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
   # Standard extraction configuration
   use_cache: true
 }
 
-{:ok, result} = Kreuzberg.extract_file("multi_page_document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("multi_page_document.pdf", nil, config)
 
 # Access metadata to retrieve page information
 metadata = result.metadata || %{}

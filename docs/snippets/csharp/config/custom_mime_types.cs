@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -6,7 +6,7 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = KreuzbergLib.ExtractBytesSync(
+var result = XbergLib.ExtractBytesSync(
     new BytesWithMime(fileBytes, "application/pdf"),
     config
 );

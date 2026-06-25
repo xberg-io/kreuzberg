@@ -13,7 +13,7 @@ async function extractWithConfig(
   configPath: string
 ): Promise<ExtractionResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn("kreuzberg", [
+    const child = spawn("xberg", [
       "extract",
       filePath,
       "--config",
@@ -45,7 +45,7 @@ async function extractWithConfig(
   });
 }
 
-const configFile = "kreuzberg.toml";
+const configFile = "xberg.toml";
 const document = "document.pdf";
 
 console.log("Extracting " + document + " with config " + configFile);

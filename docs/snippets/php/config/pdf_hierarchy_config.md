@@ -2,10 +2,10 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\PdfConfig;
-use Kreuzberg\HierarchyConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\PdfConfig;
+use Xberg\HierarchyConfig;
 
 $config = new ExtractionConfig(
     pdfOptions: new PdfConfig(
@@ -19,7 +19,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Hierarchy levels: " . count($result->getHierarchy()) . "\n";
 ?>

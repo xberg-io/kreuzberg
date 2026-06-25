@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 var processInfo = new ProcessStartInfo
 {
-    FileName = "kreuzberg",
+    FileName = "xberg",
     Arguments = "mcp",
     UseShellExecute = false,
     RedirectStandardOutput = true,

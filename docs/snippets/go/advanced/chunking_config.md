@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -11,12 +11,12 @@ func main() {
 	normalize := true
 	batchSize := int32(32)
 
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
-				Model:     kreuzberg.EmbeddingModelType_Preset("all-minilm-l6-v2"),
+			Embedding: &xberg.EmbeddingConfig{
+				Model:     xberg.EmbeddingModelType_Preset("all-minilm-l6-v2"),
 				Normalize: &normalize,
 				BatchSize: &batchSize,
 			},

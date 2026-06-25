@@ -1,17 +1,17 @@
 ```php
 <?php
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\EmbeddingConfig;
-use Kreuzberg\Config\EmbeddingModelType;
+use Xberg\Xberg;
+use Xberg\Config\EmbeddingConfig;
+use Xberg\Config\EmbeddingModelType;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 // Embed with default config (balanced preset)
-$embeddings = $kreuzberg->embed(["Hello world", "How are you?"]);
+$embeddings = $xberg->embed(["Hello world", "How are you?"]);
 
 // Embed with specific preset
 $config = new EmbeddingConfig(model: EmbeddingModelType::preset("fast"));
-$embeddings = $kreuzberg->embed(["Hello world"], $config);
+$embeddings = $xberg->embed(["Hello world"], $config);
 
 // Each embedding is a float array
 foreach ($embeddings as $i => $vector) {

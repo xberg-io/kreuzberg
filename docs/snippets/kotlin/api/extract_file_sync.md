@@ -1,10 +1,10 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 
 fun main() {
     val config = ExtractionConfig.builder().build()
-    val result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("document.pdf"), null, config)
 
     println(result.content())
     println("MIME type: ${result.mimeType()}")

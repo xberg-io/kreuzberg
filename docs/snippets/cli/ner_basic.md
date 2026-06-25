@@ -1,5 +1,5 @@
 ```bash title="Terminal"
-kreuzberg extract contract.pdf \
-  --config kreuzberg.toml \
-  --api-key "$KREUZBERG_LLM_API_KEY"
+xberg extract contract.pdf \
+  --config xberg.toml \
+  --api-key "$XBERG_LLM_API_KEY"
 ```

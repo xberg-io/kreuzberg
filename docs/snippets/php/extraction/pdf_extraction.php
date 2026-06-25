@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\PdfConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\PdfConfig;
 
-$kreuzberg = new Kreuzberg();
-$result = $kreuzberg->extractFile('document.pdf');
+$xberg = new Xberg();
+$result = $xberg->extractFile('document.pdf');
 
 echo "PDF Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -33,8 +33,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('report.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('report.pdf');
 
 echo "Extracted Tables:\n";
 echo str_repeat('=', 60) . "\n";
@@ -77,13 +77,13 @@ $formattedConfig = new ExtractionConfig(
     outputFormat: 'markdown'
 );
 
-$kreuzberg = new Kreuzberg($formattedConfig);
-$result = $kreuzberg->extractFile('formatted.pdf');
+$xberg = new Xberg($formattedConfig);
+$result = $xberg->extractFile('formatted.pdf');
 
 file_put_contents('output.md', $result->content);
 echo "Saved formatted output to: output.md\n";
 
-$result = $kreuzberg->extractFile('document.pdf');
+$result = $xberg->extractFile('document.pdf');
 $content = $result->content;
 
 $sections = [];

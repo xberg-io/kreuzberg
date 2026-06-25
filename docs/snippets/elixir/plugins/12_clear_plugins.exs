@@ -9,7 +9,7 @@ defmodule MyApp.Plugins.CleanupExample do
 
   # Simple post-processor
   defmodule TextCleaner do
-    @behaviour Kreuzberg.Plugin.PostProcessor
+    @behaviour Xberg.Plugin.PostProcessor
 
     @impl true
     def name, do: "text_cleaner"
@@ -34,7 +34,7 @@ defmodule MyApp.Plugins.CleanupExample do
 
   # Simple validator
   defmodule ContentValidator do
-    @behaviour Kreuzberg.Plugin.Validator
+    @behaviour Xberg.Plugin.Validator
 
     @impl true
     def name, do: "content_validator"
@@ -72,7 +72,7 @@ defmodule MyApp.Plugins.CleanupExample do
 
   # Simple OCR backend
   defmodule MockOCRBackend do
-    @behaviour Kreuzberg.Plugin.OcrBackend
+    @behaviour Xberg.Plugin.OcrBackend
 
     @impl true
     def name, do: "mock_ocr"
@@ -111,14 +111,14 @@ end
 
 # Register multiple plugins
 IO.puts("=== Registering Plugins ===")
-:ok = Kreuzberg.Plugin.register_post_processor(:cleaner, MyApp.Plugins.CleanupExample.TextCleaner)
-:ok = Kreuzberg.Plugin.register_validator(MyApp.Plugins.CleanupExample.ContentValidator)
-:ok = Kreuzberg.Plugin.register_ocr_backend(MyApp.Plugins.CleanupExample.MockOCRBackend)
+:ok = Xberg.Plugin.register_post_processor(:cleaner, MyApp.Plugins.CleanupExample.TextCleaner)
+:ok = Xberg.Plugin.register_validator(MyApp.Plugins.CleanupExample.ContentValidator)
+:ok = Xberg.Plugin.register_ocr_backend(MyApp.Plugins.CleanupExample.MockOCRBackend)
 
 # List registered plugins before clearing
-{:ok, post_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, validators} = Kreuzberg.Plugin.list_validators()
-{:ok, ocr_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, post_procs} = Xberg.Plugin.list_post_processors()
+{:ok, validators} = Xberg.Plugin.list_validators()
+{:ok, ocr_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Before clearing:")
 IO.puts("  Post-processors: #{length(post_procs)}")
@@ -127,37 +127,37 @@ IO.puts("  OCR backends: #{length(ocr_backends)}")
 
 # Clear post-processors
 IO.puts("\n=== Clearing Post-Processors ===")
-:ok = Kreuzberg.Plugin.clear_post_processors()
-{:ok, post_procs_after} = Kreuzberg.Plugin.list_post_processors()
+:ok = Xberg.Plugin.clear_post_processors()
+{:ok, post_procs_after} = Xberg.Plugin.list_post_processors()
 IO.puts("Post-processors after clearing: #{length(post_procs_after)}")
 
 # Validators and OCR backends should still be registered
-{:ok, validators_check} = Kreuzberg.Plugin.list_validators()
-{:ok, ocr_backends_check} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, validators_check} = Xberg.Plugin.list_validators()
+{:ok, ocr_backends_check} = Xberg.Plugin.list_ocr_backends()
 IO.puts("Validators still registered: #{length(validators_check)}")
 IO.puts("OCR backends still registered: #{length(ocr_backends_check)}")
 
 # Clear validators
 IO.puts("\n=== Clearing Validators ===")
-:ok = Kreuzberg.Plugin.clear_validators()
-{:ok, validators_after} = Kreuzberg.Plugin.list_validators()
+:ok = Xberg.Plugin.clear_validators()
+{:ok, validators_after} = Xberg.Plugin.list_validators()
 IO.puts("Validators after clearing: #{length(validators_after)}")
 
 # OCR backends should still be registered
-{:ok, ocr_backends_check2} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, ocr_backends_check2} = Xberg.Plugin.list_ocr_backends()
 IO.puts("OCR backends still registered: #{length(ocr_backends_check2)}")
 
 # Clear OCR backends
 IO.puts("\n=== Clearing OCR Backends ===")
-:ok = Kreuzberg.Plugin.clear_ocr_backends()
-{:ok, ocr_backends_after} = Kreuzberg.Plugin.list_ocr_backends()
+:ok = Xberg.Plugin.clear_ocr_backends()
+{:ok, ocr_backends_after} = Xberg.Plugin.list_ocr_backends()
 IO.puts("OCR backends after clearing: #{length(ocr_backends_after)}")
 
 # Verify all are cleared
 IO.puts("\n=== Final State (All Cleared) ===")
-{:ok, final_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, final_validators} = Kreuzberg.Plugin.list_validators()
-{:ok, final_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, final_procs} = Xberg.Plugin.list_post_processors()
+{:ok, final_validators} = Xberg.Plugin.list_validators()
+{:ok, final_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Post-processors: #{length(final_procs)}")
 IO.puts("Validators: #{length(final_validators)}")
@@ -167,23 +167,23 @@ IO.puts("OCR backends: #{length(final_backends)}")
 IO.puts("\n=== Common Use Case: Testing Setup/Teardown ===")
 
 # Setup for test
-Kreuzberg.Plugin.register_post_processor(:test_proc, MyApp.Plugins.CleanupExample.TextCleaner)
-Kreuzberg.Plugin.register_validator(MyApp.Plugins.CleanupExample.ContentValidator)
+Xberg.Plugin.register_post_processor(:test_proc, MyApp.Plugins.CleanupExample.TextCleaner)
+Xberg.Plugin.register_validator(MyApp.Plugins.CleanupExample.ContentValidator)
 
 # Run test
-{:ok, test_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, test_vals} = Kreuzberg.Plugin.list_validators()
+{:ok, test_procs} = Xberg.Plugin.list_post_processors()
+{:ok, test_vals} = Xberg.Plugin.list_validators()
 IO.puts("Test setup complete: #{length(test_procs)} processors, #{length(test_vals)} validators")
 
 # Teardown - clear everything
-Kreuzberg.Plugin.clear_post_processors()
-Kreuzberg.Plugin.clear_validators()
-Kreuzberg.Plugin.clear_ocr_backends()
+Xberg.Plugin.clear_post_processors()
+Xberg.Plugin.clear_validators()
+Xberg.Plugin.clear_ocr_backends()
 
 # Verify clean state for next test
-{:ok, clean_procs} = Kreuzberg.Plugin.list_post_processors()
-{:ok, clean_vals} = Kreuzberg.Plugin.list_validators()
-{:ok, clean_backends} = Kreuzberg.Plugin.list_ocr_backends()
+{:ok, clean_procs} = Xberg.Plugin.list_post_processors()
+{:ok, clean_vals} = Xberg.Plugin.list_validators()
+{:ok, clean_backends} = Xberg.Plugin.list_ocr_backends()
 
 IO.puts("Test teardown complete: #{length(clean_procs)} processors, #{length(clean_vals)} validators, #{length(clean_backends)} backends")
 ```

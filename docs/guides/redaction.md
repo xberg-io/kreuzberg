@@ -1,6 +1,6 @@
 # Redaction & Anonymisation
 
-Rewrite every textual field of `ExtractionResult` to remove PII before the result leaves Kreuzberg. The pattern engine covers regex-detectable categories (emails, phones, SSNs, credit cards, IBANs, IP addresses, dates of birth, SWIFT/BIC, postal codes); the optional NER backend adds PERSON / ORGANIZATION / LOCATION. The audit trail lands on `ExtractionResult.redaction_report`.
+Rewrite every textual field of `ExtractionResult` to remove PII before the result leaves Xberg. The pattern engine covers regex-detectable categories (emails, phones, SSNs, credit cards, IBANs, IP addresses, dates of birth, SWIFT/BIC, postal codes); the optional NER backend adds PERSON / ORGANIZATION / LOCATION. The audit trail lands on `ExtractionResult.redaction_report`.
 
 !!! Note "Feature gate"
     Requires the `redaction` Cargo feature (pattern engine only; ships in `no-ort-target`, `wasm-target`, `android-target`, `full`). Enable `redaction-ml` to add the NER backend for name/organisation/location categories.

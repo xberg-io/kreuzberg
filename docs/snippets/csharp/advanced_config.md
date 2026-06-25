@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -15,7 +15,7 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = KreuzbergLib.ExtractFileSync("document.pdf", config);
+var result = XbergLib.ExtractFileSync("document.pdf", config);
 
 foreach (var chunk in result.Chunks)
 {

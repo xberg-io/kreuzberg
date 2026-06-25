@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/fictionbook/basic.fb2",
 	"file_type": "fb2",
 	"file_size": 1400,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "Basic FictionBook document with simple content",
 		"category": "literature"

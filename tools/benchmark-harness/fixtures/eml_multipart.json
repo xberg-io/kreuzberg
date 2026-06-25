@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/email/multipart_email.eml",
 	"file_type": "eml",
 	"file_size": 763,
-	"expected_frameworks": ["kreuzberg", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "tika", "unstructured"],
 	"metadata": {
 		"description": "Multipart email with both plain text and HTML alternatives",
 		"category": "multipart"

@@ -40,16 +40,16 @@ The `output_format` field determines:
 
 Key format differs by framework family:
 
-- **kreuzberg** (`kreuzberg-*`): `{framework_name}:{mode}` — the output format is already encoded
-  in the framework name (e.g. `kreuzberg-markdown-baseline`), so repeating it in the key is
+- **xberg** (`xberg-*`): `{framework_name}:{mode}` — the output format is already encoded
+  in the framework name (e.g. `xberg-markdown-baseline`), so repeating it in the key is
   redundant.
 - **competitors** (all other frameworks): `{framework}:{output_format}:{mode}` — format is not
   encoded in the name, so the key carries it explicitly.
 
 Examples:
 
-- `kreuzberg-markdown-baseline:single`
-- `kreuzberg-plaintext-paddle-ocr:batch`
+- `xberg-markdown-baseline:single`
+- `xberg-plaintext-paddle-ocr:batch`
 - `unstructured:plaintext:single`
 - `docling:markdown:single`
 
@@ -131,7 +131,7 @@ One row per unique combination of (framework, output_format, execution_mode, fix
 
 ```json
 {
-  "framework": "kreuzberg-markdown-baseline",
+  "framework": "xberg-markdown-baseline",
   "output_format": "markdown",
   "execution_mode": "single",
   "ocr": false,
@@ -194,7 +194,7 @@ Contains all cross-framework rankings split by output format for quality metrics
 
 ```json
 {
-  "framework_mode": "kreuzberg-markdown-baseline:single",
+  "framework_mode": "xberg-markdown-baseline:single",
   "rank": 1,
   "value": 95.5, // The metric value (duration, throughput, etc.)
   "relative": 1.0 // Ratio relative to best (1.0 = best)
@@ -206,29 +206,29 @@ Contains all cross-framework rankings split by output format for quality metrics
 ### Breaking Changes
 
 1. **Schema version**: Bumped to `"2.4.0"`
-2. **Kreuzberg aggregate key format**: Changed from `framework:output_format:mode` to
-   `framework_name:mode` for all `kreuzberg-*` frameworks. Competitor key format
+2. **Xberg aggregate key format**: Changed from `framework:output_format:mode` to
+   `framework_name:mode` for all `xberg-*` frameworks. Competitor key format
    (`framework:output_format:mode`) is unchanged.
 
-### Kreuzberg Consolidation
+### Xberg Consolidation
 
-Language-binding frameworks (`kreuzberg-py`, `kreuzberg-node`, `kreuzberg-rb`, `kreuzberg-go`,
-`kreuzberg-java`, `kreuzberg-csharp`, `kreuzberg-elixir`, `kreuzberg-php`, `kreuzberg-rust`, etc.)
-have been removed. They are replaced by three native pipelines run directly via the kreuzberg CLI:
+Language-binding frameworks (`xberg-py`, `xberg-node`, `xberg-rb`, `xberg-go`,
+`xberg-java`, `xberg-csharp`, `xberg-elixir`, `xberg-php`, `xberg-rust`, etc.)
+have been removed. They are replaced by three native pipelines run directly via the xberg CLI:
 
 | Pipeline  | Markdown name                   | Plaintext name                   |
 | --------- | ------------------------------- | -------------------------------- |
-| Baseline  | `kreuzberg-markdown-baseline`   | `kreuzberg-plaintext-baseline`   |
-| Layout    | `kreuzberg-markdown-layout`     | `kreuzberg-plaintext-layout`     |
-| PaddleOCR | `kreuzberg-markdown-paddle-ocr` | `kreuzberg-plaintext-paddle-ocr` |
+| Baseline  | `xberg-markdown-baseline`   | `xberg-plaintext-baseline`   |
+| Layout    | `xberg-markdown-layout`     | `xberg-plaintext-layout`     |
+| PaddleOCR | `xberg-markdown-paddle-ocr` | `xberg-plaintext-paddle-ocr` |
 
-Batch variants append `-batch` to the framework name (e.g. `kreuzberg-markdown-baseline-batch`),
-which the harness normalises to aggregate key `kreuzberg-markdown-baseline:batch`.
+Batch variants append `-batch` to the framework name (e.g. `xberg-markdown-baseline-batch`),
+which the harness normalises to aggregate key `xberg-markdown-baseline:batch`.
 
 ### Key Format Rationale
 
-The format component is implicit in the kreuzberg framework name itself. Duplicating it in the
-aggregate key (`kreuzberg-markdown-baseline:markdown:single`) would be redundant and confusing.
+The format component is implicit in the xberg framework name itself. Duplicating it in the
+aggregate key (`xberg-markdown-baseline:markdown:single`) would be redundant and confusing.
 Competitor names carry no format information, so they continue to need it in the key
 (`docling:markdown:single`).
 

@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractFile } from '@kreuzberg/node';
+import { extractFile } from '@xberg/node';
 
 const result = await extractFile("ticket.pdf", { qrCodes: true });
 for (const image of result.images ?? []) {

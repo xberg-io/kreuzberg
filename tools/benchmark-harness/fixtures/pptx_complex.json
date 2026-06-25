@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/pptx/powerpoint_sample.pptx",
 	"file_type": "pptx",
 	"file_size": 45849,
-	"expected_frameworks": ["kreuzberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "markitdown", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Complex PowerPoint presentation - 45KB slides with mixed content",
 		"category": "pptx-complex",

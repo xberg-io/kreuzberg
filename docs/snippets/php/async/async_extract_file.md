@@ -3,13 +3,13 @@
 
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Exceptions\KreuzbergException;
-use function Kreuzberg\extract_file_async;
+use Xberg\Xberg;
+use Xberg\Exceptions\XbergException;
+use function Xberg\extract_file_async;
 
 // OOP API: async file extraction
-$kreuzberg = new Kreuzberg();
-$deferred = $kreuzberg->extractFileAsync('document.pdf');
+$xberg = new Xberg();
+$deferred = $xberg->extractFileAsync('document.pdf');
 
 // Non-blocking: check if ready
 if ($deferred->isReady()) {
@@ -41,7 +41,7 @@ $result = $deferred->getResult();
 echo $result->content;
 
 // Static API
-$deferred = Kreuzberg::extractFileAsyncStatic('document.pdf');
+$deferred = Xberg::extractFileAsyncStatic('document.pdf');
 $result = $deferred->getResult();
 echo $result->content;
 ```

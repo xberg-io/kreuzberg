@@ -1,9 +1,9 @@
 # Plugin System
 
-Kreuzberg's extraction pipeline is entirely plugin-driven. Every format
+Xberg's extraction pipeline is entirely plugin-driven. Every format
 extractor, OCR engine, post-processor, validator, and renderer is a plugin that
 registers itself into a typed registry. The pipeline queries these registries
-at each stage to find the right handler. You extend Kreuzberg by writing your
+at each stage to find the right handler. You extend Xberg by writing your
 own plugin and registering it. The pipeline picks it up automatically.
 
 This page explains the six plugin categories, the registry mechanism, the plugin
@@ -82,13 +82,13 @@ boilerplate.
 
 ### DocumentExtractor
 
-A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file
+A `DocumentExtractor` teaches Xberg how to extract text from a specific file
 format. It declares supported MIME types and provides async methods to extract
 from file paths or raw bytes.
 
 See [`DocumentExtractor`](../reference/types.md) for the trait signature.
 
-Kreuzberg ships with built-in extractors for PDF, Excel, images (routed to
+Xberg ships with built-in extractors for PDF, Excel, images (routed to
 OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
 
 **Priority resolution.** When two extractors are registered for the same MIME
@@ -211,7 +211,7 @@ pub trait Renderer: Send + Sync {
 }
 ```
 
-Kreuzberg ships with four built-in renderers:
+Xberg ships with four built-in renderers:
 
 | Renderer     | Output       | Description                                                              |
 | ------------ | ------------ | ------------------------------------------------------------------------ |
@@ -223,7 +223,7 @@ Kreuzberg ships with four built-in renderers:
 To register a custom renderer:
 
 ```rust title="custom_renderer.rs"
-use kreuzberg::plugins::registry::get_renderer_registry;
+use xberg::plugins::registry::get_renderer_registry;
 use std::sync::Arc;
 
 let registry = get_renderer_registry();
@@ -307,11 +307,11 @@ them concurrently from Tokio's worker thread pool. For mutable internal state, u
 
 Plugins can be registered in two ways:
 
-1. **Built-in** — automatically registered when Kreuzberg initializes. These are the
+1. **Built-in** — automatically registered when Xberg initializes. These are the
    default extractors, OCR backends, and processors. The seven OSS v5 enrichment
    processors (NER, redaction, summarisation, translation, page classification,
    image captioning, QR-code detection) all register through the shared
-   `register_builtin()` umbrella in `crates/kreuzberg/src/plugins/processor/builtin/mod.rs`.
+   `register_builtin()` umbrella in `crates/xberg/src/plugins/processor/builtin/mod.rs`.
    Each is gated behind its Cargo feature (`ner`, `redaction`, `summarization`,
    `translation`, `classification`, `captioning`, `qr-codes`) and only joins the
    registry when the feature is active.

@@ -1,7 +1,7 @@
 ```python title="Python"
-from kreuzberg import extract_file_sync, extract_bytes_sync, ExtractionConfig
-from kreuzberg import (
-    KreuzbergError,
+from xberg import extract_file_sync, extract_bytes_sync, ExtractionConfig
+from xberg import (
+    XbergError,
     ParsingError,
     OCRError,
     ValidationError,
@@ -16,7 +16,7 @@ except ParsingError as e:
     print(f"Failed to parse document: {e}")
 except OCRError as e:
     print(f"OCR processing failed: {e}")
-except KreuzbergError as e:
+except XbergError as e:
     print(f"Extraction error: {e}")
 
 try:
@@ -28,6 +28,6 @@ except ValidationError as e:
     print(f"Invalid configuration: {e}")
 except OCRError as e:
     print(f"OCR failed: {e}")
-except KreuzbergError as e:
+except XbergError as e:
     print(f"Extraction failed: {e}")
 ```

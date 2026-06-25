@@ -1,6 +1,6 @@
 ```python title="Python"
 import asyncio
-from kreuzberg import embed, EmbeddingConfig, EmbeddingModelType, LlmConfig
+from xberg import embed, EmbeddingConfig, EmbeddingModelType, LlmConfig
 
 async def main() -> None:
     config = EmbeddingConfig(

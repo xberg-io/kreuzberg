@@ -107,43 +107,43 @@ mod tests {
     #[test]
     fn test_load_single_results_file() {
         let dir = tempfile::tempdir().expect("create temp dir");
-        let results = vec![make_result("kreuzberg-rust")];
+        let results = vec![make_result("xberg-rust")];
         let json = serde_json::to_string(&results).expect("serialize");
         fs::write(dir.path().join("results.json"), &json).expect("write");
 
         let loaded = load_run_results(dir.path()).expect("load");
         assert_eq!(loaded.len(), 1);
-        assert_eq!(loaded[0].framework, "kreuzberg-rust");
+        assert_eq!(loaded[0].framework, "xberg-rust");
     }
 
     #[test]
     fn test_batch_directory_tags_framework_name() {
         let dir = tempfile::tempdir().expect("create temp dir");
-        let batch_dir = dir.path().join("kreuzberg-rust-batch");
+        let batch_dir = dir.path().join("xberg-rust-batch");
         fs::create_dir_all(&batch_dir).expect("create subdir");
 
-        let results = vec![make_result("kreuzberg-rust")];
+        let results = vec![make_result("xberg-rust")];
         let json = serde_json::to_string(&results).expect("serialize");
         fs::write(batch_dir.join("results.json"), &json).expect("write");
 
         let loaded = load_run_results(dir.path()).expect("load");
         assert_eq!(loaded.len(), 1);
-        assert_eq!(loaded[0].framework, "kreuzberg-rust-batch");
+        assert_eq!(loaded[0].framework, "xberg-rust-batch");
     }
 
     #[test]
     fn test_batch_suffix_not_doubled() {
         let dir = tempfile::tempdir().expect("create temp dir");
-        let batch_dir = dir.path().join("kreuzberg-rust-batch");
+        let batch_dir = dir.path().join("xberg-rust-batch");
         fs::create_dir_all(&batch_dir).expect("create subdir");
 
-        let results = vec![make_result("kreuzberg-rust-batch")];
+        let results = vec![make_result("xberg-rust-batch")];
         let json = serde_json::to_string(&results).expect("serialize");
         fs::write(batch_dir.join("results.json"), &json).expect("write");
 
         let loaded = load_run_results(dir.path()).expect("load");
         assert_eq!(loaded.len(), 1);
-        assert_eq!(loaded[0].framework, "kreuzberg-rust-batch");
+        assert_eq!(loaded[0].framework, "xberg-rust-batch");
     }
 
     #[test]

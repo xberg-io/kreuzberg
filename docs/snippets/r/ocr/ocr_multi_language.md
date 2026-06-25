@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Configure multi-language OCR (English, French, German)
 config <- list(

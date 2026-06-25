@@ -1,5 +1,5 @@
 ```elixir title="Elixir"
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 # Process document with quality filtering
 config = %ExtractionConfig{
@@ -9,7 +9,7 @@ config = %ExtractionConfig{
   }
 }
 
-case Kreuzberg.extract_file("document.pdf", nil, config) do
+case Xberg.extract_file("document.pdf", nil, config) do
   {:ok, result} ->
     IO.puts("=== Quality Processing ===\n")
 

@@ -3,7 +3,7 @@
 Test custom plugins to verify they implement required interfaces correctly.
 
 ```typescript title="WASM"
-import init, { registerValidator, registerPostProcessor } from "kreuzberg-wasm";
+import init, { registerValidator, registerPostProcessor } from "xberg-wasm";
 
 await init();
 

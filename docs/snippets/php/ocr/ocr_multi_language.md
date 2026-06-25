@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
 
 // Extract text from multilingual documents
 // Specify multiple language codes separated by plus (+)
@@ -17,8 +17,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('multilingual_document.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('multilingual_document.pdf');
 
 echo "Multilingual OCR Results:\n";
 echo "Supported languages: English, French, German\n";
@@ -33,8 +33,8 @@ $autoDetectConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($autoDetectConfig);
-$result = $kreuzberg->extractFile('european_document.pdf');
+$xberg = new Xberg($autoDetectConfig);
+$result = $xberg->extractFile('european_document.pdf');
 
 echo "European Language Document:\n";
 echo "Extracted " . strlen($result->content) . " characters\n";
@@ -48,8 +48,8 @@ $mixedConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($mixedConfig);
-$result = $kreuzberg->extractFile('asian_document.pdf');
+$xberg = new Xberg($mixedConfig);
+$result = $xberg->extractFile('asian_document.pdf');
 
 echo "Multi-script Document:\n";
 echo "Characters extracted: " . mb_strlen($result->content) . "\n";

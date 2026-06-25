@@ -13,8 +13,8 @@ updates:
     directories:
       - "/"
     ignore:
-      - dependency-name: "kreuzberg"
-      - dependency-name: "kreuzberg-ffi"
+      - dependency-name: "xberg"
+      - dependency-name: "xberg-ffi"
     patterns: ["*"]
     multi-ecosystem-group: "dependencies"
 
@@ -28,8 +28,8 @@ updates:
   - package-ecosystem: "npm"
     directories:
       - "/"
-      - "/crates/kreuzberg-node"
-      - "/crates/kreuzberg-wasm"
+      - "/crates/xberg-node"
+      - "/crates/xberg-wasm"
       - "/packages/typescript/core"
     patterns: ["*"]
     multi-ecosystem-group: "dependencies"

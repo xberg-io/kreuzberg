@@ -12,7 +12,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "Python"
 
     ```python
-    from kreuzberg import rerank_sync, RerankerConfig, RerankerModelType
+    from xberg import rerank_sync, RerankerConfig, RerankerModelType
 
     query = "How to train a dog"
     documents = [
@@ -34,7 +34,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "TypeScript"
 
     ```typescript
-    import { rerankSync, RerankerConfig } from "@kreuzberg/node";
+    import { rerankSync, RerankerConfig } from "@xberg/node";
 
     const config: RerankerConfig = {
       model: { type: "preset", name: "fast" },
@@ -59,7 +59,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "Rust"
 
     ```rust
-    use kreuzberg::{rerank, RerankerConfig, RerankerModelType};
+    use xberg::{rerank, RerankerConfig, RerankerModelType};
 
     let query = "How to train a dog".to_string();
     let documents = vec![
@@ -78,19 +78,19 @@ Use the `fast` preset to rerank three documents against a query.
     for r in results {
         println!("#{}: {:.3} — {}", r.index, r.score, r.document);
     }
-    # Ok::<(), kreuzberg::KreuzbergError>(())
+    # Ok::<(), xberg::XbergError>(())
     ```
 
 === "Go"
 
     ```go
-    import "github.com/xberg-io/kreuzberg/v5"
+    import "github.com/xberg-io/xberg/v5"
 
-    config := kreuzberg.RerankerConfig{
-        Model: &kreuzberg.RerankerModelTypePreset{Name: "fast"},
-        TopK:  kreuzberg.Ptr(uint(2)),
+    config := xberg.RerankerConfig{
+        Model: &xberg.RerankerModelTypePreset{Name: "fast"},
+        TopK:  xberg.Ptr(uint(2)),
     }
-    results, err := kreuzberg.Rerank(
+    results, err := xberg.Rerank(
         "How to train a dog",
         []string{
             "Dog training requires patience and consistency.",
@@ -110,14 +110,14 @@ Use the `fast` preset to rerank three documents against a query.
 === "Java"
 
     ```java
-    import dev.kreuzberg.*;
+    import dev.xberg.*;
 
     RerankerConfig config = new RerankerConfig.Builder()
         .model(new RerankerModelType.Preset("fast"))
         .topK(2L)
         .build();
 
-    var results = Kreuzberg.rerank(
+    var results = Xberg.rerank(
         "How to train a dog",
         java.util.List.of(
             "Dog training requires patience and consistency.",
@@ -141,14 +141,14 @@ Use the `fast` preset to rerank three documents against a query.
 | `quality` | Complex queries where accuracy matters more than latency. 560M parameters. |
 | `multilingual` | International documents or long context (up to 8192 tokens). 100+ languages. |
 
-All four download lazily from HuggingFace on first use and cache under `~/.cache/kreuzberg/rerankers/`.
+All four download lazily from HuggingFace on first use and cache under `~/.cache/xberg/rerankers/`.
 
 ## Custom HuggingFace cross-encoder
 
 To use any ONNX cross-encoder from HuggingFace, point the `Custom` variant at its repository ID. The repo must contain an `onnx/model.onnx` file.
 
 ```python
-from kreuzberg import rerank_sync, RerankerConfig, RerankerModelType
+from xberg import rerank_sync, RerankerConfig, RerankerModelType
 
 config = RerankerConfig(
     model=RerankerModelType(
@@ -167,7 +167,7 @@ For provider-hosted rerankers, use the `Llm` variant with a liter-llm model iden
 
 ```python
 import os
-from kreuzberg import rerank_sync, RerankerConfig, RerankerModelType, LlmConfig
+from xberg import rerank_sync, RerankerConfig, RerankerModelType, LlmConfig
 
 config = RerankerConfig(
     model=RerankerModelType(
@@ -192,7 +192,7 @@ To wrap a model you already load — `sentence-transformers`, `llama-cpp-python`
 The protocol returns **raw scores in input order**. The dispatcher handles sorting and `top_k` truncation; the plugin must not sort.
 
 ```python
-from kreuzberg import register_reranker_backend, rerank_sync, RerankerConfig, RerankerModelType
+from xberg import register_reranker_backend, rerank_sync, RerankerConfig, RerankerModelType
 
 class MyReranker:
     def __init__(self):

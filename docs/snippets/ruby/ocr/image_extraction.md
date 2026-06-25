@@ -1,8 +1,8 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  images: Kreuzberg::ImageExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
+  images: Xberg::ImageExtractionConfig.new(
     extract_images: true,
     target_dpi: 200,
     max_image_dimension: 2048,

@@ -9,13 +9,13 @@
 import PackageDescription
 
 let package = Package(
-  name: "Kreuzberg",
+  name: "Xberg",
   platforms: [
     .macOS(.v13),
     .iOS(.v16),
   ],
   products: [
-    .library(name: "Kreuzberg", targets: ["Kreuzberg"])
+    .library(name: "Xberg", targets: ["Xberg"])
   ],
   targets: [
     // RustBridgeC: C headers target. Swift files in RustBridge import this to
@@ -33,7 +33,7 @@ let package = Package(
     // sibling RustBridge target below and link against this binary.
     .binaryTarget(
       name: "RustBridgeBinary",
-      url: "https://github.com/xberg-io/kreuzberg/releases/download/v5.0.0-rc.36/Kreuzberg-rs.artifactbundle.zip",
+      url: "https://github.com/xberg-io/xberg/releases/download/v1.0.0-rc.1/Xberg-rs.artifactbundle.zip",
       checksum: "__ALEF_SWIFT_CHECKSUM__"
     ),
     // RustBridge: Swift wrapper module owning the swift-bridge generated
@@ -54,9 +54,9 @@ let package = Package(
       ]
     ),
     .target(
-      name: "Kreuzberg",
+      name: "Xberg",
       dependencies: ["RustBridge", "RustBridgeC"],
-      path: "packages/swift/Sources/Kreuzberg"
+      path: "packages/swift/Sources/Xberg"
     ),
   ]
 )

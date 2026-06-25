@@ -8,7 +8,7 @@ Structured extraction combines document extraction with LLM-based schema complet
 
 Structured extraction runs in three phases:
 
-1. **Extract** — Use Kreuzberg to extract text and/or images from the document.
+1. **Extract** — Use Xberg to extract text and/or images from the document.
 2. **Call** — Send the extracted content to an LLM with a schema and system prompt (from a preset).
 3. **Merge** — Combine results from multiple calls (e.g. per-page batches) using the preset's merge strategy.
 
@@ -27,7 +27,7 @@ The `CallMode` enum governs how document content is sent to the LLM:
 Example in Rust:
 
 ```rust
-use kreuzberg::presets::{Preset, CallMode};
+use xberg::presets::{Preset, CallMode};
 
 let preset = Preset {
     preferred_call_mode: CallMode::TextOnly,
@@ -55,7 +55,7 @@ The `MergeMode` enum controls how partial results from batched calls combine:
 Choose based on your schema:
 
 ```rust
-use kreuzberg::presets::{Preset, MergeMode};
+use xberg::presets::{Preset, MergeMode};
 
 // Merge invoice items from multiple pages
 let preset = Preset {
@@ -114,7 +114,7 @@ Heuristics automatically decide whether and how to invoke structured extraction 
 
 ```toml
 [dependencies]
-kreuzberg = { version = "5.0", features = ["heuristics"] }
+xberg = { version = "5.0", features = ["heuristics"] }
 ```
 
 ### Confidence Scoring
@@ -128,7 +128,7 @@ When enabled, extraction results carry an `extraction_confidence` score combinin
 The combined score is a weighted blend on `[0, 1]`:
 
 ```rust
-use kreuzberg::heuristics::{score_confidence, ConfidenceSignals, ConfidenceWeights, SchemaCompliance};
+use xberg::heuristics::{score_confidence, ConfidenceSignals, ConfidenceWeights, SchemaCompliance};
 
 let signals = ConfidenceSignals {
     text_coverage: 0.95,
@@ -152,7 +152,7 @@ Use the confidence score to:
 The `choose_call_mode` function automatically selects the best call mode for a document:
 
 ```rust
-use kreuzberg::heuristics::{StructuredInput, StructuredThresholds, choose_call_mode};
+use xberg::heuristics::{StructuredInput, StructuredThresholds, choose_call_mode};
 
 let input = StructuredInput {
     mime_type: "application/pdf".to_string(),
@@ -171,7 +171,7 @@ let mode = choose_call_mode(&input, &thresholds);
 Rules applied in order:
 
 1. `image/*` → `VisionOnly` (no native text layer)
-2. `application/pdf` → `TextOnly` (Kreuzberg's OCR produces text for scanned PDFs)
+2. `application/pdf` → `TextOnly` (Xberg's OCR produces text for scanned PDFs)
 3. Text-heavy DOCX/HTML/text → `TextOnly` (if avg_chars_per_page > threshold)
 4. Anything else → `Skip`
 
@@ -185,7 +185,7 @@ After selection, two post-rule promotions apply:
 All heuristic thresholds are conservative defaults. Deployments should measure their corpus and override:
 
 ```rust
-use kreuzberg::heuristics::StructuredThresholds;
+use xberg::heuristics::StructuredThresholds;
 
 let custom = StructuredThresholds {
     scan_max_coverage: 0.15,          // Your PDFs average 15% text coverage when scanned
@@ -219,7 +219,7 @@ The `TextOnlyWithVisionFallback` mode is the bridge between heuristics and orche
 ## Example: Invoice Extraction
 
 ```rust
-use kreuzberg::{
+use xberg::{
     extract_file, ExtractionConfig,
     presets::{Registry, resolve},
     heuristics::{
@@ -244,7 +244,7 @@ let signals = ConfidenceSignals::from_extraction_result(
     SchemaCompliance::AllValid,  // Assume schema validation passed
     0.95,  // 95% of pages have text
 );
-let confidence = kreuzberg::heuristics::score_confidence(
+let confidence = xberg::heuristics::score_confidence(
     signals,
     Default::default()
 );

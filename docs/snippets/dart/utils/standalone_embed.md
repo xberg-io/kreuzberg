@@ -1,5 +1,5 @@
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   const config = EmbeddingConfig(
@@ -9,8 +9,8 @@ Future<void> main() async {
     showDownloadProgress: false,
   );
 
-  final texts = <String>['Hello, world!', 'Kreuzberg is fast'];
-  final embeddings = await KreuzbergBridge.embedTexts(texts, config);
+  final texts = <String>['Hello, world!', 'Xberg is fast'];
+  final embeddings = await XbergBridge.embedTexts(texts, config);
 
   print('Vectors: ${embeddings.length}');
   print('Dimensions: ${embeddings.first.length}');

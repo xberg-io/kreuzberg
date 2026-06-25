@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -10,7 +10,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFileAsync(
+var result = await XbergLib.ExtractFileAsync(
     "verbose_document.pdf",
     config
 );

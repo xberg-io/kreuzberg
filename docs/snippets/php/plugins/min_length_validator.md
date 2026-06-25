@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
+use Xberg\Xberg;
 
 class MinLengthValidator implements Validator {
     private int $minLength;
@@ -47,7 +47,7 @@ class MinLengthValidator implements Validator {
 
 // Register validator with 50-character minimum
 $validator = new MinLengthValidator(50);
-Kreuzberg::registerValidator($validator);
+Xberg::registerValidator($validator);
 
 echo "Min-length validator registered (minimum: 50 chars)\n";
 ```

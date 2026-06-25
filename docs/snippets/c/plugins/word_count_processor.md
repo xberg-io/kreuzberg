@@ -1,5 +1,5 @@
 ```c title="C"
-#include <kreuzberg.h>
+#include <xberg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +25,7 @@ static int32_t process_fn(
 
     /* The `result` JSON string is read-only at this layer; for a real
      * mutating post-processor, decode the JSON, mutate, and serialise back
-     * via the kreuzberg ExtractionResult helpers in your host language. */
+     * via the xberg ExtractionResult helpers in your host language. */
     size_t words = 0;
     int in_word = 0;
     for (const char *p = result; *p; ++p) {
@@ -67,14 +67,14 @@ static int32_t priority_fn(const void *user_data) {
 }
 
 int main(void) {
-    KREUZBERGKreuzbergPostProcessorVTable vtable = {0};
+    XBERGXbergPostProcessorVTable vtable = {0};
     vtable.process = process_fn;
     vtable.processing_stage = processing_stage_fn;
     vtable.should_process = should_process_fn;
     vtable.priority = priority_fn;
 
     char *err = NULL;
-    int32_t rc = kreuzberg_register_post_processor(
+    int32_t rc = xberg_register_post_processor(
         "word-count",
         vtable,
         NULL,
@@ -82,7 +82,7 @@ int main(void) {
     );
     if (rc != 0) {
         fprintf(stderr, "register post-processor failed: %s\n", err ? err : "(no detail)");
-        kreuzberg_free_string(err);
+        xberg_free_string(err);
         return 1;
     }
 

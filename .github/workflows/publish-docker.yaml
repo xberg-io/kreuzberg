@@ -131,21 +131,21 @@ jobs:
       - name: Check core image tag
         id: core
         env:
-          DOCKER_TAG: ghcr.io/xberg-io/kreuzberg:${{ needs.prepare.outputs.version }}-core
+          DOCKER_TAG: ghcr.io/xberg-io/xberg:${{ needs.prepare.outputs.version }}-core
           SUMMARY_LABEL: core
         run: scripts/publish/check-docker-tag.sh
 
       - name: Check full image tag
         id: full
         env:
-          DOCKER_TAG: ghcr.io/xberg-io/kreuzberg:${{ needs.prepare.outputs.version }}
+          DOCKER_TAG: ghcr.io/xberg-io/xberg:${{ needs.prepare.outputs.version }}
           SUMMARY_LABEL: full
         run: scripts/publish/check-docker-tag.sh
 
       - name: Check CLI image tag
         id: cli
         env:
-          DOCKER_TAG: ghcr.io/xberg-io/kreuzberg-cli:${{ needs.prepare.outputs.version }}
+          DOCKER_TAG: ghcr.io/xberg-io/xberg-cli:${{ needs.prepare.outputs.version }}
           SUMMARY_LABEL: cli
         run: scripts/publish/check-docker-tag.sh
 
@@ -165,17 +165,17 @@ jobs:
         include:
           - variant: core
             dockerfile: docker/Dockerfile.core
-            image: ghcr.io/xberg-io/kreuzberg
+            image: ghcr.io/xberg-io/xberg
             tag_suffix: "-core"
             extra_tag: "core"
           - variant: full
             dockerfile: docker/Dockerfile.full
-            image: ghcr.io/xberg-io/kreuzberg
+            image: ghcr.io/xberg-io/xberg
             tag_suffix: ""
             extra_tag: "latest"
           - variant: cli
             dockerfile: docker/Dockerfile.cli
-            image: ghcr.io/xberg-io/kreuzberg-cli
+            image: ghcr.io/xberg-io/xberg-cli
             tag_suffix: ""
             extra_tag: "latest"
     if: ${{ needs.prepare.outputs.release_docker == 'true' }}
@@ -206,11 +206,11 @@ jobs:
 
       - name: Build AMD64 test image
         if: ${{ needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true') }}
-        run: docker build -f ${{ matrix.dockerfile }} --build-arg ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }} -t kreuzberg-publish:${{ matrix.variant }}-test .
+        run: docker build -f ${{ matrix.dockerfile }} --build-arg ONNXRUNTIME_VERSION=${{ env.ORT_VERSION }} -t xberg-publish:${{ matrix.variant }}-test .
 
       - name: Run Docker tests
         if: ${{ needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true') }}
-        run: python3 scripts/ci/docker/test_docker.py --image kreuzberg-publish:${{ matrix.variant }}-test --variant ${{ matrix.variant }} --verbose
+        run: python3 scripts/ci/docker/test_docker.py --image xberg-publish:${{ matrix.variant }}-test --variant ${{ matrix.variant }} --verbose
 
       - name: Log in to GitHub Container Registry
         if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || (matrix.variant == 'core' && needs.check-docker.outputs.core_exists != 'true') || (matrix.variant == 'full' && needs.check-docker.outputs.full_exists != 'true') || (matrix.variant == 'cli' && needs.check-docker.outputs.cli_exists != 'true')) }}
@@ -243,7 +243,7 @@ jobs:
           labels: |
             ${{ steps.docker_meta.outputs.labels }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.description=Kreuzberg document intelligence - ${{ matrix.variant }} variant
+            org.opencontainers.image.description=Xberg document intelligence - ${{ matrix.variant }} variant
             org.opencontainers.image.licenses=MIT
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
@@ -259,4 +259,4 @@ jobs:
 
       - name: Clean up local Docker images
         if: ${{ always() }}
-        run: docker rmi kreuzberg-publish:${{ matrix.variant }}-test || true
+        run: docker rmi xberg-publish:${{ matrix.variant }}-test || true

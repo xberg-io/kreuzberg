@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/markdown/writer.pandoc.md",
 	"file_type": "md",
 	"file_size": 15271,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Pandoc test suite - nested divs, headers, inline formatting, code blocks",
 		"category": "markdown-code",

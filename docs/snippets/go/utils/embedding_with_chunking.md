@@ -4,18 +4,18 @@ package main
 import (
 	"fmt"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
 	maxChars := 1024
 	maxOverlap := 100
 	batchSize := int32(32)
-	config := &kreuzberg.ExtractionConfig{
-		Chunking: &kreuzberg.ChunkingConfig{
+	config := &xberg.ExtractionConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
-			Embedding: &kreuzberg.EmbeddingConfig{
+			Embedding: &xberg.EmbeddingConfig{
 				Model:                   "balanced",
 				Normalize:               true,
 				BatchSize:               &batchSize,

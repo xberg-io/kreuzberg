@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, NerConfig, NerBackendKind, LlmConfig};
+use xberg::{extract_file, ExtractionConfig, NerConfig, NerBackendKind, LlmConfig};
 
 let config = ExtractionConfig {
     ner: Some(NerConfig {

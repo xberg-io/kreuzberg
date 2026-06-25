@@ -1,4 +1,4 @@
-```toml title="kreuzberg.toml"
+```toml title="xberg.toml"
 [page_classification]
 labels = ["invoice", "contract", "id_document", "receipt"]
 multi_label = false

@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -6,16 +6,16 @@ class Program
     {
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync("document.pdf");
+            var result = await XbergLib.ExtractFileAsync("document.pdf");
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
 
             var tasks = new[]
             {
-                KreuzbergLib.ExtractFileAsync("file1.pdf"),
-                KreuzbergLib.ExtractFileAsync("file2.pdf"),
-                KreuzbergLib.ExtractFileAsync("file3.pdf")
+                XbergLib.ExtractFileAsync("file1.pdf"),
+                XbergLib.ExtractFileAsync("file2.pdf"),
+                XbergLib.ExtractFileAsync("file3.pdf")
             };
 
             var results = await Task.WhenAll(tasks);
@@ -25,7 +25,7 @@ class Program
                 Console.WriteLine($"Extracted {r.Content.Length} characters");
             }
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction failed: {ex.Message}");
         }

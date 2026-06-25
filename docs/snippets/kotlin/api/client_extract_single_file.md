@@ -12,7 +12,7 @@ fun main() {
     val bytes = Files.readAllBytes(path)
     val fileName = path.fileName.toString()
 
-    val boundary = "----KreuzbergBoundary${System.currentTimeMillis()}"
+    val boundary = "----XbergBoundary${System.currentTimeMillis()}"
     val crlf = "\r\n"
     val header = (
         "--$boundary$crlf" +

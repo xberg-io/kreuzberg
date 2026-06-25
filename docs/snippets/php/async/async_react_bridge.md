@@ -4,13 +4,13 @@
 declare(strict_types=1);
 
 // Requires: composer require react/promise ^3.0 react/event-loop ^1.0
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Async\ReactBridge;
+use Xberg\Xberg;
+use Xberg\Async\ReactBridge;
 
-$kreuzberg = new Kreuzberg();
+$xberg = new Xberg();
 
 // Single file extraction with ReactPHP Promise
-$deferred = $kreuzberg->extractFileAsync('document.pdf');
+$deferred = $xberg->extractFileAsync('document.pdf');
 $promise = ReactBridge::toPromise($deferred);
 
 $promise->then(

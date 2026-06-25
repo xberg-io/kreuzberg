@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{EmbeddingConfig, EmbeddingModelType, embed_texts};
+use xberg::{EmbeddingConfig, EmbeddingModelType, embed_texts};
 
 let config = EmbeddingConfig {
     model: EmbeddingModelType::Preset { name: "balanced".to_string() },
@@ -7,7 +7,7 @@ let config = EmbeddingConfig {
     ..Default::default()
 };
 
-let texts = vec!["Hello, world!", "Kreuzberg is fast"];
+let texts = vec!["Hello, world!", "Xberg is fast"];
 let embeddings = embed_texts(&texts, &config)?;
 
 assert_eq!(embeddings.len(), 2);

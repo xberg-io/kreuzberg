@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -15,16 +15,16 @@ func main() {
 	enableQuality := true
 	languageDetectionEnabled := true
 
-	config := kreuzberg.ExtractionConfig{
-		Ocr: &kreuzberg.OcrConfig{
+	config := xberg.ExtractionConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend:  "tesseract",
 			Language: "eng+deu",
 		},
-		Chunking: &kreuzberg.ChunkingConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &maxOverlap,
 		},
-		LanguageDetection: &kreuzberg.LanguageDetectionConfig{
+		LanguageDetection: &xberg.LanguageDetectionConfig{
 			Enabled:        &languageDetectionEnabled,
 			DetectMultiple: true,
 		},
@@ -32,7 +32,7 @@ func main() {
 		EnableQualityProcessing: &enableQuality,
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, config)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

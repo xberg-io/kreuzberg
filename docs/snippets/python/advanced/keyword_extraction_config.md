@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm
+from xberg import ExtractionConfig, KeywordConfig, KeywordAlgorithm
 
 config: ExtractionConfig = ExtractionConfig(
     keywords=KeywordConfig(

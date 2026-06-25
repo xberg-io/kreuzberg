@@ -1,8 +1,8 @@
 ```java title="Java"
-import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.ExtractionResult;
-import dev.kreuzberg.Metadata;
-import dev.kreuzberg.KreuzbergException;
+import dev.xberg.Xberg;
+import dev.xberg.ExtractionResult;
+import dev.xberg.Metadata;
+import dev.xberg.XbergException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         try {
-            ExtractionResult result = Kreuzberg.extractFileSync("document.pdf");
+            ExtractionResult result = Xberg.extractFileSync("document.pdf");
 
             // Metadata is flat — format-specific fields are at the top level
             Metadata metadata = result.getMetadata();
@@ -24,7 +24,7 @@ public class Main {
             }
 
             // Access HTML metadata
-            ExtractionResult htmlResult = Kreuzberg.extractFileSync("page.html");
+            ExtractionResult htmlResult = Xberg.extractFileSync("page.html");
             Metadata htmlMeta = htmlResult.getMetadata();
             htmlMeta.getTitle().ifPresent(t -> System.out.println("Title: " + t));
 
@@ -103,7 +103,7 @@ public class Main {
             if (structuredData != null) {
                 System.out.println("Structured data items: " + structuredData.size());
             }
-        } catch (IOException | KreuzbergException e) {
+        } catch (IOException | XbergException e) {
             System.err.println("Extraction failed: " + e.getMessage());
         }
     }

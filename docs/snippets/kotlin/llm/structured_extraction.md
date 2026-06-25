@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 import java.util.Optional
 
@@ -32,7 +32,7 @@ fun main() {
         .withStructuredExtraction(Optional.of(structured))
         .build()
 
-    val result = Kreuzberg.extractFileSync(Paths.get("paper.pdf"), null, config)
+    val result = Xberg.extractFileSync(Paths.get("paper.pdf"), null, config)
     result.structuredOutput()?.let { println(it) }
 }
 ```

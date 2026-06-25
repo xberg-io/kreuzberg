@@ -1,13 +1,13 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 import java.nio.file.Paths
 
 fun main() {
     val config = ExtractionConfig.builder().build()
     try {
-        val result = Kreuzberg.extractFileSync(Paths.get("document.pdf"), null, config)
+        val result = Xberg.extractFileSync(Paths.get("document.pdf"), null, config)
         println(result.content())
-    } catch (e: KreuzbergRsException) {
+    } catch (e: XbergRsException) {
         System.err.println("Extraction failed: ${e.message}")
         System.err.println("Error code: ${e.code}")
     } catch (e: Exception) {

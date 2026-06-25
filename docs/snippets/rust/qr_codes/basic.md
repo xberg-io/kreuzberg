@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig};
+use xberg::{extract_file, ExtractionConfig};
 
 let config = ExtractionConfig {
     qr_codes: Some(true),

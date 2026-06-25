@@ -1,6 +1,6 @@
 # CLI Usage
 
-Command-line access to all Kreuzberg extraction features.
+Command-line access to all Xberg extraction features.
 
 ## Installation
 
@@ -46,13 +46,13 @@ Command-line access to all Kreuzberg extraction features.
 
 ```bash title="Terminal"
 # Set log level to debug for troubleshooting
-kreuzberg --log-level debug extract document.pdf
+xberg --log-level debug extract document.pdf
 
 # Suppress all but error messages
-kreuzberg --log-level error batch documents/*.pdf
+xberg --log-level error batch documents/*.pdf
 
 # Trace-level logging for maximum detail
-kreuzberg --log-level trace extract document.pdf
+xberg --log-level trace extract document.pdf
 ```
 
 Valid levels: `trace`, `debug`, `info` (default), `warn`, `error`.
@@ -63,7 +63,7 @@ Output is colored by default. Disable with `NO_COLOR`:
 
 ```bash title="Terminal"
 # Disable colored output
-NO_COLOR=1 kreuzberg extract document.pdf
+NO_COLOR=1 xberg extract document.pdf
 ```
 
 ## Basic Usage
@@ -72,23 +72,23 @@ NO_COLOR=1 kreuzberg extract document.pdf
 
 ```bash title="Terminal"
 # Extract text content to stdout
-kreuzberg extract document.pdf
+xberg extract document.pdf
 
 # Specify MIME type (auto-detected if not provided)
-kreuzberg extract document.pdf --mime-type application/pdf
+xberg extract document.pdf --mime-type application/pdf
 ```
 
 ### Batch Extract Multiple Files
 
 ```bash title="Terminal"
 # Extract from multiple files
-kreuzberg batch doc1.pdf doc2.docx doc3.txt
+xberg batch doc1.pdf doc2.docx doc3.txt
 
 # Batch extract all PDFs in directory
-kreuzberg batch documents/*.pdf
+xberg batch documents/*.pdf
 
 # Batch extract recursively
-kreuzberg batch documents/**/*.pdf
+xberg batch documents/**/*.pdf
 ```
 
 ### Extract Structured Data
@@ -97,7 +97,7 @@ kreuzberg batch documents/**/*.pdf
 
 ```bash title="Terminal"
 # Extract invoice fields into JSON matching invoice_schema.json
-kreuzberg extract-structured invoice.pdf \
+xberg extract-structured invoice.pdf \
   --schema invoice_schema.json \
   --model openai/gpt-4o \
   --strict
@@ -115,22 +115,22 @@ kreuzberg extract-structured invoice.pdf \
 | `-c, --config <PATH>`   | Path to a TOML/YAML/JSON extraction config file applied to the document extraction step.             |
 | `-f, --format <FORMAT>` | Wire format for the printed output: `json` (default), `text`, or `toon`.                             |
 
-Only the structured output is printed; the underlying document text is not. Set `RUST_LOG=kreuzberg=debug` to inspect the prompt sent.
+Only the structured output is printed; the underlying document text is not. Set `RUST_LOG=xberg=debug` to inspect the prompt sent.
 
 ### Output Formats
 
 ```bash title="Terminal"
 # Output as plain text (default for extract)
-kreuzberg extract document.pdf --format text
+xberg extract document.pdf --format text
 
 # Output as JSON (default for batch)
-kreuzberg batch documents/*.pdf --format json
+xberg batch documents/*.pdf --format json
 
 # Extract single file as JSON
-kreuzberg extract document.pdf --format json
+xberg extract document.pdf --format json
 
 # Output as TOON wire format (token-efficient alternative to JSON)
-kreuzberg extract document.pdf --format toon
+xberg extract document.pdf --format toon
 ```
 
 ### Content Output Format
@@ -139,19 +139,19 @@ kreuzberg extract document.pdf --format toon
 
 ```bash title="Terminal"
 # Extract as plain text (default)
-kreuzberg extract document.pdf --content-format plain
+xberg extract document.pdf --content-format plain
 
 # Extract as Markdown
-kreuzberg extract document.pdf --content-format markdown
+xberg extract document.pdf --content-format markdown
 
 # Extract as Djot markup
-kreuzberg extract document.pdf --content-format djot
+xberg extract document.pdf --content-format djot
 
 # Extract as HTML
-kreuzberg extract document.pdf --content-format html
+xberg extract document.pdf --content-format html
 
 # Combine content format with wire format
-kreuzberg extract document.pdf --content-format markdown --format toon
+xberg extract document.pdf --content-format markdown --format toon
 ```
 
 `--content-format` formats `result.content`; `--format` controls the wire format of the entire response (`text`, `json`, or `toon`).
@@ -162,10 +162,10 @@ kreuzberg extract document.pdf --content-format markdown --format toon
 
 ```bash title="Terminal"
 # Enable OCR (overrides config file setting)
-kreuzberg extract scanned.pdf --ocr true
+xberg extract scanned.pdf --ocr true
 
 # Disable OCR
-kreuzberg extract document.pdf --ocr false
+xberg extract document.pdf --ocr false
 ```
 
 ### Force OCR
@@ -174,7 +174,7 @@ Force OCR even for PDFs with text layer:
 
 ```bash title="Terminal"
 # Force OCR to run regardless of existing text
-kreuzberg extract document.pdf --force-ocr true
+xberg extract document.pdf --force-ocr true
 ```
 
 ### OCR Language Selection
@@ -189,19 +189,19 @@ kreuzberg extract document.pdf --force-ocr true
 
 ```bash title="Terminal"
 # French OCR with Tesseract (default backend)
-kreuzberg extract --ocr true --ocr-language fra document.pdf
+xberg extract --ocr true --ocr-language fra document.pdf
 
 # Chinese OCR with PaddleOCR
-kreuzberg extract --ocr true --ocr-backend paddle-ocr --ocr-language ch document.pdf
+xberg extract --ocr true --ocr-backend paddle-ocr --ocr-language ch document.pdf
 
 # Thai OCR with PaddleOCR
-kreuzberg extract --ocr true --ocr-backend paddle-ocr --ocr-language thai document.pdf
+xberg extract --ocr true --ocr-backend paddle-ocr --ocr-language thai document.pdf
 
 # German OCR with Tesseract
-kreuzberg extract --ocr true --ocr-language deu document.pdf
+xberg extract --ocr true --ocr-language deu document.pdf
 
 # Override config file language with Spanish
-kreuzberg extract document.pdf --config kreuzberg.toml --ocr-language spa
+xberg extract document.pdf --config xberg.toml --ocr-language spa
 ```
 
 ### OCR Configuration
@@ -209,7 +209,7 @@ kreuzberg extract document.pdf --config kreuzberg.toml --ocr-language spa
 OCR options live in the config file; CLI flags override:
 
 ```bash title="Terminal"
-kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
+xberg extract scanned.pdf --config xberg.toml --ocr true
 ```
 
 See [Configuration Files](#configuration-files) for backend, language, and Tesseract options.
@@ -218,10 +218,10 @@ See [Configuration Files](#configuration-files) for backend, language, and Tesse
 
 ### Using Config Files
 
-Kreuzberg auto-discovers `kreuzberg.toml` by walking up from the current directory. For YAML or JSON, pass `--config` explicitly.
+Xberg auto-discovers `xberg.toml` by walking up from the current directory. For YAML or JSON, pass `--config` explicitly.
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf  # auto-discovers kreuzberg.toml
+xberg extract document.pdf  # auto-discovers xberg.toml
 ```
 
 ### Specify Config File
@@ -229,9 +229,9 @@ kreuzberg extract document.pdf  # auto-discovers kreuzberg.toml
 Load TOML, YAML (`.yaml`/`.yml`), or JSON via `--config`:
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --config my-config.toml
-kreuzberg extract document.pdf --config kreuzberg.yaml
-kreuzberg extract document.pdf --config my-config.json
+xberg extract document.pdf --config my-config.toml
+xberg extract document.pdf --config xberg.yaml
+xberg extract document.pdf --config my-config.json
 ```
 
 ### Inline JSON Config
@@ -240,17 +240,17 @@ Inline JSON is merged after config file, before individual flags:
 
 ```bash title="Terminal"
 # Inline JSON (applied after config file)
-kreuzberg extract document.pdf --config-json '{"ocr":{"backend":"tesseract"},"chunking":{"max_chars":1000}}'
+xberg extract document.pdf --config-json '{"ocr":{"backend":"tesseract"},"chunking":{"max_chars":1000}}'
 
 # Base64-encoded JSON (useful in shells where quoting is awkward)
-kreuzberg extract document.pdf --config-json-base64 eyJvY3IiOnsiYmFja2VuZCI6InRlc3NlcmFjdCJ9fQ==
+xberg extract document.pdf --config-json-base64 eyJvY3IiOnsiYmFja2VuZCI6InRlc3NlcmFjdCJ9fQ==
 ```
 
 Both `extract` and `batch` support `--config-json` and `--config-json-base64`.
 
 ### Example Config Files
 
-**kreuzberg.toml:**
+**xberg.toml:**
 
 ```toml title="OCR configuration"
 use_cache = true
@@ -268,9 +268,9 @@ max_characters = 1000
 overlap = 100
 ```
 
-**kreuzberg.yaml:**
+**xberg.yaml:**
 
-```yaml title="kreuzberg.yaml"
+```yaml title="xberg.yaml"
 use_cache: true
 enable_quality_processing: true
 
@@ -285,9 +285,9 @@ chunking:
   overlap: 100
 ```
 
-**kreuzberg.json:**
+**xberg.json:**
 
-```json title="kreuzberg.json"
+```json title="xberg.json"
 {
   "use_cache": true,
   "enable_quality_processing": true,
@@ -311,49 +311,49 @@ Process multiple files with `batch`:
 
 ```bash title="Terminal"
 # Extract all PDFs in directory
-kreuzberg batch documents/*.pdf
+xberg batch documents/*.pdf
 
 # Extract PDFs recursively from subdirectories
-kreuzberg batch documents/**/*.pdf
+xberg batch documents/**/*.pdf
 
 # Extract multiple file types
-kreuzberg batch documents/**/*.{pdf,docx,txt}
+xberg batch documents/**/*.{pdf,docx,txt}
 ```
 
 ### Batch with Output Formats
 
 ```bash title="Terminal"
 # Output as JSON (default for batch command)
-kreuzberg batch documents/*.pdf --format json
+xberg batch documents/*.pdf --format json
 
 # Output as plain text
-kreuzberg batch documents/*.pdf --format text
+xberg batch documents/*.pdf --format text
 ```
 
 ### Batch with OCR
 
 ```bash title="Terminal"
 # Batch extract with OCR enabled
-kreuzberg batch scanned/*.pdf --ocr true
+xberg batch scanned/*.pdf --ocr true
 
 # Batch extract with force OCR
-kreuzberg batch documents/*.pdf --force-ocr true
+xberg batch documents/*.pdf --force-ocr true
 
 # Batch extract with quality processing
-kreuzberg batch documents/*.pdf --quality true
+xberg batch documents/*.pdf --quality true
 ```
 
 ### Batch with Content Format
 
 ```bash title="Terminal"
 # Batch extract with djot formatting
-kreuzberg batch documents/*.pdf --output-format djot --format json
+xberg batch documents/*.pdf --output-format djot --format json
 
 # Batch extract as Markdown
-kreuzberg batch documents/*.pdf --output-format markdown --format json
+xberg batch documents/*.pdf --output-format markdown --format json
 
 # Batch extract as HTML
-kreuzberg batch documents/*.pdf --output-format html --format json
+xberg batch documents/*.pdf --output-format html --format json
 ```
 
 ## Advanced Features
@@ -362,52 +362,52 @@ kreuzberg batch documents/*.pdf --output-format html --format json
 
 ```bash title="Terminal"
 # Extract with automatic language detection
-kreuzberg extract document.pdf --detect-language true
+xberg extract document.pdf --detect-language true
 
 # Disable language detection
-kreuzberg extract document.pdf --detect-language false
+xberg extract document.pdf --detect-language false
 ```
 
 ### Content Chunking
 
 ```bash title="Terminal"
 # Split content into chunks for LLM processing
-kreuzberg extract document.pdf --chunk true
+xberg extract document.pdf --chunk true
 
 # Specify chunk size and overlap
-kreuzberg extract document.pdf --chunk true --chunk-size 1000 --chunk-overlap 100
+xberg extract document.pdf --chunk true --chunk-size 1000 --chunk-overlap 100
 
 # Output chunked content as JSON
-kreuzberg extract document.pdf --chunk true --format json
+xberg extract document.pdf --chunk true --format json
 ```
 
 ### Quality Processing
 
 ```bash title="Terminal"
 # Apply quality processing for improved formatting
-kreuzberg extract document.pdf --quality true
+xberg extract document.pdf --quality true
 
 # Disable quality processing
-kreuzberg extract document.pdf --quality false
+xberg extract document.pdf --quality false
 
 # Batch extraction with quality processing
-kreuzberg batch documents/*.pdf --quality true
+xberg batch documents/*.pdf --quality true
 ```
 
 ### Caching
 
 ```bash title="Terminal"
 # Extract with result caching enabled (default)
-kreuzberg extract document.pdf
+xberg extract document.pdf
 
 # Extract without caching results
-kreuzberg extract document.pdf --no-cache true
+xberg extract document.pdf --no-cache true
 
 # Clear all cached results
-kreuzberg cache clear
+xberg cache clear
 
 # View cache statistics
-kreuzberg cache stats
+xberg cache stats
 ```
 
 ## Extraction Override Flags
@@ -429,8 +429,8 @@ kreuzberg cache stats
     Candle-based backends (`candle-trocr`, `candle-paddleocr-vl`, `candle-paddleocr-vl-15`, `candle-glm-ocr`, `candle-hunyuan-ocr`, `candle-deepseek-ocr`) are pure-Rust VLM and vision-transformer OCR engines. No ONNX Runtime required; GPU-accelerated on Metal (macOS) and CUDA (Linux).
 
 ```bash title="Terminal"
-kreuzberg extract scanned.pdf --ocr true --ocr-backend paddle-ocr --ocr-language ch
-kreuzberg extract document.pdf --force-ocr true --ocr-auto-rotate true
+xberg extract scanned.pdf --ocr true --ocr-backend paddle-ocr --ocr-language ch
+xberg extract document.pdf --force-ocr true --ocr-auto-rotate true
 ```
 
 ### Chunking Flags
@@ -443,8 +443,8 @@ kreuzberg extract document.pdf --force-ocr true --ocr-auto-rotate true
 | `--chunking-tokenizer <MODEL>` | Tokenizer model for token-based chunk sizing (for example `Xenova/gpt-4o`). Implicitly enables chunking. Requires the `chunking-tokenizers` feature. |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --chunk true --chunk-size 512 --chunk-overlap 50
-kreuzberg extract document.pdf --chunking-tokenizer "Xenova/gpt-4o"
+xberg extract document.pdf --chunk true --chunk-size 512 --chunk-overlap 50
+xberg extract document.pdf --chunking-tokenizer "Xenova/gpt-4o"
 ```
 
 ### Output Flags
@@ -455,7 +455,7 @@ kreuzberg extract document.pdf --chunking-tokenizer "Xenova/gpt-4o"
 | `--include-structure <true\|false>` | Include hierarchical document structure in results.                                                                                            |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --content-format markdown --include-structure true
+xberg extract document.pdf --content-format markdown --include-structure true
 ```
 
 ### Layout Detection Flags
@@ -467,7 +467,7 @@ kreuzberg extract document.pdf --content-format markdown --include-structure tru
 | `--layout-table-model <MODEL>` | Table structure model: `tatr` (default), `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`.                            |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --layout --layout-confidence 0.7
+xberg extract document.pdf --layout --layout-confidence 0.7
 ```
 
 ### Acceleration Flags
@@ -478,10 +478,10 @@ kreuzberg extract document.pdf --layout --layout-confidence 0.7
 
 ```bash title="Terminal"
 # Use CoreML on macOS for GPU acceleration
-kreuzberg extract document.pdf --acceleration coreml
+xberg extract document.pdf --acceleration coreml
 
 # Use CUDA on Linux with NVIDIA GPU
-kreuzberg extract document.pdf --acceleration cuda
+xberg extract document.pdf --acceleration cuda
 ```
 
 ### Page Flags
@@ -492,7 +492,7 @@ kreuzberg extract document.pdf --acceleration cuda
 | `--page-markers <true\|false>`  | Insert page marker comments into the main content string. |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --extract-pages true --page-markers true --format json
+xberg extract document.pdf --extract-pages true --page-markers true --format json
 ```
 
 ### Image Flags
@@ -503,7 +503,7 @@ kreuzberg extract document.pdf --extract-pages true --page-markers true --format
 | `--target-dpi <N>`               | Target DPI for image normalisation (36 - 2400). |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --extract-images true --target-dpi 300
+xberg extract document.pdf --extract-images true --target-dpi 300
 ```
 
 ### PDF Flags
@@ -515,8 +515,8 @@ kreuzberg extract document.pdf --extract-images true --target-dpi 300
 | `--pdf-extract-metadata <true\|false>` | Extract PDF metadata (title, author, etc.).                                          |
 
 ```bash title="Terminal"
-kreuzberg extract encrypted.pdf --pdf-password "secret"
-kreuzberg extract document.pdf --pdf-extract-images true --pdf-extract-metadata true
+xberg extract encrypted.pdf --pdf-password "secret"
+xberg extract document.pdf --pdf-extract-images true --pdf-extract-metadata true
 ```
 
 ### Token Reduction Flags
@@ -527,10 +527,10 @@ kreuzberg extract document.pdf --pdf-extract-images true --pdf-extract-metadata 
 
 ```bash title="Terminal"
 # Aggressive token reduction for cheaper LLM processing
-kreuzberg extract document.pdf --token-reduction aggressive
+xberg extract document.pdf --token-reduction aggressive
 
 # Maximum compression (lossy)
-kreuzberg extract document.pdf --token-reduction maximum
+xberg extract document.pdf --token-reduction maximum
 ```
 
 ### Quality and Detection Flags
@@ -556,7 +556,7 @@ kreuzberg extract document.pdf --token-reduction maximum
 | `--max-threads <N>`    | Cap all internal thread pools (Rayon, ONNX intra-op, batch semaphore). Useful for constrained environments. |
 
 ```bash title="Terminal"
-kreuzberg batch documents/*.pdf --max-concurrent 4 --max-threads 8
+xberg batch documents/*.pdf --max-concurrent 4 --max-threads 8
 ```
 
 ### Email Flags
@@ -566,7 +566,7 @@ kreuzberg batch documents/*.pdf --max-concurrent 4 --max-threads 8
 | `--msg-codepage <N>` | Windows codepage fallback for MSG files without codepage metadata. Common values: 1250 (Central European), 1251 (Cyrillic), 1252 (Western). |
 
 ```bash title="Terminal"
-kreuzberg extract message.msg --msg-codepage 1251
+xberg extract message.msg --msg-codepage 1251
 ```
 
 ## Output Options
@@ -575,23 +575,23 @@ kreuzberg extract message.msg --msg-codepage 1251
 
 ```bash title="Terminal"
 # Extract and print content to stdout
-kreuzberg extract document.pdf
+xberg extract document.pdf
 
 # Extract and redirect output to file
-kreuzberg extract document.pdf > output.txt
+xberg extract document.pdf > output.txt
 
 # Batch extract as text
-kreuzberg batch documents/*.pdf --format text
+xberg batch documents/*.pdf --format text
 ```
 
 ### JSON Output
 
 ```bash title="Terminal"
 # Output as JSON
-kreuzberg extract document.pdf --format json
+xberg extract document.pdf --format json
 
 # Batch extract as JSON (default format)
-kreuzberg batch documents/*.pdf --format json
+xberg batch documents/*.pdf --format json
 ```
 
 **JSON Output Structure:**
@@ -611,11 +611,11 @@ The CLI returns non-zero exit codes on error. Use shell idioms:
 
 ```bash title="Terminal"
 # Check for extraction errors
-kreuzberg extract document.pdf || echo "Extraction failed"
+xberg extract document.pdf || echo "Extraction failed"
 
 # Continue processing even if one file fails (bash)
 for file in documents/*.pdf; do
-  kreuzberg batch "$file" || continue
+  xberg batch "$file" || continue
 done
 ```
 
@@ -624,64 +624,64 @@ done
 ### Extract Single PDF
 
 ```bash title="Extract text from PDF"
-kreuzberg extract document.pdf
+xberg extract document.pdf
 ```
 
 ### Batch Extract All PDFs in Directory
 
 ```bash title="Extract all PDFs from directory as JSON"
-kreuzberg batch documents/*.pdf --format json
+xberg batch documents/*.pdf --format json
 ```
 
 ### OCR Scanned Documents
 
 ```bash title="OCR extraction from scanned documents"
-kreuzberg batch scans/*.pdf --ocr true --format json
+xberg batch scans/*.pdf --ocr true --format json
 ```
 
 ### Extract with Quality Processing
 
 ```bash title="Extract with quality processing enabled"
-kreuzberg extract document.pdf --quality true --format json
+xberg extract document.pdf --quality true --format json
 ```
 
 ### Extract with Chunking
 
 ```bash title="Extract with chunking for LLM processing"
-kreuzberg extract document.pdf --config kreuzberg.toml --chunk true --chunk-size 1000 --chunk-overlap 100 --format json
+xberg extract document.pdf --config xberg.toml --chunk true --chunk-size 1000 --chunk-overlap 100 --format json
 ```
 
 ### Batch Extract Multiple File Types
 
 ```bash title="Extract multiple file types in batch"
-kreuzberg batch documents/**/*.{pdf,docx,txt} --format json
+xberg batch documents/**/*.{pdf,docx,txt} --format json
 ```
 
 ### Extract with Config File
 
 ```bash title="Extract using configuration file"
-kreuzberg extract document.pdf --config /path/to/kreuzberg.toml
+xberg extract document.pdf --config /path/to/xberg.toml
 ```
 
 ### Detect MIME Type
 
 ```bash title="Detect file MIME type"
-kreuzberg detect document.pdf
+xberg detect document.pdf
 ```
 
 ## Docker Usage
 
-Use `ghcr.io/xberg-io/kreuzberg-cli:latest` for the CLI image, or `ghcr.io/xberg-io/kreuzberg:latest` for the full image (also includes the CLI).
+Use `ghcr.io/xberg-io/xberg-cli:latest` for the CLI image, or `ghcr.io/xberg-io/xberg:latest` for the full image (also includes the CLI).
 
 ### Basic Docker
 
 ```bash title="Terminal"
 # Extract document using Docker with mounted directory
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg-cli:latest \
   extract /data/document.pdf
 
 # Extract and save output to host directory using shell redirection
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg-cli:latest \
   extract /data/document.pdf > output.txt
 ```
 
@@ -689,7 +689,7 @@ docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
 
 ```bash title="Terminal"
 # Extract with OCR using Docker
-docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
+docker run -v $(pwd):/data ghcr.io/xberg-io/xberg-cli:latest \
   extract /data/scanned.pdf --ocr true
 ```
 
@@ -701,8 +701,8 @@ docker run -v $(pwd):/data ghcr.io/xberg-io/kreuzberg-cli:latest \
 version: "3.8"
 
 services:
-  kreuzberg:
-    image: ghcr.io/xberg-io/kreuzberg-cli:latest
+  xberg:
+    image: ghcr.io/xberg-io/xberg-cli:latest
     volumes:
       - ./documents:/input
     command: extract /input/document.pdf --ocr true
@@ -720,20 +720,20 @@ docker-compose up
 
 ```bash title="Terminal"
 # Extract without quality processing for faster speed
-kreuzberg extract large.pdf --quality false
+xberg extract large.pdf --quality false
 
 # Use batch for processing multiple files
-kreuzberg batch large_files/*.pdf --format json
+xberg batch large_files/*.pdf --format json
 ```
 
 ### Manage Memory Usage
 
 ```bash title="Terminal"
 # Disable caching to reduce memory footprint
-kreuzberg extract large_file.pdf --no-cache true
+xberg extract large_file.pdf --no-cache true
 
 # Compress output to save disk space
-kreuzberg extract document.pdf | gzip > output.txt.gz
+xberg extract document.pdf | gzip > output.txt.gz
 ```
 
 ## Troubleshooting
@@ -742,10 +742,10 @@ kreuzberg extract document.pdf | gzip > output.txt.gz
 
 ```bash title="Terminal"
 # Display installed version
-kreuzberg --version
+xberg --version
 
 # Display help for commands
-kreuzberg --help
+xberg --help
 ```
 
 ### Common Issues
@@ -771,7 +771,7 @@ Ensure the file path is correct and accessible:
 ls -la document.pdf
 
 # Extract with absolute path
-kreuzberg extract /absolute/path/to/document.pdf
+xberg extract /absolute/path/to/document.pdf
 ```
 
 ## Server Commands
@@ -782,14 +782,14 @@ kreuzberg extract /absolute/path/to/document.pdf
 
 ```bash title="Terminal"
 # Start server on default host (127.0.0.1) and port (8000)
-kreuzberg serve
+xberg serve
 
 # Start server on specific host and port (-H / -p are short forms)
-kreuzberg serve --host 0.0.0.0 --port 8000
-kreuzberg serve -H 0.0.0.0 -p 8000
+xberg serve --host 0.0.0.0 --port 8000
+xberg serve -H 0.0.0.0 -p 8000
 
 # Start server with custom configuration file
-kreuzberg serve --config kreuzberg.toml --host 0.0.0.0 --port 8000
+xberg serve --config xberg.toml --host 0.0.0.0 --port 8000
 ```
 
 ### Server Endpoints
@@ -812,16 +812,16 @@ See [API Server Guide](../guides/api-server.md) for full API details.
 
 ```bash title="Terminal"
 # Start MCP server with stdio transport (default for Claude Desktop)
-kreuzberg mcp
+xberg mcp
 
 # Start MCP server with HTTP transport
-kreuzberg mcp --transport http
+xberg mcp --transport http
 
 # Start MCP server on specific HTTP host and port
-kreuzberg mcp --transport http --host 0.0.0.0 --port 8001
+xberg mcp --transport http --host 0.0.0.0 --port 8001
 
 # Start MCP server with custom configuration file
-kreuzberg mcp --config kreuzberg.toml --transport stdio
+xberg mcp --config xberg.toml --transport stdio
 ```
 
 The MCP server provides tools for AI agents:
@@ -838,19 +838,19 @@ Generate vector embeddings using pre-trained models. Input via `--text` or stdin
 
 ```bash title="Terminal"
 # Generate embeddings for a single text
-kreuzberg embed --text "hello world" --preset balanced
+xberg embed --text "hello world" --preset balanced
 
 # Generate embeddings with a specific preset
-kreuzberg embed --text "document content" --preset fast
+xberg embed --text "document content" --preset fast
 
 # Batch embed multiple texts
-kreuzberg embed --text "first document" --text "second document" --preset quality
+xberg embed --text "first document" --text "second document" --preset quality
 
 # Read from stdin
-echo "hello world" | kreuzberg embed --preset balanced
+echo "hello world" | xberg embed --preset balanced
 
 # Output as text instead of JSON
-kreuzberg embed --text "hello" --preset balanced --format text
+xberg embed --text "hello" --preset balanced --format text
 ```
 
 Available presets: `fast`, `balanced` (default), `quality`, `multilingual`.
@@ -863,25 +863,25 @@ Split text with configurable size and overlap. Input via `--text` or stdin.
 
 ```bash title="Terminal"
 # Chunk text with default settings
-kreuzberg chunk --text "long text content to be split into chunks..."
+xberg chunk --text "long text content to be split into chunks..."
 
 # Specify chunk size and overlap
-kreuzberg chunk --text "long text..." --chunk-size 512 --chunk-overlap 50
+xberg chunk --text "long text..." --chunk-size 512 --chunk-overlap 50
 
 # Use markdown-aware chunking
-kreuzberg chunk --text "# Heading\n\nParagraph..." --chunker-type markdown
+xberg chunk --text "# Heading\n\nParagraph..." --chunker-type markdown
 
 # Use a tokenizer model for token-based sizing
-kreuzberg chunk --text "long text..." --chunking-tokenizer "Xenova/gpt-4o"
+xberg chunk --text "long text..." --chunking-tokenizer "Xenova/gpt-4o"
 
 # Read from stdin
-cat document.txt | kreuzberg chunk --chunk-size 1000
+cat document.txt | xberg chunk --chunk-size 1000
 
 # Output as text instead of JSON
-kreuzberg chunk --text "long text..." --format text
+xberg chunk --text "long text..." --format text
 
 # Use a config file for chunking settings
-kreuzberg chunk --text "long text..." --config kreuzberg.toml
+xberg chunk --text "long text..." --config xberg.toml
 ```
 
 ## Shell Completions
@@ -890,19 +890,19 @@ Tab-completion scripts for bash, zsh, and fish:
 
 ```bash title="Terminal"
 # Generate bash completions
-kreuzberg completions bash
+xberg completions bash
 
 # Generate zsh completions
-kreuzberg completions zsh
+xberg completions zsh
 
 # Generate fish completions
-kreuzberg completions fish
+xberg completions fish
 
 # Install bash completions
-eval "$(kreuzberg completions bash)"
+eval "$(xberg completions bash)"
 
 # Install zsh completions (add to .zshrc)
-eval "$(kreuzberg completions zsh)"
+eval "$(xberg completions zsh)"
 ```
 
 ## API Utilities
@@ -913,10 +913,10 @@ Output the OpenAPI 3.1 specification — useful for code generation and API clie
 
 ```bash title="Terminal"
 # Print OpenAPI schema as JSON
-kreuzberg api schema
+xberg api schema
 
 # Save to file
-kreuzberg api schema > openapi.json
+xberg api schema > openapi.json
 ```
 
 !!! Info "Feature Availability" The `api` subcommand requires the `api` feature.
@@ -927,10 +927,10 @@ List supported formats with extensions and MIME types:
 
 ```bash title="Terminal"
 # List formats as a table
-kreuzberg formats
+xberg formats
 
 # List formats as JSON
-kreuzberg formats --format json
+xberg formats --format json
 ```
 
 ## Cache Management
@@ -939,26 +939,26 @@ kreuzberg formats --format json
 
 ```bash title="Terminal"
 # Display cache usage statistics
-kreuzberg cache stats
+xberg cache stats
 
 # Display statistics for specific cache directory
-kreuzberg cache stats --cache-dir /path/to/cache
+xberg cache stats --cache-dir /path/to/cache
 
 # Output cache statistics as JSON
-kreuzberg cache stats --format json
+xberg cache stats --format json
 ```
 
 ### Clear Cache
 
 ```bash title="Terminal"
 # Remove all cached extraction results
-kreuzberg cache clear
+xberg cache clear
 
 # Clear specific cache directory
-kreuzberg cache clear --cache-dir /path/to/cache
+xberg cache clear --cache-dir /path/to/cache
 
 # Clear cache and display removal details
-kreuzberg cache clear --format json
+xberg cache clear --format json
 ```
 
 ### Warm Model Cache
@@ -967,27 +967,27 @@ Pre-download ML models (PaddleOCR, layout detection) for offline use — useful 
 
 Default cache directories:
 
-- **Linux**: `~/.cache/kreuzberg/{module}` (or `$XDG_CACHE_HOME/kreuzberg/{module}`)
-- **macOS**: `~/Library/Caches/kreuzberg/{module}`
-- **Windows**: `%LOCALAPPDATA%/kreuzberg/{module}`
+- **Linux**: `~/.cache/xberg/{module}` (or `$XDG_CACHE_HOME/xberg/{module}`)
+- **macOS**: `~/Library/Caches/xberg/{module}`
+- **Windows**: `%LOCALAPPDATA%/xberg/{module}`
 
-Override with `KREUZBERG_CACHE_DIR` or `--cache-dir`.
+Override with `XBERG_CACHE_DIR` or `--cache-dir`.
 
 ```bash title="Terminal"
 # Download all OCR and layout models eagerly
-kreuzberg cache warm
+xberg cache warm
 
 # Download to a specific cache directory
-kreuzberg cache warm --cache-dir /path/to/cache
+xberg cache warm --cache-dir /path/to/cache
 
 # Also download all 4 embedding model presets (fast, balanced, quality, multilingual)
-kreuzberg cache warm --all-embeddings
+xberg cache warm --all-embeddings
 
 # Download a specific embedding model preset
-kreuzberg cache warm --embedding-model balanced
+xberg cache warm --embedding-model balanced
 
 # Output download results as JSON
-kreuzberg cache warm --format json
+xberg cache warm --format json
 ```
 
 ### Model Manifest
@@ -996,10 +996,10 @@ Manifest of expected model files with SHA256 checksums and sizes — for cache i
 
 ```bash title="Terminal"
 # Output manifest as JSON (default)
-kreuzberg cache manifest
+xberg cache manifest
 
 # Output manifest as human-readable text
-kreuzberg cache manifest --format text
+xberg cache manifest --format text
 ```
 
 ## Getting Help
@@ -1008,40 +1008,40 @@ kreuzberg cache manifest --format text
 
 ```bash title="Terminal"
 # Display general CLI help
-kreuzberg --help
+xberg --help
 
 # Display command-specific help
-kreuzberg extract --help
-kreuzberg batch --help
-kreuzberg detect --help
-kreuzberg formats --help
-kreuzberg version --help
-kreuzberg embed --help
-kreuzberg chunk --help
-kreuzberg completions --help
-kreuzberg serve --help
-kreuzberg mcp --help
-kreuzberg cache --help
-kreuzberg cache stats --help
-kreuzberg cache clear --help
-kreuzberg cache warm --help
-kreuzberg cache manifest --help
-kreuzberg api schema --help
+xberg extract --help
+xberg batch --help
+xberg detect --help
+xberg formats --help
+xberg version --help
+xberg embed --help
+xberg chunk --help
+xberg completions --help
+xberg serve --help
+xberg mcp --help
+xberg cache --help
+xberg cache stats --help
+xberg cache clear --help
+xberg cache warm --help
+xberg cache manifest --help
+xberg api schema --help
 ```
 
 ### Version Information
 
 ```bash title="Terminal"
 # Display version number
-kreuzberg --version
+xberg --version
 
 # Show version with JSON output
-kreuzberg version --format json
+xberg version --format json
 ```
 
 ## Next Steps
 
 - [API Server Guide](../guides/api-server.md) - API and MCP server setup
-- [Advanced Features](../guides/advanced.md) - Advanced Kreuzberg features
-- [Plugin Development](../guides/plugins.md) - Extend Kreuzberg functionality
+- [Advanced Features](../guides/advanced.md) - Advanced Xberg features
+- [Plugin Development](../guides/plugins.md) - Extend Xberg functionality
 - [API Reference](../reference/api-python.md) - Programmatic access

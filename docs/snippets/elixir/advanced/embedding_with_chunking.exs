@@ -1,10 +1,10 @@
 # Extract and prepare for embeddings
-config = %Kreuzberg.ExtractionConfig{
+config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 512},
   embeddings: %{"enabled" => true}
 }
 
-{:ok, result} = Kreuzberg.extract_file("document.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("document.pdf", nil, config)
 
 # Process chunks with embeddings for semantic search
 embedded_chunks = result.chunks

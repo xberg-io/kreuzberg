@@ -1,11 +1,11 @@
 ```ruby title="Ruby"
-require 'kreuzberg'
+require 'xberg'
 
 begin
   pdf_bytes = File.read('document.pdf')
-  config = Kreuzberg::ExtractionConfig.new
+  config = Xberg::ExtractionConfig.new
 
-  result = Kreuzberg.extract_bytes_sync(pdf_bytes, 'application/pdf', config: config)
+  result = Xberg.extract_bytes_sync(pdf_bytes, 'application/pdf', config: config)
   puts "Extracted #{result.content.length} characters"
 rescue RuntimeError => e
   # All extraction errors are raised as RuntimeError

@@ -1,5 +1,5 @@
 ```python title="Python"
-from kreuzberg import extract_file, ExtractionConfig, PageClassificationConfig, LlmConfig
+from xberg import extract_file, ExtractionConfig, PageClassificationConfig, LlmConfig
 
 config = ExtractionConfig(
     page_classification=PageClassificationConfig(

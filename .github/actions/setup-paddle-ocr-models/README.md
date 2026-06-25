@@ -4,7 +4,7 @@ GitHub Action to download and cache PaddleOCR ONNX models for CI testing and dev
 
 ## Overview
 
-This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `kreuzberg-paddle-ocr` crate for optical character recognition testing. It:
+This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `xberg-paddle-ocr` crate for optical character recognition testing. It:
 
 - Downloads three model types (detection, classification, recognition) from Hugging Face
 - Caches models per OS and CPU architecture (Linux x86_64, Linux ARM64, macOS, Windows)
@@ -14,7 +14,7 @@ This action manages the setup of PaddleOCR PP-OCRv5 ONNX models used by the `kre
 
 ## Models
 
-The action downloads pre-converted ONNX format models from the `Kreuzberg/paddleocr-onnx-models` Hugging Face repository:
+The action downloads pre-converted ONNX format models from the `Xberg/paddleocr-onnx-models` Hugging Face repository:
 
 | Model Type           | File                                  | Size    | Purpose                                   |
 | -------------------- | ------------------------------------- | ------- | ----------------------------------------- |
@@ -108,7 +108,7 @@ jobs:
         id: paddle-models
 
       - name: Run PaddleOCR tests
-        run: cargo test --package kreuzberg-paddle-ocr
+        run: cargo test --package xberg-paddle-ocr
         env:
           PADDLE_OCR_MODEL_CACHE: ${{ steps.paddle-models.outputs.cache-dir }}
 
@@ -132,7 +132,7 @@ The action downloads models sequentially and will fail if a required model downl
 Models are downloaded from:
 
 ```text
-https://huggingface.co/Kreuzberg/paddleocr-onnx-models/resolve/main/
+https://huggingface.co/Xberg/paddleocr-onnx-models/resolve/main/
 ```
 
 If this repository becomes unavailable, the action will fail gracefully. Alternative sources can be configured by modifying the `MODEL_URL` environment variables in the action.
@@ -159,7 +159,7 @@ If downloads timeout:
 Check that all expected models exist in the correct directory structure:
 
 ```bash
-ls -lh ~/.cache/kreuzberg/paddle-ocr/
+ls -lh ~/.cache/xberg/paddle-ocr/
 ```
 
 Expected output:
@@ -169,13 +169,13 @@ drwxr-xr-x det/
 drwxr-xr-x cls/
 drwxr-xr-x rec/
 
-ls -lh ~/.cache/kreuzberg/paddle-ocr/det/
+ls -lh ~/.cache/xberg/paddle-ocr/det/
 -rw-r--r-- model.onnx (~84 MB)
 
-ls -lh ~/.cache/kreuzberg/paddle-ocr/cls/
+ls -lh ~/.cache/xberg/paddle-ocr/cls/
 -rw-r--r-- model.onnx (~0.6 MB)
 
-ls -lh ~/.cache/kreuzberg/paddle-ocr/rec/english/
+ls -lh ~/.cache/xberg/paddle-ocr/rec/english/
 -rw-r--r-- model.onnx (~8 MB)
 -rw-r--r-- dict.txt
 ```
@@ -198,5 +198,5 @@ The directory structure must match what `ModelManager` expects in `model_manager
 ## See Also
 
 - [PaddleOCR Documentation](https://github.com/PaddlePaddle/PaddleOCR)
-- [kreuzberg-paddle-ocr crate](../../../crates/kreuzberg-paddle-ocr)
-- [ModelManager source](../../../crates/kreuzberg/src/paddle_ocr/model_manager.rs)
+- [xberg-paddle-ocr crate](../../../crates/xberg-paddle-ocr)
+- [ModelManager source](../../../crates/xberg/src/paddle_ocr/model_manager.rs)

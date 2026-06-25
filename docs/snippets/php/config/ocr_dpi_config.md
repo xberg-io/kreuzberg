@@ -2,9 +2,9 @@
 <?php
 declare(strict_types=1);
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\ExtractionConfig;
-use Kreuzberg\ImageExtractionConfig;
+use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\ImageExtractionConfig;
 
 $config = new ExtractionConfig(
     images: new ImageExtractionConfig(
@@ -17,7 +17,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Kreuzberg::extractFileSync('document.pdf', null, $config);
+$result = Xberg::extractFileSync('document.pdf', null, $config);
 
 echo "Extracted images: " . count($result->getImages()) . "\n";
 ?>

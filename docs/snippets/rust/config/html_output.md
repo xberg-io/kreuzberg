@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file_sync, ExtractionConfig, HtmlOutputConfig, HtmlTheme, OutputFormat};
+use xberg::{extract_file_sync, ExtractionConfig, HtmlOutputConfig, HtmlTheme, OutputFormat};
 
 let config = ExtractionConfig {
     output_format: OutputFormat::Html,

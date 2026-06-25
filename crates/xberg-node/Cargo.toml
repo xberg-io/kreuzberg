@@ -1,0 +1,73 @@
+[package]
+name = "xberg-node"
+version = "1.0.0-rc.1"
+edition = "2024"
+license = "Elastic-2.0"
+description = "High-performance document intelligence library"
+readme = false
+keywords = ["document", "extraction", "ocr", "pdf", "text"]
+categories = []
+
+# `serde_json` is emitted unconditionally above so the manifest is stable
+# across regens, but for umbrella crates with no JSON-marshalled return types
+# it is genuinely unused. The conditional `async-trait` / `futures-util` deps
+# are similarly flagged when the umbrella has trait-bridge / streaming
+# adapters configured but no actual async-trait callsite in this binding.
+[package.metadata.cargo-machete]
+ignored = ["serde_json", "async-trait", "tokio-util"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "enrichment", "heic", "heuristics", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "markdown-footnotes", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "presets", "quality", "redaction", "reranker", "reranker-presets", "structured", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
+api = ["xberg/api"]
+api-types = ["xberg/api-types"]
+auto-rotate-types = ["xberg/auto-rotate-types"]
+captioning = ["xberg/captioning"]
+chunking = ["xberg/chunking"]
+chunking-tokenizers = ["xberg/chunking-tokenizers"]
+classification = ["xberg/classification"]
+diff = ["xberg/diff"]
+embedding-presets = ["xberg/embedding-presets"]
+embeddings = ["xberg/embeddings"]
+enrichment = ["xberg/enrichment"]
+heic = ["xberg/heic"]
+heuristics = ["xberg/heuristics"]
+html = ["xberg/html"]
+keywords-rake = ["xberg/keywords-rake"]
+keywords-yake = ["xberg/keywords-yake"]
+layout-types = ["xberg/layout-types"]
+liter-llm = ["xberg/liter-llm"]
+markdown-footnotes = ["xberg/markdown-footnotes"]
+ner-llm = ["xberg/ner-llm"]
+ner-onnx = ["xberg/ner-onnx"]
+ocr = ["xberg/ocr"]
+ocr-wasm = ["xberg/ocr-wasm"]
+office = ["xberg/office"]
+paddle-ocr-types = ["xberg/paddle-ocr-types"]
+pdf = ["xberg/pdf"]
+presets = ["xberg/presets"]
+quality = ["xberg/quality"]
+redaction = ["xberg/redaction"]
+reranker = ["xberg/reranker"]
+reranker-presets = ["xberg/reranker-presets"]
+structured = ["xberg/structured"]
+svg = ["xberg/svg"]
+tokio-runtime = ["xberg/tokio-runtime"]
+transcription-types = ["xberg/transcription-types"]
+tree-sitter = ["xberg/tree-sitter"]
+xml = ["xberg/xml"]
+
+[dependencies]
+async-trait = "0.1"
+napi = { version = "3", features = ["async", "serde-json"] }
+napi-derive = "3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_with = "3"
+tokio-util = { version = "0.7", features = ["rt"] }
+xberg = { version = "1.0.0-rc.1", path = "../xberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "markdown-footnotes", "redaction", "enrichment", "heuristics", "presets", "structured"] }
+
+[build-dependencies]
+napi-build = "2"

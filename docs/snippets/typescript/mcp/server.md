@@ -6,17 +6,17 @@ import {
   extractBytesSync,
   type ExtractionResult,
   type ExtractionConfig,
-} from "@kreuzberg/node";
+} from "@xberg/node";
 import * as readline from "node:readline";
 
 /**
- * MCP Server for Kreuzberg
+ * MCP Server for Xberg
  * Exposes document extraction as MCP tools
  * @example
- * const server = new KreuzbergMcpServer();
+ * const server = new XbergMcpServer();
  * await server.start();
  */
-class KreuzbergMcpServer {
+class XbergMcpServer {
   private config?: ExtractionConfig;
   private rl: readline.Interface;
 
@@ -33,7 +33,7 @@ class KreuzbergMcpServer {
    * Start MCP server
    */
   async start(): Promise<void> {
-    console.error("[MCP Server] Starting Kreuzberg MCP server");
+    console.error("[MCP Server] Starting Xberg MCP server");
 
     this.rl.on("line", async (line) => {
       try {
@@ -177,7 +177,7 @@ async function main(): Promise<void> {
     },
   };
 
-  const server = new KreuzbergMcpServer(config);
+  const server = new XbergMcpServer(config);
   await server.start();
 }
 
@@ -189,5 +189,5 @@ if (process.argv[2] === "mcp") {
   });
 }
 
-export { KreuzbergMcpServer };
+export { XbergMcpServer };
 ```

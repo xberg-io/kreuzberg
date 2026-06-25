@@ -8,14 +8,14 @@ import FormData from "form-data";
 
 const execAsync = promisify(exec);
 
-class DockerKreuzbergClient {
+class DockerXbergClient {
   private containerName: string;
   private containerImage: string;
   private apiPort: number;
 
   constructor(
-    containerName: string = "kreuzberg-api",
-    containerImage: string = "kreuzberg:latest",
+    containerName: string = "xberg-api",
+    containerImage: string = "xberg:latest",
     apiPort: number = 8000
   ) {
     this.containerName = containerName;
@@ -24,7 +24,7 @@ class DockerKreuzbergClient {
   }
 
   async startContainer(): Promise<void> {
-    console.log("Starting Kreuzberg Docker container...");
+    console.log("Starting Xberg Docker container...");
     const cmd = `docker run -d --name ${this.containerName} -p ${this.apiPort}:8000 ${this.containerImage}`;
     await execAsync(cmd);
     console.log(`Container started on http://localhost:${this.apiPort}`);
@@ -43,7 +43,7 @@ class DockerKreuzbergClient {
   }
 
   async stopContainer(): Promise<void> {
-    console.log("Stopping Kreuzberg Docker container...");
+    console.log("Stopping Xberg Docker container...");
     await execAsync(`docker stop ${this.containerName}`);
     await execAsync(`docker rm ${this.containerName}`);
     console.log("Container stopped and removed");
@@ -51,7 +51,7 @@ class DockerKreuzbergClient {
 }
 
 (async () => {
-  const dockerClient = new DockerKreuzbergClient();
+  const dockerClient = new DockerXbergClient();
 
   try {
     await dockerClient.startContainer();

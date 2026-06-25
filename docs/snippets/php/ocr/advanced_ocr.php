@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Kreuzberg\Kreuzberg;
-use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\TesseractConfig;
-use Kreuzberg\Config\ImagePreprocessingConfig;
+use Xberg\Xberg;
+use Xberg\Config\ExtractionConfig;
+use Xberg\Config\OcrConfig;
+use Xberg\Config\TesseractConfig;
+use Xberg\Config\ImagePreprocessingConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -29,8 +29,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($config);
-$result = $kreuzberg->extractFile('financial_report_scan.pdf');
+$xberg = new Xberg($config);
+$result = $xberg->extractFile('financial_report_scan.pdf');
 
 echo "OCR with Table Detection:\n";
 echo str_repeat('=', 60) . "\n";
@@ -52,8 +52,8 @@ $invoiceConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($invoiceConfig);
-$result = $kreuzberg->extractFile('invoice_scan.pdf');
+$xberg = new Xberg($invoiceConfig);
+$result = $xberg->extractFile('invoice_scan.pdf');
 
 echo "Invoice OCR (numbers only):\n";
 echo str_repeat('=', 60) . "\n";
@@ -76,8 +76,8 @@ $preprocessedConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($preprocessedConfig);
-$result = $kreuzberg->extractFile('poor_quality_scan.pdf');
+$xberg = new Xberg($preprocessedConfig);
+$result = $xberg->extractFile('poor_quality_scan.pdf');
 
 echo "OCR with Image Preprocessing:\n";
 echo str_repeat('=', 60) . "\n";
@@ -113,9 +113,9 @@ if (file_exists($testFile)) {
             )
         );
 
-        $kreuzberg = new Kreuzberg($config);
+        $xberg = new Xberg($config);
         $start = microtime(true);
-        $result = $kreuzberg->extractFile($testFile);
+        $result = $xberg->extractFile($testFile);
         $elapsed = microtime(true) - $start;
 
         echo "PSM $psm - {$psmModes[$psm]}:\n";
@@ -139,8 +139,8 @@ $singleColumnConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($singleColumnConfig);
-$result = $kreuzberg->extractFile('book_scan.pdf');
+$xberg = new Xberg($singleColumnConfig);
+$result = $xberg->extractFile('book_scan.pdf');
 
 echo "Single-column OCR:\n";
 echo $result->content . "\n\n";
@@ -160,8 +160,8 @@ $sparseConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($sparseConfig);
-$result = $kreuzberg->extractFile('receipt.jpg');
+$xberg = new Xberg($sparseConfig);
+$result = $xberg->extractFile('receipt.jpg');
 
 echo "Sparse text OCR (receipt):\n";
 echo str_repeat('=', 60) . "\n";
@@ -186,8 +186,8 @@ $highAccuracyConfig = new ExtractionConfig(
     )
 );
 
-$kreuzberg = new Kreuzberg($highAccuracyConfig);
-$result = $kreuzberg->extractFile('legal_document_scan.pdf');
+$xberg = new Xberg($highAccuracyConfig);
+$result = $xberg->extractFile('legal_document_scan.pdf');
 
 echo "High-accuracy OCR:\n";
 echo "Characters: " . strlen($result->content) . "\n";

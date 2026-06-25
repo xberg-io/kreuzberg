@@ -3,15 +3,15 @@ require 'open3'
 require 'net/http'
 require 'json'
 
-class DockerKreuzbergClient
-  def initialize(container_name = 'kreuzberg-api', api_port = 8000)
+class DockerXbergClient
+  def initialize(container_name = 'xberg-api', api_port = 8000)
     @container_name = container_name
     @api_port = api_port
     @api_url = "http://localhost:#{api_port}/api/extract"
   end
 
-  def start_container(image = 'kreuzberg:latest')
-    puts 'Starting Kreuzberg Docker container...'
+  def start_container(image = 'xberg:latest')
+    puts 'Starting Xberg Docker container...'
     cmd = "docker run -d --name #{@container_name} -p #{@api_port}:8000 #{image}"
     stdout, stderr, status = Open3.capture3(cmd)
 
@@ -42,14 +42,14 @@ class DockerKreuzbergClient
   end
 
   def stop_container
-    puts 'Stopping Kreuzberg Docker container...'
+    puts 'Stopping Xberg Docker container...'
     system("docker stop #{@container_name}")
     system("docker rm #{@container_name}")
     puts 'Container stopped and removed'
   end
 end
 
-docker_client = DockerKreuzbergClient.new
+docker_client = DockerXbergClient.new
 
 begin
   docker_client.start_container

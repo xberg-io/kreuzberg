@@ -1,5 +1,5 @@
 # Advanced keyword extraction configuration
-alias Kreuzberg.ExtractionConfig
+alias Xberg.ExtractionConfig
 
 config = %ExtractionConfig{
   keyword_extraction: %{
@@ -10,7 +10,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, result} = Kreuzberg.extract_file("research_paper.pdf", nil, config)
+{:ok, result} = Xberg.extract_file("research_paper.pdf", nil, config)
 
 if result.keywords do
   # Group by score ranges

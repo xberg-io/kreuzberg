@@ -1,4 +1,4 @@
-using Kreuzberg;
+using Xberg;
 
 class Program
 {
@@ -6,22 +6,22 @@ class Program
     {
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync("document.pdf");
+            var result = await XbergLib.ExtractFileAsync("document.pdf");
             Console.WriteLine($"Extracted {result.Content.Length} characters");
         }
-        catch (KreuzbergParsingException ex)
+        catch (XbergParsingException ex)
         {
             Console.WriteLine($"Failed to parse document: {ex.Message}");
         }
-        catch (KreuzbergOcrException ex)
+        catch (XbergOcrException ex)
         {
             Console.WriteLine($"OCR processing failed: {ex.Message}");
         }
-        catch (KreuzbergMissingDependencyException ex)
+        catch (XbergMissingDependencyException ex)
         {
             Console.WriteLine($"Missing dependency: {ex.Message}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction error: {ex.Message}");
         }
@@ -31,7 +31,7 @@ class Program
             var config = new ExtractionConfig();
             var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 }; 
 
-            var result = await KreuzbergLib.ExtractBytesAsync(
+            var result = await XbergLib.ExtractBytesAsync(
                 pdfBytes,
                 "application/pdf",
                 config
@@ -43,24 +43,24 @@ class Program
 
             Console.WriteLine($"Extracted: {preview}");
         }
-        catch (KreuzbergValidationException ex)
+        catch (XbergValidationException ex)
         {
             Console.WriteLine($"Invalid configuration: {ex.Message}");
         }
-        catch (KreuzbergOcrException ex)
+        catch (XbergOcrException ex)
         {
             Console.WriteLine($"OCR failed: {ex.Message}");
         }
-        catch (KreuzbergException ex)
+        catch (XbergException ex)
         {
             Console.WriteLine($"Extraction failed: {ex.Message}");
         }
 
         try
         {
-            var result = await KreuzbergLib.ExtractFileAsync("nonexistent.pdf");
+            var result = await XbergLib.ExtractFileAsync("nonexistent.pdf");
         }
-        catch (KreuzbergIOException)
+        catch (XbergIOException)
         {
             Console.WriteLine("File not found");
         }

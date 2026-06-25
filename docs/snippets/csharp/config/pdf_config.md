@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var config = new ExtractionConfig
 {
@@ -12,7 +12,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await KreuzbergLib.ExtractFile("encrypted.pdf", null, config);
+var result = await XbergLib.ExtractFile("encrypted.pdf", null, config);
 if (result.Metadata != null)
 {
     Console.WriteLine($"Title: {result.Metadata.Title}");

@@ -1,4 +1,4 @@
-import type { Chunk, ExtractedImage, ExtractionResult, Table } from "@kreuzberg/wasm";
+import type { Chunk, ExtractedImage, ExtractionResult, Table } from "@xberg/wasm";
 
 function _isTable(obj: unknown): obj is Table {
   if (!obj || typeof obj !== "object") return false;

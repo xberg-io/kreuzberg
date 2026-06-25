@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/kreuzberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go/v5"
 )
 
 func main() {
@@ -13,21 +13,21 @@ func main() {
 	overlap := uint(200)
 	useCache := true
 
-	config := kreuzberg.ExtractionConfig{
+	config := xberg.ExtractionConfig{
 		UseCache: &useCache,
-		Ocr: &kreuzberg.OcrConfig{
+		Ocr: &xberg.OcrConfig{
 			Backend: "tesseract",
-			TesseractConfig: &kreuzberg.TesseractConfig{
+			TesseractConfig: &xberg.TesseractConfig{
 				Psm: &psm,
 			},
 		},
-		Chunking: &kreuzberg.ChunkingConfig{
+		Chunking: &xberg.ChunkingConfig{
 			MaxCharacters: &maxChars,
 			Overlap:       &overlap,
 		},
 	}
 
-	result, err := kreuzberg.ExtractFileSync("document.pdf", nil, config)
+	result, err := xberg.ExtractFileSync("document.pdf", nil, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}

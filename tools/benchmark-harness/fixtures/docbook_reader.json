@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/docbook/docbook-reader.docbook",
 	"file_type": "docbook",
 	"file_size": 37139,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": ["xberg"],
 	"metadata": {
 		"description": "DocBook reader with larger content",
 		"category": "documentation"

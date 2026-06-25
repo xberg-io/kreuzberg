@@ -12,8 +12,8 @@ A comprehensive local Docker testing script that validates all configuration vol
 
 Tests Docker configuration in various scenarios:
 
-- Volume mounts to `/etc/kreuzberg/kreuzberg.toml` (recommended system path)
-- Volume mounts to `/app/.config/kreuzberg/config.toml` (user path)
+- Volume mounts to `/etc/xberg/xberg.toml` (recommended system path)
+- Volume mounts to `/app/.config/xberg/config.toml` (user path)
 - Custom paths with `--config` flag
 - Environment variable overrides with config files
 - All config formats (TOML, YAML, JSON)
@@ -22,7 +22,7 @@ Tests Docker configuration in various scenarios:
 #### Requirements
 
 - Docker installed and running
-- Docker images pre-built (`kreuzberg:core` and/or `kreuzberg:full`)
+- Docker images pre-built (`xberg:core` and/or `xberg:full`)
 - Port range 18100-18199 available for testing
 
 #### Usage
@@ -64,11 +64,11 @@ Test core variant and keep containers for inspection:
 
 The script runs 8 test cases for each variant:
 
-1. **Volume mount to /etc/kreuzberg/kreuzberg.toml**
+1. **Volume mount to /etc/xberg/xberg.toml**
    - Tests the recommended system-wide configuration path
    - Validates read-only mount functionality
 
-2. **Volume mount to /app/.config/kreuzberg/config.toml**
+2. **Volume mount to /app/.config/xberg/config.toml**
    - Tests the user-level configuration path
    - Validates alternative mount location
 
@@ -132,10 +132,10 @@ Example output:
 
 [INFO] Docker is available
 
-Test 01: Volume mount to /etc/kreuzberg/kreuzberg.toml (variant: core)
+Test 01: Volume mount to /etc/xberg/xberg.toml (variant: core)
 [PASS] Test passed
 
-Test 02: Volume mount to /app/.config/kreuzberg/config.toml (variant: core)
+Test 02: Volume mount to /app/.config/xberg/config.toml (variant: core)
 [PASS] Test passed
 
 ...
@@ -150,8 +150,8 @@ Failed Tests:  0
 Pass Rate:     100%
 
 Tested Variants:
-  - kreuzberg:core
-  - kreuzberg:full
+  - xberg:core
+  - xberg:full
 ```
 
 #### Troubleshooting
@@ -171,9 +171,9 @@ Tested Variants:
 - Build the required image(s):
 
   ```bash
-  cd /path/to/kreuzberg
-  docker build -f docker/Dockerfile.core -t kreuzberg:core .
-  docker build -f docker/Dockerfile.full -t kreuzberg:full .
+  cd /path/to/xberg
+  docker build -f docker/Dockerfile.core -t xberg:core .
+  docker build -f docker/Dockerfile.full -t xberg:full .
   ```
 
 **Tests timing out**
@@ -206,9 +206,9 @@ VERBOSE=true ./test-docker-config-local.sh --variant core
 
 #### Temporary Files
 
-The script creates temporary configuration files in `/tmp/kreuzberg-config-test-$PID/`:
+The script creates temporary configuration files in `/tmp/xberg-config-test-$PID/`:
 
-- `kreuzberg.toml` - TOML format test config
+- `xberg.toml` - TOML format test config
 - `config.yaml` - YAML format test config
 - `config.json` - JSON format test config
 
@@ -235,8 +235,8 @@ The script can be integrated into CI/CD pipelines:
 set -e
 
 # Build images
-docker build -f docker/Dockerfile.core -t kreuzberg:core .
-docker build -f docker/Dockerfile.full -t kreuzberg:full .
+docker build -f docker/Dockerfile.core -t xberg:core .
+docker build -f docker/Dockerfile.full -t xberg:full .
 
 # Run tests
 ./scripts/test/test-docker-config-local.sh --variant all
@@ -249,7 +249,7 @@ echo "Configuration tests passed!"
 - Requires Docker to be installed and running
 - Tests only configuration volume mounts (not other volume types)
 - Tests only health endpoint (basic connectivity validation)
-- Assumes `kreuzberg:*` image naming convention
+- Assumes `xberg:*` image naming convention
 - Tests run sequentially (not parallelized)
 
 #### Future Enhancements

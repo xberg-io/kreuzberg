@@ -4,7 +4,7 @@ require 'open3'
 
 def extract_with_cli(file_path, output_format = 'text')
   stdout, stderr, status = Open3.capture3(
-    'kreuzberg', 'extract', file_path, '--format', output_format
+    'xberg', 'extract', file_path, '--format', output_format
   )
 
   unless status.success?

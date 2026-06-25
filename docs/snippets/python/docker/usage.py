@@ -4,14 +4,14 @@ import httpx
 import json
 from pathlib import Path
 
-class DockerKreuzbergClient:
-    def __init__(self, container_name: str = "kreuzberg-api", port: int = 8000):
+class DockerXbergClient:
+    def __init__(self, container_name: str = "xberg-api", port: int = 8000):
         self.container_name = container_name
         self.port = port
         self.api_url = f"http://localhost:{port}/api/extract"
 
-    def start_container(self, image: str = "kreuzberg:latest"):
-        print("Starting Kreuzberg Docker container...")
+    def start_container(self, image: str = "xberg:latest"):
+        print("Starting Xberg Docker container...")
         subprocess.run(
             [
                 "docker", "run", "-d",
@@ -34,13 +34,13 @@ class DockerKreuzbergClient:
             return result.get("content", "")
 
     def stop_container(self):
-        print("Stopping Kreuzberg Docker container...")
+        print("Stopping Xberg Docker container...")
         subprocess.run(["docker", "stop", self.container_name], check=True)
         subprocess.run(["docker", "rm", self.container_name], check=True)
         print("Container stopped and removed")
 
 async def main():
-    docker_client = DockerKreuzbergClient()
+    docker_client = DockerXbergClient()
 
     try:
         docker_client.start_container()

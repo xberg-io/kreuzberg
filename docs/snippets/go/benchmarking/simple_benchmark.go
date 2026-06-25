@@ -6,14 +6,14 @@ import (
 	"sync"
 	"time"
 
-	"kreuzberg"
+	"xberg"
 )
 
 func main() {
-	config := &kreuzberg.ExtractionConfig{
+	config := &xberg.ExtractionConfig{
 		UseCache: false,
 	}
-	client, err := kreuzberg.New(config)
+	client, err := xberg.New(config)
 	if err != nil {
 		panic(err)
 	}
@@ -54,10 +54,10 @@ func main() {
 	fmt.Printf("  - Average: %.3fs per extraction\n", asyncDuration/float64(numRuns))
 	fmt.Printf("  - Speedup: %.1fx\n", syncDuration/asyncDuration)
 
-	cacheConfig := &kreuzberg.ExtractionConfig{
+	cacheConfig := &xberg.ExtractionConfig{
 		UseCache: true,
 	}
-	clientCached, err := kreuzberg.New(cacheConfig)
+	clientCached, err := xberg.New(cacheConfig)
 	if err != nil {
 		panic(err)
 	}

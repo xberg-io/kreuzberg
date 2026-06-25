@@ -1,5 +1,5 @@
 ```csharp title="C#"
-using Kreuzberg;
+using Xberg;
 
 var items = new List<BatchFileItem>
 {
@@ -12,7 +12,7 @@ var items = new List<BatchFileItem>
 };
 
 var config = new ExtractionConfig { OutputFormat = OutputFormat.Text };
-var results = KreuzbergLib.BatchExtractFilesSync(items, config);
+var results = XbergLib.BatchExtractFilesSync(items, config);
 
 foreach (var result in results)
 {

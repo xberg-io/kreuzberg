@@ -45,8 +45,8 @@ tasks:
       # Build with the `profiling` profile (inherits release, retains debug
       # info). A plain --release build strips Rust symbols, leaving the
       # flamegraph full of __mh_execute_header / raw addresses and unable
-      # to surface kreuzberg::* hotspots. See docs/perf/profiling.md.
-      - cargo build --locked --profile profiling -p kreuzberg-cli --features all
+      # to surface xberg::* hotspots. See docs/perf/profiling.md.
+      - cargo build --locked --profile profiling -p xberg-cli --features all
       - cargo build --locked --profile profiling -p benchmark-harness --features profiling
       - mkdir -p "{{.FLAMEGRAPH_DIR}}/{{.SHA}}"
       - |

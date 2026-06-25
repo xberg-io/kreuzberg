@@ -1,9 +1,9 @@
 ```rust title="simple_benchmark.rs"
-use kreuzberg::{extract_file_sync, extract_file, ExtractionConfig};
+use xberg::{extract_file_sync, extract_file, ExtractionConfig};
 use std::time::Instant;
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         use_cache: false,
         ..Default::default()

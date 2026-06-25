@@ -2,7 +2,7 @@
 	"document": "../../../test_documents/json/simple.json",
 	"file_type": "json",
 	"file_size": 3443,
-	"expected_frameworks": ["kreuzberg", "markitdown", "tika"],
+	"expected_frameworks": ["xberg", "markitdown", "tika"],
 	"metadata": {
 		"description": "Simple JSON - Document elements with metadata and structured content",
 		"category": "structured"

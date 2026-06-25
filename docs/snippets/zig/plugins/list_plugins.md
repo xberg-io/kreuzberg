@@ -1,15 +1,15 @@
 ```zig title="Zig"
 const std = @import("std");
-const kreuzberg = @import("kreuzberg");
+const xberg = @import("xberg");
 
 pub fn main() !void {
-    const ocr_backends = try kreuzberg.list_ocr_backends();
+    const ocr_backends = try xberg.list_ocr_backends();
     defer std.heap.c_allocator.free(ocr_backends);
 
-    const post_processors = try kreuzberg.list_post_processors();
+    const post_processors = try xberg.list_post_processors();
     defer std.heap.c_allocator.free(post_processors);
 
-    const validators = try kreuzberg.list_validators();
+    const validators = try xberg.list_validators();
     defer std.heap.c_allocator.free(validators);
 
     const stdout = std.io.getStdOut().writer();

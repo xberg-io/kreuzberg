@@ -4,7 +4,7 @@ defmodule Example do
     content = File.read!("document.pdf")
     config = nil
 
-    case Kreuzberg.extract_bytes_sync(content, "application/pdf", config) do
+    case Xberg.extract_bytes_sync(content, "application/pdf", config) do
       {:ok, result} ->
         IO.puts("Content: #{result}")
         :ok

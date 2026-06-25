@@ -1,6 +1,6 @@
-# Kreuzberg Docker Images
+# Xberg Docker Images
 
-This directory contains Dockerfile variants for building Kreuzberg Docker images with different feature sets.
+This directory contains Dockerfile variants for building Xberg Docker images with different feature sets.
 
 ## Base Image
 
@@ -26,7 +26,7 @@ Both variants use **Debian 13 (Trixie) slim** - the latest stable Debian release
 **Build command:**
 
 ```bash
-docker build -f docker/Dockerfile.core -t kreuzberg:core .
+docker build -f docker/Dockerfile.core -t xberg:core .
 ```
 
 ### 2. Full Image (`Dockerfile.full`)
@@ -46,7 +46,7 @@ docker build -f docker/Dockerfile.core -t kreuzberg:core .
 **Build command:**
 
 ```bash
-docker build -f docker/Dockerfile.full -t kreuzberg:full .
+docker build -f docker/Dockerfile.full -t xberg:full .
 ```
 
 ## Size Comparison
@@ -79,23 +79,23 @@ All images support three execution modes via ENTRYPOINT:
 ### 1. API Server (default)
 
 ```bash
-docker run -p 8000:8000 kreuzberg:core
+docker run -p 8000:8000 xberg:core
 # or override host/port:
-docker run -p 8000:8000 kreuzberg:core serve --host 0.0.0.0 --port 8000
+docker run -p 8000:8000 xberg:core serve --host 0.0.0.0 --port 8000
 ```
 
 ### 2. CLI Mode
 
 ```bash
-docker run -v $(pwd):/data kreuzberg:core extract /data/document.pdf
-docker run -v $(pwd):/data kreuzberg:core detect /data/file.bin
-docker run -v $(pwd):/data kreuzberg:core batch /data/*.pdf
+docker run -v $(pwd):/data xberg:core extract /data/document.pdf
+docker run -v $(pwd):/data xberg:core detect /data/file.bin
+docker run -v $(pwd):/data xberg:core batch /data/*.pdf
 ```
 
 ### 3. MCP Server Mode
 
 ```bash
-docker run kreuzberg:core mcp
+docker run xberg:core mcp
 ```
 
 ## Testing
@@ -104,20 +104,20 @@ Test scripts are provided to verify both image variants:
 
 ```bash
 # Test core image
-IMAGE_NAME=kreuzberg:core ./scripts/test_docker.sh
+IMAGE_NAME=xberg:core ./scripts/test_docker.sh
 
 # Test full image
-IMAGE_NAME=kreuzberg:full ./scripts/test_docker.sh
+IMAGE_NAME=xberg:full ./scripts/test_docker.sh
 ```
 
 ## GitHub Actions
 
 The `.github/workflows/publish-docker.yaml` workflow builds and publishes both variants to GitHub Container Registry:
 
-- `ghcr.io/xberg-io/kreuzberg:VERSION-core` - Core image (minimal runtime)
-- `ghcr.io/xberg-io/kreuzberg:core` - Latest core image
-- `ghcr.io/xberg-io/kreuzberg:VERSION` - Full image (all optional dependencies)
-- `ghcr.io/xberg-io/kreuzberg:latest` - Latest full image
+- `ghcr.io/xberg-io/xberg:VERSION-core` - Core image (minimal runtime)
+- `ghcr.io/xberg-io/xberg:core` - Latest core image
+- `ghcr.io/xberg-io/xberg:VERSION` - Full image (all optional dependencies)
+- `ghcr.io/xberg-io/xberg:latest` - Latest full image
 
 For local development, use the local tags shown in the build commands above.
 

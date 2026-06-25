@@ -6,7 +6,7 @@ model: haiku
 
 When working on OCR code:
 
-1. Key source paths: crates/kreuzberg/src/ocr/ (processor.rs, tesseract_backend.rs, hocr.rs, cache.rs, language_registry.rs, table/)
+1. Key source paths: crates/xberg/src/ocr/ (processor.rs, tesseract_backend.rs, hocr.rs, cache.rs, language_registry.rs, table/)
 2. The OCR pipeline: Image Detection -> Preprocessing (denoise, deskew, binarize) -> Backend Selection -> OCR Execution -> hOCR Parsing -> Table Reconstruction -> Caching -> Return
 3. Backends: Tesseract (default, native C FFI via leptess), PaddleOCR (ONNX via ort), EasyOCR (Python via PyO3)
 4. For Python backends: use tokio::task::spawn_blocking, minimize GIL hold time with py.allow_threads(), cache Python data in Rust fields

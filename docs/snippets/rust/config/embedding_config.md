@@ -1,8 +1,8 @@
 ```rust title="Rust"
-use kreuzberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig, EmbeddingModelType};
+use xberg::{extract_file, ExtractionConfig, ChunkingConfig, EmbeddingConfig, EmbeddingModelType};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         chunking: Some(ChunkingConfig {
             max_characters: 1000,

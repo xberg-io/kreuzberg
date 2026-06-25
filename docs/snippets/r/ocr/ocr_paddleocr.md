@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 # Configure PaddleOCR backend (defaults to mobile tier)
 config <- list(

@@ -1,5 +1,5 @@
 ```kotlin title="Kotlin"
-import dev.kreuzberg.*
+import dev.xberg.*
 
 fun main() {
     val config = ExtractionConfig.builder().build()
@@ -7,7 +7,7 @@ fun main() {
         BatchBytesItem("Hello, world!".toByteArray(), "text/plain", null),
         BatchBytesItem("# Heading\n\nParagraph text.".toByteArray(), "text/markdown", null),
     )
-    val results = Kreuzberg.batchExtractBytesSync(items, config)
+    val results = Xberg.batchExtractBytesSync(items, config)
 
     results.forEachIndexed { index, result ->
         println("Item $index: ${result.content().length} chars")

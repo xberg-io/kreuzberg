@@ -1,5 +1,5 @@
 ```r title="R"
-library(kreuzberg)
+library(xberg)
 
 items <- jsonlite::toJSON(list(
   list(path = "doc1.pdf"),

@@ -2,7 +2,7 @@
 	"document": "../../../../test_documents/vendored/docling/md/test_03.asciidoc.md",
 	"file_type": "md",
 	"file_size": 646,
-	"expected_frameworks": ["kreuzberg", "docling", "pandoc", "tika", "unstructured"],
+	"expected_frameworks": ["xberg", "docling", "pandoc", "tika", "unstructured"],
 	"metadata": {
 		"description": "Document from docling test suite",
 		"source": "docling",

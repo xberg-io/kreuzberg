@@ -1,5 +1,5 @@
-import type { ExtractionConfig } from "@kreuzberg/wasm";
-import { extractBytes, initWasm } from "@kreuzberg/wasm";
+import type { ExtractionConfig } from "@xberg/wasm";
+import { extractBytes, initWasm } from "@xberg/wasm";
 
 async function extractWithChunking() {
   await initWasm();

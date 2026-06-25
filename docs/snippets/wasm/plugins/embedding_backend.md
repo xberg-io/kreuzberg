@@ -3,7 +3,7 @@
 Register a custom embedding backend that provides vector embeddings for text.
 
 ```typescript title="WASM"
-import init, { registerEmbeddingBackend } from "kreuzberg-wasm";
+import init, { registerEmbeddingBackend } from "xberg-wasm";
 
 await init();
 

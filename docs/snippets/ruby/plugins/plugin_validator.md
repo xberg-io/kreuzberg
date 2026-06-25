@@ -1,14 +1,14 @@
 ```ruby title="Ruby"
-require "kreuzberg"
+require "xberg"
 
 validator = lambda do |result|
   raise StandardError, "Content too short" if result.content.length < 50
 end
 
-Kreuzberg.register_validator("min_length", validator, priority: 10)
+Xberg.register_validator("min_length", validator, priority: 10)
 
-result = Kreuzberg.extract_file_sync("document.pdf")
+result = Xberg.extract_file_sync("document.pdf")
 puts "Validated content length: #{result.content.length}"
 
-Kreuzberg.unregister_validator("min_length")
+Xberg.unregister_validator("min_length")
 ```

@@ -1,6 +1,6 @@
 ```rust title="Rust"
-use kreuzberg::plugins::{Plugin, Validator, register_validator};
-use kreuzberg::{Result, ExtractionResult, ExtractionConfig, KreuzbergError};
+use xberg::plugins::{Plugin, Validator, register_validator};
+use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
 use async_trait::async_trait;
 use std::sync::Arc;
 
@@ -50,7 +50,7 @@ fn register_generic_validator() -> Result<()> {
         plugin_priority: 200,
         check: |result, _config| {
             if result.content.trim().is_empty() {
-                return Err(KreuzbergError::validation("Extracted content is blank"));
+                return Err(XbergError::validation("Extracted content is blank"));
             }
             Ok(())
         },
