@@ -13,7 +13,12 @@
 # `cargo unyank`.
 #
 # Usage:
-#   scripts/publish/placeholders/crates-placeholders.sh [--dry-run] [--no-yank]
+#   scripts/publish/placeholders/crates-placeholders.sh [--dry-run] [--no-yank] [--yank-only]
+#
+# Recommended order for a real run (publish first so a token failure can't leave
+# xberg with every version yanked):
+#   1. crates-placeholders.sh --no-yank     # publish the 7 v0.0.1 stubs
+#   2. crates-placeholders.sh --yank-only   # yank the legacy xberg 5.0.0-rc.* versions
 #
 # Requirements:
 #   - cargo on PATH
@@ -24,10 +29,12 @@ set -euo pipefail
 
 DRY_RUN=0
 DO_YANK=1
+YANK_ONLY=0
 for arg in "$@"; do
   case "$arg" in
   --dry-run) DRY_RUN=1 ;;
   --no-yank) DO_YANK=0 ;;
+  --yank-only) YANK_ONLY=1 ;;
   -h | --help)
     grep '^#' "$0" | sed 's/^# \{0,1\}//'
     exit 0
@@ -136,6 +143,11 @@ EOF
 }
 
 main() {
+  if [[ "$YANK_ONLY" -eq 1 ]]; then
+    yank_legacy_xberg
+    log "done (yank-only)."
+    return 0
+  fi
   if [[ "$DO_YANK" -eq 1 ]]; then
     yank_legacy_xberg
   fi
