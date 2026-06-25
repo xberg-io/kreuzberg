@@ -1,12 +1,12 @@
-//! kreuzberg-gliner-rs ONNX backend for named-entity recognition.
+//! GLiNER ONNX backend for named-entity recognition.
 //!
-//! Wraps the `kreuzberg-gliner-rs` crate (a Xberg fork of upstream gline-rs,
-//! see <https://crates.io/crates/kreuzberg-gliner-rs>) to run
-//! [GLiNER](https://github.com/urchade/GLiNER) span-mode models. The default
-//! model is `urchade/gliner_multi-v2.1` — a 100 MB multilingual checkpoint that
-//! covers PERSON / ORGANIZATION / LOCATION / DATE / EMAIL out of the box.
+//! Wraps the in-tree [`xberg_gliner`] crate (a hand-written port of
+//! [GLiNER](https://github.com/urchade/GLiNER) span-mode inference) to detect
+//! entities locally. The default model is `urchade/gliner_multi-v2.1` — a 100 MB
+//! multilingual checkpoint that covers PERSON / ORGANIZATION / LOCATION / DATE /
+//! EMAIL out of the box.
 //!
-//! The fork pins `ort = "=2.0.0-rc.12"`, matching the rest of the xberg
+//! `xberg_gliner` runs on `ort 2.0.0-rc.12`, matching the rest of the xberg
 //! workspace (paddle-ocr, layout-detection, embeddings, auto-rotate,
 //! doc_orientation).
 //!
@@ -17,11 +17,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use async_trait::async_trait;
-use gliner::model::GLiNER;
-use gliner::model::input::text::TextInput;
-use gliner::model::params::Parameters;
-use gliner::model::pipeline::span::SpanMode;
-use orp::params::RuntimeParameters;
+use xberg_gliner::{Gliner, Parameters, RuntimeConfig, TextInput};
 
 use crate::Result;
 use crate::types::entity::{Entity, EntityCategory};
@@ -89,7 +85,7 @@ pub fn download_model(repo_id: &str, _cache_dir: Option<PathBuf>) -> Result<Path
     tracing::info!(
         model_path = %model_path.display(),
         tokenizer_path = %tokenizer_path.display(),
-        "kreuzberg-gliner-rs model downloaded"
+        "GLiNER model downloaded"
     );
     Ok(model_path)
 }
@@ -128,11 +124,11 @@ fn label_to_category(class: &str) -> EntityCategory {
     }
 }
 
-/// kreuzberg-gliner-rs ONNX backend wrapper.
+/// GLiNER ONNX backend wrapper.
 ///
-/// Holds an initialised [`GLiNER<SpanMode>`] behind an `Arc<Mutex<...>>` so the
-/// model can be safely shared across async tasks (inference is synchronous and
-/// serialised internally by the mutex).
+/// Holds an initialised [`Gliner`] behind an `Arc<Mutex<...>>` so the model can
+/// be safely shared across async tasks (inference is synchronous and serialised
+/// by the mutex).
 pub struct GlineBackend {
     /// HuggingFace repository ID used to load this model (e.g. `"urchade/gliner_multi-v2.1"`).
     pub repo_id: String,
@@ -140,10 +136,9 @@ pub struct GlineBackend {
     pub model_path: PathBuf,
     /// Local path to the cached tokenizer file.
     pub tokenizer_path: PathBuf,
-    // SAFETY: GLiNER<SpanMode> is Send (all sub-fields are Send). The Mutex
-    // serialises concurrent inference calls, which is required by the
-    // underlying ort::Session API (Session::run requires &mut self).
-    model: Arc<Mutex<GLiNER<SpanMode>>>,
+    // `Gliner` is Send and serialises its own ONNX session internally; the Mutex
+    // here lets the initialised model be shared across async inference tasks.
+    model: Arc<Mutex<Gliner>>,
 }
 
 impl GlineBackend {
@@ -160,9 +155,9 @@ impl GlineBackend {
                 plugin_name: "ner-gline".to_string(),
             }
         })?;
-        let gliner = GLiNER::<SpanMode>::new(
+        let gliner = Gliner::with_runtime(
             Parameters::default(),
-            RuntimeParameters::default(),
+            RuntimeConfig::default(),
             &tokenizer_path,
             &model_path,
         )

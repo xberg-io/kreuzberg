@@ -317,15 +317,13 @@ impl Tokenizer for HFTokenizer {
 #[derive(Debug)]
 struct Prompt {
     tokens: Vec<String>,
-    text_length: usize,
     entities_length: usize,
 }
 
 impl Prompt {
-    fn new(tokens: Vec<String>, text_length: usize, entities_length: usize) -> Self {
+    fn new(tokens: Vec<String>, entities_length: usize) -> Self {
         Self {
             tokens,
-            text_length,
             entities_length,
         }
     }
@@ -372,7 +370,7 @@ impl PromptInput {
             let mut prompt = Vec::with_capacity(entities_prompt.len() + tokens.len());
             prompt.extend(entities_prompt.clone());
             prompt.extend(tokens.iter().map(|token| token.text().to_string()));
-            prompts.push(Prompt::new(prompt, tokens.len(), entities_prompt.len()));
+            prompts.push(Prompt::new(prompt, entities_prompt.len()));
             text_lengths.push(tokens.len());
             num_words = num_words.max(tokens.len());
         }
@@ -781,9 +779,13 @@ impl Gliner {
 }
 
 fn build_session<P: AsRef<Path>>(model_path: P, runtime: &RuntimeConfig) -> Result<Session> {
+    // ort 2.0.0-rc.12 builder option methods return `ort::Error<SessionBuilder>`; flatten to the
+    // plain `ort::Error` the `Ort` variant accepts (matches the other ORT session sites in xberg).
     let session = Session::builder()?
-        .with_optimization_level(GraphOptimizationLevel::All)?
-        .with_intra_threads(runtime.intra_threads)?
+        .with_optimization_level(GraphOptimizationLevel::All)
+        .map_err(|e| ort::Error::new(e.message()))?
+        .with_intra_threads(runtime.intra_threads)
+        .map_err(|e| ort::Error::new(e.message()))?
         .commit_from_file(model_path)?;
     Ok(session)
 }
@@ -988,8 +990,8 @@ mod tests {
         assert_eq!(prepared.prompts.len(), 2);
         assert_eq!(prepared.prompts[0].tokens.len(), 10);
         assert_eq!(prepared.prompts[1].tokens.len(), 11);
-        assert_eq!(prepared.prompts[0].text_length, 5);
-        assert_eq!(prepared.prompts[1].text_length, 6);
+        assert_eq!(prepared.text_lengths[0], 5);
+        assert_eq!(prepared.text_lengths[1], 6);
         assert_eq!(prepared.prompts[0].tokens[0], "<<ENT>>");
         assert_eq!(prepared.prompts[0].tokens[1], "Person");
         assert_eq!(prepared.prompts[0].tokens[2], "<<ENT>>");
@@ -997,6 +999,16 @@ mod tests {
         assert_eq!(prepared.prompts[0].tokens[4], "<<SEP>>");
         assert_eq!(prepared.prompts[1].tokens[5], "This");
         assert_eq!(prepared.num_words, 6);
+    }
+
+    #[test]
+    fn build_session_surfaces_missing_model_as_error() {
+        // Exercises the ort 2.0.0-rc.12 `SessionBuilder` option chain (the part the
+        // rc.12 bump broke) and confirms a missing model file surfaces as a
+        // `GlinerError` instead of panicking.
+        let err = build_session("/nonexistent/gliner-model.onnx", &RuntimeConfig::default())
+            .expect_err("missing model file must error");
+        assert!(matches!(err, GlinerError::Ort(_)), "expected Ort error, got {err:?}");
     }
 
     #[test]
@@ -1032,9 +1044,16 @@ mod tests {
         assert_eq!(span_idx[[0, 1, 0]], 0);
         assert_eq!(span_idx[[0, 1, 1]], 1);
         assert!(span_mask[[0, 1]]);
-        assert_eq!(span_idx[[0, 11, 0]], 3);
-        assert_eq!(span_idx[[0, 11, 1]], 3);
-        assert!(span_mask[[0, 11]]);
+        // Last valid span for a 4-word text is the single-word span (3, 3), at
+        // dimension `start * max_width + width` = 3 * 3 + 0 = 9.
+        assert_eq!(span_idx[[0, 9, 0]], 3);
+        assert_eq!(span_idx[[0, 9, 1]], 3);
+        assert!(span_mask[[0, 9]]);
+        // Dimension 11 (start 3, width 2 -> span end 5) runs past the text, so it
+        // stays zeroed and masked out.
+        assert_eq!(span_idx[[0, 11, 0]], 0);
+        assert_eq!(span_idx[[0, 11, 1]], 0);
+        assert!(!span_mask[[0, 11]]);
     }
 
     #[test]
