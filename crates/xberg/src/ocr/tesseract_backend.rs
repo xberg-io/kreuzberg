@@ -119,6 +119,13 @@ impl TesseractBackend {
                 ..Default::default()
             },
         };
+        // An empty language list joins to an empty string, which Tesseract would otherwise
+        // try to load as a language pack named "" — surfacing as a confusing
+        // "Failed to download language pack ''" error. Default to English, matching the
+        // documented `OcrConfig` default, the WASM Tesseract backend, and the VLM OCR path.
+        if internal.language.trim().is_empty() {
+            internal.language = "eng".to_string();
+        }
         // Propagate top-level OcrConfig.auto_rotate (OR with any preprocessing setting)
         if config.auto_rotate {
             internal.auto_rotate = true;
@@ -508,6 +515,33 @@ mod tests {
         assert_eq!(tess_config.language, "fra");
         assert_eq!(tess_config.psm, 6);
         assert!(tess_config.enable_table_detection);
+    }
+
+    #[test]
+    fn test_config_to_tesseract_defaults_empty_language_to_eng() {
+        let backend = TesseractBackend::new();
+
+        // No tesseract_config: empty language list (e.g. `language=[]`) must default to "eng"
+        // rather than producing an empty language string. Regression test for the image OCR
+        // path failing with "Failed to download language pack ''".
+        let ocr_config = OcrConfig {
+            backend: "tesseract".to_string(),
+            language: vec![],
+            ..Default::default()
+        };
+        assert_eq!(backend.config_to_tesseract(&ocr_config).language, "eng");
+
+        // With a tesseract_config whose language is also empty, the same default applies.
+        let ocr_config_with_tess = OcrConfig {
+            backend: "tesseract".to_string(),
+            language: vec![],
+            tesseract_config: Some(crate::types::TesseractConfig {
+                language: vec![],
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+        assert_eq!(backend.config_to_tesseract(&ocr_config_with_tess).language, "eng");
     }
 
     #[test]

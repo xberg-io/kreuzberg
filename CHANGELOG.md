@@ -31,6 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runtime model downloads to the xberg-managed `xberg-io/gliner-models` artifact
   repository. The public `ner-onnx` feature and NER config shape are unchanged.
 
+### Fixed
+
+- **Tesseract image OCR no longer fails on an empty language list.** `OcrConfig { language: [] }`
+  joined to an empty Tesseract language string, which the native backend tried to load as a
+  language pack named `""` — surfacing as the confusing `Failed to download language pack ''`.
+  The native backend now defaults an empty language to English, matching the WASM Tesseract
+  backend, the VLM OCR path, and the documented `OcrConfig` default.
+
 ## [5.0.0-rc.36] - 2026-06-24
 
 ### Removed
