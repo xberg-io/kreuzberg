@@ -4,22 +4,6 @@
 	"description": "extract_batch: mixed bytes and URL inputs share one output envelope",
 	"tags": ["url", "batch"],
 	"call": "extract_batch",
-	"args": [
-		{
-			"name": "inputs",
-			"field": "input.extract_inputs",
-			"type": "json_object",
-			"owned": true,
-			"go_type": "ExtractInput",
-			"element_type": "ExtractInput"
-		},
-		{
-			"name": "config",
-			"field": "config",
-			"type": "json_object",
-			"optional": true
-		}
-	],
 	"input": {
 		"mock_responses": [
 			{
@@ -32,7 +16,7 @@
 				"body_inline": "Batch URL document content.\n"
 			}
 		],
-		"extract_inputs": [
+		"inputs": [
 			{
 				"kind": "uri",
 				"uri": "$mock_url"

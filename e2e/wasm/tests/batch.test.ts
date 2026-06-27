@@ -4,7 +4,7 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { extract, extractBatch, ExtractInput, type ExtractionConfig } from "@xberg-io/xberg";
+import { extract, extractBatch, ExtractInput, WasmExtractionConfig, WasmAccelerationConfig, WasmCaptioningConfig, WasmChunkingConfig, WasmContentFilterConfig, WasmEmailConfig, WasmEmbeddingConfig, WasmHierarchyConfig, WasmHtmlOutputConfig, WasmImageExtractionConfig, WasmImagePreprocessingConfig, WasmKeywordConfig, WasmLanguageDetectionConfig, WasmLayoutDetectionConfig, WasmLlmConfig, WasmNerConfig, WasmOcrConfig, WasmOcrElementConfig, WasmOcrPipelineConfig, WasmOcrPipelineStage, WasmOcrQualityThresholds, WasmPageClassificationConfig, WasmPageConfig, WasmPdfConfig, WasmPostProcessorConfig, WasmRakeParams, WasmRedactionConfig, WasmRedactionPattern, WasmRedactionTerm, WasmSecurityLimits, WasmStructuredExtractionConfig, WasmSummarizationConfig, WasmSvgOptions, WasmTesseractConfig, WasmTokenReductionOptions, WasmTranscriptionConfig, WasmTranslationConfig, WasmTreeSitterConfig, WasmTreeSitterProcessConfig, WasmUrlExtractionConfig, WasmYakeParams } from "@xberg-io/xberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
@@ -61,21 +61,6 @@ describe("batch", () => {
 
 	it("batch_bytes_invalid_mime: extract_batch invalid MIME", async () => {
 		await extractBatch([{ bytes: [72, 101, 108, 108, 111], kind: "bytes", mimeType: "application/x-nonexistent" }], undefined);
-	}, 30000);
-	it("batch_file_async_basic: Extract text from multiple files asynchronously", async () => {
-		await extractBatch([{ kind: "uri", uri: "pdf/fake_memo.pdf" }, { kind: "uri", uri: "text/fake_text.txt" }], undefined);
-	}, 30000);
-	it("batch_file_async_not_found: extract_batch async nonexistent", async () => {
-		await extractBatch([{ kind: "uri", uri: "/nonexistent/a.pdf" }], undefined);
-	}, 30000);
-	it("batch_file_not_found: extract_batch nonexistent", async () => {
-		await extractBatch([{ kind: "uri", uri: "/nonexistent/a.pdf" }, { kind: "uri", uri: "/nonexistent/b.txt" }], undefined);
-	}, 30000);
-	it("batch_file_partial: extract_batch mixed", async () => {
-		await extractBatch([{ kind: "uri", uri: "text/plain.txt" }, { kind: "uri", uri: "/nonexistent/missing.pdf" }], undefined);
-	}, 30000);
-	it("batch_file_sync_basic: Extract text from multiple files synchronously", async () => {
-		await extractBatch([{ kind: "uri", uri: "pdf/fake_memo.pdf" }, { kind: "uri", uri: "text/fake_text.txt" }], undefined);
 	}, 30000);
 	it("extract_batch_bytes_happy: extract_batch: happy path with mixed inputs", async () => {
 		const result = await extractBatch([{ bytes: [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33], kind: "bytes", mimeType: "text/plain" }, { bytes: [60, 104, 116, 109, 108, 62, 60, 98, 111, 100, 121, 62, 84, 101, 115, 116, 60, 47, 98, 111, 100, 121, 62, 60, 47, 104, 116, 109, 108, 62], kind: "bytes", mimeType: "text/html" }], undefined);

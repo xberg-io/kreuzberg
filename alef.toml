@@ -1909,11 +1909,14 @@ function = "extract_batch"
 module = "xberg"
 async = true
 returns_result = true
-skip_languages = ["wasm"]
 args = [
   { name = "inputs", field = "input.inputs", type = "json_object", owned = true, go_type = "ExtractInput", element_type = "ExtractInput" },
   { name = "config", field = "config", type = "json_object", optional = true },
 ]
+
+[crates.e2e.calls.extract_batch.overrides.node]
+function = "extractBatch"
+options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_batch.overrides.csharp]
 options_type = "ExtractionConfig"
@@ -1928,8 +1931,16 @@ options_type = "ExtractionConfig"
 [crates.e2e.calls.extract_batch.overrides.r]
 options_type = "ExtractionConfig"
 
+[crates.e2e.calls.extract_batch.overrides.php]
+function = "extractBatch"
+options_type = "ExtractionConfig"
+
 [crates.e2e.calls.extract_batch.overrides.swift]
 options_type = "ExtractionConfig"
+
+[crates.e2e.calls.extract_batch.overrides.wasm]
+function = "extractBatch"
+options_type = "WasmExtractionConfig"
 
 [crates.e2e.calls.extract_batch.overrides.zig]
 function = "extract_batch"

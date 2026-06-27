@@ -638,9 +638,5 @@
 			"field": "results[0].metadata.output_format",
 			"value": "markdown"
 		}
-	],
-	"skip": {
-		"languages": ["wasm"],
-		"reason": "WASM uses synchronous-only API; async extraction is not available on the wasm target"
-	}
+	]
 }
