@@ -3,8 +3,7 @@
 #![cfg(feature = "xml")]
 
 use std::path::PathBuf;
-use xberg::core::config::ExtractionConfig;
-use xberg::extraction::derive::derive_extraction_result;
+use xberg::core::config::{ExtractInput, ExtractionConfig};
 use xberg::plugins::{DocumentExtractor, Plugin};
 use xberg::types::ExtractedDocument;
 
@@ -25,30 +24,31 @@ fn test_file_path(filename: &str) -> PathBuf {
 async fn extract_docbook4_file(filename: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
     let path = test_file_path(filename);
-    let config = ExtractionConfig::default();
-    let doc = extractor
-        .extract_file(&path, "application/docbook+xml", &config)
-        .await?;
-    Ok(derive_extraction_result(doc, true, xberg::OutputFormat::Plain))
+    let mut config = ExtractionConfig::default();
+    config.include_document_structure = true;
+    let mut input = ExtractInput::from_uri(path.to_string_lossy().into_owned());
+    input.mime_type = Some("application/docbook+xml".to_string());
+    extractor.extract(input, &config).await
 }
 
 /// DocBook 5.x extractor test helper
 async fn extract_docbook5_file(filename: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
     let path = test_file_path(filename);
-    let config = ExtractionConfig::default();
-    let doc = extractor
-        .extract_file(&path, "application/docbook+xml", &config)
-        .await?;
-    Ok(derive_extraction_result(doc, true, xberg::OutputFormat::Plain))
+    let mut config = ExtractionConfig::default();
+    config.include_document_structure = true;
+    let mut input = ExtractInput::from_uri(path.to_string_lossy().into_owned());
+    input.mime_type = Some("application/docbook+xml".to_string());
+    extractor.extract(input, &config).await
 }
 
 /// Helper to extract bytes directly
 async fn extract_docbook_bytes(content: &[u8], mime_type: &str) -> xberg::Result<ExtractedDocument> {
     let extractor = xberg::extractors::DocbookExtractor;
-    let config = ExtractionConfig::default();
-    let doc = extractor.extract_bytes(content, mime_type, &config).await?;
-    Ok(derive_extraction_result(doc, true, xberg::OutputFormat::Plain))
+    let mut config = ExtractionConfig::default();
+    config.include_document_structure = true;
+    let input = ExtractInput::from_bytes(content.to_vec(), mime_type.to_string(), None);
+    extractor.extract(input, &config).await
 }
 
 #[test]

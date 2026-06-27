@@ -7,13 +7,12 @@
 //! - Error handling and edge cases
 
 use async_trait::async_trait;
-use std::path::Path;
+use std::borrow::Cow;
 use std::sync::Arc;
-use xberg::core::config::ExtractionConfig;
+use xberg::core::config::{ExtractInput, ExtractionConfig};
 use xberg::plugins::registry::{DocumentExtractorRegistry, ValidatorRegistry};
 use xberg::plugins::{DocumentExtractor, Plugin, Validator};
 use xberg::types::ExtractedDocument;
-use xberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::{Result, XbergError};
 
 struct MockValidator {
@@ -112,25 +111,15 @@ impl Plugin for MockExtractor {
 
 #[async_trait]
 impl DocumentExtractor for MockExtractor {
-    async fn extract_bytes(
-        &self,
-        content: &[u8],
-        mime_type: &str,
-        _config: &ExtractionConfig,
-    ) -> Result<InternalDocument> {
-        let mut doc = InternalDocument::new("mock");
-        doc.mime_type = mime_type.to_string();
-        doc.push_element(InternalElement::text(
-            ElementKind::Paragraph,
-            format!("Extracted by {}: {}", self.name, String::from_utf8_lossy(content)),
-            0,
-        ));
-        Ok(doc)
-    }
-
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
-        let content = std::fs::read(path)?;
-        self.extract_bytes(&content, mime_type, config).await
+    async fn extract(&self, input: ExtractInput, _config: &ExtractionConfig) -> Result<ExtractedDocument> {
+        let content = input.bytes.unwrap_or_default();
+        let mut document = ExtractedDocument::default();
+        document.content = format!("Extracted by {}: {}", self.name, String::from_utf8_lossy(&content));
+        document.mime_type = input
+            .mime_type
+            .map(Cow::Owned)
+            .unwrap_or(Cow::Borrowed("application/octet-stream"));
+        Ok(document)
     }
 
     fn supported_mime_types(&self) -> &[&str] {

@@ -6,14 +6,20 @@
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::sync::Arc;
-use xberg::core::config::ExtractionConfig;
+use xberg::core::config::{ExtractInput, ExtractionConfig};
 use xberg::plugins::registry::{
     DocumentExtractorRegistry, OcrBackendRegistry, PostProcessorRegistry, ValidatorRegistry,
 };
 use xberg::plugins::{DocumentExtractor, Plugin, PostProcessor, ProcessingStage, Validator};
 use xberg::types::ExtractedDocument;
-use xberg::types::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::{Result, XbergError};
+
+fn extracted_text_document(content: impl Into<String>, mime_type: Cow<'static, str>) -> ExtractedDocument {
+    let mut document = ExtractedDocument::default();
+    document.content = content.into();
+    document.mime_type = mime_type;
+    document
+}
 
 struct FailingExtractor {
     name: String,
@@ -45,17 +51,17 @@ impl Plugin for FailingExtractor {
 
 #[async_trait]
 impl DocumentExtractor for FailingExtractor {
-    async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract(&self, input: ExtractInput, _: &ExtractionConfig) -> Result<ExtractedDocument> {
         if self.should_fail_extract {
             Err(XbergError::Parsing {
                 message: "Extraction failed".to_string(),
                 source: None,
             })
         } else {
-            let mut doc = InternalDocument::new("text");
-            doc.mime_type = "text/plain".to_string();
-            doc.push_element(InternalElement::text(ElementKind::Paragraph, "success", 0));
-            Ok(doc)
+            Ok(extracted_text_document(
+                "success",
+                input.mime_type.map(Cow::Owned).unwrap_or(Cow::Borrowed("text/plain")),
+            ))
         }
     }
 
@@ -223,7 +229,8 @@ async fn test_extractor_extraction_failure() {
 
     let extractor = registry.get("text/plain").expect("Value not found");
     let config = ExtractionConfig::default();
-    let result = extractor.extract_bytes(b"test", "text/plain", &config).await;
+    let input = ExtractInput::from_bytes(b"test".to_vec(), "text/plain", None);
+    let result = extractor.extract(input, &config).await;
 
     assert!(matches!(result, Err(XbergError::Parsing { .. })));
 }
@@ -313,11 +320,11 @@ fn test_extractor_priority_ordering_complex() {
 
     #[async_trait]
     impl DocumentExtractor for PriorityExtractor {
-        async fn extract_bytes(&self, _: &[u8], _: &str, _: &ExtractionConfig) -> Result<InternalDocument> {
-            let mut doc = InternalDocument::new("text");
-            doc.mime_type = "text/plain".to_string();
-            doc.push_element(InternalElement::text(ElementKind::Paragraph, "test", 0));
-            Ok(doc)
+        async fn extract(&self, input: ExtractInput, _: &ExtractionConfig) -> Result<ExtractedDocument> {
+            Ok(extracted_text_document(
+                "test",
+                input.mime_type.map(Cow::Owned).unwrap_or(Cow::Borrowed("text/plain")),
+            ))
         }
         fn supported_mime_types(&self) -> &[&str] {
             &["text/plain"]
@@ -368,8 +375,8 @@ fn test_extractor_wildcard_vs_exact_priority() {
 
     #[async_trait]
     impl DocumentExtractor for WildcardExtractor {
-        async fn extract_bytes(&self, c: &[u8], m: &str, cfg: &ExtractionConfig) -> Result<InternalDocument> {
-            self.0.extract_bytes(c, m, cfg).await
+        async fn extract(&self, input: ExtractInput, cfg: &ExtractionConfig) -> Result<ExtractedDocument> {
+            self.0.extract(input, cfg).await
         }
         fn supported_mime_types(&self) -> &[&str] {
             &["text/*"]
@@ -471,11 +478,7 @@ async fn test_processor_execution_order_within_stage() {
     let processors = registry.get_for_stage(ProcessingStage::Early);
     assert_eq!(processors.len(), 3);
 
-    let mut result = ExtractedDocument {
-        content: "start".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let mut result = extracted_text_document("start", Cow::Borrowed("text/plain"));
 
     let config = ExtractionConfig::default();
     for processor in processors {
@@ -501,11 +504,7 @@ async fn test_processor_error_propagation() {
     let processors = registry.get_for_stage(ProcessingStage::Early);
     assert_eq!(processors.len(), 1);
 
-    let mut result = ExtractedDocument {
-        content: "test".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let mut result = extracted_text_document("test", Cow::Borrowed("text/plain"));
 
     let config = ExtractionConfig::default();
     let process_result = processors[0].process(&mut result, &config).await;
@@ -641,20 +640,12 @@ async fn test_validator_content_validation() {
 
     let config = ExtractionConfig::default();
 
-    let short_result = ExtractedDocument {
-        content: "short".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let short_result = extracted_text_document("short", Cow::Borrowed("text/plain"));
 
     let validation = validators[0].validate(&short_result, &config).await;
     assert!(matches!(validation, Err(XbergError::Validation { .. })));
 
-    let long_result = ExtractedDocument {
-        content: "this is long enough content".to_string(),
-        mime_type: Cow::Borrowed("text/plain"),
-        ..Default::default()
-    };
+    let long_result = extracted_text_document("this is long enough content", Cow::Borrowed("text/plain"));
 
     let validation = validators[0].validate(&long_result, &config).await;
     assert!(validation.is_ok());
