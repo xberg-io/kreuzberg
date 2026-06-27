@@ -41,6 +41,16 @@ pub enum RagError {
         got: u32,
     },
 
+    /// An embedder returned a different number of vectors than the inputs it
+    /// was given — a broken embedder contract.
+    #[error("embedding count mismatch: expected {expected} vectors, got {got}")]
+    EmbeddingCountMismatch {
+        /// Number of texts submitted for embedding.
+        expected: usize,
+        /// Number of vectors the embedder returned.
+        got: usize,
+    },
+
     /// A filter referenced a field outside the allowed namespaces.
     #[error("filter references unknown field: {field}")]
     FilterUnknownField {

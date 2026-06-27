@@ -131,6 +131,14 @@ pub async fn ingest_document(
     let texts: Vec<String> = chunks.iter().map(|c| c.content.clone()).collect();
     let embeddings = embedder.embed(texts).await?;
 
+    // Guard the embedder contract: zip would silently drop chunks on a mismatch.
+    if embeddings.len() != chunks.len() {
+        return Err(RagError::EmbeddingCountMismatch {
+            expected: chunks.len(),
+            got: embeddings.len(),
+        });
+    }
+
     let chunk_records: Vec<ChunkRecord> = chunks
         .into_iter()
         .zip(embeddings)
@@ -316,6 +324,35 @@ mod tests {
             .unwrap();
 
         assert!(!doc_id.0.is_empty());
+    }
+
+    struct BadEmbedder;
+
+    #[async_trait]
+    impl Embedder for BadEmbedder {
+        async fn embed(&self, texts: Vec<String>) -> RagResult<Vec<Vec<f32>>> {
+            // Returns one more vector than requested — always a count mismatch.
+            Ok(vec![vec![0.0; 4]; texts.len() + 1])
+        }
+    }
+
+    #[tokio::test]
+    async fn ingest_rejects_embedder_count_mismatch() {
+        const DIM: u32 = 4;
+        let store: Arc<dyn VectorStore> = make_store("bad-embedder");
+        store.ensure_collection(&make_collection("docs", DIM)).await.unwrap();
+
+        let chunking = xberg::ChunkingConfig::default();
+        let config = RagPipelineConfig { chunking: &chunking };
+        let request = IngestRequest {
+            full_text: "Sentence one. Sentence two. Sentence three.".to_string(),
+            ..Default::default()
+        };
+
+        let err = ingest_document(Arc::clone(&store), "docs", request, &config, &BadEmbedder)
+            .await
+            .unwrap_err();
+        assert!(matches!(err, RagError::EmbeddingCountMismatch { .. }));
     }
 
     #[tokio::test]
