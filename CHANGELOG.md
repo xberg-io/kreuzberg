@@ -36,8 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tesseract image OCR no longer fails on an empty language list.** `OcrConfig { language: [] }`
   joined to an empty Tesseract language string, which the native backend tried to load as a
   language pack named `""` — surfacing as the confusing `Failed to download language pack ''`.
-  The native backend now defaults an empty language to English, matching the WASM Tesseract
-  backend, the VLM OCR path, and the documented `OcrConfig` default.
+  An empty language now defaults to English consistently across every OCR backend, matching the
+  documented `OcrConfig` default. PaddleOCR results also report English in their metadata instead
+  of an empty language when none is configured.
 
 ## [5.0.0-rc.36] - 2026-06-24
 

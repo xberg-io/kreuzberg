@@ -77,16 +77,15 @@ impl TesseractBackend {
         let mut internal = match &config.tesseract_config {
             Some(tess_config) => InternalTesseractConfig::from(tess_config),
             None => InternalTesseractConfig {
-                language: config.language.join("+"),
+                language: config.effective_languages().join("+"),
                 ..Default::default()
             },
         };
-        // An empty language list joins to an empty string, which Tesseract would otherwise
-        // try to load as a language pack named "" — surfacing as a confusing
-        // "Failed to download language pack ''" error. Default to English, matching the
-        // documented `OcrConfig` default, the WASM Tesseract backend, and the VLM OCR path.
+        // The `None` branch is already defaulted by `effective_languages`. An explicit
+        // `tesseract_config` carries its own language list, which may be empty; guard that
+        // case too so an empty language never reaches Tesseract as a pack named "".
         if internal.language.trim().is_empty() {
-            internal.language = "eng".to_string();
+            internal.language = crate::core::config::ocr::DEFAULT_OCR_LANGUAGE.to_string();
         }
         // Propagate top-level OcrConfig.auto_rotate (OR with any preprocessing setting)
         if config.auto_rotate {
