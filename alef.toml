@@ -248,6 +248,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 reexported_types = [
   "ExtractionResult",
@@ -276,6 +286,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 [crates.node.extra_dependencies]
@@ -296,6 +316,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 [crates.ruby.stubs]
@@ -332,6 +362,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
   # embed_texts_async and rerank_async are now generated with always-true cfg
   # conditions to work around ext-php-rs's #[php_impl] macro unconditional
   # function resolution. See prepend_cfg_for_php in rust_bindings.rs.
@@ -350,6 +390,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 exclude_types = [
   # Trait types cannot be FFI-bound
@@ -447,6 +497,16 @@ exclude_functions = [
   "split_and_extract_json",
   # Rust-only utility — reuses the HF tokenizer cache; not generated into bindings
   "count_tokens",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 features = ["wasm-target"]
 
@@ -505,6 +565,16 @@ exclude_functions = [
   "extract_structured",
   "extract_structured_sync",
   "extract_structured_json",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
   "fingerprint",
   "get_embedding_preset",
   "get_extensions_for_mime",
@@ -603,6 +673,16 @@ exclude_functions = [
   "extract_structured",
   "extract_structured_sync",
   "extract_structured_json",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
   "fingerprint",
   "get_embedding_preset",
   "get_extensions_for_mime",
@@ -688,6 +768,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 # Windows: libheif is not installed on the `windows-latest` runner image, so
@@ -765,6 +855,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 # Android (any arch) and iOS: libheif-sys + ORT do not cross-compile to mobile
@@ -823,6 +923,16 @@ exclude_functions = [
   "embed_texts_async",
   "calculate_quality_score",
   "count_tokens",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 # Windows: libheif is not installed on the `windows-latest` runner image, so
@@ -967,6 +1077,16 @@ exclude_functions = [
   "unregister_document_extractor",
   "register_renderer",
   "unregister_renderer",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 # iOS: libheif-sys + ORT do not cross-compile to the iOS SDK, so the
@@ -1002,6 +1122,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 [crates.r]
@@ -1018,6 +1148,16 @@ exclude_functions = [
   # types. Excluded until alef emits a manual list-based From impl.
   "detect_qr_codes",
   "find_all",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
   # Vec<EnumVariant> param + Result<Vec<NamedStruct>> return: extendr cannot derive
   # `TryFrom<&Robj> for Vec<E>` or `From<Result<Vec<S>>> for Robj`. Excluded until alef
   # emits manual list-based conversions for these shapes.
@@ -1030,6 +1170,16 @@ exclude_functions = [
   "calculate_quality_score",
   "count_tokens",
   "embed_texts",
+  "extract_sync",
+  "extract_batch_sync",
+  "extract_bytes",
+  "extract_bytes_sync",
+  "extract_file",
+  "extract_file_sync",
+  "batch_extract_bytes",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_files_sync",
 ]
 
 [crates.output]

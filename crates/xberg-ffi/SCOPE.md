@@ -4,23 +4,17 @@ This document defines the **canonical public C FFI surface** for `xberg-ffi`.
 The crate is consumed by Go (cgo), Java (Panama FFM), and C# (P/Invoke) bindings,
 which use **JSON marshaling** for typed values rather than per-field accessors.
 
-## Target surface (~70 exports)
+## Target surface (~60 exports)
 
-The FFI must mirror the canonical 27-function public Xberg API plus the
+The FFI must mirror the canonical public Xberg API plus the
 minimum machinery to make it usable across language boundaries.
 
-### 1. High-level functions (27)
+### 1. High-level functions
 
-#### Extraction (8)
+#### Extraction (2)
 
-- `xberg_extract_file`
-- `xberg_extract_file_sync`
-- `xberg_extract_bytes`
-- `xberg_extract_bytes_sync`
-- `xberg_batch_extract_files`
-- `xberg_batch_extract_files_sync` _(currently missing — must be added)_
-- `xberg_batch_extract_bytes`
-- `xberg_batch_extract_bytes_sync`
+- `xberg_extract`
+- `xberg_extract_batch`
 
 #### Embeddings (4)
 
@@ -118,20 +112,14 @@ removed in a follow-up cycle (see issue link below).
 
 ## Migration plan
 
-This document captures the target. The actual deletion is deferred to **v4.10.1**
-to de-risk the v4.10 stabilization window:
+This document captures the target. The accessor deletion is deferred until
+binding audits confirm no silent dependency on per-field accessors:
 
-1. v4.10 (now): document target surface; do **not** delete exports yet; add the
-   small number of missing canonical functions above (`batch_extract_files_sync`,
-   `render_pdf_page_to_png`, `register/unregister/clear_document_extractors`,
-   `last_error_clear`, rename `last_error_context` → `last_error_message`).
-2. v4.10.1 (follow-up tracked via GitHub issue):
-   - Audit Java/C#/Go bindings for any per-field getter usage; replace with JSON
-     round-trip via `*_to_json`.
-   - Delete the ~1300 accessor exports from `lib.rs`.
-   - Regenerate `include/xberg.h` via `cbindgen`.
-   - Bump FFI semver minor (struct layouts unchanged; export removal is a
-     soft break for any external consumer outside the xberg-dev polyrepo).
+1. Audit Java/C#/Go bindings for any per-field getter usage; replace with JSON
+   round-trip via `*_to_json`.
+2. Delete the ~1300 accessor exports from `lib.rs`.
+3. Regenerate `include/xberg.h` via `cbindgen`.
+4. Bump FFI major for the unified extraction ABI cleanup.
 
 ## Why JSON marshaling
 
