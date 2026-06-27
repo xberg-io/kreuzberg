@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Xberg\extract;
 
-$result = extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 if (isset($result->metadata->pages->boundaries) && !empty($result->metadata->pages->boundaries)) {
     $boundaries = $result->metadata->pages->boundaries;

@@ -58,6 +58,7 @@ use crate::core::config::LlmConfig;
 /// # Ok(())
 /// # }
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub async fn caption_image(
     image_bytes: &[u8],
     llm_config: &LlmConfig,
@@ -107,6 +108,7 @@ pub async fn caption_image(
 /// # Ok(())
 /// # }
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub async fn caption_image_file(
     path: impl AsRef<Path>,
     llm_config: &LlmConfig,
@@ -156,6 +158,7 @@ pub async fn caption_image_file(
 /// # Ok(())
 /// # }
 /// ```
+#[cfg_attr(alef, alef(skip))]
 pub async fn caption_images(
     images: &[&[u8]],
     llm_config: &LlmConfig,

@@ -62,11 +62,12 @@ func main() {
 	}()
 
 	// Extract and validate
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
 
-	log.Printf("Validation passed. Content length: %d", len(result.Content))
+	log.Printf("Validation passed. Content length: %d", len(result.Results[0].Content))
 }
 ```

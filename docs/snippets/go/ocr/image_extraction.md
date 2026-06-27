@@ -14,7 +14,7 @@ func main() {
 	targetDpi := int32(200)
 	maxDim := int32(2048)
 
-	result, err := xberg.ExtractSync("document.pdf", nil, xberg.ExtractionConfig{
+	config := xberg.ExtractionConfig{
 		Images: &xberg.ImageExtractionConfig{
 			ExtractImages:      &extractImages,
 			TargetDpi:          &targetDpi,
@@ -22,11 +22,13 @@ func main() {
 			InjectPlaceholders: &injectPlaceholders, // set to false to extract images without markdown references
 			AutoAdjustDpi:      &autoAdjustDpi,
 		},
-	})
+	}
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Println("content length:", len(result.Content))
+	log.Println("content length:", len(result.Results[0].Content))
 }
 ```

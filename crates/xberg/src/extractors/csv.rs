@@ -8,7 +8,7 @@ use std::sync::LazyLock;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::text::utf8_validation;
 use crate::types::Table;
 use crate::types::internal::InternalDocument;
@@ -66,8 +66,8 @@ impl Plugin for CsvExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for CsvExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for CsvExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -623,7 +623,7 @@ mod tests {
         let csv_data = b"Name,Age,City\nAlice,30,NYC\nBob,25,LA\n";
 
         let result = extractor
-            .extract_bytes(csv_data, "text/csv", &config)
+            .extract_content(csv_data, "text/csv", &config)
             .await
             .expect("CSV extraction should succeed");
 
@@ -645,7 +645,7 @@ mod tests {
         let csv_data = b"Name,Description\n\"Smith, John\",\"Has a comma, inside\"\n";
 
         let result = extractor
-            .extract_bytes(csv_data, "text/csv", &config)
+            .extract_content(csv_data, "text/csv", &config)
             .await
             .expect("CSV extraction with quoted fields should succeed");
 
@@ -767,7 +767,7 @@ mod tests {
         let config = ExtractionConfig::default();
         let csv_data = b"Name,Age,City\nAlice,30,NYC\nBob,25,LA\n";
 
-        let result = extractor.extract_bytes(csv_data, "text/csv", &config).await.unwrap();
+        let result = extractor.extract_content(csv_data, "text/csv", &config).await.unwrap();
 
         if let Some(FormatMetadata::Csv(csv_meta)) = &result.metadata.format {
             assert!(csv_meta.has_header);
@@ -787,7 +787,7 @@ mod tests {
         let content = std::fs::read(&test_file).expect("Failed to read test CSV");
         let extractor = CsvExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor.extract_bytes(&content, "text/csv", &config).await.unwrap();
+        let result = extractor.extract_content(&content, "text/csv", &config).await.unwrap();
 
         // Tables should be populated
         assert!(!result.tables.is_empty());

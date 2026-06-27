@@ -123,7 +123,7 @@ where
     router.add_route(PromptRoute::new_dyn(
         Prompt::new(
             "semantic_search",
-            Some("Prepare a document for semantic search using embeddings and chunking"),
+            Some("Prepare a document for semantic search through unified extraction"),
             Some(vec![
                 PromptArgument::new("path")
                     .with_description("Path to the document to index")
@@ -173,12 +173,9 @@ where
                     PromptMessageRole::User,
                     format!(
                         "Index {path} for semantic search:\n\
-                         1. Extract text: call extract with input={{\"kind\":\"uri\",\"uri\":\"{path}\"}}\n\
-                         2. Chunk text: call chunk_text with \
-                            chunker_type=\"{chunker_type}\" and max_characters={max_characters}\n\
-                         3. Embed chunks: call embed_text with preset=\"{preset}\" \
-                            on each chunk's content\n\
-                         Store (chunk_text, embedding) pairs in your vector store."
+                         1. Call extract with input={{\"kind\":\"uri\",\"uri\":\"{path}\"}}.\n\
+                         2. Pass config={{\"chunking\":{{\"chunker_type\":\"{chunker_type}\",\"max_characters\":{max_characters}}},\"embedding\":{{\"model\":{{\"type\":\"preset\",\"name\":\"{preset}\"}}}}}}.\n\
+                         3. Store output.results[*].chunks and each chunk embedding in your vector store."
                     ),
                 )]))
             })

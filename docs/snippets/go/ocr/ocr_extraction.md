@@ -15,10 +15,11 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("scanned.pdf", nil, cfg)
+	input := xberg.ExtractInputFromURI("scanned.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
-	log.Println(len(result.Content))
+	log.Println(len(result.Results[0].Content))
 }
 ```

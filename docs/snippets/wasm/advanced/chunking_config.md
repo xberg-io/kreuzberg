@@ -1,7 +1,7 @@
 ```typescript title="WASM - Fixed-Size Chunks"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -12,7 +12,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 result.chunks?.forEach((chunk, idx) => {
   console.log(`Chunk ${chunk.metadata?.chunkIndex}/${chunk.metadata?.totalChunks}`);
@@ -22,9 +22,9 @@ result.chunks?.forEach((chunk, idx) => {
 ```
 
 ```typescript title="WASM - Markdown-Aware Chunking"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -35,7 +35,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "text/markdown", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "text/markdown" }, config);
 
 result.chunks?.forEach((chunk) => {
   // Content already includes heading context prepended
@@ -47,9 +47,9 @@ result.chunks?.forEach((chunk) => {
 ```
 
 ```typescript title="WASM - Semantic Chunking with Topic Threshold"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -61,7 +61,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "text/markdown", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "text/markdown" }, config);
 
 console.log(`Generated ${result.chunks?.length} semantic chunks`);
 result.chunks?.forEach((chunk) => {

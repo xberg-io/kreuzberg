@@ -20,7 +20,7 @@ func extractAndVectorize(documentPath string, documentID string) ([]VectorRecord
 	normalize := true
 	batchSize := int32(32)
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
@@ -32,13 +32,14 @@ func extractAndVectorize(documentPath string, documentID string) ([]VectorRecord
 		},
 	}
 
-	result, err := xberg.ExtractSync(documentPath, config)
+	input := xberg.ExtractInputFromURI(documentPath)
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	var vectorRecords []VectorRecord
-	for index, chunk := range result.Chunks {
+	for index, chunk := range result.Results[0].Chunks {
 		record := VectorRecord{
 			ID:        fmt.Sprintf("%s_chunk_%d", documentID, index),
 			Content:   chunk.Content,

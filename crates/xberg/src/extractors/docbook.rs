@@ -1,7 +1,7 @@
 //! DocBook document extractor supporting both 4.x and 5.x formats.
 //!
 //! This extractor handles DocBook XML documents in both traditional (4.x, no namespace)
-//! and modern (5.x, with http://docbook.org/ns/docbook namespace) formats.
+//! and modern (5.x, with <http://docbook.org/ns/docbook> namespace) formats.
 //!
 //! Single-pass architecture that extracts in one document traversal:
 //! - Document metadata (title, author, date, abstract)
@@ -19,7 +19,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::{cells_to_markdown, cells_to_text};
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::text::utf8_validation;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
@@ -1121,7 +1121,7 @@ impl Plugin for DocbookExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for DocbookExtractor {
+impl InternalDocumentExtractor for DocbookExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -1132,7 +1132,7 @@ impl DocumentExtractor for DocbookExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -1202,7 +1202,7 @@ impl DocumentExtractor for DocbookExtractor {
             )
         )
     )]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         crate::core::path_resolver::extract_file_with_image_resolution(self, path, mime_type, config).await
     }
 

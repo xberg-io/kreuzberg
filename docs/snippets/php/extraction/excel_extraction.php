@@ -12,21 +12,20 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 
 echo "Example 1: Basic Excel Extraction\n";
 echo "=================================\n";
 
-$xberg = new Xberg();
-$result = $xberg->extract('financial_report.xlsx');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('financial_report.xlsx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Content:\n";
 echo $result->content . "\n\n";
 
 echo "Metadata:\n";
-echo "- Title: " . ($result->metadata->title ?? 'N/A') . "\n";
-echo "- Author: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'N/A') . "\n";
+echo "- Title: " . ($result->metadata?->title ?? 'N/A') . "\n";
+echo "- Author: " . (isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'N/A') . "\n";
 echo "- Created: " . ($result->metadata->createdAt ?? 'N/A') . "\n";
 echo "- Modified: " . ($result->metadata->modifiedAt ?? 'N/A') . "\n\n";
 
@@ -37,7 +36,7 @@ $config2 = new ExtractionConfig(
     extractTables: true  
 );
 
-$result2 = (new Xberg($config2))->extract('data.xlsx');
+$result2 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('data.xlsx'), $config2)->results[0];
 
 if (count($result2->tables) > 0) {
     echo "Found " . count($result2->tables) . " table(s)\n\n";
@@ -55,7 +54,7 @@ if (count($result2->tables) > 0) {
 echo "Example 3: Convert Excel to CSV\n";
 echo "===============================\n";
 
-$result3 = $xberg->extract('spreadsheet.xlsx');
+$result3 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('spreadsheet.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 foreach ($result3->tables as $i => $table) {
     $csvFilename = "sheet_{$i}.csv";
@@ -74,7 +73,7 @@ echo "\n";
 echo "Example 4: Convert Excel to JSON\n";
 echo "================================\n";
 
-$result4 = $xberg->extract('data.xlsx');
+$result4 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('data.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 foreach ($result4->tables as $i => $table) {
     $jsonData = [];
@@ -106,7 +105,7 @@ echo "\n";
 echo "Example 5: Process Multiple Sheets\n";
 echo "==================================\n";
 
-$result5 = $xberg->extract('multi_sheet_workbook.xlsx');
+$result5 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('multi_sheet_workbook.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 echo "Total sheets/tables: " . count($result5->tables) . "\n\n";
 
@@ -155,7 +154,7 @@ foreach ($result5->tables as $i => $table) {
 echo "Example 6: Extract Specific Data\n";
 echo "================================\n";
 
-$result6 = $xberg->extract('budget.xlsx');
+$result6 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('budget.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 if (count($result6->tables) > 0) {
     $table = $result6->tables[0];
@@ -187,7 +186,11 @@ $excelFiles = [
     'march_sales.xlsx',
 ];
 
-$results = $xberg->extractBatch($excelFiles);
+$excelInputs = array_map(
+    static fn (string $file): \Xberg\ExtractInput => \Xberg\ExtractInput::fromUri($file),
+    $excelFiles
+);
+$results = \Xberg\XbergApi::extractBatch($excelInputs, \Xberg\ExtractionConfig::default())->results;
 
 $totalSheets = 0;
 foreach ($results as $i => $result) {
@@ -204,7 +207,7 @@ echo "Total sheets across all files: {$totalSheets}\n\n";
 echo "Example 8: Convert Excel to HTML\n";
 echo "================================\n";
 
-$result8 = $xberg->extract('report.xlsx');
+$result8 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('report.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 foreach ($result8->tables as $i => $table) {
     $html = "<table border='1'>\n";
@@ -234,7 +237,7 @@ echo "\n";
 echo "Example 9: Excel Metadata Extraction\n";
 echo "====================================\n";
 
-$result9 = $xberg->extract('workbook.xlsx');
+$result9 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('workbook.xlsx'), $config ?? \Xberg\ExtractionConfig::default())->results[0];
 
 echo "File Metadata:\n";
 echo "- Title: " . ($result9->metadata->title ?? 'N/A') . "\n";
@@ -260,7 +263,8 @@ echo "=========================\n";
 use Xberg\Exceptions\XbergException;
 
 try {
-    $result = $xberg->extract('protected.xlsx');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('protected.xlsx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     echo "Success: Extracted " . count($result->tables) . " sheets\n";
 } catch (XbergException $e) {
     echo "Error: {$e->getMessage()}\n";

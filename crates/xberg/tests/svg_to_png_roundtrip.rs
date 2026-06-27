@@ -10,9 +10,11 @@
 
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
-use xberg::extract_bytes_sync;
 
 /// PNG magic: `\x89PNG\r\n\x1a\n` (8 bytes).
 const PNG_MAGIC: &[u8] = b"\x89PNG\r\n\x1a\n";
@@ -62,7 +64,8 @@ fn config_with_output_format(output_format: ImageOutputFormat) -> ExtractionConf
 #[test]
 fn svg_inline_in_html_rasterised_to_png() {
     let config = config_with_output_format(ImageOutputFormat::Png);
-    let result = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+    let result =
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let images = result
         .images
@@ -106,10 +109,10 @@ fn svg_inline_in_html_rasterised_to_png() {
 fn svg_to_png_rasterisation_is_deterministic() {
     let config = config_with_output_format(ImageOutputFormat::Png);
 
-    let result1 =
-        extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("first extraction must succeed");
-    let result2 =
-        extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("second extraction must succeed");
+    let result1 = extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config)
+        .expect("first extraction must succeed");
+    let result2 = extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config)
+        .expect("second extraction must succeed");
 
     let images1 = result1.images.as_ref().expect("images must be present in first run");
     let images2 = result2.images.as_ref().expect("images must be present in second run");

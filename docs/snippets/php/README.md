@@ -171,44 +171,52 @@ Benchmark extraction performance across different configurations.
 ### Basic Extraction
 
 ```php title="Basic Extraction"
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
-$xberg = new Xberg();
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 echo $result->content;
 ```
 
 ### With Configuration
 
 ```php title="With Configuration"
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng'),
     extractTables: true
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('scanned.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 ```
 
 ### Procedural API
 
 ```php title="Procedural API"
-use function Xberg\extract;
 
-$result = extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 echo $result->content;
 ```
 
 ### Batch Processing
 
 ```php title="Batch Processing"
-use function Xberg\extract_batch;
+use Xberg\ExtractInput;
+use Xberg\ExtractionConfig;
+use Xberg\XbergApi;
 
 $files = ['doc1.pdf', 'doc2.docx', 'doc3.xlsx'];
-$results = extract_batch($files);
+$inputs = array_map(
+    static fn (string $file): ExtractInput => ExtractInput::fromUri($file),
+    $files
+);
+
+$output = Xberg::extractBatch($inputs, ExtractionConfig::default());
+$results = $output->results;
 ```
 
 ## Async Extraction (4 snippets)

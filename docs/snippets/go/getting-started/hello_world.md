@@ -9,16 +9,17 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	fmt.Println("Extracted content:")
-	if len(result.Content) > 200 {
-		fmt.Println(result.Content[:200])
+	if len(result.Results[0].Content) > 200 {
+		fmt.Println(result.Results[0].Content[:200])
 	} else {
-		fmt.Println(result.Content)
+		fmt.Println(result.Results[0].Content)
 	}
 }
 ```

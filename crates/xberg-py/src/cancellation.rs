@@ -7,13 +7,14 @@
 //!
 //! ```python
 //! import asyncio
-//! from xberg import extract_file, ExtractionConfig, CancellationToken
+//! from xberg import extract, ExtractInput, ExtractionConfig, CancellationToken
 //!
 //! async def main():
 //!     token = CancellationToken()
 //!     config = ExtractionConfig()
 //!     config.cancel_token = token
-//!     task = asyncio.create_task(extract_file("large.pdf", config=config))
+//!     input = ExtractInput(kind="uri", uri="large.pdf")
+//!     task = asyncio.create_task(extract(input, config=config))
 //!     await asyncio.sleep(0.1)
 //!     token.cancel()
 //!     try:

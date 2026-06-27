@@ -1,0 +1,28 @@
+{
+	"id": "extract_batch_uri_all_missing",
+	"category": "batch",
+	"description": "extract_batch with missing URI inputs",
+	"tags": ["batch", "uri", "error"],
+	"call": "extract_batch",
+	"input": {
+		"inputs": [
+			{
+				"kind": "uri",
+				"uri": "/nonexistent/a.pdf"
+			},
+			{
+				"kind": "uri",
+				"uri": "/nonexistent/b.txt"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"languages": ["wasm"],
+		"reason": "WASM cannot access filesystem; use bytes input with file content instead"
+	}
+}

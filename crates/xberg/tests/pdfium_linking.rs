@@ -21,10 +21,12 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::{
+    UriBatchInput, extract_bytes_document_blocking, extract_uri_document_blocking, extract_uri_documents_blocking,
+};
 
 use helpers::*;
 use xberg::core::config::ExtractionConfig;
-use xberg::extract_file_sync;
 
 /// Test basic PDF extraction works regardless of linking strategy.
 ///
@@ -43,7 +45,7 @@ fn test_pdf_extraction_basic() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract PDF successfully");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 
@@ -66,7 +68,8 @@ fn test_pdf_extraction_medium() {
     let file_path = get_test_file_path("pdf/medium.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract medium PDF successfully");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract medium PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -89,7 +92,8 @@ fn test_pdf_extraction_rotated_pages() {
     let file_path = get_test_file_path("pdf/ocr_test_rotated_90.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract rotated PDF successfully");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract rotated PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 }
@@ -107,7 +111,8 @@ fn test_pdf_extraction_code_and_formulas() {
     let file_path = get_test_file_path("pdf/code_and_formula.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract PDF with code and formulas");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with code and formulas");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -126,7 +131,7 @@ fn test_pdf_extraction_right_to_left() {
     let file_path = get_test_file_path("pdf/right_to_left_01.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract RTL PDF successfully");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract RTL PDF successfully");
 
     assert_mime_type(&result, "application/pdf");
 }
@@ -144,7 +149,7 @@ fn test_pdf_metadata_extraction() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract PDF metadata");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF metadata");
 
     let _metadata = &result.metadata;
     assert!(!result.mime_type.is_empty(), "MIME type should be set");
@@ -152,7 +157,7 @@ fn test_pdf_metadata_extraction() {
 
 /// Test extraction of byte array from PDF.
 ///
-/// Verifies that extract_bytes_sync works for PDF content, which is
+/// Verifies that extract_bytes_document_blocking works for PDF content, which is
 /// important for in-memory processing.
 #[test]
 fn test_pdf_extraction_from_bytes() {
@@ -164,7 +169,7 @@ fn test_pdf_extraction_from_bytes() {
     let pdf_bytes = std::fs::read(&file_path).expect("Should read PDF file");
 
     let config = ExtractionConfig::default();
-    let result = xberg::extract_bytes_sync(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document_blocking(&pdf_bytes, "application/pdf", &config)
         .expect("Should extract PDF from bytes successfully");
 
     assert_mime_type(&result, "application/pdf");
@@ -184,7 +189,8 @@ fn test_pdf_extraction_with_config() {
 
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract PDF with custom config");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with custom config");
 
     assert_mime_type(&result, "application/pdf");
     assert_non_empty_content(&result);
@@ -205,7 +211,7 @@ fn test_pdf_extraction_edge_cases() {
     let file_path = get_test_file_path("pdf/tiny.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(result.is_ok(), "PDF extraction should succeed");
 }
 
@@ -220,12 +226,12 @@ fn test_pdf_batch_extraction() {
         return;
     }
 
-    let paths: Vec<xberg::BatchFileItem> = vec![
-        xberg::BatchFileItem {
+    let paths: Vec<UriBatchInput> = vec![
+        UriBatchInput {
             path: get_test_file_path("pdf/tiny.pdf"),
             config: None,
         },
-        xberg::BatchFileItem {
+        UriBatchInput {
             path: get_test_file_path("pdf/medium.pdf"),
             config: None,
         },
@@ -233,7 +239,7 @@ fn test_pdf_batch_extraction() {
 
     let config = ExtractionConfig::default();
 
-    let results = xberg::batch_extract_files_sync(paths, &config).expect("Should extract PDFs in batch");
+    let results = extract_uri_documents_blocking(paths, &config).expect("Should extract PDFs in batch");
 
     assert_eq!(results.len(), 2, "Should extract both PDFs");
 
@@ -256,7 +262,8 @@ fn test_pdf_unicode_content() {
     let file_path = get_test_file_path("pdf/right_to_left_01.pdf");
     let config = ExtractionConfig::default();
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Should extract PDF with Unicode content");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Should extract PDF with Unicode content");
 
     assert_mime_type(&result, "application/pdf");
 }

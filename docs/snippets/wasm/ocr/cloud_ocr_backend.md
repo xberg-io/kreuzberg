@@ -1,9 +1,9 @@
 <!-- snippet:syntax-only -->
 
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Cloud OCR backends are not supported in WASM directly.
 // WASM runs in a sandboxed environment without direct network access.

@@ -23,10 +23,9 @@ class RagPipelineExample
 
         try
         {
-            var result = await XbergLib.ExtractAsync(
-                "research_paper.pdf",
-                config
-            ).ConfigureAwait(false);
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                "research_paper.pdf"), config
+            )).Results[0].ConfigureAwait(false);
 
             var vectorStore = await BuildVectorStoreAsync(result.Chunks)
                 .ConfigureAwait(false);

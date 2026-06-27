@@ -7,17 +7,17 @@
 //! - File I/O optimization
 //! - Resource utilization (CPU cores)
 
+mod helpers;
+use helpers::{
+    BytesInput, UriBatchInput, extract_bytes_documents, extract_uri_document, extract_uri_document_blocking,
+    extract_uri_documents,
+};
+
 use std::time::{Duration, Instant};
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::{batch_extract_bytes, batch_extract_files};
 
 #[cfg(feature = "ocr")]
 use xberg::core::config::OcrConfig;
-
-#[cfg(feature = "ocr")]
-use xberg::core::extractor::extract_file_sync;
-
-mod helpers;
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])
@@ -59,11 +59,11 @@ async fn test_batch_documents_parallel_execution() {
     }
 
     let parallel_start = Instant::now();
-    let results = batch_extract_files(
+    let results = extract_uri_documents(
         paths
             .clone()
             .into_iter()
-            .map(|path| xberg::BatchFileItem { path, config: None })
+            .map(|path| UriBatchInput { path, config: None })
             .collect::<Vec<_>>(),
         &config,
     )
@@ -100,17 +100,17 @@ async fn test_batch_documents_concurrency_limiting() {
         ..Default::default()
     };
 
-    let paths: Vec<xberg::BatchFileItem> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("text/contract.txt"),
         get_test_file_path("json/sample_document.json"),
         get_test_file_path("xml/simple_note.xml"),
         get_test_file_path("text/readme.md"),
     ]
     .into_iter()
-    .map(|path| xberg::BatchFileItem { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = batch_extract_files(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok());
     let results = results.expect("Operation failed");
@@ -134,11 +134,11 @@ async fn test_batch_documents_default_concurrency() {
     let paths = paths
         .into_iter()
         .take(50)
-        .map(|path| xberg::BatchFileItem { path, config: None })
+        .map(|path| UriBatchInput { path, config: None })
         .collect::<Vec<_>>();
 
     let start = Instant::now();
-    let results = batch_extract_files(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -161,16 +161,16 @@ async fn test_batch_documents_preserves_order() {
 
     let config = ExtractionConfig::default();
 
-    let paths: Vec<xberg::BatchFileItem> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("text/contract.txt"),
         get_test_file_path("json/sample_document.json"),
         get_test_file_path("xml/simple_note.xml"),
     ]
     .into_iter()
-    .map(|path| xberg::BatchFileItem { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = batch_extract_files(paths, &config)
+    let results = extract_uri_documents(paths, &config)
         .await
         .expect("Async operation failed");
 
@@ -217,7 +217,7 @@ async fn test_multipage_pdf_extraction() {
     let pdf_path = get_test_file_path("pdfs/multi_page.pdf");
 
     let start = Instant::now();
-    let result = xberg::core::extractor::extract_file(&pdf_path, None, &config).await;
+    let result = extract_uri_document(&pdf_path, None, &config).await;
     let duration = start.elapsed();
 
     assert!(result.is_ok(), "Multi-page PDF extraction should succeed");
@@ -240,16 +240,16 @@ async fn test_concurrent_pdf_extractions() {
 
     let config = ExtractionConfig::default();
 
-    let mut paths: Vec<xberg::BatchFileItem> = Vec::new();
+    let mut paths: Vec<UriBatchInput> = Vec::new();
     for _ in 0..10 {
-        paths.push(xberg::BatchFileItem {
+        paths.push(UriBatchInput {
             path: get_test_file_path("pdfs/simple.pdf"),
             config: None,
         });
     }
 
     let start = Instant::now();
-    let results = batch_extract_files(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -289,13 +289,13 @@ fn test_ocr_multipage_efficiency() {
     let file_path = get_test_file_path("images/ocr_image.jpg");
 
     let start = Instant::now();
-    let result1 = extract_file_sync(&file_path, None, &config);
+    let result1 = extract_uri_document_blocking(&file_path, None, &config);
     let first_duration = start.elapsed();
 
     assert!(result1.is_ok(), "First OCR should succeed");
 
     let start = Instant::now();
-    let result2 = extract_file_sync(&file_path, None, &config);
+    let result2 = extract_uri_document_blocking(&file_path, None, &config);
     let second_duration = start.elapsed();
 
     assert!(result2.is_ok(), "Second OCR should succeed");
@@ -319,7 +319,7 @@ fn test_ocr_multipage_efficiency() {
 
 /// Test parallel processing of byte arrays.
 ///
-/// Validates that batch_extract_bytes processes data in parallel.
+/// Validates that extract_bytes_documents processes data in parallel.
 #[tokio::test]
 async fn test_batch_bytes_parallel_processing() {
     let config = ExtractionConfig::default();
@@ -332,9 +332,9 @@ async fn test_batch_bytes_parallel_processing() {
         .collect();
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents: Vec<BytesInput> = contents_ref
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
@@ -342,7 +342,7 @@ async fn test_batch_bytes_parallel_processing() {
         .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(owned_contents, &config).await;
+    let results = extract_bytes_documents(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -370,16 +370,16 @@ async fn test_batch_bytes_mixed_valid_invalid() {
         (b"valid content 3".as_slice(), "text/plain"),
     ];
 
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents
+    let owned_contents: Vec<BytesInput> = contents
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
 
-    let results = batch_extract_bytes(owned_contents, &config).await;
+    let results = extract_bytes_documents(owned_contents, &config).await;
 
     assert!(results.is_ok());
     let results = results.expect("Operation failed");
@@ -416,9 +416,9 @@ async fn test_batch_utilizes_multiple_cores() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents: Vec<BytesInput> = contents_ref
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
@@ -426,7 +426,7 @@ async fn test_batch_utilizes_multiple_cores() {
         .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(owned_contents, &config).await;
+    let results = extract_bytes_documents(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -463,9 +463,9 @@ async fn test_batch_memory_pressure_handling() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents: Vec<BytesInput> = contents_ref
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
@@ -473,7 +473,7 @@ async fn test_batch_memory_pressure_handling() {
         .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(owned_contents, &config).await;
+    let results = extract_bytes_documents(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -503,9 +503,9 @@ async fn test_batch_scales_with_cpu_count() {
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
 
-    let owned_contents_1: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents_1: Vec<BytesInput> = contents_ref
         .iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
@@ -513,7 +513,7 @@ async fn test_batch_scales_with_cpu_count() {
         .collect();
 
     let start = Instant::now();
-    let _ = batch_extract_bytes(owned_contents_1, &config_1)
+    let _ = extract_bytes_documents(owned_contents_1, &config_1)
         .await
         .expect("Async operation failed");
     let duration_1 = start.elapsed();
@@ -523,9 +523,9 @@ async fn test_batch_scales_with_cpu_count() {
         ..Default::default()
     };
 
-    let owned_contents_full: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents_full: Vec<BytesInput> = contents_ref
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
@@ -533,7 +533,7 @@ async fn test_batch_scales_with_cpu_count() {
         .collect();
 
     let start = Instant::now();
-    let _ = batch_extract_bytes(owned_contents_full, &config_full)
+    let _ = extract_bytes_documents(owned_contents_full, &config_full)
         .await
         .expect("Async operation failed");
     let duration_full = start.elapsed();
@@ -564,17 +564,17 @@ async fn test_batch_mixed_document_types() {
 
     let config = ExtractionConfig::default();
 
-    let paths: Vec<xberg::BatchFileItem> = vec![
+    let paths: Vec<UriBatchInput> = vec![
         get_test_file_path("text/contract.txt"),
         get_test_file_path("json/sample_document.json"),
         get_test_file_path("xml/simple_note.xml"),
         get_test_file_path("text/readme.md"),
     ]
     .into_iter()
-    .map(|path| xberg::BatchFileItem { path, config: None })
+    .map(|path| UriBatchInput { path, config: None })
     .collect();
 
-    let results = batch_extract_files(paths, &config).await;
+    let results = extract_uri_documents(paths, &config).await;
 
     assert!(results.is_ok());
     let results = results.expect("Operation failed");
@@ -622,16 +622,16 @@ async fn test_batch_accuracy_under_load() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
-    let owned_contents: Vec<xberg::BatchBytesItem> = contents_ref
+    let owned_contents: Vec<BytesInput> = contents_ref
         .into_iter()
-        .map(|(bytes, mime)| xberg::BatchBytesItem {
+        .map(|(bytes, mime)| BytesInput {
             content: bytes.to_vec(),
             mime_type: mime.to_string(),
             config: None,
         })
         .collect();
 
-    let results = batch_extract_bytes(owned_contents, &config)
+    let results = extract_bytes_documents(owned_contents, &config)
         .await
         .expect("Async operation failed");
 

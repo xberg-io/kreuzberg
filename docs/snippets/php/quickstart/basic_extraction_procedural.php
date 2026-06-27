@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Xberg\extract;
 
-$result = extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Extracted Text:\n";
 echo str_repeat('=', 50) . "\n";
@@ -22,9 +22,9 @@ echo $result->content . "\n\n";
 
 echo "Document Information:\n";
 echo str_repeat('=', 50) . "\n";
-printf("Title:   %s\n", $result->metadata->title ?? 'Unknown');
-printf("Authors: %s\n", isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown');
-printf("Pages:   %d\n", $result->metadata->pageCount ?? 0);
+printf("Title:   %s\n", $result->metadata?->title ?? 'Unknown');
+printf("Authors: %s\n", isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'Unknown');
+printf("Pages:   %d\n", $result->metadata?->pdf?->page_count ?? 0);
 printf("Format:  %s\n", $result->mimeType);
 
 $char_count = mb_strlen($result->content);

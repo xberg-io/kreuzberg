@@ -12,7 +12,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::transcription::decode::{PcmAudio, decode_audio_to_pcm};
 use crate::transcription::engine::WhisperEngine;
 use crate::transcription::model::{WhisperModelPaths, ensure_whisper_model};
@@ -92,8 +92,8 @@ impl Plugin for TranscriptionExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for TranscriptionExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for TranscriptionExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -194,10 +194,6 @@ impl DocumentExtractor for TranscriptionExtractor {
 
     fn priority(&self) -> i32 {
         50 // Normal default — users can override with a higher-priority custom plugin
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -381,7 +377,7 @@ mod tests {
     async fn test_async_no_config_returns_error() {
         let ext = TranscriptionExtractor;
         let cfg = ExtractionConfig::default();
-        let result = ext.extract_bytes(&[], "audio/mpeg", &cfg).await;
+        let result = ext.extract_content(&[], "audio/mpeg", &cfg).await;
         assert!(result.is_err(), "expected error when no transcription config (async)");
         let msg = result.unwrap_err().to_string();
         assert!(msg.contains("config") || msg.contains("disabled"), "unexpected: {msg}");
@@ -396,7 +392,7 @@ mod tests {
         };
         let cfg = config_with_transcription(tcfg);
         let oversized = vec![0u8; 11];
-        let result = ext.extract_bytes(&oversized, "audio/mpeg", &cfg).await;
+        let result = ext.extract_content(&oversized, "audio/mpeg", &cfg).await;
         assert!(result.is_err(), "expected error when input exceeds max_bytes (async)");
         let msg = result.unwrap_err().to_string();
         assert!(

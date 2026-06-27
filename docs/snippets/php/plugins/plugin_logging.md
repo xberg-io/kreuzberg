@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 class LoggingPostProcessor implements PostProcessor {
     public function name(): string {

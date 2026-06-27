@@ -151,10 +151,15 @@ fn revisions_docx_track_changes_basic_matches_ground_truth() {
     );
 
     // When the xberg extractor lands the revisions field on
-    // ExtractionResult, replace the placeholder below with:
+    // ExtractedDocument, replace the placeholder below with:
     //
-    //   let result = xberg::extract::extract_file_sync(&fixture_path, &cfg)?;
-    //   let revisions = result.revisions.expect("DOCX track-changes fixture must yield revisions");
+    //   let input = ExtractInput::from_uri(fixture_path.display().to_string());
+    //   let output = xberg::extract(input, &cfg).await?;
+    //   let document = output
+    //       .results
+    //       .first()
+    //       .expect("DOCX track-changes fixture must yield a result");
+    //   let revisions = document.revisions.expect("DOCX track-changes fixture must yield revisions");
     //   assert_eq!(revisions.len() as u64, expected_count);
     let _ = fixture_path;
 }
@@ -183,8 +188,10 @@ fn diff_xlsx_budget_pair_round_trips() {
 
     // When the integration lands:
     //
-    //   let v1 = xberg::extract::extract_file_sync(&v1_path, &cfg)?;
-    //   let v2 = xberg::extract::extract_file_sync(&v2_path, &cfg)?;
+    //   let input_v1 = ExtractInput::from_uri(v1_path.display().to_string());
+    //   let input_v2 = ExtractInput::from_uri(v2_path.display().to_string());
+    //   let v1 = xberg::extract(input_v1, &cfg).await?;
+    //   let v2 = xberg::extract(input_v2, &cfg).await?;
     //   let diff = xberg::diff::compare(&v1, &v2, &DiffOptions::default());
     //   assert_eq!(diff.tables_changed.len(), 1);
     //   assert_eq!(diff.tables_changed[0].cell_changes.len(), 1);

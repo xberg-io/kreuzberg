@@ -10,9 +10,11 @@
 
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
-use xberg::extract_bytes_sync;
 
 /// PNG magic: `\x89PNG\r\n\x1a\n` (8 bytes).
 const PNG_MAGIC: &[u8] = b"\x89PNG\r\n\x1a\n";
@@ -45,14 +47,14 @@ fn config_svg_target() -> ExtractionConfig {
 
 /// When `output_format = Svg` and the source image is a raster PNG:
 ///
-/// 1. `extract_bytes_sync` must return `Ok` (not a hard error).
+/// 1. `extract_bytes_document_blocking` must return `Ok` (not a hard error).
 /// 2. At least one `ProcessingWarning` with `source == "image_encoder"` must
 ///    be emitted containing the word "svg" (the unsupported direction message).
 /// 3. The image's bytes must still start with PNG magic (untouched).
 /// 4. The image's `format` must remain `"png"` (unchanged).
 #[test]
 fn raster_png_to_svg_target_warns_and_preserves_bytes() {
-    let result = extract_bytes_sync(HTML_WITH_PNG_DATA_URI, "text/html", &config_svg_target())
+    let result = extract_bytes_document_blocking(HTML_WITH_PNG_DATA_URI, "text/html", &config_svg_target())
         .expect("extraction must return Ok even when raster→SVG is unsupported");
 
     // Must have emitted at least one image_encoder warning.
@@ -105,7 +107,7 @@ fn raster_png_to_svg_target_warns_and_preserves_bytes() {
 /// must never propagate as a hard `XbergError`.
 #[test]
 fn raster_to_svg_does_not_return_hard_error() {
-    let outcome = extract_bytes_sync(HTML_WITH_PNG_DATA_URI, "text/html", &config_svg_target());
+    let outcome = extract_bytes_document_blocking(HTML_WITH_PNG_DATA_URI, "text/html", &config_svg_target());
     assert!(
         outcome.is_ok(),
         "raster→SVG unsupported direction must degrade to a warning, not a hard error; \

@@ -2,8 +2,8 @@
 //!
 //! This module provides utilities for formatting extraction results and building configurations.
 
+use crate::ExtractionConfig;
 use crate::core::config::merge::build_config_from_json;
-use crate::{ExtractionConfig, ExtractionResult as XbergResult};
 
 /// Build extraction config from MCP parameters.
 ///
@@ -20,39 +20,9 @@ pub(super) fn build_config(
     build_config_from_json(default_config, json_string.as_deref())
 }
 
-/// Format extraction result as JSON string.
-///
-/// Serializes the full `ExtractionResult` to JSON, ensuring 1:1 parity
-/// with the API and CLI JSON output.
-pub(super) fn format_extraction_result(result: &XbergResult) -> String {
-    serde_json::to_string_pretty(result).unwrap_or_default()
-}
-
-/// Format extraction result as TOON string.
-///
-/// Serializes the full `ExtractionResult` to TOON wire format.
-pub(super) fn format_extraction_result_toon(result: &XbergResult) -> String {
-    serde_toon::to_string(result).unwrap_or_else(|e| {
-        tracing::error!(error = %e, "Failed to serialize extraction result to TOON, falling back to JSON");
-        format_extraction_result(result)
-    })
-}
-
-/// Format extraction result using the specified wire format.
-///
-/// When `use_toon` is true, serializes to TOON format; otherwise serializes to JSON.
-pub(super) fn format_extraction_result_for_wire(result: &XbergResult, use_toon: bool) -> String {
-    if use_toon {
-        format_extraction_result_toon(result)
-    } else {
-        format_extraction_result(result)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::borrow::Cow;
 
     #[test]
     fn test_build_config_with_no_config() {
@@ -254,94 +224,5 @@ mod tests {
             merged.use_cache,
             "Should use explicit override even if it matches default"
         );
-    }
-
-    #[test]
-    fn test_format_extraction_result_is_valid_json() {
-        let result = XbergResult {
-            content: "Sample extracted text".to_string(),
-            mime_type: Cow::Borrowed("text/plain"),
-            ..Default::default()
-        };
-
-        let formatted = format_extraction_result(&result);
-        let parsed: serde_json::Value = serde_json::from_str(&formatted).expect("Should be valid JSON");
-
-        assert_eq!(parsed["content"], "Sample extracted text");
-        assert_eq!(parsed["mime_type"], "text/plain");
-        assert!(parsed["metadata"].is_object());
-    }
-
-    #[test]
-    fn test_format_extraction_result_includes_tables() {
-        let result = XbergResult {
-            content: "Document with tables".to_string(),
-            mime_type: Cow::Borrowed("application/pdf"),
-            tables: vec![crate::Table {
-                cells: vec![
-                    vec!["Col1".to_string(), "Col2".to_string()],
-                    vec!["A".to_string(), "B".to_string()],
-                ],
-                page_number: 1,
-                markdown: "| Col1 | Col2 |\n|------|------|\n| A    | B    |".to_string(),
-                bounding_box: None,
-            }],
-            ..Default::default()
-        };
-
-        let formatted = format_extraction_result(&result);
-        let parsed: serde_json::Value = serde_json::from_str(&formatted).expect("Should be valid JSON");
-
-        assert_eq!(parsed["tables"].as_array().unwrap().len(), 1);
-        assert_eq!(parsed["tables"][0]["page_number"], 1);
-    }
-
-    #[test]
-    fn test_format_extraction_result_includes_chunks_when_present() {
-        let result = XbergResult {
-            content: "Chunked text".to_string(),
-            mime_type: Cow::Borrowed("text/plain"),
-            chunks: Some(vec![crate::Chunk {
-                content: "Chunk 1".to_string(),
-                chunk_type: Default::default(),
-                embedding: None,
-                metadata: crate::ChunkMetadata {
-                    byte_start: 0,
-                    byte_end: 7,
-                    token_count: None,
-                    chunk_index: 0,
-                    total_chunks: 1,
-                    first_page: None,
-                    last_page: None,
-                    heading_context: None,
-                    heading_path: Vec::new(),
-                    image_indices: Vec::new(),
-                },
-            }]),
-            ..Default::default()
-        };
-
-        let formatted = format_extraction_result(&result);
-        let parsed: serde_json::Value = serde_json::from_str(&formatted).expect("Should be valid JSON");
-
-        assert_eq!(parsed["chunks"].as_array().unwrap().len(), 1);
-        assert_eq!(parsed["chunks"][0]["content"], "Chunk 1");
-    }
-
-    #[test]
-    fn test_format_extraction_result_omits_none_fields() {
-        let result = XbergResult {
-            content: "Simple text".to_string(),
-            mime_type: Cow::Borrowed("text/plain"),
-            ..Default::default()
-        };
-
-        let formatted = format_extraction_result(&result);
-        let parsed: serde_json::Value = serde_json::from_str(&formatted).expect("Should be valid JSON");
-
-        // None fields should be omitted via skip_serializing_if
-        assert!(parsed.get("chunks").is_none());
-        assert!(parsed.get("images").is_none());
-        assert!(parsed.get("detected_languages").is_none());
     }
 }

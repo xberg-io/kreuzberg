@@ -6,9 +6,11 @@
 
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
-use xberg::extract_bytes_sync;
 
 /// Returns `true` when `data` starts with the RIFF/WEBP container signature.
 ///
@@ -51,7 +53,8 @@ fn config_webp(quality: u8) -> ExtractionConfig {
 #[test]
 fn svg_inline_in_html_rasterised_to_webp() {
     let config = config_webp(80);
-    let result = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+    let result =
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let images = result
         .images
@@ -88,7 +91,8 @@ fn svg_inline_in_html_rasterised_to_webp() {
 #[test]
 fn svg_to_webp_emits_no_image_encoder_warnings() {
     let config = config_webp(80);
-    let result = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+    let result =
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let encoder_warnings: Vec<_> = result
         .processing_warnings

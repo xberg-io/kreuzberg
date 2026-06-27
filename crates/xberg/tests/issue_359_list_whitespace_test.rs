@@ -5,7 +5,10 @@
 
 #![cfg(feature = "office")]
 
-use xberg::{ExtractionConfig, extract_file};
+mod helpers;
+use helpers::extract_uri_document;
+
+use xberg::ExtractionConfig;
 
 #[tokio::test]
 async fn test_issue_359_docx_list_run_whitespace() {
@@ -21,7 +24,7 @@ async fn test_issue_359_docx_list_run_whitespace() {
         return;
     }
 
-    let result = extract_file(&test_file, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&test_file, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX successfully");
 

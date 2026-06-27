@@ -9,7 +9,7 @@
 //! - Djot content rendering and conversion APIs
 //!
 //! Djot is a modern markup language with simpler parsing rules than CommonMark.
-//! See https://djot.net for the specification.
+//! See <https://djot.net> for the specification.
 //!
 //! Requires the `djot` feature.
 

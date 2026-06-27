@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\PostProcessorConfig;
 
@@ -16,8 +16,10 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
-echo "Processed content: " . substr($result->getContent(), 0, 100) . "...\n";
+$result = $resultOutput->results[0];
+
+echo "Processed content: " . substr($result->content, 0, 100) . "...\n";
 ?>
 ```

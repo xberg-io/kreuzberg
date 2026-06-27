@@ -18,12 +18,12 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
-use xberg::extract_file_sync;
 
 // ═══════════════════════════════════════════════════════════════════
 // Scoring utilities
@@ -372,12 +372,12 @@ const PDFIUM_KNOWN_REGRESSIONS: &[&str] = &[
 // ═══════════════════════════════════════════════════════════════════
 
 /// Extract a PDF with the given output format.
-fn extract_with_format(pdf_path: &std::path::Path, format: OutputFormat) -> Option<xberg::types::ExtractionResult> {
+fn extract_with_format(pdf_path: &std::path::Path, format: OutputFormat) -> Option<xberg::types::ExtractedDocument> {
     let config = ExtractionConfig {
         output_format: format,
         ..Default::default()
     };
-    extract_file_sync(pdf_path, None, &config).ok()
+    extract_uri_document_blocking(pdf_path, None, &config).ok()
 }
 
 /// Result of running the quality gate across all documents.
@@ -655,7 +655,7 @@ fn test_docling_pdf_plain_parity() {
 
 /// Extract text via the OCR (forced) path.
 #[cfg(feature = "ocr")]
-fn extract_ocr(pdf_path: &std::path::Path) -> Option<xberg::types::ExtractionResult> {
+fn extract_ocr(pdf_path: &std::path::Path) -> Option<xberg::types::ExtractedDocument> {
     use xberg::core::config::OcrConfig;
 
     let config = ExtractionConfig {
@@ -669,7 +669,7 @@ fn extract_ocr(pdf_path: &std::path::Path) -> Option<xberg::types::ExtractionRes
         ..Default::default()
     };
 
-    extract_file_sync(pdf_path, None, &config).ok()
+    extract_uri_document_blocking(pdf_path, None, &config).ok()
 }
 
 /// OCR ground truth entries. Same documents but tested through OCR pipeline.

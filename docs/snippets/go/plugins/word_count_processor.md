@@ -72,14 +72,15 @@ func main() {
 	}()
 
 	// Extract document
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
 
 	// Access word count from metadata
 	var metadata map[string]interface{}
-	if metaJSON, ok := result.MetadataJSON.(string); ok {
+	if metaJSON, ok := result.Results[0].MetadataJSON.(string); ok {
 		if err := json.Unmarshal([]byte(metaJSON), &metadata); err == nil {
 			if wordCount, ok := metadata["word_count"].(float64); ok {
 				log.Printf("Word count: %.0f", wordCount)

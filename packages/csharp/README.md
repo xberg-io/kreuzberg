@@ -86,7 +86,7 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 
 - **Document intelligence core** — extract text, tables, images, metadata, entities, keywords, code intelligence, and transcripts in builds that enable transcription.
 - **Format coverage** — PDF, Office, images, HTML/XML, email, archives, notebooks, citations, scientific formats, plain text, and audio/video formats in builds that enable transcription.
-- **OCR choices** — Tesseract, PaddleOCR, EasyOCR where supported, VLM OCR through liter-llm, and plugin hooks for custom backends.
+- **OCR choices** — Tesseract, PaddleOCR, Candle where supported, VLM OCR through liter-llm, and plugin hooks for custom backends.
 - **Same engine as every binding** — Rust, Python, Node.js, Go, Java, PHP, Ruby, .NET, Elixir, R, WASM, Kotlin Android, Swift, Dart, Zig, and C FFI share the same Rust implementation.
 - **.NET package** — async/await API with nullable-aware result types.
 
@@ -97,13 +97,13 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 Install via NuGet:
 
 ```bash
-dotnet add package Xberg
+dotnet add package XbergIo.Xberg
 ```
 
 Or via NuGet Package Manager:
 
 ```
-Install-Package Xberg
+Install-Package XbergIo.Xberg
 ```
 
 ### System Requirements
@@ -126,7 +126,7 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = XbergClient.ExtractSync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");
@@ -156,7 +156,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.ExtractSync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -193,18 +193,19 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var result = await XbergLib.ExtractAsync(filePath, config);
-                batchResults.Add(result);
-                Console.WriteLine($"Processed {filePath}: {result.Content.Length} chars");
+                var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config);
+                batchResults.Add(output);
+                var document = output.Results[0];
+                Console.WriteLine($"Processed {filePath}: {document.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                XbergLib.ExtractAsync(path, config)
+                XbergConverter.ExtractAsync(ExtractInput.FromUri(path), config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);
 
-            var totalChars = results.Sum(r => r.Content.Length);
+            var totalChars = results.Sum(output => output.Results.Sum(document => document.Content.Length));
             Console.WriteLine($"Total extracted: {totalChars} characters");
         }
         catch (XbergException ex)
@@ -228,23 +229,24 @@ class Program
     {
         try
         {
-            var result = await XbergLib.ExtractAsync("document.pdf");
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
 
             var tasks = new[]
             {
-                XbergLib.ExtractAsync("file1.pdf"),
-                XbergLib.ExtractAsync("file2.pdf"),
-                XbergLib.ExtractAsync("file3.pdf")
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file1.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file2.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file3.pdf"), ExtractionConfig.Default())
             };
 
             var results = await Task.WhenAll(tasks);
 
             foreach (var r in results)
             {
-                Console.WriteLine($"Extracted {r.Content.Length} characters");
+                var document = r.Results[0];
+                Console.WriteLine($"Extracted {document.Content.Length} characters");
             }
         }
         catch (XbergException ex)
@@ -345,22 +347,13 @@ Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-l
 - **OCR Support** - Integrate multiple OCR backends for scanned documents
 - **Async/Await** - Non-blocking document processing with concurrent operations
 - **Plugin System** - Extensible post-processing for custom text transformation
-- **Embeddings** - Generate vector embeddings using ONNX Runtime models
+- **Embeddings** - Generate vector embeddings using ONNX Runtime models or provider-hosted services
 - **Batch Processing** - Efficiently process multiple documents in parallel
 - **Memory Efficient** - Stream large files without loading entirely into memory
 - **Language Detection** - Detect and support multiple languages in documents
 - **Code Intelligence** - Extract structure, imports, exports, symbols, and docstrings from [306 programming languages](https://docs.tree-sitter-language-pack.xberg.io) via tree-sitter
 - **Configuration** - Fine-grained control over extraction behavior
-
-### Performance Characteristics
-
-| Format | Speed | Memory | Notes |
-|--------|-------|--------|-------|
-| **PDF (text)** | 10-100 MB/s | ~50MB per doc | Fastest extraction |
-| **Office docs** | 20-200 MB/s | ~100MB per doc | DOCX, XLSX, PPTX |
-| **Images (OCR)** | 1-5 MB/s | Variable | Depends on OCR backend |
-| **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
-| **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
+- **Six Output Formats** - Plain text, Markdown, Djot, HTML, JSON tree structure, or Structured JSON with OCR metadata
 
 ## OCR Support
 
@@ -388,7 +381,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.ExtractSync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -405,23 +398,24 @@ class Program
     {
         try
         {
-            var result = await XbergLib.ExtractAsync("document.pdf");
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
 
             var tasks = new[]
             {
-                XbergLib.ExtractAsync("file1.pdf"),
-                XbergLib.ExtractAsync("file2.pdf"),
-                XbergLib.ExtractAsync("file3.pdf")
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file1.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file2.pdf"), ExtractionConfig.Default()),
+                XbergConverter.ExtractAsync(ExtractInput.FromUri("file3.pdf"), ExtractionConfig.Default())
             };
 
             var results = await Task.WhenAll(tasks);
 
             foreach (var r in results)
             {
-                Console.WriteLine($"Extracted {r.Content.Length} characters");
+                var document = r.Results[0];
+                Console.WriteLine($"Extracted {document.Content.Length} characters");
             }
         }
         catch (XbergException ex)
@@ -475,18 +469,19 @@ class Program
 
             foreach (var filePath in filePaths)
             {
-                var result = await XbergLib.ExtractAsync(filePath, config);
-                batchResults.Add(result);
-                Console.WriteLine($"Processed {filePath}: {result.Content.Length} chars");
+                var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri(filePath), config);
+                batchResults.Add(output);
+                var document = output.Results[0];
+                Console.WriteLine($"Processed {filePath}: {document.Content.Length} chars");
             }
 
             var tasks = filePaths.Select(path =>
-                XbergLib.ExtractAsync(path, config)
+                XbergConverter.ExtractAsync(ExtractInput.FromUri(path), config)
             ).ToArray();
 
             var results = await Task.WhenAll(tasks);
 
-            var totalChars = results.Sum(r => r.Content.Length);
+            var totalChars = results.Sum(output => output.Results.Sum(document => document.Content.Length));
             Console.WriteLine($"Total extracted: {totalChars} characters");
         }
         catch (XbergException ex)

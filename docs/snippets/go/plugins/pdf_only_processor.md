@@ -91,7 +91,8 @@ func main() {
 	}
 
 	for _, file := range files {
-		result, err := xberg.ExtractSync(file, nil)
+		input := xberg.ExtractInputFromURI(file)
+		result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 		if err != nil {
 			log.Printf("Warning: extraction failed for %s: %v", file, err)
 			continue
@@ -99,7 +100,7 @@ func main() {
 
 		// Parse metadata to check if PDF processing occurred
 		var metadata map[string]interface{}
-		if metaJSON, ok := result.MetadataJSON.(string); ok {
+		if metaJSON, ok := result.Results[0].MetadataJSON.(string); ok {
 			if err := json.Unmarshal([]byte(metaJSON), &metadata); err == nil {
 				if pdfProcessing, ok := metadata["pdf_specific_processing"].(bool); ok && pdfProcessing {
 					log.Printf("PDF-specific processing applied to: %s", file)
@@ -107,7 +108,7 @@ func main() {
 						log.Printf("  Tables found: %.0f", tableCount)
 					}
 				} else {
-					log.Printf("Skipped PDF processor for: %s (MIME: %s)", file, result.MimeType)
+					log.Printf("Skipped PDF processor for: %s (MIME: %s)", file, result.Results[0].MimeType)
 				}
 			}
 		}

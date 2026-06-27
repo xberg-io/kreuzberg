@@ -4,7 +4,7 @@
 //! is `Some(_)`. Resolves the backend declared in
 //! [`NerConfig::backend`](crate::core::config::ner::NerConfig::backend) and
 //! writes the detected entities into
-//! [`ExtractionResult::entities`](crate::types::ExtractionResult::entities).
+//! [`ExtractedDocument::entities`](crate::types::ExtractedDocument::entities).
 
 use std::sync::Arc;
 
@@ -15,7 +15,7 @@ use crate::core::config::ExtractionConfig;
 use crate::core::config::ner::{NerBackendKind, NerConfig};
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
 use crate::text::ner::NerBackend;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// NER post-processor.
 #[cfg_attr(alef, alef(skip))]
@@ -42,7 +42,7 @@ impl Plugin for NerProcessor {
 
 #[async_trait]
 impl PostProcessor for NerProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let Some(ner_config) = config.ner.as_ref() else {
             return Ok(());
         };
@@ -70,7 +70,7 @@ impl PostProcessor for NerProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.ner.is_some()
     }
 
@@ -132,7 +132,7 @@ mod tests {
     #[test]
     fn should_process_only_when_ner_configured() {
         let p = NerProcessor;
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Alice works at Acme".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

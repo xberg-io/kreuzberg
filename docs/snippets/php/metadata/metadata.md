@@ -1,11 +1,12 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 
 // Extract PDF metadata
-$result = Xberg::extract_sync("document.pdf", null, new ExtractionConfig());
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("document.pdf"), \Xberg\ExtractionConfig::default());
+$result = $resultOutput->results[0];
 
 if ($result->metadata?->pdf) {
     $pdfMeta = $result->metadata->pdf;
@@ -21,7 +22,8 @@ if ($result->metadata?->pdf) {
 }
 
 // Extract HTML metadata
-$htmlResult = Xberg::extract_sync("page.html", null, new ExtractionConfig());
+$htmlResultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("page.html"), \Xberg\ExtractionConfig::default());
+$htmlResult = $htmlResultOutput->results[0];
 
 if ($htmlResult->metadata?->html) {
     $htmlMeta = $htmlResult->metadata->html;

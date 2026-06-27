@@ -9,17 +9,18 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if result.Metadata.Pages == nil || result.Metadata.Pages.Boundaries == nil {
+	if result.Results[0].Metadata.Pages == nil || result.Results[0].Metadata.Pages.Boundaries == nil {
 		return
 	}
 
-	contentBytes := []byte(result.Content)
-	for i, boundary := range result.Metadata.Pages.Boundaries {
+	contentBytes := []byte(result.Results[0].Content)
+	for i, boundary := range result.Results[0].Metadata.Pages.Boundaries {
 		if i >= 3 {
 			break
 		}

@@ -1,4 +1,4 @@
-//! Diff two [`ExtractionResult`] values.
+//! Diff two [`ExtractedDocument`] values.
 //!
 //! This module is gated behind the `diff` Cargo feature. Enable it by adding
 //! `xberg = { features = ["diff"] }` to your `Cargo.toml`.
@@ -6,11 +6,11 @@
 //! # Example
 //!
 //! ```rust,no_run
-//! use xberg::{ExtractionResult, diff::{compare, DiffOptions}};
+//! use xberg::{ExtractedDocument, diff::{compare, DiffOptions}};
 //!
 //! # fn main() {
-//! let a = ExtractionResult::default();
-//! let b = ExtractionResult::default();
+//! let a = ExtractedDocument::default();
+//! let b = ExtractedDocument::default();
 //! let opts = DiffOptions::default();
 //! let result = compare(&a, &b, &opts);
 //! assert!(result.content_diff.is_empty());
@@ -25,7 +25,7 @@ pub use types::{
 
 use similar::{ChangeTag, DiffOp, TextDiff};
 
-use crate::types::extraction::{ArchiveEntry, ExtractionResult};
+use crate::types::extraction::{ArchiveEntry, ExtractedDocument};
 use crate::types::tables::Table;
 
 /// Default number of context lines on each side of a changed region.
@@ -45,11 +45,11 @@ const CONTEXT_LINES: usize = 3;
 /// # Example
 ///
 /// ```rust,no_run
-/// use xberg::{ExtractionResult, diff::{compare, DiffOptions}};
+/// use xberg::{ExtractedDocument, diff::{compare, DiffOptions}};
 ///
 /// # fn main() {
-/// let mut a = ExtractionResult::default();
-/// let mut b = ExtractionResult::default();
+/// let mut a = ExtractedDocument::default();
+/// let mut b = ExtractedDocument::default();
 /// a.content = "Hello world".to_string();
 /// b.content = "Hello Rust".to_string();
 ///
@@ -57,7 +57,7 @@ const CONTEXT_LINES: usize = 3;
 /// assert_eq!(diff.content_diff.len(), 1);
 /// # }
 /// ```
-pub fn compare(a: &ExtractionResult, b: &ExtractionResult, opts: &DiffOptions) -> ExtractionDiff {
+pub fn compare(a: &ExtractedDocument, b: &ExtractedDocument, opts: &DiffOptions) -> ExtractionDiff {
     let content_diff = diff_content(&a.content, &b.content, opts);
     let (tables_added, tables_removed, tables_changed) = diff_tables(&a.tables, &b.tables);
     let metadata_changed = if opts.include_metadata {
@@ -341,21 +341,21 @@ fn is_nonempty_metadata_diff(val: &serde_json::Value) -> bool {
 #[cfg(all(test, feature = "diff"))]
 mod tests {
     use super::*;
-    use crate::types::{extraction::ExtractionResult, tables::Table};
+    use crate::types::{extraction::ExtractedDocument, tables::Table};
 
-    fn empty_result() -> ExtractionResult {
-        ExtractionResult::default()
+    fn empty_result() -> ExtractedDocument {
+        ExtractedDocument::default()
     }
 
-    fn result_with_content(content: &str) -> ExtractionResult {
-        ExtractionResult {
+    fn result_with_content(content: &str) -> ExtractedDocument {
+        ExtractedDocument {
             content: content.to_string(),
             ..Default::default()
         }
     }
 
-    fn result_with_tables(tables: Vec<Table>) -> ExtractionResult {
-        ExtractionResult {
+    fn result_with_tables(tables: Vec<Table>) -> ExtractedDocument {
+        ExtractedDocument {
             tables,
             ..Default::default()
         }
@@ -393,8 +393,8 @@ mod tests {
     #[test]
     fn should_produce_empty_diff_for_both_empty_results() {
         let diff = compare(
-            &ExtractionResult::default(),
-            &ExtractionResult::default(),
+            &ExtractedDocument::default(),
+            &ExtractedDocument::default(),
             &DiffOptions::default(),
         );
         assert!(!is_nonempty_diff(&diff));

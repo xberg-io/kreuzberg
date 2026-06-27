@@ -7,7 +7,7 @@ use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::ocr::processor::OcrProcessor;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use ahash::AHashMap;
 use async_trait::async_trait;
 use once_cell::sync::OnceCell;
@@ -182,7 +182,7 @@ impl Plugin for TesseractBackend {
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 impl OcrBackend for TesseractBackend {
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         let tess_config = self.config_to_tesseract(config);
         let tess_config_clone = tess_config.clone();
         let output_format = config.output_format.clone();
@@ -250,7 +250,7 @@ impl OcrBackend for TesseractBackend {
             ..Default::default()
         };
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: ocr_result.content,
             mime_type: ocr_result.mime_type.into(),
             metadata,
@@ -278,7 +278,7 @@ impl OcrBackend for TesseractBackend {
         })
     }
 
-    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractedDocument> {
         let tess_config = self.config_to_tesseract(config);
         let tess_config_clone = tess_config.clone();
         let output_format = config.output_format.clone();
@@ -346,7 +346,7 @@ impl OcrBackend for TesseractBackend {
             ..Default::default()
         };
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: ocr_result.content,
             mime_type: ocr_result.mime_type.into(),
             metadata,

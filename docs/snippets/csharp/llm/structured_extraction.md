@@ -32,7 +32,7 @@ var config = new ExtractionConfig
     },
 };
 
-var result = await XbergLib.Extract("paper.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("paper.pdf"), config)).Results[0];
 
 if (result.StructuredOutput is not null)
 {

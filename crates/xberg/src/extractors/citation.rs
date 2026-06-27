@@ -5,7 +5,7 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{CitationMetadata, FormatMetadata, Metadata, YearRange};
@@ -64,7 +64,7 @@ impl Plugin for CitationExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for CitationExtractor {
+impl InternalDocumentExtractor for CitationExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, _config),
         fields(
@@ -72,7 +72,7 @@ impl DocumentExtractor for CitationExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -323,7 +323,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(ris_content, "application/x-research-info-systems", &config)
+            .extract_content(ris_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -355,7 +355,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(ris_content, "application/x-research-info-systems", &config)
+            .extract_content(ris_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -386,7 +386,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(ris_content, "application/x-research-info-systems", &config)
+            .extract_content(ris_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -407,7 +407,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(empty_content, "application/x-research-info-systems", &config)
+            .extract_content(empty_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -428,7 +428,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(malformed_content, "application/x-research-info-systems", &config)
+            .extract_content(malformed_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -480,7 +480,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(ris_content, "application/x-research-info-systems", &config)
+            .extract_content(ris_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -505,7 +505,7 @@ ER  -"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(ris_content, "application/x-research-info-systems", &config)
+            .extract_content(ris_content, "application/x-research-info-systems", &config)
             .await;
 
         assert!(result.is_ok());
@@ -527,7 +527,7 @@ DP  - 2023"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(pubmed_content, "application/x-pubmed", &config)
+            .extract_content(pubmed_content, "application/x-pubmed", &config)
             .await;
 
         assert!(result.is_ok());
@@ -560,7 +560,7 @@ DP  - 2023"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(endnote_content, "application/x-endnote+xml", &config)
+            .extract_content(endnote_content, "application/x-endnote+xml", &config)
             .await;
 
         assert!(result.is_ok());

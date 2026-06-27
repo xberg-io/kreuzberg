@@ -5,7 +5,6 @@
 //!
 //! # Supported Backends
 //!
-//! - **easyocr**: 83 languages with broad multilingual support
 //! - **paddleocr**: 14 optimized languages for production deployments
 //! - **tesseract**: 100+ languages via Tesseract OCR
 //!
@@ -15,8 +14,8 @@
 //! use xberg::ocr::LanguageRegistry;
 //!
 //! let registry = LanguageRegistry::new();
-//! if let Some(languages) = registry.get_supported_languages("easyocr") {
-//!     println!("EasyOCR supports {} languages", languages.len());
+//! if let Some(languages) = registry.get_supported_languages("paddleocr") {
+//!     println!("PaddleOCR supports {} languages", languages.len());
 //! }
 //! ```
 
@@ -50,15 +49,12 @@ impl LanguageRegistry {
     ///
     /// # Returns
     ///
-    /// A new `LanguageRegistry` with EasyOCR, PaddleOCR, and Tesseract languages pre-populated.
+    /// A new `LanguageRegistry` with PaddleOCR and Tesseract languages pre-populated.
     pub(crate) fn new() -> Self {
         let mut registry = Self {
             backends: AHashMap::new(),
         };
 
-        registry
-            .backends
-            .insert("easyocr".to_string(), backends::easyocr::languages());
         registry
             .backends
             .insert("paddleocr".to_string(), backends::paddleocr::languages());
@@ -84,7 +80,7 @@ impl LanguageRegistry {
     ///
     /// # Arguments
     ///
-    /// * `backend` - Backend name (e.g., "easyocr", "paddleocr", "tesseract")
+    /// * `backend` - Backend name (e.g., "paddleocr", "tesseract")
     ///
     /// # Returns
     ///
@@ -96,7 +92,7 @@ impl LanguageRegistry {
     /// use xberg::ocr::LanguageRegistry;
     ///
     /// let registry = LanguageRegistry::new();
-    /// if let Some(languages) = registry.get_supported_languages("easyocr") {
+    /// if let Some(languages) = registry.get_supported_languages("paddleocr") {
     ///     assert!(languages.contains(&"en".to_string()));
     /// }
     /// ```
@@ -164,21 +160,6 @@ mod tests {
     }
 
     #[test]
-    fn test_easyocr_languages() {
-        let registry = LanguageRegistry::new();
-        let languages = registry
-            .get_supported_languages("easyocr")
-            .expect("EasyOCR backend not found");
-
-        assert_eq!(languages.len(), 83);
-        assert!(languages.contains(&"en".to_string()));
-        assert!(languages.contains(&"fr".to_string()));
-        assert!(languages.contains(&"de".to_string()));
-        assert!(languages.contains(&"ch_sim".to_string()));
-        assert!(languages.contains(&"ch_tra".to_string()));
-    }
-
-    #[test]
     fn test_paddleocr_languages() {
         let registry = LanguageRegistry::new();
         let languages = registry
@@ -215,10 +196,6 @@ mod tests {
     fn test_is_language_supported() {
         let registry = LanguageRegistry::new();
 
-        assert!(registry.is_language_supported("easyocr", "en"));
-        assert!(registry.is_language_supported("easyocr", "fr"));
-        assert!(!registry.is_language_supported("easyocr", "invalid"));
-
         assert!(registry.is_language_supported("paddleocr", "en"));
         assert!(!registry.is_language_supported("paddleocr", "invalid"));
 
@@ -231,8 +208,7 @@ mod tests {
         let registry = LanguageRegistry::new();
         let backends = registry.get_backends();
 
-        assert_eq!(backends.len(), 3);
-        assert!(backends.contains(&"easyocr".to_string()));
+        assert_eq!(backends.len(), 2);
         assert!(backends.contains(&"paddleocr".to_string()));
         assert!(backends.contains(&"tesseract".to_string()));
     }
@@ -241,7 +217,6 @@ mod tests {
     fn test_get_language_count() {
         let registry = LanguageRegistry::new();
 
-        assert_eq!(registry.get_language_count("easyocr"), 83);
         assert_eq!(registry.get_language_count("paddleocr"), 14);
         assert!(registry.get_language_count("tesseract") >= 100);
         assert_eq!(registry.get_language_count("nonexistent"), 0);
@@ -253,8 +228,8 @@ mod tests {
         let registry2 = LanguageRegistry::new();
 
         assert_eq!(
-            registry1.get_language_count("easyocr"),
-            registry2.get_language_count("easyocr")
+            registry1.get_language_count("paddleocr"),
+            registry2.get_language_count("paddleocr")
         );
     }
 
@@ -264,21 +239,9 @@ mod tests {
         let global2 = LanguageRegistry::global();
 
         assert_eq!(
-            global1.get_language_count("easyocr"),
-            global2.get_language_count("easyocr")
+            global1.get_language_count("paddleocr"),
+            global2.get_language_count("paddleocr")
         );
-    }
-
-    #[test]
-    fn test_easyocr_specific_languages() {
-        let registry = LanguageRegistry::new();
-        let languages = registry.get_supported_languages("easyocr").unwrap();
-
-        assert!(languages.contains(&"abq".to_string()));
-        assert!(languages.contains(&"bho".to_string()));
-        assert!(languages.contains(&"gom".to_string()));
-        assert!(languages.contains(&"rs_cyrillic".to_string()));
-        assert!(languages.contains(&"rs_latin".to_string()));
     }
 
     #[test]

@@ -19,7 +19,7 @@ use std::sync::Arc;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::types::summary::{DocumentSummary, SummaryStrategy};
 use async_trait::async_trait;
 
@@ -49,7 +49,7 @@ impl Plugin for SummarizationProcessor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for SummarizationProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let summarization_config = match &config.summarization {
             Some(cfg) => cfg,
             None => return Ok(()),
@@ -69,17 +69,17 @@ impl PostProcessor for SummarizationProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.summarization.is_some()
     }
 
-    fn estimated_duration_ms(&self, result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, result: &ExtractedDocument) -> u64 {
         let word_count = result.content.split_whitespace().count() as u64;
         word_count / 200 + 50
     }
 }
 
-fn run_extractive(result: &mut ExtractionResult, max_tokens: Option<u32>) -> Result<()> {
+fn run_extractive(result: &mut ExtractedDocument, max_tokens: Option<u32>) -> Result<()> {
     let language = result
         .detected_languages
         .as_ref()
@@ -104,7 +104,7 @@ fn run_extractive(result: &mut ExtractionResult, max_tokens: Option<u32>) -> Res
 
 #[cfg(feature = "summarization-llm")]
 async fn run_abstractive(
-    result: &mut ExtractionResult,
+    result: &mut ExtractedDocument,
     summarization_config: &crate::core::config::SummarizationConfig,
 ) -> Result<()> {
     use crate::types::ProcessingWarning;
@@ -157,7 +157,7 @@ async fn run_abstractive(
 
 #[cfg(not(feature = "summarization-llm"))]
 async fn run_abstractive(
-    _result: &mut ExtractionResult,
+    _result: &mut ExtractedDocument,
     _summarization_config: &crate::core::config::SummarizationConfig,
 ) -> Result<()> {
     Err(crate::XbergError::validation(
@@ -193,7 +193,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: PARAGRAPH.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             detected_languages: Some(vec!["en".to_string()]),
@@ -210,7 +210,7 @@ mod tests {
     async fn no_config_means_no_summary() {
         let processor = SummarizationProcessor;
         let config = ExtractionConfig::default();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: PARAGRAPH.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -226,7 +226,7 @@ mod tests {
             summarization: Some(SummarizationConfig::default()),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: String::new(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

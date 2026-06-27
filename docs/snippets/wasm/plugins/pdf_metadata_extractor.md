@@ -3,9 +3,9 @@
 Register a post-processor that extracts and enriches extraction results with PDF metadata.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extract } from "xberg-wasm";
+import { initWasm, registerPostProcessor, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a PDF metadata extractor post-processor
 const pdfMetadataProcessor = {

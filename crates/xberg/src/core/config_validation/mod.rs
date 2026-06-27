@@ -97,15 +97,21 @@ mod tests {
     #[test]
     fn test_validate_ocr_backend_valid() {
         assert!(validate_ocr_backend("tesseract").is_ok());
-        assert!(validate_ocr_backend("easyocr").is_ok());
         assert!(validate_ocr_backend("paddleocr").is_ok());
     }
 
     #[test]
     fn test_validate_ocr_backend_case_insensitive() {
         assert!(validate_ocr_backend("TESSERACT").is_ok());
-        assert!(validate_ocr_backend("EasyOCR").is_ok());
         assert!(validate_ocr_backend("PADDLEOCR").is_ok());
+    }
+
+    #[test]
+    fn test_validate_ocr_backend_rejects_unknown_backend() {
+        let result = validate_ocr_backend("unsupported-ocr");
+        assert!(result.is_err());
+        let msg = result.unwrap_err().to_string();
+        assert!(msg.contains("Invalid OCR backend"));
     }
 
     #[test]

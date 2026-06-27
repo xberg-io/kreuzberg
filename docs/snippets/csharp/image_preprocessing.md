@@ -19,6 +19,6 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.ExtractAsync("scanned.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("scanned.pdf"), config)).Results[0];
 Console.WriteLine($"Content: {result.Content[..Math.Min(100, result.Content.Length)]}");
 ```

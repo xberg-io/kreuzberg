@@ -7,8 +7,10 @@ end
 
 Xberg.register_validator("min_length", validator, priority: 10)
 
-result = Xberg.extract_sync("document.pdf")
-puts "Validated content length: #{result.content.length}"
+input = Xberg::ExtractInput.new(uri: "document.pdf")
+config = Xberg::ExtractionConfig.new
+result = Xberg.extract(input, config)
+puts "Validated content length: #{result.results.first.content.length}"
 
 Xberg.unregister_validator("min_length")
 ```

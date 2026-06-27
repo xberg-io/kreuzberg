@@ -14,9 +14,11 @@
 
 #![cfg(feature = "office")]
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 use std::{fs, path::PathBuf};
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 fn typst_fixture(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -50,7 +52,7 @@ async fn test_simple_typst_document_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -139,7 +141,7 @@ async fn test_minimal_typst_document_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "application/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "application/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -183,7 +185,7 @@ async fn test_heading_hierarchy_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -263,7 +265,7 @@ async fn test_metadata_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "application/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "application/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -324,7 +326,7 @@ async fn test_advanced_typst_document_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -402,7 +404,7 @@ async fn test_typst_reader_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "application/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "application/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -445,7 +447,7 @@ async fn test_undergradmath_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -492,7 +494,7 @@ async fn test_typst_mime_type_variants() {
     let mime_types = vec!["application/x-typst", "text/x-typst", "text/plain"];
 
     for mime_type in mime_types {
-        let result = extract_bytes(&content, mime_type, &config).await;
+        let result = extract_bytes_document(&content, mime_type, &config).await;
 
         if let Ok(extraction) = result {
             assert!(
@@ -525,7 +527,7 @@ async fn test_formatting_preservation() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -567,7 +569,7 @@ async fn test_large_document_extraction() {
         }
     };
 
-    let result = extract_bytes(&content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(&content, "text/x-typst", &config).await;
     if result.is_err() {
         println!("Skipping test: Typst extractor may not be available");
         return;
@@ -594,7 +596,7 @@ async fn test_empty_content_handling() {
     let config = ExtractionConfig::default();
 
     let empty_content = b"";
-    let result = extract_bytes(empty_content, "text/x-typst", &config).await;
+    let result = extract_bytes_document(empty_content, "text/x-typst", &config).await;
 
     match result {
         Ok(extraction) => {

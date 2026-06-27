@@ -60,7 +60,7 @@ mod tests {
     use crate::Result;
     use crate::core::config::ExtractionConfig;
     use crate::plugins::Plugin;
-    use crate::types::ExtractionResult;
+    use crate::types::ExtractedDocument;
     use ahash::AHashMap;
     use async_trait::async_trait;
     use std::borrow::Cow;
@@ -89,7 +89,7 @@ mod tests {
 
     #[async_trait]
     impl PostProcessor for MockPostProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             result
                 .metadata
                 .additional
@@ -108,7 +108,7 @@ mod tests {
             stage: ProcessingStage::Early,
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "test content".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -153,7 +153,7 @@ mod tests {
             stage: ProcessingStage::Early,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -215,7 +215,7 @@ mod tests {
             stage: ProcessingStage::Early,
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
@@ -236,7 +236,7 @@ mod tests {
         let mut additional = AHashMap::new();
         additional.insert(Cow::Borrowed("existing_key"), serde_json::json!("existing_value"));
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata: crate::types::Metadata {
@@ -262,7 +262,7 @@ mod tests {
             stage: ProcessingStage::Early,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -292,7 +292,7 @@ mod tests {
 
         #[async_trait]
         impl PostProcessor for PdfOnlyProcessor {
-            async fn process(&self, _result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, _result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
                 Ok(())
             }
 
@@ -300,7 +300,7 @@ mod tests {
                 ProcessingStage::Middle
             }
 
-            fn should_process(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> bool {
+            fn should_process(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> bool {
                 result.mime_type == "application/pdf"
             }
         }
@@ -308,13 +308,13 @@ mod tests {
         let processor = PdfOnlyProcessor;
         let config = ExtractionConfig::default();
 
-        let pdf_result = ExtractionResult {
+        let pdf_result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             ..Default::default()
         };
 
-        let txt_result = ExtractionResult {
+        let txt_result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -339,7 +339,7 @@ mod tests {
             bounding_box: None,
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             tables: vec![table],

@@ -17,9 +17,10 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+result = Xberg.extract(input, config)
 
-chunks = result.chunks || []
+chunks = result.results.first.chunks || []
 chunks.each_with_index do |chunk, idx|
   chunk_id = "doc_chunk_#{idx}"
   puts "Chunk #{chunk_id}: #{chunk.content[0...50]}"

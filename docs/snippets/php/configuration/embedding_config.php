@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\ChunkingConfig;
-use Xberg\Config\EmbeddingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
+use Xberg\EmbeddingConfig;
 
 echo "Example 1: Basic Embedding Generation\n";
 echo "=====================================\n";
@@ -28,8 +27,8 @@ $config1 = new ExtractionConfig(
     embedding: new EmbeddingConfig()  
 );
 
-$xberg = new Xberg($config1);
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 if ($result->chunks !== null) {
     foreach ($result->chunks as $i => $chunk) {
@@ -150,7 +149,7 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$result5 = (new Xberg($config5))->extract('document.pdf');
+$result5 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config5)->results[0];
 
 if ($result5->chunks !== null) {
     echo "Processing " . count($result5->chunks) . " chunks with embeddings...\n\n";

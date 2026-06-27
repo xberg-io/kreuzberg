@@ -12,19 +12,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use function Xberg\extract;
+use Xberg\ExtractionConfig;
 
 $fileData = file_get_contents('document.pdf');
 $mimeType = 'application/pdf';
 
-$result = extract($fileData, $mimeType);
-echo "Extracted using procedural API:\n";
-echo substr($result->content, 0, 200) . "...\n\n";
-
-$xberg = new Xberg();
-$result = $xberg->extract($fileData, $mimeType);
-echo "Extracted using OOP API:\n";
+$output = \Xberg\XbergApi::extract(
+    \Xberg\ExtractInput::fromBytes($fileData, $mimeType),
+    new ExtractionConfig()
+);
+$result = $output->results[0];
+echo "Extracted from bytes:\n";
 echo substr($result->content, 0, 200) . "...\n\n";
 
 $uploadedFile = [
@@ -35,7 +33,11 @@ $uploadedFile = [
 
 if (file_exists($uploadedFile['tmp_name'])) {
     $data = file_get_contents($uploadedFile['tmp_name']);
-    $result = extract($data, $uploadedFile['type']);
+    $output = \Xberg\XbergApi::extract(
+        \Xberg\ExtractInput::fromBytes($data, $uploadedFile['type']),
+        new ExtractionConfig()
+    );
+    $result = $output->results[0];
 
     echo "Uploaded file processed:\n";
     echo "Size: " . strlen($data) . " bytes\n";

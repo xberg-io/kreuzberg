@@ -12,42 +12,35 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use function Xberg\detect_mime_type;
-use function Xberg\detect_mime_type_from_path;
-use function Xberg\extract;
+use Xberg\ExtractionConfig;
 
 $path = 'document.pdf';
-$mimeType = detect_mime_type_from_path($path);
-echo "Detected MIME type from path: $mimeType\n";
-
-$data = file_get_contents($path);
-$mimeType = detect_mime_type($data);
-echo "Detected MIME type from content: $mimeType\n\n";
+echo "Processing file: $path\n";
+echo "MIME type is automatically detected from extension and content.\n\n";
 
 $unknownFile = 'file_without_extension';
 if (file_exists($unknownFile)) {
-    $detectedType = detect_mime_type_from_path($unknownFile);
-    echo "Unknown file detected as: $detectedType\n";
+    echo "Processing unknown file: $unknownFile\n";
+    echo "ExtractInput will auto-detect the format...\n";
 
-    $result = extract($unknownFile, $detectedType);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($unknownFile), new ExtractionConfig());
+    $result = $output->results[0];
     echo "Successfully extracted " . strlen($result->content) . " characters\n";
 }
 
-$allowedTypes = [
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-];
+$allowedExtensions = ['pdf', 'docx', 'txt'];
 
 $fileToCheck = 'user_upload.dat';
 if (file_exists($fileToCheck)) {
-    $type = detect_mime_type_from_path($fileToCheck);
+    $extension = strtolower(pathinfo($fileToCheck, PATHINFO_EXTENSION));
 
-    if (in_array($type, $allowedTypes, true)) {
-        echo "File type $type is allowed, processing...\n";
-        $result = extract($fileToCheck);
+    if (in_array($extension, $allowedExtensions, true)) {
+        echo "File extension .$extension is allowed, processing...\n";
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($fileToCheck), new ExtractionConfig());
+        $result = $output->results[0];
+        echo "Extraction successful: " . strlen($result->content) . " characters extracted\n";
     } else {
-        echo "File type $type is not allowed\n";
+        echo "File extension .$extension is not allowed\n";
     }
 }
 ```

@@ -9,7 +9,7 @@ use super::extraction::BoundingBox;
 /// Populated by the layout-guided formula pipeline: regions classified as
 /// `LayoutClass::Formula` are routed to the formula OCR task, which returns the
 /// LaTeX source for the region. The field is always present on
-/// [`ExtractionResult`](super::extraction::ExtractionResult) but only populated
+/// [`ExtractedDocument`](super::extraction::ExtractedDocument) but only populated
 /// when the `layout-detection` feature is active and the document contains
 /// formula regions.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

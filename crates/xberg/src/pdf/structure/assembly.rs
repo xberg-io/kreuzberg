@@ -970,7 +970,7 @@ mod tests {
 
         let pages = vec![vec![make_paragraph("Page with OCR image", None)]];
         let image_positions = vec![(1u32, 0u32)];
-        let ocr_result = Box::new(crate::types::ExtractionResult {
+        let ocr_result = Box::new(crate::types::ExtractedDocument {
             content: "OCR extracted text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

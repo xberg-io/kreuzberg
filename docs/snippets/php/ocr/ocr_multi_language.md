@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
+use Xberg\XbergApi;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
 
 // Extract text from multilingual documents
 // Specify multiple language codes separated by plus (+)
@@ -17,8 +17,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('multilingual_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('multilingual_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Multilingual OCR Results:\n";
 echo "Supported languages: English, French, German\n";
@@ -33,8 +33,8 @@ $autoDetectConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($autoDetectConfig);
-$result = $xberg->extract('european_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('european_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "European Language Document:\n";
 echo "Extracted " . strlen($result->content) . " characters\n";
@@ -48,8 +48,8 @@ $mixedConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($mixedConfig);
-$result = $xberg->extract('asian_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('asian_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Multi-script Document:\n";
 echo "Characters extracted: " . mb_strlen($result->content) . "\n";

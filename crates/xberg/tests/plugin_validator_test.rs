@@ -3,6 +3,9 @@
 //! Tests custom validator registration, execution, validation logic,
 //! error handling, and cleanup with real file extraction.
 
+mod helpers;
+use helpers::extract_uri_document_blocking;
+
 use async_trait::async_trait;
 use serial_test::serial;
 use std::sync::Arc;
@@ -10,8 +13,8 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use xberg::core::config::ExtractionConfig;
 use xberg::plugins::registry::get_validator_registry;
 use xberg::plugins::{Plugin, Validator};
-use xberg::types::ExtractionResult;
-use xberg::{Result, XbergError, extract_file_sync};
+use xberg::types::ExtractedDocument;
+use xberg::{Result, XbergError};
 
 struct MinLengthValidator {
     name: String,
@@ -39,7 +42,7 @@ impl Plugin for MinLengthValidator {
 
 #[async_trait]
 impl Validator for MinLengthValidator {
-    async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         self.call_count.fetch_add(1, Ordering::SeqCst);
 
         if result.content.len() < self.min_length {
@@ -85,7 +88,7 @@ impl Plugin for PassingValidator {
 
 #[async_trait]
 impl Validator for PassingValidator {
-    async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         Ok(())
     }
 }
@@ -115,7 +118,7 @@ impl Plugin for MimeTypeValidator {
 
 #[async_trait]
 impl Validator for MimeTypeValidator {
-    async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         if result.mime_type != self.allowed_mime {
             Err(XbergError::validation(format!(
                 "MIME type '{}' not allowed, expected '{}'",
@@ -126,7 +129,7 @@ impl Validator for MimeTypeValidator {
         }
     }
 
-    fn should_validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> bool {
+    fn should_validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> bool {
         !result.mime_type.is_empty()
     }
 }
@@ -156,7 +159,7 @@ impl Plugin for MetadataValidator {
 
 #[async_trait]
 impl Validator for MetadataValidator {
-    async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         if !result.metadata.additional.contains_key(self.required_key.as_str()) {
             Err(XbergError::validation(format!(
                 "Required metadata key '{}' missing",
@@ -196,7 +199,7 @@ impl Plugin for FailingValidator {
 
 #[async_trait]
 impl Validator for FailingValidator {
-    async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         Err(XbergError::validation("Validation intentionally failed".to_string()))
     }
 }
@@ -226,7 +229,7 @@ impl Plugin for TrackingValidator {
 
 #[async_trait]
 impl Validator for TrackingValidator {
-    async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         self.called.store(true, Ordering::Release);
         Ok(())
     }
@@ -295,7 +298,7 @@ fn test_validator_called_during_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -334,7 +337,7 @@ fn test_validator_can_reject_invalid_input() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected validation to fail");
 
@@ -374,7 +377,7 @@ fn test_validator_can_pass_valid_input() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Validation should have passed: {:?}", result.err());
 
@@ -406,7 +409,7 @@ fn test_validator_receives_correct_parameters() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Validation failed: {:?}", result.err());
 
@@ -441,7 +444,7 @@ fn test_validator_rejects_wrong_mime_type() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected MIME type validation to fail");
 
@@ -492,7 +495,7 @@ fn test_unregister_validator() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(
         result.is_ok(),
@@ -545,7 +548,7 @@ fn test_clear_all_validators() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction should succeed after clearing validators");
 }
@@ -655,7 +658,7 @@ fn test_multiple_validators_execution() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Both validators should pass");
     assert_eq!(validator1.call_count.load(Ordering::SeqCst), 1);
@@ -696,7 +699,7 @@ fn test_validator_priority_execution_order() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected high-priority validator to fail");
 
@@ -734,7 +737,7 @@ fn test_validator_always_fails() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Validator should always fail");
 
@@ -778,7 +781,7 @@ fn test_validator_registration_order_preserved_for_same_priority() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_err(), "Expected first validator to fail");
     assert!(

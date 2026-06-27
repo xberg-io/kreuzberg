@@ -7,9 +7,9 @@
 #![cfg(feature = "office")]
 
 mod helpers;
+use helpers::extract_uri_document;
 
 use helpers::{assert_non_empty_content, get_test_file_path};
-use xberg::extract_file;
 use xberg::{ExtractionConfig, OutputFormat};
 
 // ---------------------------------------------------------------------------
@@ -27,7 +27,9 @@ async fn test_docx_bold_rendered_as_markdown() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -48,7 +50,9 @@ async fn test_docx_italic_rendered_as_markdown() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -69,7 +73,9 @@ async fn test_docx_hyperlink_rendered_as_markdown() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -95,7 +101,9 @@ async fn test_docx_mixed_formatting_on_same_line() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     // The document has a line: "Normal italic bold underline and hyperlink on the same line"
@@ -123,7 +131,9 @@ async fn test_docx_title_rendered_as_h1() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -144,7 +154,9 @@ async fn test_docx_heading_hierarchy() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     let content = &result.content;
@@ -178,7 +190,7 @@ async fn test_docx_paragraphs_separated_by_blank_lines() {
         return;
     }
 
-    let result = extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX");
 
@@ -206,7 +218,9 @@ async fn test_docx_bullet_list_rendered() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -227,7 +241,9 @@ async fn test_docx_numbered_list_rendered() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -248,7 +264,9 @@ async fn test_docx_nested_list_indentation() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     assert!(
@@ -274,7 +292,9 @@ async fn test_docx_document_structure_populated() {
         ..Default::default()
     };
 
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert!(
         result.document.is_some(),
@@ -300,7 +320,9 @@ async fn test_docx_tables_in_markdown_output() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&path, None, &config).await.expect("Should extract DOCX");
+    let result = extract_uri_document(&path, None, &config)
+        .await
+        .expect("Should extract DOCX");
 
     assert_non_empty_content(&result);
     // Tables should be rendered as markdown tables with pipe separators
@@ -324,7 +346,7 @@ async fn test_docx_table_cell_formatting_preserved() {
         return;
     }
 
-    let result = extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX");
 
@@ -347,7 +369,7 @@ async fn test_docx_produces_markdown_mime_type() {
         return;
     }
 
-    let result = extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Should extract DOCX");
 

@@ -6,7 +6,7 @@ use super::super::annotation_utils::adjust_annotations_for_trim;
 use super::parsing::extract_tables_from_events;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
@@ -505,7 +505,7 @@ impl Plugin for DjotExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for DjotExtractor {
+impl InternalDocumentExtractor for DjotExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -516,7 +516,7 @@ impl DocumentExtractor for DjotExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -558,7 +558,7 @@ impl DocumentExtractor for DjotExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,
@@ -610,7 +610,7 @@ mod tests {
         let extractor = DjotExtractor::new();
         let config = ExtractionConfig::default();
 
-        let result = extractor.extract_bytes(content, "text/djot", &config).await;
+        let result = extractor.extract_content(content, "text/djot", &config).await;
         assert!(result.is_ok());
 
         let result = result.unwrap();
@@ -629,7 +629,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(djot, "text/djot", &config)
+            .extract_content(djot, "text/djot", &config)
             .await
             .expect("Should handle emoji in trimmed djot paragraph");
         let result =
@@ -646,7 +646,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(djot, "text/djot", &config)
+            .extract_content(djot, "text/djot", &config)
             .await
             .expect("Should handle CJK with bold formatting");
         let result =
@@ -665,7 +665,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let doc = extractor
-            .extract_bytes(djot, "text/djot", &config)
+            .extract_content(djot, "text/djot", &config)
             .await
             .expect("image djot should extract");
 

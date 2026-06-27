@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
 
 if (!extension_loaded('xberg')) {
     echo "Error: xberg extension is not loaded\n";
@@ -25,6 +24,5 @@ if (!extension_loaded('xberg')) {
 echo "Xberg extension is loaded successfully!\n";
 echo "Version: " . Xberg::version() . "\n";
 
-$xberg = new Xberg();
 echo "Xberg client initialized successfully!\n";
 ```

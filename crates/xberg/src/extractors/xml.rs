@@ -5,7 +5,7 @@ use crate::core::config::ExtractionConfig;
 use crate::extraction::xml::{parse_xml, parse_xml_svg};
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::metadata::Metadata;
 use ahash::AHashMap;
@@ -219,8 +219,8 @@ impl SyncExtractor for XmlExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for XmlExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for XmlExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -241,10 +241,6 @@ impl DocumentExtractor for XmlExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        Some(self)
-    }
 }
 
 #[cfg(test)]
@@ -258,7 +254,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(content, "application/xml", &config)
+            .extract_content(content, "application/xml", &config)
             .await
             .unwrap();
 

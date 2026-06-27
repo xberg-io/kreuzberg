@@ -8,18 +8,19 @@ import (
 
 func main() {
     // Configure element-based output
-    config := &xberg.ExtractionConfig{
+    cfg := xberg.ExtractionConfig{
         OutputFormat: "element_based",
     }
 
     // Extract document
-    result, err := xberg.ExtractSync("document.pdf", config)
+    input := xberg.ExtractInputFromURI("document.pdf")
+    result, err := xberg.Extract(*input, cfg)
     if err != nil {
         panic(err)
     }
 
     // Access elements
-    for _, element := range result.Elements {
+    for _, element := range result.Results[0].Elements {
         fmt.Printf("Type: %s\n", element.ElementType)
 
         text := element.Text
@@ -43,7 +44,7 @@ func main() {
 
     // Filter by element type
     var titles []xberg.Element
-    for _, element := range result.Elements {
+    for _, element := range result.Results[0].Elements {
         if element.ElementType == "title" {
             titles = append(titles, element)
         }

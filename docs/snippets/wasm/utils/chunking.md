@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -10,6 +10,6 @@ const config = {
   },
 };
 
-const result = await extract("document.pdf", undefined, config);
+const result = await extract({ kind: "uri", uri: "document.pdf" }, config);
 console.log(`Chunks created: ${result.chunks?.length ?? 0}`);
 ```

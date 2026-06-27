@@ -7,10 +7,11 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::{extract_bytes_document_blocking, extract_uri_document_blocking};
 
 use helpers::*;
+use xberg::PdfConfig;
 use xberg::core::config::ExtractionConfig;
-use xberg::{PdfConfig, extract_bytes_sync, extract_file_sync};
 
 /// Corrupted / garbage bytes passed as PDF must return a handled error, not panic.
 ///
@@ -22,17 +23,17 @@ fn test_corrupted_pdf_returns_error_not_panic() {
     let config = ExtractionConfig::default();
 
     // Pure garbage — not even a PDF header.
-    let result = extract_bytes_sync(b"not a pdf", "application/pdf", &config);
+    let result = extract_bytes_document_blocking(b"not a pdf", "application/pdf", &config);
     assert!(result.is_err(), "Garbage bytes should return Err, not Ok");
 
     // Truncated PDF header with no content.
-    let result = extract_bytes_sync(b"%PDF-1.4\n%%EOF", "application/pdf", &config);
+    let result = extract_bytes_document_blocking(b"%PDF-1.4\n%%EOF", "application/pdf", &config);
     assert!(result.is_err(), "Truncated PDF should return Err, not Ok");
 
     // Binary noise with a valid-looking PDF header.
     let mut noisy = b"%PDF-1.7\n".to_vec();
     noisy.extend(std::iter::repeat_n(0xEFu8, 256));
-    let result = extract_bytes_sync(&noisy, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(&noisy, "application/pdf", &config);
     assert!(result.is_err(), "Corrupt PDF body should return Err, not Ok");
 }
 
@@ -43,7 +44,7 @@ fn test_pdf_password_protected_fails_gracefully() {
     }
 
     let file_path = get_test_file_path("pdfs/copy_protected.pdf");
-    let result = extract_file_sync(&file_path, None, &ExtractionConfig::default());
+    let result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default());
 
     match result {
         Ok(extraction_result) => {
@@ -84,7 +85,7 @@ fn test_pdf_password_protected_succeeds_with_correct_password() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config);
+    let result = extract_uri_document_blocking(&file_path, None, &config);
 
     match result {
         Ok(extraction_result) => {

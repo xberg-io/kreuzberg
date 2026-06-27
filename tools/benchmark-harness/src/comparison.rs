@@ -600,7 +600,7 @@ pub async fn extract_pipeline(
             let extraction_future = async {
                 tokio::time::timeout(
                     std::time::Duration::from_secs(180),
-                    xberg::extract_file(&doc_path, None, &config),
+                    crate::extract_xberg_file(&doc_path, &config),
                 )
                 .await
             };

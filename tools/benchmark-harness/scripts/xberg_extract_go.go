@@ -179,7 +179,7 @@ func runServer(ocrEnabled bool) {
 		}
 
 		start := time.Now()
-		result, err := kz.ExtractFileSync(absPath, nil, config)
+		result, err := extractURI(absPath, config)
 		if err != nil {
 			debug("Extraction failed for %s: %v", absPath, err)
 			mustEncodeError(err, ocrEnabled)
@@ -213,7 +213,7 @@ func runServer(ocrEnabled bool) {
 
 func extractSync(path string, ocrEnabled bool) (*payload, error) {
 	start := time.Now()
-	debug("ExtractFileSync called with path: %s", path)
+	debug("Extract called with URI: %s", path)
 
 	absPath, err := filepath.Abs(path)
 	if err != nil {
@@ -223,13 +223,13 @@ func extractSync(path string, ocrEnabled bool) (*payload, error) {
 	debug("Resolved absolute path: %s", absPath)
 
 	config := createConfig(ocrEnabled, false)
-	result, err := kz.ExtractFileSync(absPath, nil, config)
+	result, err := extractURI(absPath, config)
 	if err != nil {
-		debug("ExtractFileSync failed: %v", err)
+		debug("Extract failed: %v", err)
 		return nil, err
 	}
 	elapsed := time.Since(start).Seconds() * 1000.0
-	debug("ExtractFileSync succeeded, elapsed: %.2f ms", elapsed)
+	debug("Extract succeeded, elapsed: %.2f ms", elapsed)
 	meta, err := metadataMap(result.Metadata)
 	if err != nil {
 		debug("metadataMap failed: %v", err)
@@ -246,27 +246,38 @@ func extractSync(path string, ocrEnabled bool) (*payload, error) {
 
 func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 	start := time.Now()
-	debug("BatchExtractFilesSync called with %d files", len(paths))
+	debug("ExtractBatch called with %d files", len(paths))
 
-	items := make([]kz.BatchFileItem, len(paths))
+	inputs := make([]kz.ExtractInput, len(paths))
 	for i, path := range paths {
 		absPath, err := filepath.Abs(path)
 		if err != nil {
 			debug("filepath.Abs failed for %s: %v", path, err)
 			return nil, fmt.Errorf("failed to resolve path %s: %w", path, err)
 		}
-		items[i] = kz.BatchFileItem{Path: absPath}
+		input := kz.ExtractInputFromURI(absPath)
+		if input == nil {
+			return nil, fmt.Errorf("failed to build extract input for %s", absPath)
+		}
+		inputs[i] = *input
 		debug("Resolved path %d: %s -> %s", i, path, absPath)
 	}
 
 	config := createConfig(ocrEnabled, false)
-	results, err := kz.BatchExtractFilesSync(items, config)
+	output, err := kz.ExtractBatch(inputs, config)
 	if err != nil {
-		debug("BatchExtractFilesSync failed: %v", err)
+		debug("ExtractBatch failed: %v", err)
 		return nil, err
 	}
+	if output == nil {
+		return nil, fmt.Errorf("batch extraction returned no output")
+	}
+	if len(output.Errors) > 0 {
+		return nil, fmt.Errorf("batch extraction failed for %s: %s", output.Errors[0].Source, output.Errors[0].Message)
+	}
+	results := output.Results
 	totalMs := time.Since(start).Seconds() * 1000.0
-	debug("BatchExtractFilesSync succeeded, %d results, total elapsed: %.2f ms", len(results), totalMs)
+	debug("ExtractBatch succeeded, %d results, total elapsed: %.2f ms", len(results), totalMs)
 	if len(paths) == 1 && len(results) == 1 {
 		meta, err := metadataMap(results[0].Metadata)
 		if err != nil {
@@ -299,6 +310,31 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 		})
 	}
 	return out, nil
+}
+
+func extractURI(uri string, config kz.ExtractionConfig) (*kz.ExtractedDocument, error) {
+	input := kz.ExtractInputFromURI(uri)
+	if input == nil {
+		return nil, fmt.Errorf("failed to build extract input for %s", uri)
+	}
+	output, err := kz.Extract(*input, config)
+	if err != nil {
+		return nil, err
+	}
+	if output == nil {
+		return nil, fmt.Errorf("extraction returned no output for %s", uri)
+	}
+	if len(output.Errors) > 0 {
+		return nil, fmt.Errorf("extraction failed for %s: %s", output.Errors[0].Source, output.Errors[0].Message)
+	}
+	return firstExtractionResult(output)
+}
+
+func firstExtractionResult(output *kz.ExtractionResult) (*kz.ExtractedDocument, error) {
+	if output == nil || len(output.Results) == 0 {
+		return nil, fmt.Errorf("no extraction result")
+	}
+	return &output.Results[0], nil
 }
 
 func metadataMap(meta kz.Metadata) (map[string]any, error) {

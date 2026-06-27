@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ChunkingConfig, ExtractionConfig, OcrConfig, TesseractConfig};
+use xberg::{extract, ChunkingConfig, ExtractionConfig, ExtractInput, OcrConfig, TesseractConfig};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = ExtractionConfig {
         use_cache: true,
         ocr: Some(OcrConfig {
@@ -22,8 +23,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
 
-    let result = extract_sync("document.pdf", None, &config)?;
-    println!("Content length: {}", result.content.len());
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    println!("Content length: {}", output.results[0].content.len());
     Ok(())
 }
 ```

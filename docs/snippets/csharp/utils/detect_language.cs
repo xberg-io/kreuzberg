@@ -13,7 +13,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.ExtractSync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 
 Console.WriteLine("Detected Language:");
 foreach (var lang in result.DetectedLanguages)
@@ -31,7 +31,7 @@ var multiLangConfig = new ExtractionConfig
     }
 };
 
-var multiResult = XbergLib.ExtractSync("multilingual_document.pdf", multiLangConfig);
+var multiResult = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("multilingual_document.pdf"), multiLangConfig)).Results[0];
 
 Console.WriteLine("Detected Languages:");
 foreach (var lang in multiResult.DetectedLanguages)

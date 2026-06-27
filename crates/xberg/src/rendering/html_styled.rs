@@ -17,7 +17,7 @@ use v_htmlescape::escape_string;
 use crate::Result;
 use crate::XbergError;
 use crate::core::config::html_output::{HtmlOutputConfig, HtmlTheme};
-use crate::plugins::{Plugin, Renderer};
+use crate::plugins::{InternalRenderer, Plugin};
 use crate::rendering::common::{NestingKind, RenderState, render_annotated_text_with_plain};
 use crate::types::document_structure::{AnnotationKind, ContentLayer};
 use crate::types::internal::{ElementKind, InternalDocument};
@@ -143,7 +143,7 @@ p .kb-code { background: var(--kb-code-bg); color: var(--kb-code-color); padding
 
 /// Styled HTML renderer.
 ///
-/// Implements the [`Renderer`] trait; registered as `"html"` when the
+/// Implements the [`crate::plugins::Renderer`] trait; registered as `"html"` when the
 /// `html` feature is active. Configuration is baked in at
 /// construction time — no per-render allocation for CSS resolution.
 #[cfg_attr(alef, alef(skip))]
@@ -234,7 +234,7 @@ impl Plugin for StyledHtmlRenderer {
     }
 }
 
-impl Renderer for StyledHtmlRenderer {
+impl InternalRenderer for StyledHtmlRenderer {
     fn render(&self, doc: &InternalDocument) -> Result<String> {
         let p = &self.config.class_prefix;
 
@@ -756,7 +756,7 @@ mod tests {
             bits_per_component: None,
             is_mask: false,
             description: None,
-            ocr_result: Some(Box::new(crate::types::ExtractionResult {
+            ocr_result: Some(Box::new(crate::types::ExtractedDocument {
                 content: "OCR caption".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
                 ..Default::default()

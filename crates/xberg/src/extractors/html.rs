@@ -4,7 +4,7 @@ use crate::Result;
 use crate::core::config::{ExtractionConfig, OutputFormat};
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::text::utf8_validation;
 use crate::types::document_structure::TextAnnotation;
 use crate::types::extraction::ExtractedImage;
@@ -574,8 +574,8 @@ impl SyncExtractor for HtmlExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for HtmlExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for HtmlExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -591,9 +591,9 @@ impl DocumentExtractor for HtmlExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let bytes = tokio::fs::read(path).await?;
-        self.extract_bytes(&bytes, mime_type, config).await
+        self.extract_content(&bytes, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -602,10 +602,6 @@ impl DocumentExtractor for HtmlExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -820,7 +816,7 @@ mod tests {
         let extractor = HtmlExtractor::new();
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(html.as_bytes(), "text/html", &config)
+            .extract_content(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
         let result =
@@ -854,7 +850,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(html.as_bytes(), "text/html", &config)
+            .extract_content(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
         let result =
@@ -891,7 +887,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(html.as_bytes(), "text/html", &config)
+            .extract_content(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
         let result =
@@ -926,7 +922,7 @@ mod tests {
         let extractor = HtmlExtractor::new();
         let config = ExtractionConfig::default(); // Plain text
         let result = extractor
-            .extract_bytes(html.as_bytes(), "text/html", &config)
+            .extract_content(html.as_bytes(), "text/html", &config)
             .await
             .unwrap();
         // Check that InternalDocument has elements

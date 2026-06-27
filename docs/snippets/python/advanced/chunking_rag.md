@@ -1,6 +1,7 @@
 ```python title="Python"
 import asyncio
 from xberg import (
+    ExtractInput,
     ExtractionConfig,
     ChunkingConfig,
     EmbeddingConfig,
@@ -21,9 +22,9 @@ async def main() -> None:
         )
     )
 
-    result = await extract("research_paper.pdf", config=config)
+    result = await extract(ExtractInput.from_uri("research_paper.pdf"), config)
 
-    for chunk in result.chunks or []:
+    for chunk in result.results[0].chunks or []:
         print(
             f"Chunk {chunk.metadata.chunk_index + 1}/{chunk.metadata.total_chunks}"
         )

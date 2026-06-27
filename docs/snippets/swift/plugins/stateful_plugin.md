@@ -23,22 +23,22 @@ final class StatefulPlugin: PostProcessor {
         50
     }
 
-    func process(result: ExtractionResult, config: ExtractionConfig) -> String {
+    func process(result: ExtractedDocument, config: ExtractionConfig) -> String {
         lock.lock()
         defer { lock.unlock() }
 
         callCount += 1
-        cache["last_mime"] = result.mimeType()
+        cache["last_mime"] = result.mimeType
         cache["call_count"] = String(callCount)
 
         return "{\"ok\": null}"
     }
 
-    func shouldProcess(result: ExtractionResult, config: ExtractionConfig) -> Bool {
+    func shouldProcess(result: ExtractedDocument, config: ExtractionConfig) -> Bool {
         true
     }
 
-    func estimatedDurationMs(result: ExtractionResult) -> UInt64 {
+    func estimatedDurationMs(result: ExtractedDocument) -> UInt64 {
         1  // Minimal overhead
     }
 

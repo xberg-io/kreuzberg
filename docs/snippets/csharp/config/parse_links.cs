@@ -5,7 +5,7 @@ var config = new ExtractionConfig
     UseCache = true
 };
 
-var result = XbergLib.ExtractSync("document.html", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.html"), config)).Results[0];
 
 if (result.Metadata?.Format.Text?.Links != null)
 {

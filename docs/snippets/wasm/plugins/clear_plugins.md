@@ -3,9 +3,9 @@
 Clear all registered OCR backends, post-processors, or validators from the global registry.
 
 ```typescript title="WASM"
-import init, { clearOcrBackends, clearPostProcessors, clearValidators } from "xberg-wasm";
+import { initWasm, clearOcrBackends, clearPostProcessors, clearValidators } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Clear all OCR backends
 clearOcrBackends();

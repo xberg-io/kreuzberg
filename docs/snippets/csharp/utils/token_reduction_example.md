@@ -10,7 +10,7 @@ var config = new ExtractionConfig
     },
 };
 
-var result = await XbergLib.Extract("verbose_document.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("verbose_document.pdf"), config)).Results[0];
 
 var additional = result.Metadata.Additional;
 var original = additional.TryGetValue("original_token_count", out var o) ? o : 0;

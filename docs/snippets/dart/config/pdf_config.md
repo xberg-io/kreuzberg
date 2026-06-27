@@ -26,7 +26,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('encrypted.pdf', null, config);
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'encrypted.pdf'), config: config);
   print('Title: ${result.metadata.title}');
 }
 ```

@@ -1,13 +1,17 @@
 ```typescript title="TypeScript"
-import { extractSync } from "@xberg-io/xberg";
+import { extract } from "@xberg-io/xberg";
 
-const result = extractSync("document.pdf");
+const output = await extract({
+  kind: "uri",
+  uri: "document.pdf",
+});
 
-console.log(`Content: ${result.content}`);
-console.log(`Success: ${result.success}`);
-console.log(`Content Length: ${result.content.length}`);
+const doc = output.results[0];
+console.log(`Content: ${doc.content}`);
+console.log(`Success: ${output.errors?.length === 0}`);
+console.log(`Content Length: ${doc.content.length}`);
 
-if (result.metadata.page_count) {
-  console.log(`Pages: ${result.metadata.page_count}`);
+if (doc.metadata?.page_count) {
+  console.log(`Pages: ${doc.metadata.page_count}`);
 }
 ```

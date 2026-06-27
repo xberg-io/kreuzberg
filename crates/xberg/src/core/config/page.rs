@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct PageConfig {
-    /// Extract pages as separate array (ExtractionResult.pages)
+    /// Extract pages as separate array (ExtractedDocument.pages)
     #[serde(default)]
     pub extract_pages: bool,
 

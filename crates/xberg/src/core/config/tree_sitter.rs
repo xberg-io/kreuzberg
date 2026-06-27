@@ -9,7 +9,7 @@ use std::path::PathBuf;
 /// Content rendering mode for code extraction.
 ///
 /// Controls how extracted code content is represented in the `content` field
-/// of `ExtractionResult`.
+/// of `ExtractedDocument`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CodeContentMode {

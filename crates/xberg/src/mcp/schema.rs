@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 /// Structured output for unified extraction.
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct ExtractionOutput {
+pub struct ExtractionResult {
     /// Extraction results in discovery order.
     #[schemars(description = "Extraction results in discovery order")]
     pub results: Vec<serde_json::Value>,
@@ -71,48 +71,6 @@ pub struct VersionOutput {
     pub version: String,
 }
 
-/// A single text chunk with position metadata.
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct ChunkItem {
-    /// Chunk text content.
-    #[schemars(description = "Chunk text content")]
-    pub content: String,
-    /// Zero-based index of this chunk.
-    #[schemars(description = "Zero-based index of this chunk")]
-    pub chunk_index: usize,
-    /// Total number of chunks in the result.
-    #[schemars(description = "Total number of chunks")]
-    pub total_chunks: usize,
-}
-
-/// Structured output for text chunking.
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct ChunkTextOutput {
-    /// Total number of chunks produced.
-    #[schemars(description = "Total number of chunks produced")]
-    pub chunk_count: usize,
-    /// The individual chunks.
-    #[schemars(description = "The individual text chunks")]
-    pub chunks: Vec<ChunkItem>,
-}
-
-/// Structured output for embedding generation.
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct EmbedTextOutput {
-    /// Vector embeddings, one per input text.
-    #[schemars(description = "Vector embeddings, one per input text")]
-    pub embeddings: Vec<Vec<f32>>,
-    /// Model or preset name used to generate the embeddings.
-    #[schemars(description = "Model or preset name used")]
-    pub model: String,
-    /// Dimensionality of each embedding vector.
-    #[schemars(description = "Dimensionality of each embedding vector")]
-    pub dimensions: usize,
-    /// Number of texts embedded.
-    #[schemars(description = "Number of texts embedded")]
-    pub count: usize,
-}
-
 /// Structured output for cache statistics.
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct CacheStatsOutput {
@@ -145,18 +103,4 @@ pub struct CacheManifestOutput {
     /// Model file entries with name, size, and checksum.
     #[schemars(description = "Model file entries")]
     pub models: Vec<serde_json::Value>,
-}
-
-/// Structured output for LLM-based structured extraction.
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct ExtractStructuredOutput {
-    /// Structured JSON output conforming to the provided schema.
-    #[schemars(description = "Structured JSON output conforming to the provided schema")]
-    pub structured_output: serde_json::Value,
-    /// Plain-text content of the source document.
-    #[schemars(description = "Plain-text content of the source document")]
-    pub content: String,
-    /// MIME type of the source document.
-    #[schemars(description = "MIME type of the source document")]
-    pub mime_type: Option<String>,
 }

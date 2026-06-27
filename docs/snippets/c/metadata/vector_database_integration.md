@@ -25,33 +25,41 @@ int main(void) {
         return 1;
     }
 
-    XBERGExtractionResult *result =
-        xberg_extract_sync("document.pdf", NULL, config);
-    if (!result) {
-        fprintf(stderr, "extraction failed (code %d): %s\n",
+    XBERGExtractInput *input = xberg_extract_input_from_uri("document.pdf");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
                 xberg_last_error_code(),
                 xberg_last_error_context());
         xberg_extraction_config_free(config);
         return 1;
     }
 
-    char *chunks_json = xberg_extraction_result_chunks(result);
-    if (chunks_json) {
-        printf("Chunks with embeddings (JSON): %s\n", chunks_json);
-        xberg_free_string(chunks_json);
-    } else {
-        printf("No chunks produced\n");
+    XBERGExtractionResult *result = xberg_extract(input, config);
+    if (!result) {
+        fprintf(stderr, "extraction failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extract_input_free(input);
+        xberg_extraction_config_free(config);
+        return 1;
     }
 
-    XBERGMetadata *metadata = xberg_extraction_result_metadata(result);
-    if (metadata) {
-        char *title = xberg_metadata_title(metadata);
-        if (title) {
-            printf("Document title: %s\n", title);
-            xberg_free_string(title);
-        }
-        xberg_metadata_free(metadata);
+    char *results = xberg_extraction_result_results(result);
+    if (results) {
+        printf("Extraction results with chunks and embeddings (JSON): %s\n", results);
+        xberg_free_string(results);
+    } else {
+        printf("No results produced\n");
     }
+
+    XBERGExtractionSummary *summary = xberg_extraction_result_summary(result);
+    if (summary) {
+        // Access document metadata from summary using xberg_extraction_summary_* accessors
+        xberg_extraction_summary_free(summary);
+    }
+
+    xberg_extract_input_free(input);
+
 
     xberg_extraction_result_free(result);
     xberg_extraction_config_free(config);

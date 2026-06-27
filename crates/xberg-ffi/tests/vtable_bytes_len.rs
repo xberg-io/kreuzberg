@@ -57,22 +57,30 @@ unsafe extern "C" fn ocr_process_image(
     1
 }
 
-unsafe extern "C" fn extractor_extract_bytes(
+unsafe extern "C" fn extractor_extract(
     user_data: *const std::ffi::c_void,
-    content: *const u8,
-    content_len: usize,
-    _mime_type: *const std::ffi::c_char,
+    input: *const std::ffi::c_char,
     _config: *const std::ffi::c_char,
     out_result: *mut *mut std::ffi::c_char,
     out_error: *mut *mut std::ffi::c_char,
 ) -> i32 {
     // SAFETY: user_data points to a CallbackState that the calling test keeps alive.
     let state = unsafe { &*(user_data as *const CallbackState) };
-    state.received_len.store(content_len, Ordering::SeqCst);
-    if content_len > 0 {
-        // SAFETY: caller guarantees content[0..content_len] is valid.
-        let last = unsafe { *content.add(content_len - 1) };
-        state.received_last_byte.store(last, Ordering::SeqCst);
+    let input_json = if input.is_null() {
+        String::new()
+    } else {
+        // SAFETY: caller passes a valid NUL-terminated JSON string.
+        unsafe { std::ffi::CStr::from_ptr(input) }
+            .to_string_lossy()
+            .into_owned()
+    };
+    if let Ok(input_value) = serde_json::from_str::<serde_json::Value>(&input_json) {
+        if let Some(bytes) = input_value.get("bytes").and_then(serde_json::Value::as_array) {
+            state.received_len.store(bytes.len(), Ordering::SeqCst);
+            if let Some(last) = bytes.last().and_then(serde_json::Value::as_u64) {
+                state.received_last_byte.store(last as u8, Ordering::SeqCst);
+            }
+        }
     }
     unsafe { *out_result = std::ptr::null_mut() };
     let msg = std::ffi::CString::new("stub").unwrap();
@@ -128,10 +136,10 @@ async fn ocr_backend_vtable_process_image_passes_full_length_with_embedded_nuls(
     );
 }
 
-/// DocumentExtractor.extract_bytes must pass the full buffer length even when
-/// the document bytes contain embedded NUL bytes.
+/// DocumentExtractor.extract must pass the full bytes input even when the
+/// document bytes contain embedded NUL bytes.
 #[tokio::test]
-async fn document_extractor_vtable_extract_bytes_passes_full_length_with_embedded_nuls() {
+async fn document_extractor_vtable_extract_passes_full_length_with_embedded_nuls() {
     // 8-byte buffer; NUL at index 2.
     let content: Vec<u8> = vec![0x50, 0x4B, 0x00, 0x03, 0x14, 0x00, 0x00, 0x02];
 
@@ -139,12 +147,11 @@ async fn document_extractor_vtable_extract_bytes_passes_full_length_with_embedde
     let state_ptr = state.as_ref() as *const CallbackState as *const std::ffi::c_void;
 
     let vtable = XbergDocumentExtractorVTable {
-        extract_bytes: Some(extractor_extract_bytes),
-        extract_file: None,
         name_fn: None,
         version_fn: None,
         initialize_fn: None,
         shutdown_fn: None,
+        extract: Some(extractor_extract),
         supported_mime_types: None,
         priority: None,
         can_handle: None,
@@ -156,23 +163,18 @@ async fn document_extractor_vtable_extract_bytes_passes_full_length_with_embedde
     let bridge = unsafe { XbergDocumentExtractorBridge::new("test-extractor-stub".to_string(), vtable, state_ptr) };
 
     use xberg::DocumentExtractor;
-    let _ = bridge
-        .extract_bytes(
-            &content,
-            "application/octet-stream",
-            &xberg::ExtractionConfig::default(),
-        )
-        .await;
+    let input = xberg::ExtractInput::from_bytes(content, "application/octet-stream", Some("embedded.bin".to_string()));
+    let _ = bridge.extract(input, &xberg::ExtractionConfig::default()).await;
 
     assert_eq!(
         state.received_len.load(Ordering::SeqCst),
         8,
-        "extract_bytes vtable received wrong length (truncated at embedded NUL?)"
+        "extract vtable received wrong length (truncated at embedded NUL?)"
     );
     assert_eq!(
         state.received_last_byte.load(Ordering::SeqCst),
         0x02,
-        "extract_bytes vtable could not read past the embedded NUL"
+        "extract vtable could not read past the embedded NUL"
     );
 }
 

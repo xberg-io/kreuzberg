@@ -17,7 +17,7 @@ mod types;
 pub use types::{ListItemMetadata, ListType};
 
 use crate::types::internal::{ElementKind, InternalDocument};
-use crate::types::{Element, ExtractionResult};
+use crate::types::{Element, ExtractedDocument};
 use content::{
     add_page_break, format_table_as_text, process_content, process_hierarchy, process_images, process_tables,
 };
@@ -119,7 +119,7 @@ pub fn convert_internal_elements_to_elements(doc: &InternalDocument, filename: &
 
 /// Transform an extraction result into semantic elements.
 ///
-/// This function takes a reference to an ExtractionResult and generates
+/// This function takes a reference to an ExtractedDocument and generates
 /// a vector of Element structs representing semantic blocks in the document.
 /// It detects content sections, list items, page breaks, and other structural
 /// elements to create an Unstructured-compatible element-based output.
@@ -138,13 +138,13 @@ pub fn convert_internal_elements_to_elements(doc: &InternalDocument, filename: &
 ///
 /// # Arguments
 ///
-/// * `result` - Reference to the ExtractionResult to transform
+/// * `result` - Reference to the ExtractedDocument to transform
 ///
 /// # Returns
 ///
 /// A vector of Elements with proper semantic types and metadata.
 #[cfg_attr(alef, alef(skip))]
-pub fn transform_extraction_result_to_elements(result: &ExtractionResult) -> Vec<Element> {
+pub fn transform_extraction_result_to_elements(result: &ExtractedDocument) -> Vec<Element> {
     // When the pipeline stored the original InternalDocument before derivation, use it
     // directly to preserve the extractor's native reading order. This is the primary
     // fix for DOCX (#1112): DOCX has no native page boundaries, so per-page
@@ -370,10 +370,10 @@ mod tests {
     // Integration tests for full transformation
     #[test]
     fn test_transform_with_pages_and_hierarchy() {
-        use crate::types::{ElementType, ExtractionResult, HierarchicalBlock, PageContent, PageHierarchy};
+        use crate::types::{ElementType, ExtractedDocument, HierarchicalBlock, PageContent, PageHierarchy};
 
         // Create a mock result with pages and hierarchy
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Full document content".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             metadata: test_metadata(Some("Test Document".to_string())),
@@ -468,7 +468,7 @@ mod tests {
 
     #[test]
     fn test_transform_with_tables_and_images() {
-        use crate::types::{ExtractedImage, ExtractionResult, PageContent, Table};
+        use crate::types::{ExtractedDocument, ExtractedImage, PageContent, Table};
         use std::sync::Arc;
 
         let table = Table {
@@ -503,7 +503,7 @@ mod tests {
             data_base64: None,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Test content".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             metadata: test_metadata(Some("Test".to_string())),
@@ -549,10 +549,10 @@ mod tests {
 
     #[test]
     fn test_transform_fallback_no_pages() {
-        use crate::types::{ElementType, ExtractionResult};
+        use crate::types::{ElementType, ExtractedDocument};
 
         // Create a result without pages
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Simple text content\n\nSecond paragraph".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata: test_metadata(Some("Simple Doc".to_string())),
@@ -661,9 +661,9 @@ mod tests {
 
     #[test]
     fn test_paragraph_splitting() {
-        use crate::types::{ElementType, ExtractionResult};
+        use crate::types::{ElementType, ExtractedDocument};
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "First paragraph.\n\nSecond paragraph.\n\nThird paragraph.".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata: test_metadata(None),
@@ -688,9 +688,9 @@ mod tests {
     /// elements with populated coordinates (issue #566).
     #[test]
     fn test_body_hierarchy_blocks_get_coordinates() {
-        use crate::types::{ElementType, ExtractionResult, HierarchicalBlock, PageContent, PageHierarchy};
+        use crate::types::{ElementType, ExtractedDocument, HierarchicalBlock, PageContent, PageHierarchy};
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Some body text here.".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             metadata: test_metadata(Some("Doc".to_string())),
@@ -763,9 +763,9 @@ mod tests {
     /// Body blocks without bboxes are emitted once by process_hierarchy; process_content is skipped.
     #[test]
     fn test_body_hierarchy_without_bbox_emits_once_without_coordinates() {
-        use crate::types::{ElementType, ExtractionResult, HierarchicalBlock, PageContent, PageHierarchy};
+        use crate::types::{ElementType, ExtractedDocument, HierarchicalBlock, PageContent, PageHierarchy};
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Paragraph one.\n\nParagraph two.".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             metadata: test_metadata(None),

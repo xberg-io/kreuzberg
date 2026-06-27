@@ -15,10 +15,10 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OcrConfig};
-use xberg::extract_file_sync;
 
 /// All PDF filenames in test_documents/pdf/.
 #[allow(dead_code)]
@@ -128,7 +128,7 @@ fn test_table_detection_false_positives() {
             ..Default::default()
         };
 
-        match extract_file_sync(&path, None, &config) {
+        match extract_uri_document_blocking(&path, None, &config) {
             Ok(result) => {
                 if result.tables.is_empty() {
                     println!("  [CORRECT] {} - no tables detected", filename);
@@ -228,7 +228,7 @@ fn test_table_detection_focus_on_table_documents() {
             ..Default::default()
         };
 
-        match extract_file_sync(&path, None, &config) {
+        match extract_uri_document_blocking(&path, None, &config) {
             Ok(result) => {
                 println!("  Tables detected: {}", result.tables.len());
 

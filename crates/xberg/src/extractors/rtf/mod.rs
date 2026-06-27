@@ -24,7 +24,7 @@ pub(crate) use parser::{extract_rtf_formatting, extract_text_from_rtf, spans_to_
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
@@ -306,7 +306,7 @@ impl Plugin for RtfExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for RtfExtractor {
+impl InternalDocumentExtractor for RtfExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
         fields(
@@ -314,7 +314,7 @@ impl DocumentExtractor for RtfExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -507,7 +507,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(rtf_content.as_bytes(), "application/rtf", &config)
+            .extract_content(rtf_content.as_bytes(), "application/rtf", &config)
             .await
             .expect("RTF extraction failed");
         let result =

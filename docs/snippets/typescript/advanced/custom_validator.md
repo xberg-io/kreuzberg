@@ -4,7 +4,7 @@ import {
   unregisterValidator,
   extract,
   type ValidatorProtocol,
-  type ExtractionResult,
+  type ExtractedDocument,
   ValidationError,
 } from "@xberg-io/xberg";
 
@@ -27,7 +27,7 @@ class QualityValidator implements ValidatorProtocol {
   /**
    * Validate extraction result meets quality standards
    */
-  validate(result: ExtractionResult): void {
+  validate(result: ExtractedDocument): void {
     this.checkMinimumLength(result);
     this.checkEmptyContent(result);
     this.checkMetadata(result);
@@ -36,7 +36,7 @@ class QualityValidator implements ValidatorProtocol {
   /**
    * Ensure minimum content length
    */
-  private checkMinimumLength(result: ExtractionResult): void {
+  private checkMinimumLength(result: ExtractedDocument): void {
     const minLength = 50;
     if (result.content.length < minLength) {
       throw new ValidationError(
@@ -48,7 +48,7 @@ class QualityValidator implements ValidatorProtocol {
   /**
    * Ensure content is not empty
    */
-  private checkEmptyContent(result: ExtractionResult): void {
+  private checkEmptyContent(result: ExtractedDocument): void {
     const trimmed = result.content.trim();
     if (trimmed.length === 0) {
       throw new ValidationError("Extracted content is empty");
@@ -58,7 +58,7 @@ class QualityValidator implements ValidatorProtocol {
   /**
    * Validate metadata is present
    */
-  private checkMetadata(result: ExtractionResult): void {
+  private checkMetadata(result: ExtractedDocument): void {
     if (!result.metadata || Object.keys(result.metadata).length === 0) {
       throw new ValidationError("Missing extraction metadata");
     }
@@ -71,8 +71,11 @@ registerValidator(validator);
 
 // Usage with error handling (must use async extraction for custom validators)
 try {
-  const result = await extract("document.pdf");
-  console.log(`Validated content length: ${result.content.length} characters`);
+  const output = await extract({
+    kind: "uri",
+    uri: "document.pdf",
+  });
+  console.log(`Validated content length: ${output.results[0].content.length} characters`);
 } catch (error) {
   if (error instanceof ValidationError) {
     console.error(`Validation failed: ${error.message}`);

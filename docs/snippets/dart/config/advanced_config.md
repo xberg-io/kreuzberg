@@ -53,12 +53,12 @@ Future<void> main() async {
     maxArchiveDepth: 3,
   );
 
-  final result = await XbergBridge.extract('document.pdf', null, config);
-  print('Content: ${result.content}');
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'document.pdf'), config: config);
+  print('Content: ${result.results[0].content}');
   if (result.detectedLanguages != null) {
     print('Languages: ${result.detectedLanguages}');
   }
-  final chunks = result.chunks ?? const [];
+  final chunks = result.results[0].chunks ?? const [];
   print('Chunks: ${chunks.length}');
 }
 ```

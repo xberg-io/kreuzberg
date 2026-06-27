@@ -2,7 +2,7 @@
 //!
 //! Produced by the summarisation post-processor
 //! (`crates/xberg/src/text/summarization/`) and attached to
-//! [`ExtractionResult::summary`](super::extraction::ExtractionResult::summary).
+//! [`ExtractedDocument::summary`](super::extraction::ExtractedDocument::summary).
 
 use serde::{Deserialize, Serialize};
 
@@ -30,7 +30,7 @@ pub enum SummaryStrategy {
     Extractive,
     /// Abstractive summary produced by liter-llm. Requires `liter-llm` feature and
     /// a configured `LlmConfig`. Token usage is captured in
-    /// [`ExtractionResult::llm_usage`](super::extraction::ExtractionResult::llm_usage).
+    /// [`ExtractedDocument::llm_usage`](super::extraction::ExtractedDocument::llm_usage).
     Abstractive,
 }
 

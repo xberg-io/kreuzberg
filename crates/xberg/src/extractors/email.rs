@@ -4,7 +4,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
@@ -301,8 +301,8 @@ impl SyncExtractor for EmailExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for EmailExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for EmailExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -349,9 +349,9 @@ impl DocumentExtractor for EmailExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let bytes = tokio::fs::read(path).await?;
-        self.extract_bytes(&bytes, mime_type, config).await
+        self.extract_content(&bytes, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {
@@ -360,10 +360,6 @@ impl DocumentExtractor for EmailExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        Some(self)
     }
 }
 

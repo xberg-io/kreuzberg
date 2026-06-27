@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\LanguageDetectionConfig;
 
@@ -14,7 +14,9 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+
+$result = $resultOutput->results[0];
 
 echo "Detected language: " . $result->getLanguage() . "\n";
 echo "Confidence: " . $result->getLanguageConfidence() . "\n";

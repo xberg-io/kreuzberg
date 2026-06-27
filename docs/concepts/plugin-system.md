@@ -115,13 +115,13 @@ or files.
 
 See [`OcrBackend`](../reference/types.md) for the trait signature.
 
-Three backends ship out of the box:
+Multiple backends ship out of the box:
 
 | Backend       | Engine               | Strengths                                                                                         |
 | ------------- | -------------------- | ------------------------------------------------------------------------------------------------- |
 | **Tesseract** | Native Rust bindings | Fast, general-purpose, default backend. Good accuracy for Latin scripts.                          |
 | **PaddleOCR** | ONNX Runtime         | Best accuracy for CJK (Chinese, Japanese, Korean) scripts. No Python dependency.                  |
-| **EasyOCR**   | Python + PyTorch     | Supports 80+ languages including Arabic, Hindi, and Thai. Only available through Python bindings. |
+| **VLM OCR**   | liter-llm providers  | Vision-model OCR for handwriting, poor scans, and complex layouts.                                |
 
 You can register your own OCR backend (for example, a cloud-based API, a custom model) using the same trait.
 
@@ -201,13 +201,13 @@ Validators run before post-processors. This means you can catch and reject bad r
 
 ### Renderer
 
-A `Renderer` converts the internal document representation into a specific output
-format. It declares a name and provides a render method.
+A `Renderer` converts an extraction result into a specific output format. It
+declares a name and provides a render method.
 
 ```rust
 pub trait Renderer: Send + Sync {
     fn name(&self) -> &str;
-    fn render(&self, document: &InternalDocument) -> Result<String>;
+    fn render_result(&self, result: &ExtractedDocument) -> Result<String>;
 }
 ```
 
@@ -284,10 +284,10 @@ sequenceDiagram
     B->>R: Store as Arc<dyn DocumentExtractor>
 
     Note over R: During extraction...
-    R->>B: extract(path, mime, config)
+    R->>B: extract(input, config)
     B->>P: Call plugin.extract()
     P-->>B: Return result as dict
-    B-->>R: Convert to ExtractionResult
+    B-->>R: Convert to ExtractedDocument
 ```
 
 Type mapping: `Vec<u8>` ↔ `bytes`, `String` ↔ `str`, Rust structs ↔ Python dataclasses.

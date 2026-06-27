@@ -1,4 +1,4 @@
-//! Derivation pipeline: converts `InternalDocument` → `DocumentStructure` + `ExtractionResult`.
+//! Derivation pipeline: converts `InternalDocument` → `DocumentStructure` + `ExtractedDocument`.
 //!
 //! This module bridges the internal flat document representation produced by extractors
 //! and the public-facing types consumed by callers. It handles:
@@ -6,7 +6,7 @@
 //! - **Relationship resolution**: `RelationshipTarget::Key` → `RelationshipTarget::Index`
 //! - **Tree reconstruction**: Flat elements → hierarchical `DocumentStructure`
 //! - **Content string derivation**: Concatenation of text-carrying elements
-//! - **ExtractionResult assembly**: Combining all outputs into the final result
+//! - **ExtractedDocument assembly**: Combining all outputs into the final result
 
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -16,7 +16,7 @@ use ahash::AHashMap;
 use crate::types::document_structure::{
     DocumentNode, DocumentRelationship, DocumentStructure, GridCell, NodeContent, NodeId, NodeIndex, TableGrid,
 };
-use crate::types::extraction::{ExtractionMethod, ExtractionResult};
+use crate::types::extraction::{ExtractedDocument, ExtractionMethod};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement, RelationshipTarget};
 use crate::types::ocr_elements::{OcrConfidence, OcrElement};
 use crate::types::page::PageContent;
@@ -525,10 +525,10 @@ fn parse_metadata_entries(text: &str) -> Vec<(String, String)> {
 }
 
 // ============================================================================
-// 4. ExtractionResult Assembly
+// 4. ExtractedDocument Assembly
 // ============================================================================
 
-/// Derive a complete `ExtractionResult` from an `InternalDocument`.
+/// Derive a complete `ExtractedDocument` from an `InternalDocument`.
 ///
 /// This is the main entry point for the derivation pipeline. It:
 /// 1. Resolves relationships (needed by renderers for footnotes)
@@ -537,13 +537,13 @@ fn parse_metadata_entries(text: &str) -> Vec<(String, String)> {
 /// 4. Groups elements by page into `PageContent`
 /// 5. Extracts OCR elements for backward compatibility
 /// 6. Optionally derives `DocumentStructure` (assumes relationships resolved)
-/// 7. Assembles the final `ExtractionResult`
+/// 7. Assembles the final `ExtractedDocument`
 #[cfg_attr(alef, alef(skip))]
 pub fn derive_extraction_result(
     mut doc: InternalDocument,
     include_document_structure: bool,
     output_format: crate::core::config::OutputFormat,
-) -> ExtractionResult {
+) -> ExtractedDocument {
     tracing::debug!(
         element_count = doc.elements.len(),
         source_format = %doc.source_format,
@@ -655,7 +655,7 @@ pub fn derive_extraction_result(
         has_document_structure = document.is_some(),
         "derivation pipeline complete"
     );
-    ExtractionResult {
+    ExtractedDocument {
         content,
         mime_type,
         metadata: doc.metadata,

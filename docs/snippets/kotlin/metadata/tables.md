@@ -1,17 +1,20 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 
 fun main() {
     val config = ExtractionConfig.builder().build()
-    val result = Xberg.extractSync(Paths.get("document.pdf"), null, config)
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
 
-    val tables = result.tables() ?: emptyList()
+    val tables = result.tables ?: emptyList()
     for (table in tables) {
-        println("Table on page ${table.pageNumber()} with ${table.cells().size} rows")
-        println(table.markdown())
+        println("Table on page ${table.pageNumber} with ${table.cells.size} rows")
+        println(table.markdown)
 
-        for (row in table.cells()) {
+        for (row in table.cells) {
             println(row)
         }
     }

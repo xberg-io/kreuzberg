@@ -45,8 +45,8 @@ HTTP Client / AI Agent (Claude)
 │   └── GET /mcp/prompts/:name - Get prompt
     |
 [Handler / Tool Layer]
-├── extract_handler / extract_file tool
-├── batch_handler / batch_extract tool
+├── extract_handler / extract tool
+├── extract_async_handler / extract_batch tool
 ├── health_handler / get_capabilities tool
 └── format_handler
     |
@@ -77,9 +77,8 @@ Key middleware layers applied in order:
 
 | Handler               | Method            | Description                                                                                            |
 | --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `extract_handler`     | POST /extract     | Multipart upload: parse file + optional config JSON, check cache, call `extract_bytes()`, cache result |
-| `extract_url_handler` | POST /extract-url | Fetch URL via reqwest, extract bytes                                                                   |
-| `batch_handler`       | POST /batch       | Parallel extraction with `Semaphore`-limited concurrency (default: CPU count)                          |
+| `extract_handler`     | POST /extract       | Multipart files, URL fields, or JSON inputs; build `ExtractInput` and call `extract()` / `extract_batch()` |
+| `extract_async_handler` | POST /extract-async | Queue the same unified extraction input shape for async processing                                      |
 | `health_handler`      | GET /health       | Report status, version, uptime, feature availability (OCR, embeddings), cache stats                    |
 | `formats_handler`     | GET /formats      | Return supported format categories (office, pdf, images, web, email, archives, academic)               |
 | `cache_stats_handler` | GET /cache/stats  | Hit/miss counts and hit rate                                                                           |
@@ -114,19 +113,19 @@ Three tools are registered:
 
 | Tool               | Purpose                                                   | Required Params |
 | ------------------ | --------------------------------------------------------- | --------------- |
-| `extract_file`     | Extract text/tables/metadata from documents (75+ formats) | `file_path`     |
-| `batch_extract`    | Extract from multiple documents in parallel               | `file_paths[]`  |
+| `extract`          | Extract text/tables/metadata from bytes, paths, file URIs, or URLs | `input`        |
+| `extract_batch`    | Extract from multiple unified inputs in parallel                 | `inputs[]`     |
 | `get_capabilities` | List supported formats, features, backends                | (none)          |
 
-**Tool registration pattern** (example: `extract_file`):
+**Tool registration pattern** (example: `extract`):
 
 ```rust
 // Define Tool with name, description, JSON Schema inputSchema
 // Register with server.register_tool(tool, handler_fn)
-// Handler: parse params -> build ExtractionConfig -> call extract_file() -> return ToolResult as JSON
+// Handler: parse params -> build ExtractInput + ExtractionConfig -> call extract() -> return ToolResult as JSON
 ```
 
-`extract_file` optional params: `format`, `extract_tables`, `extract_images`, `ocr_enabled`, `extract_metadata`, `chunking_preset`, `generate_embeddings`.
+`extract` optional params: `mime_type`, `filename`, `extract_tables`, `extract_images`, `ocr_enabled`, `extract_metadata`, `chunking_preset`, `generate_embeddings`, and URL ingestion options.
 
 ### MCP Resources (Static Knowledge)
 

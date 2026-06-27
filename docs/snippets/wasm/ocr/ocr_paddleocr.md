@@ -1,9 +1,9 @@
 <!-- snippet:syntax-only -->
 
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // PaddleOCR backend is not supported in WASM.
 // PaddleOCR requires ONNX Runtime and native C++ dependencies unavailable in browser/WASM.

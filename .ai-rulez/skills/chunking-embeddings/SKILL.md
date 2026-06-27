@@ -95,8 +95,8 @@ Install: `brew install onnxruntime` (macOS) / `apt install libonnxruntime libonn
 
 The full extraction-to-RAG pipeline:
 
-1. **Extract**: `extract_file(path, config)` -> `ExtractionResult`
-2. **Chunk**: Apply preset strategy to `result.content` -> `Vec<Chunk>`
+1. **Extract**: `extract(ExtractInput::from_uri(path), config)` -> `ExtractionResult`
+2. **Chunk**: Apply preset strategy to `output.results[0].content` -> `Vec<Chunk>`
 3. **Embed**: If embedding config present, `TextEmbeddingManager::embed_chunks()` -> `Vec<ChunkWithEmbedding>`
 4. **Output**: `RagDocument { file_path, metadata, chunks }` ready for vector DB ingestion
 

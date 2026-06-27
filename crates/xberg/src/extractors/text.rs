@@ -2,7 +2,7 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
@@ -71,7 +71,7 @@ impl Plugin for PlainTextExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PlainTextExtractor {
+impl InternalDocumentExtractor for PlainTextExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, _config),
         fields(
@@ -79,7 +79,7 @@ impl DocumentExtractor for PlainTextExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -134,7 +134,7 @@ mod tests {
         let content = b"Hello, World!\nThis is a test.";
         let config = ExtractionConfig::default();
 
-        let result = extractor.extract_bytes(content, "text/plain", &config).await.unwrap();
+        let result = extractor.extract_content(content, "text/plain", &config).await.unwrap();
 
         assert!(result.metadata.format.is_some());
         let text_meta = match result.metadata.format.as_ref().unwrap() {

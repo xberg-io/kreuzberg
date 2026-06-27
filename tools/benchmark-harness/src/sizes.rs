@@ -98,10 +98,10 @@ const KNOWN_THIRD_PARTY_SIZES: &[(&str, u64, u64, u64, &str)] = &[
     // tika: tika-app JAR ~57 MB. System: default-jre-headless ~215 MB.
     ("tika", 57_000_000, 215_000_000, 0, "Apache Tika content analysis"),
     // docling (IBM): torch 916 MB + torchvision 7 MB + transformers 10 MB + docling-core +
-    // docling-ibm-models + easyocr 3 MB + opencv-python 70 MB + scipy 40 MB + pillow +
+    // docling-ibm-models + OCR dependencies + opencv-python 70 MB + scipy 40 MB + pillow +
     // numerous transitive deps. pip-weigh (if it completes): ~2.5 GB.
     // Models: docling-models (TableFormer + LayoutLM) 358 MB from HuggingFace +
-    // EasyOCR CRAFT detection 83 MB + English recognition 15 MB = ~470 MB.
+    // OCR detection + recognition models = ~470 MB.
     (
         "docling",
         2_500_000_000,

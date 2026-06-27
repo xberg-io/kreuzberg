@@ -1,12 +1,15 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 
 fun main() {
     val config = ExtractionConfig.builder().build()
     try {
-        val result = Xberg.extractSync(Paths.get("document.pdf"), null, config)
-        println(result.content())
+        val resultOutput = Xberg.extract(
+            ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
+            config,
+        )
+        val result = resultOutput.results.first()
+        println(result.content)
     } catch (e: XbergRsException) {
         System.err.println("Extraction failed: ${e.message}")
         System.err.println("Error code: ${e.code}")

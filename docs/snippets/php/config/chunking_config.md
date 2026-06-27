@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\ChunkingConfig;
 
@@ -14,11 +14,13 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
-echo "Number of chunks: " . count($result->getChunks()) . "\n";
-foreach ($result->getChunks() as $chunk) {
-    echo "Chunk size: " . strlen($chunk->getContent()) . " characters\n";
+$result = $resultOutput->results[0];
+
+echo "Number of chunks: " . count($result->chunks) . "\n";
+foreach ($result->chunks as $chunk) {
+    echo "Chunk size: " . strlen($chunk->content) . " characters\n";
 }
 ?>
 ```
@@ -27,7 +29,7 @@ foreach ($result->getChunks() as $chunk) {
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\ChunkingConfig;
 
@@ -40,17 +42,19 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.md', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.md'), $config);
 
-foreach ($result->getChunks() as $chunk) {
-    $metadata = $chunk->getMetadata();
+$result = $resultOutput->results[0];
+
+foreach ($result->chunks as $chunk) {
+    $metadata = $chunk->metadata;
     if ($metadata && $metadata->getHeadingContext()) {
         $headings = $metadata->getHeadingContext()->getHeadings();
         foreach ($headings as $heading) {
             echo "Heading L" . $heading->getLevel() . ": " . $heading->getText() . "\n";
         }
     }
-    echo "Content: " . substr($chunk->getContent(), 0, 100) . "...\n";
+    echo "Content: " . substr($chunk->content, 0, 100) . "...\n";
 }
 ?>
 ```

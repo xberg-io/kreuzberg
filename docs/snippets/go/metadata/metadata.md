@@ -10,13 +10,14 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract pdf: %v", err)
 	}
 
 	// Access PDF metadata
-	if pdf, ok := result.Metadata.PdfMetadata(); ok {
+	if pdf, ok := result.Results[0].Metadata.PdfMetadata(); ok {
 		if pdf.PageCount != nil {
 			fmt.Printf("Pages: %d\n", *pdf.PageCount)
 		}
@@ -29,11 +30,12 @@ func main() {
 	}
 
 	// Access HTML metadata
-	htmlResult, err := xberg.ExtractSync("page.html", nil)
+	htmlInput := xberg.ExtractInputFromURI("page.html")
+	htmlResult, err := xberg.Extract(*htmlInput, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract html: %v", err)
 	}
-	if html, ok := htmlResult.Metadata.HTMLMetadata(); ok {
+	if html, ok := htmlResult.Results[0].Metadata.HTMLMetadata(); ok {
 		if html.Title != nil {
 			fmt.Printf("Title: %s\n", *html.Title)
 		}

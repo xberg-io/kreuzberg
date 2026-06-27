@@ -11,7 +11,7 @@ use crate::Result;
 use crate::XbergError;
 use crate::core::config::ExtractionConfig;
 use crate::core::mime::{LEGACY_POWERPOINT_MIME_TYPE, LEGACY_WORD_MIME_TYPE};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use std::path::Path;
 
 use super::helpers::get_extractor;
@@ -34,7 +34,7 @@ use super::helpers::get_extractor;
 ///
 /// # Returns
 ///
-/// An `ExtractionResult` containing the extracted content and metadata.
+/// An `ExtractedDocument` containing the extracted content and metadata.
 ///
 /// # Errors
 ///
@@ -68,7 +68,7 @@ pub(crate) async fn extract_file(
     path: impl AsRef<Path>,
     mime_type: Option<&str>,
     config: &ExtractionConfig,
-) -> Result<ExtractionResult> {
+) -> Result<ExtractedDocument> {
     use crate::core::{io, mime};
 
     let path = path.as_ref();
@@ -163,7 +163,7 @@ pub(in crate::core::extractor) async fn extract_file_with_extractor(
     path: &Path,
     mime_type: &str,
     config: &ExtractionConfig,
-) -> Result<ExtractionResult> {
+) -> Result<ExtractedDocument> {
     // Normalize config so cache keys are consistent for ElementBased requests
     // regardless of whether the caller explicitly set extract_pages.
     let config = config.normalized();
@@ -184,7 +184,7 @@ pub(in crate::core::extractor) async fn extract_file_with_extractor(
     // Try cache read
     if let Some(cache) = get_extraction_cache()
         && let Ok(Some(data)) = cache.get(&cache_key, path.to_str(), namespace, config.cache_ttl_secs)
-        && let Ok(result) = rmp_serde::from_slice::<ExtractionResult>(&data)
+        && let Ok(result) = rmp_serde::from_slice::<ExtractedDocument>(&data)
     {
         tracing::debug!(cache_key = %cache_key, "Extraction cache hit");
         return Ok(result);
@@ -204,14 +204,14 @@ pub(in crate::core::extractor) async fn extract_file_with_extractor(
 }
 
 /// Extract without caching logic.
-async fn extract_file_uncached(path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractionResult> {
+async fn extract_file_uncached(path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<ExtractedDocument> {
     let budget = crate::core::config::concurrency::resolve_thread_budget(config.concurrency.as_ref());
     crate::core::config::concurrency::init_thread_pools(budget);
 
     crate::extractors::ensure_initialized()?;
 
     let extractor = get_extractor(mime_type)?;
-    let doc = extractor.extract_file(path, mime_type, config).await?;
+    let doc = extractor.extract_path(path, mime_type, config).await?;
     let result = crate::core::pipeline::run_pipeline(doc, config).await?;
     Ok(result)
 }
@@ -263,7 +263,7 @@ pub(in crate::core::extractor) async fn extract_bytes_with_extractor(
     content: &[u8],
     mime_type: &str,
     config: &ExtractionConfig,
-) -> Result<ExtractionResult> {
+) -> Result<ExtractedDocument> {
     let config = config.normalized();
     let config = config.as_ref();
 
@@ -273,7 +273,7 @@ pub(in crate::core::extractor) async fn extract_bytes_with_extractor(
     crate::extractors::ensure_initialized()?;
 
     let extractor = get_extractor(mime_type)?;
-    let doc = extractor.extract_bytes(content, mime_type, config).await?;
+    let doc = extractor.extract_content(content, mime_type, config).await?;
     let result = crate::core::pipeline::run_pipeline(doc, config).await?;
     Ok(result)
 }

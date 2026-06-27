@@ -7,10 +7,10 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OcrConfig, OutputFormat};
-use xberg::extract_file_sync;
 
 /// Helper: create an ExtractionConfig with OCR + Markdown output.
 fn ocr_markdown_config() -> ExtractionConfig {
@@ -49,8 +49,8 @@ fn test_ocr_markdown_inlines_table_into_content() {
     }
 
     let file_path = get_test_file_path("images/simple_table.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract table image with OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract table image with OCR");
 
     assert_non_empty_content(&result);
 
@@ -76,10 +76,10 @@ fn test_ocr_markdown_differs_from_plain_when_tables_found() {
     let file_path = get_test_file_path("images/simple_table.png");
 
     let plain_result =
-        extract_file_sync(&file_path, None, &ocr_plain_config()).expect("Should extract with plain output");
+        extract_uri_document_blocking(&file_path, None, &ocr_plain_config()).expect("Should extract with plain output");
 
-    let md_result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract with markdown output");
+    let md_result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract with markdown output");
 
     // Both should have content
     assert_non_empty_content(&plain_result);
@@ -107,8 +107,8 @@ fn test_ocr_table_has_bounding_box() {
     }
 
     let file_path = get_test_file_path("images/simple_table.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract table image with OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract table image with OCR");
 
     for (idx, table) in result.tables.iter().enumerate() {
         assert!(
@@ -136,8 +136,8 @@ fn test_issue_421_balance_sheet_markdown() {
     }
 
     let file_path = get_test_file_path("images/balance_sheet_1.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract balance sheet image");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract balance sheet image");
 
     assert_non_empty_content(&result);
 
@@ -167,8 +167,8 @@ fn test_issue_421_financial_table_markdown() {
     }
 
     let file_path = get_test_file_path("images/financial_table_1.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract financial table image");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract financial table image");
 
     assert_non_empty_content(&result);
 
@@ -193,8 +193,8 @@ fn test_ocr_markdown_sets_output_format_metadata() {
     }
 
     let file_path = get_test_file_path("images/simple_table.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract table image with OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract table image with OCR");
 
     // output_format should be set to "markdown" by the pipeline
     assert_eq!(
@@ -222,8 +222,8 @@ fn diagnostic_print_ocr_table_content() {
 
         let path = get_test_file_path(file);
 
-        let plain = extract_file_sync(&path, None, &ocr_plain_config()).unwrap();
-        let md = extract_file_sync(&path, None, &ocr_markdown_config()).unwrap();
+        let plain = extract_uri_document_blocking(&path, None, &ocr_plain_config()).unwrap();
+        let md = extract_uri_document_blocking(&path, None, &ocr_markdown_config()).unwrap();
 
         eprintln!("\n============================================================");
         eprintln!("FILE: {file}");
@@ -259,8 +259,8 @@ fn test_inlined_table_matches_structured_table() {
     }
 
     let file_path = get_test_file_path("images/simple_table.png");
-    let result =
-        extract_file_sync(&file_path, None, &ocr_markdown_config()).expect("Should extract table image with OCR");
+    let result = extract_uri_document_blocking(&file_path, None, &ocr_markdown_config())
+        .expect("Should extract table image with OCR");
 
     for table in &result.tables {
         let table_md = table.markdown.trim();

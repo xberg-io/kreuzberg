@@ -5,8 +5,179 @@
 
 #![allow(dead_code)]
 
-use std::path::PathBuf;
-use xberg::types::ExtractionResult;
+use std::borrow::Cow;
+use std::path::{Path, PathBuf};
+use xberg::{
+    ErrorMetadata, ExtractInput, ExtractedDocument, ExtractionConfig, ExtractionErrorItem, FileExtractionConfig,
+    Metadata, Result, XbergError, extract, extract_batch,
+};
+
+/// Batch URI input used by integration tests.
+#[derive(Debug, Clone)]
+pub struct UriBatchInput {
+    pub path: PathBuf,
+    pub config: Option<FileExtractionConfig>,
+}
+
+/// In-memory bytes input used by integration tests.
+#[derive(Debug, Clone)]
+pub struct BytesInput {
+    pub content: Vec<u8>,
+    pub mime_type: String,
+    pub config: Option<FileExtractionConfig>,
+}
+
+/// Extract a URI-backed document through the public unified API and return the single result.
+pub async fn extract_uri_document(
+    path: impl AsRef<Path>,
+    mime_type: Option<&str>,
+    config: &ExtractionConfig,
+) -> Result<ExtractedDocument> {
+    let mut input = ExtractInput::from_uri(path.as_ref().to_string_lossy().into_owned());
+    input.mime_type = mime_type.map(str::to_string);
+    single_result(extract(input, config).await)
+}
+
+/// Extract bytes through the public unified API and return the single result.
+pub async fn extract_bytes_document(
+    content: &[u8],
+    mime_type: &str,
+    config: &ExtractionConfig,
+) -> Result<ExtractedDocument> {
+    single_result(extract(ExtractInput::from_bytes(content.to_vec(), mime_type, None), config).await)
+}
+
+/// Blocking URI-backed extraction adapter for synchronous integration tests.
+pub fn extract_uri_document_blocking(
+    path: impl AsRef<Path>,
+    mime_type: Option<&str>,
+    config: &ExtractionConfig,
+) -> Result<ExtractedDocument> {
+    runtime()?.block_on(extract_uri_document(path, mime_type, config))
+}
+
+/// Blocking bytes extraction adapter for synchronous integration tests.
+pub fn extract_bytes_document_blocking(
+    content: &[u8],
+    mime_type: &str,
+    config: &ExtractionConfig,
+) -> Result<ExtractedDocument> {
+    runtime()?.block_on(extract_bytes_document(content, mime_type, config))
+}
+
+/// Extract URI-backed inputs through the public unified batch API and return result-shaped items.
+pub async fn extract_uri_documents(
+    items: Vec<UriBatchInput>,
+    config: &ExtractionConfig,
+) -> Result<Vec<ExtractedDocument>> {
+    let inputs = items
+        .into_iter()
+        .map(|item| {
+            let mut input = ExtractInput::from_uri(item.path.to_string_lossy().into_owned());
+            input.config = item.config;
+            input
+        })
+        .collect::<Vec<_>>();
+    let input_count = inputs.len();
+    batch_results(extract_batch(inputs, config).await?, input_count)
+}
+
+/// Extract byte inputs through the public unified batch API and return result-shaped items.
+pub async fn extract_bytes_documents(
+    items: Vec<BytesInput>,
+    config: &ExtractionConfig,
+) -> Result<Vec<ExtractedDocument>> {
+    let inputs = items
+        .into_iter()
+        .map(|item| {
+            let mut input = ExtractInput::from_bytes(item.content, item.mime_type, None);
+            input.config = item.config;
+            input
+        })
+        .collect::<Vec<_>>();
+    let input_count = inputs.len();
+    batch_results(extract_batch(inputs, config).await?, input_count)
+}
+
+/// Blocking URI-backed batch extraction adapter for synchronous integration tests.
+pub fn extract_uri_documents_blocking(
+    items: Vec<UriBatchInput>,
+    config: &ExtractionConfig,
+) -> Result<Vec<ExtractedDocument>> {
+    runtime()?.block_on(extract_uri_documents(items, config))
+}
+
+/// Blocking bytes batch extraction adapter for synchronous integration tests.
+pub fn extract_bytes_documents_blocking(
+    items: Vec<BytesInput>,
+    config: &ExtractionConfig,
+) -> Result<Vec<ExtractedDocument>> {
+    runtime()?.block_on(extract_bytes_documents(items, config))
+}
+
+fn runtime() -> Result<tokio::runtime::Runtime> {
+    tokio::runtime::Runtime::new().map_err(XbergError::from)
+}
+
+fn single_result(output: Result<xberg::ExtractionResult>) -> Result<ExtractedDocument> {
+    let mut output = output?;
+    if let Some(error) = output.errors.into_iter().next() {
+        return Err(XbergError::Other(error.message));
+    }
+    if output.results.len() != 1 {
+        return Err(XbergError::Other(format!(
+            "expected one extraction result, got {}",
+            output.results.len()
+        )));
+    }
+    Ok(output.results.remove(0))
+}
+
+fn batch_results(output: xberg::ExtractionResult, input_count: usize) -> Result<Vec<ExtractedDocument>> {
+    let mut slots = vec![None; input_count];
+    for result in output.results {
+        let index = source_index(&result).unwrap_or_else(|| first_empty_slot(&slots));
+        if let Some(slot) = slots.get_mut(index) {
+            *slot = Some(result);
+        }
+    }
+    for error in output.errors {
+        if let Some(slot) = slots.get_mut(error.index) {
+            *slot = Some(error_extraction_result(&error, None));
+        }
+    }
+    Ok(slots.into_iter().flatten().collect())
+}
+
+fn source_index(result: &ExtractedDocument) -> Option<usize> {
+    result
+        .metadata
+        .additional
+        .get("source_index")
+        .and_then(serde_json::Value::as_u64)
+        .and_then(|value| usize::try_from(value).ok())
+}
+
+fn first_empty_slot(slots: &[Option<ExtractedDocument>]) -> usize {
+    slots.iter().position(Option::is_none).unwrap_or(slots.len())
+}
+
+fn error_extraction_result(error: &ExtractionErrorItem, elapsed_ms: Option<u64>) -> ExtractedDocument {
+    let metadata = Metadata {
+        error: Some(ErrorMetadata {
+            error_type: error.error_type.clone(),
+            message: error.message.clone(),
+        }),
+        extraction_duration_ms: elapsed_ms,
+        ..Default::default()
+    };
+
+    let mut result = ExtractedDocument::default();
+    result.content = format!("Error: {}", error.message);
+    result.mime_type = Cow::Borrowed("text/plain");
+    result.metadata = metadata;
+    result
+}
 
 /// Get the test_documents directory path.
 ///
@@ -36,7 +207,7 @@ pub fn get_test_file_path(relative_path: &str) -> PathBuf {
 /// This is a common assertion for most extraction tests - we want
 /// to verify that *something* was extracted, even if we don't know
 /// the exact content.
-pub fn assert_non_empty_content(result: &ExtractionResult) {
+pub fn assert_non_empty_content(result: &ExtractedDocument) {
     assert!(
         !result.content.trim().is_empty(),
         "Extraction result should have non-empty content, got: '{}'",
@@ -45,7 +216,7 @@ pub fn assert_non_empty_content(result: &ExtractionResult) {
 }
 
 /// Assert that extraction result has expected MIME type.
-pub fn assert_mime_type(result: &ExtractionResult, expected: &str) {
+pub fn assert_mime_type(result: &ExtractedDocument, expected: &str) {
     assert_eq!(
         result.mime_type, expected,
         "Expected MIME type '{}', got '{}'",
@@ -78,7 +249,7 @@ pub fn test_documents_available() -> bool {
 ///
 /// This is useful for smoke testing - ensuring substantial content
 /// was extracted without needing to verify exact text.
-pub fn assert_min_content_length(result: &ExtractionResult, min_length: usize) {
+pub fn assert_min_content_length(result: &ExtractedDocument, min_length: usize) {
     assert!(
         result.content.len() >= min_length,
         "Expected content length >= {}, got {}. Content preview: '{}'",
@@ -89,7 +260,7 @@ pub fn assert_min_content_length(result: &ExtractionResult, min_length: usize) {
 }
 
 /// Assert that content contains at least one of the given substrings.
-pub fn assert_content_contains_any(result: &ExtractionResult, substrings: &[&str]) {
+pub fn assert_content_contains_any(result: &ExtractedDocument, substrings: &[&str]) {
     let found = substrings.iter().any(|s| result.content.contains(s));
     assert!(
         found,
@@ -99,7 +270,7 @@ pub fn assert_content_contains_any(result: &ExtractionResult, substrings: &[&str
 }
 
 /// Assert that extraction result has at least one table.
-pub fn assert_has_tables(result: &ExtractionResult) {
+pub fn assert_has_tables(result: &ExtractedDocument) {
     assert!(
         !result.tables.is_empty(),
         "Expected result to have tables, but found none"

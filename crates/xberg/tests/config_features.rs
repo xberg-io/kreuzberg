@@ -9,9 +9,9 @@ use xberg::core::config::ExtractionConfig;
 #[cfg(feature = "language-detection")]
 use xberg::core::config::LanguageDetectionConfig;
 use xberg::core::config::TokenReductionOptions;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Test chunking enabled - text split into chunks.
 #[tokio::test]
@@ -29,7 +29,7 @@ async fn test_chunking_enabled() {
     let text = "This is a long text that should be split into multiple chunks. ".repeat(10);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -63,7 +63,7 @@ async fn test_chunking_with_overlap() {
     let text = "a".repeat(250);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -100,7 +100,7 @@ async fn test_chunking_custom_sizes() {
     let text = "Custom chunk test. ".repeat(50);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -128,7 +128,7 @@ async fn test_chunking_disabled() {
     let text = "This is a long text that should NOT be split into chunks. ".repeat(10);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -154,7 +154,7 @@ async fn test_language_detection_single() {
     let text = "Hello world! This is English text. It should be detected as English language.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -181,7 +181,7 @@ async fn test_language_detection_multiple() {
     let text = "Hello world! This is English. ".repeat(10) + "Hola mundo! Este es español. ".repeat(10).as_str();
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -206,7 +206,7 @@ async fn test_language_detection_confidence() {
     let text = "This is clear English text that should have high confidence.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -231,7 +231,7 @@ async fn test_language_detection_disabled() {
     let text = "Hello world! This is English text.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -252,11 +252,11 @@ async fn test_cache_hit_behavior() {
     let text = "Test text for caching behavior.";
     let text_bytes = text.as_bytes();
 
-    let result1 = extract_bytes(text_bytes, "text/plain", &config)
+    let result1 = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("First extraction should succeed");
 
-    let result2 = extract_bytes(text_bytes, "text/plain", &config)
+    let result2 = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Second extraction should succeed");
 
@@ -274,11 +274,11 @@ async fn test_cache_miss_invalidation() {
     let text1 = "First text for cache test.";
     let text2 = "Second different text.";
 
-    let result1 = extract_bytes(text1.as_bytes(), "text/plain", &config)
+    let result1 = extract_bytes_document(text1.as_bytes(), "text/plain", &config)
         .await
         .expect("First extraction should succeed");
 
-    let result2 = extract_bytes(text2.as_bytes(), "text/plain", &config)
+    let result2 = extract_bytes_document(text2.as_bytes(), "text/plain", &config)
         .await
         .expect("Second extraction should succeed");
 
@@ -296,7 +296,7 @@ async fn test_custom_cache_directory() {
     let text = "Test text for cache directory test.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -314,11 +314,11 @@ async fn test_cache_disabled() {
     let text = "Test text without caching.";
     let text_bytes = text.as_bytes();
 
-    let result1 = extract_bytes(text_bytes, "text/plain", &config)
+    let result1 = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("First extraction should succeed");
 
-    let result2 = extract_bytes(text_bytes, "text/plain", &config)
+    let result2 = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Second extraction should succeed");
 
@@ -339,7 +339,7 @@ async fn test_token_reduction_aggressive() {
     let text = "This is a very long sentence with many unnecessary words that could be reduced. ".repeat(5);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -360,7 +360,7 @@ async fn test_token_reduction_conservative() {
     let text = "Conservative token reduction test with moderate text length.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -381,7 +381,7 @@ async fn test_token_reduction_disabled() {
     let text = "Text without token reduction applied.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -400,7 +400,7 @@ async fn test_quality_processing_enabled() {
     let text = "This is well-structured text. It has multiple sentences. And proper punctuation.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -421,12 +421,12 @@ async fn test_quality_threshold_filtering() {
     };
 
     let high_quality = "This is a well-structured document. It has proper sentences. And good formatting.";
-    let result_high = extract_bytes(high_quality.as_bytes(), "text/plain", &config)
+    let result_high = extract_bytes_document(high_quality.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
     let low_quality = "a  b  c  d  ....... word123mixed .  . ";
-    let result_low = extract_bytes(low_quality.as_bytes(), "text/plain", &config)
+    let result_low = extract_bytes_document(low_quality.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -451,7 +451,7 @@ async fn test_quality_processing_disabled() {
     let text = "Text without quality processing.";
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -490,7 +490,7 @@ More detailed content here in the subsection.
         ..Default::default()
     };
 
-    let result = extract_bytes(markdown.as_bytes(), "text/markdown", &config)
+    let result = extract_bytes_document(markdown.as_bytes(), "text/markdown", &config)
         .await
         .expect("Should extract successfully");
 
@@ -544,7 +544,7 @@ A brief summary of the document.
         ..Default::default()
     };
 
-    let result = extract_bytes(markdown.as_bytes(), "text/markdown", &config)
+    let result = extract_bytes_document(markdown.as_bytes(), "text/markdown", &config)
         .await
         .expect("Should extract successfully");
 
@@ -593,7 +593,7 @@ async fn test_chunking_with_embeddings() {
     let text = "This is a test document for embedding generation. ".repeat(10);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -653,7 +653,7 @@ async fn test_chunking_with_fast_embeddings() {
     let text = "Fast embedding test. ".repeat(10);
     let text_bytes = text.as_bytes();
 
-    let result = extract_bytes(text_bytes, "text/plain", &config)
+    let result = extract_bytes_document(text_bytes, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 

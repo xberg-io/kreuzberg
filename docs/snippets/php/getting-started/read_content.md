@@ -2,23 +2,24 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\ChunkingConfig;
 
-$config = new ExtractionConfig();
+$config = ExtractionConfig::default();
 $config->setChunking(new ChunkingConfig());
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+$result = $resultOutput->results[0];
 
-echo "Total content length: " . strlen($result->getContent()) . "\n";
+echo "Total content length: " . strlen($result->content) . "\n";
 
-if ($result->getChunks() !== null) {
-    foreach ($result->getChunks() as $chunk) {
-        echo "Chunk: " . $chunk->getContent() . "\n";
+if ($result->chunks !== null) {
+    foreach ($result->chunks as $chunk) {
+        echo "Chunk: " . $chunk->content . "\n";
     }
 }
 
-foreach ($result->getTables() as $table) {
+foreach ($result->tables as $table) {
     echo "Table with " . count($table->getRows()) . " rows\n";
 }
 ```

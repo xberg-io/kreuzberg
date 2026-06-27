@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const fileInput = document.getElementById("file") as HTMLInputElement;
 const file = fileInput.files?.[0];
@@ -55,7 +55,7 @@ if (file) {
   };
 
   try {
-    const result = await extract(bytes, file.type || "application/octet-stream", config);
+    const result = await extract({ kind: "bytes", bytes, mimeType: file.type || "application/octet-stream" }, config);
     console.log(`Content: ${result.content.substring(0, 100)}...`);
     console.log(`Language: ${result.metadata?.language ?? "Unknown"}`);
     console.log(`Chunks: ${result.chunks?.length ?? 0}`);

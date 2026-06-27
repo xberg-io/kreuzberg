@@ -16,7 +16,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::qr::detect_qr_codes;
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// Post-processor that runs `rqrr` over each image and writes the decoded QR
 /// payloads into [`crate::types::ExtractedImage::qr_codes`].
@@ -44,7 +44,7 @@ impl Plugin for QrCodeProcessor {
 
 #[async_trait]
 impl PostProcessor for QrCodeProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         if config.qr_codes != Some(true) {
             return Ok(());
         }
@@ -72,7 +72,7 @@ impl PostProcessor for QrCodeProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.qr_codes == Some(true)
     }
 
@@ -94,8 +94,8 @@ mod tests {
     use bytes::Bytes;
     use std::borrow::Cow;
 
-    fn empty_result_with_image() -> ExtractionResult {
-        ExtractionResult {
+    fn empty_result_with_image() -> ExtractedDocument {
+        ExtractedDocument {
             content: String::new(),
             mime_type: Cow::Borrowed("text/plain"),
             images: Some(vec![ExtractedImage {

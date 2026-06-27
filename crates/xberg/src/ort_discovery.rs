@@ -3,7 +3,7 @@
 //! Scans common installation paths and sets `ORT_DYLIB_PATH` so the `ort` crate
 //! can find `libonnxruntime` via `dlopen`. Called once at init time.
 //!
-//! Also provides [`apply_execution_providers`] for configuring GPU acceleration
+//! Also provides `apply_execution_providers` for configuring GPU acceleration
 //! on ORT session builders across all subsystems (layout, embeddings, OCR, etc.).
 
 #[cfg(not(feature = "ort-bundled"))]

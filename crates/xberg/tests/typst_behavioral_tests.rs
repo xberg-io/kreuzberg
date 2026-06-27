@@ -13,9 +13,11 @@
 //! The tests are designed to FAIL initially, exposing real bugs that need fixing.
 //! They compare extracted output against Pandoc baseline outputs for behavioral parity.
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 use std::{fs, path::PathBuf};
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 fn typst_doc_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/typst")
@@ -147,7 +149,7 @@ async fn test_typst_all_heading_levels_not_lost() {
     let _baseline = load_pandoc_baseline("headings");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -185,7 +187,7 @@ async fn test_typst_display_math_preserved() {
     let baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -228,7 +230,7 @@ async fn test_typst_no_empty_headings_output() {
     let content = load_test_document("headings.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -268,7 +270,7 @@ async fn test_typst_metadata_extraction_completeness() {
     let _baseline_meta = load_pandoc_metadata("metadata");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -312,7 +314,7 @@ async fn test_typst_tables_with_nested_brackets_not_corrupted() {
     let baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -355,7 +357,7 @@ async fn test_typst_content_volume_parity_with_pandoc() {
         let baseline = load_pandoc_baseline(doc_name);
         let config = ExtractionConfig::default();
 
-        let result = extract_bytes(&content, "application/x-typst", &config)
+        let result = extract_bytes_document(&content, "application/x-typst", &config)
             .await
             .unwrap_or_else(|_| panic!("Extraction failed for {}", doc_name));
 
@@ -390,7 +392,7 @@ async fn test_typst_blockquote_handling() {
     ]";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -418,7 +420,7 @@ async fn test_typst_inline_code_preserved() {
     let baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -444,7 +446,7 @@ async fn test_typst_inline_math_preserved() {
     let baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -474,7 +476,7 @@ async fn test_typst_figures_and_captions() {
     )";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -501,7 +503,7 @@ async fn test_typst_citations_preserved() {
 #bibliography()";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -524,7 +526,7 @@ async fn test_typst_link_extraction() {
     let _baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -549,7 +551,7 @@ async fn test_typst_list_extraction() {
     let _baseline = load_pandoc_baseline("simple");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -575,7 +577,7 @@ async fn test_typst_code_block_extraction() {
     let _baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -598,7 +600,7 @@ async fn test_typst_emphasis_formatting() {
     let content = load_test_document("advanced.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -618,7 +620,7 @@ async fn test_typst_nested_formatting() {
     let test_content = b"This is *bold with _nested italic_* text.";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -644,7 +646,7 @@ async fn test_typst_multiple_paragraphs() {
     let _baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -668,7 +670,7 @@ async fn test_typst_heading_content_association() {
     let content = load_test_document("advanced.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -692,7 +694,7 @@ async fn test_typst_whitespace_handling() {
     let content = load_test_document("advanced.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -718,7 +720,7 @@ async fn test_typst_minimal_document() {
     let _baseline = load_pandoc_baseline("minimal");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -744,7 +746,7 @@ async fn test_typst_no_directive_pollution() {
     let content = load_test_document("advanced.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -769,7 +771,7 @@ async fn test_typst_metadata_field_completeness() {
     let content = load_test_document("advanced.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -798,7 +800,7 @@ async fn test_typst_special_character_preservation() {
     let test_content = "Café with naïve français".as_bytes();
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -822,7 +824,7 @@ async fn test_typst_long_heading_handling() {
     let test_content = b"= This is a very long heading that should be completely preserved without any truncation or corruption whatsoever";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -842,7 +844,7 @@ async fn test_typst_empty_heading_edge_case() {
     let test_content = b"= \n\n== \nContent here";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config).await;
+    let result = extract_bytes_document(test_content, "application/x-typst", &config).await;
 
     match result {
         Ok(extraction) => {
@@ -861,7 +863,7 @@ async fn test_typst_basic_heading_regression() {
     let test_content = b"= Main Heading\n\nContent here";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -879,7 +881,7 @@ async fn test_typst_level2_heading_regression() {
     let test_content = b"= Main\n\n== Subsection\n\nMore content";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -895,7 +897,7 @@ async fn test_typst_basic_metadata_regression() {
     let test_content = b"#set document(title: \"Test\", author: \"Me\")\n\n= Heading";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -910,7 +912,7 @@ async fn test_typst_bold_regression() {
     let test_content = b"This is *bold text* here";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -932,7 +934,7 @@ async fn test_typst_inline_code_regression() {
     let test_content = b"Use `println!(\"hello\")` in Rust";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -954,7 +956,7 @@ async fn test_typst_codeblock_regression() {
     let test_content = b"```rust\nfn main() {}\n```";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -967,7 +969,7 @@ async fn test_typst_list_regression() {
     let test_content = b"- Item 1\n+ Item 2\n- Item 3";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -983,7 +985,7 @@ async fn test_typst_math_regression() {
     let test_content = b"Formula: $E = mc^2$";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -999,7 +1001,7 @@ async fn test_typst_link_regression() {
     let test_content = b"Visit #link(\"https://example.com\")[example]";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1015,7 +1017,7 @@ async fn test_typst_table_regression() {
     let test_content = b"#table(columns: 2, [A], [B], [1], [2])";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1036,7 +1038,7 @@ async fn test_typst_large_document_stress() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(large_content.as_bytes(), "application/x-typst", &config)
+    let result = extract_bytes_document(large_content.as_bytes(), "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1059,7 +1061,7 @@ async fn test_typst_deep_nesting_stress() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(nested.as_bytes(), "application/x-typst", &config)
+    let result = extract_bytes_document(nested.as_bytes(), "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1079,7 +1081,7 @@ async fn test_typst_mixed_formatting_stress() {
     let test_content = b"This text has *bold*, _italic_, `code`, and $math$ all mixed together!";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1097,7 +1099,7 @@ async fn test_typst_unicode_stress() {
     let test_content = "= Unicode Heading 中文 العربية\n\nContent with emojis: 🎉🚀💯\n\nGreek: α β γ δ ε ζ".as_bytes();
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1113,7 +1115,7 @@ async fn test_typst_pathological_whitespace() {
     let test_content = b"= Heading\n\n\n\n\n\nContent with excessive blank lines\n\n\n\n\nMore content";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes(test_content, "application/x-typst", &config)
+    let result = extract_bytes_document(test_content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1130,7 +1132,7 @@ async fn test_typst_full_simple_document_comparison() {
     let _baseline = load_pandoc_baseline("simple");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1150,7 +1152,7 @@ async fn test_typst_full_advanced_document_comparison() {
     let _baseline = load_pandoc_baseline("advanced");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1172,7 +1174,7 @@ async fn test_typst_mime_type_consistency() {
     let content = load_test_document("simple.typ");
     let config = ExtractionConfig::default();
 
-    let result_primary = extract_bytes(&content, "application/x-typst", &config)
+    let result_primary = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Primary MIME type should work");
 
@@ -1181,7 +1183,7 @@ async fn test_typst_mime_type_consistency() {
         "Primary MIME type should extract content"
     );
 
-    match extract_bytes(&content, "text/x-typst", &config).await {
+    match extract_bytes_document(&content, "text/x-typst", &config).await {
         Ok(result) => {
             assert!(
                 result.content.len() > 0,
@@ -1200,7 +1202,7 @@ async fn test_typst_config_parameter_handling() {
     let content = load_test_document("simple.typ");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 
@@ -1219,7 +1221,7 @@ async fn test_typst_heading_loss_bug_analysis() {
     let baseline = load_pandoc_baseline("headings");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&content, "application/x-typst", &config)
+    let result = extract_bytes_document(&content, "application/x-typst", &config)
         .await
         .expect("Extraction failed");
 

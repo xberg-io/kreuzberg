@@ -1,10 +1,9 @@
 ```php
 <?php
-use Xberg\Xberg;
-use Xberg\Config\EmbeddingConfig;
-use Xberg\Config\EmbeddingModelType;
+use Xberg\XbergApi;
+use Xberg\EmbeddingConfig;
+use Xberg\EmbeddingModelType;
 
-$xberg = new Xberg();
 
 // Embed with default config (balanced preset)
 $embeddings = $xberg->embed(["Hello world", "How are you?"]);

@@ -1,8 +1,9 @@
 ```rust title="Element-Based Output (Rust)"
-use xberg::{extract_sync, ExtractionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput};
 use xberg::types::OutputFormat as ResultFormat;
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     // Configure element-based output (result_format controls Unified vs ElementBased)
     let config = ExtractionConfig {
         result_format: ResultFormat::ElementBased,
@@ -10,11 +11,12 @@ fn main() -> xberg::Result<()> {
     };
 
     // Extract document
-    let result = extract_sync("document.pdf", None, &config)?;
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    let result = &output.results[0];
 
     // Access elements
-    if let Some(elements) = result.elements {
-        for element in &elements {
+    if let Some(elements) = &result.elements {
+        for element in elements {
             println!("Type: {:?}", element.element_type);
             println!("Text: {}", &element.text[..100.min(element.text.len())]);
 

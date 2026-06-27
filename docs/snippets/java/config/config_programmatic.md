@@ -1,8 +1,11 @@
 ```java title="Java"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
 import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.ChunkingConfig;
 import io.xberg.ExtractionConfig;
+import io.xberg.ExtractInput;
 import io.xberg.OcrConfig;
 import io.xberg.TesseractConfig;
 
@@ -23,9 +26,12 @@ public final class ProgrammaticConfigExample {
             .useCache(true)
             .enableQualityProcessing(true)
             .build();
-
-        ExtractionResult result = Xberg.extract("document.pdf", config);
-        System.out.printf("Content length: %d%n", result.getContent().length());
+        ExtractionResult output = Xberg.extract(
+            ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("document.pdf").build(),
+            config
+        );
+        ExtractedDocument result = output.results().get(0);
+        System.out.printf("Content length: %d%n", result.content().length());
     }
 }
 ```

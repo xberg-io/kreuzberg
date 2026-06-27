@@ -3,9 +3,9 @@
 Demonstrate the pattern for using registered plugins during document extraction.
 
 ```typescript title="WASM"
-import init, { extract, registerPostProcessor } from "xberg-wasm";
+import { initWasm, extract, registerPostProcessor } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Register a custom post-processor
 const customProcessor = {
@@ -34,7 +34,7 @@ async function extractWithPlugins(fileBytes, mimeType) {
   };
 
   // Extraction automatically applies registered post-processors
-  const result = await extract(fileBytes, mimeType, config);
+  const result = await extract({ kind: "bytes", bytes: fileBytes, mimeType: mimeType }, config);
 
   console.log("Extraction complete");
   console.log("Plugins applied:", result.metadata?.enriched);

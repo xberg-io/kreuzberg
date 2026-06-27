@@ -4,7 +4,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::page::PageContent;
@@ -164,7 +164,7 @@ impl ExcelExtractor {
     ///
     /// Each sheet becomes a table preceded by an H2 heading with the sheet name (when
     /// non-empty). Additionally, `prebuilt_pages` is set to `Some(Vec<PageContent>)` with
-    /// one entry per sheet so that `ExtractionResult.pages` is always `Some` for Excel.
+    /// one entry per sheet so that `ExtractedDocument.pages` is always `Some` for Excel.
     ///
     /// Empty sheets still produce a `PageContent` entry so the page index aligns with the
     /// sheet index. The top-level `content` remains the concatenation of all per-sheet
@@ -366,7 +366,7 @@ impl SyncExtractor for ExcelExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for ExcelExtractor {
+impl InternalDocumentExtractor for ExcelExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, config),
         fields(
@@ -374,7 +374,7 @@ impl DocumentExtractor for ExcelExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -434,7 +434,7 @@ impl DocumentExtractor for ExcelExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, _config: &ExtractionConfig) -> Result<InternalDocument> {
         let path_str = path
             .to_str()
             .ok_or_else(|| crate::XbergError::validation("Invalid file path".to_string()))?;
@@ -461,10 +461,6 @@ impl DocumentExtractor for ExcelExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -638,7 +634,7 @@ mod tests {
 
     #[test]
     fn test_top_level_tables_populated_for_multi_sheet_workbook() {
-        // ExtractionResult.tables (top-level) must be populated after XLSX extraction
+        // ExtractedDocument.tables (top-level) must be populated after XLSX extraction
         // and the count must equal the number of sheets with data. This is the primary
         // backward-compat surface for callers that do not read .pages.
         let sheet1_cells = vec![

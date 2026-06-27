@@ -2,13 +2,16 @@
 
 Detect document layout regions (tables, figures, headers, text blocks, etc.) in PDFs using ONNX-based deep learning models. Enables table extraction, figure isolation, reading-order reconstruction, and selective OCR.
 
+See the [LayoutDetectionConfig reference](../reference/configuration.md#layoutdetectionconfig) for all configuration options.
+
 !!! Note "Feature gate" Requires the `layout-detection` Cargo feature. Not included in the default feature set.
 
 ## Model
 
 Layout detection uses the **RT-DETR v2** model, an ONNX-based deep learning model that detects 17 layout element classes: text blocks, tables, figures, headers, footers, captions, code, lists, sections, formulas, footnotes, page headers/footers, titles, checkboxes, key-value regions, and document indices.
 
-Layout detection now populates `ExtractionResult.formulas` for formula regions and supports chart understanding via `enable_chart_understanding`.
+Layout detection now populates `ExtractedDocument.formulas` for formula regions and supports chart understanding via
+`enable_chart_understanding`.
 
 ### When to Enable
 
@@ -32,7 +35,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 === "Python"
 
     ```python
-    from xberg import ExtractionConfig, LayoutDetectionConfig, extract
+    from xberg import ExtractInput, ExtractionConfig, LayoutDetectionConfig, extract
 
     config = ExtractionConfig(
         layout=LayoutDetectionConfig(
@@ -41,13 +44,18 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
             table_model="tatr",
         )
     )
-    result = await extract("document.pdf", config=config)
+    output = await extract(ExtractInput(kind="uri", uri="document.pdf"), config=config)
     ```
 
 === "TypeScript"
 
     ```typescript
-    const result = await extract("document.pdf", {
+    import { ExtractInputKind, extract } from "@xberg-io/xberg";
+
+    const output = await extract({
+      kind: ExtractInputKind.Uri,
+      uri: "document.pdf",
+    }, {
       layout: {
         confidenceThreshold: 0.5,
         applyHeuristics: true,
@@ -150,15 +158,16 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "Python"
 
     ```python
-    from xberg import extract, ExtractionConfig, LayoutDetectionConfig, PagesConfig
+    from xberg import ExtractInput, extract, ExtractionConfig, LayoutDetectionConfig, PagesConfig
 
-    result = await extract(
-        "document.pdf",
+    output = await extract(
+        ExtractInput(kind="uri", uri="document.pdf"),
         config=ExtractionConfig(
             layout=LayoutDetectionConfig(),
             pages=PagesConfig(extract_pages=True),
         ),
     )
+    result = output.results[0]
 
     for page in result.pages:
         if page.layout_regions:
@@ -172,10 +181,16 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "TypeScript"
 
     ```typescript
-    const result = await extract("document.pdf", {
+    import { ExtractInputKind, extract } from "@xberg-io/xberg";
+
+    const output = await extract({
+      kind: ExtractInputKind.Uri,
+      uri: "document.pdf",
+    }, {
       layout: {},
       pages: { extractPages: true },
     });
+    const result = output.results[0];
 
     for (const page of result.pages ?? []) {
       if (page.layoutRegions) {
@@ -195,19 +210,22 @@ When layout detection is enabled AND page extraction is enabled, each page in th
 === "Rust"
 
     ```rust
-    use xberg::core::{ExtractionConfig, LayoutDetectionConfig, PagesConfig};
+    use xberg::{extract, ExtractInput, ExtractionConfig, LayoutDetectionConfig, PagesConfig};
 
-    let result = extract(
-        "document.pdf",
-        ExtractionConfig {
-            layout: Some(LayoutDetectionConfig::default()),
-            pages: Some(PagesConfig {
-                extract_pages: true,
-                ..Default::default()
-            }),
+    let config = ExtractionConfig {
+        layout: Some(LayoutDetectionConfig::default()),
+        pages: Some(PagesConfig {
+            extract_pages: true,
             ..Default::default()
-        },
+        }),
+        ..Default::default()
+    };
+
+    let output = extract(
+        ExtractInput::from_uri("document.pdf"),
+        &config,
     ).await?;
+    let result = &output.results[0];
 
     for page in &result.pages {
         if let Some(regions) = &page.layout_regions {

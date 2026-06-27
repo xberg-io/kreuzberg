@@ -53,17 +53,7 @@ check("module is an object", () => {
 	}
 });
 
-const required = [
-	"extractBytes",
-	"extractBytesSync",
-	"extractTextFromPdf",
-	"chunkText",
-	"detectMimeTypeFromBytes",
-	"blake3HashBytes",
-	"validateChunkingParams",
-	"validateMimeType",
-	"listSupportedFormats",
-];
+const required = ["extract", "extractBatch", "listSupportedFormats"];
 for (const name of required) {
 	check(`export ${name} is function`, () => {
 		if (typeof native[name] !== "function") {
@@ -77,32 +67,6 @@ check("listSupportedFormats returns non-empty array", () => {
 	if (!Array.isArray(formats) || formats.length === 0) {
 		throw new Error(`got ${typeof formats} length=${Array.isArray(formats) ? formats.length : "n/a"}`);
 	}
-});
-
-check("blake3HashBytes returns non-empty hex string", () => {
-	const hash = native.blake3HashBytes(Array.from(Buffer.from("xberg-glibc-228-smoke")));
-	if (typeof hash !== "string" || hash.length === 0) {
-		throw new Error(`got ${typeof hash} length=${hash?.length}`);
-	}
-});
-
-check("detectMimeTypeFromBytes(%PDF-) -> application/pdf", () => {
-	const mime = native.detectMimeTypeFromBytes([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]);
-	if (mime !== "application/pdf") throw new Error(`got ${mime}`);
-});
-
-check("validateChunkingParams accepts (1000, 100)", () => {
-	native.validateChunkingParams(1000, 100);
-});
-
-check("validateChunkingParams rejects (10, 50) (overlap >= max)", () => {
-	let threw = false;
-	try {
-		native.validateChunkingParams(10, 50);
-	} catch {
-		threw = true;
-	}
-	if (!threw) throw new Error("expected throw, got success");
 });
 
 console.log(`\n=== Summary ===`);

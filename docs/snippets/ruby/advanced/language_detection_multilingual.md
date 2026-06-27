@@ -9,9 +9,11 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('multilingual_document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'multilingual_document.pdf')
+result = Xberg.extract(input, config)
+first_result = result.results.first
 
-languages = result.detected_languages || []
+languages = first_result.detected_languages || []
 
 if languages.any?
   puts "Detected #{languages.length} language(s): #{languages.join(', ')}"
@@ -19,6 +21,6 @@ else
   puts "No languages detected"
 end
 
-puts "Total content: #{result.content.length} characters"
-puts "MIME type: #{result.mime_type}"
+puts "Total content: #{first_result.content.length} characters"
+puts "MIME type: #{first_result.mime_type}"
 ```

@@ -2,7 +2,7 @@
 //! actually runs end-to-end.
 //!
 //! Composes the three Stage 0 deliverables (dataset fixture shape +
-//! [`json_quality`] metrics) with the xberg `extract_file` +
+//! [`json_quality`] metrics) with the xberg unified extraction API +
 //! `StructuredExtractionConfig` pipeline against a real LLM.
 //!
 //! Required env var: `OPENAI_API_KEY` (loaded from the workspace `.env`).
@@ -18,6 +18,7 @@
 use std::path::PathBuf;
 
 use benchmark_harness::datasets::{Split, StructuredFixture};
+use benchmark_harness::extract_xberg_file;
 use benchmark_harness::json_quality;
 use serde_json::{Value, json};
 use xberg::core::config::{ExtractionConfig, LlmConfig, StructuredExtractionConfig};
@@ -87,9 +88,9 @@ async fn run_text_then_llm(fixture: &StructuredFixture, api_key: String) -> Valu
         }),
         ..Default::default()
     };
-    let result = xberg::extract_file(&fixture.document_path, None, &config)
+    let result = extract_xberg_file(&fixture.document_path, &config)
         .await
-        .expect("xberg extract_file failed");
+        .expect("xberg extraction failed");
     result
         .structured_output
         .expect("structured_output missing; structured_extraction did not run")

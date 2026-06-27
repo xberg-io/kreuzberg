@@ -17,6 +17,6 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.Extract("scanned.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("scanned.pdf"), config)).Results[0];
 Console.WriteLine($"OCR text: {result.Content.Substring(0, Math.Min(100, result.Content.Length))}");
 ```

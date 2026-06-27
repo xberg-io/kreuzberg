@@ -2,7 +2,7 @@
 using Xberg;
 
 var output = await XbergConverter.ExtractAsync(
-    ExtractInput.Uri("document.pdf"),
+    ExtractInput.FromUri("document.pdf"),
     ExtractionConfig.Default()
 );
 

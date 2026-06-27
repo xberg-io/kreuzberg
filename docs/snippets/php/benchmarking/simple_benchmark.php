@@ -12,11 +12,18 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use function Xberg\extract;
-use function Xberg\extract_batch;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+
+function extractBatchFiles(array $files): array
+{
+    $inputs = array_map(
+        static fn (string $file): \Xberg\ExtractInput => \Xberg\ExtractInput::fromUri($file),
+        $files
+    );
+
+    return Xberg::extractBatch($inputs, \Xberg\ExtractionConfig::default())->results;
+}
 
 class Benchmark
 {
@@ -107,8 +114,7 @@ if (file_exists($testFile)) {
 if (file_exists($testFile)) {
     $benchmark->run('PDF with table extraction', function () use ($testFile) {
         $config = new ExtractionConfig(extractTables: true);
-        $xberg = new Xberg($config);
-        $xberg->extract($testFile);
+        \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
     }, 5);
 }
 
@@ -117,15 +123,14 @@ if (file_exists($testFile)) {
         $config = new ExtractionConfig(
             ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
         );
-        $xberg = new Xberg($config);
-        $xberg->extract($testFile);
+        \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
     }, 3);
 }
 
 $files = array_filter(['doc1.pdf', 'doc2.pdf', 'doc3.pdf'], 'file_exists');
 if (count($files) >= 3) {
     $benchmark->run('Batch processing (3 files)', function () use ($files) {
-        extract_batch(array_slice($files, 0, 3));
+        extractBatchFiles(array_slice($files, 0, 3));
     }, 3);
 
     $benchmark->run('Sequential processing (3 files)', function () use ($files) {
@@ -169,8 +174,7 @@ $configs = [
 foreach ($configs as $name => $config) {
     if (file_exists($testFile)) {
         $benchmark->run("$name config", function () use ($testFile, $config) {
-            $xberg = new Xberg($config);
-            $xberg->extract($testFile);
+            \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
         }, 5);
     }
 }

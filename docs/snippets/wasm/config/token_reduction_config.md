@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const data = new Uint8Array(await fetch("document.pdf").then((r) => r.arrayBuffer()));
 
@@ -12,7 +12,7 @@ const config = {
   },
 };
 
-const result = await extract(data, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes: data, mimeType: "application/pdf" }, config);
 console.log(`Original tokens: ${result.token_count}`);
 console.log(`Reduced content: ${result.content}`);
 ```

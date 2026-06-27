@@ -9,9 +9,12 @@
 
 #![cfg(feature = "office")]
 
+mod helpers;
+use helpers::extract_uri_document;
+
 use std::io::Write;
 use tempfile::NamedTempFile;
-use xberg::{ExtractionConfig, ImageExtractionConfig, extract_file};
+use xberg::{ExtractionConfig, ImageExtractionConfig};
 use zip::CompressionMethod;
 use zip::write::{FileOptions, ZipWriter};
 
@@ -37,7 +40,7 @@ async fn test_ppsx_slideshow_extraction() {
         return;
     }
 
-    let result = extract_file(&test_file, None, &ExtractionConfig::default()).await;
+    let result = extract_uri_document(&test_file, None, &ExtractionConfig::default()).await;
 
     match result {
         Ok(extraction) => {
@@ -82,7 +85,7 @@ async fn test_ppsx_with_explicit_mime_type() {
     }
 
     // Explicitly provide the PPSX MIME type
-    let result = extract_file(
+    let result = extract_uri_document(
         &test_file,
         Some("application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
         &ExtractionConfig::default(),
@@ -281,7 +284,7 @@ async fn test_pptx_with_image_placeholder_no_txbody() {
     }
 
     // Extract the PPTX file
-    let result = extract_file(
+    let result = extract_uri_document(
         temp_file.path(),
         Some("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
         &ExtractionConfig::default(),
@@ -479,7 +482,7 @@ async fn test_pptx_mixed_shapes_extraction() {
         zip.finish().expect("Operation failed");
     }
 
-    let result = extract_file(
+    let result = extract_uri_document(
         temp_file.path(),
         Some("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
         &ExtractionConfig::default(),
@@ -693,7 +696,7 @@ async fn test_pptx_image_page_numbers_not_reversed() {
         ..Default::default()
     };
 
-    let result = extract_file(
+    let result = extract_uri_document(
         temp_file.path(),
         Some("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
         &config,
@@ -756,7 +759,7 @@ async fn test_pptx_image_page_numbers_issue329_user_file() {
         ..Default::default()
     };
 
-    let result = extract_file(&test_file, None, &config).await;
+    let result = extract_uri_document(&test_file, None, &config).await;
 
     match result {
         Ok(extraction) => {
@@ -969,7 +972,7 @@ async fn test_pptx_broken_image_blip_missing_embed_skipped_gracefully() {
         zip.finish().expect("Operation failed");
     }
 
-    let result = extract_file(
+    let result = extract_uri_document(
         temp_file.path(),
         Some("application/vnd.openxmlformats-officedocument.presentationml.presentation"),
         &ExtractionConfig::default(),

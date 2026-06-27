@@ -345,7 +345,7 @@ pub enum NodeContent {
         /// Optional alt text or caption describing the image.
         #[serde(skip_serializing_if = "Option::is_none")]
         description: Option<String>,
-        /// Index into the parent `ExtractionResult::images` list.
+        /// Index into the parent `ExtractedDocument::images` list.
         #[serde(skip_serializing_if = "Option::is_none")]
         image_index: Option<u32>,
         /// Source URL or path of the image (from `<img src="...">` or `![](src)`).

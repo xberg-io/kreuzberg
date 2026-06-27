@@ -9,13 +9,15 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+result = Xberg.extract(input, config)
+first_result = result.results.first
 
-if result.detected_languages&.any?
-  puts "Detected Language: #{result.detected_languages.first}"
+if first_result.detected_languages&.any?
+  puts "Detected Language: #{first_result.detected_languages.first}"
 else
   puts "No language detected"
 end
 
-puts "Content length: #{result.content.length} characters"
+puts "Content length: #{first_result.content.length} characters"
 ```

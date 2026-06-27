@@ -20,7 +20,7 @@ mod parser;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::text::utf8_validation;
 use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
@@ -454,7 +454,7 @@ impl Plugin for JatsExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for JatsExtractor {
+impl InternalDocumentExtractor for JatsExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -465,7 +465,7 @@ impl DocumentExtractor for JatsExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -622,9 +622,9 @@ impl DocumentExtractor for JatsExtractor {
             )
         )
     )]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let bytes = tokio::fs::read(path).await?;
-        self.extract_bytes(&bytes, mime_type, config).await
+        self.extract_content(&bytes, mime_type, config).await
     }
 
     fn supported_mime_types(&self) -> &[&str] {

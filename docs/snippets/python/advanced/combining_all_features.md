@@ -1,6 +1,7 @@
 ```python title="Python"
 import asyncio
 from xberg import (
+    ExtractInput,
     extract,
     ExtractionConfig,
     ChunkingConfig,
@@ -23,12 +24,12 @@ async def main() -> None:
             ),
         ),
     )
-    result = await extract("document.pdf", config=config)
+    result = await extract(ExtractInput.from_uri("document.pdf"), config)
     quality = result.quality_score or 0
     print(f"Quality: {quality:.2f}")
-    print(f"Languages: {result.detected_languages}")
-    if result.chunks:
-        print(f"Chunks: {len(result.chunks)}")
+    print(f"Languages: {result.results[0].detected_languages}")
+    if result.results[0].chunks:
+        print(f"Chunks: {len(result.results[0].chunks)}")
 
 asyncio.run(main())
 ```

@@ -66,8 +66,6 @@ pub struct ExtractionConfig {
     /// native text extraction without OCR fallback.
     ///
     /// Cannot be `true` simultaneously with `force_ocr`.
-    ///
-    /// *Added in v4.7.0.*
     #[serde(default)]
     pub disable_ocr: bool,
 
@@ -241,7 +239,7 @@ pub struct ExtractionConfig {
 
     /// Enable structured document tree output.
     ///
-    /// When true, populates the `document` field on `ExtractionResult` with a
+    /// When true, populates the `document` field on `ExtractedDocument` with a
     /// hierarchical `DocumentStructure` containing heading-driven section nesting,
     /// table grids, content layer classification, and inline annotations.
     ///
@@ -310,37 +308,37 @@ pub struct ExtractionConfig {
     ///
     /// When set, the extracted document content is sent to an LLM with the
     /// provided JSON schema. The structured response is stored in
-    /// `ExtractionResult::structured_output`.
+    /// `ExtractedDocument::structured_output`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub structured_extraction: Option<super::super::llm::StructuredExtractionConfig>,
 
     /// Named-entity recognition configuration. When set, the NER post-processor runs at
-    /// the Middle stage and populates `ExtractionResult::entities`.
+    /// the Middle stage and populates `ExtractedDocument::entities`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "alef-meta", alef(since = "5.0.0"))]
     pub ner: Option<super::super::ner::NerConfig>,
 
     /// Redaction / anonymisation configuration. When set, the redaction post-processor
-    /// runs at the Late stage and rewrites every textual field in `ExtractionResult`,
-    /// emitting an audit trail in `ExtractionResult::redaction_report`.
+    /// runs at the Late stage and rewrites every textual field in `ExtractedDocument`,
+    /// emitting an audit trail in `ExtractedDocument::redaction_report`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "alef-meta", alef(since = "5.0.0"))]
     pub redaction: Option<super::super::redaction::RedactionConfig>,
 
     /// Summarisation configuration. When set, the summarisation post-processor runs at
-    /// the Middle stage and populates `ExtractionResult::summary`.
+    /// the Middle stage and populates `ExtractedDocument::summary`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "alef-meta", alef(since = "5.0.0"))]
     pub summarization: Option<super::super::summarization::SummarizationConfig>,
 
     /// Translation configuration. When set, the translation post-processor runs at the
-    /// Middle stage and populates `ExtractionResult::translation`.
+    /// Middle stage and populates `ExtractedDocument::translation`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "alef-meta", alef(since = "5.0.0"))]
     pub translation: Option<super::super::translation::TranslationConfig>,
 
     /// Per-page classification configuration. When set, the classification post-processor
-    /// runs at the Middle stage and populates `ExtractionResult::page_classifications`.
+    /// runs at the Middle stage and populates `ExtractedDocument::page_classifications`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "alef-meta", alef(since = "5.0.0"))]
     pub page_classification: Option<super::super::classification::PageClassificationConfig>,
@@ -473,6 +471,8 @@ impl ExtractionConfig {
             ref postprocessor,
             #[cfg(feature = "html")]
             ref html_options,
+            #[cfg(feature = "html")]
+            ref html_output,
             ref result_format,
             ref output_format,
             ref include_document_structure,
@@ -484,6 +484,14 @@ impl ExtractionConfig {
             #[cfg(feature = "tree-sitter")]
             ref tree_sitter,
             ref structured_extraction,
+            ref url,
+            ref ner,
+            ref redaction,
+            ref summarization,
+            ref translation,
+            ref page_classification,
+            ref captioning,
+            ref qr_codes,
         } = *overrides;
 
         let mut config = self.clone();
@@ -536,6 +544,10 @@ impl ExtractionConfig {
         if let Some(v) = html_options {
             config.html_options = Some(v.clone());
         }
+        #[cfg(feature = "html")]
+        if let Some(v) = html_output {
+            config.html_output = Some(v.clone());
+        }
         if let Some(v) = result_format {
             config.result_format = *v;
         }
@@ -562,6 +574,30 @@ impl ExtractionConfig {
         }
         if let Some(v) = structured_extraction {
             config.structured_extraction = Some(v.clone());
+        }
+        if let Some(v) = url {
+            config.url = v.clone();
+        }
+        if let Some(v) = ner {
+            config.ner = Some(v.clone());
+        }
+        if let Some(v) = redaction {
+            config.redaction = Some(v.clone());
+        }
+        if let Some(v) = summarization {
+            config.summarization = Some(v.clone());
+        }
+        if let Some(v) = translation {
+            config.translation = Some(v.clone());
+        }
+        if let Some(v) = page_classification {
+            config.page_classification = Some(v.clone());
+        }
+        if let Some(v) = captioning {
+            config.captioning = Some(v.clone());
+        }
+        if let Some(v) = qr_codes {
+            config.qr_codes = Some(*v);
         }
 
         config
@@ -622,11 +658,13 @@ impl ExtractionConfig {
     /// image I/O and processing when results won't be used.
     /// Returns `true` when image binary data should be extracted.
     ///
-    /// True when `config.images.extract_images` is set **or** when captioning is
-    /// configured — captioning requires image bytes regardless of whether the caller
-    /// also requested `images` extraction.
+    /// True when `config.images.extract_images` is set, captioning is configured, or QR-code
+    /// detection is enabled. Captioning and QR-code detection both require image bytes
+    /// regardless of whether the caller also requested image extraction.
     pub fn needs_image_data(&self) -> bool {
-        self.images.as_ref().is_some_and(|i| i.extract_images) || self.captioning.is_some()
+        self.images.as_ref().is_some_and(|i| i.extract_images)
+            || self.captioning.is_some()
+            || self.qr_codes == Some(true)
     }
 
     /// Returns `true` when any image processing is needed during extraction.
@@ -678,7 +716,10 @@ fn default_extraction_timeout() -> Option<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::config::OcrConfig;
+    use crate::core::config::{
+        CaptioningConfig, LlmConfig, NerConfig, OcrConfig, PageClassificationConfig, RedactionConfig,
+        SummarizationConfig, TranslationConfig,
+    };
 
     #[test]
     fn test_effective_disable_ocr_from_top_level_flag() {
@@ -819,5 +860,104 @@ mod tests {
             Some(60),
             "absent field must use default_extraction_timeout() -> Some(60)"
         );
+    }
+
+    #[test]
+    fn test_needs_image_data_includes_qr_codes() {
+        let config = ExtractionConfig {
+            qr_codes: Some(true),
+            ..Default::default()
+        };
+        assert!(config.needs_image_data());
+
+        let config = ExtractionConfig {
+            qr_codes: Some(false),
+            ..Default::default()
+        };
+        assert!(!config.needs_image_data());
+    }
+
+    #[test]
+    fn test_with_file_overrides_applies_enrichment_fields() {
+        let llm = LlmConfig {
+            model: "test/model".to_string(),
+            ..Default::default()
+        };
+        let url = super::UrlExtractionConfig {
+            max_total_urls: Some(7),
+            ..Default::default()
+        };
+
+        let overrides = FileExtractionConfig {
+            url: Some(url),
+            ner: Some(NerConfig::default()),
+            redaction: Some(RedactionConfig::default()),
+            summarization: Some(SummarizationConfig {
+                max_tokens: Some(32),
+                ..Default::default()
+            }),
+            translation: Some(TranslationConfig {
+                target_lang: "de".to_string(),
+                source_lang: Some("en".to_string()),
+                preserve_markup: true,
+                llm: llm.clone(),
+            }),
+            page_classification: Some(PageClassificationConfig {
+                prompt_template: None,
+                labels: vec!["invoice".to_string()],
+                multi_label: false,
+                llm: llm.clone(),
+            }),
+            captioning: Some(CaptioningConfig {
+                llm,
+                prompt: Some("caption".to_string()),
+                min_image_area: 42,
+            }),
+            qr_codes: Some(true),
+            ..Default::default()
+        };
+
+        let resolved = ExtractionConfig::default().with_file_overrides(&overrides);
+        assert_eq!(resolved.url.max_total_urls, Some(7));
+        assert!(resolved.ner.is_some());
+        assert!(resolved.redaction.is_some());
+        assert_eq!(resolved.summarization.as_ref().and_then(|c| c.max_tokens), Some(32));
+        assert_eq!(
+            resolved
+                .translation
+                .as_ref()
+                .map(|c| (c.target_lang.as_str(), c.preserve_markup)),
+            Some(("de", true))
+        );
+        assert_eq!(
+            resolved.page_classification.as_ref().map(|c| c.labels.as_slice()),
+            Some(&["invoice".to_string()][..])
+        );
+        assert_eq!(
+            resolved
+                .captioning
+                .as_ref()
+                .map(|c| (c.prompt.as_deref(), c.min_image_area)),
+            Some((Some("caption"), 42))
+        );
+        assert_eq!(resolved.qr_codes, Some(true));
+    }
+
+    #[cfg(feature = "html")]
+    #[test]
+    fn test_with_file_overrides_applies_html_output() {
+        let overrides = FileExtractionConfig {
+            html_output: Some(crate::core::config::html_output::HtmlOutputConfig {
+                css: Some(".kb-p { color: red; }".to_string()),
+                embed_css: false,
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let resolved = ExtractionConfig::default().with_file_overrides(&overrides);
+        let html_output = resolved.html_output.expect("html output override should apply");
+        assert_eq!(html_output.css.as_deref(), Some(".kb-p { color: red; }"));
+        assert!(!html_output.embed_css);
     }
 }

@@ -3,6 +3,9 @@
 //! These tests verify that .pages, .numbers, and .key files can be
 //! opened, parsed, and produce non-empty text output.
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 #[cfg(feature = "iwork")]
 mod iwork_tests {
     use std::path::PathBuf;
@@ -59,7 +62,7 @@ mod iwork_tests {
         let content = std::fs::read(&path).expect("Failed to read test.numbers");
         let config = ExtractionConfig::default();
 
-        let result = xberg::extract_bytes(&content, "application/x-iwork-numbers-sffnumbers", &config)
+        let result = extract_bytes_document(&content, "application/x-iwork-numbers-sffnumbers", &config)
             .await
             .expect("Extraction should not fail on valid file");
 
@@ -85,7 +88,7 @@ mod iwork_tests {
 
         // Extraction should not panic — it may produce empty content if the
         // fixture is a stub (non-Snappy compressed IWA), but should not error.
-        let result = xberg::extract_bytes(&content, "application/x-iwork-pages-sffpages", &config)
+        let result = extract_bytes_document(&content, "application/x-iwork-pages-sffpages", &config)
             .await
             .expect("Extraction should not fail on valid ZIP file");
 

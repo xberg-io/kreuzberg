@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 
@@ -13,9 +13,11 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('scanned.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config);
 
-echo "Content length: " . strlen($result->getContent()) . " characters\n";
-echo "Tables detected: " . count($result->getTables()) . "\n";
+$result = $resultOutput->results[0];
+
+echo "Content length: " . strlen($result->content) . " characters\n";
+echo "Tables detected: " . count($result->tables) . "\n";
 ?>
 ```

@@ -9,21 +9,22 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	fmt.Println("Content:")
-	fmt.Println(result.Content)
+	fmt.Println(result.Results[0].Content)
 
 	fmt.Println("\nMetadata:")
-	if result.Metadata != nil {
-		fmt.Printf("Title: %v\n", result.Metadata["title"])
-		fmt.Printf("Author: %v\n", result.Metadata["author"])
+	if result.Results[0].Metadata != nil {
+		fmt.Printf("Title: %v\n", result.Results[0].Metadata["title"])
+		fmt.Printf("Author: %v\n", result.Results[0].Metadata["author"])
 	}
 
-	fmt.Printf("\nTables found: %d\n", len(result.Tables))
-	fmt.Printf("Images found: %d\n", len(result.Images))
+	fmt.Printf("\nTables found: %d\n", len(result.Results[0].Tables))
+	fmt.Printf("Images found: %d\n", len(result.Results[0].Images))
 }
 ```

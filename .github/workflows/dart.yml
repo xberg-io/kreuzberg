@@ -2,7 +2,7 @@ name: Dart
 
 on:
   workflow_dispatch:
-  # Dart/Gleam/Zig/Kotlin/Swift bindings are alef-experimental (added v0.10.0).
+  # Dart/Zig/Swift bindings are alef-experimental.
   # Codegen bugs (wrong List<T> syntax, missing bridge file, etc.) make
   # `dart analyze` fail; re-enable on push/PR once alef-backend-dart matures.
 

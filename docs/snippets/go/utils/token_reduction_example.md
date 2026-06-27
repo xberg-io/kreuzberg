@@ -9,20 +9,21 @@ import (
 )
 
 func main() {
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:             "moderate",
 			PreserveMarkdown: true,
 		},
 	}
 
-	result, err := xberg.ExtractSync("verbose_document.pdf", config)
+	input := xberg.ExtractInputFromURI("verbose_document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	fmt.Printf("Original tokens: %v\n", result.Metadata.Additional["original_token_count"])
-	fmt.Printf("Reduced tokens: %v\n", result.Metadata.Additional["token_count"])
-	fmt.Printf("Reduction ratio: %v\n", result.Metadata.Additional["token_reduction_ratio"])
+	fmt.Printf("Original tokens: %v\n", result.Results[0].Metadata.Additional["original_token_count"])
+	fmt.Printf("Reduced tokens: %v\n", result.Results[0].Metadata.Additional["token_count"])
+	fmt.Printf("Reduction ratio: %v\n", result.Results[0].Metadata.Additional["token_reduction_ratio"])
 }
 ```

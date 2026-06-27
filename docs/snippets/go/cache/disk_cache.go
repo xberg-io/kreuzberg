@@ -20,19 +20,27 @@ func main() {
 	}
 
 	fmt.Println("First extraction (will be cached)...")
-	result1, err := xberg.ExtractSync("document.pdf", nil, config)
+	input1 := xberg.ExtractInputFromURI("document.pdf")
+	result1, err := xberg.Extract(*input1, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
-	fmt.Printf("  - Content length: %d\n", len(result1.Content))
+	if len(result1.Results) > 0 {
+		fmt.Printf("  - Content length: %d\n", len(result1.Results[0].Content))
+	}
 
 	fmt.Println("\nSecond extraction (from cache)...")
-	result2, err := xberg.ExtractSync("document.pdf", nil, config)
+	input2 := xberg.ExtractInputFromURI("document.pdf")
+	result2, err := xberg.Extract(*input2, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
-	fmt.Printf("  - Content length: %d\n", len(result2.Content))
+	if len(result2.Results) > 0 {
+		fmt.Printf("  - Content length: %d\n", len(result2.Results[0].Content))
+	}
 
-	fmt.Printf("\nResults are identical: %v\n", result1.Content == result2.Content)
+	if len(result1.Results) > 0 && len(result2.Results) > 0 {
+		fmt.Printf("\nResults are identical: %v\n", result1.Results[0].Content == result2.Results[0].Content)
+	}
 }
 ```

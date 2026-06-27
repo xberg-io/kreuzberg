@@ -2,14 +2,16 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 
 $config = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$result = Xberg::extractSync('scanned_document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config);
+
+$result = $resultOutput->results[0];
 
 if ($result->getQualityScore() !== null) {
     $score = $result->getQualityScore();
@@ -22,6 +24,6 @@ if ($result->getQualityScore() !== null) {
     echo "Quality score not available.\n";
 }
 
-echo "Extracted text length: " . strlen($result->getContent()) . " characters\n";
+echo "Extracted text length: " . strlen($result->content) . " characters\n";
 ?>
 ```

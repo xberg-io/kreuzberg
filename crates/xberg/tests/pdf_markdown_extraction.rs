@@ -6,10 +6,10 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
-use xberg::extract_file_sync;
 
 #[ignore = "TODO: pdf_oxide upstream — https://github.com/yfedoseev/pdf_oxide/issues/484"]
 #[test]
@@ -25,7 +25,7 @@ fn test_pdf_markdown_extraction_produces_structured_output() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF as markdown");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("Should extract PDF as markdown");
 
     assert!(
         !result.content.trim().is_empty(),
@@ -66,7 +66,7 @@ fn test_pdf_plain_extraction_unchanged() {
 
     // Default config = Plain output format
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF as plain text");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("Should extract PDF as plain text");
 
     assert!(!result.content.trim().is_empty(), "Plain content should not be empty");
     assert_eq!(
@@ -85,14 +85,14 @@ fn test_pdf_markdown_vs_plain_has_more_structure() {
 
     // Extract as plain
     let plain_config = ExtractionConfig::default();
-    let plain_result = extract_file_sync(&path, None, &plain_config).expect("Plain extraction failed");
+    let plain_result = extract_uri_document_blocking(&path, None, &plain_config).expect("Plain extraction failed");
 
     // Extract as markdown
     let md_config = ExtractionConfig {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let md_result = extract_file_sync(&path, None, &md_config).expect("Markdown extraction failed");
+    let md_result = extract_uri_document_blocking(&path, None, &md_config).expect("Markdown extraction failed");
 
     println!("=== Plain (first 500 chars) ===");
     println!("{}", &plain_result.content[..plain_result.content.len().min(500)]);
@@ -127,7 +127,7 @@ fn test_pdf_markdown_produces_headings_via_font_size_clustering() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF as markdown");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("Should extract PDF as markdown");
 
     let heading_lines: Vec<&str> = result.content.lines().filter(|l| l.trim().starts_with('#')).collect();
 
@@ -160,7 +160,7 @@ fn test_pdf_markdown_heuristic_fallback_preserves_paragraphs() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("Should extract PDF");
 
     let normalized = result.content.replace("\r\n", "\n");
     let para_breaks = normalized.matches("\n\n").count();

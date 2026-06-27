@@ -143,9 +143,9 @@ defmodule XbergMCPClient do
   Sends concurrent extraction requests for better throughput with large
   document collections.
   """
-  @spec batch_extract(Config.t(), [String.t()], keyword()) ::
+  @spec extract_batch(Config.t(), [String.t()], keyword()) ::
           {:ok, [map()]} | {:error, String.t()}
-  def batch_extract(config, file_paths, opts \\ []) do
+  def extract_batch(config, file_paths, opts \\ []) do
     Logger.info("Batch extracting #{length(file_paths)} documents")
 
     results =
@@ -300,7 +300,7 @@ documents = [
   "doc3.pdf"
 ]
 
-case XbergMCPClient.batch_extract(config, documents) do
+case XbergMCPClient.extract_batch(config, documents) do
   {:ok, results} ->
     IO.puts("Batch extraction complete!")
     successful = Enum.count(results, &match?({:ok, _}, &1))

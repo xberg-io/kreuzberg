@@ -1,6 +1,6 @@
 //! Hostile-input integration tests for the security validators wired into
 //! extractors. Each test feeds a synthesised attack payload through the
-//! public `extract_bytes_sync` entry point and asserts the extraction fails
+//! public `extract_bytes_document_blocking` entry point and asserts the extraction fails
 //! with `XbergError::Security`.
 //!
 //! The validators (`StringGrowthValidator`, `IterationValidator`,
@@ -14,8 +14,10 @@
 //! more extractors get the `SecurityBudget` parameter threaded through their
 //! parser loops.
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes_sync;
 use xberg::extractors::security::SecurityLimits;
 
 /// Build a `SecurityLimits` with everything dialled to a small cap so a
@@ -55,7 +57,7 @@ fn xml_depth_bomb_fires_security_error() {
     payload.push_str("</root>");
 
     let cfg = config_with_tight_limits();
-    let err = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let err = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect_err("hostile XML must not extract successfully");
 
     assert!(
@@ -78,7 +80,7 @@ fn xml_oversize_text_fires_security_error() {
     let payload = format!("<root>{}</root>", huge_text);
 
     let cfg = config_with_tight_limits();
-    let err = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let err = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect_err("oversize text must not extract successfully");
 
     assert!(
@@ -100,7 +102,7 @@ fn xml_oversize_attribute_fires_security_error() {
     let payload = format!("<root attr=\"{}\">ok</root>", huge_attr);
 
     let cfg = config_with_tight_limits();
-    let err = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let err = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect_err("oversize attribute must not extract successfully");
 
     assert!(
@@ -131,7 +133,7 @@ fn xml_string_growth_fires_security_error() {
     payload.push_str("</root>");
 
     let cfg = config_with_tight_limits();
-    let err = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let err = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect_err("oversized cumulative content must not extract successfully");
 
     assert!(
@@ -159,7 +161,7 @@ fn xml_iteration_bomb_fires_security_error() {
     payload.push_str("</root>");
 
     let cfg = config_with_tight_limits();
-    let err = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let err = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect_err("oversized iteration count must not extract successfully");
 
     assert!(
@@ -181,7 +183,7 @@ fn xml_iteration_bomb_fires_security_error() {
 fn xml_benign_input_extracts_successfully() {
     let payload = "<root><greeting>hello world</greeting></root>";
     let cfg = config_with_tight_limits();
-    let result = extract_bytes_sync(payload.as_bytes(), "application/xml", &cfg)
+    let result = extract_bytes_document_blocking(payload.as_bytes(), "application/xml", &cfg)
         .expect("benign XML must extract under the same tight limits");
     assert!(
         result.content.contains("hello world"),

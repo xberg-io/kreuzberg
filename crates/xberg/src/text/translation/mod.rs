@@ -1,6 +1,6 @@
 //! Document translation post-processor implementation.
 //!
-//! Translates `ExtractionResult::content`, optionally `formatted_content`, and
+//! Translates `ExtractedDocument::content`, optionally `formatted_content`, and
 //! each `Chunk::content` into the language requested by
 //! [`TranslationConfig::target_lang`](crate::core::config::TranslationConfig).
 //!

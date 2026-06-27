@@ -24,6 +24,7 @@ config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-Xberg.extract_sync('document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+Xberg.extract(input, config)
 puts "Processed: #{plugin.count}"
 ```

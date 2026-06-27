@@ -15,7 +15,7 @@ use crate::types::{extraction::ArchiveEntry, tables::Table};
 // remains stable. The canonical definitions are in `crate::types::revisions`.
 pub use crate::types::revisions::{CellChange, DiffLine};
 
-/// Options controlling how two `ExtractionResult` values are compared.
+/// Options controlling how two `ExtractedDocument` values are compared.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct DiffOptions {
@@ -41,7 +41,7 @@ impl Default for DiffOptions {
     }
 }
 
-/// The complete diff between two `ExtractionResult` values.
+/// The complete diff between two `ExtractedDocument` values.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct ExtractionDiff {
@@ -112,7 +112,7 @@ pub struct EmbeddedChanges {
     pub removed: Vec<ArchiveEntry>,
     /// Children present in both but with differing content (matched by `path`).
     ///
-    /// Each entry holds the diff of the nested `ExtractionResult`.
+    /// Each entry holds the diff of the nested `ExtractedDocument`.
     pub changed: Vec<EmbeddedDiff>,
 }
 

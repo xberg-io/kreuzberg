@@ -3,9 +3,9 @@
 Create a stateful post-processor that maintains state across multiple extraction calls.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extract } from "xberg-wasm";
+import { initWasm, registerPostProcessor, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Create a stateful post-processor using a closure
 function createStatefulProcessor() {

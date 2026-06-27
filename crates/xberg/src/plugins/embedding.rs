@@ -44,8 +44,8 @@ use std::sync::Arc;
 
 /// Trait for in-process embedding backend plugins.
 ///
-/// Async to match the convention used by [`crate::plugins::OcrBackend`],
-/// [`crate::plugins::DocumentExtractor`], and [`crate::plugins::PostProcessor`].
+/// Async to match the convention used by other plugin hooks such as
+/// [`crate::plugins::OcrBackend`] and [`crate::plugins::PostProcessor`].
 /// Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
 /// C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
 /// equivalent to satisfy the async signature.

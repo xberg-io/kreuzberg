@@ -82,11 +82,12 @@ func main() {
 	log.Println("[Main] Validator registered with logging enabled")
 
 	// Extract with logging
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Printf("[Main] Extraction complete: %d bytes content", len(result.Content))
+	log.Printf("[Main] Extraction complete: %d bytes content", len(result.Results[0].Content))
 }
 ```

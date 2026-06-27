@@ -14,7 +14,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.Extract("document.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 if (result.Images != null)
 {
     Console.WriteLine($"Extracted images: {result.Images.Count}");

@@ -12,7 +12,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.Extract("encrypted.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("encrypted.pdf"), config)).Results[0];
 if (result.Metadata != null)
 {
     Console.WriteLine($"Title: {result.Metadata.Title}");

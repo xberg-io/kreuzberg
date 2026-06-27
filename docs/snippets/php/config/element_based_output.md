@@ -1,26 +1,27 @@
 ```php title="Element-Based Output (PHP)"
 <?php
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 // Configure element-based output
-$config = new ExtractionConfig();
+$config = ExtractionConfig::default();
 $config->setOutputFormat('element_based');
 
 // Extract document
-$result = Xberg::extractSync('document.pdf', $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+$result = $resultOutput->results[0];
 
 // Access elements
 foreach ($result->getElements() as $element) {
     echo "Type: " . $element->getElementType() . "\n";
     echo "Text: " . substr($element->getText(), 0, 100) . "\n";
 
-    if ($element->getMetadata()->getPageNumber()) {
-        echo "Page: " . $element->getMetadata()->getPageNumber() . "\n";
+    if ($element->metadata->pageNumber) {
+        echo "Page: " . $element->metadata->pageNumber . "\n";
     }
 
-    if ($element->getMetadata()->getCoordinates()) {
-        $coords = $element->getMetadata()->getCoordinates();
+    if ($element->metadata->coordinates) {
+        $coords = $element->metadata->coordinates;
         echo sprintf("Coords: (%s, %s) - (%s, %s)\n",
             $coords->getLeft(), $coords->getTop(),
             $coords->getRight(), $coords->getBottom());
@@ -35,7 +36,7 @@ $titles = array_filter($result->getElements(), function($e) {
 });
 
 foreach ($titles as $title) {
-    $level = $title->getMetadata()->getAdditional()['level'] ?? 'unknown';
+    $level = $title->metadata->additional['level'] ?? 'unknown';
     echo "[{$level}] {$title->getText()}\n";
 }
 ?>

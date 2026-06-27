@@ -9,10 +9,10 @@
 #![cfg(all(feature = "pdf", feature = "chunking"))]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ChunkingConfig, ExtractionConfig};
-use xberg::extract_file_sync;
 
 /// All chunks produced from a multi-page PDF must have non-null page metadata.
 ///
@@ -35,7 +35,7 @@ fn chunks_from_multi_page_pdf_all_have_page_metadata() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(get_test_file_path("pdf/multi_page.pdf"), None, &config)
+    let result = extract_uri_document_blocking(get_test_file_path("pdf/multi_page.pdf"), None, &config)
         .expect("multi_page.pdf extraction should succeed");
 
     let chunks = result.chunks.expect("chunking was configured — chunks must be present");
@@ -81,7 +81,7 @@ fn chunks_from_multi_page_pdf_have_monotonic_page_numbers() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(get_test_file_path("pdf/multi_page.pdf"), None, &config)
+    let result = extract_uri_document_blocking(get_test_file_path("pdf/multi_page.pdf"), None, &config)
         .expect("multi_page.pdf extraction should succeed");
 
     let chunks = result.chunks.expect("chunking was configured — chunks must be present");
@@ -132,7 +132,7 @@ fn chunks_from_single_page_pdf_are_not_null() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(get_test_file_path("pdf/single_page.pdf"), None, &config)
+    let result = extract_uri_document_blocking(get_test_file_path("pdf/single_page.pdf"), None, &config)
         .expect("single_page.pdf extraction should succeed");
 
     // chunks must be Some(...) — null means chunking silently failed (see issue #1105).

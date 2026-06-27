@@ -42,7 +42,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('scanned.pdf', null, config);
-  print('OCR text: ${result.content}');
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'scanned.pdf'), config: config);
+  print('OCR text: ${result.results[0].content}');
 }
 ```

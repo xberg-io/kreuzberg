@@ -1,9 +1,12 @@
 # Audio and Video Transcription
 
-The `transcription` Cargo feature adds speech-to-text extraction for audio and
-video MIME types via Whisper ONNX models. Enable the feature and set a
-`TranscriptionConfig` block in your `ExtractionConfig` to produce transcripts
-from audio and video files.
+Turn audio and video into searchable, model-ready transcripts. Whisper-based speech-to-text with automatic language detection and multi-language support, automatic sample-rate and channel handling, chunking for files over 30 seconds, and configurable model sizes from tiny (10 MB) to large.
+
+See the [TranscriptionConfig reference](../reference/configuration.md#transcriptionconfig) for all configuration options.
+
+## Setup
+
+Enable the `transcription` Cargo feature and set a `TranscriptionConfig` block in your `ExtractionConfig` to extract transcripts from audio and video files.
 
 ## Supported MIME types
 
@@ -67,12 +70,9 @@ Add the feature to `Cargo.toml`:
 xberg = { version = "5", features = ["transcription"] }
 ```
 
-### Async
-
 ```rust
-use xberg::extract;
-use xberg::core::config::ExtractionConfig;
 use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
+use xberg::{extract, ExtractInput, ExtractionConfig};
 
 let config = ExtractionConfig {
     transcription: Some(TranscriptionConfig {
@@ -85,29 +85,11 @@ let config = ExtractionConfig {
 };
 
 let bytes = std::fs::read("recording.wav")?;
-let result = extract(&bytes, "audio/wav", &config).await?;
-println!("{}", result.content); // transcript
-```
-
-### Sync
-
-```rust
-use xberg::extract;
-use xberg::core::config::ExtractionConfig;
-use xberg::core::config::transcription::{TranscriptionConfig, WhisperModel};
-
-let config = ExtractionConfig {
-    transcription: Some(TranscriptionConfig {
-        enabled: true,
-        model: WhisperModel::Tiny,
-        ..Default::default()
-    }),
-    ..Default::default()
-};
-
-let bytes = std::fs::read("recording.mp3")?;
-let result = extract(&bytes, "audio/mpeg", &config)?;
-println!("{}", result.content);
+let output = extract(
+    ExtractInput::from_bytes(bytes, "audio/wav", Some("recording.wav".to_string())),
+    &config,
+).await?;
+println!("{}", output.results[0].content); // transcript
 ```
 
 ## Notes
@@ -120,4 +102,4 @@ println!("{}", result.content);
   sessions are loaded once and reused across calls.
 - Async inference calls are bounded by a semaphore sized to
   `resolve_thread_budget`, matching the same limit used by the embedding and
-  reranking pipelines. Sync calls run on the caller thread.
+  reranking pipelines.

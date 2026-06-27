@@ -33,8 +33,8 @@ pub(crate) fn extract_usage_from_embedding(response: &liter_llm::EmbeddingRespon
     })
 }
 
-/// Append an `LlmUsage` entry to an `ExtractionResult`, lazily initializing the vec.
-pub(crate) fn push_llm_usage(result: &mut crate::ExtractionResult, usage: Option<LlmUsage>) {
+/// Append an `LlmUsage` entry to an `ExtractedDocument`, lazily initializing the vec.
+pub(crate) fn push_llm_usage(result: &mut crate::ExtractedDocument, usage: Option<LlmUsage>) {
     if let Some(u) = usage {
         result.llm_usage.get_or_insert_with(Vec::new).push(u);
     }

@@ -140,6 +140,7 @@
     ".cursor/rules/async-and-concurrency.mdc",
     ".cursor/rules/atomic-commits.mdc",
     ".cursor/rules/avoid-duplication.mdc",
+    ".cursor/rules/basemind-tools.mdc",
     ".cursor/rules/batch-operations.mdc",
     ".cursor/rules/bindings.mdc",
     ".cursor/rules/branch-hygiene.mdc",

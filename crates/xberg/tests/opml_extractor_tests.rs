@@ -14,9 +14,9 @@
 
 use std::path::PathBuf;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Helper to resolve workspace root and construct test file paths
 fn get_test_opml_path(filename: &str) -> PathBuf {
@@ -67,7 +67,7 @@ async fn test_opml_rss_feeds_extraction() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract RSS feeds OPML successfully");
 
@@ -121,7 +121,7 @@ async fn test_opml_podcast_directory_extraction() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract podcast directory OPML successfully");
 
@@ -176,7 +176,7 @@ async fn test_opml_outline_hierarchy_extraction() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract outline OPML successfully");
 
@@ -250,7 +250,7 @@ async fn test_opml_metadata_extraction_complete() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract metadata successfully");
 
@@ -305,7 +305,7 @@ async fn test_opml_feed_url_extraction() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract feed names successfully");
 
@@ -338,13 +338,13 @@ async fn test_opml_mime_type_handling() {
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
 
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract with text/x-opml MIME type");
 
     assert_eq!(result.mime_type, "text/x-opml", "MIME type should be preserved");
 
-    let result2 = extract_bytes(&content, "application/xml+opml", &ExtractionConfig::default())
+    let result2 = extract_bytes_document(&content, "application/xml+opml", &ExtractionConfig::default())
         .await
         .expect("Should extract with application/xml+opml MIME type");
 
@@ -378,7 +378,7 @@ async fn test_opml_special_characters_handling() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract with special characters");
 
@@ -411,7 +411,7 @@ async fn test_opml_deep_nesting_hierarchy() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read OPML file");
-    let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
         .await
         .expect("Should extract deep nesting successfully");
 
@@ -459,7 +459,7 @@ async fn test_opml_content_quality_all_files() {
         }
 
         let content = std::fs::read(&test_file).expect("Should read OPML file");
-        let result = extract_bytes(&content, "text/x-opml", &ExtractionConfig::default())
+        let result = extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default())
             .await
             .unwrap_or_else(|_| panic!("Should extract {}", opml_file));
 
@@ -500,7 +500,7 @@ async fn test_opml_extractor_registration() {
     use xberg::plugins::registry::get_document_extractor_registry;
 
     // Trigger initialization via a real extraction call so the registry is populated.
-    let _ = xberg::extract_bytes(
+    let _ = extract_bytes_document(
         b"<opml/>",
         "text/x-opml",
         &xberg::core::config::ExtractionConfig::default(),
@@ -548,7 +548,7 @@ async fn test_opml_extraction_statistics() {
         }
 
         match std::fs::read(&test_file) {
-            Ok(content) => match extract_bytes(&content, "text/x-opml", &ExtractionConfig::default()).await {
+            Ok(content) => match extract_bytes_document(&content, "text/x-opml", &ExtractionConfig::default()).await {
                 Ok(result) => {
                     total_files += 1;
                     total_content_bytes += result.content.len();

@@ -29,7 +29,7 @@
 //! use std::sync::Arc;
 //!
 //! # struct MyExtractor;
-//! # use xberg::types::{ExtractionResult, Metadata};
+//! # use xberg::{ExtractInput, ExtractionConfig, ExtractedDocument};
 //! # impl xberg::plugins::Plugin for MyExtractor {
 //! #     fn name(&self) -> &str { "my" }
 //! #     fn version(&self) -> String { "1.0.0".to_string() }
@@ -38,13 +38,8 @@
 //! # }
 //! # #[async_trait::async_trait]
 //! # impl DocumentExtractor for MyExtractor {
-//! #     async fn extract_bytes(&self, _: &[u8], _: &str, _: &xberg::ExtractionConfig)
-//! #         -> xberg::Result<ExtractionResult> {
-//! #         Ok(ExtractionResult::default())
-//! #     }
-//! #     async fn extract_file(&self, _: &std::path::Path, _: &str, _: &xberg::ExtractionConfig)
-//! #         -> xberg::Result<ExtractionResult> {
-//! #         Ok(ExtractionResult::default())
+//! #     async fn extract(&self, _: ExtractInput, _: &ExtractionConfig) -> xberg::Result<ExtractedDocument> {
+//! #         Ok(ExtractedDocument::default())
 //! #     }
 //! #     fn supported_mime_types(&self) -> &[&str] { &[] }
 //! #     fn priority(&self) -> i32 { 50 }
@@ -57,7 +52,7 @@
 //!
 //! // 3. Register with registry (calls initialize internally)
 //! let registry = get_document_extractor_registry();
-//! let mut registry = registry.write().unwrap();
+//! let mut registry = registry.write();
 //! registry.register(plugin)?;
 //! # Ok::<(), xberg::XbergError>(())
 //! ```
@@ -66,10 +61,9 @@
 //!
 //! ```rust
 //! use xberg::plugins::{Plugin, DocumentExtractor};
-//! use xberg::{Result, ExtractionConfig};
-//! use xberg::types::{ExtractionResult, Metadata};
+//! use xberg::{ExtractInput, ExtractionConfig, Result};
+//! use xberg::types::{ExtractedDocument, Metadata};
 //! use async_trait::async_trait;
-//! use std::path::Path;
 //!
 //! struct CustomJsonExtractor;
 //!
@@ -88,28 +82,22 @@
 //!
 //! #[async_trait]
 //! impl DocumentExtractor for CustomJsonExtractor {
-//!     async fn extract_bytes(&self, content: &[u8], _mime_type: &str, _config: &ExtractionConfig)
-//!         -> Result<ExtractionResult> {
+//!     async fn extract(&self, input: ExtractInput, _config: &ExtractionConfig)
+//!         -> Result<ExtractedDocument> {
 //!         // Parse JSON and extract all string values
-//!         let json: serde_json::Value = serde_json::from_slice(content)?;
+//!         let content = input.bytes.unwrap_or_default();
+//!         let json: serde_json::Value = serde_json::from_slice(&content)?;
 //!         let extracted_text = extract_strings_from_json(&json);
 //!
 //!         let mut metadata = Metadata::default();
 //!         metadata.additional.insert("extracted_fields".to_string().into(), serde_json::json!(true));
 //!
-//!         Ok(ExtractionResult {
+//!         Ok(ExtractedDocument {
 //!             content: extracted_text,
 //!             mime_type: std::borrow::Cow::Borrowed("application/json"),
 //!             metadata,
 //!             ..Default::default()
 //!         })
-//!     }
-//!
-//!     async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig)
-//!         -> Result<ExtractionResult> {
-//!         // Read file and delegate to extract_bytes
-//!         let content = tokio::fs::read(path).await?;
-//!         self.extract_bytes(&content, mime_type, config).await
 //!     }
 //!
 //!     fn supported_mime_types(&self) -> &[&str] {
@@ -190,6 +178,7 @@ pub use embedding::{
     EmbeddingBackend, clear_embedding_backends, list_embedding_backends, register_embedding_backend,
     unregister_embedding_backend,
 };
+pub(crate) use extractor::InternalDocumentExtractor;
 pub use extractor::{
     DocumentExtractor, clear_document_extractors, list_document_extractors, register_document_extractor,
     unregister_document_extractor,
@@ -201,6 +190,7 @@ pub use processor::{
     PostProcessor, ProcessingStage, clear_post_processors, list_post_processors, register_post_processor,
     unregister_post_processor,
 };
+pub(crate) use renderer::InternalRenderer;
 pub use renderer::{Renderer, clear_renderers, list_renderers, register_renderer, unregister_renderer};
 pub use reranker::{
     RerankerBackend, clear_reranker_backends, list_reranker_backends, register_reranker_backend,

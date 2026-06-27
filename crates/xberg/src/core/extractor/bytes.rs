@@ -10,7 +10,7 @@ use crate::Result;
 use crate::XbergError;
 use crate::core::config::ExtractionConfig;
 use crate::core::mime::{LEGACY_POWERPOINT_MIME_TYPE, LEGACY_WORD_MIME_TYPE};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 use super::file::extract_bytes_with_extractor;
 
@@ -31,7 +31,7 @@ use super::file::extract_bytes_with_extractor;
 ///
 /// # Returns
 ///
-/// An `ExtractionResult` containing the extracted content and metadata.
+/// An `ExtractedDocument` containing the extracted content and metadata.
 ///
 /// # Errors
 ///
@@ -67,7 +67,7 @@ pub(crate) async fn extract_bytes(
     content: &[u8],
     mime_type: &str,
     config: &ExtractionConfig,
-) -> Result<ExtractionResult> {
+) -> Result<ExtractedDocument> {
     use crate::core::mime;
 
     let extraction_future = async {

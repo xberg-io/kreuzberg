@@ -4,23 +4,42 @@
 //! All extractors implement the `DocumentExtractor` plugin trait.
 
 use crate::Result;
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
 use crate::core::config::ExtractionConfig;
 use crate::plugins::registry::get_document_extractor_registry;
 
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
 use crate::types::internal::InternalDocument;
 use once_cell::sync::OnceCell;
 use std::sync::Arc;
 
-/// Trait for extractors that can work synchronously (WASM-compatible).
+/// Trait for extractors that share a blocking parser implementation.
 ///
-/// This trait defines the synchronous extraction interface for WASM targets and other
-/// environments where async/tokio runtimes are not available or desirable.
+/// This trait defines a synchronous extraction interface for formats whose async
+/// extractor can delegate to a local blocking parser.
 ///
 /// # Implementation
 ///
-/// Extractors that need to support WASM should implement this trait in addition to
-/// the async `DocumentExtractor` trait. This allows the same extractor to work in both
-/// environments by delegating to the sync implementation.
+/// Extractors can implement this trait in addition to
+/// `InternalDocumentExtractor` when their parser does not need an async runtime.
 ///
 /// # MIME Type Validation
 ///
@@ -30,26 +49,26 @@ use std::sync::Arc;
 ///
 /// ```rust,ignore
 /// impl SyncExtractor for PlainTextExtractor {
-///     fn extract_sync(&self, content: &[u8], config: &ExtractionConfig) -> Result<ExtractionResult> {
+///     fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
 ///         let text = String::from_utf8_lossy(content).to_string();
-///         Ok(ExtractionResult {
-///             content: text,
-///             mime_type: "text/plain".to_string(),
-///             metadata: Metadata::default(),
-///             tables: vec![],
-///             detected_languages: None,
-///             chunks: None,
-///             images: None,
-///         })
+///         Ok(InternalDocument::from_text(text, mime_type))
 ///     }
 /// }
 /// ```
-#[cfg_attr(alef, alef(skip))]
-pub trait SyncExtractor {
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
+pub(crate) trait SyncExtractor {
     /// Extract content from a byte array synchronously.
     ///
     /// This method performs extraction without requiring an async runtime.
-    /// It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
     ///
     /// # Arguments
     ///
@@ -335,92 +354,92 @@ pub(crate) fn register_default_extractors() -> Result<()> {
     let registry = get_document_extractor_registry();
     let mut registry = registry.write();
 
-    registry.register(Arc::new(PlainTextExtractor::new()))?;
-    registry.register(Arc::new(MarkdownExtractor::new()))?;
-    registry.register(Arc::new(StructuredExtractor::new()))?;
-    registry.register(Arc::new(CsvExtractor::new()))?;
+    registry.register_internal(Arc::new(PlainTextExtractor::new()))?;
+    registry.register_internal(Arc::new(MarkdownExtractor::new()))?;
+    registry.register_internal(Arc::new(StructuredExtractor::new()))?;
+    registry.register_internal(Arc::new(CsvExtractor::new()))?;
 
     #[cfg(any(feature = "ocr", feature = "ocr-wasm", feature = "ocr-pipeline"))]
-    registry.register(Arc::new(ImageExtractor::new()))?;
+    registry.register_internal(Arc::new(ImageExtractor::new()))?;
 
     #[cfg(feature = "xml")]
     {
-        registry.register(Arc::new(XmlExtractor::new()))?;
-        registry.register(Arc::new(JatsExtractor::new()))?;
-        registry.register(Arc::new(DocbookExtractor::new()))?;
+        registry.register_internal(Arc::new(XmlExtractor::new()))?;
+        registry.register_internal(Arc::new(JatsExtractor::new()))?;
+        registry.register_internal(Arc::new(DocbookExtractor::new()))?;
     }
 
     #[cfg(feature = "pdf")]
-    registry.register(Arc::new(PdfExtractor::new()))?;
+    registry.register_internal(Arc::new(PdfExtractor::new()))?;
 
     #[cfg(any(feature = "excel", feature = "excel-wasm"))]
-    registry.register(Arc::new(ExcelExtractor::new()))?;
+    registry.register_internal(Arc::new(ExcelExtractor::new()))?;
 
-    registry.register(Arc::new(DjotExtractor::new()))?;
+    registry.register_internal(Arc::new(DjotExtractor::new()))?;
 
     #[cfg(feature = "office")]
     {
-        registry.register(Arc::new(BibtexExtractor::new()))?;
-        registry.register(Arc::new(CitationExtractor::new()))?;
-        registry.register(Arc::new(EpubExtractor::new()))?;
-        registry.register(Arc::new(FictionBookExtractor::new()))?;
-        registry.register(Arc::new(RtfExtractor::new()))?;
-        registry.register(Arc::new(RstExtractor::new()))?;
-        registry.register(Arc::new(LatexExtractor::new()))?;
-        registry.register(Arc::new(JupyterExtractor::new()))?;
-        registry.register(Arc::new(OrgModeExtractor::new()))?;
-        registry.register(Arc::new(OpmlExtractor::new()))?;
-        registry.register(Arc::new(TypstExtractor::new()))?;
-        registry.register(Arc::new(DocExtractor::new()))?;
-        registry.register(Arc::new(DocxExtractor::new()))?;
-        registry.register(Arc::new(PptExtractor::new()))?;
-        registry.register(Arc::new(PptxExtractor::new()))?;
-        registry.register(Arc::new(OdtExtractor::new()))?;
-        registry.register(Arc::new(DbfExtractor::new()))?;
+        registry.register_internal(Arc::new(BibtexExtractor::new()))?;
+        registry.register_internal(Arc::new(CitationExtractor::new()))?;
+        registry.register_internal(Arc::new(EpubExtractor::new()))?;
+        registry.register_internal(Arc::new(FictionBookExtractor::new()))?;
+        registry.register_internal(Arc::new(RtfExtractor::new()))?;
+        registry.register_internal(Arc::new(RstExtractor::new()))?;
+        registry.register_internal(Arc::new(LatexExtractor::new()))?;
+        registry.register_internal(Arc::new(JupyterExtractor::new()))?;
+        registry.register_internal(Arc::new(OrgModeExtractor::new()))?;
+        registry.register_internal(Arc::new(OpmlExtractor::new()))?;
+        registry.register_internal(Arc::new(TypstExtractor::new()))?;
+        registry.register_internal(Arc::new(DocExtractor::new()))?;
+        registry.register_internal(Arc::new(DocxExtractor::new()))?;
+        registry.register_internal(Arc::new(PptExtractor::new()))?;
+        registry.register_internal(Arc::new(PptxExtractor::new()))?;
+        registry.register_internal(Arc::new(OdtExtractor::new()))?;
+        registry.register_internal(Arc::new(DbfExtractor::new()))?;
     }
 
     #[cfg(feature = "hwp")]
     {
-        registry.register(Arc::new(HwpExtractor::new()))?;
+        registry.register_internal(Arc::new(HwpExtractor::new()))?;
     }
 
     #[cfg(feature = "hwpx")]
     {
-        registry.register(Arc::new(HwpxExtractor::new()))?;
+        registry.register_internal(Arc::new(HwpxExtractor::new()))?;
     }
 
     #[cfg(feature = "iwork")]
     {
-        registry.register(Arc::new(PagesExtractor::new()))?;
-        registry.register(Arc::new(NumbersExtractor::new()))?;
-        registry.register(Arc::new(KeynoteExtractor::new()))?;
+        registry.register_internal(Arc::new(PagesExtractor::new()))?;
+        registry.register_internal(Arc::new(NumbersExtractor::new()))?;
+        registry.register_internal(Arc::new(KeynoteExtractor::new()))?;
     }
 
     #[cfg(feature = "mdx")]
-    registry.register(Arc::new(MdxExtractor::new()))?;
+    registry.register_internal(Arc::new(MdxExtractor::new()))?;
 
     #[cfg(feature = "email")]
     {
-        registry.register(Arc::new(EmailExtractor::new()))?;
-        registry.register(Arc::new(PstExtractor::new()))?;
+        registry.register_internal(Arc::new(EmailExtractor::new()))?;
+        registry.register_internal(Arc::new(PstExtractor::new()))?;
     }
 
     #[cfg(feature = "html")]
-    registry.register(Arc::new(HtmlExtractor::new()))?;
+    registry.register_internal(Arc::new(HtmlExtractor::new()))?;
 
     #[cfg(feature = "tree-sitter")]
-    registry.register(Arc::new(CodeExtractor::new()))?;
+    registry.register_internal(Arc::new(CodeExtractor::new()))?;
 
     #[cfg(feature = "archives")]
     {
-        registry.register(Arc::new(ZipExtractor::new()))?;
-        registry.register(Arc::new(TarExtractor::new()))?;
-        registry.register(Arc::new(SevenZExtractor::new()))?;
-        registry.register(Arc::new(GzipExtractor::new()))?;
+        registry.register_internal(Arc::new(ZipExtractor::new()))?;
+        registry.register_internal(Arc::new(TarExtractor::new()))?;
+        registry.register_internal(Arc::new(SevenZExtractor::new()))?;
+        registry.register_internal(Arc::new(GzipExtractor::new()))?;
     }
 
     #[cfg(feature = "transcription")]
-    registry.register(Arc::new(TranscriptionExtractor))?;
+    registry.register_internal(Arc::new(TranscriptionExtractor))?;
 
     Ok(())
 }

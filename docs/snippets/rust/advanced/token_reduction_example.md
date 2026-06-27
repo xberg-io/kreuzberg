@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract, ExtractionConfig, TokenReductionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, TokenReductionConfig};
 
 let config = ExtractionConfig {
     token_reduction: Some(TokenReductionConfig {
@@ -10,7 +10,8 @@ let config = ExtractionConfig {
     ..Default::default()
 };
 
-let result = extract("verbose_document.pdf", None, &config).await?;
+let output = extract(ExtractInput::from_uri("verbose_document.pdf"), &config).await?;
+let result = &output.results[0];
 
 if let Some(original) = result.original_token_count {
     println!("Original tokens: {}", original);

@@ -1,7 +1,8 @@
 ```rust title="disk_cache.rs"
-use xberg::{extract_sync, ExtractionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let path = std::env::args()
         .skip(1)
         .find(|a| !a.is_empty() && a != "--")
@@ -14,14 +15,14 @@ fn main() -> xberg::Result<()> {
     };
 
     println!("First extraction (will be cached)...");
-    let result1 = extract_sync(&path, None, &config)?;
-    println!("  - Content length: {}", result1.content.len());
+    let output1 = extract(ExtractInput::from_uri(&path), &config).await?;
+    println!("  - Content length: {}", output1.results[0].content.len());
 
     println!("\nSecond extraction (from cache when available)...");
-    let result2 = extract_sync(&path, None, &config)?;
-    println!("  - Content length: {}", result2.content.len());
+    let output2 = extract(ExtractInput::from_uri(&path), &config).await?;
+    println!("  - Content length: {}", output2.results[0].content.len());
 
-    println!("\nResults are identical: {}", result1.content == result2.content);
+    println!("\nResults are identical: {}", output1.results[0].content == output2.results[0].content);
 
     Ok(())
 }

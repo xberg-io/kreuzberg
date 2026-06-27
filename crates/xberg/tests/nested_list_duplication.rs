@@ -16,6 +16,9 @@
 
 #![cfg(feature = "chunking")]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::chunking::{ChunkerType, ChunkingConfig, chunk_text};
 
 /// Malformed Markdown produced by html-to-markdown on a `ul > li > ul > li > ol`
@@ -102,7 +105,6 @@ fn markdown_chunker_valid_nested_list() {
 mod html_extraction {
     use xberg::chunking::{ChunkerType, ChunkingConfig};
     use xberg::core::config::{ExtractionConfig, OutputFormat};
-    use xberg::core::extractor::extract_bytes_sync;
 
     fn config_with_markdown_chunking() -> ExtractionConfig {
         ExtractionConfig {
@@ -121,7 +123,7 @@ mod html_extraction {
     #[test]
     fn html_nested_list_extraction_no_panic() {
         let html = b"<ul><li>outer<ul><li>mid<ol><li>inner1</li><li>inner2</li></ol></li></ul></li></ul>";
-        let result = extract_bytes_sync(html, "text/html", &ExtractionConfig::default());
+        let result = extract_bytes_document_blocking(html, "text/html", &ExtractionConfig::default());
         assert!(result.is_ok(), "extraction must not error: {:?}", result.err());
     }
 
@@ -129,8 +131,8 @@ mod html_extraction {
     #[test]
     fn html_nested_list_no_content_duplication() {
         let html = b"<ul><li>outer<ul><li>mid<ol><li>inner1</li><li>inner2</li></ol></li></ul></li></ul>";
-        let result =
-            extract_bytes_sync(html, "text/html", &ExtractionConfig::default()).expect("extraction must not error");
+        let result = extract_bytes_document_blocking(html, "text/html", &ExtractionConfig::default())
+            .expect("extraction must not error");
         let content = &result.content;
         for word in ["outer", "mid", "inner1", "inner2"] {
             assert_eq!(
@@ -145,7 +147,7 @@ mod html_extraction {
     /// with Markdown chunking must not panic (original bug report scenario).
     #[test]
     fn second_pass_markdown_chunking_no_panic() {
-        let first = extract_bytes_sync(
+        let first = extract_bytes_document_blocking(
             b"<ul><li>outer<ul><li>mid<ol><li>inner1</li><li>inner2</li></ol></li></ul></li></ul>",
             "text/html",
             &ExtractionConfig::default(),
@@ -154,7 +156,8 @@ mod html_extraction {
 
         // Pass result.content back as Markdown bytes — this is the exact
         // scenario from the issue that triggered the panic.
-        let second = extract_bytes_sync(first.content.as_bytes(), "text/plain", &config_with_markdown_chunking());
+        let second =
+            extract_bytes_document_blocking(first.content.as_bytes(), "text/plain", &config_with_markdown_chunking());
         // Must not panic; Ok or Err are both acceptable.
         let _ = second;
     }

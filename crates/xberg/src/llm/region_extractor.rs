@@ -184,7 +184,7 @@ pub async fn extract_region_with_vlm(
 ///
 /// Callers that need to track token / cost data per call (for example the captioning
 /// post-processor, which appends every call's usage to
-/// [`ExtractionResult::llm_usage`](crate::types::ExtractionResult::llm_usage)) should
+/// [`ExtractedDocument::llm_usage`](crate::types::ExtractedDocument::llm_usage)) should
 /// prefer this variant. The plain [`extract_region_with_vlm`] is kept for callers that
 /// only care about the markdown output (PDF region splicing).
 ///

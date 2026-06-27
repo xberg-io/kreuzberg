@@ -1229,7 +1229,7 @@ dependencies = [
 
 [[package]]
 name = "crawlberg"
-version = "0.3.0"
+version = "1.0.0"
 dependencies = [
  "ahash 0.8.12",
  "aho-corasick",

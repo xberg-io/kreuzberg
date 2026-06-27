@@ -3,24 +3,43 @@
 #include <stdio.h>
 
 int main(void) {
-    struct ConfigBuilder *builder = xberg_config_builder_new();
-    xberg_config_builder_set_ocr(builder,
-        "{\"tesseract\":{\"language\":\"eng\"}}");
-    ExtractionConfig *config = xberg_config_builder_build(builder);
+    const char *config_json = "{"
+        "\"ocr\": {\"tesseract\": {\"language\": \"eng\"}}"
+        "}";
 
-    char *config_json = xberg_config_to_json(config);
-    struct CExtractionResult *result =
-        xberg_extract_sync_with_config("scanned.png", config_json);
-
-    if (result && result->success) {
-        printf("OCR text: %s\n", result->content);
-    } else {
-        fprintf(stderr, "OCR error: %s\n", xberg_get_error_details().message);
+    XBERGExtractionConfig *config = xberg_extraction_config_from_json(config_json);
+    if (!config) {
+        fprintf(stderr, "config parse failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        return 1;
     }
 
-    xberg_free_result(result);
-    xberg_free_string(config_json);
-    xberg_config_free(config);
+    XBERGExtractInput *input = xberg_extract_input_from_uri("scanned.png");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extraction_config_free(config);
+        return 1;
+    }
+
+    XBERGExtractionResult *result = xberg_extract(input, config);
+    if (result) {
+        char *results = xberg_extraction_result_results(result);
+        if (results) {
+            printf("OCR results: %s\n", results);
+        }
+        xberg_free_string(results);
+    } else {
+        fprintf(stderr, "OCR error (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+    }
+
+    xberg_extract_input_free(input);
+    xberg_extraction_result_free(result);
+    xberg_extraction_config_free(config);
     return 0;
 }
 ```

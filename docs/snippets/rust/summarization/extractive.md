@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract, ExtractionConfig, SummarizationConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, SummarizationConfig};
 use xberg::types::summary::SummaryStrategy;
 
 #[tokio::main]
@@ -12,8 +12,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
         ..Default::default()
     };
-    let result = extract("report.pdf", None, &config).await?;
-    if let Some(summary) = result.summary {
+    let output = extract(ExtractInput::from_uri("report.pdf"), &config).await?;
+    if let Some(summary) = &output.results[0].summary {
         println!("{}", summary.text);
     }
     Ok(())

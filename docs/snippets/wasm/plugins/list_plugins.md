@@ -3,14 +3,14 @@
 List all registered plugins of each type: OCR backends, post-processors, validators, and document extractors.
 
 ```typescript title="WASM"
-import init, {
+import { initWasm,
   listDocumentExtractors,
   listOcrBackends,
   listPostProcessors,
   listValidators,
-} from "xberg-wasm";
+} from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // List all document extractors
 const extractors = listDocumentExtractors();

@@ -22,8 +22,8 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('document.pdf', null, config);
-  final chunks = result.chunks ?? const [];
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'document.pdf'), config: config);
+  final chunks = result.results[0].chunks ?? const [];
   print('Chunks: ${chunks.length}');
 }
 ```

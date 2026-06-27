@@ -152,18 +152,18 @@ pub(crate) fn resolve_image_uris(doc: &mut InternalDocument, base_dir: &Path, co
     }
 }
 
-/// Read a file, extract via `extract_bytes`, then resolve image URIs.
+/// Read a path, extract content, then resolve image URIs.
 ///
 /// Shared helper for markup extractors (Markdown, LaTeX, RST, Org-mode, Typst,
 /// Djot, DocBook, MDX) that need to resolve relative image paths after extraction.
 pub(crate) async fn extract_file_with_image_resolution(
-    extractor: &(dyn crate::plugins::DocumentExtractor + Sync),
+    extractor: &(dyn crate::plugins::InternalDocumentExtractor + Sync),
     path: &Path,
     mime_type: &str,
     config: &ExtractionConfig,
 ) -> crate::Result<InternalDocument> {
     let bytes = crate::core::io::open_file_bytes(path)?;
-    let mut doc = extractor.extract_bytes(&bytes, mime_type, config).await?;
+    let mut doc = extractor.extract_content(&bytes, mime_type, config).await?;
     if let Some(base_dir) = path.parent() {
         resolve_image_uris(&mut doc, base_dir, config);
     }

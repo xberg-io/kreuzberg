@@ -9,8 +9,9 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, result} = Xberg.extract("multi_page_document.pdf", nil, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multi_page_document.pdf"}, config: config)
 
+result = List.first(output.results)
 # Access metadata to retrieve page information
 metadata = result.metadata || %{}
 

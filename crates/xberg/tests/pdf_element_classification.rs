@@ -1,6 +1,9 @@
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use std::path::Path;
 use xberg::types::{ElementType, ResultFormat};
-use xberg::{ExtractionConfig, OutputFormat, extract_bytes_sync};
+use xberg::{ExtractionConfig, OutputFormat};
 
 /// Verifies that numbered chapter headings in an untagged ReportLab PDF are
 /// classified as Heading/Title, not ListItem (#961).
@@ -19,7 +22,7 @@ fn numbered_chapters_in_untagged_pdf_become_headings() {
         ..Default::default()
     };
 
-    let result = extract_bytes_sync(&bytes, "application/pdf", &config).expect("extraction failed");
+    let result = extract_bytes_document_blocking(&bytes, "application/pdf", &config).expect("extraction failed");
     let elements = result.elements.unwrap_or_default();
 
     let chapter_list_items: Vec<_> = elements

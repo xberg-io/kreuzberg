@@ -2,7 +2,7 @@
 //!
 //! When `ExtractionConfig::page_classification` is `Some`, the page-classification
 //! post-processor runs at the Middle stage and populates
-//! [`ExtractionResult::page_classifications`](crate::types::ExtractionResult::page_classifications).
+//! [`ExtractedDocument::page_classifications`](crate::types::ExtractedDocument::page_classifications).
 
 use serde::{Deserialize, Serialize};
 

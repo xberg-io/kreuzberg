@@ -22,14 +22,14 @@ wasm-threads = ["dep:wasm-bindgen-rayon"]  # Optional
 
 All operations must be synchronous internally. Use `#[cfg(not(feature = "tokio-runtime"))]` paths.
 
-### 2. SyncExtractor Required
+### 2. Internal Sync Extractor Required
 
-Every WASM-compatible extractor MUST implement `SyncExtractor`:
+Every WASM-compatible built-in extractor MUST implement the internal `SyncExtractor` trait. This is not part of the public V1 extraction API; public callers still use unified `extract` / `extract_batch`.
 
 ```rust
 impl SyncExtractor for MyExtractor {
     fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
-        -> Result<ExtractionResult> { /* sync implementation */ }
+        -> Result<InternalDocument> { /* sync implementation */ }
 }
 
 impl DocumentExtractor for MyExtractor {

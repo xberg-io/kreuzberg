@@ -16,12 +16,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("scanned.pdf", nil, cfg)
+	input := xberg.ExtractInputFromURI("scanned.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	for _, element := range result.OcrElements {
+	for _, element := range result.Results[0].OcrElements {
 		fmt.Printf("Text: %s\n", element.Text)
 		fmt.Printf("Confidence: %.2f\n", element.Confidence.Recognition)
 		fmt.Printf("Geometry: %+v\n", element.Geometry)

@@ -20,10 +20,9 @@ class Program
 
         try
         {
-            var result = await XbergLib.ExtractAsync(
-                "document.pdf",
-                config
-            ).ConfigureAwait(false);
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                "document.pdf"), config
+            )).Results[0].ConfigureAwait(false);
 
             if (result.Chunks != null)
             {

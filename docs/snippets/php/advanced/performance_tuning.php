@@ -12,10 +12,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use function Xberg\extract;
-use function Xberg\extract_batch;
+use Xberg\ExtractionConfig;
+
+function extractBatchFiles(array $files): array
+{
+    $inputs = array_map(
+        static fn (string $file): \Xberg\ExtractInput => \Xberg\ExtractInput::fromUri($file),
+        $files
+    );
+
+    return Xberg::extractBatch($inputs, \Xberg\ExtractionConfig::default())->results;
+}
 
 function benchmark(callable $fn, string $label): void
 {
@@ -51,7 +58,7 @@ if (!empty($files)) {
     }, "Single file processing");
 
     benchmark(function () use ($files) {
-        return extract_batch($files);
+        return extractBatchFiles($files);
     }, "Batch processing (parallel)");
 }
 
@@ -73,27 +80,25 @@ if (file_exists($testFile)) {
     echo str_repeat('=', 60) . "\n\n";
 
     benchmark(function () use ($testFile, $fastConfig) {
-        $xberg = new Xberg($fastConfig);
-        return $xberg->extract($testFile);
+        return \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
     }, "Fast config (minimal features)");
 
     benchmark(function () use ($testFile, $standardConfig) {
-        $xberg = new Xberg($standardConfig);
-        return $xberg->extract($testFile);
+        return \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
     }, "Standard config (all features)");
 }
 
 function processLargeDocumentEfficiently(string $filePath): void
 {
     $config = new ExtractionConfig(
-        page: new \Xberg\Config\PageConfig(
+        page: new \Xberg\PageConfig(
             extractPages: true  
         ),
         extractImages: false    
     );
 
-    $xberg = new Xberg($config);
-    $result = $xberg->extract($filePath);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     echo "Processing large document page by page:\n";
 
@@ -123,7 +128,7 @@ function findOptimalBatchSize(array $files): int
         $startTime = microtime(true);
 
         foreach ($batches as $batch) {
-            extract_batch($batch);
+            extractBatchFiles($batch);
         }
 
         $elapsed = microtime(true) - $startTime;
@@ -188,10 +193,10 @@ class ResourceMonitor
 
 $monitor = new ResourceMonitor();
 
-$xberg = new Xberg();
 $monitor->checkpoint("Xberg initialized");
 
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 $monitor->checkpoint("Document extracted");
 
 $words = str_word_count($result->content);
@@ -209,7 +214,7 @@ function processConcurrently(array $files, int $workers = 4): array
     $results = [];
 
     foreach ($chunks as $chunk) {
-        $chunkResults = extract_batch($chunk);
+        $chunkResults = extractBatchFiles($chunk);
         $results = array_merge($results, $chunkResults);
     }
 
@@ -221,10 +226,8 @@ class CachedXberg
     private array $cache = [];
     private int $maxCacheSize;
 
-    public function __construct(
-        private Xberg $xberg,
-        int $maxCacheSize = 100
-    ) {
+    public function __construct(int $maxCacheSize = 100)
+    {
         $this->maxCacheSize = $maxCacheSize;
     }
 
@@ -236,7 +239,8 @@ class CachedXberg
             return $this->cache[$cacheKey];
         }
 
-        $result = $this->xberg->extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+        $result = $output->results[0];
 
         if (count($this->cache) >= $this->maxCacheSize) {
             array_shift($this->cache); 
@@ -252,7 +256,7 @@ class CachedXberg
     }
 }
 
-$cachedXberg = new CachedXberg(new Xberg(), maxCacheSize: 50);
+$cachedXberg = new CachedXberg(maxCacheSize: 50);
 
 echo "\nCached extraction performance:\n";
 echo str_repeat('=', 60) . "\n";

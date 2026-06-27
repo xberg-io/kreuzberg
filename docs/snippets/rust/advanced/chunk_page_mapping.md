@@ -1,4 +1,4 @@
-Use Xberg::{extract_sync, ExtractionConfig, ChunkingConfig, PageConfig};
+Use Xberg::{extract, ExtractionConfig, ExtractInput, ChunkingConfig, PageConfig};
 
 Let config = ExtractionConfig {
 chunking: Some(ChunkingConfig {
@@ -13,9 +13,9 @@ extract_pages: true,
 ..Default::default()
 };
 
-Let result = extract_sync("document.pdf", None, &config)?;
+Let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
 
-If let Some(chunks) = result.chunks {
+If let Some(chunks) = output.results[0].chunks {
 for chunk in chunks {
 if let (Some(first), Some(last)) = (chunk.metadata.first_page, chunk.metadata.last_page) {
 let page_range = if first == last {

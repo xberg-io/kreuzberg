@@ -932,11 +932,11 @@ pub(crate) async fn extract_with_ocr(
         // (requires the multi-threaded runtime). On wasm32 futures are awaited sequentially
         // because JoinSet::spawn requires thread-spawning, which is unavailable there.
         let batch_count = encoded_batch.len();
-        let mut batch_ocr_results: Vec<Option<crate::types::ExtractionResult>> = vec![None; batch_count];
+        let mut batch_ocr_results: Vec<Option<crate::types::ExtractedDocument>> = vec![None; batch_count];
 
         #[cfg(feature = "tokio-runtime")]
         {
-            let mut join_set: JoinSet<(usize, crate::Result<crate::types::ExtractionResult>)> = JoinSet::new();
+            let mut join_set: JoinSet<(usize, crate::Result<crate::types::ExtractedDocument>)> = JoinSet::new();
             for (page_idx, image_data, _width, _height) in &encoded_batch {
                 let backend_clone = std::sync::Arc::clone(&backend);
                 let config_clone = ocr_config_owned.clone();
@@ -1048,7 +1048,7 @@ pub(crate) async fn extract_with_ocr(
                     _ => Vec::new(),
                 };
 
-                // Collect recognized tables as Table structs for ExtractionResult.tables
+                // Collect recognized tables as Table structs for ExtractedDocument.tables
                 for rt in &recognized_tables {
                     if !rt.markdown.is_empty() {
                         collected_tables.push(crate::types::Table {
@@ -2285,7 +2285,7 @@ mod tests {
     async fn test_process_document_propagation() {
         use crate::core::config::OcrConfig;
         use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-        use crate::types::ExtractionResult;
+        use crate::types::ExtractedDocument;
         use std::path::Path;
         use std::sync::Arc;
         use std::sync::atomic::{AtomicBool, Ordering};
@@ -2302,16 +2302,16 @@ mod tests {
             fn supports_language(&self, _: &str) -> bool {
                 true
             }
-            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractedDocument> {
                 panic!("Should not call process_image");
             }
             fn supports_document_processing(&self) -> bool {
                 true
             }
-            async fn process_document(&self, path: &Path, _: &OcrConfig) -> crate::Result<ExtractionResult> {
+            async fn process_document(&self, path: &Path, _: &OcrConfig) -> crate::Result<ExtractedDocument> {
                 assert!(path.to_string_lossy().contains("test.pdf"));
                 self.called.store(true, Ordering::SeqCst);
-                Ok(ExtractionResult::default())
+                Ok(ExtractedDocument::default())
             }
         }
 
@@ -2370,7 +2370,7 @@ mod tests {
     async fn test_llm_usage_propagated_through_extract_with_ocr() {
         use crate::core::config::OcrConfig;
         use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-        use crate::types::{ExtractionResult, LlmUsage};
+        use crate::types::{ExtractedDocument, LlmUsage};
         use std::sync::Arc;
 
         struct VlmMockBackend;
@@ -2383,8 +2383,8 @@ mod tests {
             fn supports_language(&self, _: &str) -> bool {
                 true
             }
-            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
-                Ok(ExtractionResult {
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractedDocument> {
+                Ok(ExtractedDocument {
                     content: "page text".to_string(),
                     llm_usage: Some(vec![LlmUsage {
                         model: "gpt-4o".to_string(),
@@ -2603,7 +2603,7 @@ Buffers:           50000 kB
     async fn test_formulas_accumulated_and_renumbered_per_page() {
         use crate::core::config::OcrConfig;
         use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-        use crate::types::{BoundingBox, ExtractionResult};
+        use crate::types::{BoundingBox, ExtractedDocument};
         use std::sync::Arc;
 
         struct FormulaMockBackend;
@@ -2618,8 +2618,8 @@ Buffers:           50000 kB
             }
             // Each page returns one formula. The page field is set to 0 (unset) here;
             // extract_with_ocr must overwrite it with the 1-indexed document page number.
-            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
-                Ok(ExtractionResult {
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractedDocument> {
+                Ok(ExtractedDocument {
                     content: "page text".to_string(),
                     formulas: vec![crate::types::Formula {
                         latex: "E = mc^2".to_string(),

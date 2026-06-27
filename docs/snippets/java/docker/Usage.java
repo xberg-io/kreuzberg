@@ -30,6 +30,7 @@ public final class Usage {
     System.out.println("Container started on http://localhost:" + apiPort);
   }
 
+  // Note: This is a custom HTTP client method, not Xberg.extract() API
   public String extract(String filePath) throws IOException {
     byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
     String fileName = Paths.get(filePath).getFileName().toString();

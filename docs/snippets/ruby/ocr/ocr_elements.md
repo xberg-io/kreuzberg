@@ -8,9 +8,10 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('scanned.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'scanned.pdf')
+result = Xberg.extract(input, config)
 
-result.ocr_elements&.each do |element|
+result.results.first.ocr_elements&.each do |element|
   puts "Text: #{element.text}"
   puts "Confidence: #{format('%.2f', element.confidence.recognition)}"
   puts "Geometry: #{element.geometry}"

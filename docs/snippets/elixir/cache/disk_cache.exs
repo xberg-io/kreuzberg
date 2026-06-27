@@ -312,8 +312,9 @@ defmodule XbergDiskCache do
       :miss ->
         Logger.info("Cache miss: #{file_path}")
 
-        case Xberg.extract(file_path) do
-          {:ok, result} ->
+        case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: nil) do
+          {:ok, output} ->
+            result = List.first(output.results)
             new_cache = Cache.put(cache, cache_key, result)
             {:ok, result, new_cache}
 
@@ -326,7 +327,7 @@ defmodule XbergDiskCache do
   @doc """
   Extract multiple files with batch caching.
   """
-  def batch_extract_with_cache(file_paths, cache_dir, opts \\ []) do
+  def extract_batch_with_cache(file_paths, cache_dir, opts \\ []) do
     cache = Cache.new(cache_dir, opts)
 
     results =
@@ -408,7 +409,7 @@ IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
 documents = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
-{results, stats} = XbergDiskCache.batch_extract_with_cache(documents, cache_dir)
+{results, stats} = XbergDiskCache.extract_batch_with_cache(documents, cache_dir)
 
 successful = Enum.count(results, &match?({:ok, _, _}, &1))
 IO.puts("Batch results:")

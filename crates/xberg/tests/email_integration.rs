@@ -6,9 +6,9 @@
 #![cfg(feature = "email")]
 
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Test basic EML extraction with subject, from, to, and body.
 #[tokio::test]
@@ -23,7 +23,7 @@ Message-ID: <unique123@example.com>\r\n\
 \r\n\
 This is the email body content.";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract EML successfully");
 
@@ -81,7 +81,7 @@ Content-Disposition: attachment; filename=\"file.txt\"\r\n\
 Attachment content here.\r\n\
 ------boundary--\r\n";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract EML with attachment");
 
@@ -117,7 +117,7 @@ Content-Type: text/html; charset=utf-8\r\n\
 </body>\r\n\
 </html>";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract HTML email");
 
@@ -150,7 +150,7 @@ This is a plain text email.\r\n\
 It has multiple lines.\r\n\
 And preserves formatting.";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract plain text email");
 
@@ -188,7 +188,7 @@ Content-Type: text/html\r\n\
 <html><body><p>HTML version of the email.</p></body></html>\r\n\
 ------boundary--\r\n";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract multipart email");
 
@@ -217,7 +217,7 @@ async fn test_msg_file_extraction() {
 
     let invalid_msg = b"This is not a valid MSG file";
 
-    let result = extract_bytes(invalid_msg, "application/vnd.ms-outlook", &config).await;
+    let result = extract_bytes_document(invalid_msg, "application/vnd.ms-outlook", &config).await;
 
     assert!(result.is_err(), "Invalid MSG should fail gracefully");
 }
@@ -238,7 +238,7 @@ On Mon, 1 Jan 2024, person1@example.com wrote:\r\n\
 > Original message text here.\r\n\
 > This was the first message.";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract email thread");
 
@@ -261,7 +261,7 @@ Email body with special chars: café, naïve, résumé.\r\n\
 Emoji: 🎉 🚀 ✅"
         .as_bytes();
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract UTF-8 email");
 
@@ -285,7 +285,7 @@ Subject: Multiple Recipients\r\n\
 \r\n\
 Email to multiple recipients.";
 
-    let result = extract_bytes(eml_content, "message/rfc822", &config)
+    let result = extract_bytes_document(eml_content, "message/rfc822", &config)
         .await
         .expect("Should extract email with multiple recipients");
 
@@ -318,7 +318,7 @@ async fn test_malformed_email() {
 
     let malformed_eml = b"This is not a valid email at all.";
 
-    let result = extract_bytes(malformed_eml, "message/rfc822", &config).await;
+    let result = extract_bytes_document(malformed_eml, "message/rfc822", &config).await;
 
     assert!(
         result.is_ok() || result.is_err(),
@@ -339,7 +339,7 @@ async fn test_msg_basic_extraction() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/test_email.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should extract MSG successfully");
 
@@ -364,7 +364,7 @@ async fn test_msg_unicode() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/unicode.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should extract Unicode MSG");
 
@@ -389,7 +389,7 @@ async fn test_msg_attachments() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/attachment.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should extract MSG with attachments");
 
@@ -410,7 +410,7 @@ async fn test_msg_truncated_fat() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/simple_msg_alt.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should handle MSG with truncated FAT via lenient padding");
 
@@ -432,7 +432,7 @@ async fn test_msg_truncated_fat_with_attachments() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/msg_with_attachments_alt.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should handle truncated-FAT MSG with attachments");
 
@@ -452,7 +452,7 @@ async fn test_msg_large_attachment_no_hang() {
     let data = std::fs::read(helpers::get_test_file_path("email/MSG_hang_repro.msg")).unwrap();
 
     let start = std::time::Instant::now();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config)
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config)
         .await
         .expect("Should extract large MSG without hanging");
     let elapsed = start.elapsed();
@@ -470,7 +470,7 @@ async fn test_msg_large_attachment_no_hang() {
 #[tokio::test]
 async fn test_msg_invalid_data() {
     let config = ExtractionConfig::default();
-    let result = extract_bytes(b"not a valid MSG", "application/vnd.ms-outlook", &config).await;
+    let result = extract_bytes_document(b"not a valid MSG", "application/vnd.ms-outlook", &config).await;
     assert!(result.is_err());
 }
 
@@ -483,6 +483,6 @@ async fn test_msg_bad_outlook() {
 
     let config = ExtractionConfig::default();
     let data = std::fs::read(helpers::get_test_file_path("email/bad_outlook.msg")).unwrap();
-    let result = extract_bytes(&data, "application/vnd.ms-outlook", &config).await;
+    let result = extract_bytes_document(&data, "application/vnd.ms-outlook", &config).await;
     assert!(result.is_err(), "Corrupt MSG should fail gracefully");
 }

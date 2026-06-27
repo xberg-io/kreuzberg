@@ -7,6 +7,7 @@
 #![cfg(feature = "office")]
 
 mod helpers;
+use helpers::extract_uri_document;
 
 /// Unit-level regression: `convert_internal_elements_to_elements` walks a synthetic
 /// InternalDocument in document order (heading → paragraph → list → table).
@@ -110,7 +111,6 @@ fn test_internal_document_walk_preserves_reading_order() {
 async fn test_docx_element_based_result_format_preserves_order() {
     use helpers::get_test_file_path;
     use xberg::core::config::ExtractionConfig;
-    use xberg::extract_file;
     use xberg::types::{ElementType, ResultFormat};
 
     let path = get_test_file_path("docx/unit_test_headers.docx");
@@ -123,7 +123,7 @@ async fn test_docx_element_based_result_format_preserves_order() {
         ..Default::default()
     };
 
-    let result = extract_file(&path, None, &config)
+    let result = extract_uri_document(&path, None, &config)
         .await
         .expect("DOCX extraction should succeed");
 

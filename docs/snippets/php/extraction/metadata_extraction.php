@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use function Xberg\extract;
 
-$result = extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 $metadata = $result->metadata;
 
 echo "Document Metadata:\n";
@@ -35,13 +34,14 @@ $files = glob('documents/*.{pdf,docx,xlsx}', GLOB_BRACE);
 $metadataCollection = [];
 
 foreach ($files as $file) {
-    $result = extract($file);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $metadataCollection[] = [
         'file' => basename($file),
-        'title' => $result->metadata->title ?? 'Untitled',
-        'author' => isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown',
+        'title' => $result->metadata?->title ?? 'Untitled',
+        'author' => isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'Unknown',
         'created' => $result->metadata->createdAt ?? 'Unknown',
-        'pages' => $result->metadata->pageCount ?? 0,
+        'pages' => $result->metadata?->pdf?->page_count ?? 0,
         'size' => filesize($file),
     ];
 }

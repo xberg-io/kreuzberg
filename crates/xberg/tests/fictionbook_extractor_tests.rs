@@ -1,5 +1,8 @@
 #![cfg(feature = "office")]
 
+mod helpers;
+use helpers::extract_uri_document;
+
 use std::path::PathBuf;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
 
@@ -19,7 +22,7 @@ fn test_file_path(filename: &str) -> PathBuf {
 #[tokio::test]
 async fn test_fictionbook_extract_metadata_title() {
     let path = test_file_path("meta.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -32,7 +35,7 @@ async fn test_fictionbook_extract_metadata_title() {
 #[tokio::test]
 async fn test_fictionbook_extract_metadata_genre() {
     let path = test_file_path("meta.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -42,7 +45,7 @@ async fn test_fictionbook_extract_metadata_genre() {
 #[tokio::test]
 async fn test_fictionbook_extract_content_sections() {
     let path = test_file_path("titles.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -59,7 +62,7 @@ async fn test_fictionbook_extract_content_sections() {
 #[tokio::test]
 async fn test_fictionbook_extract_section_hierarchy() {
     let path = test_file_path("basic.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -77,7 +80,7 @@ async fn test_fictionbook_extract_section_hierarchy() {
 #[tokio::test]
 async fn test_fictionbook_extract_inline_markup() {
     let path = test_file_path("emphasis.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -91,7 +94,7 @@ async fn test_fictionbook_extract_inline_markup() {
 #[tokio::test]
 async fn test_fictionbook_extract_emphasis() {
     let path = test_file_path("basic.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -104,7 +107,7 @@ async fn test_fictionbook_extract_emphasis() {
 #[tokio::test]
 async fn test_fictionbook_extract_strong() {
     let path = test_file_path("basic.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -114,7 +117,7 @@ async fn test_fictionbook_extract_strong() {
 #[tokio::test]
 async fn test_fictionbook_extract_code() {
     let path = test_file_path("basic.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -124,7 +127,7 @@ async fn test_fictionbook_extract_code() {
 #[tokio::test]
 async fn test_fictionbook_extract_blockquote() {
     let path = test_file_path("basic.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -134,7 +137,7 @@ async fn test_fictionbook_extract_blockquote() {
 #[tokio::test]
 async fn test_fictionbook_extract_tables() {
     let path = test_file_path("tables.fb2");
-    let result = xberg::extract_file(&path, None, &ExtractionConfig::default())
+    let result = extract_uri_document(&path, None, &ExtractionConfig::default())
         .await
         .expect("Failed to extract FB2 file");
 
@@ -151,7 +154,7 @@ async fn test_fictionbook_markdown_formatting_preservation() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = xberg::extract_file(&path, None, &config)
+    let result = extract_uri_document(&path, None, &config)
         .await
         .expect("Failed to extract FB2 file");
 
@@ -181,7 +184,7 @@ async fn test_fictionbook_formatting_in_body_paragraphs() {
         output_format: OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = xberg::extract_file(&path, None, &config)
+    let result = extract_uri_document(&path, None, &config)
         .await
         .expect("Failed to extract FB2 file");
 

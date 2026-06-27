@@ -6,9 +6,9 @@
 use std::io::Write;
 use tempfile::NamedTempFile;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::{extract_bytes, extract_file};
 
 mod helpers;
+use helpers::{extract_bytes_document, extract_uri_document};
 
 /// Test truncated PDF - incomplete PDF file.
 #[tokio::test]
@@ -18,7 +18,7 @@ async fn test_truncated_pdf() {
 
     let truncated_pdf = b"%PDF-1.4\n1 0 obj\n<<";
 
-    let result = extract_bytes(truncated_pdf, "application/pdf", &config).await;
+    let result = extract_bytes_document(truncated_pdf, "application/pdf", &config).await;
 
     assert!(result.is_err(), "Truncated PDF should fail gracefully");
 
@@ -38,7 +38,7 @@ async fn test_corrupted_zip() {
 
     let corrupted_zip = vec![0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00];
 
-    let result = extract_bytes(&corrupted_zip, "application/zip", &config).await;
+    let result = extract_bytes_document(&corrupted_zip, "application/zip", &config).await;
 
     assert!(result.is_err(), "Corrupted ZIP should fail gracefully");
 
@@ -62,7 +62,7 @@ async fn test_invalid_xml() {
 <another>text</wrong_tag>\n\
 </root";
 
-    let result = extract_bytes(invalid_xml, "application/xml", &config).await;
+    let result = extract_bytes_document(invalid_xml, "application/xml", &config).await;
 
     match result {
         Ok(extraction) => {
@@ -89,7 +89,7 @@ async fn test_corrupted_image() {
 
     let corrupted_png = vec![0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0xFF, 0xFF, 0xFF, 0xFF];
 
-    let result = extract_bytes(&corrupted_png, "image/png", &config).await;
+    let result = extract_bytes_document(&corrupted_png, "image/png", &config).await;
 
     match result {
         Ok(extraction) => {
@@ -115,10 +115,10 @@ async fn test_empty_file() {
 
     let empty_data = b"";
 
-    let result_text = extract_bytes(empty_data, "text/plain", &config).await;
+    let result_text = extract_bytes_document(empty_data, "text/plain", &config).await;
     #[cfg(feature = "pdf")]
     {
-        let result_pdf = extract_bytes(empty_data, "application/pdf", &config).await;
+        let result_pdf = extract_bytes_document(empty_data, "application/pdf", &config).await;
         match result_pdf {
             Ok(extraction) => {
                 assert!(
@@ -155,7 +155,7 @@ async fn test_empty_file() {
 
     #[cfg(feature = "xml")]
     {
-        let result_xml = extract_bytes(empty_data, "application/xml", &config).await;
+        let result_xml = extract_bytes_document(empty_data, "application/xml", &config).await;
         match result_xml {
             Ok(extraction) => {
                 assert!(
@@ -183,7 +183,7 @@ async fn test_very_large_file() {
     let large_text = "This is a line of text that will be repeated many times.\n".repeat(200_000);
     let large_bytes = large_text.as_bytes();
 
-    let result = extract_bytes(large_bytes, "text/plain", &config).await;
+    let result = extract_bytes_document(large_bytes, "text/plain", &config).await;
 
     assert!(result.is_ok(), "Large file should be processed successfully");
     let extraction = result.expect("Operation failed");
@@ -216,7 +216,7 @@ async fn test_unicode_filenames() {
         .write_all(b"Test content with Unicode filename.")
         .expect("Operation failed");
 
-    let result = extract_file(temp_file.path(), Some("text/plain"), &config).await;
+    let result = extract_uri_document(temp_file.path(), Some("text/plain"), &config).await;
 
     assert!(result.is_ok(), "Unicode filename should be handled");
     let extraction = result.expect("Operation failed");
@@ -247,7 +247,7 @@ Japanese: こんにちは世界\n\
 Special chars: © ® ™ € £ ¥\n\
 Math symbols: ∑ ∫ √ ≈ ∞";
 
-    let result = extract_bytes(special_text.as_bytes(), "text/plain", &config).await;
+    let result = extract_bytes_document(special_text.as_bytes(), "text/plain", &config).await;
 
     assert!(result.is_ok(), "Special characters should be handled");
     let extraction = result.expect("Operation failed");
@@ -278,7 +278,7 @@ async fn test_nonexistent_file() {
 
     let nonexistent_path = "/nonexistent/path/to/file.pdf";
 
-    let result = extract_file(nonexistent_path, Some("application/pdf"), &config).await;
+    let result = extract_uri_document(nonexistent_path, Some("application/pdf"), &config).await;
 
     assert!(result.is_err(), "Nonexistent file should return error");
 
@@ -297,7 +297,7 @@ async fn test_unsupported_format() {
 
     let data = b"Some random data";
 
-    let result = extract_bytes(data, "application/x-unknown-format", &config).await;
+    let result = extract_bytes_document(data, "application/x-unknown-format", &config).await;
 
     assert!(result.is_err(), "Unsupported format should return error");
 
@@ -325,7 +325,7 @@ async fn test_permission_denied() {
     perms.set_mode(0o000);
     fs::set_permissions(temp_file.path(), perms).expect("Operation failed");
 
-    let result = extract_file(temp_file.path(), Some("text/plain"), &config).await;
+    let result = extract_uri_document(temp_file.path(), Some("text/plain"), &config).await;
 
     let mut perms = fs::metadata(temp_file.path()).expect("Operation failed").permissions();
     perms.set_mode(0o644);
@@ -341,7 +341,7 @@ async fn test_file_extension_mismatch() {
 
     let docx_magic = vec![0x50, 0x4B, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00];
 
-    let result = extract_bytes(&docx_magic, "application/pdf", &config).await;
+    let result = extract_bytes_document(&docx_magic, "application/pdf", &config).await;
 
     assert!(result.is_err(), "MIME type mismatch should fail");
 }
@@ -353,7 +353,7 @@ async fn test_null_bytes_in_content() {
 
     let data_with_nulls = b"Text before\x00null\x00bytes\x00after";
 
-    let result = extract_bytes(data_with_nulls, "text/plain", &config).await;
+    let result = extract_bytes_document(data_with_nulls, "text/plain", &config).await;
 
     assert!(result.is_ok(), "Null bytes should be handled");
     let extraction = result.expect("Operation failed");
@@ -380,7 +380,7 @@ async fn test_concurrent_extractions() {
     let handles: Vec<_> = (0..10)
         .map(|_| {
             let config = config.clone();
-            tokio::spawn(async move { extract_bytes(text_data, "text/plain", &config).await })
+            tokio::spawn(async move { extract_bytes_document(text_data, "text/plain", &config).await })
         })
         .collect();
 

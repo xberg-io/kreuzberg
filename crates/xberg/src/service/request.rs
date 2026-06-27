@@ -36,29 +36,12 @@ pub struct ExtractionRequest {
 
 impl ExtractionRequest {
     /// Create a file-based extraction request.
-    #[cfg(feature = "mcp")]
+    #[cfg(test)]
     pub(crate) fn file(path: impl Into<PathBuf>, config: ExtractionConfig) -> Self {
         Self {
             source: ExtractionSource::File {
                 path: path.into(),
                 mime_hint: None,
-            },
-            config,
-            file_overrides: None,
-        }
-    }
-
-    /// Create a file-based extraction request with a MIME type hint.
-    #[cfg(feature = "mcp")]
-    pub(crate) fn file_with_mime(
-        path: impl Into<PathBuf>,
-        mime_hint: impl Into<String>,
-        config: ExtractionConfig,
-    ) -> Self {
-        Self {
-            source: ExtractionSource::File {
-                path: path.into(),
-                mime_hint: Some(mime_hint.into()),
             },
             config,
             file_overrides: None,
@@ -89,7 +72,6 @@ impl ExtractionRequest {
 mod tests {
     use super::*;
 
-    #[cfg(feature = "mcp")]
     #[test]
     fn file_creates_file_source() {
         let req = ExtractionRequest::file("/tmp/doc.pdf", ExtractionConfig::default());
@@ -112,18 +94,6 @@ mod tests {
                 assert_eq!(mime_type, "text/plain");
             }
             _ => panic!("expected Bytes source"),
-        }
-    }
-
-    #[cfg(feature = "mcp")]
-    #[test]
-    fn file_with_mime_sets_hint() {
-        let req = ExtractionRequest::file_with_mime("/tmp/doc.pdf", "application/pdf", ExtractionConfig::default());
-        match &req.source {
-            ExtractionSource::File { mime_hint, .. } => {
-                assert_eq!(mime_hint.as_deref(), Some("application/pdf"));
-            }
-            _ => panic!("expected File source"),
         }
     }
 

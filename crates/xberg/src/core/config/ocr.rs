@@ -236,7 +236,7 @@ fn default_pipeline_min_quality() -> f64 {
 /// A single backend stage in the OCR pipeline.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OcrPipelineStage {
-    /// Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name.
+    /// Backend name: "tesseract", "paddleocr", "paddle-ocr", "vlm", or a custom registered name.
     pub backend: String,
 
     /// Priority weight (higher = tried first). Stages are sorted by priority descending.
@@ -377,7 +377,7 @@ pub struct OcrConfig {
     #[serde(default = "default_ocr_enabled")]
     pub enabled: bool,
 
-    /// OCR backend: tesseract, easyocr, paddleocr
+    /// OCR backend: tesseract, paddleocr, paddle-ocr, or vlm
     #[serde(default = "default_tesseract_backend")]
     pub backend: String,
 
@@ -535,8 +535,9 @@ impl OcrConfig {
     ///
     /// This method checks that the backend name is one of the supported OCR backends:
     /// - tesseract
-    /// - easyocr
     /// - paddleocr
+    /// - paddle-ocr
+    /// - vlm
     ///
     /// Typos in backend names are caught at configuration validation time, not at runtime.
     /// Also validates pipeline stage backends when a pipeline is configured.
@@ -830,12 +831,14 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_easyocr_backend() {
+    fn test_validate_unknown_backend_rejected() {
         let config = OcrConfig {
-            backend: "easyocr".to_string(),
+            backend: "unsupported-ocr".to_string(),
             ..Default::default()
         };
-        assert!(config.validate().is_ok());
+        let result = config.validate();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid OCR backend"));
     }
 
     #[test]
@@ -909,7 +912,7 @@ mod tests {
     fn test_effective_pipeline_explicit_pipeline_returned_unchanged() {
         let explicit_pipeline = OcrPipelineConfig {
             stages: vec![OcrPipelineStage {
-                backend: "easyocr".to_string(),
+                backend: "paddleocr".to_string(),
                 priority: 200,
                 language: Some(vec!["fra".to_string()]),
                 tesseract_config: None,
@@ -925,7 +928,7 @@ mod tests {
         };
         let result = config.effective_pipeline().unwrap();
         assert_eq!(result.stages.len(), 1);
-        assert_eq!(result.stages[0].backend, "easyocr");
+        assert_eq!(result.stages[0].backend, "paddleocr");
         assert_eq!(result.stages[0].priority, 200);
         assert_eq!(result.stages[0].language, Some(vec!["fra".to_string()]));
     }
@@ -942,12 +945,14 @@ mod tests {
 
     #[cfg(feature = "ocr")]
     #[test]
-    fn test_effective_pipeline_explicit_easyocr_no_autofallback() {
+    fn test_effective_pipeline_unknown_backend_rejected_by_validation() {
         let config = OcrConfig {
-            backend: "easyocr".to_string(),
+            backend: "unsupported-ocr".to_string(),
             ..Default::default()
         };
-        assert!(config.effective_pipeline().is_none());
+        let result = config.validate();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid OCR backend"));
     }
 
     #[cfg(feature = "ocr")]
@@ -1164,7 +1169,7 @@ mod tests {
     fn test_vlm_fallback_disabled_no_synthesis() {
         let config = OcrConfig {
             // Non-default backend so paddleocr auto-fallback is skipped too.
-            backend: "easyocr".to_string(),
+            backend: "paddleocr".to_string(),
             vlm_fallback: VlmFallbackPolicy::Disabled,
             vlm_config: None,
             ..Default::default()
@@ -1181,7 +1186,7 @@ mod tests {
 
         let explicit = OcrPipelineConfig {
             stages: vec![OcrPipelineStage {
-                backend: "easyocr".to_string(),
+                backend: "paddleocr".to_string(),
                 priority: 99,
                 language: None,
                 tesseract_config: None,
@@ -1203,7 +1208,7 @@ mod tests {
 
         let pipeline = config.effective_pipeline().expect("explicit pipeline must be returned");
         assert_eq!(pipeline.stages.len(), 1, "explicit pipeline must win");
-        assert_eq!(pipeline.stages[0].backend, "easyocr", "explicit pipeline must win");
+        assert_eq!(pipeline.stages[0].backend, "paddleocr", "explicit pipeline must win");
     }
 
     #[test]
@@ -1311,7 +1316,7 @@ mod tests {
 
     #[test]
     fn test_pipeline_stage_default_priority_is_100() {
-        let json = r#"{"backend": "easyocr"}"#;
+        let json = r#"{"backend": "paddleocr"}"#;
         let stage: OcrPipelineStage = serde_json::from_str(json).unwrap();
         assert_eq!(stage.priority, 100);
     }

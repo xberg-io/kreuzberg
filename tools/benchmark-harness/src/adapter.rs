@@ -68,7 +68,7 @@ pub trait FrameworkAdapter: Send + Sync {
     /// Extract content from multiple documents using framework's batch API
     ///
     /// Frameworks with native batch support should override this method to use
-    /// their optimized batch extraction API (e.g., Xberg's `batch_extract_files()`).
+    /// their optimized batch extraction API (e.g., Xberg's unified `extract_batch`).
     ///
     /// Default implementation calls `extract()` sequentially for each file.
     ///

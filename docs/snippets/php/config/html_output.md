@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\HtmlOutputConfig;
 
@@ -13,9 +13,11 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+
+$result = $resultOutput->results[0];
 
 // Output HTML with kb-* CSS classes
-echo $result->getContent();
+echo $result->content;
 ?>
 ```

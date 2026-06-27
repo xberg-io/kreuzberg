@@ -102,7 +102,7 @@ def parse_request(line)
   [stripped, false]
 end
 
-# Extract one file through the synchronous Ruby binding.
+# Extract one file through the unified Ruby binding.
 #
 # @param file_path [String] File path to extract.
 # @param config [Hash] Extraction config.
@@ -117,7 +117,9 @@ def extract_sync(file_path, config = {})
   start_wall = Time.now
   debug_log "Timing start (monotonic): #{start_monotonic.round(6)}, wall: #{start_wall.iso8601(6)}"
 
-  result = Xberg.extract_file(path: file_path, config: config)
+  input = Xberg::ExtractInput.new(kind: "uri", uri: file_path)
+  result = Xberg.extract(input, config).results.first
+  raise "No extraction result produced for #{file_path}" unless result
 
   end_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end_wall = Time.now
@@ -153,7 +155,7 @@ rescue StandardError => e
   raise
 end
 
-# Extract one or more files through the batch Ruby binding.
+# Extract one or more files through the unified batch Ruby binding.
 #
 # @param file_paths [Array<String>] File paths to extract.
 # @param config [Hash] Extraction config.
@@ -169,7 +171,8 @@ def extract_batch(file_paths, config = {})
   start_wall = Time.now
   debug_log "Timing start (monotonic): #{start_monotonic.round(6)}, wall: #{start_wall.iso8601(6)}"
 
-  results = Xberg.batch_extract_files_sync(paths: file_paths, config: config)
+  inputs = file_paths.map { |path| Xberg::ExtractInput.new(kind: "uri", uri: path) }
+  results = Xberg.extract_batch(inputs, config).results
 
   end_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end_wall = Time.now
@@ -231,7 +234,9 @@ def extract_server(ocr_enabled)
       config[:ocr] = { enabled: true } if (ocr_enabled || force_ocr)
 
       start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      result = Xberg.extract_file(path: file_path, config: config)
+      input = Xberg::ExtractInput.new(kind: "uri", uri: file_path)
+      result = Xberg.extract(input, config).results.first
+      raise "No extraction result produced for #{file_path}" unless result
       duration_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000.0
 
       metadata = result.metadata || {}

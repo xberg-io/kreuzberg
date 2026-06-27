@@ -26,6 +26,7 @@ impl TokenCounter {
 
     /// Allocate the next token for `category` and `original`. If the original
     /// has been seen before in this category, the same token is reused.
+    #[cfg_attr(alef, alef(skip))]
     pub fn next_token(&mut self, category: &PiiCategory, original: &str) -> String {
         let cat_label = category_label(category);
         let key = (cat_label.clone(), original.to_string());
@@ -44,6 +45,7 @@ impl TokenCounter {
 ///
 /// The optional `counter` is required for [`RedactionStrategy::TokenReplace`];
 /// other strategies ignore it.
+#[cfg_attr(alef, alef(skip))]
 pub fn apply_strategy(
     strategy: RedactionStrategy,
     original: &str,

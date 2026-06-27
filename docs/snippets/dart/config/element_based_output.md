@@ -14,7 +14,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('document.pdf', null, config);
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'document.pdf'), config: config);
   final elements = result.elements ?? const [];
   for (final element in elements) {
     print('Type: ${element.elementType}');

@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, PdfConfig, HierarchyConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         pdf_options: Some(PdfConfig {
             extract_images: true,
@@ -12,7 +13,8 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("encrypted.pdf", None, &config)?;
+    let output = extract(ExtractInput::from_uri("encrypted.pdf"), &config).await?;
+    let result = &output.results[0];
     println!("Title: {:?}", result.metadata.title);
     println!("Authors: {:?}", result.metadata.authors);
     Ok(())

@@ -13,7 +13,7 @@ use super::super::formats::OutputFormat;
 use super::super::ocr::OcrConfig;
 use super::super::page::PageConfig;
 use super::super::processing::{ChunkingConfig, PostProcessorConfig};
-use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions};
+use super::types::{ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions, UrlExtractionConfig};
 
 /// Per-file extraction configuration overrides for batch processing.
 ///
@@ -108,6 +108,11 @@ pub struct FileExtractionConfig {
     #[cfg_attr(alef, alef(skip))]
     pub html_options: Option<html_to_markdown_rs::ConversionOptions>,
 
+    /// Override styled HTML output configuration for this file.
+    #[cfg(feature = "html")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html_output: Option<super::super::html_output::HtmlOutputConfig>,
+
     /// Override result format for this file.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub result_format: Option<crate::types::ResultFormat>,
@@ -150,4 +155,36 @@ pub struct FileExtractionConfig {
     /// and the response is parsed according to the provided schema.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub structured_extraction: Option<super::super::llm::StructuredExtractionConfig>,
+
+    /// Override URL ingestion and crawl configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<UrlExtractionConfig>,
+
+    /// Override named-entity recognition configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ner: Option<super::super::ner::NerConfig>,
+
+    /// Override redaction configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redaction: Option<super::super::redaction::RedactionConfig>,
+
+    /// Override summarization configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub summarization: Option<super::super::summarization::SummarizationConfig>,
+
+    /// Override translation configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translation: Option<super::super::translation::TranslationConfig>,
+
+    /// Override per-page classification configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub page_classification: Option<super::super::classification::PageClassificationConfig>,
+
+    /// Override VLM captioning configuration for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub captioning: Option<super::super::captioning::CaptioningConfig>,
+
+    /// Override QR-code detection for this file.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub qr_codes: Option<bool>,
 }

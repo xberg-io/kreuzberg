@@ -1,5 +1,5 @@
 ```typescript title="TypeScript"
-import { extractSync } from "xberg";
+import { extract } from "@xberg-io/xberg";
 
 const config = {
   // OCR: Tesseract on all pages with English text
@@ -27,7 +27,8 @@ const config = {
   enable_quality_processing: true,
 };
 
-const result = extractSync("report.pdf", undefined, config);
+const output = await extract({ kind: "uri", uri: "report.pdf" }, config);
+const result = output.results[0];
 
 console.log(`Content (${result.content.length} chars):`);
 console.log(result.content.slice(0, 200));
@@ -36,10 +37,10 @@ if (result.chunks) {
   console.log(`\nChunks: ${result.chunks.length}`);
 }
 console.log(`Tables: ${result.tables?.length ?? 0}`);
-if (result.detected_languages) {
-  console.log(`Languages: ${result.detected_languages}`);
+if (result.detectedLanguages) {
+  console.log(`Languages: ${result.detectedLanguages}`);
 }
-if (result.extraction_method) {
-  console.log(`Extraction method: ${result.extraction_method}`);
+if (result.extractionMethod) {
+  console.log(`Extraction method: ${result.extractionMethod}`);
 }
 ```

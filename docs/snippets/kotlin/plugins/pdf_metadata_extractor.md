@@ -8,26 +8,26 @@ class PdfMetadataExtractor : IPostProcessor {
     override fun name(): String = "pdf-metadata-extractor"
     override fun version(): String = "1.0.0"
 
-    override fun process(result: ExtractionResult, config: ExtractionConfig) {
-        if (result.mimeType() != "application/pdf") return
+    override fun process(result: ExtractedDocument, config: ExtractionConfig) {
+        if (result.mimeType != "application/pdf") return
 
         val count = processed.incrementAndGet()
-        val metadata: Metadata = result.metadata()
+        val metadata: Metadata = result.metadata
         // Metadata is an immutable record — read PDF metadata fields rather
         // than mutate. Reporting via stdout/log keeps the snippet honest.
         println(
-            "[pdf-metadata] #$count title=${metadata.title()} authors=${metadata.authors()}",
+            "[pdf-metadata] #$count title=${metadata.title} authors=${metadata.authors}",
         )
     }
 
     override fun processing_stage(): ProcessingStage = ProcessingStage.Late
 
     override fun should_process(
-        _result: ExtractionResult,
+        _result: ExtractedDocument,
         _config: ExtractionConfig,
-    ): Boolean = _result.mimeType() == "application/pdf"
+    ): Boolean = _result.mimeType == "application/pdf"
 
-    override fun estimated_duration_ms(_result: ExtractionResult): Long = 2L
+    override fun estimated_duration_ms(_result: ExtractedDocument): Long = 2L
 
     override fun priority(): Int = 25
 }

@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\ImagePreprocessingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ImagePreprocessingConfig;
 
 echo "Example 1: Default Image Preprocessing\n";
 echo "======================================\n";
@@ -107,8 +106,8 @@ $config5 = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config5);
-$result = $xberg->extract('noisy_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('noisy_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Denoising: Enabled\n";
 echo "Best for:\n";
@@ -254,7 +253,7 @@ $config10 = new ExtractionConfig(
     )
 );
 
-$result10 = (new Xberg($config10))->extract('poor_quality_scan.pdf');
+$result10 = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('poor_quality_scan.pdf'), $config10)->results[0];
 
 echo "Processing pipeline:\n";
 echo "1. Load image\n";

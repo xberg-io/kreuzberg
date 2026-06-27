@@ -16,9 +16,11 @@
 
 #![cfg(feature = "office")]
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 use std::path::PathBuf;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 /// Helper to resolve workspace root and construct test file paths
 fn get_test_orgmode_path(filename: &str) -> PathBuf {
@@ -66,7 +68,7 @@ async fn test_orgmode_basic_extraction() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract Org Mode successfully");
 
@@ -100,7 +102,7 @@ async fn test_orgmode_metadata_extraction() {
   Document content here.
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract metadata from Org Mode");
 
@@ -139,7 +141,7 @@ Text under third level.
 Deep nested content.
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract headings from Org Mode");
 
@@ -176,7 +178,7 @@ async fn test_orgmode_tables() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract tables from Org Mode");
 
@@ -212,7 +214,7 @@ async fn test_orgmode_tables_complex() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract complex tables from Org Mode");
 
@@ -263,7 +265,7 @@ async fn test_orgmode_lists() {
   2. Another sub
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract lists from Org Mode");
 
@@ -300,7 +302,7 @@ Some text with _underlined_ content.
 Mixed formatting like *bold /italic/ text* is also supported.
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract inline formatting from Org Mode");
 
@@ -332,7 +334,7 @@ async fn test_orgmode_properties() {
 This is content after properties.
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract properties from Org Mode");
 
@@ -358,7 +360,7 @@ async fn test_orgmode_links() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract links from Org Mode");
 
@@ -387,7 +389,7 @@ async fn test_orgmode_code_blocks() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract code blocks from Org Mode");
 
@@ -414,7 +416,7 @@ async fn test_orgmode_code_blocks_multilang() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract multi-language code blocks");
 
@@ -452,7 +454,7 @@ Degrees: 25°C
 Emoji: 🎉 ✨ 📚 🌟
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract unicode characters from Org Mode");
 
@@ -493,7 +495,7 @@ AT&T has an ampersand. Check prices @ 50%.
 Backslash: \ and other symbols: | ~ `
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract special characters from Org Mode");
 
@@ -520,7 +522,7 @@ async fn test_orgmode_content_quality() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract Org Mode content successfully");
 
@@ -568,7 +570,7 @@ async fn test_orgmode_mime_type() {
 Content here.
 "#;
 
-    let result = extract_bytes(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(org_content.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract with correct MIME type");
 
@@ -596,7 +598,7 @@ async fn test_orgmode_content_compliance() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract Org Mode successfully for baseline comparison");
 
@@ -640,7 +642,7 @@ async fn test_orgmode_content_compliance() {
 async fn test_orgmode_empty_document() {
     let empty_org = "";
 
-    let result = extract_bytes(empty_org.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(empty_org.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should handle empty Org Mode document");
 
@@ -665,7 +667,7 @@ async fn test_orgmode_metadata_only() {
 #+DATE: 2024-01-01
 "#;
 
-    let result = extract_bytes(metadata_only.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(metadata_only.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should handle metadata-only document");
 
@@ -696,7 +698,7 @@ Text at level 5
 Text at level 6
 "#;
 
-    let result = extract_bytes(deep_org.as_bytes(), "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(deep_org.as_bytes(), "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should handle deeply nested structure");
 
@@ -722,7 +724,7 @@ async fn test_orgmode_comprehensive_document() {
     }
 
     let content = std::fs::read(&test_file).expect("Should read Org Mode file");
-    let result = extract_bytes(&content, "text/x-org", &ExtractionConfig::default())
+    let result = extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default())
         .await
         .expect("Should extract comprehensive document");
 
@@ -767,7 +769,7 @@ async fn test_orgmode_extraction_statistics() {
         }
 
         match std::fs::read(&test_file) {
-            Ok(content) => match extract_bytes(&content, "text/x-org", &ExtractionConfig::default()).await {
+            Ok(content) => match extract_bytes_document(&content, "text/x-org", &ExtractionConfig::default()).await {
                 Ok(result) => {
                     total_files += 1;
                     total_content_bytes += result.content.len();

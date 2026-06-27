@@ -1,6 +1,6 @@
 # Draft GitHub issue body
 
-**Title:** `ffi: shrink xberg-ffi from 1464 exports to canonical ~70-export surface`
+**Title:** `ffi: shrink xberg-ffi to canonical JSON ABI surface`
 
 **Labels:** `area: ffi`, `type: refactor`
 
@@ -16,7 +16,7 @@ The canonical FFI surface is documented in `crates/xberg-ffi/SCOPE.md`.
 
 ~60–80 exports total:
 
-- 27 high-level functions mirroring the public Xberg API (extract, batch, embed, mime, pdf render, plugin lifecycle)
+- high-level functions mirroring the public Xberg API (extract, batch, embed, mime, pdf render, plugin lifecycle)
 - ~10–15 JSON marshalers (one `_from_json` / `_to_json` pair per type that crosses the boundary)
 - ~5–10 `_free` handle-lifecycle functions
 - 5 string + error helpers (`free_string`, `last_error_{message,code,clear}`, `version`)
@@ -24,7 +24,6 @@ The canonical FFI surface is documented in `crates/xberg-ffi/SCOPE.md`.
 
 ## Missing canonical exports (must be added in this cycle)
 
-- [ ] `xberg_batch_extract_files_sync`
 - [ ] `xberg_render_pdf_page_to_png`
 - [ ] `xberg_register_document_extractor`
 - [ ] `xberg_unregister_document_extractor`
@@ -44,9 +43,9 @@ Each type keeps **only**: `*_from_json`, `*_to_json`, `*_free`, and `*_default` 
 1. Audit binding usage (Go, Java, C#): grep for direct calls to per-field accessors. Replace with `_to_json` round-trip into a language-native record.
 2. Delete accessors in `lib.rs` and helper modules under `crates/xberg-ffi/src/config/`.
 3. Regenerate `include/xberg.h` via `cbindgen`; verify CI freshness check passes.
-4. Bump FFI minor (struct layouts unchanged; soft break for any external consumer outside polyrepo).
+4. Bump FFI major for the unified extraction ABI cleanup.
 5. Run `task test:e2e` across Go/Java/C# bindings to verify behavioral parity.
 
 ## Risk / scope
 
-Deferred from v4.10 to v4.10.1 to keep the stabilization window clean. The current bloat is functional (compiles, exports, works) — just oversized. v4.10 ships with the target documented in SCOPE.md and the small number of canonical-fn gaps above closed. Deletion lands in v4.10.1 once binding audits confirm no silent dependency on accessors.
+Deferred from the v1 API cleanup until binding audits confirm no silent dependency on accessors.

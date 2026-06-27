@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 use Xberg\ChunkingConfig;
@@ -37,9 +37,11 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
-echo "Content length: " . strlen($result->getContent()) . " characters\n";
+$result = $resultOutput->results[0];
+
+echo "Content length: " . strlen($result->content) . " characters\n";
 if ($result->getDetectedLanguages()) {
     echo "Languages: " . implode(', ', $result->getDetectedLanguages()) . "\n";
 }

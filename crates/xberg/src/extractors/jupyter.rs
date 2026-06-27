@@ -16,7 +16,7 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::extractors::security::SecurityBudget;
 #[cfg(feature = "office")]
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 #[cfg(feature = "office")]
 use crate::types::internal::InternalDocument;
 #[cfg(feature = "office")]
@@ -784,7 +784,7 @@ impl Plugin for JupyterExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for JupyterExtractor {
+impl InternalDocumentExtractor for JupyterExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -795,7 +795,7 @@ impl DocumentExtractor for JupyterExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,

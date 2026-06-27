@@ -1,7 +1,7 @@
 //! VLM image-captioning configuration.
 //!
 //! When `ExtractionConfig::captioning` is `Some`, the captioning post-processor runs at
-//! the Middle stage, iterates `ExtractionResult::images`, and populates
+//! the Middle stage, iterates `ExtractedDocument::images`, and populates
 //! [`ExtractedImage::caption`](crate::types::ExtractedImage::caption) for each image whose
 //! pixel area exceeds `min_image_area`.
 

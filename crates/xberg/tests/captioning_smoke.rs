@@ -13,6 +13,9 @@
 
 #![cfg(all(feature = "captioning", not(target_os = "windows")))]
 
+mod helpers;
+use helpers::extract_uri_document;
+
 use xberg::core::config::{CaptioningConfig, ExtractionConfig, ImageExtractionConfig, LlmConfig};
 
 const IMAGES_PDF: &str = "../../test_documents/pdf/with_images.pdf";
@@ -66,7 +69,7 @@ async fn run_captioning_against_pdf(model: &str, api_key: String) {
     // explicitly registers so it can verify behaviour in isolation).
     xberg::plugins::processor::builtin::register_builtin().expect("register_builtin failed");
 
-    let result = xberg::extract_file(IMAGES_PDF, None, &config)
+    let result = extract_uri_document(IMAGES_PDF, None, &config)
         .await
         .expect("extraction failed");
     let Some(images) = result.images.as_ref() else {
@@ -110,7 +113,7 @@ async fn captioning_post_processor_is_noop_without_images() {
     use std::borrow::Cow;
     use xberg::plugins::PostProcessor;
     use xberg::plugins::processor::builtin::captioning::CaptioningProcessor;
-    use xberg::types::ExtractionResult;
+    use xberg::types::ExtractedDocument;
 
     let cfg = ExtractionConfig {
         captioning: Some(CaptioningConfig {
@@ -125,7 +128,7 @@ async fn captioning_post_processor_is_noop_without_images() {
     };
 
     // No images vector at all.
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: String::new(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()
@@ -154,7 +157,7 @@ async fn captioning_post_processor_tolerates_vlm_failure() {
     use std::borrow::Cow;
     use xberg::plugins::PostProcessor;
     use xberg::plugins::processor::builtin::captioning::CaptioningProcessor;
-    use xberg::types::{ExtractedImage, ExtractionResult};
+    use xberg::types::{ExtractedDocument, ExtractedImage};
 
     let cfg = ExtractionConfig {
         captioning: Some(CaptioningConfig {
@@ -172,7 +175,7 @@ async fn captioning_post_processor_tolerates_vlm_failure() {
         ..Default::default()
     };
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: String::new(),
         mime_type: Cow::Borrowed("text/plain"),
         images: Some(vec![ExtractedImage {

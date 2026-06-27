@@ -91,16 +91,17 @@ func main() {
 	}()
 
 	// Extract PDF document
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
 
-	log.Printf("PDF MIME type: %s", result.MimeType)
+	log.Printf("PDF MIME type: %s", result.Results[0].MimeType)
 
 	// Parse and display metadata
 	var metadata map[string]interface{}
-	if metaJSON, ok := result.MetadataJSON.(string); ok {
+	if metaJSON, ok := result.Results[0].MetadataJSON.(string); ok {
 		if err := json.Unmarshal([]byte(metaJSON), &metadata); err == nil {
 			if pdfProcessed, ok := metadata["pdf_processed"].(bool); ok && pdfProcessed {
 				log.Printf("PDF metadata extracted successfully")

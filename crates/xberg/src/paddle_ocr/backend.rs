@@ -34,7 +34,7 @@ use crate::core::config::OcrConfig;
 use crate::ocr::conversion::{elements_to_hocr_words, text_block_to_element};
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
 use crate::table_core::{reconstruct_table, table_to_markdown};
-use crate::types::{ExtractionResult, FormatMetadata, Metadata, OcrElement, OcrMetadata, Table};
+use crate::types::{ExtractedDocument, FormatMetadata, Metadata, OcrElement, OcrMetadata, Table};
 
 use super::config::PaddleOcrConfig;
 use super::model_manager::{ModelManager, SharedModelPaths};
@@ -421,7 +421,7 @@ impl Plugin for PaddleOcrBackend {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl OcrBackend for PaddleOcrBackend {
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         if image_bytes.is_empty() {
             return Err(crate::XbergError::Validation {
                 message: "Empty image data provided to PaddleOCR".to_string(),
@@ -570,7 +570,7 @@ impl OcrBackend for PaddleOcrBackend {
             None
         };
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: text,
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
@@ -582,7 +582,7 @@ impl OcrBackend for PaddleOcrBackend {
         })
     }
 
-    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractedDocument> {
         let bytes = tokio::fs::read(path).await?;
         self.process_image(&bytes, config).await
     }

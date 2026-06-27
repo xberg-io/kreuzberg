@@ -15,7 +15,7 @@
 //!
 //! The `{cache_root}` defaults to the centralized xberg cache directory
 //! (`~/.cache/xberg/whisper` on Linux/macOS, `%LOCALAPPDATA%/xberg/whisper`
-//! on Windows), resolved via [`crate::cache_dir::resolve_cache_dir`].
+//! on Windows), resolved via `crate::cache_dir::resolve_cache_dir`.
 //! Pass `cache_dir` to override.
 //!
 //! # HF repos

@@ -1,6 +1,6 @@
 //! Pure-Rust regex pattern engine for PII detection.
 //!
-//! Each submodule owns one [`PiiCategory`](crate::types::redaction::PiiCategory)
+//! Each submodule owns one [`PiiCategory`]
 //! and exposes a `find_all(text) -> Vec<PatternMatch>` function. The dispatcher
 //! [`scan_text`] selects the requested patterns and returns merged matches.
 //!

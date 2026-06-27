@@ -4,7 +4,7 @@
 //! extraction results and stores them in metadata.
 
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
-use crate::{ExtractionConfig, ExtractionResult, Result, XbergError};
+use crate::{ExtractedDocument, ExtractionConfig, Result, XbergError};
 use async_trait::async_trait;
 
 /// Post-processor that extracts keywords from document content.
@@ -49,7 +49,7 @@ impl Plugin for KeywordExtractor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for KeywordExtractor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let keyword_config = match &config.keywords {
             Some(cfg) => cfg,
             None => return Ok(()),
@@ -72,11 +72,11 @@ impl PostProcessor for KeywordExtractor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.keywords.is_some()
     }
 
-    fn estimated_duration_ms(&self, result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, result: &ExtractedDocument) -> u64 {
         let word_count = result.content.split_whitespace().count();
         (word_count as u64) / 100 + 10
     }
@@ -103,7 +103,7 @@ machine learning that uses neural networks with multiple layers.
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: TEST_TEXT.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -124,7 +124,7 @@ machine learning that uses neural networks with multiple layers.
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: TEST_TEXT.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -141,7 +141,7 @@ machine learning that uses neural networks with multiple layers.
         let processor = KeywordExtractor;
         let config = ExtractionConfig::default();
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: TEST_TEXT.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -161,7 +161,7 @@ machine learning that uses neural networks with multiple layers.
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Short text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -192,7 +192,7 @@ machine learning that uses neural networks with multiple layers.
     fn test_keyword_processor_should_process() {
         let processor = KeywordExtractor;
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: TEST_TEXT.to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -212,13 +212,13 @@ machine learning that uses neural networks with multiple layers.
     fn test_keyword_processor_estimated_duration() {
         let processor = KeywordExtractor;
 
-        let short_result = ExtractionResult {
+        let short_result = ExtractedDocument {
             content: "Short text with just a few words".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        let long_result = ExtractionResult {
+        let long_result = ExtractedDocument {
             content: "word ".repeat(1000),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

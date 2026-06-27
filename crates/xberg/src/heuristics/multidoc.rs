@@ -19,7 +19,7 @@
 //! | Function | When to use |
 //! |----------|-------------|
 //! | [`detect_boundaries`] | Low-level: caller already has [`MultidocInput`] + [`PageSignals`] |
-//! | [`boundaries_from_extraction_result`] | High-level: derive signals from an [`ExtractionResult`](crate::types::ExtractionResult) |
+//! | [`boundaries_from_extraction_result`] | High-level: derive signals from an [`ExtractedDocument`](crate::types::ExtractedDocument) |
 //! | [`PageSignals::from_page_text`] | Helper: build signals from plain page text |
 
 use std::collections::HashSet;
@@ -280,7 +280,7 @@ fn detect_signature_block(text: &str) -> bool {
     })
 }
 
-/// Derive document boundaries from an already-produced [`ExtractionResult`](crate::types::ExtractionResult).
+/// Derive document boundaries from an already-produced [`ExtractedDocument`](crate::types::ExtractedDocument).
 ///
 /// Builds a [`MultidocInput`] from `result.pages` (one [`PageSignals`] per
 /// [`crate::types::PageContent`] entry), then delegates to [`detect_boundaries`].
@@ -305,7 +305,7 @@ fn detect_signature_block(text: &str) -> bool {
 /// * `result` — Extraction result whose `pages` field will be used.
 /// * `thresholds` — Detection thresholds forwarded to [`detect_boundaries`].
 pub fn boundaries_from_extraction_result(
-    result: &crate::types::ExtractionResult,
+    result: &crate::types::ExtractedDocument,
     thresholds: &MultidocThresholds,
 ) -> Vec<DocumentBoundary> {
     let pages = match result.pages.as_deref() {
@@ -600,10 +600,10 @@ mod tests {
 
     // ── boundaries_from_extraction_result ────────────────────────────────────
 
-    fn make_extraction_result(pages: Vec<(&str, u32)>) -> crate::types::ExtractionResult {
+    fn make_extraction_result(pages: Vec<(&str, u32)>) -> crate::types::ExtractedDocument {
         use crate::types::PageContent;
 
-        crate::types::ExtractionResult {
+        crate::types::ExtractedDocument {
             content: pages.iter().map(|(t, _)| *t).collect::<Vec<_>>().join("\n"),
             pages: Some(
                 pages
@@ -665,7 +665,7 @@ mod tests {
 
     #[test]
     fn boundaries_from_result_no_pages_returns_start_end() {
-        let result = crate::types::ExtractionResult {
+        let result = crate::types::ExtractedDocument {
             content: "Whole document as one blob.".to_string(),
             pages: None,
             ..Default::default()
@@ -682,7 +682,7 @@ mod tests {
 
     #[test]
     fn boundaries_from_result_empty_pages_returns_start_end() {
-        let result = crate::types::ExtractionResult {
+        let result = crate::types::ExtractedDocument {
             content: "Document content.".to_string(),
             pages: Some(vec![]),
             ..Default::default()

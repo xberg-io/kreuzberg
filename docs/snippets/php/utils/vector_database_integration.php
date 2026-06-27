@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\ChunkingConfig;
-use Xberg\Config\EmbeddingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
+use Xberg\EmbeddingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -28,8 +27,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Vector Database Integration:\n";
 echo str_repeat('=', 60) . "\n";
@@ -186,7 +185,6 @@ $vectorConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($vectorConfig);
 
 foreach ($documents as $document) {
     if (!file_exists($document)) {
@@ -194,7 +192,8 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $xberg->extract($document);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($document), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     echo basename($document) . ":\n";
     echo "  Chunks: " . count($result->chunks ?? []) . "\n";

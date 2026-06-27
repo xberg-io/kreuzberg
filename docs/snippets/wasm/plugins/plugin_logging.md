@@ -3,16 +3,16 @@
 Log plugin registration and execution for debugging purposes.
 
 ```typescript title="WASM"
-import init, {
+import { initWasm,
   registerPostProcessor,
   registerValidator,
   registerOcrBackend,
   listPostProcessors,
   listValidators,
   listOcrBackends,
-} from "xberg-wasm";
+} from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Track plugin registrations
 const pluginLog = {

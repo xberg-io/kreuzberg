@@ -3,7 +3,7 @@
 //! This module provides utilities for detecting MIME types from file extensions
 //! and validating them against supported types.
 //!
-//! Format information is centralized in the [`FORMATS`] registry. All extension-to-MIME
+//! Format information is centralized in the `FORMATS` registry. All extension-to-MIME
 //! mappings and supported MIME type validation are derived from this single source of truth.
 
 use crate::{Result, XbergError};

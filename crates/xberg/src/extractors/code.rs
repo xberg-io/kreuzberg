@@ -15,7 +15,7 @@ use crate::core::config::ExtractionConfig;
 use crate::core::mime::SOURCE_CODE_MIME_TYPE;
 use crate::extractors::SyncExtractor;
 use crate::internal_builder::InternalDocumentBuilder;
-use crate::plugins::DocumentExtractor;
+use crate::plugins::InternalDocumentExtractor;
 use crate::plugins::Plugin;
 use crate::types::internal::InternalDocument;
 use crate::types::metadata::{FormatMetadata, Metadata};
@@ -150,8 +150,8 @@ impl Plugin for CodeExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for CodeExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for CodeExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         _mime_type: &str,
@@ -177,7 +177,7 @@ impl DocumentExtractor for CodeExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(&self, path: &Path, _mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, _mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let (language, source) = Self::read_and_detect(path)?;
         Self::extract_with_language(&source, &language, config)
     }
@@ -188,10 +188,6 @@ impl DocumentExtractor for CodeExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 

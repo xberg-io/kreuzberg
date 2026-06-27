@@ -1,7 +1,7 @@
 //! Named-entity recognition output types.
 //!
 //! Produced by the NER post-processor (`crates/xberg/src/text/ner/`) and
-//! attached to [`ExtractionResult::entities`](super::extraction::ExtractionResult::entities).
+//! attached to [`ExtractedDocument::entities`](super::extraction::ExtractedDocument::entities).
 //! Backends (`xberg-gliner` ONNX, LLM-driven) share a common `NerBackend`
 //! trait so the redaction post-processor can consume the same entity stream.
 
@@ -15,9 +15,9 @@ pub struct Entity {
     pub category: EntityCategory,
     /// Raw mention text exactly as it appeared in the source.
     pub text: String,
-    /// Byte-offset span in `ExtractionResult::content` where the mention starts.
+    /// Byte-offset span in `ExtractedDocument::content` where the mention starts.
     pub start: u32,
-    /// Byte-offset span in `ExtractionResult::content` where the mention ends (exclusive).
+    /// Byte-offset span in `ExtractedDocument::content` where the mention ends (exclusive).
     pub end: u32,
     /// Backend-reported confidence in `[0.0, 1.0]`. `None` when the backend does not
     /// expose confidence scores.

@@ -12,14 +12,15 @@ func main() {
 	preserveMarkdown := true
 	mode := "moderate"
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:             &mode,
 			PreserveMarkdown: &preserveMarkdown,
 		},
 	}
 
-	result, err := xberg.ExtractSync("verbose_document.pdf", config)
+	input := xberg.ExtractInputFromURI("verbose_document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
@@ -28,15 +29,15 @@ func main() {
 	reduced := 0
 	ratio := 0.0
 
-	if val, ok := result.Metadata["original_token_count"]; ok {
+	if val, ok := result.Results[0].Metadata["original_token_count"]; ok {
 		original = val.(int)
 	}
 
-	if val, ok := result.Metadata["token_count"]; ok {
+	if val, ok := result.Results[0].Metadata["token_count"]; ok {
 		reduced = val.(int)
 	}
 
-	if val, ok := result.Metadata["token_reduction_ratio"]; ok {
+	if val, ok := result.Results[0].Metadata["token_reduction_ratio"]; ok {
 		ratio = val.(float64)
 	}
 

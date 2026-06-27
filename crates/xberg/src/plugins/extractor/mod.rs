@@ -8,8 +8,8 @@ mod r#trait;
 #[cfg(feature = "otel")]
 pub(crate) mod instrumented;
 
-// Re-export trait for backward compatibility
 pub use r#trait::DocumentExtractor;
+pub(crate) use r#trait::InternalDocumentExtractor;
 
 use std::sync::Arc;
 
@@ -24,7 +24,6 @@ use std::sync::Arc;
 /// - [`crate::XbergError::Validation`] if the plugin name is empty or
 ///   contains whitespace.
 /// - Any error returned by the extractor's `initialize()` method.
-#[cfg_attr(alef, alef(skip))]
 pub fn register_document_extractor(extractor: Arc<dyn DocumentExtractor>) -> crate::Result<()> {
     use crate::plugins::registry::get_document_extractor_registry;
 
@@ -41,7 +40,6 @@ pub fn register_document_extractor(extractor: Arc<dyn DocumentExtractor>) -> cra
 /// # Errors
 ///
 /// - Any error returned by the extractor's `shutdown()` method.
-#[cfg_attr(alef, alef(skip))]
 pub fn unregister_document_extractor(name: &str) -> crate::Result<()> {
     use crate::plugins::registry::get_document_extractor_registry;
 
@@ -51,7 +49,6 @@ pub fn unregister_document_extractor(name: &str) -> crate::Result<()> {
 }
 
 /// List names of all registered document extractors.
-#[cfg_attr(alef, alef(skip))]
 pub fn list_document_extractors() -> crate::Result<Vec<String>> {
     use crate::plugins::registry::get_document_extractor_registry;
 
@@ -69,7 +66,6 @@ pub fn list_document_extractors() -> crate::Result<Vec<String>> {
 ///
 /// - Any error returned by an extractor's `shutdown()` method. The first error
 ///   encountered stops processing of remaining extractors.
-#[cfg_attr(alef, alef(skip))]
 pub fn clear_document_extractors() -> crate::Result<()> {
     use crate::plugins::registry::get_document_extractor_registry;
 
@@ -110,8 +106,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for MockExtractor {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for MockExtractor {
+        async fn extract_content(
             &self,
             content: &[u8],
             mime_type: &str,
@@ -140,7 +136,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_document_extractor_extract_bytes() {
+    async fn test_internal_document_extractor_extract_content() {
         let extractor = MockExtractor {
             mime_types: vec!["text/plain"],
             priority: 50,
@@ -148,7 +144,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let doc = extractor
-            .extract_bytes(b"test content", "text/plain", &config)
+            .extract_content(b"test content", "text/plain", &config)
             .await
             .unwrap();
         let result =
@@ -165,7 +161,7 @@ mod tests {
             priority: 50,
         };
 
-        let supported = extractor.supported_mime_types();
+        let supported = InternalDocumentExtractor::supported_mime_types(&extractor);
         assert_eq!(supported.len(), 2);
         assert!(supported.contains(&"text/plain"));
         assert!(supported.contains(&"text/markdown"));
@@ -183,8 +179,8 @@ mod tests {
             priority: 100,
         };
 
-        assert_eq!(low_priority.priority(), 10);
-        assert_eq!(high_priority.priority(), 100);
+        assert_eq!(InternalDocumentExtractor::priority(&low_priority), 10);
+        assert_eq!(InternalDocumentExtractor::priority(&high_priority), 100);
     }
 
     #[test]
@@ -197,12 +193,16 @@ mod tests {
         use std::path::PathBuf;
         let path = PathBuf::from("test.txt");
 
-        assert!(extractor.can_handle(&path, "text/plain"));
-        assert!(extractor.can_handle(&path, "application/pdf"));
+        assert!(InternalDocumentExtractor::can_handle(&extractor, &path, "text/plain"));
+        assert!(InternalDocumentExtractor::can_handle(
+            &extractor,
+            &path,
+            "application/pdf"
+        ));
     }
 
     #[tokio::test]
-    async fn test_document_extractor_extract_file_default_impl() {
+    async fn test_internal_document_extractor_extract_path_default_impl() {
         use std::io::Write;
         use tempfile::NamedTempFile;
 
@@ -216,7 +216,7 @@ mod tests {
         let path = temp_file.path();
 
         let config = ExtractionConfig::default();
-        let doc = extractor.extract_file(path, "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_path(path, "text/plain", &config).await.unwrap();
         let result =
             crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
@@ -232,7 +232,7 @@ mod tests {
         };
 
         let config = ExtractionConfig::default();
-        let doc = extractor.extract_bytes(b"", "text/plain", &config).await.unwrap();
+        let doc = extractor.extract_content(b"", "text/plain", &config).await.unwrap();
         let result =
             crate::extraction::derive::derive_extraction_result(doc, true, crate::core::config::OutputFormat::Plain);
 
@@ -250,7 +250,7 @@ mod tests {
         let invalid_utf8 = vec![0xFF, 0xFE, 0xFD];
         let config = ExtractionConfig::default();
         let doc = extractor
-            .extract_bytes(&invalid_utf8, "text/plain", &config)
+            .extract_content(&invalid_utf8, "text/plain", &config)
             .await
             .unwrap();
         let result =
@@ -292,8 +292,8 @@ mod tests {
         }
 
         #[async_trait]
-        impl DocumentExtractor for DefaultPriorityExtractor {
-            async fn extract_bytes(
+        impl InternalDocumentExtractor for DefaultPriorityExtractor {
+            async fn extract_content(
                 &self,
                 _content: &[u8],
                 _mime_type: &str,
@@ -308,7 +308,7 @@ mod tests {
         }
 
         let extractor = DefaultPriorityExtractor;
-        assert_eq!(extractor.priority(), 50);
+        assert_eq!(InternalDocumentExtractor::priority(&extractor), 50);
     }
 
     #[test]
@@ -318,7 +318,7 @@ mod tests {
             priority: 50,
         };
 
-        assert_eq!(extractor.supported_mime_types().len(), 0);
+        assert_eq!(InternalDocumentExtractor::supported_mime_types(&extractor).len(), 0);
     }
 
     #[test]
@@ -328,7 +328,7 @@ mod tests {
             priority: 50,
         };
 
-        let supported = extractor.supported_mime_types();
+        let supported = InternalDocumentExtractor::supported_mime_types(&extractor);
         assert_eq!(supported.len(), 2);
         assert!(supported.contains(&"text/*"));
         assert!(supported.contains(&"image/*"));
@@ -357,10 +357,10 @@ mod tests {
             priority: 100,
         };
 
-        assert!(fallback.priority() < alternative.priority());
-        assert!(alternative.priority() < default.priority());
-        assert!(default.priority() < premium.priority());
-        assert!(premium.priority() < specialized.priority());
+        assert!(InternalDocumentExtractor::priority(&fallback) < InternalDocumentExtractor::priority(&alternative));
+        assert!(InternalDocumentExtractor::priority(&alternative) < InternalDocumentExtractor::priority(&default));
+        assert!(InternalDocumentExtractor::priority(&default) < InternalDocumentExtractor::priority(&premium));
+        assert!(InternalDocumentExtractor::priority(&premium) < InternalDocumentExtractor::priority(&specialized));
     }
 
     #[tokio::test]
@@ -372,7 +372,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(b"{\"key\":\"value\"}", "application/json", &config)
+            .extract_content(b"{\"key\":\"value\"}", "application/json", &config)
             .await
             .unwrap();
 
@@ -409,8 +409,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for LifecycleMock {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for LifecycleMock {
+        async fn extract_content(
             &self,
             _content: &[u8],
             _mime_type: &str,

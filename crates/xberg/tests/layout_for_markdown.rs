@@ -13,15 +13,15 @@
 #![cfg(all(feature = "pdf", feature = "layout-detection"))]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::{get_test_file_path, test_documents_available};
 use xberg::core::config::{ExtractionConfig, OutputFormat, layout::LayoutDetectionConfig};
-use xberg::extract_file_sync;
 
 /// Extract `relative_path` (from `test_documents/`) with the given config.
 fn extract_md(relative_path: &str, config: &ExtractionConfig) -> String {
     let path = get_test_file_path(relative_path);
-    extract_file_sync(&path, None, config)
+    extract_uri_document_blocking(&path, None, config)
         .expect("extraction should succeed")
         .content
 }

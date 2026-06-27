@@ -5,7 +5,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::core::mime::LEGACY_POWERPOINT_MIME_TYPE;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::{Metadata, PageInfo, PageStructure, PageUnitType};
@@ -105,8 +105,8 @@ impl Plugin for PptExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PptExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for PptExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -259,7 +259,7 @@ mod tests {
         let extractor = PptExtractor::new();
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
+            .extract_content(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
         let result =
@@ -281,7 +281,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
+            .extract_content(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
         let result =
@@ -306,7 +306,7 @@ mod tests {
         let extractor = PptExtractor::new();
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
+            .extract_content(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
         let result =
@@ -336,7 +336,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(&content, "application/vnd.ms-powerpoint", &config)
+            .extract_content(&content, "application/vnd.ms-powerpoint", &config)
             .await
             .expect("PPT extraction failed");
         let result =

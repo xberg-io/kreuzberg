@@ -7,10 +7,10 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, PageConfig};
-use xberg::extract_file_sync;
 
 /// Test that page markers are inserted when enabled.
 #[test]
@@ -28,7 +28,8 @@ fn test_page_markers_inserted_when_enabled() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with page markers");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with page markers");
 
     // Default marker format is "\n\n<!-- PAGE {page_num} -->\n\n"
     assert!(
@@ -54,7 +55,8 @@ fn test_page_1_gets_marker() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with page markers");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with page markers");
 
     // Page 1 should have a marker at the start
     assert!(
@@ -82,7 +84,8 @@ fn test_custom_marker_format() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with custom markers");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with custom markers");
 
     assert!(
         result.content.contains("=== Page 1 ==="),
@@ -107,7 +110,8 @@ fn test_page_num_placeholder_replacement() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with custom markers");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with custom markers");
 
     // Should NOT contain the placeholder itself
     assert!(
@@ -139,7 +143,8 @@ fn test_markers_and_extract_pages_together() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with both features");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with both features");
 
     // Should have both features working
     assert!(
@@ -169,7 +174,8 @@ fn test_no_markers_when_disabled() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF without markers");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF without markers");
 
     // Should NOT contain default marker pattern
     assert!(
@@ -195,7 +201,7 @@ fn test_marker_appears_before_content() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF with markers");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF with markers");
 
     // The marker should appear at or near the start
     let marker_pos = result.content.find("[[PAGE 1]]");
@@ -227,7 +233,7 @@ fn test_multi_page_markers() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF");
 
     if let Some(ref pages) = result.pages {
         let page_count = pages.len();
@@ -289,7 +295,7 @@ fn test_page_markers_in_markdown_output() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF as markdown");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF as markdown");
 
     assert!(
         result.content.contains("<!-- PAGE 1 -->"),
@@ -316,7 +322,7 @@ fn test_page_markers_custom_format_markdown() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF as markdown");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF as markdown");
 
     assert!(
         result.content.contains("<page number=\"1\">"),
@@ -342,7 +348,7 @@ fn test_no_markers_in_markdown_when_disabled() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF as markdown");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF as markdown");
 
     assert!(
         !result.content.contains("<!-- PAGE"),
@@ -368,7 +374,7 @@ fn test_page_markers_in_djot_output() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF as djot");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF as djot");
 
     assert!(
         result.content.contains("<!-- PAGE 1 -->"),
@@ -394,7 +400,7 @@ fn test_marker_format_multiple_placeholders() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("Failed to extract PDF");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("Failed to extract PDF");
 
     assert!(
         result.content.contains("Page 1 of document (page 1)"),

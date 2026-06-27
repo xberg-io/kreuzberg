@@ -7,7 +7,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 #[cfg(feature = "chunking")]
 use crate::types::PageBoundary;
-use crate::types::{ExtractionResult, ProcessingWarning};
+use crate::types::{ExtractedDocument, ProcessingWarning};
 use std::borrow::Cow;
 
 /// Recompute page boundaries against the rendered `content` string.
@@ -119,7 +119,7 @@ pub(crate) fn clamp_boundaries_to_text(boundaries: &[PageBoundary], text: &str) 
 /// those chunks already represent semantically meaningful code boundaries produced
 /// by tree-sitter. Using text-splitter would break these boundaries.
 #[cfg(all(feature = "tree-sitter", feature = "chunking"))]
-fn try_code_chunks(_result: &ExtractionResult) -> Option<Vec<crate::types::extraction::Chunk>> {
+fn try_code_chunks(_result: &ExtractedDocument) -> Option<Vec<crate::types::extraction::Chunk>> {
     // FormatMetadata::Code is a unit variant — the structured ProcessResult payload
     // is no longer attached. Code extractions fall back to standard text-based
     // chunking via the default pipeline.
@@ -127,7 +127,7 @@ fn try_code_chunks(_result: &ExtractionResult) -> Option<Vec<crate::types::extra
 }
 
 /// Execute chunking if configured.
-pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+pub(super) fn execute_chunking(result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
     #[cfg(feature = "chunking")]
     if let Some(ref chunking_config) = config.chunking {
         // For code extractions with TSLP chunks, bypass text-splitter and map directly.
@@ -307,7 +307,7 @@ pub(super) fn execute_chunking(result: &mut ExtractionResult, config: &Extractio
 }
 
 /// Execute language detection if configured.
-pub(super) fn execute_language_detection(result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+pub(super) fn execute_language_detection(result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
     #[cfg(feature = "language-detection")]
     if let Some(ref lang_config) = config.language_detection {
         match crate::language_detection::detect_languages(&result.content, lang_config) {
@@ -335,7 +335,7 @@ pub(super) fn execute_language_detection(result: &mut ExtractionResult, config: 
 }
 
 /// Execute token reduction if configured.
-pub(super) fn execute_token_reduction(result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+pub(super) fn execute_token_reduction(result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
     #[cfg(feature = "quality")]
     if let Some(ref tr_config) = config.token_reduction {
         let level = crate::text::token_reduction::ReductionLevel::from(tr_config.mode.as_str());
@@ -551,8 +551,8 @@ mod tests {
 
     // --- Issue #1073: chunk content must match output_format ---
 
-    fn make_result_with_formatted(plain: &str, formatted: &str) -> ExtractionResult {
-        ExtractionResult {
+    fn make_result_with_formatted(plain: &str, formatted: &str) -> ExtractedDocument {
+        ExtractedDocument {
             content: plain.to_string(),
             formatted_content: Some(formatted.to_string()),
             mime_type: std::borrow::Cow::Borrowed("application/pdf"),
@@ -564,8 +564,8 @@ mod tests {
         plain: &str,
         formatted: &str,
         pages: Vec<crate::types::PageContent>,
-    ) -> ExtractionResult {
-        ExtractionResult {
+    ) -> ExtractedDocument {
+        ExtractedDocument {
             content: plain.to_string(),
             formatted_content: Some(formatted.to_string()),
             pages: Some(pages),
@@ -641,7 +641,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain.to_string(),
             formatted_content: Some(heading_source.to_string()), // simulates chunker_only_markdown
             mime_type: std::borrow::Cow::Borrowed("text/plain"),
@@ -673,7 +673,7 @@ mod tests {
         let plain = "Some plain text without markdown pre-render";
 
         let config = markdown_chunking_config();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain.to_string(),
             formatted_content: None,
             mime_type: std::borrow::Cow::Borrowed("text/plain"),
@@ -784,7 +784,7 @@ mod tests {
 
         let pages = vec![make_page(1, p1)];
         let config = markdown_chunking_config();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: p1.to_string(),
             formatted_content: Some(markdown),
             pages: Some(pages),
@@ -827,7 +827,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain.clone(),
             formatted_content: Some(heading_source),
             pages: Some(pages),
@@ -876,7 +876,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain,
             formatted_content: Some(html),
             pages: Some(pages),
@@ -919,7 +919,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain,
             formatted_content: Some(html),
             pages: Some(pages),
@@ -963,7 +963,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain,
             formatted_content: Some(djot),
             pages: Some(pages),
@@ -1003,7 +1003,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: plain,
             formatted_content: Some(markdown),
             pages: Some(pages),
@@ -1053,7 +1053,7 @@ mod tests {
         // single-page documents.  Do not gate this on "more than one page".
         let p1 = "Single page plain text content for the document";
         let config = plain_chunking_config();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: p1.to_string(),
             pages: Some(vec![make_page(1, p1)]),
             mime_type: std::borrow::Cow::Borrowed("application/pdf"),
@@ -1075,7 +1075,7 @@ mod tests {
         // Empty content (scanned page without OCR) must yield Some([]), not None.
         // chunks: null in the API always means chunking was not configured.
         let config = plain_chunking_config();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: String::new(),
             pages: Some(vec![make_page(1, "")]),
             mime_type: std::borrow::Cow::Borrowed("application/pdf"),

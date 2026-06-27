@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\ChunkingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\ChunkingConfig;
 
 $longOpts = [
     'file:',
@@ -85,8 +84,8 @@ try {
     fwrite(STDERR, "  Format: $format\n\n");
 
     $start = microtime(true);
-    $xberg = new Xberg($config);
-    $result = $xberg->extract($inputFile);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($inputFile), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $elapsed = microtime(true) - $start;
 
     fwrite(STDERR, "Extraction completed in " . number_format($elapsed, 3) . "s\n");
@@ -95,9 +94,9 @@ try {
         'json' => json_encode([
             'content' => $result->content,
             'metadata' => [
-                'title' => $result->metadata->title,
+                'title' => $result->metadata?->title,
                 'author' => $result->metadata->author,
-                'page_count' => $result->metadata->pageCount,
+                'page_count' => $result->metadata?->pdf?->page_count,
             ],
             'tables' => array_map(fn($t) => [
                 'page' => $t->pageNumber,

@@ -97,7 +97,7 @@ impl SubprocessAdapter {
             return true;
         }
 
-        // Docling supports OCR via EasyOCR/Tesseract
+        // Docling supports OCR via external OCR backends
         if name_lower.contains("docling") {
             return true;
         }

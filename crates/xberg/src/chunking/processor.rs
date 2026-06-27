@@ -6,7 +6,7 @@
 use crate::chunking::config::{ChunkerType, ChunkingConfig};
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
 use crate::types::Metadata;
-use crate::{ExtractionConfig, ExtractionResult, Result, XbergError};
+use crate::{ExtractedDocument, ExtractionConfig, Result, XbergError};
 use async_trait::async_trait;
 
 /// Post-processor that chunks text in document content.
@@ -51,7 +51,7 @@ impl Plugin for ChunkingProcessor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for ChunkingProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let chunking_config = match &config.chunking {
             Some(cfg) => cfg,
             None => return Ok(()),
@@ -71,11 +71,11 @@ impl PostProcessor for ChunkingProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.chunking.is_some()
     }
 
-    fn estimated_duration_ms(&self, result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, result: &ExtractedDocument) -> u64 {
         let text_length = result.content.len();
         (text_length / 10240).max(1) as u64
     }
@@ -124,7 +124,7 @@ mod tests {
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "This is a longer text that should be split into multiple chunks to test the chunking processor functionality.".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -142,7 +142,7 @@ mod tests {
         let processor = ChunkingProcessor;
         let config = ExtractionConfig::default();
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Some text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -172,7 +172,7 @@ mod tests {
     fn test_chunking_processor_should_process() {
         let processor = ChunkingProcessor;
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Sample text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -198,13 +198,13 @@ mod tests {
     fn test_chunking_processor_estimated_duration() {
         let processor = ChunkingProcessor;
 
-        let short_result = ExtractionResult {
+        let short_result = ExtractedDocument {
             content: "Short".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        let long_result = ExtractionResult {
+        let long_result = ExtractedDocument {
             content: "a".repeat(100000),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -239,7 +239,7 @@ mod tests {
         };
 
         let yaml_content = "server:\n  host: localhost\n  port: 8080";
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: yaml_content.to_string(),
             mime_type: Cow::Borrowed("text/yaml"),
             metadata: make_metadata_with_format("yaml"),
@@ -267,7 +267,7 @@ mod tests {
         };
 
         let json_content = r#"{"name": "test", "version": "1.0"}"#;
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: json_content.to_string(),
             mime_type: Cow::Borrowed("application/json"),
             metadata: make_metadata_with_format("json"),
@@ -295,7 +295,7 @@ mod tests {
         };
 
         let yaml_content = "server:\n  host: localhost\n  port: 8080";
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: yaml_content.to_string(),
             mime_type: Cow::Borrowed("text/yaml"),
             metadata: make_metadata_with_format("yaml"),
@@ -323,7 +323,7 @@ mod tests {
         };
 
         let yaml_content = "server:\n  host: localhost\n  port: 8080";
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: yaml_content.to_string(),
             mime_type: Cow::Borrowed("text/yaml"),
             ..Default::default()

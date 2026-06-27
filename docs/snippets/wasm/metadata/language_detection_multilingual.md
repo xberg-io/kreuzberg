@@ -1,8 +1,8 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
-import { LanguageDetectionConfig, ExtractionConfig } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
+import { LanguageDetectionConfig, ExtractionConfig } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const fileBuffer = new Uint8Array(/* your file bytes */);
 const mimeType = "text/plain";
@@ -15,7 +15,7 @@ const config = new ExtractionConfig({
   }),
 });
 
-const result = await extract(fileBuffer, mimeType, config);
+const result = await extract({ kind: "bytes", bytes: fileBuffer, mimeType: mimeType }, config);
 
 if (result.detected_languages && result.detected_languages.length > 0) {
   console.log("Document languages:", result.detected_languages.join(", "));

@@ -1,6 +1,6 @@
 //! Integration tests for the heuristic PDF table extraction added for #897.
 //!
-//! These exercise the public `extract_bytes_sync` API to confirm:
+//! These exercise the public `extract_bytes_document_blocking` API to confirm:
 //!   1. `PdfConfig.extract_tables = false` truly suppresses all tables
 //!      (native and heuristic), matching the documented contract.
 //!   2. With the default `extract_tables = true`, a text-layer PDF that
@@ -13,8 +13,10 @@
 
 #![cfg(feature = "pdf")]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::{ExtractionConfig, PdfConfig};
-use xberg::extract_bytes_sync;
 
 const PDF_MIME: &str = "application/pdf";
 
@@ -45,7 +47,7 @@ fn test_extract_tables_flag_false_suppresses_all_tables() {
         ..ExtractionConfig::default()
     };
 
-    let result = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(&bytes, PDF_MIME, &config).expect("extraction must succeed");
     assert!(
         result.tables.is_empty(),
         "extract_tables=false must suppress all tables, got {n} table(s)",
@@ -65,7 +67,7 @@ fn test_default_config_populates_tables_on_text_layer_pdf() {
     };
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(&bytes, PDF_MIME, &config).expect("extraction must succeed");
 
     if result.tables.is_empty() {
         eprintln!(
@@ -101,7 +103,7 @@ fn test_minimal_pdf_does_not_panic() {
         return;
     };
     let config = ExtractionConfig::default();
-    let _ = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
+    let _ = extract_bytes_document_blocking(&bytes, PDF_MIME, &config).expect("extraction must succeed");
 }
 
 /// Integration test for issue #964: the three-tier pipeline (native → bordered → heuristic)
@@ -109,7 +111,7 @@ fn test_minimal_pdf_does_not_panic() {
 ///
 /// Uses the same synthetic PDF that the unit tests build (5 rows × 2 columns, all cells
 /// delimited by explicit stroke lines). The unit tests verify the internal function directly;
-/// this test exercises the full public API path: `extract_bytes_sync` with default config.
+/// this test exercises the full public API path: `extract_bytes_document_blocking` with default config.
 #[test]
 fn test_bordered_two_column_table_detected_via_pipeline() {
     use pdf_oxide::geometry::Rect;
@@ -138,7 +140,7 @@ fn test_bordered_two_column_table_detected_via_pipeline() {
     let bytes = doc.build().expect("build synthetic PDF");
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(&bytes, PDF_MIME, &config).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(&bytes, PDF_MIME, &config).expect("extraction must succeed");
 
     assert!(
         !result.tables.is_empty(),

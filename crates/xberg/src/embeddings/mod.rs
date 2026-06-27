@@ -25,7 +25,7 @@
 //! - **Linux (Ubuntu/Debian)**: `apt install libonnxruntime libonnxruntime-dev`
 //! - **Linux (Fedora)**: `dnf install onnxruntime onnxruntime-devel`
 //! - **Linux (Arch)**: `pacman -S onnxruntime`
-//! - **Windows (MSVC)**: Download from https://github.com/microsoft/onnxruntime/releases and add to PATH
+//! - **Windows (MSVC)**: Download from <https://github.com/microsoft/onnxruntime/releases> and add to PATH
 //!
 //! Alternatively, set the `ORT_DYLIB_PATH` environment variable to the ONNX Runtime library path.
 //!
@@ -51,7 +51,7 @@
 //!     ..Default::default()
 //! };
 //!
-//! let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
+//! let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
 //! let result = output.results.into_iter().next().expect("one input yields one result");
 //! for chunk in result.chunks.unwrap() {
 //!     if let Some(embedding) = chunk.embedding {

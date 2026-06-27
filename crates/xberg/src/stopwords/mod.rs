@@ -94,7 +94,7 @@ mod languages;
 ///
 /// # Note
 ///
-/// For most use cases, prefer [`get_stopwords()`] which provides language code
+/// For most use cases, prefer `get_stopwords()` which provides language code
 /// normalization (case-insensitive, locale handling). Direct access to STOPWORDS
 /// is case-sensitive and requires exact language codes (lowercase, 2-letter ISO 639-1).
 ///

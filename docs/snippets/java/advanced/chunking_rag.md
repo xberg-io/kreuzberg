@@ -1,7 +1,10 @@
 ```java title="Java"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
 import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.ExtractionConfig;
+import io.xberg.ExtractInput;
 import io.xberg.ChunkingConfig;
 import io.xberg.EmbeddingConfig;
 import io.xberg.EmbeddingModelType;
@@ -18,13 +21,14 @@ ExtractionConfig config = ExtractionConfig.builder()
             .build())
         .build())
     .build();
-
 try {
-    ExtractionResult result = Xberg.extract("research_paper.pdf", config);
-
-    List<Object> chunks = result.getChunks() != null ? result.getChunks() : List.of();
+    ExtractionResult output = Xberg.extract(
+        ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("research_paper.pdf").build(),
+        config
+    );
+    ExtractedDocument result = output.results().get(0);
+    List<Object> chunks = result.chunks() != null ? result.chunks() : List.of();
     System.out.println("Found " + chunks.size() + " chunks for RAG pipeline");
-
     for (int i = 0; i < Math.min(3, chunks.size()); i++) {
         Object chunk = chunks.get(i);
         System.out.println("Chunk " + i + ": " + chunk.toString().substring(0, Math.min(80, chunk.toString().length())) + "...");

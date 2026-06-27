@@ -1,6 +1,5 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
@@ -31,15 +30,19 @@ fun main() {
         .withEnableQualityProcessing(true)
         .build()
 
-    val result = Xberg.extractSync(Paths.get("report.pdf"), null, config)
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "report.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
 
-    val content = result.content()
+    val content = result.content
     println("Content (${content.length} chars):")
     println(content.take(200))
 
-    result.chunks()?.let { println("\nChunks: ${it.size}") }
-    println("Tables: ${result.tables()?.size ?: 0}")
-    result.detectedLanguages()?.let { println("Languages: $it") }
-    result.extractionMethod()?.let { println("Extraction method: $it") }
+    result.chunks?.let { println("\nChunks: ${it.size}") }
+    println("Tables: ${result.tables?.size ?: 0}")
+    result.detectedLanguages?.let { println("Languages: $it") }
+    result.extractionMethod?.let { println("Extraction method: $it") }
 }
 ```

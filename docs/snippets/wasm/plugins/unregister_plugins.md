@@ -3,7 +3,7 @@
 Remove registered plugins from the WASM runtime using individual unregister or bulk clear operations.
 
 ```typescript title="WASM"
-import init, {
+import { initWasm,
   registerDocumentExtractor,
   unregisterDocumentExtractor,
   listDocumentExtractors,
@@ -24,9 +24,9 @@ import init, {
   unregisterValidator,
   listValidators,
   clearValidators,
-} from "xberg-wasm";
+} from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Example: register a custom document extractor
 const extractor = {

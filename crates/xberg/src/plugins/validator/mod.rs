@@ -61,7 +61,7 @@ mod tests {
     use crate::XbergError;
     use crate::core::config::ExtractionConfig;
     use crate::plugins::Plugin;
-    use crate::types::ExtractionResult;
+    use crate::types::ExtractedDocument;
     use ahash::AHashMap;
     use async_trait::async_trait;
     use std::borrow::Cow;
@@ -90,7 +90,7 @@ mod tests {
 
     #[async_trait]
     impl Validator for MockValidator {
-        async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             if self.should_fail {
                 Err(XbergError::validation("Validation failed".to_string()))
             } else {
@@ -103,7 +103,7 @@ mod tests {
     async fn test_validator_success() {
         let validator = MockValidator { should_fail: false };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test content".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -117,7 +117,7 @@ mod tests {
     async fn test_validator_failure() {
         let validator = MockValidator { should_fail: true };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test content".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -133,7 +133,7 @@ mod tests {
     fn test_validator_should_validate_default() {
         let validator = MockValidator { should_fail: false };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -164,7 +164,7 @@ mod tests {
     async fn test_validator_empty_content() {
         let validator = MockValidator { should_fail: false };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
@@ -194,11 +194,11 @@ mod tests {
 
         #[async_trait]
         impl Validator for PdfOnlyValidator {
-            async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+            async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
                 Ok(())
             }
 
-            fn should_validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> bool {
+            fn should_validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> bool {
                 result.mime_type == "application/pdf"
             }
         }
@@ -206,13 +206,13 @@ mod tests {
         let validator = PdfOnlyValidator;
         let config = ExtractionConfig::default();
 
-        let pdf_result = ExtractionResult {
+        let pdf_result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("application/pdf"),
             ..Default::default()
         };
 
-        let txt_result = ExtractionResult {
+        let txt_result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -259,7 +259,7 @@ mod tests {
 
         #[async_trait]
         impl Validator for HighPriorityValidator {
-            async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+            async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
                 Ok(())
             }
 
@@ -270,7 +270,7 @@ mod tests {
 
         #[async_trait]
         impl Validator for LowPriorityValidator {
-            async fn validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+            async fn validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
                 Ok(())
             }
 
@@ -291,7 +291,7 @@ mod tests {
     async fn test_validator_error_message() {
         let validator = MockValidator { should_fail: true };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -315,7 +315,7 @@ mod tests {
         let mut additional = AHashMap::new();
         additional.insert(Cow::Borrowed("quality_score"), serde_json::json!(0.95));
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata: crate::types::Metadata {
@@ -342,7 +342,7 @@ mod tests {
             bounding_box: None,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             tables: vec![table],
@@ -367,7 +367,7 @@ mod tests {
         ];
 
         for mime_type in mime_types {
-            let result = ExtractionResult {
+            let result = ExtractedDocument {
                 content: "test".to_string(),
                 mime_type: Cow::Borrowed(mime_type),
                 ..Default::default()
@@ -381,7 +381,7 @@ mod tests {
     async fn test_validator_long_content() {
         let validator = MockValidator { should_fail: false };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test content ".repeat(10000),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

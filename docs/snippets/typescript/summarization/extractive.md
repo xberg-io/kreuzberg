@@ -1,13 +1,16 @@
 ```typescript title="TypeScript"
 import { extract } from '@xberg-io/xberg';
 
-const result = await extract("report.pdf", {
+const output = await extract({
+    kind: "uri",
+    uri: "report.pdf",
+}, {
     summarization: {
         strategy: "extractive",
         maxTokens: 200,
     },
 });
-if (result.summary) {
-    console.log(result.summary.text);
+if (output.results[0].summary) {
+    console.log(output.results[0].summary.text);
 }
 ```

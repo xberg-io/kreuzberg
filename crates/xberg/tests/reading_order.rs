@@ -16,9 +16,11 @@
 
 #![cfg(all(feature = "pdf", feature = "layout-detection", not(target_arch = "wasm32")))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use std::path::PathBuf;
 use xberg::core::config::{ExtractionConfig, OutputFormat, PdfConfig};
-use xberg::extract_bytes_sync;
 
 /// Helper: check if layout-detection tests are enabled via env var
 fn should_run_layout_tests() -> bool {
@@ -68,7 +70,7 @@ fn text_reading_order_changes_output() {
         config_no_ro.use_layout_for_markdown
     );
 
-    let result_no_ro = extract_bytes_sync(&content, "application/pdf", &config_no_ro)
+    let result_no_ro = extract_bytes_document_blocking(&content, "application/pdf", &config_no_ro)
         .expect("Failed to extract with reading_order=false");
 
     // Extract with reading_order = true
@@ -94,7 +96,7 @@ fn text_reading_order_changes_output() {
         config_with_ro.use_layout_for_markdown
     );
 
-    let result_with_ro = extract_bytes_sync(&content, "application/pdf", &config_with_ro)
+    let result_with_ro = extract_bytes_document_blocking(&content, "application/pdf", &config_with_ro)
         .expect("Failed to extract with reading_order=true");
 
     // Both should produce text
@@ -145,7 +147,7 @@ fn markdown_reading_order_changes_output() {
     config_no_ro.layout = Some(Default::default()); // Enable layout detection
     config_no_ro.use_layout_for_markdown = true; // Needed for layout hints to be computed
 
-    let result_no_ro = extract_bytes_sync(&content, "application/pdf", &config_no_ro)
+    let result_no_ro = extract_bytes_document_blocking(&content, "application/pdf", &config_no_ro)
         .expect("Failed to extract with reading_order=false");
 
     // Extract with reading_order = true
@@ -160,7 +162,7 @@ fn markdown_reading_order_changes_output() {
     config_with_ro.layout = Some(Default::default()); // Enable layout detection
     config_with_ro.use_layout_for_markdown = true; // Needed for layout hints to be computed
 
-    let result_with_ro = extract_bytes_sync(&content, "application/pdf", &config_with_ro)
+    let result_with_ro = extract_bytes_document_blocking(&content, "application/pdf", &config_with_ro)
         .expect("Failed to extract with reading_order=true");
 
     // Both should produce markdown

@@ -17,7 +17,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.ExtractAsync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine($"Content length: {result.Content.Length}");
 
 // Advanced hierarchy detection with custom parameters
@@ -36,7 +36,7 @@ var advancedConfig = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.ExtractAsync("complex_document.pdf", advancedConfig);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("complex_document.pdf"), advancedConfig)).Results[0];
 Console.WriteLine($"Advanced hierarchy detection completed: {result.Content.Length} chars");
 
 // Minimal configuration with only enabled flag
@@ -54,7 +54,7 @@ var minimalConfig = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.ExtractAsync("document.pdf", minimalConfig);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), minimalConfig)).Results[0];
 Console.WriteLine("Extraction with default hierarchy settings complete");
 
 // Disabling hierarchy detection
@@ -69,6 +69,6 @@ var noHierarchyConfig = new ExtractionConfig
     }
 };
 
-var result = await XbergLib.ExtractAsync("document.pdf", noHierarchyConfig);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), noHierarchyConfig)).Results[0];
 Console.WriteLine("Extraction without hierarchy detection complete");
 ```

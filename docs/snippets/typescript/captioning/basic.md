@@ -1,13 +1,16 @@
 ```typescript title="TypeScript"
 import { extract } from "@xberg-io/xberg";
 
-const result = await extract("report.pdf", {
+const output = await extract({
+    kind: "uri",
+    uri: "report.pdf",
+}, {
     captioning: {
         llm: { model: "openai/gpt-4o-mini" },
     },
 });
 
-for (const image of result.images ?? []) {
+for (const image of output.results[0].images ?? []) {
     if (image.caption) {
         console.log(image.caption);
     }

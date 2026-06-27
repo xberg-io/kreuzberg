@@ -7,7 +7,7 @@ using Xberg;
 
 var rootCommand = new RootCommand("Xberg document extraction CLI");
 
-var extractCommand = new Command("extract-file", "Extract text from a document file");
+var extractCommand = new Command("extract", "Extract text from a document file");
 var filePath = new Argument<string>("path", "Path to the document file");
 var outputFormat = new Option<string>(
     new[] { "-f", "--format" },
@@ -22,7 +22,7 @@ extractCommand.SetHandler(async (path, format) =>
 {
     try
     {
-        var result = await XbergLib.ExtractAsync(path);
+        var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(path), ExtractionConfig.Default())).Results[0];
 
         if (format == "json")
         {

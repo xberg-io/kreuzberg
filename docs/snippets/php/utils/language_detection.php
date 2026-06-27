@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\LanguageDetectionConfig;
+use Xberg\ExtractionConfig;
+use Xberg\LanguageDetectionConfig;
 
 $config = new ExtractionConfig(
     languageDetection: new LanguageDetectionConfig(
@@ -24,8 +23,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Language Detection Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -80,8 +79,8 @@ foreach ($thresholds as $threshold) {
         )
     );
 
-    $xberg = new Xberg($thresholdConfig);
-    $result = $xberg->extract('document.pdf');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     $languages = $result->detectedLanguages ?? [];
 
@@ -146,7 +145,6 @@ $detectionConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($detectionConfig);
 
 foreach ($documents as $document) {
     if (!file_exists($document)) {
@@ -154,7 +152,8 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $xberg->extract($document);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($document), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $languages = $result->detectedLanguages ?? [];
 
     echo basename($document) . ": ";

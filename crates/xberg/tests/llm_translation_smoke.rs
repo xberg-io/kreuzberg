@@ -11,7 +11,7 @@
 
 use std::borrow::Cow;
 use xberg::core::config::{LlmConfig, TranslationConfig};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 
 fn init() {
     let _ = dotenvy::dotenv();
@@ -41,7 +41,7 @@ async fn translation_writes_translated_content_and_records_usage() {
         },
     };
 
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: "Hello world. This is a test sentence.".to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()

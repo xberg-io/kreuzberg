@@ -1,16 +1,20 @@
 ```java title="Java"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
 import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.ExtractionConfig;
+import io.xberg.ExtractInput;
 
 ExtractionConfig config = ExtractionConfig.builder()
     .enableQualityProcessing(true)
     .build();
-
-ExtractionResult result = Xberg.extract("scanned_document.pdf", config);
-
-double qualityScore = result.getQualityScore() != null ? result.getQualityScore() : 0.0;
-
+ExtractionResult output = Xberg.extract(
+    ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("scanned_document.pdf").build(),
+    config
+);
+ExtractedDocument result = output.results().get(0);
+double qualityScore = result.qualityScore() != null ? result.qualityScore() : 0.0;
 if (qualityScore < 0.5) {
     System.out.printf("Warning: Low quality extraction (%.2f)%n", qualityScore);
     System.out.println("Consider re-scanning or adjusting OCR settings");

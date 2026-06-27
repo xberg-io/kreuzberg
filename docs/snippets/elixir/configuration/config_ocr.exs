@@ -18,8 +18,9 @@ config = %ExtractionConfig{
   force_ocr: false
 }
 
-{:ok, result} = Xberg.extract("scanned_document.pdf", nil, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config: config)
 
+result = List.first(output.results)
 IO.puts("OCR Configuration Applied:")
 IO.puts("Backend: tesseract")
 IO.puts("Language: eng")

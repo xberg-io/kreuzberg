@@ -1,15 +1,15 @@
 //! Built-in Middle-stage post-processor that captions every
-//! [`ExtractedImage`](crate::types::ExtractedImage) using a VLM.
+//! [`ExtractedImage`] using a VLM.
 //!
 //! Activates when [`ExtractionConfig::captioning`](crate::core::config::ExtractionConfig::captioning)
 //! is `Some`. The processor walks `result.images`, and for each image whose
 //! pixel area (`width * height`) is at least `min_image_area` it invokes
 //! [`crate::llm::region_extractor::extract_region_with_vlm_usage`] in
-//! [`RegionKind::Caption`](crate::llm::region_extractor::RegionKind::Caption)
+//! [`RegionKind::Caption`]
 //! mode. The caption is stored on [`ExtractedImage::caption`].
 //!
 //! Every VLM call's [`LlmUsage`](crate::types::LlmUsage) is appended to
-//! [`ExtractionResult::llm_usage`] so token / cost accounting carries over
+//! [`ExtractedDocument::llm_usage`] so token / cost accounting carries over
 //! into downstream telemetry.
 
 use std::sync::Arc;
@@ -20,7 +20,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::llm::region_extractor::{RegionKind, extract_region_with_vlm_usage};
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use crate::types::{ExtractedImage, ExtractionResult};
+use crate::types::{ExtractedDocument, ExtractedImage};
 
 /// Post-processor that captions every extracted image via a VLM.
 #[cfg_attr(alef, alef(skip))]
@@ -47,7 +47,7 @@ impl Plugin for CaptioningProcessor {
 
 #[async_trait]
 impl PostProcessor for CaptioningProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let Some(caption_config) = config.captioning.as_ref() else {
             return Ok(());
         };
@@ -130,7 +130,7 @@ impl PostProcessor for CaptioningProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.captioning.is_some()
     }
 
@@ -211,7 +211,7 @@ mod tests {
     #[test]
     fn should_process_only_when_config_present() {
         let p = CaptioningProcessor;
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "x".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -256,7 +256,7 @@ mod tests {
             captioning: Some(caption_config(1000)),
             ..Default::default()
         };
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "x".to_string(),
             mime_type: std::borrow::Cow::Borrowed("text/plain"),
             ..Default::default()

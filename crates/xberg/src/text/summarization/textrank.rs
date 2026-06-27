@@ -31,7 +31,7 @@ const MAX_SENTENCES: usize = 256;
 /// `language` is an ISO 639 (or locale) code used to pick a stopword list;
 /// pass `None` (or an unknown code) to fall back to English.
 /// `max_tokens` bounds the summary length by whitespace-separated tokens;
-/// `None` falls back to [`DEFAULT_MAX_TOKENS`].
+/// `None` falls back to `DEFAULT_MAX_TOKENS`.
 pub fn summarize(text: &str, language: Option<&str>, max_tokens: Option<u32>) -> Option<String> {
     let trimmed = text.trim();
     if trimmed.is_empty() {

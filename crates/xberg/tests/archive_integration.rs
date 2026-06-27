@@ -8,10 +8,10 @@
 use std::io::{Cursor, Write};
 use tar::Builder as TarBuilder;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::{extract_bytes, extract_bytes_sync};
 use zip::write::{FileOptions, ZipWriter};
 
 mod helpers;
+use helpers::{extract_bytes_document, extract_bytes_document_blocking};
 
 /// Test basic ZIP extraction with single file.
 #[tokio::test]
@@ -20,7 +20,7 @@ async fn test_zip_basic_extraction() {
 
     let zip_bytes = create_simple_zip();
 
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract ZIP successfully");
 
@@ -67,7 +67,7 @@ async fn test_zip_multiple_files() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract multi-file ZIP");
 
@@ -119,7 +119,7 @@ async fn test_zip_nested_directories() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract nested ZIP");
 
@@ -159,7 +159,7 @@ async fn test_tar_extraction() {
 
     let tar_bytes = create_simple_tar();
 
-    let result = extract_bytes(&tar_bytes, "application/x-tar", &config)
+    let result = extract_bytes_document(&tar_bytes, "application/x-tar", &config)
         .await
         .expect("Should extract TAR successfully");
 
@@ -191,7 +191,7 @@ async fn test_tar_gz_extraction() {
 
     let tar_bytes = create_simple_tar();
 
-    let result = extract_bytes(&tar_bytes, "application/x-tar", &config)
+    let result = extract_bytes_document(&tar_bytes, "application/x-tar", &config)
         .await
         .expect("Should extract TAR");
 
@@ -210,7 +210,7 @@ async fn test_tar_gz_extraction() {
     assert_eq!(archive_meta.format, "TAR");
     assert_eq!(archive_meta.file_count, 1);
 
-    let result2 = extract_bytes(&tar_bytes, "application/tar", &config)
+    let result2 = extract_bytes_document(&tar_bytes, "application/tar", &config)
         .await
         .expect("Should extract with alternative MIME type");
 
@@ -254,7 +254,7 @@ async fn test_nested_archive() {
     }
 
     let outer_zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&outer_zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&outer_zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract nested ZIP");
 
@@ -302,7 +302,7 @@ async fn test_archive_mixed_formats() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract mixed-format ZIP");
 
@@ -338,7 +338,7 @@ async fn test_password_protected_archive() {
 
     let invalid_zip = vec![0x50, 0x4B, 0x03, 0x04];
 
-    let result = extract_bytes(&invalid_zip, "application/zip", &config).await;
+    let result = extract_bytes_document(&invalid_zip, "application/zip", &config).await;
 
     assert!(result.is_err(), "Should fail on invalid/encrypted ZIP");
 }
@@ -350,14 +350,14 @@ async fn test_corrupted_archive() {
 
     let corrupted_zip = vec![0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFF, 0xFF, 0xFF];
 
-    let result = extract_bytes(&corrupted_zip, "application/zip", &config).await;
+    let result = extract_bytes_document(&corrupted_zip, "application/zip", &config).await;
 
     assert!(result.is_err(), "Should fail on corrupted ZIP");
 
     let mut corrupted_tar = vec![0xFF; 512];
     corrupted_tar[0..5].copy_from_slice(b"file\0");
 
-    let result = extract_bytes(&corrupted_tar, "application/x-tar", &config).await;
+    let result = extract_bytes_document(&corrupted_tar, "application/x-tar", &config).await;
     assert!(
         result.is_ok() || result.is_err(),
         "Should handle corrupted TAR gracefully"
@@ -385,7 +385,7 @@ async fn test_large_archive() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract large ZIP");
 
@@ -438,7 +438,7 @@ async fn test_archive_with_special_characters() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract ZIP with special characters");
 
@@ -474,7 +474,7 @@ async fn test_empty_archive() {
     }
 
     let zip_bytes = cursor.into_inner();
-    let result = extract_bytes(&zip_bytes, "application/zip", &config)
+    let result = extract_bytes_document(&zip_bytes, "application/zip", &config)
         .await
         .expect("Should extract empty ZIP");
 
@@ -499,7 +499,8 @@ fn test_archive_extraction_sync() {
     let config = ExtractionConfig::default();
 
     let zip_bytes = create_simple_zip();
-    let result = extract_bytes_sync(&zip_bytes, "application/zip", &config).expect("Should extract ZIP synchronously");
+    let result = extract_bytes_document_blocking(&zip_bytes, "application/zip", &config)
+        .expect("Should extract ZIP synchronously");
 
     assert!(result.chunks.is_none(), "Chunks should be None without chunking config");
     assert!(result.detected_languages.is_none(), "Language detection not enabled");

@@ -18,9 +18,9 @@
 
 use std::path::{Path, PathBuf};
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_file;
 
 mod helpers;
+use helpers::extract_uri_document;
 
 /// Helper function to get the workspace root and construct test file paths
 fn get_test_file_path(filename: &str) -> PathBuf {
@@ -59,7 +59,7 @@ async fn test_odt_metadata_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract ODT metadata successfully");
 
@@ -127,7 +127,7 @@ async fn test_odt_table_with_caption_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config).await;
+    let result = extract_uri_document(&test_file, None, &config).await;
 
     if let Ok(result) = result {
         if !result.content.is_empty() {
@@ -155,7 +155,7 @@ async fn test_odt_simple_table_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config).await;
+    let result = extract_uri_document(&test_file, None, &config).await;
 
     if let Ok(result) = result {
         if !result.content.is_empty() {
@@ -185,7 +185,7 @@ async fn test_odt_heading_structure_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract heading structure successfully");
 
@@ -215,7 +215,7 @@ async fn test_odt_bold_formatting_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract bold formatting successfully");
 
@@ -243,7 +243,7 @@ async fn test_odt_italic_formatting_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract italic formatting successfully");
 
@@ -271,7 +271,7 @@ async fn test_odt_strikeout_formatting_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract strikeout formatting successfully");
 
@@ -302,7 +302,7 @@ async fn test_odt_image_with_caption_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config).await;
+    let result = extract_uri_document(&test_file, None, &config).await;
 
     if let Ok(result) = result {
         if !result.content.is_empty() {
@@ -332,7 +332,7 @@ async fn test_odt_formula_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract formula successfully");
 
@@ -363,7 +363,7 @@ async fn test_odt_footnote_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract footnote successfully");
 
@@ -389,7 +389,7 @@ async fn test_odt_endnote_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract endnote successfully");
 
@@ -415,7 +415,7 @@ async fn test_odt_citation_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract citation successfully");
 
@@ -442,7 +442,7 @@ async fn test_odt_unicode_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract unicode successfully");
 
@@ -465,7 +465,7 @@ async fn test_odt_inlined_code_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract inline code successfully");
 
@@ -491,7 +491,7 @@ async fn test_odt_paragraph_structure_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract paragraph structure successfully");
 
@@ -516,7 +516,7 @@ async fn test_odt_extraction_api_integration() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract via standard API");
 
@@ -532,7 +532,7 @@ async fn test_odt_extraction_missing_file_handling() {
     let test_file = get_test_file_path("nonexistent.odt");
     let config = ExtractionConfig::default();
 
-    let result = extract_file(&test_file, None, &config).await;
+    let result = extract_uri_document(&test_file, None, &config).await;
 
     assert!(result.is_err(), "Should return error for non-existent file");
 
@@ -559,7 +559,7 @@ async fn test_odt_extraction_variety() {
             continue;
         }
 
-        if let Ok(result) = extract_file(&test_file, None, &config).await
+        if let Ok(result) = extract_uri_document(&test_file, None, &config).await
             && !result.content.is_empty()
         {
             successful_extractions += 1;
@@ -590,7 +590,7 @@ async fn test_odt_table_no_duplicate_content() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract table successfully");
 
@@ -629,7 +629,7 @@ async fn test_odt_comprehensive_table_extraction() {
         output_format: xberg::core::config::OutputFormat::Markdown,
         ..Default::default()
     };
-    let result = extract_file(&test_file, None, &config)
+    let result = extract_uri_document(&test_file, None, &config)
         .await
         .expect("Should extract comprehensive table document successfully");
 

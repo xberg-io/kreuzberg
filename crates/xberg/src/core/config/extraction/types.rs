@@ -7,14 +7,15 @@
 //! - Batch extraction items
 
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "tokio-runtime")]
 use std::path::PathBuf;
 
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// Target format for re-encoding extracted images.
 ///
 /// Controls whether and how extracted images are normalised to a uniform
-/// container format before being returned in `ExtractionResult.images`.
+/// container format before being returned in `ExtractedDocument.images`.
 /// The default (`Native`) preserves the format produced by each extractor
 /// without any additional encode pass.
 ///
@@ -181,7 +182,7 @@ impl Default for ExtractInput {
 
 impl ExtractInput {
     /// Build a bytes input with a MIME type and optional filename hint.
-    pub fn bytes(bytes: impl Into<Vec<u8>>, mime_type: impl Into<String>, filename: Option<String>) -> Self {
+    pub fn from_bytes(bytes: impl Into<Vec<u8>>, mime_type: impl Into<String>, filename: Option<String>) -> Self {
         Self {
             kind: ExtractInputKind::Bytes,
             bytes: Some(bytes.into()),
@@ -192,7 +193,7 @@ impl ExtractInput {
     }
 
     /// Build a URI input from a local path, `file://` URI, or HTTP(S) URL.
-    pub fn uri(uri: impl Into<String>) -> Self {
+    pub fn from_uri(uri: impl Into<String>) -> Self {
         Self {
             kind: ExtractInputKind::Uri,
             uri: Some(uri.into()),
@@ -201,7 +202,7 @@ impl ExtractInput {
     }
 }
 
-/// Non-fatal per-input extraction error captured by [`ExtractionOutput`].
+/// Non-fatal per-input extraction error captured by [`ExtractionResult`].
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct ExtractionErrorItem {
@@ -235,12 +236,12 @@ pub struct ExtractionSummary {
     pub documents_downloaded: usize,
 }
 
-/// Unified extraction output envelope.
+/// Unified extraction result envelope.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ExtractionOutput {
-    /// Extraction results in discovery order.
-    pub results: Vec<ExtractionResult>,
+pub struct ExtractionResult {
+    /// Extracted documents in discovery order.
+    pub results: Vec<ExtractedDocument>,
     /// Non-fatal per-input errors.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub errors: Vec<ExtractionErrorItem>,
@@ -257,9 +258,9 @@ pub struct ExtractionOutput {
     pub crawl_unique_normalized_urls: Vec<String>,
 }
 
-impl ExtractionOutput {
+impl ExtractionResult {
     /// Build an output containing one successful result.
-    pub fn single(result: ExtractionResult) -> Self {
+    pub fn single(result: ExtractedDocument) -> Self {
         Self {
             results: vec![result],
             summary: ExtractionSummary {
@@ -363,6 +364,7 @@ pub(crate) struct BatchBytesItem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg(feature = "tokio-runtime")]
 pub(crate) struct BatchFileItem {
     /// Path to the file to extract from
     pub path: PathBuf,
@@ -425,12 +427,12 @@ pub struct ImageExtractionConfig {
     pub classify: bool,
 
     /// When `true`, full-page renders produced during OCR preprocessing are captured
-    /// and returned as `ImageKind::PageRaster` entries in `ExtractionResult.images`.
+    /// and returned as `ImageKind::PageRaster` entries in `ExtractedDocument.images`.
     ///
     /// **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the
     /// document-level OCR bypass is active (whole-document backend). When OCR is
     /// enabled and this flag is set but the active backend skips per-page rendering,
-    /// a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`.
+    /// a `ProcessingWarning` is emitted in `ExtractedDocument.processing_warnings`.
     ///
     /// Defaults to `false`. Enable when downstream consumers need page thumbnails
     /// (e.g. citation previews, visual grounding).

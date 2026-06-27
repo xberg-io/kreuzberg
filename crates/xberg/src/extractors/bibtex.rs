@@ -5,7 +5,7 @@
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::{BibtexMetadata, FormatMetadata, Metadata, YearRange};
@@ -69,7 +69,7 @@ impl Plugin for BibtexExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for BibtexExtractor {
+impl InternalDocumentExtractor for BibtexExtractor {
     #[cfg_attr(feature = "otel", tracing::instrument(
         skip(self, content, _config),
         fields(
@@ -77,7 +77,7 @@ impl DocumentExtractor for BibtexExtractor {
             content.size_bytes = content.len(),
         )
     ))]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -329,7 +329,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -368,7 +368,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -403,7 +403,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -428,7 +428,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -469,7 +469,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -504,7 +504,7 @@ mod tests {
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -528,7 +528,7 @@ Some random text that's not valid BibTeX"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -545,7 +545,7 @@ Some random text that's not valid BibTeX"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await;
 
         assert!(result.is_ok());
@@ -595,7 +595,7 @@ Some random text that's not valid BibTeX"#;
 
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await
             .expect("Should extract entry fields");
 
@@ -650,7 +650,7 @@ Some random text that's not valid BibTeX"#;
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(bibtex_content, "application/x-bibtex", &config)
+            .extract_content(bibtex_content, "application/x-bibtex", &config)
             .await
             .expect("Should extract with document structure");
 

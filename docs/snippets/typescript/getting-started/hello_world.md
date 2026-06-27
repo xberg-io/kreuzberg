@@ -1,6 +1,9 @@
 ```typescript title="TypeScript"
-import { extractSync } from "@xberg-io/xberg";
+import { extract } from "@xberg-io/xberg";
 
-const result = extractSync("document.pdf");
-console.log(result.content);
+const output = await extract({
+  kind: "uri",
+  uri: "document.pdf",
+});
+console.log(output.results[0].content);
 ```

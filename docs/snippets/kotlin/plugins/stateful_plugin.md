@@ -20,20 +20,20 @@ class StatefulPlugin : IPostProcessor {
         cache.clear()
     }
 
-    override fun process(result: ExtractionResult, config: ExtractionConfig) {
+    override fun process(result: ExtractedDocument, config: ExtractionConfig) {
         val count = callCount.incrementAndGet()
-        cache["last_mime"] = result.mimeType()
+        cache["last_mime"] = result.mimeType
         cache["last_call"] = count.toString()
     }
 
     override fun processing_stage(): ProcessingStage = ProcessingStage.Middle
 
     override fun should_process(
-        _result: ExtractionResult,
+        _result: ExtractedDocument,
         _config: ExtractionConfig,
     ): Boolean = true
 
-    override fun estimated_duration_ms(_result: ExtractionResult): Long = 1L
+    override fun estimated_duration_ms(_result: ExtractedDocument): Long = 1L
 
     override fun priority(): Int = 50
 

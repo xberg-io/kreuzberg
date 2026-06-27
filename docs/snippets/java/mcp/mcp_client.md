@@ -20,6 +20,7 @@ public class McpClient {
         stdout = new BufferedReader(new InputStreamReader(mcpProcess.getInputStream()));
     }
 
+    // Note: This is a custom RPC client method, not Xberg.extract() API
     public String extract(String path) throws IOException {
         Map<String, Object> request = Map.of(
             "method", "tools/call",

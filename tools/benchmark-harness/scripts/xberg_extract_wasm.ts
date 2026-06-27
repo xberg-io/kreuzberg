@@ -6,9 +6,11 @@ import * as readline from "node:readline";
 // The @xberg-io/xberg-wasm package is resolved through pnpm's virtual store which
 // doesn't reliably provide the WASM binary and glue JS via import.meta.url.
 import {
+	WasmExtractInput,
 	type ExtractionConfig,
 	enableOcr,
-	extractFile,
+	extract,
+	extractBatch as extractBatchEnvelope,
 	getWasmModule,
 	initializePdfiumAsync,
 	initWasm,
@@ -40,13 +42,39 @@ function log(msg: string): void {
 	}
 }
 
-interface ExtractionOutput {
+interface BenchmarkExtractionPayload {
 	content: string;
 	metadata: Record<string, unknown>;
 	_extraction_time_ms: number;
 	_batch_total_ms?: number;
 	_ocr_used: boolean;
 	_peak_memory_bytes?: number;
+}
+
+interface WasmExtractedDocumentPayload {
+	content: string;
+	metadata?: Record<string, unknown> | null;
+}
+
+type WasmExtractionEnvelopePayload = {
+	results?: WasmExtractedDocumentPayload[] | (() => WasmExtractedDocumentPayload[]);
+};
+
+function getResults(output: WasmExtractionEnvelopePayload): WasmExtractedDocumentPayload[] {
+	const results = output.results;
+	return typeof results === "function" ? results.call(output) : (results ?? []);
+}
+
+function firstResult(output: WasmExtractionEnvelopePayload, source: string): WasmExtractedDocumentPayload {
+	const result = getResults(output)[0];
+	if (!result) {
+		throw new Error(`No extraction result produced for ${source}`);
+	}
+	return result;
+}
+
+function inputFromPath(filePath: string, mimeType: string | null): WasmExtractInput {
+	return new WasmExtractInput(undefined, undefined, filePath, mimeType ?? undefined, undefined, undefined);
 }
 
 /** Map file extension to MIME type so we don't rely on byte-level detection. */
@@ -203,11 +231,18 @@ async function withTimeout<T>(promise: Promise<T>, filePath: string, mimeType: s
 	}
 }
 
-async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<ExtractionOutput> {
+async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<BenchmarkExtractionPayload> {
 	const config = createConfig(ocrEnabled);
 	const mimeType = guessMimeType(filePath);
 	const start = performance.now();
-	const result = await withTimeout(extractFile(filePath, mimeType, config), filePath, mimeType);
+	const result = firstResult(
+		await withTimeout(
+			extract({ kind: "uri", uri: filePath, mime_type: mimeType ?? undefined }, config),
+			filePath,
+			mimeType,
+		),
+		filePath,
+	);
 	const durationMs = performance.now() - start;
 
 	const metadata = (result.metadata as Record<string, unknown>) ?? {};
@@ -220,30 +255,28 @@ async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<Extr
 	};
 }
 
-async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<ExtractionOutput[]> {
+async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<BenchmarkExtractionPayload[]> {
 	const config = createConfig(ocrEnabled);
 	const start = performance.now();
-	const settled = await Promise.allSettled(
-		filePaths.map((fp) => {
-			const mime = guessMimeType(fp);
-			return withTimeout(extractFile(fp, mime, config), fp, mime);
-		}),
-	);
+	const inputs = filePaths.map((fp) => inputFromPath(fp, guessMimeType(fp)));
+	const settled = await Promise.allSettled([withTimeout(extractBatchEnvelope(inputs, config), "batch", null)]);
 	const totalDurationMs = performance.now() - start;
 
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;
 
 	const peakMemory = process.memoryUsage().rss;
-	return settled.map((settlement, _i) => {
-		if (settlement.status === "rejected") {
-			const reason = settlement.reason instanceof Error ? settlement.reason.message : String(settlement.reason);
-			return {
-				error: reason,
-				_extraction_time_ms: 0,
-				_ocr_used: false,
-			} as unknown as ExtractionOutput;
-		}
-		const result = settlement.value;
+	if (settled[0]?.status === "rejected") {
+		const reason = settled[0].reason instanceof Error ? settled[0].reason.message : String(settled[0]?.reason);
+		return filePaths.map(
+			() =>
+				({
+					error: reason,
+					_extraction_time_ms: 0,
+					_ocr_used: false,
+				}) as unknown as BenchmarkExtractionPayload,
+		);
+	}
+	return getResults(settled[0].value).map((result) => {
 		const metadata = (result.metadata as Record<string, unknown>) ?? {};
 		return {
 			content: result.content,
@@ -292,13 +325,20 @@ async function runServer(ocrEnabled: boolean): Promise<void> {
 		const start = performance.now();
 		try {
 			const config = createConfig(ocrEnabled || forceOcr, forceOcr);
-			const result = await withTimeout(extractFile(filePath, mimeType, config), filePath, mimeType);
+			const result = firstResult(
+				await withTimeout(
+					extract({ kind: "uri", uri: filePath, mime_type: mimeType ?? undefined }, config),
+					filePath,
+					mimeType,
+				),
+				filePath,
+			);
 			const durationMs = performance.now() - start;
 
 			log(`OK    ${filePath} (${durationMs.toFixed(1)}ms, ${result.content.length} chars)`);
 
 			const metadata = (result.metadata as Record<string, unknown>) ?? {};
-			const payload: ExtractionOutput = {
+			const payload: BenchmarkExtractionPayload = {
 				content: result.content,
 				metadata,
 				_extraction_time_ms: durationMs,

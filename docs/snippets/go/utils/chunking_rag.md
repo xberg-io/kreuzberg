@@ -11,7 +11,7 @@ import (
 func main() {
 	maxChars := 500
 	maxOverlap := 50
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
@@ -22,12 +22,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("research_paper.pdf", config)
+	input := xberg.ExtractInputFromURI("research_paper.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	for i, chunk := range result.Chunks {
+	for i, chunk := range result.Results[0].Chunks {
 		fmt.Printf("Chunk %d/%d (%d-%d)\n", i+1, chunk.Metadata.TotalChunks, chunk.Metadata.CharStart, chunk.Metadata.CharEnd)
 		fmt.Printf("Content: %s...\n", chunk.Content[:min(len(chunk.Content), 100)])
 		if chunk.Embedding != nil {

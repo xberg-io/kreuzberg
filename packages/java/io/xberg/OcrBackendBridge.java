@@ -298,8 +298,8 @@ public final class OcrBackendBridge implements AutoCloseable {
             byte[] image_bytes = image_bytes_in.reinterpret(image_bytesLen).toArray(ValueLayout.JAVA_BYTE);
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             OcrConfig config = JSON.readValue(config_json, OcrConfig.class);
-            ExtractionResult result = impl.process_image(image_bytes, config);
-            String json = JSON.writeValueAsString(result);
+            ExtractedDocument callbackResult = impl.process_image(image_bytes, config);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -320,8 +320,8 @@ public final class OcrBackendBridge implements AutoCloseable {
             java.nio.file.Path path = java.nio.file.Paths.get(path_in.reinterpret(Long.MAX_VALUE).getString(0));
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             OcrConfig config = JSON.readValue(config_json, OcrConfig.class);
-            ExtractionResult result = impl.process_image_file(path, config);
-            String json = JSON.writeValueAsString(result);
+            ExtractedDocument callbackResult = impl.process_image_file(path, config);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -334,8 +334,8 @@ public final class OcrBackendBridge implements AutoCloseable {
     private int handleSupportsLanguage(MemorySegment userData, MemorySegment lang_in, MemorySegment outResult, MemorySegment outError) {
         try {
             String lang = lang_in.reinterpret(Long.MAX_VALUE).getString(0);
-            boolean result = impl.supports_language(lang);
-            String json = JSON.writeValueAsString(result);
+            boolean callbackResult = impl.supports_language(lang);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -347,8 +347,8 @@ public final class OcrBackendBridge implements AutoCloseable {
 
     private int handleBackendType(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            String result = impl.backend_type();
-            MemorySegment jsonCs = arena.allocateFrom(result);
+            String callbackResult = impl.backend_type();
+            MemorySegment jsonCs = arena.allocateFrom(callbackResult);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {
@@ -359,8 +359,8 @@ public final class OcrBackendBridge implements AutoCloseable {
 
     private int handleSupportedLanguages(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            List<String> result = impl.supported_languages();
-            String json = JSON.writeValueAsString(result);
+            List<String> callbackResult = impl.supported_languages();
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -372,8 +372,8 @@ public final class OcrBackendBridge implements AutoCloseable {
 
     private int handleSupportsTableDetection(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            boolean result = impl.supports_table_detection();
-            String json = JSON.writeValueAsString(result);
+            boolean callbackResult = impl.supports_table_detection();
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -385,8 +385,8 @@ public final class OcrBackendBridge implements AutoCloseable {
 
     private int handleSupportsDocumentProcessing(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            boolean result = impl.supports_document_processing();
-            String json = JSON.writeValueAsString(result);
+            boolean callbackResult = impl.supports_document_processing();
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -398,8 +398,8 @@ public final class OcrBackendBridge implements AutoCloseable {
 
     private int handleEmitsStructuredMarkdown(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            boolean result = impl.emits_structured_markdown();
-            String json = JSON.writeValueAsString(result);
+            boolean callbackResult = impl.emits_structured_markdown();
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -420,8 +420,8 @@ public final class OcrBackendBridge implements AutoCloseable {
             java.nio.file.Path _path = java.nio.file.Paths.get(_path_in.reinterpret(Long.MAX_VALUE).getString(0));
             String _config_json = _config_in.reinterpret(Long.MAX_VALUE).getString(0);
             OcrConfig _config = JSON.readValue(_config_json, OcrConfig.class);
-            ExtractionResult result = impl.process_document(_path, _config);
-            String json = JSON.writeValueAsString(result);
+            ExtractedDocument callbackResult = impl.process_document(_path, _config);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -459,7 +459,12 @@ public final class OcrBackendBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_REGISTER_OCR_BACKEND.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
+                int rc = (int) (long) NativeLib.XBERG_REGISTER_OCR_BACKEND.invoke(
+                    nameCs,
+                    bridge.vtableSegment(),
+                    MemorySegment.NULL,
+                    outErr
+                );
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL) ? "registration failed (rc=" + rc + ")" : readNativeString(errPtr);
@@ -483,7 +488,7 @@ public final class OcrBackendBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_UNREGISTER_OCR_BACKEND.invoke(nameCs, outErr);
+                int rc = (int) (long) NativeLib.XBERG_UNREGISTER_OCR_BACKEND.invoke(nameCs, outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)
@@ -507,7 +512,7 @@ public final class OcrBackendBridge implements AutoCloseable {
         try {
             try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_CLEAR_OCR_BACKEND.invoke(outErr);
+                int rc = (int) (long) NativeLib.XBERG_CLEAR_OCR_BACKEND.invoke(outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)

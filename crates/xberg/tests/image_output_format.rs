@@ -1,8 +1,8 @@
 //! End-to-end integration tests for `ImageExtractionConfig.output_format`.
 //!
-//! Drives real extractors through `extract_file_sync` and asserts that the
+//! Drives real extractors through `extract_uri_document_blocking` and asserts that the
 //! chosen `ImageOutputFormat` variant propagates correctly to
-//! `ExtractionResult.images[*].format` and raw byte magic-number signatures.
+//! `ExtractedDocument.images[*].format` and raw byte magic-number signatures.
 //!
 //! Fixtures used:
 //!   - `pdf/embedded_images_tables.pdf`  — PDF with embedded JPEG images
@@ -19,10 +19,10 @@
 #![cfg(feature = "image-encode")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use xberg::core::config::extraction::ImageOutputFormat;
 use xberg::core::config::{ExtractionConfig, ImageExtractionConfig, OutputFormat};
-use xberg::extract_file_sync;
 
 // ── Magic-byte helpers ───────────────────────────────────────────────────────
 
@@ -103,8 +103,9 @@ fn pdf_native_passthrough() {
     };
 
     let result_native =
-        extract_file_sync(&path, None, &config_explicit_native).expect("native extraction must succeed");
-    let result_default = extract_file_sync(&path, None, &config_default).expect("default extraction must succeed");
+        extract_uri_document_blocking(&path, None, &config_explicit_native).expect("native extraction must succeed");
+    let result_default =
+        extract_uri_document_blocking(&path, None, &config_default).expect("default extraction must succeed");
 
     let images_native = result_native
         .images
@@ -146,7 +147,7 @@ fn pdf_force_png() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Png);
-    let result = extract_file_sync(&path, None, &config).expect("PNG extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("PNG extraction must succeed");
 
     let images = result
         .images
@@ -188,7 +189,7 @@ fn pdf_force_jpeg() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Jpeg { quality: 85 });
-    let result = extract_file_sync(&path, None, &config).expect("JPEG extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("JPEG extraction must succeed");
 
     let images = result
         .images
@@ -230,7 +231,7 @@ fn pdf_force_webp() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Webp { quality: 80 });
-    let result = extract_file_sync(&path, None, &config).expect("WebP extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("WebP extraction must succeed");
 
     let images = result
         .images
@@ -274,7 +275,7 @@ fn office_mixed_to_png() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Png);
-    let result = extract_file_sync(&path, None, &config).expect("DOCX PNG extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("DOCX PNG extraction must succeed");
 
     let images = match result.images.as_ref() {
         Some(v) if !v.is_empty() => v,
@@ -346,11 +347,12 @@ fn image_extractor_jpeg_to_png() {
         use_cache: false,
         ..Default::default()
     };
-    let native_result = extract_file_sync(&path, None, &native_config).expect("native JPEG extraction must succeed");
+    let native_result =
+        extract_uri_document_blocking(&path, None, &native_config).expect("native JPEG extraction must succeed");
 
     // Extract with PNG re-encode.
     let png_config = config_with_output_format(ImageOutputFormat::Png);
-    let png_result = extract_file_sync(&path, None, &png_config).expect("PNG JPEG extraction must succeed");
+    let png_result = extract_uri_document_blocking(&path, None, &png_config).expect("PNG JPEG extraction must succeed");
 
     let images = png_result
         .images
@@ -430,7 +432,7 @@ fn ocr_runs_before_reencode() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("OCR + JPEG re-encode must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("OCR + JPEG re-encode must succeed");
 
     assert!(
         !result.content.trim().is_empty(),
@@ -483,8 +485,10 @@ fn quality_change_alters_byte_size() {
     let config_high = config_with_output_format(ImageOutputFormat::Jpeg { quality: 95 });
     let config_low = config_with_output_format(ImageOutputFormat::Jpeg { quality: 30 });
 
-    let result_high = extract_file_sync(&path, None, &config_high).expect("high-quality JPEG extraction must succeed");
-    let result_low = extract_file_sync(&path, None, &config_low).expect("low-quality JPEG extraction must succeed");
+    let result_high =
+        extract_uri_document_blocking(&path, None, &config_high).expect("high-quality JPEG extraction must succeed");
+    let result_low =
+        extract_uri_document_blocking(&path, None, &config_low).expect("low-quality JPEG extraction must succeed");
 
     let images_high = result_high
         .images
@@ -540,7 +544,7 @@ fn unsupported_source_format_warns_and_preserves() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Png);
-    let result = extract_file_sync(&path, None, &config).expect("DOCX extraction must not error out");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("DOCX extraction must not error out");
 
     // We only check the warning structure if the fixture actually has undecodable images.
     let encoder_warnings: Vec<_> = result
@@ -599,7 +603,7 @@ fn heif_output() {
     }
 
     let config = config_with_output_format(ImageOutputFormat::Heif { quality: 80 });
-    let result = extract_file_sync(&path, None, &config).expect("HEIF extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("HEIF extraction must succeed");
 
     let images = result
         .images

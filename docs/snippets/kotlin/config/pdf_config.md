@@ -1,6 +1,5 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
@@ -19,8 +18,12 @@ fun main() {
         .withPdfOptions(Optional.of(pdf))
         .build()
 
-    val result = Xberg.extractSync(Paths.get("encrypted.pdf"), null, config)
-    println("Title: ${result.metadata().title()}")
-    println("Authors: ${result.metadata().authors()}")
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "encrypted.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
+    println("Title: ${result.metadata.title}")
+    println("Authors: ${result.metadata.authors}")
 }
 ```

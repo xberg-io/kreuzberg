@@ -15,9 +15,11 @@
 
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat, SvgOptions};
-use xberg::extract_bytes_sync;
 
 /// HTML document containing an inline SVG with XSS payloads:
 ///
@@ -81,8 +83,8 @@ fn no_sanitize_config() -> ExtractionConfig {
 /// leaving the output format as `"svg"`.
 #[test]
 fn svg_sanitize_strips_script_and_external_href() {
-    let result =
-        extract_bytes_sync(HTML_WITH_XSS_SVG, "text/html", &sanitize_config()).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(HTML_WITH_XSS_SVG, "text/html", &sanitize_config())
+        .expect("extraction must succeed");
 
     let images = result
         .images
@@ -125,8 +127,8 @@ fn svg_sanitize_strips_script_and_external_href() {
 /// vacuous.
 #[test]
 fn svg_without_sanitize_preserves_original_bytes_on_native_target() {
-    let result =
-        extract_bytes_sync(HTML_WITH_XSS_SVG, "text/html", &no_sanitize_config()).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(HTML_WITH_XSS_SVG, "text/html", &no_sanitize_config())
+        .expect("extraction must succeed");
 
     let images = result
         .images
@@ -160,8 +162,8 @@ fn svg_without_sanitize_preserves_original_bytes_on_native_target() {
 /// The SVG root element marker `<svg` must survive.
 #[test]
 fn svg_sanitize_output_is_valid_xml_structure() {
-    let result =
-        extract_bytes_sync(HTML_WITH_XSS_SVG, "text/html", &sanitize_config()).expect("extraction must succeed");
+    let result = extract_bytes_document_blocking(HTML_WITH_XSS_SVG, "text/html", &sanitize_config())
+        .expect("extraction must succeed");
 
     let images = result
         .images

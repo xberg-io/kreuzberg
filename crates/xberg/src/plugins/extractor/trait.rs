@@ -3,8 +3,9 @@
 //! This module defines the trait for implementing custom document extractors.
 
 use crate::Result;
-use crate::core::config::ExtractionConfig;
+use crate::core::config::{ExtractInput, ExtractInputKind, ExtractionConfig};
 use crate::plugins::Plugin;
+use crate::types::ExtractedDocument;
 use crate::types::internal::InternalDocument;
 use async_trait::async_trait;
 use std::path::Path;
@@ -14,14 +15,10 @@ use crate::XbergError;
 
 /// Trait for document extractor plugins.
 ///
-/// Implement this trait to add support for new document formats or to override
-/// built-in extraction behavior with custom logic.
-///
-/// # Return Type
-///
-/// Extractors return `InternalDocument`, a flat intermediate representation.
-/// The pipeline converts this into the public `ExtractionResult` via the
-/// derivation step.
+/// Implement this trait to add support for new document formats or override
+/// built-in extraction behavior. Foreign-language bindings expose the
+/// [`DocumentExtractor::extract`] method, which accepts [`ExtractInput`] and
+/// returns an [`ExtractedDocument`].
 ///
 /// # Priority System
 ///
@@ -41,107 +38,43 @@ use crate::XbergError;
 ///
 /// ```rust
 /// use xberg::plugins::{Plugin, DocumentExtractor};
-/// use xberg::{Result, ExtractionConfig};
-/// use xberg::types::internal::InternalDocument;
+/// use xberg::{ExtractInput, ExtractionConfig, ExtractedDocument, Result};
 /// use async_trait::async_trait;
-/// use std::path::Path;
 ///
-/// /// Custom PDF extractor with premium features
-/// struct PremiumPdfExtractor;
+/// struct CustomTextExtractor;
 ///
-/// impl Plugin for PremiumPdfExtractor {
-///     fn name(&self) -> &str { "premium-pdf" }
-///     fn version(&self) -> String { "2.0.0".to_string() }
+/// impl Plugin for CustomTextExtractor {
+///     fn name(&self) -> &str { "custom-text" }
+///     fn version(&self) -> String { "1.0.0".to_string() }
 ///     fn initialize(&self) -> Result<()> { Ok(()) }
 ///     fn shutdown(&self) -> Result<()> { Ok(()) }
 /// }
 ///
 /// #[async_trait]
-/// impl DocumentExtractor for PremiumPdfExtractor {
-///     async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
-///         -> Result<InternalDocument> {
-///         // Premium extraction logic with better accuracy
-///         let mut doc = InternalDocument::new("pdf");
-///         // ... populate doc.elements, doc.metadata, etc.
-///         Ok(doc)
+/// impl DocumentExtractor for CustomTextExtractor {
+///     async fn extract(&self, input: ExtractInput, _config: &ExtractionConfig)
+///         -> Result<ExtractedDocument> {
+///         let bytes = input.bytes.unwrap_or_default();
+///         Ok(ExtractedDocument {
+///             content: String::from_utf8_lossy(&bytes).to_string(),
+///             mime_type: "text/plain".into(),
+///             ..Default::default()
+///         })
 ///     }
 ///
 ///     fn supported_mime_types(&self) -> &[&str] {
-///         &["application/pdf"]
-///     }
-///
-///     fn priority(&self) -> i32 {
-///         100  // Higher than default (50) - will be preferred
+///         &["text/plain"]
 ///     }
 /// }
 /// ```
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 pub trait DocumentExtractor: Plugin {
-    /// Extract content from a byte array.
+    /// Binding-safe extraction entry point for foreign-language plugin bridges.
     ///
-    /// This is the core extraction method that processes in-memory document data.
-    ///
-    /// # Arguments
-    ///
-    /// * `content` - Raw document bytes
-    /// * `mime_type` - MIME type of the document (already validated)
-    /// * `config` - Extraction configuration
-    ///
-    /// # Returns
-    ///
-    /// An `InternalDocument` containing the extracted elements, metadata, and tables.
-    /// The pipeline will convert this into the public `ExtractionResult`.
-    ///
-    /// # Errors
-    ///
-    /// - `XbergError::Parsing` - Document parsing failed
-    /// - `XbergError::Validation` - Invalid document structure
-    /// - `XbergError::Io` - I/O errors (these always bubble up)
-    /// - `XbergError::MissingDependency` - Required dependency not available
-    async fn extract_bytes(
-        &self,
-        content: &[u8],
-        mime_type: &str,
-        config: &ExtractionConfig,
-    ) -> Result<InternalDocument>;
-
-    /// Extract content from a file.
-    ///
-    /// Default implementation reads the file and calls `extract_bytes`.
-    /// Override for custom file handling, streaming, or memory optimizations.
-    ///
-    /// # Arguments
-    ///
-    /// * `path` - Path to the document file
-    /// * `mime_type` - MIME type of the document (already validated)
-    /// * `config` - Extraction configuration
-    ///
-    /// # Returns
-    ///
-    /// An `InternalDocument` containing the extracted elements, metadata, and tables.
-    ///
-    /// # Errors
-    ///
-    /// Same as `extract_bytes`, plus file I/O errors.
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
-        #[cfg(feature = "tokio-runtime")]
-        {
-            use crate::core::io;
-            // Use memory-mapped I/O for large files (> 1 MiB) to avoid an extra
-            // heap allocation.  `open_file_bytes` falls back to a plain read for
-            // small files and on WASM where mmap is unavailable.
-            let bytes = io::open_file_bytes(path)?;
-            self.extract_bytes(&bytes, mime_type, config).await
-        }
-        #[cfg(not(feature = "tokio-runtime"))]
-        {
-            let _ = (path, mime_type, config);
-            Err(XbergError::Other(
-                "File-based extraction requires the tokio-runtime feature".to_string(),
-            ))
-        }
-    }
+    /// Accepts the same unified input shape as the public extraction API and
+    /// returns one extracted document result.
+    async fn extract(&self, input: ExtractInput, config: &ExtractionConfig) -> Result<ExtractedDocument>;
 
     /// Get the list of MIME types supported by this extractor.
     ///
@@ -190,13 +123,95 @@ pub trait DocumentExtractor: Plugin {
     fn can_handle(&self, _path: &Path, _mime_type: &str) -> bool {
         true
     }
+}
 
-    /// Attempt to get a reference to this extractor as a SyncExtractor.
-    ///
-    /// Returns None if the extractor doesn't support synchronous extraction.
-    /// This is used for WASM and other sync-only environments.
-    #[doc(hidden)]
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        None
+/// Crate-private extraction capability used by native Rust extractors.
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
+pub(crate) trait InternalDocumentExtractor: Plugin {
+    /// Extract an in-memory payload into the pipeline representation.
+    async fn extract_content(
+        &self,
+        content: &[u8],
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument>;
+
+    /// Extract a path into the pipeline representation.
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+        #[cfg(feature = "tokio-runtime")]
+        {
+            use crate::core::io;
+            let bytes = io::open_file_bytes(path)?;
+            self.extract_content(&bytes, mime_type, config).await
+        }
+        #[cfg(not(feature = "tokio-runtime"))]
+        {
+            let _ = (path, mime_type, config);
+            Err(XbergError::Other(
+                "Path extraction requires the tokio-runtime feature".to_string(),
+            ))
+        }
+    }
+
+    /// Get the list of MIME types supported by this extractor.
+    fn supported_mime_types(&self) -> &[&str];
+
+    /// Get the priority of this extractor.
+    fn priority(&self) -> i32 {
+        50
+    }
+
+    /// Check if this extractor can handle a specific path and MIME type.
+    fn can_handle(&self, _path: &Path, _mime_type: &str) -> bool {
+        true
+    }
+}
+
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
+impl<T> DocumentExtractor for T
+where
+    T: InternalDocumentExtractor + ?Sized,
+{
+    async fn extract(&self, input: ExtractInput, config: &ExtractionConfig) -> Result<ExtractedDocument> {
+        let doc = match input.kind {
+            ExtractInputKind::Bytes => {
+                let bytes = input.bytes.ok_or_else(|| {
+                    crate::XbergError::validation(
+                        "document extractor input kind 'bytes' requires the 'bytes' field".to_string(),
+                    )
+                })?;
+                let mime_type = input.mime_type.as_deref().unwrap_or("application/octet-stream");
+                InternalDocumentExtractor::extract_content(self, &bytes, mime_type, config).await?
+            }
+            ExtractInputKind::Uri => {
+                let uri = input.uri.ok_or_else(|| {
+                    crate::XbergError::validation(
+                        "document extractor input kind 'uri' requires the 'uri' field".to_string(),
+                    )
+                })?;
+                let mime_type = input.mime_type.as_deref().unwrap_or("application/octet-stream");
+                InternalDocumentExtractor::extract_path(self, Path::new(&uri), mime_type, config).await?
+            }
+        };
+
+        Ok(crate::extraction::derive::derive_extraction_result(
+            doc,
+            config.include_document_structure,
+            config.output_format.clone(),
+        ))
+    }
+
+    fn supported_mime_types(&self) -> &[&str] {
+        InternalDocumentExtractor::supported_mime_types(self)
+    }
+
+    fn priority(&self) -> i32 {
+        InternalDocumentExtractor::priority(self)
+    }
+
+    fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
+        InternalDocumentExtractor::can_handle(self, path, mime_type)
     }
 }

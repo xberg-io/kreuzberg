@@ -70,6 +70,40 @@ pub mod survey;
 pub mod types;
 pub mod validate_gt;
 
+use std::path::Path;
+
+/// Extract one local file through the public unified Xberg API.
+pub async fn extract_xberg_file(
+    path: &Path,
+    config: &xberg::ExtractionConfig,
+) -> xberg::Result<xberg::ExtractedDocument> {
+    let output = xberg::extract(xberg::ExtractInput::from_uri(path.to_string_lossy()), config).await?;
+    output
+        .results
+        .into_iter()
+        .next()
+        .ok_or_else(|| xberg::XbergError::Other(format!("no extraction result produced for {}", path.display())))
+}
+
+/// Extract local files through the public unified Xberg batch API.
+pub async fn extract_xberg_files(
+    paths: &[impl AsRef<Path>],
+    config: &xberg::ExtractionConfig,
+) -> xberg::Result<Vec<xberg::ExtractedDocument>> {
+    let inputs = paths
+        .iter()
+        .map(|path| xberg::ExtractInput::from_uri(path.as_ref().to_string_lossy()))
+        .collect();
+    let output = xberg::extract_batch(inputs, config).await?;
+    if let Some(error) = output.errors.first() {
+        return Err(xberg::XbergError::Other(format!(
+            "batch extraction failed for {}: {}",
+            error.source, error.message
+        )));
+    }
+    Ok(output.results)
+}
+
 pub use adapter::FrameworkAdapter;
 pub use aggregate::{
     ComparisonData, ConsolidationMetadata, DeltaMetrics, DurationPercentiles, FileTypeAggregation,

@@ -11,18 +11,19 @@ import (
 func main() {
 	enableQualityProcessing := true
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		EnableQualityProcessing: &enableQualityProcessing,
 	}
 
-	result, err := xberg.ExtractSync("scanned_document.pdf", config)
+	input := xberg.ExtractInputFromURI("scanned_document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
 
 	qualityScore := 0.0
-	if result.QualityScore != nil {
-		qualityScore = *result.QualityScore
+	if result.Results[0].QualityScore != nil {
+		qualityScore = *result.Results[0].QualityScore
 	}
 
 	if qualityScore < 0.5 {

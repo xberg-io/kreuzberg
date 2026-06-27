@@ -3,9 +3,9 @@
 Register a validator that filters out extraction results with text below a minimum length threshold.
 
 ```typescript title="WASM"
-import init, { registerValidator, extract } from "xberg-wasm";
+import { initWasm, registerValidator, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const MIN_LENGTH = 10;
 

@@ -1,52 +1,28 @@
-//! Main extraction entry points.
+//! Internal extraction implementation.
 //!
-//! This module provides the primary API for extracting content from bytes and URIs.
-//! It orchestrates the entire extraction pipeline: cache checking, MIME detection,
-//! extractor selection, extraction, post-processing, and cache storage.
-//!
-//! # Functions
-//!
-//! - [`extract`] - Extract content from one bytes or URI input
-//! - [`extract_batch`] - Extract content from multiple bytes or URI inputs
+//! Public extraction orchestration lives in [`crate::core::extract`]. This module
+//! contains the private file, bytes, and batch implementation details used by that
+//! public API and by internal extractors.
 
 mod bytes;
 mod file;
 mod helpers;
-mod legacy;
-mod sync;
-mod unified;
 
 #[cfg(feature = "tokio-runtime")]
 mod batch;
-
-// Re-export public API
-pub use unified::{extract, extract_batch};
-
-#[cfg(feature = "tokio-runtime")]
-pub use sync::{extract_batch_sync, extract_sync};
 
 #[allow(unused_imports)]
 pub(crate) use bytes::extract_bytes;
 #[allow(unused_imports)]
 pub(crate) use file::extract_file;
-#[allow(unused_imports)]
-pub(crate) use sync::{batch_extract_bytes_sync, extract_bytes_sync};
-
-#[allow(unused_imports)]
-#[cfg(feature = "tokio-runtime")]
-pub(crate) use sync::extract_file_sync;
 
 #[allow(unused_imports)]
 #[cfg(feature = "tokio-runtime")]
 pub(crate) use batch::{batch_extract_bytes, batch_extract_files};
-#[allow(unused_imports)]
-#[cfg(feature = "tokio-runtime")]
-pub(crate) use sync::batch_extract_files_sync;
 
-// The test module exercises the async extraction entry points and the batch/sync helpers
-// (`batch_extract_files`, `batch_extract_bytes`, `extract_file_sync`, `batch_extract_files_sync`),
-// all of which are only compiled under the `tokio-runtime` feature. Gate the module to match so
-// the crate's test build succeeds for feature sets without `tokio-runtime` (e.g. `heuristics`).
+// The test module exercises the async extraction entry points and batch helpers, which are only
+// compiled under the `tokio-runtime` feature. Gate the module to match so the crate's test build
+// succeeds for feature sets without `tokio-runtime` (e.g. `heuristics`).
 #[cfg(all(test, feature = "tokio-runtime"))]
 mod tests {
     use super::*;
@@ -179,23 +155,6 @@ mod tests {
         assert_eq!(results.len(), 2);
         assert_text_content(&results[0].content, "content 1");
         assert_text_content(&results[1].content, "content 2");
-    }
-
-    #[test]
-    fn test_sync_wrappers() {
-        let dir = tempdir().unwrap();
-        let file_path = dir.path().join("test.txt");
-        File::create(&file_path).unwrap().write_all(b"sync test").unwrap();
-
-        let config = ExtractionConfig::default();
-
-        let result = extract_file_sync(&file_path, None, &config);
-        assert!(result.is_ok());
-        let result = result.unwrap();
-        assert_text_content(&result.content, "sync test");
-
-        let result = extract_bytes_sync(b"test", "text/plain", &config);
-        assert!(result.is_ok());
     }
 
     #[tokio::test]
@@ -454,37 +413,6 @@ mod tests {
         assert!(result.is_err() || result.is_ok());
     }
 
-    #[test]
-    fn test_sync_wrapper_nonexistent_file() {
-        let config = ExtractionConfig::default();
-        let result = extract_file_sync("/nonexistent/path.txt", None, &config);
-
-        assert!(result.is_err());
-        use crate::XbergError;
-        // File validation returns Io error, not Validation error
-        assert!(matches!(result.unwrap_err(), XbergError::Io { .. }));
-    }
-
-    #[test]
-    fn test_sync_wrapper_batch_empty() {
-        let config = ExtractionConfig::default();
-        let items: Vec<BatchFileItem> = vec![];
-        let results = batch_extract_files_sync(items, &config);
-
-        assert!(results.is_ok());
-        assert_eq!(results.unwrap().len(), 0);
-    }
-
-    #[test]
-    fn test_sync_wrapper_batch_bytes_empty() {
-        let config = ExtractionConfig::default();
-        let items: Vec<BatchBytesItem> = vec![];
-        let results = batch_extract_bytes_sync(items, &config);
-
-        assert!(results.is_ok());
-        assert_eq!(results.unwrap().len(), 0);
-    }
-
     #[tokio::test]
     async fn test_concurrent_extractions_same_mime() {
         use tokio::task::JoinSet;
@@ -624,25 +552,6 @@ mod tests {
         assert_eq!(results.len(), 2);
         assert_text_content(&results[0].content, "valid");
         assert!(results[1].metadata.error.is_some());
-    }
-
-    #[test]
-    fn test_batch_extract_file_sync_with_configs() {
-        let dir = tempdir().unwrap();
-        let file_path = dir.path().join("test.txt");
-        File::create(&file_path).unwrap().write_all(b"sync test").unwrap();
-
-        let config = ExtractionConfig::default();
-        let items = vec![BatchFileItem {
-            path: file_path,
-            config: None,
-        }];
-        let results = batch_extract_files_sync(items, &config);
-
-        assert!(results.is_ok());
-        let results = results.unwrap();
-        assert_eq!(results.len(), 1);
-        assert_text_content(&results[0].content, "sync test");
     }
 
     #[test]

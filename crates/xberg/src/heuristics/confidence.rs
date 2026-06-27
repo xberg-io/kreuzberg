@@ -8,7 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::extraction::ExtractionResult;
+use crate::types::extraction::ExtractedDocument;
 
 /// Schema-validation outcome surfaced as one of three buckets.
 ///
@@ -51,7 +51,7 @@ pub struct ConfidenceSignals {
 }
 
 impl ConfidenceSignals {
-    /// Build `ConfidenceSignals` from an `ExtractionResult`.
+    /// Build `ConfidenceSignals` from an `ExtractedDocument`.
     ///
     /// * `result` — The extraction result whose `ocr_elements` are inspected.
     /// * `schema_compliance` — Caller-supplied schema validation outcome.
@@ -62,7 +62,7 @@ impl ConfidenceSignals {
     /// `ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
     /// `None` or empty the field is set to `None`.
     pub fn from_extraction_result(
-        result: &ExtractionResult,
+        result: &ExtractedDocument,
         schema_compliance: SchemaCompliance,
         text_coverage: f32,
     ) -> Self {
@@ -163,7 +163,7 @@ pub fn score_confidence(signals: ConfidenceSignals, weights: ConfidenceWeights) 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::extraction::ExtractionResult;
+    use crate::types::extraction::ExtractedDocument;
     use crate::types::ocr_elements::{OcrBoundingGeometry, OcrConfidence, OcrElement};
 
     // -----------------------------------------------------------------------
@@ -185,7 +185,7 @@ mod tests {
     #[test]
     fn from_extraction_result_computes_mean_recognition_confidence() {
         // Three OCR elements with known recognition scores → mean should be (0.7 + 0.8 + 0.9) / 3 = 0.8
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             ocr_elements: Some(vec![
                 make_ocr_element(0.7),
                 make_ocr_element(0.8),
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn from_extraction_result_no_ocr_elements_returns_none() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             ocr_elements: None,
             ..Default::default()
         };
@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn from_extraction_result_empty_ocr_elements_returns_none() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             ocr_elements: Some(vec![]),
             ..Default::default()
         };
@@ -229,7 +229,7 @@ mod tests {
 
     #[test]
     fn from_extraction_result_single_element_mean_equals_element_confidence() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             ocr_elements: Some(vec![make_ocr_element(0.95)]),
             ..Default::default()
         };

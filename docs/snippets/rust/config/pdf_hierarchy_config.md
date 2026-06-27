@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, PdfConfig, HierarchyConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         pdf_options: Some(PdfConfig {
             hierarchy: Some(HierarchyConfig {
@@ -16,8 +17,8 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("document.pdf", None::<&str>, &config)?;
-    println!("Hierarchy levels: {}", result.hierarchy.len());
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    println!("Hierarchy levels: {}", output.results[0].hierarchy.len());
     Ok(())
 }
 ```

@@ -14,7 +14,7 @@ func main() {
 	batchSize := int32(32)
 	showProgress := false
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
@@ -27,13 +27,14 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
 
-	for index, chunk := range result.Chunks {
+	for index, chunk := range result.Results[0].Chunks {
 		chunkID := fmt.Sprintf("doc_chunk_%d", index)
 		content := chunk.Content
 		if len(content) > 50 {

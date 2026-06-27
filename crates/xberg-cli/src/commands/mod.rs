@@ -17,7 +17,6 @@ pub mod config;
 #[cfg(feature = "embeddings")]
 pub mod embed;
 pub mod extract;
-pub mod extract_structured;
 #[cfg(feature = "ner-onnx")]
 pub mod ner;
 pub mod overrides;

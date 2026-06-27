@@ -12,15 +12,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 
 $config = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('scanned_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Quality Processing Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -106,7 +105,6 @@ $qualityConfig = new ExtractionConfig(
     enableQualityProcessing: true
 );
 
-$xberg = new Xberg($qualityConfig);
 $qualityResults = [];
 
 foreach ($documents as $document) {
@@ -115,7 +113,8 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $xberg->extract($document);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($document), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $score = $result->qualityScore ?? 0.0;
 
     $qualityResults[$document] = [

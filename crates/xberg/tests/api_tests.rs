@@ -25,6 +25,18 @@ use xberg::{
     api::{HealthResponse, InfoResponse, create_router},
 };
 
+fn extraction_results_from_body(body: &[u8]) -> Vec<serde_json::Value> {
+    let envelope: serde_json::Value = serde_json::from_slice(body).expect("Failed to deserialize JSON response");
+    let errors = envelope["errors"]
+        .as_array()
+        .expect("ExtractionResult.errors should be an array");
+    assert!(errors.is_empty(), "ExtractionResult.errors should be empty");
+    envelope["results"]
+        .as_array()
+        .expect("ExtractionResult.results should be an array")
+        .clone()
+}
+
 /// Test the health check endpoint.
 #[tokio::test]
 async fn test_health_endpoint() {
@@ -135,7 +147,7 @@ async fn test_extract_text_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -200,7 +212,7 @@ async fn test_extract_with_config() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -302,7 +314,7 @@ async fn test_extract_multiple_files() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 2);
     assert!(
@@ -365,7 +377,7 @@ async fn test_extract_markdown_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/markdown");
@@ -412,7 +424,7 @@ async fn test_extract_json_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "application/json");
@@ -454,7 +466,7 @@ async fn test_extract_xml_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "application/xml");
@@ -502,7 +514,7 @@ async fn test_extract_html_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/html");
@@ -568,7 +580,7 @@ async fn test_extract_empty_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -927,7 +939,7 @@ async fn test_extract_large_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1080,7 +1092,7 @@ async fn test_extract_mixed_content_types() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 2);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1290,7 +1302,7 @@ async fn test_extract_file_larger_than_2mb() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1344,7 +1356,7 @@ async fn test_extract_2mb_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1393,7 +1405,7 @@ async fn test_extract_5mb_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1442,7 +1454,7 @@ async fn test_extract_10mb_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1492,7 +1504,7 @@ async fn test_extract_50mb_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1546,7 +1558,7 @@ async fn test_extract_90mb_file() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0]["mime_type"], "text/plain");
@@ -1653,7 +1665,7 @@ async fn test_extract_multiple_large_files_within_limit() {
     let body = axum::body::to_bytes(response.into_body(), usize::MAX)
         .await
         .expect("Failed to read HTTP response body");
-    let results: Vec<serde_json::Value> = serde_json::from_slice(&body).expect("Failed to deserialize JSON response");
+    let results = extraction_results_from_body(&body);
 
     assert_eq!(results.len(), 3, "Should have 3 results");
     for result in &results {

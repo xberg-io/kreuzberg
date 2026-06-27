@@ -5,6 +5,9 @@
 
 #![cfg(feature = "ocr")]
 
+mod helpers;
+use helpers::{extract_bytes_document_blocking, extract_uri_document_blocking};
+
 use async_trait::async_trait;
 use serial_test::serial;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -12,8 +15,8 @@ use std::sync::{Arc, Mutex};
 use xberg::core::config::{ExtractionConfig, OcrConfig};
 use xberg::plugins::registry::get_ocr_backend_registry;
 use xberg::plugins::{OcrBackend, OcrBackendType, Plugin};
-use xberg::types::{ExtractionResult, Metadata};
-use xberg::{Result, XbergError, extract_file_sync};
+use xberg::types::{ExtractedDocument, Metadata};
+use xberg::{Result, XbergError};
 
 struct BackendRegistryGuard;
 
@@ -55,7 +58,7 @@ impl Plugin for MockOcrBackend {
 
 #[async_trait]
 impl OcrBackend for MockOcrBackend {
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         self.call_count.fetch_add(1, Ordering::SeqCst);
 
         *self.last_language.lock().expect("Operation failed") = config.language.clone();
@@ -65,7 +68,7 @@ impl OcrBackend for MockOcrBackend {
         }
 
         use std::borrow::Cow;
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: format!("{} (lang: {})", self.return_text, config.language.join(",")),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -109,7 +112,7 @@ impl Plugin for FailingOcrBackend {
 
 #[async_trait]
 impl OcrBackend for FailingOcrBackend {
-    async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractedDocument> {
         Err(XbergError::ocr("OCR processing intentionally failed".to_string()))
     }
 
@@ -147,7 +150,7 @@ impl Plugin for ValidatingOcrBackend {
 
 #[async_trait]
 impl OcrBackend for ValidatingOcrBackend {
-    async fn process_image(&self, image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractedDocument> {
         if image_bytes.len() < self.min_size {
             return Err(XbergError::validation(format!(
                 "Image too small: {} < {} bytes",
@@ -157,7 +160,7 @@ impl OcrBackend for ValidatingOcrBackend {
         }
 
         use std::borrow::Cow;
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: format!("Processed {} bytes", image_bytes.len()),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -197,7 +200,7 @@ impl Plugin for MetadataOcrBackend {
 
 #[async_trait]
 impl OcrBackend for MetadataOcrBackend {
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         let mut metadata = Metadata::default();
         metadata.additional.insert(
             std::borrow::Cow::Borrowed("ocr_backend"),
@@ -213,7 +216,7 @@ impl OcrBackend for MetadataOcrBackend {
         );
 
         use std::borrow::Cow;
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: "OCR processed text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
@@ -257,11 +260,11 @@ impl Plugin for DocumentProcessingOcrBackend {
 
 #[async_trait]
 impl OcrBackend for DocumentProcessingOcrBackend {
-    async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, _image_bytes: &[u8], _config: &OcrConfig) -> Result<ExtractedDocument> {
         self.image_call_count.fetch_add(1, Ordering::SeqCst);
 
         use std::borrow::Cow;
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: "Processed via image extraction".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -276,11 +279,11 @@ impl OcrBackend for DocumentProcessingOcrBackend {
         &self,
         _document_path: &std::path::Path,
         _config: &OcrConfig,
-    ) -> Result<ExtractionResult> {
+    ) -> Result<ExtractedDocument> {
         self.document_call_count.fetch_add(1, Ordering::SeqCst);
 
         use std::borrow::Cow;
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content: "Processed natively as document".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -377,7 +380,7 @@ fn test_ocr_backend_used_for_image_extraction() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -438,7 +441,7 @@ fn test_ocr_backend_receives_correct_parameters() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok());
 
@@ -491,7 +494,7 @@ fn test_ocr_backend_returns_correct_format() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_ok());
 
@@ -542,7 +545,7 @@ fn test_ocr_backend_error_handling() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_err(), "Expected OCR to fail");
 
@@ -593,7 +596,7 @@ fn test_ocr_backend_validation_error() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_image, None, &config);
+    let result = extract_uri_document_blocking(test_image, None, &config);
 
     assert!(result.is_err(), "Expected validation to fail");
 
@@ -658,7 +661,7 @@ fn test_switching_between_ocr_backends() {
         ..Default::default()
     };
 
-    let result1 = extract_file_sync(test_image, None, &config1);
+    let result1 = extract_uri_document_blocking(test_image, None, &config1);
     assert!(result1.is_ok());
     assert!(
         result1
@@ -681,7 +684,7 @@ fn test_switching_between_ocr_backends() {
         ..Default::default()
     };
 
-    let result2 = extract_file_sync(test_image, None, &config2);
+    let result2 = extract_uri_document_blocking(test_image, None, &config2);
     assert!(result2.is_ok());
     assert!(
         result2
@@ -918,7 +921,7 @@ fn test_ocr_backend_document_processing_fallback() {
     };
 
     // Use async environment if required or standard sync method
-    let result = extract_file_sync(test_document, None, &config);
+    let result = extract_uri_document_blocking(test_document, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -984,7 +987,7 @@ fn test_ocr_backend_document_processing_override() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(test_document, None, &config);
+    let result = extract_uri_document_blocking(test_document, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -1047,7 +1050,7 @@ fn test_ocr_backend_document_processing_missing_path_fallback() {
         ..Default::default()
     };
 
-    let result = xberg::extract_bytes_sync(&bytes, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/pdf", &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 

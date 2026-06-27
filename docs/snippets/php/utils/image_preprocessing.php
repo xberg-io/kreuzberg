@@ -12,11 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\TesseractConfig;
-use Xberg\Config\ImagePreprocessingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\TesseractConfig;
+use Xberg\ImagePreprocessingConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -32,8 +31,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('scanned.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "OCR with Image Preprocessing:\n";
 echo str_repeat('=', 60) . "\n";
@@ -60,8 +59,8 @@ $advancedConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($advancedConfig);
-$result = $xberg->extract('poor_quality_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('poor_quality_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Advanced Preprocessing Results:\n";
 echo str_repeat('=', 60) . "\n";
@@ -127,10 +126,10 @@ foreach ($preprocessingProfiles as $profileName => $preprocessing) {
         )
     );
 
-    $xberg = new Xberg($profileConfig);
 
     $startTime = microtime(true);
-    $result = $xberg->extract('sample_scan.pdf');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('sample_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $elapsedTime = microtime(true) - $startTime;
 
     echo ucfirst($profileName) . " profile:\n";

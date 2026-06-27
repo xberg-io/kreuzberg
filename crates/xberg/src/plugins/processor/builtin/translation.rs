@@ -10,7 +10,7 @@ use async_trait::async_trait;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// Post-processor that translates content (and optionally formatted content and chunks)
 /// into the requested target language via the configured LLM.
@@ -38,7 +38,7 @@ impl Plugin for TranslationProcessor {
 
 #[async_trait]
 impl PostProcessor for TranslationProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         if let Some(t_config) = config.translation.as_ref() {
             tracing::info!(
                 target: "xberg::translation",
@@ -57,7 +57,7 @@ impl PostProcessor for TranslationProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.translation.is_some()
     }
 
@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn should_process_only_when_config_present() {
         let p = TranslationProcessor;
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "x".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

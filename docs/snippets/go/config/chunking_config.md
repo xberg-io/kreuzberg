@@ -50,12 +50,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.Extract("document.md", nil, config)
+	input := xberg.ExtractInputFromURI("document.md")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	for _, chunk := range result.Chunks {
+	for _, chunk := range result.Results[0].Chunks {
 		if chunk.Metadata.HeadingContext != nil {
 			for _, heading := range chunk.Metadata.HeadingContext.Headings {
 				fmt.Printf("Heading L%d: %s\n", heading.Level, heading.Text)
@@ -90,12 +91,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.Extract("document.md", nil, config)
+	input := xberg.ExtractInputFromURI("document.md")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	for _, chunk := range result.Chunks {
+	for _, chunk := range result.Results[0].Chunks {
 		// Each chunk's content is prefixed with its heading breadcrumb
 		fmt.Printf("Content: %.100s...\n", chunk.Content)
 	}

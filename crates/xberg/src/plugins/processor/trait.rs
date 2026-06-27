@@ -5,7 +5,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::Plugin;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use async_trait::async_trait;
 
 /// Processing stages for post-processors.
@@ -75,7 +75,7 @@ pub enum ProcessingStage {
 ///
 /// ```rust
 /// use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-/// use xberg::{Result, ExtractionResult, ExtractionConfig};
+/// use xberg::{Result, ExtractedDocument, ExtractionConfig};
 /// use async_trait::async_trait;
 ///
 /// /// Add word count metadata to extraction results
@@ -90,7 +90,7 @@ pub enum ProcessingStage {
 ///
 /// #[async_trait]
 /// impl PostProcessor for WordCountProcessor {
-///     async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+///     async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig)
 ///         -> Result<()> {
 ///         // Count words
 ///         let word_count = result.content.split_whitespace().count();
@@ -140,7 +140,7 @@ pub trait PostProcessor: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct LanguageDetector;
     /// # impl Plugin for LanguageDetector {
@@ -152,7 +152,7 @@ pub trait PostProcessor: Plugin {
     /// # #[async_trait]
     /// # impl PostProcessor for LanguageDetector {
     /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Early }
-    /// async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+    /// async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig)
     ///     -> Result<()> {
     ///     // Detect language (simplified - use real detection library in practice)
     ///     let language = "en"; // Placeholder detection
@@ -169,7 +169,7 @@ pub trait PostProcessor: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct TextCleaner;
     /// # impl Plugin for TextCleaner {
@@ -181,7 +181,7 @@ pub trait PostProcessor: Plugin {
     /// # #[async_trait]
     /// # impl PostProcessor for TextCleaner {
     /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Middle }
-    /// async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+    /// async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig)
     ///     -> Result<()> {
     ///     // Remove excessive whitespace
     ///     result.content = result
@@ -194,7 +194,7 @@ pub trait PostProcessor: Plugin {
     /// }
     /// # }
     /// ```
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()>;
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()>;
 
     /// Get the processing stage for this post-processor.
     ///
@@ -208,7 +208,7 @@ pub trait PostProcessor: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct MyProcessor;
     /// # impl Plugin for MyProcessor {
@@ -219,7 +219,7 @@ pub trait PostProcessor: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl PostProcessor for MyProcessor {
-    /// #     async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// #     async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> { Ok(()) }
     /// fn processing_stage(&self) -> ProcessingStage {
     ///     ProcessingStage::Early  // Run before other processors
     /// }
@@ -245,7 +245,7 @@ pub trait PostProcessor: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct PdfOnlyProcessor;
     /// # impl Plugin for PdfOnlyProcessor {
@@ -257,14 +257,14 @@ pub trait PostProcessor: Plugin {
     /// # #[async_trait]
     /// # impl PostProcessor for PdfOnlyProcessor {
     /// #     fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Middle }
-    /// #     async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// #     async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> { Ok(()) }
     /// /// Only process PDF documents
-    /// fn should_process(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    /// fn should_process(&self, result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
     ///     result.mime_type == "application/pdf"
     /// }
     /// # }
     /// ```
-    fn should_process(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> bool {
         true
     }
 
@@ -279,7 +279,7 @@ pub trait PostProcessor: Plugin {
     /// # Returns
     ///
     /// Estimated processing time in milliseconds.
-    fn estimated_duration_ms(&self, _result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, _result: &ExtractedDocument) -> u64 {
         0
     }
 

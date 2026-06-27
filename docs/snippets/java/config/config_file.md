@@ -1,14 +1,18 @@
 ```java title="Java"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractInput;
 import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.ExtractionConfig;
 import java.nio.file.Path;
 
 public final class ConfigFileExample {
     public static void main(String[] args) throws Exception {
         ExtractionConfig config = Xberg.loadExtractionConfigFromFile(Path.of("xberg.toml"));
-        ExtractionResult result = Xberg.extract(Path.of("document.pdf"), config);
-        System.out.printf("Detected MIME: %s%n", result.getMimeType());
+        ExtractionResult output = Xberg.extract(ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("document.pdf").build(), config);
+        ExtractedDocument result = output.results().get(0);
+        System.out.printf("Detected MIME: %s%n", result.mimeType());
     }
 }
 ```

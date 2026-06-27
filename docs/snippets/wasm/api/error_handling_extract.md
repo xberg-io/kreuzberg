@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Note: WASM has no native batch API; use Promise.all with per-item error handling
 const files = document.getElementById("files") as HTMLInputElement;
@@ -11,7 +11,7 @@ const fileList = files.files || [];
 const extractionPromises = Array.from(fileList).map(async (file) => {
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const result = await extract(bytes, file.type || "application/octet-stream", undefined);
+    const result = await extract({ kind: "bytes", bytes, mimeType: file.type || "application/octet-stream" }, undefined);
     return { file: file.name, success: true, result };
   } catch (err) {
     return {

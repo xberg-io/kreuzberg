@@ -5,7 +5,9 @@ begin
   pdf_bytes = File.read('document.pdf')
   config = Xberg::ExtractionConfig.new
 
-  result = Xberg.extract_sync(pdf_bytes, 'application/pdf', config: config)
+  input = Xberg::ExtractInput.from_bytes(pdf_bytes, 'application/pdf')
+  output = Xberg.extract(input, config)
+  result = output.results.first
   puts "Extracted #{result.content.length} characters"
 rescue RuntimeError => e
   # All extraction errors are raised as RuntimeError

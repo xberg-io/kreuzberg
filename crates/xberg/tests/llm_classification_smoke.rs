@@ -11,14 +11,14 @@
 
 use std::borrow::Cow;
 use xberg::core::config::{LlmConfig, PageClassificationConfig};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 
 fn init() {
     let _ = dotenvy::dotenv();
 }
 
-fn build_result(text: &str) -> ExtractionResult {
-    ExtractionResult {
+fn build_result(text: &str) -> ExtractedDocument {
+    ExtractedDocument {
         content: text.to_string(),
         mime_type: Cow::Borrowed("text/plain"),
         ..Default::default()

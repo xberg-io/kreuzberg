@@ -6,15 +6,15 @@
 #![cfg(feature = "email")]
 
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Test that invalid PST data returns an error, not a panic.
 #[tokio::test]
 async fn test_pst_invalid_data_returns_error() {
     let config = ExtractionConfig::default();
-    let result = extract_bytes(b"not a pst file", "application/vnd.ms-outlook-pst", &config).await;
+    let result = extract_bytes_document(b"not a pst file", "application/vnd.ms-outlook-pst", &config).await;
     assert!(result.is_err(), "Invalid PST data should return an error");
 }
 
@@ -27,7 +27,7 @@ async fn test_pst_empty_file_extraction() {
     let pst_bytes = std::fs::read(&pst_path).expect("Should read empty.pst");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&pst_bytes, "application/vnd.ms-outlook-pst", &config)
+    let result = extract_bytes_document(&pst_bytes, "application/vnd.ms-outlook-pst", &config)
         .await
         .expect("Should extract empty PST without error");
 
@@ -52,7 +52,7 @@ async fn test_pst_message_count_in_metadata() {
     let pst_bytes = std::fs::read(&pst_path).expect("Should read empty.pst");
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes(&pst_bytes, "application/vnd.ms-outlook-pst", &config)
+    let result = extract_bytes_document(&pst_bytes, "application/vnd.ms-outlook-pst", &config)
         .await
         .expect("Should extract empty PST");
 

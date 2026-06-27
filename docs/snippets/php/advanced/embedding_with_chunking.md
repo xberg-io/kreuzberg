@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\ChunkingConfig;
 use Xberg\EmbeddingConfig;
@@ -19,11 +19,13 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
 
-if ($result->getChunks()) {
-    foreach ($result->getChunks() as $chunk) {
-        echo "Chunk content: " . substr($chunk->getContent(), 0, 100) . "...\n";
+$result = $resultOutput->results[0];
+
+if ($result->chunks) {
+    foreach ($result->chunks as $chunk) {
+        echo "Chunk content: " . substr($chunk->content, 0, 100) . "...\n";
 
         $embedding = $chunk->getEmbedding();
         if ($embedding) {

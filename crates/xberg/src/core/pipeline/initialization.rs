@@ -22,16 +22,6 @@ pub(super) fn initialize_features() {
         let _ = crate::keywords::ensure_initialized();
     }
 
-    #[cfg(feature = "language-detection")]
-    {
-        let _ = crate::language_detection::ensure_initialized();
-    }
-
-    #[cfg(feature = "chunking")]
-    {
-        let _ = crate::chunking::ensure_initialized();
-    }
-
     #[cfg(feature = "quality")]
     {
         static QUALITY_INIT: OnceLock<()> = OnceLock::new();

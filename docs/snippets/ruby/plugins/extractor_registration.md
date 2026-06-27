@@ -10,6 +10,8 @@ Xberg.register_document_extractor(
   priority: 50
 )
 
-result = Xberg.extract("document.json")
-puts "Extracted content length: #{result.content.length}"
+input = Xberg::ExtractInput.new(uri: "document.json")
+config = Xberg::ExtractionConfig.new
+result = Xberg.extract(input, config)
+puts "Extracted content length: #{result.results.first.content.length}"
 ```

@@ -11,19 +11,20 @@ import (
 func main() {
 	maxChars := 1000
 	maxOverlap := 200
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
 		},
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	for i, chunk := range result.Chunks {
+	for i, chunk := range result.Results[0].Chunks {
 		fmt.Printf("Chunk %d/%d (%d-%d)\n", i+1, chunk.Metadata.TotalChunks, chunk.Metadata.CharStart, chunk.Metadata.CharEnd)
 		fmt.Printf("%s...\n", chunk.Content[:min(len(chunk.Content), 100)])
 	}

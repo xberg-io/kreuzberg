@@ -17,6 +17,7 @@ use super::backend::NerBackend;
 
 /// liter-llm-backed NER backend.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct LlmBackend {
     config: LlmConfig,
 }

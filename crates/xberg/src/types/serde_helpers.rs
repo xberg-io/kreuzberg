@@ -1,8 +1,8 @@
-//! Custom serde serialization helpers for Vec<Arc<T>>.
+//! Custom serde serialization helpers for `Vec<Arc<T>>`.
 
-/// Module for serializing Vec<Arc<T>> with transparent Arc handling.
+/// Module for serializing `Vec<Arc<T>>` with transparent Arc handling.
 ///
-/// Serializes a Vec<Arc<T>> as Vec<T> for compatibility, while preserving
+/// Serializes a `Vec<Arc<T>>` as `Vec<T>` for compatibility, while preserving
 /// Arc semantics for memory efficiency.
 ///
 /// # Arc Sharing Semantics

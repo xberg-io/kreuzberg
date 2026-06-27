@@ -149,11 +149,12 @@ for element in elements:
 **Xberg**:
 
 ```python
-from xberg import extract
+from xberg import ExtractInput, ExtractionConfig, extract
 
 # Option 1: Element-based output
-config = {"output_format": "element_based"}
-result = extract(pdf_bytes, "application/pdf", config)
+config = ExtractionConfig(result_format="element_based")
+output = extract(ExtractInput(kind="bytes", bytes=pdf_bytes, mime_type="application/pdf"), config)
+result = output.results[0]
 
 for element in result.elements:
     print(f"{element.element_type}: {element.text}")
@@ -161,7 +162,8 @@ for element in result.elements:
         print(f"  Page: {element.metadata.page_number}")
 
 # Option 2: Unified output (default, richer metadata)
-result = extract(pdf_bytes, "application/pdf")
+output = extract(ExtractInput(kind="bytes", bytes=pdf_bytes, mime_type="application/pdf"))
+result = output.results[0]
 print(result.content)  # Full text
 print(result.metadata.title)  # Document metadata
 for page in result.pages:
@@ -186,23 +188,37 @@ const elements = await response.json();
 **Xberg**:
 
 ```typescript
-import { extractBytes } from "xberg";
+import { ExtractInputKind, extract } from "@xberg-io/xberg";
 
 // Option 1: Element-based output
-const result = await extractBytes(pdfBuffer, "application/pdf", {
-  output_format: "element_based",
-});
+const elementOutput = await extract(
+  {
+    kind: ExtractInputKind.Bytes,
+    bytes: pdfBuffer,
+    mimeType: "application/pdf",
+    filename: "document.pdf",
+  },
+  { outputFormat: "element_based" },
+);
+const elementResult = elementOutput.results[0];
 
-for (const element of result.elements) {
+for (const element of elementResult.elements) {
   console.log(`${element.element_type}: ${element.text}`);
 }
 
 // Option 2: Unified output with pages
-const result = await extractBytes(pdfBuffer, "application/pdf", {
-  pages: { extract_pages: true },
-});
+const pageOutput = await extract(
+  {
+    kind: ExtractInputKind.Bytes,
+    bytes: pdfBuffer,
+    mimeType: "application/pdf",
+    filename: "document.pdf",
+  },
+  { pages: { extractPages: true } },
+);
+const pageResult = pageOutput.results[0];
 
-for (const page of result.pages) {
+for (const page of pageResult.pages) {
   console.log(`Page ${page.page_number}:`, page.content);
 }
 ```
@@ -279,12 +295,14 @@ curl -X POST "http://localhost:8080/extract" \
 You can use **both formats** simultaneously:
 
 ```python
-from xberg import extract
+from xberg import ExtractInput, ExtractionConfig, PageConfig, extract
 
-result = extract(pdf_bytes, "application/pdf", {
-    "output_format": "element_based",  # Get elements
-    "pages": {"extract_pages": true}   # Also get per-page content
-})
+config = ExtractionConfig(
+    result_format="element_based",  # Get elements
+    pages=PageConfig(extract_pages=True),  # Also get per-page content
+)
+output = extract(ExtractInput(kind="bytes", bytes=pdf_bytes, mime_type="application/pdf"), config)
+result = output.results[0]
 
 # Element-based processing
 for element in result.elements:
@@ -317,6 +335,5 @@ for page in result.pages:
 
 After migration:
 
-1. Review the [Xberg vs Unstructured Comparison](../comparisons/xberg-vs-unstructured.md)
-2. Explore Xberg-specific features (hierarchy, per-page metadata, embeddings)
-3. Optimize your pipeline with native Rust performance
+1. Explore Xberg-specific features (hierarchy, per-page metadata, embeddings)
+2. Optimize your pipeline with native Rust performance

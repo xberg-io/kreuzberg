@@ -12,11 +12,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\TesseractConfig;
-use Xberg\Config\ImagePreprocessingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\TesseractConfig;
+use Xberg\ImagePreprocessingConfig;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -29,8 +28,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('financial_report_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('financial_report_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "OCR with Table Detection:\n";
 echo str_repeat('=', 60) . "\n";
@@ -52,8 +51,8 @@ $invoiceConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($invoiceConfig);
-$result = $xberg->extract('invoice_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('invoice_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Invoice OCR (numbers only):\n";
 echo str_repeat('=', 60) . "\n";
@@ -76,8 +75,8 @@ $preprocessedConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($preprocessedConfig);
-$result = $xberg->extract('poor_quality_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('poor_quality_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "OCR with Image Preprocessing:\n";
 echo str_repeat('=', 60) . "\n";
@@ -113,9 +112,9 @@ if (file_exists($testFile)) {
             )
         );
 
-        $xberg = new Xberg($config);
         $start = microtime(true);
-        $result = $xberg->extract($testFile);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($testFile), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         $elapsed = microtime(true) - $start;
 
         echo "PSM $psm - {$psmModes[$psm]}:\n";
@@ -139,8 +138,8 @@ $singleColumnConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($singleColumnConfig);
-$result = $xberg->extract('book_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('book_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Single-column OCR:\n";
 echo $result->content . "\n\n";
@@ -160,8 +159,8 @@ $sparseConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($sparseConfig);
-$result = $xberg->extract('receipt.jpg');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('receipt.jpg'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Sparse text OCR (receipt):\n";
 echo str_repeat('=', 60) . "\n";
@@ -186,8 +185,8 @@ $highAccuracyConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($highAccuracyConfig);
-$result = $xberg->extract('legal_document_scan.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('legal_document_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "High-accuracy OCR:\n";
 echo "Characters: " . strlen($result->content) . "\n";

@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, ImageExtractionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, ImageExtractionConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         images: Some(ImageExtractionConfig {
             extract_images: true,
@@ -14,8 +15,8 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("document.pdf", None, &config)?;
-    println!("content length: {}", result.content.len());
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    println!("content length: {}", output.results[0].content.len());
     Ok(())
 }
 ```

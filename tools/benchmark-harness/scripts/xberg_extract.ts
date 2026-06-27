@@ -3,22 +3,39 @@
  * Xberg TypeScript/Node.js extraction wrapper for benchmark harness.
  *
  * Supports four modes:
- * - async: extractFile() - asynchronous extraction
- * - batch: batchExtractFiles() - batch extraction for multiple files
+ * - async: asynchronous extraction
+ * - batch: batch extraction for multiple files
  * - async-batch: parallel async extraction
  * - server: persistent mode reading paths from stdin
  */
 
 import * as readline from "node:readline";
-import { batchExtractFiles, type ExtractionConfig, extractFile } from "@xberg-io/xberg";
+import { extract, extractBatch as xbergExtractBatch, type ExtractionConfig } from "@xberg-io/xberg";
 
-interface ExtractionOutput {
+interface BenchmarkExtractionPayload {
 	content: string;
 	metadata: Record<string, unknown>;
 	_extraction_time_ms: number;
 	_batch_total_ms?: number;
 	_ocr_used: boolean;
 	_peak_memory_bytes?: number;
+}
+
+interface ExtractedDocumentPayload {
+	content: string;
+	metadata?: Record<string, unknown> | null;
+}
+
+interface ExtractionEnvelopePayload {
+	results?: ExtractedDocumentPayload[] | null;
+}
+
+function firstResult(output: ExtractionEnvelopePayload, source: string): ExtractedDocumentPayload {
+	const result = output.results?.[0];
+	if (!result) {
+		throw new Error(`No extraction result produced for ${source}`);
+	}
+	return result;
 }
 
 /**
@@ -54,10 +71,14 @@ function createConfig(ocrEnabled: boolean, forceOcr = false): ExtractionConfig {
 	};
 }
 
-async function extractAsync(filePath: string, ocrEnabled: boolean, forceOcr = false): Promise<ExtractionOutput> {
+async function extractAsync(
+	filePath: string,
+	ocrEnabled: boolean,
+	forceOcr = false,
+): Promise<BenchmarkExtractionPayload> {
 	const config = createConfig(ocrEnabled, forceOcr);
 	const start = performance.now();
-	const result = await extractFile(filePath, config);
+	const result = firstResult(await extract({ kind: "uri", uri: filePath }, config), filePath);
 	const durationMs = performance.now() - start;
 
 	const metadata = result.metadata || {};
@@ -70,10 +91,14 @@ async function extractAsync(filePath: string, ocrEnabled: boolean, forceOcr = fa
 	};
 }
 
-async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<ExtractionOutput[]> {
+async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<BenchmarkExtractionPayload[]> {
 	const config = createConfig(ocrEnabled);
 	const start = performance.now();
-	const results = await batchExtractFiles(filePaths, config);
+	const output = await xbergExtractBatch(
+		filePaths.map((uri) => ({ kind: "uri", uri })),
+		config,
+	);
+	const results = output.results ?? [];
 	const totalDurationMs = performance.now() - start;
 
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;
@@ -92,7 +117,7 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 	});
 }
 
-async function extractAsyncBatch(filePaths: string[], ocrEnabled: boolean): Promise<ExtractionOutput[]> {
+async function extractAsyncBatch(filePaths: string[], ocrEnabled: boolean): Promise<BenchmarkExtractionPayload[]> {
 	const start = performance.now();
 	const promises = filePaths.map((fp) => extractAsync(fp, ocrEnabled));
 	const results = await Promise.all(promises);

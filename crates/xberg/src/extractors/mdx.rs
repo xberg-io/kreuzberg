@@ -10,7 +10,7 @@ use super::annotation_utils::adjust_annotations_for_trim;
 use super::frontmatter_utils::{extract_frontmatter, extract_metadata_from_yaml, extract_title_from_content};
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::uri::{ExtractedUri, UriKind};
@@ -667,8 +667,8 @@ impl Plugin for MdxExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for MdxExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for MdxExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -725,7 +725,7 @@ impl DocumentExtractor for MdxExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,
@@ -915,7 +915,7 @@ Final paragraph.
         let content = b"import Chart from './Chart'\n\n# Hello World\n\nThis is content.\n";
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract MDX content");
         let result =
@@ -932,7 +932,7 @@ Final paragraph.
         let content = b"---\ntitle: My MDX Post\nauthor: Test Author\ndate: 2024-01-15\n---\n\nimport Alert from './Alert'\n\n# Content\n\nBody text.\n";
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract MDX with frontmatter");
         let result =
@@ -949,7 +949,7 @@ Final paragraph.
         let content = b"# Title\n\n<Alert type=\"warning\">\nImportant message!\n</Alert>\n\nRegular text.\n";
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract MDX with JSX components");
         let result =
@@ -967,7 +967,7 @@ Final paragraph.
         let content = b"# Tables\n\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |\n";
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract MDX with tables");
         let result =
@@ -983,7 +983,7 @@ Final paragraph.
         let content = b"# My Document Title\n\nContent here.\n";
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract title from heading");
         let result =
@@ -1039,7 +1039,7 @@ Final paragraph.
         let content = load_test_doc("markdown/mdx_getting_started.mdx");
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(&content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(&content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract getting-started.mdx");
         let result =
@@ -1108,7 +1108,7 @@ Final paragraph.
         let content = load_test_doc("markdown/mdx_using_mdx.mdx");
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(&content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(&content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract using-mdx.mdx");
         let result =
@@ -1147,7 +1147,7 @@ Final paragraph.
         let content = load_test_doc("markdown/mdx_troubleshooting.mdx");
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(&content, "text/mdx", &ExtractionConfig::default())
+            .extract_content(&content, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should extract troubleshooting-mdx.mdx");
         let result =
@@ -1224,7 +1224,7 @@ Content here.
 
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(mdx, "text/mdx", &ExtractionConfig::default())
+            .extract_content(mdx, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should handle emoji in trimmed MDX paragraph");
         let result =
@@ -1240,7 +1240,7 @@ Content here.
 
         let extractor = MdxExtractor::new();
         let result = extractor
-            .extract_bytes(mdx, "text/mdx", &ExtractionConfig::default())
+            .extract_content(mdx, "text/mdx", &ExtractionConfig::default())
             .await
             .expect("Should handle CJK with bold formatting");
         let result =

@@ -13,22 +13,20 @@ use async_trait::async_trait;
 use std::sync::Arc;
 use xberg::Result;
 use xberg::core::config::{ExtractionConfig, PostProcessorConfig};
-use xberg::core::extractor::{batch_extract_bytes, extract_bytes};
 use xberg::core::pipeline::run_pipeline;
 use xberg::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::plugins::registry::{get_document_extractor_registry, get_post_processor_registry};
 use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 
 #[cfg(feature = "ocr")]
 use xberg::core::config::OcrConfig;
 
 use std::time::Duration;
 use tokio::time::timeout;
-#[cfg(feature = "ocr")]
-use xberg::core::extractor::extract_file_sync;
 
 mod helpers;
+use helpers::{BytesInput, extract_bytes_document, extract_bytes_documents, extract_uri_document_blocking};
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])
@@ -69,9 +67,9 @@ async fn test_concurrent_extractions_mixed_formats() {
             let data = data.to_vec();
             let mime_type = mime_type.to_string();
 
-            handles.push(tokio::spawn(
-                async move { extract_bytes(&data, &mime_type, &config).await },
-            ));
+            handles.push(tokio::spawn(async move {
+                extract_bytes_document(&data, &mime_type, &config).await
+            }));
         }
     }
 
@@ -109,15 +107,15 @@ async fn test_concurrent_batch_extractions() {
         let contents_clone = contents.clone();
 
         handles.push(tokio::spawn(async move {
-            let owned_data: Vec<xberg::BatchBytesItem> = contents_clone
+            let owned_data: Vec<BytesInput> = contents_clone
                 .iter()
-                .map(|c| xberg::BatchBytesItem {
+                .map(|c| BytesInput {
                     content: c.to_vec(),
                     mime_type: "text/plain".to_string(),
                     config: None,
                 })
                 .collect();
-            batch_extract_bytes(owned_data, &config).await
+            extract_bytes_documents(owned_data, &config).await
         }));
     }
 
@@ -151,7 +149,7 @@ async fn test_concurrent_extractions_with_cache() {
 
     let test_data = b"Cached content for concurrent access test";
 
-    let _ = extract_bytes(test_data, "text/plain", &config)
+    let _ = extract_bytes_document(test_data, "text/plain", &config)
         .await
         .expect("Async operation failed");
 
@@ -161,7 +159,7 @@ async fn test_concurrent_extractions_with_cache() {
         let data = test_data.to_vec();
 
         handles.push(tokio::spawn(async move {
-            extract_bytes(&data, "text/plain", &config).await
+            extract_bytes_document(&data, "text/plain", &config).await
         }));
     }
 
@@ -213,7 +211,7 @@ async fn test_concurrent_ocr_processing() {
         let config = config.clone();
 
         handles.push(tokio::task::spawn_blocking(move || {
-            extract_file_sync(&file_path, None, &config)
+            extract_uri_document_blocking(&file_path, None, &config)
         }));
     }
 
@@ -276,7 +274,7 @@ fn test_concurrent_ocr_cache_stress() {
 
     let file_path = get_test_file_path("images/ocr_image.jpg");
 
-    let first_result = extract_file_sync(&file_path, None, &config);
+    let first_result = extract_uri_document_blocking(&file_path, None, &config);
     assert!(first_result.is_ok(), "Initial OCR should succeed");
 
     let cache_hit_count = Arc::new(AtomicUsize::new(0));
@@ -289,7 +287,7 @@ fn test_concurrent_ocr_cache_stress() {
 
         handles.push(std::thread::spawn(move || {
             let start = std::time::Instant::now();
-            let result = extract_file_sync(&file_path, None, &config);
+            let result = extract_uri_document_blocking(&file_path, None, &config);
             let duration = start.elapsed();
 
             if duration < Duration::from_millis(500) {
@@ -343,7 +341,7 @@ async fn test_concurrent_pipeline_processing() {
 
     #[async_trait]
     impl PostProcessor for ConcurrentTestProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             tokio::time::sleep(Duration::from_millis(10)).await;
             result.content.push_str("[processed]");
             Ok(())
@@ -456,7 +454,7 @@ async fn test_extraction_throughput_scales() {
 
     let sequential_start = std::time::Instant::now();
     for _ in 0..20 {
-        let _ = extract_bytes(test_data, "text/plain", &config)
+        let _ = extract_bytes_document(test_data, "text/plain", &config)
             .await
             .expect("Async operation failed");
     }
@@ -469,7 +467,7 @@ async fn test_extraction_throughput_scales() {
         let data = test_data.to_vec();
 
         handles.push(tokio::spawn(async move {
-            extract_bytes(&data, "text/plain", &config).await
+            extract_bytes_document(&data, "text/plain", &config).await
         }));
     }
 
@@ -523,9 +521,9 @@ async fn test_high_concurrency_stress() {
             let data = data.to_vec();
             let mime_type = mime_type.to_string();
 
-            handles.push(tokio::spawn(
-                async move { extract_bytes(&data, &mime_type, &config).await },
-            ));
+            handles.push(tokio::spawn(async move {
+                extract_bytes_document(&data, &mime_type, &config).await
+            }));
         }
     }
 

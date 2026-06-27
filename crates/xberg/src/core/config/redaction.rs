@@ -4,7 +4,7 @@
 //! as the Late stage of the pipeline and rewrites `content`, `formatted_content`,
 //! every chunk's text, and the textual fields of `entities` / `summary` /
 //! `translation` / `page_classifications` using the configured strategy. The
-//! original text never appears in the returned `ExtractionResult`.
+//! original text never appears in the returned `ExtractedDocument`.
 
 use crate::Result;
 use crate::types::redaction::{PiiCategory, RedactionStrategy};

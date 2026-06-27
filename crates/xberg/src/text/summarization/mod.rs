@@ -10,7 +10,7 @@
 //!   `summarization-llm` feature.
 //!
 //! The post-processor that ties both backends to
-//! [`crate::types::ExtractionResult::summary`] lives in
+//! [`crate::types::ExtractedDocument::summary`] lives in
 //! `crate::plugins::processor::builtin::summarization`.
 
 pub mod textrank;

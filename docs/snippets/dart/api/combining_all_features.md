@@ -42,19 +42,19 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('report.pdf', null, config);
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'report.pdf'), config: config);
 
-  print('Content (${result.content.length} chars):');
-  final preview = result.content.substring(
+  print('Content (${result.results[0].content.length} chars):');
+  final preview = result.results[0].content.substring(
     0,
-    result.content.length < 200 ? result.content.length : 200,
+    result.results[0].content.length < 200 ? result.results[0].content.length : 200,
   );
   print(preview);
 
-  if (result.chunks != null) {
-    print('\nChunks: ${result.chunks!.length}');
+  if (result.results[0].chunks != null) {
+    print('\nChunks: ${result.results[0].chunks!.length}');
   }
-  print('Tables: ${result.tables.length}');
+  print('Tables: ${result.results[0].tables.length}');
   if (result.detectedLanguages != null) {
     print('Languages: ${result.detectedLanguages}');
   }

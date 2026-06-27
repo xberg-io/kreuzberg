@@ -2,7 +2,7 @@
 //!
 //! When `ExtractionConfig::translation` is `Some`, the translation post-processor runs
 //! at the Middle stage and populates
-//! [`ExtractionResult::translation`](crate::types::ExtractionResult::translation).
+//! [`ExtractedDocument::translation`](crate::types::ExtractedDocument::translation).
 
 use serde::{Deserialize, Serialize};
 

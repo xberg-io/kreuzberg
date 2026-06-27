@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\ChunkingConfig;
-use Xberg\Config\EmbeddingConfig;
+use Xberg\ExtractionConfig;
+use Xberg\ChunkingConfig;
+use Xberg\EmbeddingConfig;
 
 $config = new ExtractionConfig(
     chunking: new ChunkingConfig(
@@ -29,7 +28,6 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
 
 echo "Building document index...\n";
 $documentIndex = [];
@@ -38,7 +36,8 @@ $files = glob('knowledge_base/*.pdf');
 foreach ($files as $file) {
     echo "Indexing: " . basename($file) . "\n";
 
-    $result = $xberg->extract($file);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     foreach ($result->chunks ?? [] as $chunk) {
         if ($chunk->embedding) {
@@ -48,7 +47,7 @@ foreach ($files as $file) {
                 'content' => $chunk->content,
                 'embedding' => $chunk->embedding,
                 'metadata' => [
-                    'title' => $result->metadata->title ?? basename($file),
+                    'title' => $result->metadata?->title ?? basename($file),
                     'author' => $result->metadata->author ?? 'Unknown',
                 ],
             ];
@@ -91,7 +90,8 @@ function getQueryEmbedding(Xberg $xberg, string $query): ?array
     file_put_contents($tempFile, $query);
 
     try {
-        $result = $xberg->extract($tempFile);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($tempFile), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         $chunk = ($result->chunks ?? [])[0] ?? null;
         return $chunk?->embedding;
     } finally {

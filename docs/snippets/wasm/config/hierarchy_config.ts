@@ -1,9 +1,10 @@
 import {
+  extract,
+  initWasm,
   type ExtractionConfig,
   type HierarchyConfig,
-  Xberg,
   type PdfConfig,
-} from "xberg-wasm";
+} from "@xberg-io/xberg-wasm";
 
 // Example 1: Basic hierarchy extraction
 // Enabled with default kClusters=6 for standard H1-H6 heading hierarchy.
@@ -23,9 +24,6 @@ const extractionConfigBasic: ExtractionConfig = {
   pdfOptions: pdfConfigBasic,
 };
 
-// const xberg = new Xberg(extractionConfigBasic);
-// const result = await xberg.extract("document.pdf");
-
 // Example 2: Custom kClusters for minimal structure
 // Use 3 clusters for simpler hierarchy with minimal structure.
 // Useful when you only need major section divisions (Main, Subsection, Detail).
@@ -43,8 +41,6 @@ const pdfConfigMinimal: PdfConfig = {
 const _extractionConfigMinimal: ExtractionConfig = {
   pdfOptions: pdfConfigMinimal,
 };
-
-// const result = await xberg.extract("document.pdf");
 
 // Example 3: With OCR coverage threshold
 // Trigger OCR if less than 50% of text has font data.
@@ -64,17 +60,18 @@ const _extractionConfigOcr: ExtractionConfig = {
   pdfOptions: pdfConfigOcr,
 };
 
-// const result = await xberg.extract("document.pdf");
-
 // Integration with Xberg WASM instance
 async function _extractWithHierarchy(): Promise<void> {
-  const config = extractionConfigBasic;
-  const xberg = new Xberg(config);
+  await initWasm();
 
   try {
-    // Extract from file (requires file input or fetch)
-    const result = await xberg.extract("document.pdf");
-    console.log("Extraction complete:", result);
+    // Extract from file bytes with hierarchy configuration
+    const pdfBytes = new Uint8Array([/* PDF file data */]);
+    const output = await extract(
+      { kind: "bytes", bytes: pdfBytes, mimeType: "application/pdf" },
+      extractionConfigBasic,
+    );
+    console.log("Extraction complete:", output.results[0].content);
   } catch (error) {
     console.error("Extraction failed:", error);
   }

@@ -32,14 +32,15 @@ func main() {
 		EnableQualityProcessing: &enableQuality,
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", nil, config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	// Access chunks
-	if len(result.Chunks) > 0 {
-		snippet := result.Chunks[0].Content
+	if len(result.Results[0].Chunks) > 0 {
+		snippet := result.Results[0].Chunks[0].Content
 		if len(snippet) > 100 {
 			snippet = snippet[:100]
 		}
@@ -47,8 +48,8 @@ func main() {
 	}
 
 	// Access detected languages
-	if len(result.DetectedLanguages) > 0 {
-		fmt.Printf("Languages: %v\n", result.DetectedLanguages)
+	if len(result.Results[0].DetectedLanguages) > 0 {
+		fmt.Printf("Languages: %v\n", result.Results[0].DetectedLanguages)
 	}
 }
 ```

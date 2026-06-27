@@ -8,12 +8,13 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('verbose_document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'verbose_document.pdf')
+result = Xberg.extract(input, config)
 
 # Check reduction statistics in metadata
-original_tokens = result.metadata['original_token_count']
-reduced_tokens = result.metadata['token_count']
-reduction_ratio = result.metadata['token_reduction_ratio']
+original_tokens = result.results.first.metadata['original_token_count']
+reduced_tokens = result.results.first.metadata['token_count']
+reduction_ratio = result.results.first.metadata['token_reduction_ratio']
 
 puts "Reduced from #{original_tokens} to #{reduced_tokens} tokens"
 puts "Reduction: #{reduction_ratio * 100}%"

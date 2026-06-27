@@ -6,10 +6,9 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var result = XbergLib.Extract(
-    "scanned_document.pdf",
-    config
-);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+    "scanned_document.pdf"), config
+)).Results[0];
 
 var qualityScore = result.QualityScore;
 

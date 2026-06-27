@@ -7,7 +7,7 @@ import io.xberg.*
 class GenericValidator(
     private val pluginName: String,
     private val pluginPriority: Int,
-    private val check: (ExtractionResult, ExtractionConfig) -> Unit,
+    private val check: (ExtractedDocument, ExtractionConfig) -> Unit,
 ) : IValidator {
     override fun name(): String = pluginName
     override fun version(): String = "1.0.0"
@@ -20,12 +20,12 @@ class GenericValidator(
         // Optional: release resources held in initialize().
     }
 
-    override fun validate(result: ExtractionResult, config: ExtractionConfig) {
+    override fun validate(result: ExtractedDocument, config: ExtractionConfig) {
         check(result, config)
     }
 
     override fun should_validate(
-        _result: ExtractionResult,
+        _result: ExtractedDocument,
         _config: ExtractionConfig,
     ): Boolean = true
 
@@ -37,7 +37,7 @@ fun registerGenericValidator() {
         pluginName = "non-empty-content",
         pluginPriority = 200,
     ) { result, _ ->
-        require(result.content().isNotBlank()) { "Extracted content is blank" }
+        require(result.content.isNotBlank()) { "Extracted content is blank" }
     }
     ValidatorBridge.registerValidator(validator)
 }

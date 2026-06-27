@@ -13,9 +13,6 @@
 //! - **cache_manifest**: Get model manifest with checksums
 //! - **cache_warm**: Download model files for offline use
 //! - **get_version**: Get Xberg version info
-//! - **chunk_text**: Split text into chunks
-//! - **embed_text**: Generate vector embeddings (requires `embeddings` feature)
-//! - **extract_structured**: Extract structured data via LLM with JSON schema (requires `liter-llm` feature)
 //!
 //! # Example
 //!
@@ -50,7 +47,4 @@ pub use server::start_mcp_server_http_with_config;
 #[allow(unused_imports)]
 pub use server::start_mcp_server_with_config;
 
-pub use params::{
-    CacheWarmParams, ChunkTextParams, DetectMimeTypeParams, EmbedTextParams, ExtractBatchParams, ExtractParams,
-    ExtractStructuredParams,
-};
+pub use params::{CacheWarmParams, DetectMimeTypeParams, ExtractBatchParams, ExtractParams};

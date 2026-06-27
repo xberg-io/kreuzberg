@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, HtmlOutputConfig, HtmlTheme, OutputFormat};
+use xberg::{extract, ExtractionConfig, ExtractInput, HtmlOutputConfig, HtmlTheme, OutputFormat};
 
 let config = ExtractionConfig {
     output_format: OutputFormat::Html,
@@ -9,6 +9,6 @@ let config = ExtractionConfig {
     }),
     ..Default::default()
 };
-let result = extract_sync("document.pdf", None, &config).unwrap();
-println!("{}", result.content); // HTML with kb-* classes
+let output = extract(ExtractInput::from_uri("document.pdf"), &config).await.unwrap();
+println!("{}", output.results[0].content); // HTML with kb-* classes
 ```

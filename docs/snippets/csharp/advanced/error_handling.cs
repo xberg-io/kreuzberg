@@ -6,7 +6,7 @@ class Program
     {
         try
         {
-            var result = await XbergLib.ExtractAsync("document.pdf");
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
             Console.WriteLine($"Extracted {result.Content.Length} characters");
         }
         catch (XbergParsingException ex)
@@ -31,11 +31,10 @@ class Program
             var config = new ExtractionConfig();
             var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 }; 
 
-            var result = await XbergLib.ExtractAsync(
-                pdfBytes,
-                "application/pdf",
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                pdfBytes), "application/pdf",
                 config
-            );
+            )).Results[0];
 
             var preview = result.Content.Length > 100
                 ? result.Content[..100] + "..."
@@ -58,7 +57,7 @@ class Program
 
         try
         {
-            var result = await XbergLib.ExtractAsync("nonexistent.pdf");
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("nonexistent.pdf"), ExtractionConfig.Default())).Results[0];
         }
         catch (XbergIOException)
         {

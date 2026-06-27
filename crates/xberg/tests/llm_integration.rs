@@ -12,14 +12,18 @@
 //!
 //! `--test-threads=1` keeps concurrent provider calls below rate limits.
 //!
-//! All tests exercise the **public** extraction surface (`extract_file` +
+//! All tests exercise the **public** extraction surface (`extract_uri_document` +
 //! `ExtractionConfig`), matching how downstream callers (xberg-enterprise,
 //! xberg-py) invoke the engine.
 
 #![cfg(feature = "liter-llm")]
 
+mod helpers;
+use helpers::extract_uri_document;
+
 use serde_json::json;
 use xberg::core::config::{ExtractionConfig, LlmConfig, OcrConfig, StructuredExtractionConfig, VlmFallbackPolicy};
+use xberg::{ExtractInput, extract};
 
 const MEMO_PDF: &str = "../../test_documents/pdf/fake_memo.pdf";
 const HELLO_PNG: &str = "../../test_documents/images/test_hello_world.png";
@@ -65,7 +69,7 @@ fn memo_schema() -> serde_json::Value {
 }
 
 // ----------------------------------------------------------------------------
-// VLM OCR — via public extract_file with `OcrConfig { backend: "vlm", ... }`.
+// VLM OCR — via public extract_uri_document with `OcrConfig { backend: "vlm", ... }`.
 // ----------------------------------------------------------------------------
 
 async fn run_vlm_ocr(model: &str, api_key: String) {
@@ -79,7 +83,7 @@ async fn run_vlm_ocr(model: &str, api_key: String) {
         force_ocr: true,
         ..Default::default()
     };
-    let result = xberg::extract_file(HELLO_PNG, None, &config)
+    let result = extract_uri_document(HELLO_PNG, None, &config)
         .await
         .expect("VLM OCR extraction failed");
     assert!(
@@ -111,7 +115,7 @@ async fn test_vlm_ocr_gemini() {
 }
 
 // ----------------------------------------------------------------------------
-// Structured extraction — via public extract_file with
+// Structured extraction — via public extract with
 // `ExtractionConfig { structured_extraction: Some(..), .. }`.
 // ----------------------------------------------------------------------------
 
@@ -127,16 +131,28 @@ async fn run_structured(model: &str, api_key: String, strict: bool) {
         }),
         ..Default::default()
     };
-    let result = xberg::extract_file(MEMO_PDF, None, &config)
+    let output = extract(ExtractInput::from_uri(MEMO_PDF), &config)
         .await
         .expect("structured extraction failed");
+    assert_eq!(output.summary.inputs, 1);
+    assert_eq!(output.summary.results, 1);
+    assert_eq!(output.summary.errors, 0);
+    assert!(
+        output.errors.is_empty(),
+        "structured extraction returned public errors: {:?}",
+        output.errors
+    );
+
+    let result = output.results.first().expect("expected one public extraction result");
     let output = result
         .structured_output
+        .as_ref()
         .expect("expected structured_output to be populated");
     assert!(output.is_object(), "expected JSON object, got: {output}");
     assert!(output.get("title").is_some(), "expected 'title' in result: {output}");
     let usage = result
         .llm_usage
+        .as_ref()
         .expect("expected llm_usage populated for a structured-extraction run");
     assert!(!usage.is_empty(), "llm_usage was Some but empty");
     assert!(
@@ -195,10 +211,23 @@ async fn test_structured_extraction_custom_prompt() {
         }),
         ..Default::default()
     };
-    let result = xberg::extract_file(MEMO_PDF, None, &config)
+    let public_output = extract(ExtractInput::from_uri(MEMO_PDF), &config)
         .await
         .expect("structured extraction with custom prompt failed");
-    let output = result.structured_output.expect("structured_output missing");
+    assert_eq!(public_output.summary.inputs, 1);
+    assert_eq!(public_output.summary.results, 1);
+    assert_eq!(public_output.summary.errors, 0);
+    assert!(
+        public_output.errors.is_empty(),
+        "structured extraction returned public errors: {:?}",
+        public_output.errors
+    );
+
+    let result = public_output
+        .results
+        .first()
+        .expect("expected one public extraction result");
+    let output = result.structured_output.as_ref().expect("structured_output missing");
     assert!(output.is_object(), "expected JSON object: {output}");
     assert!(output.get("word_count").is_some(), "missing word_count");
     assert!(output.get("language").is_some(), "missing language");
@@ -225,7 +254,7 @@ async fn test_vlm_fallback_always_routes_to_vlm() {
         extraction_timeout_secs: Some(300),
         ..Default::default()
     };
-    let result = xberg::extract_file(SCANNED_PDF, None, &config)
+    let result = extract_uri_document(SCANNED_PDF, None, &config)
         .await
         .expect("VlmFallbackPolicy::Always extraction failed");
     assert!(
@@ -264,7 +293,7 @@ async fn test_vlm_fallback_on_low_quality() {
         extraction_timeout_secs: Some(300),
         ..Default::default()
     };
-    let result = xberg::extract_file(SCANNED_PDF, None, &config)
+    let result = extract_uri_document(SCANNED_PDF, None, &config)
         .await
         .expect("VlmFallbackPolicy::OnLowQuality extraction failed");
     assert!(
@@ -313,7 +342,7 @@ async fn test_vlm_fallback_disabled_does_not_call_llm() {
         extraction_timeout_secs: Some(300),
         ..Default::default()
     };
-    let result = xberg::extract_file(SCANNED_PDF, None, &config)
+    let result = extract_uri_document(SCANNED_PDF, None, &config)
         .await
         .expect("Disabled-fallback extraction failed");
     assert!(

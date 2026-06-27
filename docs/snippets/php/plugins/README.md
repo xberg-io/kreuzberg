@@ -66,16 +66,16 @@ Instead of registering a post-processor plugin, process the extraction result di
 
 declare(strict_types=1);
 
-use Xberg\Xberg;
-use Xberg\Types\ExtractionResult;
+use Xberg\XbergApi;
+use Xberg\Types\ExtractedDocument;
 
-function postProcessResult(ExtractionResult $result): ExtractionResult
+function postProcessResult(ExtractedDocument $result): ExtractedDocument
 {
     // Custom post-processing logic
     $processedContent = strtoupper($result->content);
 
     // Return a new result with modified content
-    return new ExtractionResult(
+    return new ExtractedDocument(
         content: $processedContent,
         mimeType: $result->mimeType,
         metadata: $result->metadata,
@@ -85,8 +85,8 @@ function postProcessResult(ExtractionResult $result): ExtractionResult
     );
 }
 
-$xberg = new Xberg();
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 $processed = postProcessResult($result);
 ```
 
@@ -99,9 +99,9 @@ PHP bindings support all built-in OCR backends:
 
 declare(strict_types=1);
 
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Xberg;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\XbergApi;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -110,8 +110,8 @@ $config = new ExtractionConfig(
     ),
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('scanned.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 ```
 
 ### 3. Validate Results in PHP
@@ -124,9 +124,9 @@ Instead of validator plugins, validate extraction results directly:
 declare(strict_types=1);
 
 use Xberg\Exceptions\ValidationException;
-use Xberg\Types\ExtractionResult;
+use Xberg\Types\ExtractedDocument;
 
-function validateResult(ExtractionResult $result): void
+function validateResult(ExtractedDocument $result): void
 {
     if (strlen($result->content) < 100) {
         throw new ValidationException('Content too short (minimum 100 characters)');
@@ -137,30 +137,34 @@ function validateResult(ExtractionResult $result): void
     }
 }
 
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 validateResult($result);
 ```
 
-### 4. Extend the Xberg Class
+### 4. Wrap the Xberg Class
 
-For application-specific functionality, extend the main class:
+For application-specific functionality, wrap the static API in a helper that
+delegates to `Xberg::extract()`:
 
-```php title="Extend Xberg Class"
+```php title="Wrap Xberg Class"
 <?php
 
 declare(strict_types=1);
 
-use Xberg\Config\ExtractionConfig;
-use Xberg\Xberg as BaseXberg;
-use Xberg\Types\ExtractionResult;
+use Xberg\ExtractInput;
+use Xberg\ExtractionConfig;
+use Xberg\XbergApi;
+use Xberg\Types\ExtractedDocument;
 
-final class CustomXberg extends BaseXberg
+final class CustomXberg
 {
-    public function extractAndValidate(
+    public static function extractAndValidate(
         string $path,
         ?ExtractionConfig $config = null
-    ): ExtractionResult {
-        $result = $this->extract($path, $config);
+    ): ExtractedDocument {
+        $output = Xberg::extract(ExtractInput::fromUri($path), $config);
+        $result = $output->results[0];
 
         // Custom validation
         if (strlen($result->content) < 100) {
@@ -170,17 +174,18 @@ final class CustomXberg extends BaseXberg
         return $result;
     }
 
-    public function extractAndTransform(
+    public static function extractAndTransform(
         string $path,
         callable $transformer,
         ?ExtractionConfig $config = null
-    ): ExtractionResult {
-        $result = $this->extract($path, $config);
+    ): ExtractedDocument {
+        $output = Xberg::extract(ExtractInput::fromUri($path), $config);
+        $result = $output->results[0];
 
         // Custom transformation
         $transformedContent = $transformer($result->content);
 
-        return new ExtractionResult(
+        return new ExtractedDocument(
             content: $transformedContent,
             mimeType: $result->mimeType,
             metadata: $result->metadata,

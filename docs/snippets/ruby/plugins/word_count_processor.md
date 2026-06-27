@@ -18,6 +18,7 @@ config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-result = Xberg.extract_sync('document.pdf', config: config)
-puts "Words: #{result.metadata['word_count']}"
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+result = Xberg.extract(input, config)
+puts "Words: #{result.results.first.metadata['word_count']}"
 ```

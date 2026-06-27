@@ -1,268 +1,208 @@
 # Structured Extraction
 
-Structured extraction combines document extraction with LLM-based schema completion to return data matching a JSON schema.
+Define a JSON schema and extract typed structured data directly from documents via LLM. Get back fields ready for your database or app, no manual parsing of raw text required.
 
-## Overview
+Structured extraction is part of the unified extraction pipeline. Set
+`ExtractionConfig.structured_extraction`, call `extract` or `extract_batch`, and
+read `structured_output` from each `ExtractedDocument` in the returned
+`ExtractionResult` envelope.
 
-Structured extraction runs in three phases:
+There is no separate public structured-extraction entrypoint in v1.
 
-1. **Extract** — Use Xberg to extract text and/or images from the document.
-2. **Call** — Send the extracted content to an LLM with a schema and system prompt (from a preset).
-3. **Merge** — Combine results from multiple calls (e.g. per-page batches) using the preset's merge strategy.
+## Configure
 
-Call mode and merge strategy are configured in the preset; heuristics can override them at extraction time.
+Provide a JSON schema and an LLM model. Xberg first extracts the document, then
+sends the extracted content to the configured model and stores the parsed JSON
+result on the extracted document.
 
-## Call Modes
+<!-- textlint-disable terminology -->
 
-The `CallMode` enum governs how document content is sent to the LLM:
+=== "Rust"
+    ```rust
+    use serde_json::json;
+    use xberg::{
+        extract, ExtractInput, ExtractionConfig, LlmConfig,
+        StructuredExtractionConfig,
+    };
 
-| Mode | Behavior |
-|------|----------|
-| `text_only` | Send extracted text only; no vision model call. Fastest, lowest cost. Best for text-heavy documents. |
-| `vision_only` | Send page rasters only; no extracted text payload. Useful for scanned/handwritten documents. |
-| `text_plus_vision` | Fuse extracted text with page rasters in a single multimodal call. Highest accuracy, highest cost. |
+    #[tokio::main]
+    async fn main() -> xberg::Result<()> {
+        let config = ExtractionConfig {
+            structured_extraction: Some(StructuredExtractionConfig {
+                schema_name: "paper_metadata".to_string(),
+                schema: json!({
+                    "type": "object",
+                    "properties": {
+                        "title": { "type": "string" },
+                        "authors": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                        },
+                        "date": { "type": "string" }
+                    },
+                    "required": ["title", "authors"],
+                    "additionalProperties": false
+                }),
+                strict: true,
+                llm: LlmConfig {
+                    model: "openai/gpt-4o-mini".to_string(),
+                    ..Default::default()
+                },
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
 
-Example in Rust:
+        let output = extract(ExtractInput::from_uri("paper.pdf"), &config).await?;
+        if let Some(result) = output.results.first() {
+            if let Some(structured) = &result.structured_output {
+                println!("{structured}");
+            }
+        }
 
-```rust
-use xberg::presets::{Preset, CallMode};
-
-let preset = Preset {
-    preferred_call_mode: CallMode::TextOnly,
-    ..Default::default()
-};
-```
-
-In configuration (TOML, YAML, JSON), use snake_case:
-
-```toml
-[structured_extraction]
-preferred_call_mode = "text_only"
-```
-
-## Merge Modes
-
-The `MergeMode` enum controls how partial results from batched calls combine:
-
-| Mode | Behavior |
-|------|----------|
-| `object_merge` | Deep-merge JSON objects field by field. Later calls fill missing fields in earlier results. |
-| `array_concat` | Concatenate top-level arrays across calls. |
-| `object_first` | Keep the first non-empty result; ignore subsequent calls. |
-
-Choose based on your schema:
-
-```rust
-use xberg::presets::{Preset, MergeMode};
-
-// Merge invoice items from multiple pages
-let preset = Preset {
-    merge_mode: MergeMode::ArrayConcat,
-    ..Default::default()
-};
-```
-
-In configuration:
-
-```toml
-[structured_extraction]
-merge_mode = "array_concat"
-```
-
-### Merge Mode Examples
-
-**invoice_items: array**
-
-Multi-page invoices often have line items spread across pages. Use `array_concat`:
-
-```json
-// Page 1 result
-{ "invoice_items": [{ "description": "Item A", "amount": 10.0 }] }
-
-// Page 2 result
-{ "invoice_items": [{ "description": "Item B", "amount": 20.0 }] }
-
-// Merged (array_concat)
-{ "invoice_items": [
-  { "description": "Item A", "amount": 10.0 },
-  { "description": "Item B", "amount": 20.0 }
-] }
-```
-
-**document_metadata: object**
-
-Metadata fields (vendor, invoice number) typically appear once. Use `object_merge`:
-
-```json
-// Page 1 result
-{ "vendor": "ACME Corp", "invoice_date": "2025-01-15" }
-
-// Page 2 result
-{ "invoice_number": "INV-123" }
-
-// Merged (object_merge)
-{ "vendor": "ACME Corp", "invoice_date": "2025-01-15", "invoice_number": "INV-123" }
-```
-
-## Heuristics
-
-Heuristics automatically decide whether and how to invoke structured extraction based on document characteristics. The `heuristics` feature gate must be enabled:
-
-```toml
-[dependencies]
-xberg = { version = "5.0", features = ["heuristics"] }
-```
-
-### Confidence Scoring
-
-When enabled, extraction results carry an `extraction_confidence` score combining:
-
-- **Text coverage** — Fraction of pages with usable text (0.0..=1.0)
-- **OCR quality** — Mean recognition confidence from OCR elements (when OCR ran)
-- **Schema compliance** — Whether the extraction validates against your schema
-
-The combined score is a weighted blend on `[0, 1]`:
-
-```rust
-use xberg::heuristics::{score_confidence, ConfidenceSignals, ConfidenceWeights, SchemaCompliance};
-
-let signals = ConfidenceSignals {
-    text_coverage: 0.95,
-    ocr_aggregate: None,  // OCR did not run
-    schema_compliance: SchemaCompliance::AllValid,
-};
-
-// Default weights: text_coverage (0.30) + schema_compliance (0.40) + ocr (0.30)
-let confidence = score_confidence(signals, ConfidenceWeights::default());
-assert!(confidence.combined > 0.8);
-```
-
-Use the confidence score to:
-
-1. **Gate fallbacks** — Escalate to vision if confidence < 0.7
-2. **Log quality metrics** — Track confidence per document type for process improvement
-3. **Alert on degradation** — Flag documents with confidence < threshold for manual review
-
-### Call-Mode Heuristics
-
-The `choose_call_mode` function automatically selects the best call mode for a document:
-
-```rust
-use xberg::heuristics::{StructuredInput, StructuredThresholds, choose_call_mode};
-
-let input = StructuredInput {
-    mime_type: "application/pdf".to_string(),
-    page_count: 10,
-    text_coverage: 0.92,  // 92% of pages have text
-    avg_chars_per_page: 500.0,
-    embedded_image_count: 2,
-    user_force_vision: false,
-};
-
-let thresholds = StructuredThresholds::default();
-let mode = choose_call_mode(&input, &thresholds);
-// Result: StructuredCallMode::TextOnly (high text coverage, text-bearing format)
-```
-
-Rules applied in order:
-
-1. `image/*` → `VisionOnly` (no native text layer)
-2. `application/pdf` → `TextOnly` (Xberg's OCR produces text for scanned PDFs)
-3. Text-heavy DOCX/HTML/text → `TextOnly` (if avg_chars_per_page > threshold)
-4. Anything else → `Skip`
-
-After selection, two post-rule promotions apply:
-
-- `user_force_vision=true` promotes `TextOnly` → `TextPlusVision`
-- `enable_vision_fallback=true` promotes `TextOnly` → `TextOnlyWithVisionFallback` (try text first, escalate on low confidence)
-
-### Tuning Thresholds
-
-All heuristic thresholds are conservative defaults. Deployments should measure their corpus and override:
-
-```rust
-use xberg::heuristics::StructuredThresholds;
-
-let custom = StructuredThresholds {
-    scan_max_coverage: 0.15,          // Your PDFs average 15% text coverage when scanned
-    digital_min_coverage: 0.85,       // Your digital PDFs hit 85%+ coverage
-    docx_text_min_density: 150.0,     // Your DOCX docs average 150 chars/page
-    enable_vision_fallback: true,     // Run confidence-gated escalation
-};
-```
-
-| Threshold | Default | Meaning |
-|-----------|---------|---------|
-| `scan_max_coverage` | 0.10 | PDFs below this threshold are treated as scanned/image-heavy |
-| `digital_min_coverage` | 0.90 | PDFs at/above this with zero embedded images → `TextOnly` |
-| `docx_text_min_density` | 200.0 | DOCX/HTML/text with avg chars/page above this → `TextOnly` |
-| `enable_vision_fallback` | false | When true, use `TextOnlyWithVisionFallback` for confidence gating |
-
-## Structured Call Modes
-
-The runtime heuristic returns a `StructuredCallMode` (distinct from `CallMode`), which has five variants:
-
-| Mode | Behavior |
-|------|----------|
-| `Skip` | Document is unsupported or not worth invoking the pipeline. |
-| `TextOnly` | Send extracted text only. |
-| `VisionOnly` | Send page rasters only. |
-| `TextPlusVision` | Fuse text and images in a single call. |
-| `TextOnlyWithVisionFallback` | Try text-only first; escalate to vision on low confidence. |
-
-The `TextOnlyWithVisionFallback` mode is the bridge between heuristics and orchestration: extract with text-only, check confidence, and invoke vision only if needed (avoiding unnecessary vision calls).
-
-## Example: Invoice Extraction
-
-```rust
-use xberg::{
-    extract, ExtractionConfig,
-    presets::{Registry, resolve},
-    heuristics::{
-        score_confidence, ConfidenceSignals, StructuredInput, StructuredThresholds,
-        choose_call_mode, SchemaCompliance,
+        Ok(())
     }
-};
-use std::collections::BTreeMap;
+    ```
 
-// Extract the document
-let config = ExtractionConfig::default();
-let result = extract("invoice.pdf", None, &config).await?;
+=== "Python"
+    ```python
+    import asyncio
+    from xberg import (
+        ExtractInput,
+        ExtractionConfig,
+        LlmConfig,
+        StructuredExtractionConfig,
+        extract,
+    )
 
-// Load the invoice preset
-let registry = Registry::global();
-let preset = registry.get("invoice").expect("preset");
-let resolved = resolve(preset, None, &BTreeMap::new())?;
 
-// Score confidence
-let signals = ConfidenceSignals::from_extraction_result(
-    &result,
-    SchemaCompliance::AllValid,  // Assume schema validation passed
-    0.95,  // 95% of pages have text
-);
-let confidence = xberg::heuristics::score_confidence(
-    signals,
-    Default::default()
-);
+    async def main() -> None:
+        config = ExtractionConfig(
+            structured_extraction=StructuredExtractionConfig(
+                schema_name="paper_metadata",
+                schema={
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "authors": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
+                        "date": {"type": "string"},
+                    },
+                    "required": ["title", "authors"],
+                    "additionalProperties": False,
+                },
+                strict=True,
+                llm=LlmConfig(model="openai/gpt-4o-mini"),
+            ),
+        )
 
-// Decide call mode
-let call_input = StructuredInput {
-    mime_type: result.mime_type.clone(),
-    page_count: result.pages.len() as u32,
-    text_coverage: 0.95,
-    avg_chars_per_page: (result.content.len() / result.pages.len()) as f64,
-    embedded_image_count: result.images.len() as u32,
-    user_force_vision: false,
-};
+        output = await extract(ExtractInput.from_uri("paper.pdf"), config)
+        if output.results and output.results[0].structured_output is not None:
+            print(output.results[0].structured_output)
 
-let call_mode = choose_call_mode(&call_input, &StructuredThresholds::default());
-// Dispatch to LLM based on call_mode with resolved preset
+
+    asyncio.run(main())
+    ```
+
+=== "TypeScript"
+    ```typescript
+    import {
+      ExtractInputKind,
+      extract,
+      type ExtractionConfig,
+    } from "@xberg-io/xberg";
+
+    const config: ExtractionConfig = {
+      structuredExtraction: {
+        schemaName: "paper_metadata",
+        schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            authors: {
+              type: "array",
+              items: { type: "string" },
+            },
+            date: { type: "string" },
+          },
+          required: ["title", "authors"],
+          additionalProperties: false,
+        },
+        strict: true,
+        llm: {
+          model: "openai/gpt-4o-mini",
+        },
+      },
+    };
+
+    const output = await extract(
+      { kind: ExtractInputKind.Uri, uri: "paper.pdf" },
+      config,
+    );
+
+    const structured = output.results[0]?.structuredOutput;
+    if (structured !== undefined && structured !== null) {
+      console.log(structured);
+    }
+    ```
+
+<!-- textlint-enable terminology -->
+
+## TOML
+
+The same configuration can be loaded from TOML:
+
+```toml
+[structured_extraction]
+schema_name = "paper_metadata"
+strict = true
+
+[structured_extraction.schema]
+type = "object"
+required = ["title", "authors"]
+additionalProperties = false
+
+[structured_extraction.schema.properties.title]
+type = "string"
+
+[structured_extraction.schema.properties.authors]
+type = "array"
+
+[structured_extraction.schema.properties.authors.items]
+type = "string"
+
+[structured_extraction.schema.properties.date]
+type = "string"
+
+[structured_extraction.llm]
+model = "openai/gpt-4o-mini"
 ```
+
+## URLs And Batches
+
+Structured extraction works with every `ExtractInput` source:
+
+- `kind = "bytes"` for in-memory content
+- `kind = "uri"` for local paths and `file://` URIs
+- `kind = "uri"` for HTTP(S) document URLs and website crawl seeds
+
+For batches, each successful result can carry its own `structured_output`.
+Failures are reported in `ExtractionResult.errors` without discarding other
+results.
+
+## Output
+
+Read structured data from each `ExtractedDocument.structured_output`.
+
+The extraction envelope still includes normal document content, pages, chunks,
+metadata, warnings, and errors. This lets downstream code store the raw
+extraction and the structured projection together.
 
 ## Best Practices
 
-1. **Measure your corpus** — Run heuristics on representative documents; adjust thresholds to your baseline.
-2. **Test presets** — Verify system prompts and schemas on real data before deploying.
-3. **Gate on confidence** — Use `extraction_confidence` to catch degraded results before they propagate downstream.
-4. **Log decisions** — Record which call mode was chosen and why for process improvement.
-5. **Cache preset fingerprints** — Use `Preset::fingerprint` as a cache-invalidation token; recompute workers when presets change.
+Use strict schemas when the provider supports them. Keep schemas small and
+specific, and include only fields you will consume. Set a model through
+`LlmConfig`; credentials can come from the provider environment variable or
+from `llm.api_key`.

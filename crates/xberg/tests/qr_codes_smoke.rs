@@ -2,7 +2,7 @@
 //!
 //! Generates a synthetic QR code at test time with the `qrcode` crate, encodes
 //! it as a PNG via the `image` crate, then runs the `qr-codes` post-processor
-//! over a synthesised [`ExtractionResult`] containing the PNG bytes. Asserts
+//! over a synthesised [`ExtractedDocument`] containing the PNG bytes. Asserts
 //! the payload round-trips and that the detector reports a bounding box.
 //!
 //! Pure-Rust feature — no API keys required, runs in every CI matrix that
@@ -19,7 +19,7 @@ use image::{ExtendedColorType, ImageEncoder, Luma};
 use qrcode::QrCode;
 use xberg::core::config::ExtractionConfig;
 use xberg::plugins::PostProcessor;
-use xberg::types::{ExtractedImage, ExtractionResult};
+use xberg::types::{ExtractedDocument, ExtractedImage};
 
 const PAYLOAD: &str = "https://xberg.io/hello-world";
 
@@ -115,14 +115,14 @@ fn detect_qr_codes_returns_all_grids_in_multi_code_image() {
 }
 
 /// Drive the public `QrCodeProcessor` via its `PostProcessor` trait against a
-/// synthesised [`ExtractionResult`]. This exercises the same surface the
+/// synthesised [`ExtractedDocument`]. This exercises the same surface the
 /// pipeline executes, including the config gate and the `Some(vec![])`
 /// no-finds convention.
 #[tokio::test]
 async fn qr_post_processor_populates_extracted_image() {
     // Build a synthetic image carrying our PNG payload.
     let png = render_qr_png(PAYLOAD);
-    let mut result = ExtractionResult {
+    let mut result = ExtractedDocument {
         content: String::new(),
         mime_type: Cow::Borrowed("application/octet-stream"),
         images: Some(vec![ExtractedImage {
@@ -173,7 +173,7 @@ impl xberg::plugins::Plugin for SmokeQrProcessor {
 
 #[async_trait]
 impl PostProcessor for SmokeQrProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> xberg::Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> xberg::Result<()> {
         if config.qr_codes != Some(true) {
             return Ok(());
         }

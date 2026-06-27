@@ -10,7 +10,7 @@
 //!
 //! # async fn run() -> xberg::Result<()> {
 //! let config = ExtractionConfig::default();
-//! let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
+//! let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
 //! println!("Extracted: {}", output.results[0].content);
 //! # Ok(())
 //! # }
@@ -21,7 +21,7 @@
 //! - **Core Module** (`core`): Main extraction orchestration, MIME detection, config loading
 //! - **Plugin System**: Language-agnostic plugin architecture
 //! - **Extractors**: Format-specific extraction (PDF, images, Office docs, email, etc.)
-//! - **OCR**: Multiple OCR backend support (Tesseract, EasyOCR, PaddleOCR)
+//! - **OCR**: Multiple OCR backend support (Tesseract, PaddleOCR, VLM)
 //!
 //! # Features
 //!
@@ -120,22 +120,6 @@ pub use heuristics::{
 #[cfg(feature = "presets")]
 pub mod presets;
 
-// Native HTTP (liter-llm) + PDF rendering are required, so the structured orchestrator is excluded
-// on wasm32. Public entry points (`extract_structured`/`split_and_extract`) are re-exported here in
-// the orchestrator wave.
-#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
-pub mod structured;
-
-#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
-pub use structured::{
-    CacheKey, CitationEnvelope, CitationSource, CitedField, MokaVisionCache, PageImage, PresetSpec, StructuredError,
-    StructuredOptions, StructuredOutput, VisionCallCache, VisionConfig, extract_structured, extract_structured_sync,
-    split_and_extract, split_and_extract_sync,
-};
-
-#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
-pub use structured::bindings::{extract_structured_json, split_and_extract_json};
-
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod ocr;
 
@@ -195,15 +179,13 @@ pub use types::*;
 pub use extraction::office_metadata::{CoreProperties, DocxAppProperties};
 
 // ── Extraction — public API ──────────────────────────────────────────────────
-pub use core::extractor::{extract, extract_batch};
-#[cfg(feature = "tokio-runtime")]
-pub use core::extractor::{extract_batch_sync, extract_sync};
+pub use core::extract::{extract, extract_batch};
 
 // ── Extraction config types ───────────────────────────────────────────────────
 pub use core::config::{
     AccelerationConfig, CallMode, CaptioningConfig, ChunkSizing, ChunkerType, ChunkingConfig, ContentFilterConfig,
     EmailConfig, EmbeddingConfig, EmbeddingModelType, ExecutionProviderType, ExtractInput, ExtractInputKind,
-    ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary, FileExtractionConfig,
+    ExtractionConfig, ExtractionErrorItem, ExtractionResult, ExtractionSummary, FileExtractionConfig,
     ImageExtractionConfig, LanguageDetectionConfig, LlmConfig, MergeMode, NerBackendKind, NerConfig, OcrConfig,
     OutputFormat, PageClassificationConfig, PageConfig, PostProcessorConfig, RedactionConfig, RedactionPattern,
     RedactionTerm, RerankerConfig, RerankerModelType, StructuredExtractionConfig, SummarizationConfig,
@@ -235,6 +217,7 @@ pub use text::{ReductionLevel, TokenReductionConfig};
     not(target_arch = "wasm32"),
     not(all(target_os = "android", target_arch = "x86_64"))
 ))]
+#[cfg_attr(alef, alef(skip))]
 pub use text::ner::llm::LlmBackend;
 
 // Re-export the NerBackend trait at crate root so consumers (e.g. the alef-generated
@@ -249,6 +232,7 @@ pub use text::ner::NerBackend;
 // This ensures `LlmBackend` is always in scope for alef-generated bindings.
 #[cfg(any(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")))]
 #[derive(Clone, Debug)]
+#[cfg_attr(alef, alef(skip))]
 pub struct LlmBackend {
     _config: LlmConfig,
 }
@@ -353,10 +337,12 @@ impl RegionKind {
 
 // Public NER API: detect_entities function and backend types.
 #[cfg(feature = "ner")]
+#[cfg_attr(alef, alef(skip))]
 pub use text::ner::detect_entities;
 
 // Public classification API: classify_document function and existing classify_text.
 #[cfg(feature = "classification")]
+#[cfg_attr(alef, alef(skip))]
 pub use text::classification::classify_document;
 
 #[cfg(feature = "redaction")]
@@ -476,6 +462,7 @@ pub use embeddings::EmbeddingPreset;
 ///
 /// Returns a 2D vector where each inner vector is the embedding for the corresponding text.
 #[cfg(feature = "embeddings")]
+#[cfg_attr(alef, alef(skip))]
 pub fn embed_texts(texts: Vec<String>, config: &core::config::EmbeddingConfig) -> crate::Result<Vec<Vec<f32>>> {
     embeddings::embed_texts(&texts, config)
 }
@@ -484,6 +471,7 @@ pub fn embed_texts(texts: Vec<String>, config: &core::config::EmbeddingConfig) -
 /// on no-ORT targets (Android x86_64 emulator, WASM) so language bindings that
 /// mirror the public API compile; the runtime call returns an unsupported error.
 #[cfg(all(feature = "embedding-presets", not(feature = "embeddings")))]
+#[cfg_attr(alef, alef(skip))]
 pub fn embed_texts(_texts: Vec<String>, _config: &core::config::EmbeddingConfig) -> crate::Result<Vec<Vec<f32>>> {
     Err(XbergError::validation(
         "embed_texts requires the `embeddings` feature, which depends on ONNX Runtime; \
@@ -492,6 +480,7 @@ pub fn embed_texts(_texts: Vec<String>, _config: &core::config::EmbeddingConfig)
 }
 
 #[cfg(all(feature = "embeddings", feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub use embeddings::embed_texts_async;
 
 #[cfg(all(
@@ -499,6 +488,7 @@ pub use embeddings::embed_texts_async;
     not(feature = "embeddings"),
     feature = "tokio-runtime"
 ))]
+#[cfg_attr(alef, alef(skip))]
 pub async fn embed_texts_async(
     _texts: Vec<String>,
     _config: &core::config::EmbeddingConfig,
@@ -514,6 +504,7 @@ pub async fn embed_texts_async(
 /// Returns `None` if no preset with the given name exists. Returns an owned
 /// clone so the value is safe to pass across FFI boundaries.
 #[cfg(feature = "embedding-presets")]
+#[cfg_attr(alef, alef(skip))]
 pub fn get_embedding_preset(name: &str) -> Option<embeddings::EmbeddingPreset> {
     embeddings::get_preset(name)
 }
@@ -522,6 +513,7 @@ pub fn get_embedding_preset(name: &str) -> Option<embeddings::EmbeddingPreset> {
 ///
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
 #[cfg(feature = "embedding-presets")]
+#[cfg_attr(alef, alef(skip))]
 pub fn list_embedding_presets() -> Vec<String> {
     embeddings::list_presets()
 }
@@ -564,12 +556,14 @@ pub struct EmbeddingPreset {
 
 /// Returns `None` for builds without the `embedding-presets` feature.
 #[cfg(not(feature = "embedding-presets"))]
+#[cfg_attr(alef, alef(skip))]
 pub fn get_embedding_preset(_name: &str) -> Option<EmbeddingPreset> {
     None
 }
 
 /// Returns an empty list for builds without the `embedding-presets` feature.
 #[cfg(not(feature = "embedding-presets"))]
+#[cfg_attr(alef, alef(skip))]
 pub fn list_embedding_presets() -> Vec<String> {
     Vec::new()
 }
@@ -600,6 +594,7 @@ pub use reranking::RerankedDocument;
 ///
 /// Since v5.0.0.
 #[cfg(feature = "reranker")]
+#[cfg_attr(alef, alef(skip))]
 pub fn rerank(
     query: String,
     documents: Vec<String>,
@@ -613,6 +608,7 @@ pub fn rerank(
 ///
 /// Since v5.0.0.
 #[cfg(all(feature = "reranker-presets", not(feature = "reranker")))]
+#[cfg_attr(alef, alef(skip))]
 pub fn rerank(
     _query: String,
     _documents: Vec<String>,
@@ -625,6 +621,7 @@ pub fn rerank(
 }
 
 #[cfg(all(feature = "reranker", feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub use reranking::rerank_async;
 
 /// Stub for builds without the `reranker` feature.
@@ -632,6 +629,7 @@ pub use reranking::rerank_async;
 /// Since v5.0.0.
 #[doc(alias = "rerank")]
 #[cfg(all(feature = "reranker-presets", not(feature = "reranker"), feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub async fn rerank_async(
     _query: String,
     _documents: Vec<String>,
@@ -650,6 +648,7 @@ pub async fn rerank_async(
 ///
 /// Since v5.0.0.
 #[cfg(feature = "reranker-presets")]
+#[cfg_attr(alef, alef(skip))]
 pub fn get_reranker_preset(name: &str) -> Option<reranking::RerankerPreset> {
     reranking::get_preset(name)
 }
@@ -660,6 +659,7 @@ pub fn get_reranker_preset(name: &str) -> Option<reranking::RerankerPreset> {
 ///
 /// Since v5.0.0.
 #[cfg(feature = "reranker-presets")]
+#[cfg_attr(alef, alef(skip))]
 pub fn list_reranker_presets() -> Vec<String> {
     reranking::list_presets()
 }
@@ -708,6 +708,7 @@ pub struct RerankedDocument {
 ///
 /// Since v5.0.0.
 #[cfg(not(feature = "reranker-presets"))]
+#[cfg_attr(alef, alef(skip))]
 pub fn get_reranker_preset(_name: &str) -> Option<RerankerPreset> {
     None
 }
@@ -716,6 +717,7 @@ pub fn get_reranker_preset(_name: &str) -> Option<RerankerPreset> {
 ///
 /// Since v5.0.0.
 #[cfg(not(feature = "reranker-presets"))]
+#[cfg_attr(alef, alef(skip))]
 pub fn list_reranker_presets() -> Vec<String> {
     Vec::new()
 }
@@ -756,6 +758,7 @@ pub fn list_reranker_presets() -> Vec<String> {
 /// # }
 /// ```
 #[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub use captioning::caption_image;
 
 /// Caption a single image from a file path using a configured LLM.
@@ -792,6 +795,7 @@ pub use captioning::caption_image;
 /// # }
 /// ```
 #[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub use captioning::caption_image_file;
 
 /// Caption multiple images in a single batch.
@@ -835,13 +839,16 @@ pub use captioning::caption_image_file;
 /// # }
 /// ```
 #[cfg(all(feature = "captioning", feature = "tokio-runtime"))]
+#[cfg_attr(alef, alef(skip))]
 pub use captioning::caption_images;
 
 // ── Enrichment chokepoint ─────────────────────────────────────────────────────
 /// Unified post-extraction enrichment: classification, NER, captioning, and
 /// (future) transcription in a single composable call.
 pub mod enrich;
-pub use enrich::{EnrichedResult, EnrichmentConfig, enrich};
+#[cfg_attr(alef, alef(skip))]
+pub use enrich::enrich;
+pub use enrich::{EnrichedResult, EnrichmentConfig};
 
 #[cfg(feature = "ner")]
 pub use enrich::NerEnrichmentConfig;

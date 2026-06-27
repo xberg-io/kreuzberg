@@ -200,7 +200,7 @@ mod tests {
     use crate::XbergError;
     use crate::core::config::ExtractionConfig;
     use crate::plugins::Plugin;
-    use crate::types::ExtractionResult;
+    use crate::types::ExtractedDocument;
     use async_trait::async_trait;
 
     struct MockPostProcessor {
@@ -237,7 +237,7 @@ mod tests {
 
     #[async_trait]
     impl PostProcessor for MockPostProcessor {
-        async fn process(&self, _result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
 
@@ -419,7 +419,7 @@ mod tests {
 
     #[async_trait]
     impl PostProcessor for FailingPostProcessor {
-        async fn process(&self, _result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
 

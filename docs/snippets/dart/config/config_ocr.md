@@ -20,8 +20,8 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await XbergBridge.extract('scanned.pdf', null, config);
-  print('Content length: ${result.content.length}');
-  print('Tables detected: ${result.tables.length}');
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'scanned.pdf'), config: config);
+  print('Content length: ${result.results[0].content.length}');
+  print('Tables detected: ${result.results[0].tables.length}');
 }
 ```

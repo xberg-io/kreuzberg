@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use tower::util::BoxCloneService;
 
-use crate::{ExtractionConfig, XbergError, service::ExtractionRequest, types::ExtractionResult};
+use crate::{ExtractionConfig, XbergError, service::ExtractionRequest, types::ExtractedDocument};
 
 /// API server size limit configuration.
 ///
@@ -152,14 +152,6 @@ pub struct InfoResponse {
     pub rust_backend: bool,
 }
 
-/// Extraction output returned by the V1 API.
-#[cfg_attr(alef, alef(skip))]
-pub type ExtractionOutput = crate::core::config::ExtractionOutput;
-
-/// Extraction response.
-#[cfg_attr(alef, alef(skip))]
-pub type ExtractResponse = ExtractionOutput;
-
 /// Error response.
 #[cfg_attr(alef, alef(skip))]
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -193,7 +185,7 @@ pub struct ApiState {
     /// Wrapped in `Arc<Mutex>` because `BoxCloneService` is `Send` but not `Sync`,
     /// while `ApiState` must be `Clone + Sync` for Axum's state requirement.
     /// The lock is held only long enough to clone the service.
-    pub extraction_service: Arc<Mutex<BoxCloneService<ExtractionRequest, ExtractionResult, XbergError>>>,
+    pub extraction_service: Arc<Mutex<BoxCloneService<ExtractionRequest, ExtractedDocument, XbergError>>>,
     /// In-memory job store for async extraction polling.
     #[cfg(feature = "api")]
     pub job_store: Arc<super::jobs::JobStore>,
@@ -277,146 +269,6 @@ pub struct CacheClearResponse {
     pub removed_files: usize,
     /// Space freed in MB
     pub freed_mb: f64,
-}
-
-/// Embedding request for generating embeddings from text.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct EmbedRequest {
-    /// Text strings to generate embeddings for (at least one non-empty string required)
-    #[cfg_attr(feature = "api", schema(min_items = 1))]
-    pub texts: Vec<String>,
-    /// Optional embedding configuration (model, batch size, etc.)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[cfg_attr(feature = "api", schema(value_type = Option<Object>))]
-    pub config: Option<crate::core::config::EmbeddingConfig>,
-}
-
-/// Embedding response containing generated embeddings.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct EmbedResponse {
-    /// Generated embeddings (one per input text)
-    pub embeddings: Vec<Vec<f32>>,
-    /// Model used for embedding generation
-    #[cfg_attr(feature = "api", schema(example = "all-MiniLM-L6-v2"))]
-    pub model: String,
-    /// Dimensionality of the embeddings
-    pub dimensions: usize,
-    /// Number of embeddings generated
-    pub count: usize,
-}
-
-/// Request body for POST /rerank — score (query, document) pairs.
-///
-/// Since v5.0.0.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct RerankRequest {
-    /// The query to score each document against.
-    pub query: String,
-    /// Documents to rerank (may be empty — returns empty results without error).
-    pub documents: Vec<String>,
-    /// Optional reranker configuration (model, top_k, cache_dir, etc.).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[cfg_attr(feature = "api", schema(value_type = Option<Object>))]
-    pub config: Option<crate::RerankerConfig>,
-}
-
-/// Response body for POST /rerank.
-///
-/// Since v5.0.0.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct RerankResponse {
-    /// Reranked documents sorted descending by score.
-    pub results: Vec<crate::RerankedDocument>,
-}
-
-/// Default chunker type.
-fn default_chunker_type() -> String {
-    "text".to_string()
-}
-
-/// Chunk request with text and configuration.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ChunkRequest {
-    /// Text to chunk (must not be empty)
-    #[cfg_attr(feature = "api", schema(example = "This is sample text to chunk.", min_length = 1))]
-    pub text: String,
-    /// Optional chunking configuration
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub config: Option<ChunkingConfigRequest>,
-    /// Chunker type (text, markdown, yaml, or semantic)
-    #[serde(default = "default_chunker_type")]
-    #[cfg_attr(
-        feature = "api",
-        schema(example = "text", pattern = "^(text|markdown|yaml|semantic)$")
-    )]
-    pub chunker_type: String,
-}
-
-/// Chunking configuration request.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ChunkingConfigRequest {
-    /// Maximum characters per chunk (must be greater than overlap, default: 2000)
-    #[cfg_attr(feature = "api", schema(minimum = 101, example = 2000))]
-    pub max_characters: Option<usize>,
-    /// Overlap between chunks in characters (must be less than max_characters, default: 100)
-    #[cfg_attr(feature = "api", schema(minimum = 0, maximum = 1999, example = 100))]
-    pub overlap: Option<usize>,
-    /// Whether to trim whitespace
-    pub trim: Option<bool>,
-    /// Cosine similarity threshold for semantic topic detection (0.0-1.0)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub topic_threshold: Option<f32>,
-}
-
-/// Chunk response with chunks and metadata.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ChunkResponse {
-    /// List of chunks
-    pub chunks: Vec<ChunkItem>,
-    /// Total number of chunks
-    pub chunk_count: usize,
-    /// Configuration used for chunking
-    pub config: ChunkingConfigResponse,
-    /// Input text size in bytes
-    pub input_size_bytes: usize,
-    /// Chunker type used for chunking
-    #[cfg_attr(feature = "api", schema(example = "text"))]
-    pub chunker_type: String,
-}
-
-/// Individual chunk item with metadata.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ChunkItem {
-    /// Chunk content
-    pub content: String,
-    /// Byte offset start position
-    pub byte_start: usize,
-    /// Byte offset end position
-    pub byte_end: usize,
-    /// Index of this chunk (0-based)
-    pub chunk_index: usize,
-    /// Total number of chunks
-    pub total_chunks: usize,
-    /// First page number (optional, for PDF chunking)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_page: Option<u32>,
-    /// Last page number (optional, for PDF chunking)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub last_page: Option<u32>,
 }
 
 /// Version response.
@@ -508,20 +360,6 @@ pub struct WarmResponse {
     pub already_cached: Vec<String>,
 }
 
-/// Response from structured extraction endpoint.
-#[cfg_attr(alef, alef(skip))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct StructuredExtractionResponse {
-    /// Structured data conforming to the provided JSON schema
-    pub structured_output: serde_json::Value,
-    /// Extracted document text content
-    pub content: String,
-    /// Detected MIME type of the input file
-    #[cfg_attr(feature = "api", schema(example = "application/pdf"))]
-    pub mime_type: String,
-}
-
 // ---------------------------------------------------------------------------
 // OpenWebUI compatibility types
 // ---------------------------------------------------------------------------
@@ -570,22 +408,4 @@ pub struct DoclingCompatResponse {
 pub struct DoclingCompatDocument {
     /// Markdown content of the converted document
     pub md_content: String,
-}
-
-/// Chunking configuration response.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
-pub struct ChunkingConfigResponse {
-    /// Maximum characters per chunk
-    pub max_characters: usize,
-    /// Overlap between chunks in characters
-    pub overlap: usize,
-    /// Whether whitespace was trimmed
-    pub trim: bool,
-    /// Type of chunker used
-    #[cfg_attr(feature = "api", schema(example = "text"))]
-    pub chunker_type: String,
-    /// Topic threshold used for semantic chunking
-    #[cfg_attr(feature = "api", schema(example = "0.75"))]
-    pub topic_threshold: Option<f32>,
 }

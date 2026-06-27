@@ -3,9 +3,9 @@
 Register a validator that computes and checks a quality score for extracted text.
 
 ```typescript title="WASM"
-import init, { registerValidator, extract } from "xberg-wasm";
+import { initWasm, registerValidator, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a quality score validator
 const qualityScoreValidator = {

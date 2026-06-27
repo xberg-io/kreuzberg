@@ -1,8 +1,12 @@
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractedDocument;
+import io.xberg.ExtractionConfig;
 import io.xberg.ExtractionResult;
+import io.xberg.Metadata;
+import io.xberg.OcrConfig;
 import io.xberg.Xberg;
-import io.xberg.XbergException;
-import io.xberg.config.ExtractionConfig;
-import io.xberg.config.OcrConfig;
+import io.xberg.XbergRsException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
@@ -17,11 +21,25 @@ public final class XbergExtractJava {
   private XbergExtractJava() {}
 
   private static ExtractionConfig buildBenchmarkConfig(boolean ocrEnabled) {
-    ExtractionConfig.Builder builder = ExtractionConfig.builder().useCache(false);
+    ExtractionConfig.Builder builder = ExtractionConfig.builder().withUseCache(false);
     if (ocrEnabled) {
-      builder.ocr(OcrConfig.builder().build());
+      builder.withOcr(OcrConfig.builder().withBackend("tesseract").build());
     }
     return builder.build();
+  }
+
+  private static ExtractInput inputFromPath(Path path) {
+    return ExtractInput.builder()
+        .withKind(ExtractInputKind.Uri)
+        .withUri(path.toString())
+        .build();
+  }
+
+  private static ExtractedDocument firstResult(ExtractionResult output, Path path) {
+    if (output.results().isEmpty()) {
+      throw new IllegalStateException("No extraction result produced for " + path);
+    }
+    return output.results().get(0);
   }
 
   /**
@@ -122,7 +140,7 @@ public final class XbergExtractJava {
     ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
     try {
       for (int i = 0; i < WARMUP_ITERATIONS; i++) {
-        Xberg.extractFile(path, benchConfig);
+        Xberg.extract(inputFromPath(path), benchConfig);
         if (debug && i % 2 == 0) {
           debugLog("Warmup iteration", String.valueOf(i + 1));
         }
@@ -131,7 +149,7 @@ public final class XbergExtractJava {
         debugLog("Warmup phase complete", String.valueOf(WARMUP_ITERATIONS) + " iterations");
       }
       System.out.println("{\"status\":\"warmup_complete\"}");
-    } catch (XbergException | RuntimeException | java.io.IOException | Error e) {
+    } catch (XbergRsException | RuntimeException | Error e) {
       if (debug) {
         debugLog("Warmup failed", e.getClass().getName());
         e.printStackTrace(System.err);
@@ -167,7 +185,8 @@ public final class XbergExtractJava {
       long start = System.nanoTime();
       try {
         Path path = Path.of(filePath);
-        ExtractionResult result = Xberg.extractFile(path, benchConfig);
+        ExtractedDocument result =
+            firstResult(Xberg.extract(inputFromPath(path), benchConfig), path);
         double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
         String json = toJson(result, elapsedMs, useOcr);
         System.out.println(json);
@@ -201,22 +220,27 @@ public final class XbergExtractJava {
 
     ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
     List<String> jsonResults = new ArrayList<>();
-    for (Path path : paths) {
-      long fileStart = System.nanoTime();
-      try {
-        ExtractionResult result = Xberg.extractFile(path, benchConfig);
-        double fileMs = (System.nanoTime() - fileStart) / NANOS_IN_MILLISECOND;
-        jsonResults.add(toJsonWithBatch(result, fileMs, fileMs, ocrEnabled));
-      } catch (XbergException | RuntimeException | java.io.IOException | Error e) {
-        double fileMs = (System.nanoTime() - fileStart) / NANOS_IN_MILLISECOND;
-        if (debug) {
-          debugLog(
-              "File extraction failed: " + path, e.getClass().getName() + ": " + e.getMessage());
-        }
-        jsonResults.add("{\"error\":\""
-            + e.getMessage().replace("\"", "\\\"")
-            + "\",\"_extraction_time_ms\":" + fileMs + ",\"_ocr_used\":false}");
+
+    long batchStart = System.nanoTime();
+    try {
+      List<ExtractInput> inputs = new ArrayList<>();
+      for (Path path : paths) {
+        inputs.add(inputFromPath(path));
       }
+      ExtractionResult output = Xberg.extractBatch(inputs, benchConfig);
+      double totalMs = (System.nanoTime() - batchStart) / NANOS_IN_MILLISECOND;
+      double perFileMs = paths.isEmpty() ? 0.0 : totalMs / paths.size();
+      for (ExtractedDocument result : output.results()) {
+        jsonResults.add(toJsonWithBatch(result, perFileMs, totalMs, ocrEnabled));
+      }
+    } catch (XbergRsException | RuntimeException | Error e) {
+      double totalMs = (System.nanoTime() - batchStart) / NANOS_IN_MILLISECOND;
+      if (debug) {
+        debugLog("Batch extraction failed", e.getClass().getName() + ": " + e.getMessage());
+      }
+      jsonResults.add("{\"error\":\""
+          + e.getMessage().replace("\"", "\\\"")
+          + "\",\"_extraction_time_ms\":" + totalMs + ",\"_ocr_used\":false}");
     }
 
     if (debug) {
@@ -257,18 +281,18 @@ public final class XbergExtractJava {
     }
 
     Path path = Path.of(positionalArgs.get(1));
-    ExtractionResult result;
+    ExtractedDocument result;
     ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
     long start = System.nanoTime();
     try {
       if (debug) {
         debugLog("Starting extraction", "");
       }
-      result = Xberg.extractFile(path, benchConfig);
+      result = firstResult(Xberg.extract(inputFromPath(path), benchConfig), path);
       if (debug) {
         debugLog("Extraction completed", "");
       }
-    } catch (XbergException | RuntimeException | java.io.IOException | Error e) {
+    } catch (XbergRsException | RuntimeException | Error e) {
       double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
       if (debug) {
         debugLog("Extraction failed with exception", e.getClass().getName());
@@ -291,8 +315,11 @@ public final class XbergExtractJava {
    * Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
    * or when format_type is "pdf" or "image" and OCR was enabled in config.
    */
-  private static boolean determineOcrUsed(ExtractionResult result, boolean ocrEnabled) {
-    Object formatTypeObj = result.getMetadata().getAdditional().get("format_type");
+  private static boolean determineOcrUsed(ExtractedDocument result, boolean ocrEnabled) {
+    Metadata metadata = result.metadata();
+    Object formatTypeObj = metadata != null && metadata.additional() != null
+        ? metadata.additional().get("format_type")
+        : null;
     String formatType = formatTypeObj != null ? formatTypeObj.toString() : "";
     if ("ocr".equals(formatType)) {
       return true;
@@ -303,21 +330,24 @@ public final class XbergExtractJava {
     return false;
   }
 
-  private static String toJson(ExtractionResult result, double elapsedMs, boolean ocrEnabled) {
+  private static String toJson(ExtractedDocument result, double elapsedMs, boolean ocrEnabled) {
     StringBuilder builder = new StringBuilder();
     builder.append('{');
-    builder.append("\"content\":").append(quote(result.getContent())).append(',');
+    builder.append("\"content\":").append(quote(result.content())).append(',');
     builder.append("\"metadata\":{");
-    builder.append("\"mimeType\":").append(quote(result.getMimeType())).append(',');
+    Metadata metadata = result.metadata();
+    builder.append("\"mimeType\":").append(quote(result.mimeType())).append(',');
     builder
         .append("\"language\":")
-        .append(optionalToJson(result.getMetadata().getLanguage()))
+        .append(nullableToJson(metadata != null ? metadata.language() : null))
         .append(',');
     builder
         .append("\"date\":")
-        .append(optionalToJson(result.getMetadata().getModifiedAt()))
+        .append(nullableToJson(metadata != null ? metadata.modifiedAt() : null))
         .append(',');
-    builder.append("\"subject\":").append(optionalToJson(result.getMetadata().getSubject()));
+    builder
+        .append("\"subject\":")
+        .append(nullableToJson(metadata != null ? metadata.subject() : null));
     builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", elapsedMs));
     builder.append(",\"_ocr_used\":").append(determineOcrUsed(result, ocrEnabled));
     builder.append('}');
@@ -325,12 +355,12 @@ public final class XbergExtractJava {
   }
 
   private static String toJsonWithBatch(
-      ExtractionResult result, double perFileMs, double batchTotalMs, boolean ocrEnabled) {
+      ExtractedDocument result, double perFileMs, double batchTotalMs, boolean ocrEnabled) {
     StringBuilder builder = new StringBuilder();
     builder.append('{');
-    builder.append("\"content\":").append(quote(result.getContent())).append(',');
+    builder.append("\"content\":").append(quote(result.content())).append(',');
     builder.append("\"metadata\":{");
-    builder.append("\"mimeType\":").append(quote(result.getMimeType()));
+    builder.append("\"mimeType\":").append(quote(result.mimeType()));
     builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", perFileMs));
     builder.append(",\"_batch_total_ms\":").append(String.format("%.3f", batchTotalMs));
     builder.append(",\"_ocr_used\":").append(determineOcrUsed(result, ocrEnabled));
@@ -338,8 +368,8 @@ public final class XbergExtractJava {
     return builder.toString();
   }
 
-  private static String optionalToJson(java.util.Optional<String> value) {
-    return value.isPresent() ? quote(value.get()) : "null";
+  private static String nullableToJson(String value) {
+    return value != null ? quote(value) : "null";
   }
 
   // CPD-OFF: quote() is intentionally duplicated in standalone benchmark scripts (no shared

@@ -8,11 +8,13 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('verbose_document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'verbose_document.pdf')
+result = Xberg.extract(input, config)
+first_result = result.results.first
 
-original_tokens = result.metadata&.dig('original_token_count') || 0
-reduced_tokens = result.metadata&.dig('token_count') || 0
-reduction_ratio = result.metadata&.dig('token_reduction_ratio') || 0.0
+original_tokens = first_result.metadata&.dig('original_token_count') || 0
+reduced_tokens = first_result.metadata&.dig('token_count') || 0
+reduction_ratio = first_result.metadata&.dig('token_reduction_ratio') || 0.0
 
 puts "Reduced from #{original_tokens} to #{reduced_tokens} tokens"
 puts "Reduction: #{(reduction_ratio * 100).round(1)}%"

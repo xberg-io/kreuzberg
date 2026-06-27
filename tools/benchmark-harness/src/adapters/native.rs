@@ -4,13 +4,14 @@
 //! It serves as the baseline for comparing language bindings.
 
 use crate::adapter::FrameworkAdapter;
+use crate::{extract_xberg_file, extract_xberg_files};
 use crate::monitoring::ResourceMonitor;
 use crate::types::{BenchmarkResult, ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
 use crate::{Error, Result};
 use async_trait::async_trait;
-use xberg::{ExtractionConfig, ExtractionResult, FormatMetadata, batch_extract_files, extract_file};
 use std::path::Path;
 use std::time::{Duration, Instant};
+use xberg::{ExtractionConfig, ExtractedDocument, FormatMetadata};
 
 /// Determine OCR status by inspecting the actual extraction result metadata.
 ///
@@ -22,7 +23,7 @@ use std::time::{Duration, Instant};
 /// - `OcrStatus::Used` if OCR metadata is present, or if this is an image with OCR enabled
 /// - `OcrStatus::NotUsed` if format metadata is present and OCR was not involved
 /// - `OcrStatus::Unknown` if no format metadata is available
-fn determine_ocr_status(result: &ExtractionResult, config: &ExtractionConfig) -> OcrStatus {
+fn determine_ocr_status(result: &ExtractedDocument, config: &ExtractionConfig) -> OcrStatus {
     match &result.metadata.format {
         Some(FormatMetadata::Ocr(_)) => OcrStatus::Used,
         Some(FormatMetadata::Image(_)) => {
@@ -146,7 +147,7 @@ impl FrameworkAdapter for NativeAdapter {
         // Start extraction timing (same as total for native - no subprocess overhead)
         let extraction_start = Instant::now();
 
-        let timed_result = tokio::time::timeout(timeout, extract_file(file_path, None, &config)).await;
+        let timed_result = tokio::time::timeout(timeout, extract_xberg_file(file_path, &config)).await;
         let timed_out = timed_result.is_err();
         let extraction_result = match timed_result {
             Ok(inner) => inner.map_err(|e| Error::Benchmark(format!("Extraction failed: {}", e))),
@@ -296,15 +297,7 @@ impl FrameworkAdapter for NativeAdapter {
 
         let start = Instant::now();
 
-        let items: Vec<xberg::BatchFileItem> = file_paths
-            .iter()
-            .map(|p| xberg::BatchFileItem {
-                path: p.to_path_buf(),
-                config: None,
-            })
-            .collect();
-
-        let timed_result = tokio::time::timeout(timeout, batch_extract_files(items.clone(), &config)).await;
+        let timed_result = tokio::time::timeout(timeout, extract_xberg_files(file_paths, &config)).await;
         let timed_out = timed_result.is_err();
         let batch_result = match timed_result {
             Ok(inner) => inner.map_err(|e| Error::Benchmark(format!("Batch extraction failed: {}", e))),
@@ -480,7 +473,7 @@ impl FrameworkAdapter for NativeAdapter {
             .map_err(|e| Error::Benchmark(format!("Failed to create warmup file: {e}")))?;
         std::fs::write(warmup_pdf.path(), minimal_pdf_bytes())
             .map_err(|e| Error::Benchmark(format!("Failed to write warmup file: {e}")))?;
-        let _ = extract_file(warmup_pdf.path(), None, &self.config).await;
+        let _ = extract_xberg_file(warmup_pdf.path(), &self.config).await;
         Ok(())
     }
 

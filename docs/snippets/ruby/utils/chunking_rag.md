@@ -15,10 +15,12 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('research_paper.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'research_paper.pdf')
+result = Xberg.extract(input, config)
+chunks = result.results.first.chunks
 
-result.chunks.each_with_index do |chunk, i|
-  puts "Chunk #{i + 1}/#{result.chunks.length}"
+chunks.each_with_index do |chunk, i|
+  puts "Chunk #{i + 1}/#{chunks.length}"
   puts "Position: #{chunk.metadata[:byte_start]}-#{chunk.metadata[:byte_end]}"
   puts "Content: #{chunk.content[0..99]}..."
   puts "Embedding: #{chunk.embedding.length} dimensions" if chunk.embedding

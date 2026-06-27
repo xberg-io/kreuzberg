@@ -10,7 +10,7 @@ import (
 
 func main() {
 	minConfidence := 0.8
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		LanguageDetection: &xberg.LanguageDetectionConfig{
 			Enabled:        true,
 			MinConfidence:  &minConfidence,
@@ -18,12 +18,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("multilingual_document.pdf", config)
+	input := xberg.ExtractInputFromURI("multilingual_document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	fmt.Printf("Detected languages: %v\n", result.DetectedLanguages)
+	fmt.Printf("Detected languages: %v\n", result.Results[0].DetectedLanguages)
 	// Output: [eng fra deu]
 }
 ```

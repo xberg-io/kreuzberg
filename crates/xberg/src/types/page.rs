@@ -110,7 +110,7 @@ pub struct PageInfo {
     ///
     /// Indicates the presence of vector-drawn content such as charts, diagrams,
     /// or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are
-    /// invisible to `ExtractionResult.images` since they are not embedded as raster
+    /// invisible to `ExtractedDocument.images` since they are not embedded as raster
     /// XObjects. Set to `true` when path count exceeds a heuristic threshold,
     /// signaling that downstream consumers may want to rasterize the page to
     /// capture this content.
@@ -145,13 +145,13 @@ pub struct PageContent {
 
     /// Tables found on this page (uses Arc for memory efficiency)
     ///
-    /// Serializes as Vec<Table> for JSON compatibility while maintaining
+    /// Serializes as `Vec<Table>` for JSON compatibility while maintaining
     /// Arc semantics in-memory for zero-copy sharing.
     #[serde(skip_serializing_if = "Vec::is_empty", default, with = "serde_vec_arc")]
     #[cfg_attr(feature = "api", schema(value_type = Vec<Table>))]
     pub tables: Vec<Arc<Table>>,
 
-    /// Indices into `ExtractionResult.images` for images found on this page.
+    /// Indices into `ExtractedDocument.images` for images found on this page.
     ///
     /// Each value is a zero-based index into the top-level `images` collection.
     /// Only populated when `extract_images = true` in the extraction config.

@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract, ExtractionConfig, ChunkingConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, ChunkingConfig};
 
 #[tokio::main]
 async fn main() -> xberg::Result<()> {
@@ -12,9 +12,9 @@ async fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract("document.pdf", None::<&str>, &config).await?;
-    println!("Chunks: {}", result.chunks.len());
-    for chunk in &result.chunks {
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    println!("Chunks: {}", output.results[0].chunks.len());
+    for chunk in &output.results[0].chunks {
         println!("Length: {}", chunk.content.len());
     }
     Ok(())
@@ -22,7 +22,7 @@ async fn main() -> xberg::Result<()> {
 ```
 
 ```rust title="Rust - Markdown with Heading Context"
-use xberg::{extract, ExtractionConfig, ChunkingConfig, ChunkerType, ChunkSizing};
+use xberg::{extract, ExtractionConfig, ExtractInput, ChunkingConfig, ChunkerType, ChunkSizing};
 
 #[tokio::main]
 async fn main() -> xberg::Result<()> {
@@ -40,8 +40,8 @@ async fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract("document.md", None::<&str>, &config).await?;
-    for chunk in &result.chunks {
+    let output = extract(ExtractInput::from_uri("document.md"), &config).await?;
+    for chunk in &output.results[0].chunks {
         if let Some(heading_context) = &chunk.metadata.heading_context {
             for heading in &heading_context.headings {
                 println!("Heading L{}: {}", heading.level, heading.text);
@@ -54,7 +54,7 @@ async fn main() -> xberg::Result<()> {
 ```
 
 ```rust title="Rust - Prepend Heading Context"
-use xberg::{extract, ExtractionConfig, ChunkingConfig, ChunkerType};
+use xberg::{extract, ExtractionConfig, ExtractInput, ChunkingConfig, ChunkerType};
 
 #[tokio::main]
 async fn main() -> xberg::Result<()> {
@@ -69,8 +69,8 @@ async fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract("document.md", None::<&str>, &config).await?;
-    for chunk in &result.chunks {
+    let output = extract(ExtractInput::from_uri("document.md"), &config).await?;
+    for chunk in &output.results[0].chunks {
         // Each chunk's content is prefixed with its heading breadcrumb
         println!("Content: {}...", &chunk.content[..100.min(chunk.content.len())]);
     }

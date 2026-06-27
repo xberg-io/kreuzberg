@@ -1,8 +1,10 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput};
 
-fn main() -> xberg::Result<()> {
-    let result = extract_sync("document.pdf", None, &ExtractionConfig::default())?;
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
+    let output = extract(ExtractInput::from_uri("document.pdf"), &ExtractionConfig::default()).await?;
+    let result = &output.results[0];
 
     if let Some(pdf_meta) = result.metadata.pdf {
         if let Some(pages) = pdf_meta.page_count {
@@ -16,7 +18,8 @@ fn main() -> xberg::Result<()> {
         }
     }
 
-    let html_result = extract_sync("page.html", None, &ExtractionConfig::default())?;
+    let html_output = extract(ExtractInput::from_uri("page.html"), &ExtractionConfig::default()).await?;
+    let html_result = &html_output.results[0];
     if let Some(html_meta) = html_result.metadata.html {
         if let Some(title) = html_meta.title {
             println!("Title: {}", title);

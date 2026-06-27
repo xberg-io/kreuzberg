@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract, ExtractionConfig, LanguageDetectionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, LanguageDetectionConfig};
 
 let config = ExtractionConfig {
     language_detection: Some(LanguageDetectionConfig {
@@ -10,7 +10,7 @@ let config = ExtractionConfig {
     ..Default::default()
 };
 
-let result = extract("multilingual_document.pdf", None, &config).await?;
+let output = extract(ExtractInput::from_uri("multilingual_document.pdf"), &config).await?;
 
-println!("Detected languages: {:?}", result.detected_languages);
+println!("Detected languages: {:?}", output.results[0].detected_languages);
 ```

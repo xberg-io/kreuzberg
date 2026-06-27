@@ -224,7 +224,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private int handleProcess(MemorySegment userData, MemorySegment result_in, MemorySegment config_in, MemorySegment outError) {
         try {
             String result_json = result_in.reinterpret(Long.MAX_VALUE).getString(0);
-            ExtractionResult result = JSON.readValue(result_json, ExtractionResult.class);
+            ExtractedDocument result = JSON.readValue(result_json, ExtractedDocument.class);
             String config_json = config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig config = JSON.readValue(config_json, ExtractionConfig.class);
             impl.process(result, config);
@@ -237,8 +237,8 @@ public final class PostProcessorBridge implements AutoCloseable {
 
     private int handleProcessingStage(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            String result = impl.processing_stage();
-            MemorySegment jsonCs = arena.allocateFrom(result);
+            String callbackResult = impl.processing_stage();
+            MemorySegment jsonCs = arena.allocateFrom(callbackResult);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
         } catch (Throwable e) {
@@ -256,11 +256,11 @@ public final class PostProcessorBridge implements AutoCloseable {
     ) {
         try {
             String _result_json = _result_in.reinterpret(Long.MAX_VALUE).getString(0);
-            ExtractionResult _result = JSON.readValue(_result_json, ExtractionResult.class);
+            ExtractedDocument _result = JSON.readValue(_result_json, ExtractedDocument.class);
             String _config_json = _config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig _config = JSON.readValue(_config_json, ExtractionConfig.class);
-            boolean result = impl.should_process(_result, _config);
-            String json = JSON.writeValueAsString(result);
+            boolean callbackResult = impl.should_process(_result, _config);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -278,9 +278,9 @@ public final class PostProcessorBridge implements AutoCloseable {
     ) {
         try {
             String _result_json = _result_in.reinterpret(Long.MAX_VALUE).getString(0);
-            ExtractionResult _result = JSON.readValue(_result_json, ExtractionResult.class);
-            long result = impl.estimated_duration_ms(_result);
-            String json = JSON.writeValueAsString(result);
+            ExtractedDocument _result = JSON.readValue(_result_json, ExtractedDocument.class);
+            long callbackResult = impl.estimated_duration_ms(_result);
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -292,8 +292,8 @@ public final class PostProcessorBridge implements AutoCloseable {
 
     private int handlePriority(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            int result = impl.priority();
-            String json = JSON.writeValueAsString(result);
+            int callbackResult = impl.priority();
+            String json = JSON.writeValueAsString(callbackResult);
             MemorySegment jsonCs = arena.allocateFrom(json);
             outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
             return 0;
@@ -331,7 +331,12 @@ public final class PostProcessorBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_REGISTER_POST_PROCESSOR.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
+                int rc = (int) (long) NativeLib.XBERG_REGISTER_POST_PROCESSOR.invoke(
+                    nameCs,
+                    bridge.vtableSegment(),
+                    MemorySegment.NULL,
+                    outErr
+                );
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL) ? "registration failed (rc=" + rc + ")" : readNativeString(errPtr);
@@ -355,7 +360,7 @@ public final class PostProcessorBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_UNREGISTER_POST_PROCESSOR.invoke(nameCs, outErr);
+                int rc = (int) (long) NativeLib.XBERG_UNREGISTER_POST_PROCESSOR.invoke(nameCs, outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)
@@ -379,7 +384,7 @@ public final class PostProcessorBridge implements AutoCloseable {
         try {
             try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_CLEAR_POST_PROCESSOR.invoke(outErr);
+                int rc = (int) (long) NativeLib.XBERG_CLEAR_POST_PROCESSOR.invoke(outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)

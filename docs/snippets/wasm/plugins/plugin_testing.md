@@ -3,9 +3,9 @@
 Test custom plugins to verify they implement required interfaces correctly.
 
 ```typescript title="WASM"
-import init, { registerValidator, registerPostProcessor } from "xberg-wasm";
+import { initWasm, registerValidator, registerPostProcessor } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Test fixture: sample extraction result
 const sampleResult = {

@@ -2,14 +2,15 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\XbergException;
 
-$config = new ExtractionConfig();
+$config = ExtractionConfig::default();
 try {
-    $result = Xberg::extractSync('document.pdf', null, $config);
-    echo $result->getContent();
+    $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+    $result = $resultOutput->results[0];
+    echo $result->content;
 } catch (XbergException $e) {
     // The extension throws XbergException with the error message
     // Error context is available in the exception message

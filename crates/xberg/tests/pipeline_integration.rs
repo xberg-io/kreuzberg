@@ -14,7 +14,7 @@ use xberg::core::pipeline::{clear_processor_cache, run_pipeline};
 use xberg::internal::{ElementKind, InternalDocument, InternalElement};
 use xberg::plugins::registry::get_post_processor_registry;
 use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::{Result, XbergError};
 
 /// Helper: build a minimal `InternalDocument` whose derived content equals `text`.
@@ -69,7 +69,7 @@ impl Plugin for OrderTrackingProcessor {
 
 #[async_trait]
 impl PostProcessor for OrderTrackingProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         result.content.push_str(&format!("[{}]", self.name));
         Ok(())
     }
@@ -106,7 +106,7 @@ impl Plugin for MetadataAddingProcessor {
 
 #[async_trait]
 impl PostProcessor for MetadataAddingProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         result
             .metadata
             .additional
@@ -141,7 +141,7 @@ impl Plugin for FailingProcessor {
 
 #[async_trait]
 impl PostProcessor for FailingProcessor {
-    async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
         Err(XbergError::Plugin {
             message: self.error_message.clone(),
             plugin_name: self.name.clone(),
@@ -412,7 +412,7 @@ async fn test_pipeline_cross_stage_data_flow() {
         }
         #[async_trait]
         impl PostProcessor for MiddleProcessor {
-            async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                 if let Some(stage) = result.metadata.additional.get(&Cow::Borrowed("stage")) {
                     result.content.push_str(&format!(
                         "[saw:{}]",
@@ -459,7 +459,7 @@ async fn test_pipeline_early_stage_error_recorded() {
     }
     #[async_trait]
     impl PostProcessor for EarlyFailingProcessor {
-        async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Err(XbergError::Plugin {
                 message: "Early error".to_string(),
                 plugin_name: "early-failing".to_string(),
@@ -543,7 +543,7 @@ async fn test_pipeline_late_stage_error_doesnt_affect_earlier_stages() {
     }
     #[async_trait]
     impl PostProcessor for LateFailingProcessor {
-        async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Err(XbergError::Plugin {
                 message: "Late error".to_string(),
                 plugin_name: "late-failing".to_string(),
@@ -614,7 +614,7 @@ async fn test_pipeline_processor_error_doesnt_stop_other_processors() {
         }
         #[async_trait]
         impl PostProcessor for EarlyFailingProcessor {
-            async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                 Err(XbergError::Plugin {
                     message: "Test error".to_string(),
                     plugin_name: self.name.clone(),
@@ -672,7 +672,7 @@ async fn test_pipeline_multiple_processor_errors() {
     }
     #[async_trait]
     impl PostProcessor for MultiFailingProcessor {
-        async fn process(&self, _: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, _: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Err(XbergError::Plugin {
                 message: format!("{} error", self.name),
                 plugin_name: self.name.clone(),
@@ -777,7 +777,7 @@ async fn test_pipeline_metadata_added_in_early_visible_in_middle() {
         }
         #[async_trait]
         impl PostProcessor for MiddleReadingProcessor {
-            async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                 if let Some(val) = result.metadata.additional.get(&Cow::Borrowed("early_key")) {
                     result
                         .metadata
@@ -840,7 +840,7 @@ async fn test_pipeline_content_modified_in_middle_visible_in_late() {
         }
         #[async_trait]
         impl PostProcessor for LateReadingProcessor {
-            async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                 result.content.push_str("[late-saw-middle]");
                 Ok(())
             }
@@ -892,7 +892,7 @@ async fn test_pipeline_multiple_processors_modifying_same_metadata() {
             }
             #[async_trait]
             impl PostProcessor for MetadataOverwritingProcessor {
-                async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+                async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                     result
                         .metadata
                         .additional
@@ -961,7 +961,7 @@ async fn test_pipeline_processors_reading_previous_output() {
         }
         #[async_trait]
         impl PostProcessor for CountingProcessor {
-            async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+            async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
                 let current_count = result
                     .metadata
                     .additional
@@ -1031,7 +1031,7 @@ async fn test_pipeline_large_content_modification() {
     }
     #[async_trait]
     impl PostProcessor for LargeContentProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             result.content.push_str(&"x".repeat(10000));
             Ok(())
         }

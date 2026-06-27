@@ -18,13 +18,14 @@ func main() {
 		Ocr: ocrConfig,
 	}
 
-	result, err := xberg.ExtractSync("scanned.pdf", nil, config)
+	input := xberg.ExtractInputFromURI("scanned.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	fmt.Println("Extracted text from scanned document:")
-	fmt.Println(result.Content)
+	fmt.Println(result.Results[0].Content)
 	fmt.Println("Used OCR backend: tesseract")
 }
 ```

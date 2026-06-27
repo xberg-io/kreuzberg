@@ -6,7 +6,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::core::mime::LEGACY_WORD_MIME_TYPE;
 use crate::extraction::doc::extract_doc_text;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::Metadata;
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use ahash::AHashMap;
@@ -59,8 +59,8 @@ impl Plugin for DocExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for DocExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for DocExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -197,7 +197,7 @@ mod tests {
         let extractor = DocExtractor::new();
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(&content, "application/msword", &config)
+            .extract_content(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
         let result =
@@ -220,7 +220,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(&content, "application/msword", &config)
+            .extract_content(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
         let result =
@@ -245,7 +245,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(&content, "application/msword", &config)
+            .extract_content(&content, "application/msword", &config)
             .await
             .expect("DOC extraction failed");
         let result =

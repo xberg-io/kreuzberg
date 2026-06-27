@@ -7,10 +7,12 @@
 //! - Malformed inputs (invalid MIME, encoding)
 //! - PDF-specific attacks (malicious JS, weak encryption)
 
+mod helpers;
+use helpers::{extract_bytes_document_blocking, extract_uri_document_blocking};
+
 use std::io::Write;
 use tempfile::NamedTempFile;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::{extract_bytes_sync, extract_file_sync};
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])
@@ -41,7 +43,7 @@ fn test_archive_zip_bomb_detection() {
     let bytes = cursor.into_inner();
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes_sync(&bytes, "application/zip", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/zip", &config);
 
     assert!(result.is_ok() || result.is_err());
     if let Ok(extracted) = result {
@@ -66,7 +68,7 @@ fn test_archive_path_traversal_zip() {
     let bytes = cursor.into_inner();
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes_sync(&bytes, "application/zip", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/zip", &config);
 
     if let Ok(extracted) = result
         && let Some(archive_meta) = &extracted.metadata.format.as_ref().and_then(|f| match f {
@@ -106,7 +108,7 @@ fn test_archive_absolute_paths_rejected() {
     let bytes = cursor.into_inner();
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes_sync(&bytes, "application/zip", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/zip", &config);
 
     assert!(
         result.is_ok() || result.is_err(),
@@ -134,7 +136,7 @@ fn test_archive_deeply_nested_directories() {
     let bytes = cursor.into_inner();
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes_sync(&bytes, "application/zip", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/zip", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -160,7 +162,7 @@ fn test_archive_many_small_files() {
     let bytes = cursor.into_inner();
     let config = ExtractionConfig::default();
 
-    let result = extract_bytes_sync(&bytes, "application/zip", &config);
+    let result = extract_bytes_document_blocking(&bytes, "application/zip", &config);
 
     assert!(result.is_ok());
     if let Ok(extracted) = result {
@@ -180,7 +182,7 @@ fn test_xml_billion_laughs_attack() {
 <lolz>&lol3;</lolz>"#;
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(xml.as_bytes(), "application/xml", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -194,7 +196,7 @@ fn test_xml_quadratic_blowup() {
 <bomb>&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;</bomb>"#;
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(xml.as_bytes(), "application/xml", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -208,7 +210,7 @@ fn test_xml_external_entity_injection() {
 <foo>&xxe;</foo>"#;
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(xml.as_bytes(), "application/xml", &config);
 
     if let Ok(extracted) = result {
         assert!(!extracted.content.contains("root:"));
@@ -225,7 +227,7 @@ fn test_xml_dtd_entity_expansion() {
 <data>&large;&large;&large;&large;&large;&large;&large;&large;</data>"#;
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(xml.as_bytes(), "application/xml", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -235,7 +237,7 @@ fn test_resource_large_text_file() {
     let large_text = "This is a line of text that will be repeated many times.\n".repeat(200_000);
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(large_text.as_bytes(), "text/plain", &config);
+    let result = extract_bytes_document_blocking(large_text.as_bytes(), "text/plain", &config);
 
     assert!(result.is_ok());
     if let Ok(extracted) = result {
@@ -252,7 +254,7 @@ fn test_resource_large_xml_streaming() {
     xml.push_str("</root>");
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(xml.as_bytes(), "application/xml", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -262,7 +264,7 @@ fn test_resource_empty_file() {
     let empty = b"";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(empty, "text/plain", &config);
+    let result = extract_bytes_document_blocking(empty, "text/plain", &config);
 
     assert!(result.is_ok());
     if let Ok(extracted) = result {
@@ -275,7 +277,7 @@ fn test_resource_single_byte_file() {
     let single_byte = b"a";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(single_byte, "text/plain", &config);
+    let result = extract_bytes_document_blocking(single_byte, "text/plain", &config);
 
     assert!(result.is_ok());
     if let Ok(extracted) = result {
@@ -288,7 +290,7 @@ fn test_resource_null_bytes() {
     let null_bytes = b"Hello\x00World\x00Test\x00";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(null_bytes, "text/plain", &config);
+    let result = extract_bytes_document_blocking(null_bytes, "text/plain", &config);
 
     assert!(result.is_ok());
 }
@@ -298,7 +300,7 @@ fn test_malformed_invalid_mime_type() {
     let content = b"Some content";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(content, "invalid/mime/type", &config);
+    let result = extract_bytes_document_blocking(content, "invalid/mime/type", &config);
 
     assert!(result.is_err());
 }
@@ -308,7 +310,7 @@ fn test_malformed_xml_structure() {
     let malformed_xml = r#"<?xml version="1.0"?><root><item>test</item>"#;
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(malformed_xml.as_bytes(), "application/xml", &config);
+    let result = extract_bytes_document_blocking(malformed_xml.as_bytes(), "application/xml", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -318,7 +320,7 @@ fn test_malformed_zip_structure() {
     let corrupt_zip = b"PK\x03\x04CORRUPTED_DATA";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(corrupt_zip, "application/zip", &config);
+    let result = extract_bytes_document_blocking(corrupt_zip, "application/zip", &config);
 
     assert!(result.is_err());
 }
@@ -328,7 +330,7 @@ fn test_malformed_invalid_utf8() {
     let invalid_utf8 = b"Hello \xFF\xFE World";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(invalid_utf8, "text/plain", &config);
+    let result = extract_bytes_document_blocking(invalid_utf8, "text/plain", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -338,7 +340,7 @@ fn test_malformed_mixed_line_endings() {
     let mixed_endings = b"Line 1\r\nLine 2\nLine 3\rLine 4";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(mixed_endings, "text/plain", &config);
+    let result = extract_bytes_document_blocking(mixed_endings, "text/plain", &config);
 
     assert!(result.is_ok());
     if let Ok(extracted) = result {
@@ -356,7 +358,7 @@ This is a very minimal PDF structure for security testing.
 %%EOF";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(minimal_pdf, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(minimal_pdf, "application/pdf", &config);
 
     assert!(result.is_ok() || result.is_err());
 }
@@ -367,7 +369,7 @@ fn test_pdf_malformed_header() {
 This is not a valid PDF structure";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(malformed_pdf, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(malformed_pdf, "application/pdf", &config);
 
     assert!(result.is_err());
 }
@@ -382,7 +384,7 @@ fn test_pdf_truncated() {
 endobj";
 
     let config = ExtractionConfig::default();
-    let result = extract_bytes_sync(truncated_pdf, "application/pdf", &config);
+    let result = extract_bytes_document_blocking(truncated_pdf, "application/pdf", &config);
 
     assert!(result.is_err() || result.is_ok());
 }
@@ -390,7 +392,7 @@ endobj";
 #[test]
 fn test_security_nonexistent_file() {
     let config = ExtractionConfig::default();
-    let result = extract_file_sync("/nonexistent/path/to/file.txt", None, &config);
+    let result = extract_uri_document_blocking("/nonexistent/path/to/file.txt", None, &config);
 
     assert!(result.is_err());
 }
@@ -398,7 +400,7 @@ fn test_security_nonexistent_file() {
 #[test]
 fn test_security_directory_instead_of_file() {
     let config = ExtractionConfig::default();
-    let result = extract_file_sync("/tmp", None, &config);
+    let result = extract_uri_document_blocking("/tmp", None, &config);
 
     assert!(result.is_err());
 }
@@ -411,7 +413,7 @@ fn test_security_special_file_handling() {
     let path = tmpfile.path();
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(path.to_str().expect("Operation failed"), None, &config);
+    let result = extract_uri_document_blocking(path.to_str().expect("Operation failed"), None, &config);
 
     assert!(result.is_ok() || result.is_err());
 }

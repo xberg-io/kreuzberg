@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 use Xberg\ChunkingConfig;
@@ -60,15 +60,17 @@ $imageConfig = new ImageExtractionConfig(
 );
 $config->setImages($imageConfig);
 
-$result = Xberg::extractSync('report.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('report.pdf'), $config);
 
-echo "Content (" . strlen($result->getContent()) . " chars):\n";
-echo substr($result->getContent(), 0, 200) . "\n\n";
+$result = $resultOutput->results[0];
 
-if ($result->getChunks() !== null) {
-    echo "Chunks: " . count($result->getChunks()) . "\n";
+echo "Content (" . strlen($result->content) . " chars):\n";
+echo substr($result->content, 0, 200) . "\n\n";
+
+if ($result->chunks !== null) {
+    echo "Chunks: " . count($result->chunks) . "\n";
 }
-echo "Tables: " . count($result->getTables()) . "\n";
+echo "Tables: " . count($result->tables) . "\n";
 
 if ($result->getDetectedLanguages() !== null) {
     echo "Languages: " . implode(', ', $result->getDetectedLanguages()) . "\n";

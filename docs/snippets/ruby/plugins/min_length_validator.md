@@ -24,8 +24,9 @@ Xberg.register_validator("min_length_validator", validator, 100)
 config = Xberg::ExtractionConfig.new
 
 begin
-  result = Xberg.extract_sync("document.pdf", config: config)
-  puts "Extraction successful: #{result["content"].length} characters"
+  input = Xberg::ExtractInput.new(uri: "document.pdf")
+  result = Xberg.extract(input, config)
+  puts "Extraction successful: #{result.results.first.content.length} characters"
 rescue StandardError => e
   puts "Validation failed: #{e.message}"
 end

@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\TokenReductionConfig;
+use Xberg\ExtractionConfig;
+use Xberg\TokenReductionConfig;
 
 $config = new ExtractionConfig(
     tokenReduction: new TokenReductionConfig(
@@ -23,8 +22,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('verbose_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('verbose_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Token Reduction Example:\n";
 echo str_repeat('=', 60) . "\n";
@@ -72,7 +71,6 @@ $batchConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($batchConfig);
 $totalOriginal = 0;
 $totalReduced = 0;
 
@@ -82,7 +80,8 @@ foreach ($documents as $document) {
         continue;
     }
 
-    $result = $xberg->extract($document);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($document), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     $originalTokens = $result->metadata['original_token_count'] ?? 0;
     $reducedTokens = $result->metadata['token_count'] ?? 0;
@@ -122,8 +121,8 @@ function fitWithinTokenLimit(
             )
         );
 
-        $xbergWithMode = new Xberg($config);
-        $result = $xbergWithMode->extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
         $tokens = $result->metadata['token_count'] ?? strlen($result->content);
 
@@ -144,8 +143,8 @@ function fitWithinTokenLimit(
         )
     );
 
-    $xbergWithMode = new Xberg($config);
-    $result = $xbergWithMode->extract($filePath);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     $tokens = $result->metadata['token_count'] ?? strlen($result->content);
 
     return [

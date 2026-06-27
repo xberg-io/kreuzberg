@@ -8,7 +8,8 @@ var config = new ExtractionConfig
 };
 
 // Extract document
-var result = Xberg.ExtractSync("document.pdf", config);
+var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
+var result = output.Results[0];
 
 // Access elements
 foreach (var element in result.Elements)

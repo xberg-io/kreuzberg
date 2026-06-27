@@ -123,7 +123,7 @@ impl AsRef<str> for InternalElementId {
 /// The internal flat document representation.
 ///
 /// All extractors output this structure. It is converted to the public
-/// [`ExtractionResult`](super::extraction::ExtractionResult) and
+/// [`ExtractedDocument`](super::extraction::ExtractedDocument) and
 /// [`DocumentStructure`](super::document_structure::DocumentStructure) in the pipeline.
 ///
 /// Implements `Serialize`/`Deserialize` so that foreign-language plugin implementations
@@ -156,7 +156,7 @@ pub struct InternalDocument {
     /// Archive children: fully-extracted results for files within an archive.
     ///
     /// Only populated by archive extractors (ZIP, TAR, 7z, GZIP) when recursive
-    /// extraction is enabled. Each entry contains the full `ExtractionResult` for
+    /// extraction is enabled. Each entry contains the full `ExtractedDocument` for
     /// a child file that was extracted through the public pipeline.
     pub children: Option<Vec<crate::types::ArchiveEntry>>,
 
@@ -197,26 +197,26 @@ pub struct InternalDocument {
     /// LLM usage records accumulated during extraction (e.g., VLM OCR per page).
     ///
     /// Populated by extractors that call LLM-backed backends (VLM OCR).
-    /// `derive_extraction_result` transfers this to `ExtractionResult.llm_usage`.
+    /// `derive_extraction_result` transfers this to `ExtractedDocument.llm_usage`.
     pub llm_usage: Option<Vec<crate::types::LlmUsage>>,
 
     /// Track-changes revisions embedded in the source document.
     ///
     /// Set by format-specific extractors (DOCX, ODT, …) that parse
     /// change-tracking markup. `derive_extraction_result` transfers this
-    /// directly to `ExtractionResult.revisions`.
+    /// directly to `ExtractedDocument.revisions`.
     pub revisions: Option<Vec<crate::types::revisions::DocumentRevision>>,
 
     /// PDF form fields extracted from AcroForm or XFA-based forms.
     ///
     /// Set by the PDF extractor when `pdf_options.extract_form_fields = true`.
-    /// `derive_extraction_result` transfers this directly to `ExtractionResult.form_fields`.
+    /// `derive_extraction_result` transfers this directly to `ExtractedDocument.form_fields`.
     pub form_fields: Vec<crate::types::PdfFormField>,
 
     /// Mathematical formulas recognized during layout-guided OCR.
     ///
     /// Set by the OCR pipeline (per-page formulas, renumbered to document pages).
-    /// `derive_extraction_result` transfers this directly to `ExtractionResult.formulas`.
+    /// `derive_extraction_result` transfers this directly to `ExtractedDocument.formulas`.
     pub formulas: Vec<crate::types::Formula>,
 
     /// When `true`, image OCR results are rendered as plain text without the
@@ -232,13 +232,13 @@ pub struct InternalDocument {
     pub append_ocr_text: bool,
 }
 
-impl From<crate::types::extraction::ExtractionResult> for InternalDocument {
+impl From<crate::types::extraction::ExtractedDocument> for InternalDocument {
     /// Lossy conversion used at FFI/trait-bridge boundaries where a foreign-language
-    /// plugin returns the public `ExtractionResult` shape but the canonical Rust trait
+    /// plugin returns the public `ExtractedDocument` shape but the canonical Rust trait
     /// signature requires an `InternalDocument`. The text content is stashed in
     /// `pre_rendered_content` so the pipeline returns it verbatim instead of trying
     /// to re-render from a non-existent element tree.
-    fn from(result: crate::types::extraction::ExtractionResult) -> Self {
+    fn from(result: crate::types::extraction::ExtractedDocument) -> Self {
         let mut doc = Self::new(result.mime_type.as_ref());
         doc.mime_type = result.mime_type.into_owned();
         doc.metadata = result.metadata;
@@ -256,10 +256,10 @@ impl From<crate::types::extraction::ExtractionResult> for InternalDocument {
     }
 }
 
-impl From<InternalDocument> for crate::types::extraction::ExtractionResult {
+impl From<InternalDocument> for crate::types::extraction::ExtractedDocument {
     /// Run the canonical derivation pipeline with `OutputFormat::Plain` and no document
     /// structure derivation. Used at FFI/trait-bridge boundaries where the rich
-    /// `InternalDocument` must be converted to the public `ExtractionResult` shape.
+    /// `InternalDocument` must be converted to the public `ExtractedDocument` shape.
     fn from(doc: InternalDocument) -> Self {
         crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain)
     }

@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use benchmark_harness::datasets::{Split, cord};
+use benchmark_harness::extract_xberg_file;
 use benchmark_harness::json_quality::{field_precision_recall_f1, is_valid_against_schema, type_correctness_rate};
 use serde_json::{Value, json};
 use std::collections::HashMap;
@@ -8,7 +9,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use xberg::core::config::{ExtractionConfig, LlmConfig, StructuredExtractionConfig};
-use xberg::extract_file;
 
 #[derive(Clone, Debug)]
 struct Provider {
@@ -134,7 +134,7 @@ async fn test_structured_extraction_matrix() -> Result<()> {
                 ..Default::default()
             };
 
-            let result = match extract_file(&fixture.document_path, None, &config).await {
+            let result = match extract_xberg_file(&fixture.document_path, &config).await {
                 Ok(r) => r,
                 Err(e) => {
                     eprintln!("  [{}] Extraction failed: {}", i, e);

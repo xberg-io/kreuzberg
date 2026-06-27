@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("missing.pdf", nil, xberg.ExtractionConfig{})
+	input := xberg.ExtractInputFromURI("missing.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		if errors.Is(err, xberg.ErrIo) {
 			log.Printf("file not found: %v", err)
@@ -21,6 +22,6 @@ func main() {
 		return
 	}
 
-	println("Content:", result.Content)
+	println("Content:", result.Results[0].Content)
 }
 ```

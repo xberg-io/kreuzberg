@@ -1,11 +1,11 @@
 ```typescript title="Document Structure Config (WASM)"
-import { extract } from "xberg-wasm";
+import { extract } from "@xberg-io/xberg-wasm";
 
 const config = {
   includeDocumentStructure: true,
 };
 
-const result = extract(fileBuffer, "application/pdf", config);
+const result = extract({ kind: "bytes", bytes: fileBuffer, mimeType: "application/pdf" }, config);
 
 if (result.document) {
   for (const node of result.document.nodes) {

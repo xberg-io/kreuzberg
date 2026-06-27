@@ -1,10 +1,11 @@
 ```rust title="Rust"
 use xberg::{
-    ChunkingConfig, ChunkerType, ExtractionConfig, ImageExtractionConfig,
-    OcrConfig, OutputFormat, extract_sync,
+    ChunkingConfig, ChunkerType, ExtractionConfig, ExtractInput, ImageExtractionConfig,
+    OcrConfig, OutputFormat, extract,
 };
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         // OCR: force Tesseract on all pages with English text
         force_ocr: false,
@@ -35,7 +36,8 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("report.pdf", None, &config)?;
+    let output = extract(ExtractInput::from_uri("report.pdf"), &config).await?;
+    let result = &output.results[0];
 
     println!("Content ({} chars):", result.content.len());
     println!("{}", &result.content[..result.content.len().min(200)]);

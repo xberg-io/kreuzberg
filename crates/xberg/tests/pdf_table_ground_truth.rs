@@ -16,10 +16,10 @@
 #![cfg(feature = "pdf")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
-use xberg::extract_file_sync;
 
 /// Compute word-level Jaccard similarity between two strings.
 fn word_similarity(a: &str, b: &str) -> f64 {
@@ -40,7 +40,7 @@ fn word_similarity(a: &str, b: &str) -> f64 {
 }
 
 /// Extract markdown from a PDF file (oxide path, no OCR).
-fn extract_markdown(relative_path: &str) -> Option<xberg::types::ExtractionResult> {
+fn extract_markdown(relative_path: &str) -> Option<xberg::types::ExtractedDocument> {
     let path = get_test_file_path(relative_path);
     if !path.exists() {
         return None;
@@ -51,10 +51,10 @@ fn extract_markdown(relative_path: &str) -> Option<xberg::types::ExtractionResul
         ..Default::default()
     };
 
-    extract_file_sync(&path, None, &config).ok()
+    extract_uri_document_blocking(&path, None, &config).ok()
 }
 
-fn print_table_summary(result: &xberg::types::ExtractionResult) {
+fn print_table_summary(result: &xberg::types::ExtractedDocument) {
     println!("  Tables detected: {}", result.tables.len());
     println!("  Content length: {} chars", result.content.len());
     for (i, table) in result.tables.iter().enumerate() {
@@ -247,7 +247,7 @@ fn test_ocr_path_table_document() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("extraction should succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("extraction should succeed");
 
     println!("=== table_document.pdf (forced OCR path) ===");
     print_table_summary(&result);

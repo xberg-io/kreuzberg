@@ -1,7 +1,7 @@
 ```typescript title="WASM - Keyword Extraction Setup"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Note: Keyword extraction requires the 'keywords' feature,
 // which may not be available in all WASM builds.
@@ -13,7 +13,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 // Keyword extraction would be performed on the extracted text
 // using external libraries or post-processing
@@ -35,16 +35,16 @@ console.log(`Extracted keywords: ${Array.from(keywords).slice(0, 10).join(", ")}
 ```
 
 ```typescript title="WASM - Keyword Filtering"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   outputFormat: "markdown",
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 // Common stopwords to exclude
 const stopwords = new Set([

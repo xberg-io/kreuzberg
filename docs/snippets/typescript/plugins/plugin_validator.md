@@ -1,17 +1,17 @@
 ```ts title="TypeScript"
 import {
-  extractSync,
+  extract,
   registerValidator,
   unregisterValidator,
   ValidationError,
-  type ExtractionResult,
+  type ExtractedDocument,
 } from "@xberg-io/xberg";
 
 class MinLengthValidator {
   name = "min_length_validator";
   priority = 10;
 
-  validate(result: ExtractionResult): void {
+  validate(result: ExtractedDocument): void {
     if (result.content.length < 50) {
       throw new ValidationError(`Content too short: ${result.content.length}`);
     }
@@ -20,8 +20,11 @@ class MinLengthValidator {
 
 registerValidator(new MinLengthValidator());
 
-const result = extractSync("document.pdf");
-console.log(`Validated content length: ${result.content.length}`);
+const output = await extract({
+  kind: "uri",
+  uri: "document.pdf",
+});
+console.log(`Validated content length: ${output.results[0].content.length}`);
 
 unregisterValidator("min_length_validator");
 ```

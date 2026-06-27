@@ -27,11 +27,12 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", nil, config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Printf("Content length: %d", len(result.Content))
+	log.Printf("Content length: %d", len(result.Results[0].Content))
 }
 ```

@@ -13,11 +13,12 @@ func main() {
 		log.Fatalf("load config failed: %v", err)
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, *config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Printf("Detected MIME: %s", result.MimeType)
+	log.Printf("Detected MIME: %s", result.Results[0].MimeType)
 }
 ```

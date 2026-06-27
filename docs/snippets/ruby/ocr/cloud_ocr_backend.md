@@ -28,5 +28,6 @@ Xberg.register_ocr_backend(CloudOcrBackend.new)
 config = Xberg::ExtractionConfig.new(
   ocr: Xberg::OcrConfig.new(backend: 'cloud-ocr')
 )
-Xberg.extract_sync('doc.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'doc.pdf')
+Xberg.extract(input, config)
 ```

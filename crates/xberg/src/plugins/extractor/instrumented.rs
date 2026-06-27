@@ -1,11 +1,11 @@
 //! Instrumented extractor wrapper for automatic telemetry.
 //!
-//! Wraps any [`DocumentExtractor`] to add tracing spans and metrics
+//! Wraps any native extractor capability to add tracing spans and metrics
 //! without requiring per-extractor instrumentation annotations.
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::Plugin;
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::telemetry::conventions;
 use crate::types::internal::InternalDocument;
 use async_trait::async_trait;
@@ -14,9 +14,7 @@ use std::sync::Arc;
 use std::time::Instant;
 use tracing::Instrument;
 
-use super::DocumentExtractor;
-
-/// A wrapper around a [`DocumentExtractor`] that adds tracing spans and
+/// A wrapper around an internal extractor that adds tracing spans and
 /// metrics recording automatically.
 ///
 /// When the `otel` feature is enabled, [`get_extractor`](crate::core::extractor::helpers::get_extractor)
@@ -24,12 +22,12 @@ use super::DocumentExtractor;
 /// instrumented uniformly — individual extractors do not need their own
 /// `#[instrument]` annotations.
 pub(crate) struct InstrumentedExtractor {
-    inner: Arc<dyn DocumentExtractor>,
+    inner: Arc<dyn InternalDocumentExtractor>,
 }
 
 impl InstrumentedExtractor {
     /// Create a new instrumented wrapper around an existing extractor.
-    pub(crate) fn new(inner: Arc<dyn DocumentExtractor>) -> Self {
+    pub(crate) fn new(inner: Arc<dyn InternalDocumentExtractor>) -> Self {
         Self { inner }
     }
 }
@@ -70,8 +68,8 @@ impl Plugin for InstrumentedExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for InstrumentedExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for InstrumentedExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -85,7 +83,7 @@ impl DocumentExtractor for InstrumentedExtractor {
 
         let result = self
             .inner
-            .extract_bytes(content, mime_type, config)
+            .extract_content(content, mime_type, config)
             .instrument(span.clone())
             .await;
 
@@ -96,7 +94,7 @@ impl DocumentExtractor for InstrumentedExtractor {
         result
     }
 
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let extractor_name = self.inner.name().to_owned();
         let size_bytes = path.metadata().map(|m| m.len() as usize).unwrap_or(0);
 
@@ -110,7 +108,7 @@ impl DocumentExtractor for InstrumentedExtractor {
 
         let result = self
             .inner
-            .extract_file(path, mime_type, config)
+            .extract_path(path, mime_type, config)
             .instrument(span.clone())
             .await;
 
@@ -131,10 +129,6 @@ impl DocumentExtractor for InstrumentedExtractor {
 
     fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
         self.inner.can_handle(path, mime_type)
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        self.inner.as_sync_extractor()
     }
 }
 

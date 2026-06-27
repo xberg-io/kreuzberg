@@ -33,16 +33,12 @@ use utoipa::OpenApi;
         crate::api::handlers::health_handler,
         crate::api::handlers::info_handler,
         crate::api::handlers::extract_handler,
-        crate::api::handlers::extract_structured_handler,
         crate::api::handlers::detect_handler,
         crate::api::handlers::formats_handler,
         crate::api::handlers::cache_stats_handler,
         crate::api::handlers::cache_clear_handler,
         crate::api::handlers::cache_manifest_handler,
         crate::api::handlers::cache_warm_handler,
-        crate::api::handlers::embed_handler,
-        crate::api::handlers::rerank_handler,
-        crate::api::handlers::chunk_handler,
         crate::api::handlers::version_handler,
         crate::api::openweb::openweb_external_handler,
         crate::api::openweb::openweb_docling_handler,
@@ -55,16 +51,6 @@ use utoipa::OpenApi;
             crate::api::types::ErrorResponse,
             crate::api::types::CacheStatsResponse,
             crate::api::types::CacheClearResponse,
-            crate::api::types::EmbedRequest,
-            crate::api::types::EmbedResponse,
-            crate::api::types::RerankRequest,
-            crate::api::types::RerankResponse,
-            crate::RerankedDocument,
-            crate::api::types::ChunkRequest,
-            crate::api::types::ChunkResponse,
-            crate::api::types::ChunkItem,
-            crate::api::types::ChunkingConfigRequest,
-            crate::api::types::ChunkingConfigResponse,
             crate::api::types::VersionResponse,
             crate::api::types::DetectResponse,
             crate::api::types::ManifestResponse,
@@ -72,10 +58,10 @@ use utoipa::OpenApi;
             crate::api::types::WarmRequest,
             crate::api::types::WarmResponse,
             crate::core::mime::SupportedFormat,
-            crate::core::config::ExtractionOutput,
+            crate::core::config::ExtractionResult,
             crate::core::config::ExtractionSummary,
             crate::core::config::ExtractionErrorItem,
-            crate::types::extraction::ExtractionResult,
+            crate::types::extraction::ExtractedDocument,
             crate::types::extraction::Chunk,
             crate::types::extraction::ChunkMetadata,
             crate::types::extraction::ExtractedImage,
@@ -98,16 +84,12 @@ use utoipa::OpenApi;
             crate::api::types::OpenWebDocumentMetadata,
             crate::api::types::DoclingCompatResponse,
             crate::api::types::DoclingCompatDocument,
-            crate::api::types::StructuredExtractionResponse,
         )
     ),
     tags(
         (name = "health", description = "Health and status endpoints"),
         (name = "extraction", description = "Document extraction endpoints"),
         (name = "cache", description = "Cache management endpoints"),
-        (name = "embeddings", description = "Text embedding generation"),
-        (name = "reranking", description = "Document reranking by relevance score"),
-        (name = "chunking", description = "Text chunking operations"),
         (name = "openweb", description = "OpenWebUI compatibility endpoints")
     )
 )]
@@ -178,12 +160,6 @@ mod tests {
         assert!(schema.contains("/cache/clear"));
         assert!(schema.contains("/cache/manifest"));
         assert!(schema.contains("/cache/warm"));
-        // Embeddings
-        assert!(schema.contains("/embed"));
-        // Reranking
-        assert!(schema.contains("/rerank"));
-        // Chunking
-        assert!(schema.contains("/chunk"));
     }
 
     #[test]
@@ -192,9 +168,6 @@ mod tests {
         let schema = openapi_json();
         assert!(schema.contains("HealthResponse"));
         assert!(schema.contains("ErrorResponse"));
-        assert!(schema.contains("EmbedRequest"));
-        assert!(schema.contains("RerankRequest"));
-        assert!(schema.contains("ChunkRequest"));
         assert!(schema.contains("VersionResponse"));
         assert!(schema.contains("DetectResponse"));
         assert!(schema.contains("ManifestResponse"));

@@ -30,8 +30,8 @@ impl Plugin for MyExtractor {
 
 #[async_trait]
 impl DocumentExtractor for MyExtractor {
-    async fn extract_bytes(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
-        -> Result<ExtractionResult> { /* ... */ }
+    async fn extract(&self, input: ExtractInput, config: &ExtractionConfig)
+        -> Result<ExtractedDocument> { /* ... */ }
 
     fn supported_mime_types(&self) -> &[&str] { &["application/x-custom"] }
     fn priority(&self) -> i32 { 50 }

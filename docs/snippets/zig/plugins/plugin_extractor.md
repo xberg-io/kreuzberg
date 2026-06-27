@@ -10,17 +10,7 @@ const DocumentExtractorVTable = extern struct {
     shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32,
     extract: ?*const fn (
         user_data: ?*anyopaque,
-        content: [*c]const u8,
-        content_len: usize,
-        mime_type: [*c]const u8,
-        config: [*c]const u8,
-        out_result: ?*?[*c]u8,
-        out_error: ?*?[*c]u8,
-    ) callconv(.C) i32,
-    extract: ?*const fn (
-        user_data: ?*anyopaque,
-        path: [*c]const u8,
-        mime_type: [*c]const u8,
+        input: [*c]const u8,
         config: [*c]const u8,
         out_result: ?*?[*c]u8,
         out_error: ?*?[*c]u8,
@@ -54,26 +44,24 @@ extern "xberg_ffi" fn xberg_free_string(ptr: [*c]u8) void;
 // Callbacks for the custom extractor.
 fn extract_impl(
     user_data: ?*anyopaque,
-    content: [*c]const u8,
-    content_len: usize,
-    _: [*c]const u8,
-    _: [*c]const u8,
+    input: [*c]const u8,
+    config: [*c]const u8,
     out_result: ?*?[*c]u8,
     out_error: ?*?[*c]u8,
 ) callconv(.C) i32 {
-    const state: *SimpleExtractorState = @ptrCast(@alignCast(user_data));
-    _ = state;
+    _ = user_data;
+    _ = config;
 
-    // Minimal extraction: wrap content in JSON.
+    // Minimal extraction: parse input JSON and return wrapped ExtractedDocument.
     var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const content_slice = content[0..content_len];
+    const input_slice = std.mem.sliceTo(input, 0);
     const result = std.fmt.allocPrint(
         allocator,
-        "{{\"content\": \"{s}\", \"mime_type\": \"application/octet-stream\"}}",
-        .{content_slice},
+        "{{\"documents\": [{{\"text\": \"{s}\", \"metadata\": {{\"source\": \"extractor\"}}}}]}}",
+        .{input_slice},
     ) catch {
         if (out_error) |ptr| {
             const err = "OOM during extraction";
@@ -167,7 +155,6 @@ pub fn main() !void {
         .initialize_fn = init_impl,
         .shutdown_fn = shutdown_impl,
         .extract = extract_impl,
-        .extract = null,
         .supported_mime_types = supported_mimes_impl,
         .priority = priority_impl,
         .can_handle = null,

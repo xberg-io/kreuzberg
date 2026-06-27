@@ -2,7 +2,7 @@
 
 use crate::core::config::ExtractionConfig;
 use crate::core::extractor::{extract_bytes, extract_file};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::{Result, XbergError};
 use std::future::Future;
 use std::pin::Pin;
@@ -26,7 +26,7 @@ use super::request::{ExtractionRequest, ExtractionSource};
 /// use tower::Service;
 ///
 /// let mut svc = ExtractionService::new();
-/// let req = ExtractionRequest::file("doc.pdf", ExtractionConfig::default());
+/// let req = ExtractionRequest::bytes(b"hello".as_slice(), "text/plain", ExtractionConfig::default());
 /// let result = svc.call(req).await?;
 /// ```
 #[cfg_attr(alef, alef(skip))]
@@ -49,9 +49,9 @@ impl Default for ExtractionService {
 }
 
 impl Service<ExtractionRequest> for ExtractionService {
-    type Response = ExtractionResult;
+    type Response = ExtractedDocument;
     type Error = XbergError;
-    type Future = Pin<Box<dyn Future<Output = Result<ExtractionResult>> + Send>>;
+    type Future = Pin<Box<dyn Future<Output = Result<ExtractedDocument>> + Send>>;
 
     fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<()>> {
         Poll::Ready(Ok(()))
@@ -105,8 +105,6 @@ mod tests {
         assert!(result.content.contains("hello"));
     }
 
-    // `ExtractionRequest::file_with_mime` is only compiled under the `mcp` feature.
-    #[cfg(feature = "mcp")]
     #[tokio::test]
     async fn extract_from_tempfile() {
         let mut svc = ExtractionService::new();
@@ -114,7 +112,7 @@ mod tests {
         tmp.write_all(b"tempfile content").expect("failed to write");
         tmp.flush().expect("failed to flush");
 
-        let req = ExtractionRequest::file_with_mime(tmp.path(), "text/plain", ExtractionConfig::default());
+        let req = ExtractionRequest::file(tmp.path(), ExtractionConfig::default());
         let result = svc.call(req).await.expect("extraction should succeed");
         assert!(result.content.contains("tempfile content"));
     }

@@ -5,8 +5,9 @@ config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, result} = Xberg.extract("scanned_document.pdf", nil, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config: config)
 
+result = List.first(output.results)
 content = result.content
 IO.puts("OCR Extracted content:")
 IO.puts(content)

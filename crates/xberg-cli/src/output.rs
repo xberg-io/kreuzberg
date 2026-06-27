@@ -5,15 +5,15 @@
 //! parsing stderr or running a separate profiling tool.
 
 use serde::Serialize;
-use xberg::ExtractionResult;
+use xberg::ExtractedDocument;
 
 /// Single-file extraction result with wall-clock timing.
 ///
 /// Emitted to stdout by `xberg extract --format json`.
 #[derive(Debug, Serialize)]
 pub struct ExtractEnvelope {
-    /// The extraction result (content, metadata, tables, …).
-    pub result: ExtractionResult,
+    /// The extracted document (content, metadata, tables, ...).
+    pub result: ExtractedDocument,
     /// Wall-clock time for the extraction call in milliseconds.
     pub extraction_time_ms: f64,
 }
@@ -24,7 +24,7 @@ pub struct ExtractEnvelope {
 #[derive(Debug, Serialize)]
 pub struct BatchEnvelope {
     /// One result per input file, in input order.
-    pub results: Vec<ExtractionResult>,
+    pub results: Vec<ExtractedDocument>,
     /// Total wall-clock time for the whole batch in milliseconds.
     pub total_ms: f64,
     /// Per-file wall-clock times in milliseconds, aligned with `results`.

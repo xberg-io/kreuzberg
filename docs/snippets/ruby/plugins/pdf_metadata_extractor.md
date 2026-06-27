@@ -22,6 +22,7 @@ config = Xberg::ExtractionConfig.new(
   postprocessor: { enabled: true }
 )
 
-result = Xberg.extract_sync('report.pdf', config: config)
-puts "Metadata: #{result.metadata.inspect}"
+input = Xberg::ExtractInput.new(uri: 'report.pdf')
+result = Xberg.extract(input, config)
+puts "Metadata: #{result.results.first.metadata.inspect}"
 ```

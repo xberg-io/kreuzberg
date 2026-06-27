@@ -14,8 +14,8 @@ config = %ExtractionConfig{
 }
 
 # Extract file with chunking
-{:ok, result} = Xberg.extract("document.pdf", nil, config)
-
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
+result = List.first(output.results)
 # Prepare chunks for vector database ingestion
 documents = Enum.map(result.chunks || [], fn chunk ->
   %{

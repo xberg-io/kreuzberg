@@ -32,7 +32,7 @@ var config = new ExtractionConfig
 
 try
 {
-    var result = await XbergLib.Extract("document.pdf", null, config);
+    var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
     Console.WriteLine($"Content: {result.Content}");
     Console.WriteLine($"Language: {result.Metadata?.LanguageDetection}");
     Console.WriteLine($"Format: {result.OutputFormat}");

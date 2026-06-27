@@ -24,12 +24,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", nil, config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extraction failed: %v", err)
 	}
 
-	println("Content length:", len(result.Content))
-	println("Chunks:", len(result.Chunks))
+	println("Content length:", len(result.Results[0].Content))
+	println("Chunks:", len(result.Results[0].Chunks))
 }
 ```

@@ -210,23 +210,89 @@ static void parse_request(char *line, const char **out_path, bool *out_force_ocr
  * Returns a static string pointer (no allocation needed).
  */
 static const char *ocr_config_json(void) {
-    return "{\"ocr\":{\"backend\":\"tesseract\",\"language\":\"eng\"}}";
+    return "{\"use_cache\":false,\"ocr\":{\"backend\":\"tesseract\",\"language\":\"eng\"}}";
+}
+
+static const char *default_config_json(void) {
+    return "{\"use_cache\":false}";
+}
+
+static const char *last_error_message(void) {
+    const char *err = xberg_last_error_context();
+    return err ? err : "unknown";
+}
+
+/**
+ * Return a heap-allocated copy of the first object from a JSON array.
+ * This is intentionally minimal: Xberg emits `results` as an array of objects.
+ */
+static char *first_json_object_from_array(const char *json) {
+    if (!json)
+        return NULL;
+
+    const char *p = json;
+    while (*p == ' ' || *p == '\n' || *p == '\r' || *p == '\t')
+        p++;
+    if (*p != '[')
+        return NULL;
+    p++;
+    while (*p == ' ' || *p == '\n' || *p == '\r' || *p == '\t')
+        p++;
+    if (*p != '{')
+        return NULL;
+
+    const char *start = p;
+    int depth = 0;
+    bool in_string = false;
+    bool escaped = false;
+    for (; *p; p++) {
+        char c = *p;
+        if (in_string) {
+            if (escaped) {
+                escaped = false;
+            } else if (c == '\\') {
+                escaped = true;
+            } else if (c == '"') {
+                in_string = false;
+            }
+            continue;
+        }
+
+        if (c == '"') {
+            in_string = true;
+        } else if (c == '{') {
+            depth++;
+        } else if (c == '}') {
+            depth--;
+            if (depth == 0) {
+                size_t len = (size_t)(p - start + 1);
+                char *copy = malloc(len + 1);
+                if (!copy)
+                    return NULL;
+                memcpy(copy, start, len);
+                copy[len] = '\0';
+                return copy;
+            }
+        }
+    }
+    return NULL;
 }
 
 /**
  * Print extraction result as JSON to stdout.
  * Does NOT print a trailing newline (caller decides).
  */
-static void print_result_json(const struct CExtractionResult *result, double elapsed_ms,
+static void print_result_json(const XBERGExtractedDocument *result, double elapsed_ms,
                               bool ocr_used) {
     uint64_t mem = peak_memory_bytes();
 
-    /* Escape content for JSON */
-    char *escaped_content = result->content ? json_escape_alloc(result->content) : NULL;
+    char *content = xberg_extracted_document_content(result);
+    char *escaped_content = content ? json_escape_alloc(content) : NULL;
     const char *content_str = escaped_content ? escaped_content : "";
 
-    /* metadata_json is already a valid JSON object string from the FFI */
-    const char *metadata_str = result->metadata_json ? result->metadata_json : "{}";
+    XBERGMetadata *metadata = xberg_extracted_document_metadata(result);
+    char *metadata_json = metadata ? xberg_metadata_to_json(metadata) : NULL;
+    const char *metadata_str = metadata_json ? metadata_json : "{}";
 
     printf("{\"content\":\"%s\",\"metadata\":%s,"
            "\"_extraction_time_ms\":%.2f,"
@@ -236,6 +302,12 @@ static void print_result_json(const struct CExtractionResult *result, double ela
            (unsigned long long)mem);
 
     free(escaped_content);
+    if (metadata_json)
+        xberg_free_string(metadata_json);
+    if (metadata)
+        xberg_metadata_free(metadata);
+    if (content)
+        xberg_free_string(content);
 }
 
 /**
@@ -250,18 +322,40 @@ static void print_error_json(const char *error_msg) {
 }
 
 /**
- * Extract a single file and return the result.
+ * Extract a single file and return the first document from the unified envelope.
  * Returns NULL on error (prints error JSON if in server mode).
  */
-static struct CExtractionResult *extract_file(const char *path, bool ocr_enabled, bool force_ocr) {
-    struct CExtractionResult *result;
-
-    if (ocr_enabled || force_ocr) {
-        result = xberg_extract_file_sync_with_config(path, ocr_config_json());
-    } else {
-        result = xberg_extract_file_sync(path);
+static XBERGExtractedDocument *extract_document(const char *path, bool ocr_enabled,
+                                                bool force_ocr) {
+    XBERGExtractInput *input = xberg_extract_input_from_uri(path);
+    XBERGExtractionConfig *config = xberg_extraction_config_from_json(
+        (ocr_enabled || force_ocr) ? ocr_config_json() : default_config_json());
+    if (!input || !config) {
+        if (input)
+            xberg_extract_input_free(input);
+        if (config)
+            xberg_extraction_config_free(config);
+        return NULL;
     }
 
+    XBERGExtractionResult *output = xberg_extract(input, config);
+    xberg_extract_input_free(input);
+    xberg_extraction_config_free(config);
+    if (!output)
+        return NULL;
+
+    char *results_json = xberg_extraction_result_results(output);
+    xberg_extraction_result_free(output);
+    if (!results_json)
+        return NULL;
+
+    char *first_json = first_json_object_from_array(results_json);
+    xberg_free_string(results_json);
+    if (!first_json)
+        return NULL;
+
+    XBERGExtractedDocument *result = xberg_extracted_document_from_json(first_json);
+    free(first_json);
     return result;
 }
 
@@ -288,24 +382,25 @@ static int run_server(bool ocr_enabled) {
         DEBUG_LOG("Extracting: %s (force_ocr=%d)", path, force_ocr);
 
         double start = time_ms();
-        struct CExtractionResult *result = extract_file(path, ocr_enabled, force_ocr);
+        XBERGExtractedDocument *result = extract_document(path, ocr_enabled, force_ocr);
         double elapsed = time_ms() - start;
 
-        if (!result || !result->success) {
-            const char *err = xberg_last_error();
+        if (!result) {
+            const char *err = last_error_message();
             DEBUG_LOG("Extraction failed: %s", err ? err : "unknown");
             print_error_json(err);
-            if (result)
-                xberg_free_result(result);
             continue;
         }
 
-        bool ocr_used = determine_ocr_used(result->mime_type, ocr_enabled || force_ocr);
+        char *mime_type = xberg_extracted_document_mime_type(result);
+        bool ocr_used = determine_ocr_used(mime_type, ocr_enabled || force_ocr);
+        if (mime_type)
+            xberg_free_string(mime_type);
         print_result_json(result, elapsed, ocr_used);
         printf("\n");
         fflush(stdout);
 
-        xberg_free_result(result);
+        xberg_extracted_document_free(result);
     }
 
     return 0;
@@ -315,23 +410,24 @@ static int run_sync(const char *path, bool ocr_enabled) {
     DEBUG_LOG("Sync mode: extracting %s", path);
 
     double start = time_ms();
-    struct CExtractionResult *result = extract_file(path, ocr_enabled, false);
+    XBERGExtractedDocument *result = extract_document(path, ocr_enabled, false);
     double elapsed = time_ms() - start;
 
-    if (!result || !result->success) {
-        const char *err = xberg_last_error();
+    if (!result) {
+        const char *err = last_error_message();
         fprintf(stderr, "Error extracting with C binding: %s\n", err ? err : "unknown");
-        if (result)
-            xberg_free_result(result);
         return 1;
     }
 
-    bool ocr_used = determine_ocr_used(result->mime_type, ocr_enabled);
+    char *mime_type = xberg_extracted_document_mime_type(result);
+    bool ocr_used = determine_ocr_used(mime_type, ocr_enabled);
+    if (mime_type)
+        xberg_free_string(mime_type);
     print_result_json(result, elapsed, ocr_used);
     printf("\n");
     fflush(stdout);
 
-    xberg_free_result(result);
+    xberg_extracted_document_free(result);
     return 0;
 }
 
@@ -343,24 +439,28 @@ static int run_batch(int file_count, const char **files, bool ocr_enabled) {
     if (file_count == 1) {
         /* Single file in batch mode: return single object (not array) */
         double start = time_ms();
-        struct CExtractionResult *result = extract_file(files[0], ocr_enabled, false);
+        XBERGExtractedDocument *result = extract_document(files[0], ocr_enabled, false);
         double elapsed = time_ms() - start;
         double total = time_ms() - batch_start;
 
-        if (!result || !result->success) {
-            const char *err = xberg_last_error();
+        if (!result) {
+            const char *err = last_error_message();
             fprintf(stderr, "Error extracting with C binding: %s\n", err ? err : "unknown");
-            if (result)
-                xberg_free_result(result);
             return 1;
         }
 
-        bool ocr_used = determine_ocr_used(result->mime_type, ocr_enabled);
+        char *mime_type = xberg_extracted_document_mime_type(result);
+        bool ocr_used = determine_ocr_used(mime_type, ocr_enabled);
+        if (mime_type)
+            xberg_free_string(mime_type);
         /* Include _batch_total_ms for batch mode */
         uint64_t mem = peak_memory_bytes();
-        char *escaped_content = result->content ? json_escape_alloc(result->content) : NULL;
+        char *content = xberg_extracted_document_content(result);
+        char *escaped_content = content ? json_escape_alloc(content) : NULL;
         const char *content_str = escaped_content ? escaped_content : "";
-        const char *metadata_str = result->metadata_json ? result->metadata_json : "{}";
+        XBERGMetadata *metadata = xberg_extracted_document_metadata(result);
+        char *metadata_json = metadata ? xberg_metadata_to_json(metadata) : NULL;
+        const char *metadata_str = metadata_json ? metadata_json : "{}";
 
         printf("{\"content\":\"%s\",\"metadata\":%s,"
                "\"_extraction_time_ms\":%.2f,"
@@ -372,36 +472,46 @@ static int run_batch(int file_count, const char **files, bool ocr_enabled) {
         printf("\n");
         fflush(stdout);
         free(escaped_content);
-        xberg_free_result(result);
+        if (metadata_json)
+            xberg_free_string(metadata_json);
+        if (metadata)
+            xberg_metadata_free(metadata);
+        if (content)
+            xberg_free_string(content);
+        xberg_extracted_document_free(result);
         return 0;
     }
 
     /* Multiple files: print JSON array */
     printf("[");
     for (int i = 0; i < file_count; i++) {
-        struct CExtractionResult *result = extract_file(files[i], ocr_enabled, false);
+        XBERGExtractedDocument *result = extract_document(files[i], ocr_enabled, false);
         double total = time_ms() - batch_start;
 
         if (i > 0)
             printf(",");
 
-        if (!result || !result->success) {
-            const char *err = xberg_last_error();
+        if (!result) {
+            const char *err = last_error_message();
             char *escaped = err ? json_escape_alloc(err) : NULL;
             printf("{\"error\":\"%s\",\"_extraction_time_ms\":0,"
                    "\"_batch_total_ms\":%.2f,\"_ocr_used\":false}",
                    escaped ? escaped : "unknown", total);
             free(escaped);
-            if (result)
-                xberg_free_result(result);
             continue;
         }
 
-        bool ocr_used = determine_ocr_used(result->mime_type, ocr_enabled);
+        char *mime_type = xberg_extracted_document_mime_type(result);
+        bool ocr_used = determine_ocr_used(mime_type, ocr_enabled);
+        if (mime_type)
+            xberg_free_string(mime_type);
         uint64_t mem = peak_memory_bytes();
-        char *escaped_content = result->content ? json_escape_alloc(result->content) : NULL;
+        char *content = xberg_extracted_document_content(result);
+        char *escaped_content = content ? json_escape_alloc(content) : NULL;
         const char *content_str = escaped_content ? escaped_content : "";
-        const char *metadata_str = result->metadata_json ? result->metadata_json : "{}";
+        XBERGMetadata *metadata = xberg_extracted_document_metadata(result);
+        char *metadata_json = metadata ? xberg_metadata_to_json(metadata) : NULL;
+        const char *metadata_str = metadata_json ? metadata_json : "{}";
 
         double per_ms = total / (double)(file_count > 0 ? file_count : 1);
 
@@ -413,7 +523,13 @@ static int run_batch(int file_count, const char **files, bool ocr_enabled) {
                content_str, metadata_str, per_ms, total, ocr_used ? "true" : "false",
                (unsigned long long)mem);
         free(escaped_content);
-        xberg_free_result(result);
+        if (metadata_json)
+            xberg_free_string(metadata_json);
+        if (metadata)
+            xberg_metadata_free(metadata);
+        if (content)
+            xberg_free_string(content);
+        xberg_extracted_document_free(result);
     }
     printf("]\n");
     fflush(stdout);

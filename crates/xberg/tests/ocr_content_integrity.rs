@@ -17,10 +17,10 @@
 #![cfg(feature = "ocr")]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OcrConfig, PageConfig};
-use xberg::extract_file_sync;
 
 /// Content must not be doubled when OCR is enabled.
 ///
@@ -49,7 +49,7 @@ fn test_ocr_content_not_doubled() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("OCR extraction must succeed");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("OCR extraction must succeed");
 
     let content_words: Vec<&str> = result.content.split_whitespace().collect();
 
@@ -122,7 +122,7 @@ fn test_ocr_page_content_matches_top_level_content() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &config).expect("OCR extraction must succeed");
+    let result = extract_uri_document_blocking(&file_path, None, &config).expect("OCR extraction must succeed");
 
     if result.content.trim().is_empty() {
         // No text detected — nothing to assert.

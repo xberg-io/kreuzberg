@@ -8,10 +8,11 @@ class Program
         {
             var pdfBytes = await File.ReadAllBytesAsync("document.pdf");
 
-            var result = await XbergLib.ExtractAsync(
-                pdfBytes,
-                "application/pdf"
+            var output = await XbergConverter.ExtractAsync(
+                ExtractInput.FromBytes(pdfBytes, "application/pdf", "document.pdf"),
+                ExtractionConfig.Default()
             );
+            var result = output.Results[0];
 
             Console.WriteLine($"Content: {result.Content}");
             Console.WriteLine($"MIME type: {result.MimeType}");
@@ -22,20 +23,21 @@ class Program
                 EnableQualityProcessing = true
             };
 
-            var result2 = await XbergLib.ExtractAsync(
-                pdfBytes,
-                "application/pdf",
+            var output2 = await XbergConverter.ExtractAsync(
+                ExtractInput.FromBytes(pdfBytes, "application/pdf", "document.pdf"),
                 config
             );
+            var result2 = output2.Results[0];
 
             Console.WriteLine($"Configured extraction: {result2.Content.Length} chars");
 
             var imageBytes = new byte[] {  };
 
-            var imageResult = await XbergLib.ExtractAsync(
-                imageBytes,
-                "image/jpeg"
+            var imageOutput = await XbergConverter.ExtractAsync(
+                ExtractInput.FromBytes(imageBytes, "image/jpeg", "image.jpg"),
+                ExtractionConfig.Default()
             );
+            var imageResult = imageOutput.Results[0];
 
             Console.WriteLine($"Image text: {imageResult.Content}");
 
@@ -47,10 +49,11 @@ class Program
 
             foreach (var (name, (bytes, mimeType)) in multipleFiles)
             {
-                var extractResult = await XbergLib.ExtractAsync(
-                    bytes,
-                    mimeType
+                var extractOutput = await XbergConverter.ExtractAsync(
+                    ExtractInput.FromBytes(bytes, mimeType, name),
+                    ExtractionConfig.Default()
                 );
+                var extractResult = extractOutput.Results[0];
                 Console.WriteLine($"{name}: {extractResult.Content.Length} chars");
             }
         }

@@ -14,7 +14,7 @@ use parking_lot::RwLock;
 use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use xberg_candle_ocr::DevicePreference;
 use xberg_candle_ocr::models::{TrocrEngine, TrocrVariant};
 
@@ -172,7 +172,7 @@ impl OcrBackend for TrocrBackend {
     /// `config.backend_options`, falling back to the constructor-time variant stored
     /// in `self.variant`. Inference runs inside `tokio::task::spawn_blocking` so the
     /// async runtime is never blocked.
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         // Parse configuration
         let (parsed_variant, device) = Self::parse_options(config);
         let variant = parsed_variant.unwrap_or(self.variant);
@@ -209,14 +209,14 @@ impl OcrBackend for TrocrBackend {
             source: None,
         })??;
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content,
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         })
     }
 
-    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractedDocument> {
         let bytes = crate::core::io::read_file_async(path).await?;
         self.process_image(&bytes, config).await
     }

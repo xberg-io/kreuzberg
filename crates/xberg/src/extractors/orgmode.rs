@@ -21,7 +21,7 @@ use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
 use crate::extractors::security::SecurityBudget;
 #[cfg(feature = "office")]
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 #[cfg(feature = "office")]
 use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 #[cfg(feature = "office")]
@@ -1034,7 +1034,7 @@ impl Plugin for OrgModeExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for OrgModeExtractor {
+impl InternalDocumentExtractor for OrgModeExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -1045,7 +1045,7 @@ impl DocumentExtractor for OrgModeExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -1080,7 +1080,7 @@ impl DocumentExtractor for OrgModeExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,

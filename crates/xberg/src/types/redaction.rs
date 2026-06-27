@@ -2,14 +2,14 @@
 //!
 //! Produced by the redaction post-processor
 //! (`crates/xberg/src/text/redaction/`) and attached to
-//! [`ExtractionResult::redaction_report`](super::extraction::ExtractionResult::redaction_report).
+//! [`ExtractedDocument::redaction_report`](super::extraction::ExtractedDocument::redaction_report).
 //!
 //! Redaction is a **Late-stage** post-processor: it always runs after NER,
 //! summarisation, translation, page classification, and captioning have populated
 //! their own fields. The processor rewrites `result.content`, `result.formatted_content`,
 //! every `result.chunks[i].content`, and the textual fields of `result.entities`,
 //! `summary`, `translation`, `page_classifications`. The original text never appears in
-//! the returned `ExtractionResult` — this struct is the audit trail of what was found.
+//! the returned `ExtractedDocument` — this struct is the audit trail of what was found.
 
 use serde::{Deserialize, Serialize};
 
@@ -32,9 +32,9 @@ pub struct RedactionReport {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct RedactionFinding {
-    /// Byte-offset start in the original (pre-redaction) `ExtractionResult::content`.
+    /// Byte-offset start in the original (pre-redaction) `ExtractedDocument::content`.
     pub start: u32,
-    /// Byte-offset end (exclusive) in the original `ExtractionResult::content`.
+    /// Byte-offset end (exclusive) in the original `ExtractedDocument::content`.
     pub end: u32,
     /// PII category that fired this redaction.
     pub category: PiiCategory,

@@ -5,12 +5,12 @@
 //!
 //! The heavy rendering work (Markdown, Djot, HTML) is now done earlier in the
 //! pipeline inside `derive_extraction_result`, which populates
-//! `ExtractionResult::formatted_content`. This function simply swaps that
+//! `ExtractedDocument::formatted_content`. This function simply swaps that
 //! pre-rendered content into the `content` field after post-processors have
 //! operated on the plain-text version.
 
 use crate::core::config::OutputFormat;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 #[cfg(test)]
 use std::borrow::Cow;
 
@@ -27,7 +27,7 @@ use std::borrow::Cow;
 /// * `result` - The extraction result to modify
 /// * `output_format` - The desired output format
 #[cfg_attr(alef, alef(skip))]
-pub fn apply_output_format(result: ExtractionResult, output_format: OutputFormat) -> ExtractionResult {
+pub fn apply_output_format(result: ExtractedDocument, output_format: OutputFormat) -> ExtractedDocument {
     let mut result = result;
     let format_name = match output_format {
         OutputFormat::Plain => "plain",
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_plain() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -68,7 +68,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_markdown_no_prerender() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_swaps_formatted_content() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("# Heading\n\nFormatted markdown".to_string()),
@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_html_with_prerender() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("<p>Hello World</p>".to_string()),
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_djot_with_prerender() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "plain text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             formatted_content: Some("# Djot heading".to_string()),
@@ -129,7 +129,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_structured() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -152,7 +152,7 @@ mod tests {
             ..Default::default()
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
@@ -179,7 +179,7 @@ mod tests {
             bounding_box: None,
         };
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Hello World".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             tables: vec![table],
@@ -194,7 +194,7 @@ mod tests {
 
     #[test]
     fn test_apply_output_format_sets_typed_field() {
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "test".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

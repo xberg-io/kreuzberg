@@ -39,7 +39,7 @@ class DockerXbergClient {
       headers: form.getHeaders(),
     });
 
-    return response.data.content;
+    return response.data.results[0].content;
   }
 
   async stopContainer(): Promise<void> {

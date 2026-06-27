@@ -1,0 +1,28 @@
+{
+	"id": "extract_batch_uri_basic",
+	"category": "batch",
+	"description": "extract_batch over URI inputs",
+	"tags": ["batch", "uri", "multiple_inputs"],
+	"call": "extract_batch",
+	"input": {
+		"inputs": [
+			{
+				"kind": "uri",
+				"uri": "pdf/fake_memo.pdf"
+			},
+			{
+				"kind": "uri",
+				"uri": "text/fake_text.txt"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"languages": ["wasm"],
+		"reason": "WASM cannot access filesystem; use bytes input with file content instead"
+	}
+}

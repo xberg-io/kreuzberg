@@ -27,8 +27,9 @@ config = Xberg::ExtractionConfig.new(
 )
 
 begin
-  result = Xberg.extract_sync("document.pdf", config: config)
-  puts "Document quality verified: #{result.quality_score}"
+  input = Xberg::ExtractInput.new(uri: "document.pdf")
+  result = Xberg.extract(input, config)
+  puts "Document quality verified: #{result.results.first.quality_score}"
 rescue StandardError => e
   puts "Quality check failed: #{e.message}"
 end

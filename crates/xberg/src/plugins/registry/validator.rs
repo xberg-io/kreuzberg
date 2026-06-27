@@ -163,7 +163,7 @@ mod tests {
     use crate::XbergError;
     use crate::core::config::ExtractionConfig;
     use crate::plugins::Plugin;
-    use crate::types::ExtractionResult;
+    use crate::types::ExtractedDocument;
     use async_trait::async_trait;
 
     struct MockValidator {
@@ -188,7 +188,7 @@ mod tests {
 
     #[async_trait]
     impl Validator for MockValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
 
@@ -321,7 +321,7 @@ mod tests {
 
     #[async_trait]
     impl Validator for FailingValidator {
-        async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> {
             Ok(())
         }
 

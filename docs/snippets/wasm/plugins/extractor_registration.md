@@ -3,14 +3,14 @@
 Register a custom document extractor plugin in WASM that implements the required interface.
 
 ```typescript title="WASM"
-import init, {
+import { initWasm,
   registerDocumentExtractor,
   unregisterDocumentExtractor,
   listDocumentExtractors,
   extract,
-} from "xberg-wasm";
+} from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a custom extractor as a plain JS object with required methods
 const customExtractor = {

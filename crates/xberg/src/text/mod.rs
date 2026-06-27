@@ -31,10 +31,10 @@ pub mod classification;
 #[cfg(not(feature = "classification"))]
 /// Page-classification API stub (classification feature not enabled on this target).
 pub mod classification {
-    use crate::{ClassificationLabel, ExtractionResult, PageClassificationConfig, Result};
+    use crate::{ClassificationLabel, ExtractedDocument, PageClassificationConfig, Result};
 
     /// Classify pages in an extraction result.
-    pub async fn classify_pages(_result: &mut ExtractionResult, _config: &PageClassificationConfig) -> Result<()> {
+    pub async fn classify_pages(_result: &mut ExtractedDocument, _config: &PageClassificationConfig) -> Result<()> {
         Err(crate::XbergError::Other(
             "classification feature not available on this target".into(),
         ))
@@ -95,10 +95,10 @@ pub mod translation;
 #[cfg(not(feature = "translation"))]
 /// Translation API stub (translation feature not enabled on this target).
 pub mod translation {
-    use crate::{ExtractionResult, Result, TranslationConfig};
+    use crate::{ExtractedDocument, Result, TranslationConfig};
 
     /// Translate an extraction result.
-    pub async fn translate_result(_result: &mut ExtractionResult, _config: &TranslationConfig) -> Result<()> {
+    pub async fn translate_result(_result: &mut ExtractedDocument, _config: &TranslationConfig) -> Result<()> {
         Err(crate::XbergError::Other(
             "translation feature not available on this target".into(),
         ))

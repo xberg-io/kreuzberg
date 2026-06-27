@@ -8,7 +8,7 @@ use axum::{
 use serde_json::Value;
 use tower::ServiceExt;
 use xberg::{
-    ExtractionConfig,
+    ExtractionConfig, ExtractionResult,
     api::{ApiSizeLimits, create_router_with_limits},
 };
 
@@ -48,11 +48,31 @@ Hello world\r\n\
         .await
         .expect("Failed to read body");
     let value: Value = serde_json::from_slice(&bytes).expect("Response JSON parse failed");
+    let envelope: ExtractionResult = serde_json::from_slice(&bytes).expect("Response should match ExtractionResult");
+
     let content = value
-        .get(0)
+        .get("results")
+        .and_then(Value::as_array)
+        .and_then(|results| results.first())
         .and_then(|v| v.get("content"))
         .and_then(Value::as_str)
         .expect("Response should include extracted content");
 
     assert_eq!(content.trim_end_matches('\n'), "Hello world");
+    if let Some(errors) = value.get("errors") {
+        assert!(
+            errors.as_array().is_some_and(Vec::is_empty),
+            "Expected empty errors array, got {errors}"
+        );
+    }
+    assert_eq!(value.pointer("/summary/inputs").and_then(Value::as_u64), Some(1));
+    assert_eq!(value.pointer("/summary/results").and_then(Value::as_u64), Some(1));
+    assert_eq!(value.pointer("/summary/errors").and_then(Value::as_u64), Some(0));
+    assert!(
+        envelope.errors.is_empty(),
+        "Multipart extraction should not report errors"
+    );
+    assert_eq!(envelope.summary.inputs, 1);
+    assert_eq!(envelope.summary.results, 1);
+    assert_eq!(envelope.summary.errors, 0);
 }

@@ -135,7 +135,8 @@ func main() {
 
 	for _, file := range files {
 		log.Printf("Processing: %s", file)
-		result, err := xberg.ExtractSync(file, nil)
+		input := xberg.ExtractInputFromURI(file)
+		result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 		if err != nil {
 			log.Printf("  Warning: extraction failed: %v", err)
 			continue
@@ -143,7 +144,7 @@ func main() {
 
 		// Parse and display metadata
 		var metadata map[string]interface{}
-		if metaJSON, ok := result.MetadataJSON.(string); ok {
+		if metaJSON, ok := result.Results[0].MetadataJSON.(string); ok {
 			if err := json.Unmarshal([]byte(metaJSON), &metadata); err == nil {
 				if callCount, ok := metadata["plugin_call_count"].(float64); ok {
 					log.Printf("  Plugin call count: %.0f", callCount)

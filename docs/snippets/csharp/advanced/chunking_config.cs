@@ -21,10 +21,9 @@ class Program
 
         try
         {
-            var result = await XbergLib.ExtractAsync(
-                "document.pdf",
-                config
-            ).ConfigureAwait(false);
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                "document.pdf"), config
+            )).Results[0].ConfigureAwait(false);
 
             Console.WriteLine($"Chunks: {result.Chunks.Count}");
             foreach (var chunk in result.Chunks)
@@ -56,10 +55,9 @@ class Program
 
         try
         {
-            var result = await XbergLib.ExtractAsync(
-                "document.md",
-                config
-            ).ConfigureAwait(false);
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri(
+                "document.md"), config
+            )).Results[0].ConfigureAwait(false);
 
             foreach (var chunk in result.Chunks)
             {

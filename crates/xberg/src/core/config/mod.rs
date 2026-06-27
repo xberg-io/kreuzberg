@@ -34,9 +34,11 @@ pub use acceleration::{AccelerationConfig, ExecutionProviderType};
 pub use concurrency::ConcurrencyConfig;
 pub use content_filter::ContentFilterConfig;
 pub use email::EmailConfig;
-pub(crate) use extraction::{BatchBytesItem, BatchFileItem};
+pub(crate) use extraction::BatchBytesItem;
+#[cfg(feature = "tokio-runtime")]
+pub(crate) use extraction::BatchFileItem;
 pub use extraction::{
-    ExtractInput, ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionOutput, ExtractionSummary,
+    ExtractInput, ExtractInputKind, ExtractionConfig, ExtractionErrorItem, ExtractionResult, ExtractionSummary,
     FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, TokenReductionOptions, UrlExtractionConfig,
     UrlExtractionMode,
 };

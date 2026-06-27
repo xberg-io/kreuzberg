@@ -2,7 +2,7 @@
 
 Every file Xberg processes follows the same multi-stage pipeline. A PDF, a scanned
 image, a spreadsheet, an email attachment: they all enter at the top and come out as a
-structured `ExtractionResult` at the bottom. The stages run in a fixed order, but several
+structured `ExtractedDocument` inside an `ExtractionResult` envelope. The stages run in a fixed order, but several
 of them are conditional. Caching can short-circuit the entire flow. OCR only runs when
 images are present. Post-processing steps only fire if you've configured them.
 
@@ -14,17 +14,17 @@ This page walks through each stage in detail so you understand what happens to y
 
 ```mermaid
 flowchart TD
-    Input(["Input: file path or raw bytes"]):::input
+    Input(["Input: URI or raw bytes"]):::input
 
     Input --> S1["<b>1. Cache Lookup</b>\nHash file + config, check for stored result"]
-    S1 -->|Cache hit| FastReturn(["Return cached ExtractionResult"]):::cached
+    S1 -->|Cache hit| FastReturn(["Return cached ExtractedDocument"]):::cached
 
     S1 -->|Cache miss| S2["<b>2. MIME Detection</b>\nResolve file type from extension or explicit param"]
     S2 --> S3["<b>3. Registry Lookup</b>\nFind the right DocumentExtractor for this MIME type"]
     S3 --> S4["<b>4. Format Extraction</b>\nRun the extractor: PDF, Excel, image, email, etc."]
 
     S4 --> S5{"<b>5. OCR</b>\nImages present\nand OCR enabled?"}
-    S5 -->|Yes| OCR["Run OCR backend\n(Tesseract / PaddleOCR / EasyOCR)"]
+    S5 -->|Yes| OCR["Run OCR backend\n(Tesseract / PaddleOCR / VLM)"]
     S5 -->|No| S6
 
     OCR --> S6["<b>6. Validators</b>\nCheck result meets requirements"]
@@ -32,7 +32,7 @@ flowchart TD
     S7 --> S8["<b>8. Post-Processors</b>\nTransform result (Early → Middle → Late)"]
 
     S8 --> S9["<b>9. Cache Store</b>\nSave result for future lookups"]
-    S9 --> Output(["Return ExtractionResult"]):::output
+    S9 --> Output(["Return ExtractionResult envelope"]):::output
 
     classDef input fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
     classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
@@ -96,7 +96,7 @@ let extractor = registry.get("application/pdf")?;
 ## 4. Format Extraction
 
 This is the core of the pipeline. The selected extractor reads the file and produces an
-`ExtractionResult` containing the extracted text, metadata (author, title, creation date),
+`ExtractedDocument` containing the extracted text, metadata (author, title, creation date),
 page count, and detected language.
 
 Each file format has a tailored extraction strategy:
@@ -110,7 +110,7 @@ Each file format has a tailored extraction strategy:
 | **Email** (`.eml`, `.msg`)         | The MIME structure is parsed. The email body (plain text or HTML) is extracted as the main content. Attachments are extracted recursively using the same pipeline.                                     |
 | **Office** (DOCX, PPTX)            | The file is a ZIP archive containing XML. Xberg opens the archive, locates the content XML parts, and parses the document structure into text.                                                     |
 
-The extraction result at this point contains raw extracted text. It hasn't been validated, scored, or chunked yet.
+The extracted document at this point contains raw extracted text. It hasn't been validated, scored, or chunked yet.
 
 ---
 
@@ -143,13 +143,13 @@ flowchart LR
     style Run fill:#e8f5e9,stroke:#2e7d32
 ```
 
-Xberg ships three OCR backends:
+Xberg ships multiple OCR backends:
 
 | Backend       | Engine               | When to use it                                                                                                               |
 | ------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | **Tesseract** | Native Rust bindings | Default. Fast, solid accuracy for Latin scripts. Good general-purpose choice.                                                |
 | **PaddleOCR** | ONNX Runtime         | Best accuracy for Chinese, Japanese, Korean (CJK) scripts. Runs natively without Python.                                     |
-| **EasyOCR**   | Python + PyTorch     | Supports 80+ languages including Arabic, Hindi, Thai, and other complex scripts. Only available through the Python bindings. |
+| **VLM OCR**   | liter-llm providers  | Best for handwriting, poor scans, and complex layouts. Requires a vision-capable model.                                      |
 
 When OCR completes, the OCR output is merged with any text the format extractor already
 produced. The merged result moves to post-processing.
@@ -158,7 +158,7 @@ produced. The merged result moves to post-processing.
 
 ## 6. Validators
 
-Validators are the first post-processing step. They inspect the `ExtractionResult` and decide
+Validators are the first post-processing step. They inspect the `ExtractedDocument` and decide
 whether it meets your requirements. If a validator rejects the result, the pipeline stops
 immediately and the error is returned to the caller. No further processing happens.
 
@@ -198,7 +198,7 @@ Chunking is designed for RAG (Retrieval-Augmented Generation) pipelines. The ove
 
 ## 8. Post-Processors
 
-Post-processors are the final transformation step. They receive the `ExtractionResult` and can modify it in any way: clean up text, extract entities, redact sensitive content, reformat output, or add custom metadata.
+Post-processors are the final transformation step. They receive the `ExtractedDocument` and can modify it in any way: clean up text, extract entities, redact sensitive content, reformat output, or add custom metadata.
 
 Post-processors run in three ordered stages so you can control what happens first:
 
@@ -217,7 +217,7 @@ result as-is. This means a buggy post-processor can't take down your extraction 
 Redaction runs Late by design: it must see the populated `entities`, `summary`,
 `translation`, and `page_classifications` fields so it can rewrite their textual content
 before the result leaves Xberg. The original pre-redaction text is dropped at the end
-of the pipeline; only `ExtractionResult.redaction_report` carries byte offsets back into
+of the pipeline; only `ExtractedDocument.redaction_report` carries byte offsets back into
 the original.
 
 ---
@@ -226,7 +226,7 @@ the original.
 
 If caching is enabled and the extraction completed without errors, the result is written to the cache for future lookups.
 
-The final `ExtractionResult` returned to you contains:
+Each final `ExtractedDocument` returned in `ExtractionResult.results` contains:
 
 - **`content`** - the fully processed text
 - **`metadata`** — format-specific metadata (author, title, creation date, page count, etc.)

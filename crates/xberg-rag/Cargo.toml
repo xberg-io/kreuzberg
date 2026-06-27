@@ -1,0 +1,70 @@
+[package]
+name = "xberg-rag"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "RAG base layer for the Xberg engine: a backend-agnostic vector-store trait, filter/query IR, ingest/retrieve pipeline, and streaming answer primitives. Rust-only; not part of the language bindings."
+
+[lints]
+workspace = true
+
+[features]
+default = ["vector-store", "in-memory"]
+
+# Backend-agnostic contract surface: trait + types + filter/query IR + registry.
+# Compiles with only serde + ahash + async-trait + thiserror. WASM-safe.
+vector-store = []
+
+# Generic ingest/retrieve orchestration composing xberg core primitives.
+# ORT-free: embeddings/reranker/NER are injected; convenience wiring is opt-in below.
+pipeline = ["vector-store", "dep:xberg", "xberg/chunking", "dep:futures", "dep:tokio"]
+pipeline-embeddings = ["pipeline", "xberg/embeddings", "xberg/tokio-runtime"]
+pipeline-reranker = ["pipeline", "xberg/reranker", "xberg/tokio-runtime"]
+pipeline-keywords = ["pipeline", "xberg/keywords"]
+pipeline-ner-llm = ["pipeline", "xberg/ner-llm"]
+pipeline-ner-onnx = ["pipeline", "xberg/ner-onnx"]
+
+# Streaming answer/progress primitives over liter-llm. Native-only.
+streaming = ["vector-store", "dep:xberg", "xberg/liter-llm", "dep:futures", "dep:liter-llm"]
+
+# Embedded backends.
+in-memory = ["vector-store"]
+sqlite = ["vector-store", "dep:rusqlite", "dep:sqlite-vec", "dep:tokio"]
+
+# OSS convenience aggregate for docs/examples. Native-only.
+full = [
+    "vector-store",
+    "pipeline",
+    "pipeline-embeddings",
+    "pipeline-reranker",
+    "pipeline-keywords",
+    "pipeline-ner-llm",
+    "streaming",
+    "in-memory",
+    "sqlite",
+]
+
+[dependencies]
+async-trait = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+# pipeline / streaming
+futures = { workspace = true, optional = true }
+liter-llm = { workspace = true, optional = true, features = ["native-http"] }
+tokio = { workspace = true, optional = true }
+xberg = { workspace = true, optional = true }
+
+# sqlite backend
+rusqlite = { workspace = true, optional = true }
+sqlite-vec = { workspace = true, optional = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros"] }

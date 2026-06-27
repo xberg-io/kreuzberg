@@ -9,7 +9,7 @@ use serde_json::{Value, json};
 
 use crate::core::config::PageClassificationConfig;
 use crate::types::classification::{ClassificationLabel, PageClassification};
-use crate::types::{ExtractionResult, LlmUsage};
+use crate::types::{ExtractedDocument, LlmUsage};
 
 /// Default Jinja2 template used when `PageClassificationConfig::prompt_template`
 /// is `None`. Variables: `labels` (joined comma-separated list), `page_text`,
@@ -115,7 +115,7 @@ fn parse_response(page_number: u32, value: &Value, multi_label: bool) -> PageCla
 /// Resolve the page chunks the classifier should operate on. When the
 /// extraction has no page boundary metadata, the whole content is treated as a
 /// single page (`page_number = 1`).
-fn page_slices(result: &ExtractionResult) -> Vec<(u32, &str)> {
+fn page_slices(result: &ExtractedDocument) -> Vec<(u32, &str)> {
     let boundaries = result.metadata.pages.as_ref().and_then(|p| p.boundaries.as_deref());
 
     match boundaries {
@@ -171,6 +171,7 @@ impl<'a> ClassifyContext<'a> {
 
 /// Classify a single text snippet (one page or a standalone document body)
 /// and return its labels plus the LLM call's usage record, if any.
+#[cfg_attr(alef, alef(skip))]
 pub async fn classify_one(
     text: &str,
     ctx: &ClassifyContext<'_>,
@@ -207,7 +208,7 @@ pub async fn classify_one(
 /// Returns the first error encountered when rendering the prompt or calling the
 /// LLM. Partially produced classifications are discarded so callers do not see
 /// a half-populated vector.
-pub async fn classify_pages(result: &mut ExtractionResult, config: &PageClassificationConfig) -> crate::Result<()> {
+pub async fn classify_pages(result: &mut ExtractedDocument, config: &PageClassificationConfig) -> crate::Result<()> {
     if config.labels.is_empty() {
         return Err(crate::XbergError::validation(
             "PageClassificationConfig.labels must contain at least one entry",
@@ -241,7 +242,7 @@ pub async fn classify_pages(result: &mut ExtractionResult, config: &PageClassifi
     Ok(())
 }
 
-/// Classify a single piece of text without requiring an `ExtractionResult`.
+/// Classify a single piece of text without requiring an `ExtractedDocument`.
 ///
 /// Use this when the caller already has plain text (e.g. a RAG ingest pipeline
 /// receiving documents off a queue) and wants a label list back without

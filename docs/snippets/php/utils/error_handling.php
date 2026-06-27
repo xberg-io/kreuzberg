@@ -12,17 +12,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use Xberg\Exceptions\XbergException;
 use Xberg\Exceptions\ParsingException;
 use Xberg\Exceptions\OcrException;
 use Xberg\Exceptions\ValidationException;
 
-$xberg = new Xberg();
 
 try {
-    $result = $xberg->extract('document.pdf');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     echo "Extracted " . strlen($result->content) . " characters\n";
 } catch (ParsingException $e) {
     echo "Failed to parse document: " . $e->getMessage() . "\n";
@@ -45,7 +44,8 @@ try {
         throw new \RuntimeException('Failed to read file');
     }
 
-    $result = $xberg->extract($pdfBytes, 'application/pdf', $config);
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromBytes($pdfBytes, 'application/pdf'), $config);
+    $result = $output->results[0];
     echo "Extracted from bytes: " . substr($result->content, 0, 100) . "...\n";
 } catch (ValidationException $e) {
     echo "Invalid configuration or input: " . $e->getMessage() . "\n";
@@ -64,7 +64,8 @@ $failedExtractions = [];
 
 foreach ($files as $file) {
     try {
-        $result = $xberg->extract($file);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         $successfulExtractions[$file] = $result;
         echo "Success: $file\n";
     } catch (XbergException $e) {
@@ -89,7 +90,7 @@ function extractWithRetry(
 
     while ($attempt < $maxRetries) {
         try {
-            return $xberg->extract($file);
+            return \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
         } catch (OcrException $e) {
             $attempt++;
             if ($attempt >= $maxRetries) {

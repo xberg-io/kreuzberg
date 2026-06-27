@@ -1,7 +1,8 @@
 ```java title="Element-Based Output (Java)"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
 import io.xberg.ExtractionConfig;
-import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.Element;
 import io.xberg.ResultFormat;
 import java.nio.file.Path;
@@ -13,33 +14,33 @@ public class ElementBasedOutput {
         ExtractionConfig config = ExtractionConfig.builder()
             .withResultFormat(ResultFormat.ElementBased)
             .build();
-
         // Extract document
-        ExtractionResult result = Xberg.extractSync(Path.of("document.pdf"), config);
-
+        var resultOutput = Xberg.extract(
+            io.xberg.ExtractInput.builder()
+                .withKind(io.xberg.ExtractInputKind.Uri)
+                .withUri("document.pdf")
+                .build(),
+            config
+        );
+        ExtractedDocument result = resultOutput.results().get(0);
         // Access elements
         List<Element> elements = result.elements();
         if (elements != null) {
             for (Element element : elements) {
                 System.out.println("Type: " + element.elementType());
-
                 String text = element.text();
                 if (text.length() > 100) {
                     text = text.substring(0, 100);
                 }
                 System.out.println("Text: " + text);
-
                 if (element.metadata().pageNumber() != null) {
                     System.out.println("Page: " + element.metadata().pageNumber());
                 }
-
                 if (element.metadata().coordinates() != null) {
                     System.out.println("Coords: " + element.metadata().coordinates());
                 }
-
                 System.out.println("---");
             }
-
             // Filter by element type
             elements.stream()
                 .filter(e -> "Title".equalsIgnoreCase(String.valueOf(e.elementType())))

@@ -4,9 +4,9 @@
 //! Validates data extraction, custom delimiters, quoted fields, and edge cases.
 
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Test basic CSV extraction - simple comma-separated values.
 #[tokio::test]
@@ -15,7 +15,7 @@ async fn test_csv_basic_extraction() {
 
     let csv_content = b"Name,Age,City\nAlice,30,NYC\nBob,25,LA";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -60,7 +60,7 @@ async fn test_csv_with_headers() {
 
     let csv_content = b"Product,Price,Quantity\nApple,1.50,100\nBanana,0.75,200\nOrange,2.00,150";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -115,7 +115,7 @@ async fn test_csv_custom_delimiter() {
 
     let csv_content = b"Name;Age;City\nAlice;30;NYC\nBob;25;LA";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -153,7 +153,7 @@ async fn test_tsv_file() {
 
     let tsv_content = b"Name\tAge\tCity\nAlice\t30\tNYC\nBob\t25\tLA";
 
-    let extraction = match extract_bytes(tsv_content, "text/tab-separated-values", &config).await {
+    let extraction = match extract_bytes_document(tsv_content, "text/tab-separated-values", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: TSV extraction not available");
@@ -195,7 +195,7 @@ async fn test_csv_quoted_fields() {
     let csv_content =
         b"Name,Description,Price\n\"Smith, John\",\"Product A, premium\",100\n\"Doe, Jane\",\"Product B, standard\",50";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -237,7 +237,7 @@ async fn test_csv_special_characters() {
 
     let csv_content = "Name,City,Emoji\nAlice,Tokyo 東京,🎉\nBob,París,✅\nCarlos,Москва,🌍".as_bytes();
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -281,7 +281,7 @@ async fn test_csv_large_file() {
         csv_content.push_str(&format!("{},Item{},{}.00\n", i, i, i * 10));
     }
 
-    let extraction = match extract_bytes(csv_content.as_bytes(), "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content.as_bytes(), "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -326,7 +326,7 @@ async fn test_csv_malformed() {
 
     let csv_content = b"Name,Age,City\nAlice,30\nBob,25,LA,Extra\nCarlos,35,SF";
 
-    let result = extract_bytes(csv_content, "text/csv", &config).await;
+    let result = extract_bytes_document(csv_content, "text/csv", &config).await;
 
     assert!(
         result.is_ok() || result.is_err(),
@@ -345,7 +345,7 @@ async fn test_csv_empty() {
 
     let empty_csv = b"";
 
-    let result = extract_bytes(empty_csv, "text/csv", &config).await;
+    let result = extract_bytes_document(empty_csv, "text/csv", &config).await;
 
     assert!(result.is_ok() || result.is_err(), "Should handle empty CSV gracefully");
 }
@@ -357,7 +357,7 @@ async fn test_csv_headers_only() {
 
     let csv_content = b"Name,Age,City";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -394,7 +394,7 @@ async fn test_csv_blank_lines() {
 
     let csv_content = b"Name,Age\nAlice,30\n\nBob,25\n\nCarlos,35";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");
@@ -428,7 +428,7 @@ async fn test_csv_numeric_data() {
 
     let csv_content = b"ID,Price,Quantity,Discount\n1,19.99,100,0.15\n2,29.99,50,0.20\n3,9.99,200,0.10";
 
-    let extraction = match extract_bytes(csv_content, "text/csv", &config).await {
+    let extraction = match extract_bytes_document(csv_content, "text/csv", &config).await {
         Ok(result) => result,
         Err(_) => {
             println!("Skipping test: CSV extraction not available");

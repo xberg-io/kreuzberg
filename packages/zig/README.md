@@ -86,7 +86,7 @@ Extract text, tables, images, metadata, and code intelligence from 96 file forma
 
 - **Document intelligence core** — extract text, tables, images, metadata, entities, keywords, code intelligence, and transcripts in builds that enable transcription.
 - **Format coverage** — PDF, Office, images, HTML/XML, email, archives, notebooks, citations, scientific formats, plain text, and audio/video formats in builds that enable transcription.
-- **OCR choices** — Tesseract, PaddleOCR, EasyOCR where supported, VLM OCR through liter-llm, and plugin hooks for custom backends.
+- **OCR choices** — Tesseract, PaddleOCR, Candle where supported, VLM OCR through liter-llm, and plugin hooks for custom backends.
 - **Same engine as every binding** — Rust, Python, Node.js, Go, Java, PHP, Ruby, .NET, Elixir, R, WASM, Kotlin Android, Swift, Dart, Zig, and C FFI share the same Rust implementation.
 - **Zig package** — wrapper over the C FFI with explicit memory ownership.
 
@@ -163,10 +163,11 @@ pub fn main() !void {
         \\}
     ;
 
-    const result_json = try xberg.extract_sync("scanned.pdf", null, config_json);
-    defer std.heap.c_allocator.free(result_json);
+    const input_json = "{\"kind\":\"uri\",\"uri\":\"scanned.pdf\"}";
+    const output_json = try xberg.extract(input_json, config_json);
+    defer std.heap.c_allocator.free(output_json);
 
-    const owned = try allocator.dupe(u8, result_json);
+    const owned = try allocator.dupe(u8, output_json);
     defer allocator.free(owned);
 
     const stdout = std.io.getStdOut().writer();
@@ -307,22 +308,13 @@ Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-l
 - **Audio/Video Transcription** - Extract speech transcripts from MP3, M4A, WAV, WebM, and MP4 inputs when the native transcription feature is available
 - **OCR Support** - Integrate multiple OCR backends for scanned documents
 - **Plugin System** - Extensible post-processing for custom text transformation
-- **Embeddings** - Generate vector embeddings using ONNX Runtime models
+- **Embeddings** - Generate vector embeddings using ONNX Runtime models or provider-hosted services
 - **Batch Processing** - Efficiently process multiple documents in parallel
 - **Memory Efficient** - Stream large files without loading entirely into memory
 - **Language Detection** - Detect and support multiple languages in documents
 - **Code Intelligence** - Extract structure, imports, exports, symbols, and docstrings from [306 programming languages](https://docs.tree-sitter-language-pack.xberg.io) via tree-sitter
 - **Configuration** - Fine-grained control over extraction behavior
-
-### Performance Characteristics
-
-| Format | Speed | Memory | Notes |
-|--------|-------|--------|-------|
-| **PDF (text)** | 10-100 MB/s | ~50MB per doc | Fastest extraction |
-| **Office docs** | 20-200 MB/s | ~100MB per doc | DOCX, XLSX, PPTX |
-| **Images (OCR)** | 1-5 MB/s | Variable | Depends on OCR backend |
-| **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
-| **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
+- **Six Output Formats** - Plain text, Markdown, Djot, HTML, JSON tree structure, or Structured JSON with OCR metadata
 
 ## OCR Support
 
@@ -352,10 +344,11 @@ pub fn main() !void {
         \\}
     ;
 
-    const result_json = try xberg.extract_sync("scanned.pdf", null, config_json);
-    defer std.heap.c_allocator.free(result_json);
+    const input_json = "{\"kind\":\"uri\",\"uri\":\"scanned.pdf\"}";
+    const output_json = try xberg.extract(input_json, config_json);
+    defer std.heap.c_allocator.free(output_json);
 
-    const owned = try allocator.dupe(u8, result_json);
+    const owned = try allocator.dupe(u8, output_json);
     defer allocator.free(owned);
 
     const stdout = std.io.getStdOut().writer();

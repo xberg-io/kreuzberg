@@ -12,9 +12,9 @@
 
 use std::{fs, path::PathBuf};
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_bytes;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 fn jupyter_fixture(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -54,7 +54,7 @@ async fn test_jupyter_simple_notebook_extraction() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed or notebook format unsupported");
@@ -149,7 +149,7 @@ async fn test_jupyter_mime_notebook_extraction() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -254,7 +254,7 @@ async fn test_jupyter_mime_out_notebook_extraction() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -344,7 +344,7 @@ async fn test_jupyter_rank_notebook_extraction() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -433,7 +433,7 @@ async fn test_jupyter_metadata_aggregation() {
             }
         };
 
-        let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+        let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
         if result.is_err() {
             println!("Skipping metadata test for {}: Pandoc may not be installed", name);
@@ -484,7 +484,7 @@ async fn test_jupyter_cell_content_aggregation() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -556,7 +556,7 @@ async fn test_jupyter_mime_output_handling() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -613,7 +613,7 @@ async fn test_jupyter_notebook_structure_preservation() {
         }
     };
 
-    let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+    let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
     if result.is_err() {
         println!("Skipping test: Pandoc may not be installed");
@@ -662,7 +662,7 @@ async fn test_jupyter_pandoc_baseline_alignment() {
             }
         };
 
-        let result = extract_bytes(&notebook_content, "application/x-ipynb+json", &config).await;
+        let result = extract_bytes_document(&notebook_content, "application/x-ipynb+json", &config).await;
 
         if result.is_err() {
             println!(

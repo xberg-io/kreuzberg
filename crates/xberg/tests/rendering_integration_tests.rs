@@ -47,14 +47,14 @@ fn build_rich_document() -> xberg::types::internal::InternalDocument {
     b.build()
 }
 
-/// Derive an `ExtractionResult` from a document in the given format.
-fn derive(doc: xberg::types::internal::InternalDocument, format: OutputFormat) -> xberg::types::ExtractionResult {
+/// Derive an `ExtractedDocument` from a document in the given format.
+fn derive(doc: xberg::types::internal::InternalDocument, format: OutputFormat) -> xberg::types::ExtractedDocument {
     derive_extraction_result(doc, false, format)
 }
 
 /// Return the "effective content" — `formatted_content` when present,
 /// otherwise the plain-text `content`.
-fn effective_content(result: &xberg::types::ExtractionResult) -> &str {
+fn effective_content(result: &xberg::types::ExtractedDocument) -> &str {
     result.formatted_content.as_deref().unwrap_or(&result.content)
 }
 

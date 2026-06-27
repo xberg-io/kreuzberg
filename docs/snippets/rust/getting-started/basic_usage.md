@@ -1,16 +1,17 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         use_cache: true,
         enable_quality_processing: true,
         ..Default::default()
     };
 
-    let result = extract_sync("document.pdf", None, &config)?;
-    println!("{}", result.content);
-    println!("MIME Type: {}", result.mime_type);
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    println!("{}", output.results[0].content);
+    println!("MIME Type: {}", output.results[0].mime_type);
     Ok(())
 }
 ```

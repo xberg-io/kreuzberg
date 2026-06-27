@@ -2,7 +2,7 @@
 import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final result = await XbergBridge.extract('document.pdf', null);
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'document.pdf'), config: ExtractionConfig());
 
   final pages = result.metadata.pages;
   if (pages == null) {
@@ -16,7 +16,7 @@ Future<void> main() async {
     return;
   }
 
-  final content = result.content;
+  final content = result.results[0].content;
   for (final boundary in boundaries.take(3)) {
     final start = boundary.byteStart.toInt();
     final end = boundary.byteEnd.toInt();

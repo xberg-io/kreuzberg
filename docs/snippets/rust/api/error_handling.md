@@ -1,10 +1,11 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, XbergError};
+use xberg::{extract, ExtractionConfig, ExtractInput, XbergError};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let config = ExtractionConfig::default();
-    match extract_sync("document.pdf", None, &config) {
-        Ok(result) => println!("{}", result.content),
+    match extract(ExtractInput::from_uri("document.pdf"), &config).await {
+        Ok(output) => println!("{}", output.results[0].content),
         Err(XbergError::Io(e)) => eprintln!("File error: {e}"),
         Err(XbergError::UnsupportedFormat(mime)) => {
             eprintln!("Unsupported format: {mime}");

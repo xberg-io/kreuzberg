@@ -68,7 +68,7 @@ pub struct PdfConfig {
     #[serde(default)]
     pub ocr_inline_images: bool,
 
-    /// Extract AcroForm and XFA form fields into `ExtractionResult.form_fields`.
+    /// Extract AcroForm and XFA form fields into `ExtractedDocument.form_fields`.
     ///
     /// When `true` (default), reads the document's interactive form structure
     /// (field names, types, values, widget geometry). Cheap and strictly

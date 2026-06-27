@@ -3,7 +3,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::metadata::Metadata;
@@ -328,8 +328,8 @@ impl Plugin for PptxExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PptxExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for PptxExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -423,7 +423,7 @@ impl DocumentExtractor for PptxExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let path_str = path
             .to_str()
             .ok_or_else(|| crate::XbergError::validation("Invalid file path".to_string()))?;
@@ -486,12 +486,12 @@ mod tests {
     }
 
     /// Full round-trip through PptxExtractor::extract_bytes → derive_extraction_result →
-    /// ExtractionResult.pages, asserting that speaker_notes and section_name are present.
+    /// ExtractedDocument.pages, asserting that speaker_notes and section_name are present.
     #[tokio::test]
     async fn test_extract_bytes_populates_speaker_notes_and_section_name() {
         use crate::core::config::{ExtractionConfig, PageConfig};
         use crate::extraction::derive::derive_extraction_result;
-        use crate::plugins::DocumentExtractor;
+        use crate::plugins::InternalDocumentExtractor;
 
         let pptx = crate::extraction::pptx::tests::create_pptx_with_sections_and_notes(
             &[
@@ -509,7 +509,7 @@ mod tests {
         };
         let mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
         let internal_doc = extractor
-            .extract_bytes(&pptx, mime, &config)
+            .extract_content(&pptx, mime, &config)
             .await
             .expect("extraction failed");
         let result = derive_extraction_result(internal_doc, true, crate::core::config::OutputFormat::Plain);

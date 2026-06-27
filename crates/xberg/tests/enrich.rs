@@ -1,12 +1,12 @@
 //! Integration tests for the unified enrichment chokepoint.
 
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 use xberg::{EnrichedResult, EnrichmentConfig, enrich};
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-fn bare_result(content: &str) -> ExtractionResult {
-    ExtractionResult {
+fn bare_result(content: &str) -> ExtractedDocument {
+    ExtractedDocument {
         content: content.to_string(),
         ..Default::default()
     }

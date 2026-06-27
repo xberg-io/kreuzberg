@@ -1,15 +1,15 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
-import { ExtractionConfig } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
+import { ExtractionConfig } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const fileBuffer = new Uint8Array(/* your file bytes */);
 const mimeType = "application/pdf";
 
 const config = new ExtractionConfig({});
 
-const result = await extract(fileBuffer, mimeType, config);
+const result = await extract({ kind: "bytes", bytes: fileBuffer, mimeType: mimeType }, config);
 
 if (result.tables && result.tables.length > 0) {
   console.log(`Found ${result.tables.length} tables`);

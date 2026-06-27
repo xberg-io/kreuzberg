@@ -3,7 +3,7 @@
 //! Wraps [`crate::llm::text_completion::complete_text`] with a prompt template
 //! tuned for summary generation. Returns the prose summary plus the captured
 //! LLM usage entry so the caller can append it to
-//! [`crate::types::ExtractionResult::llm_usage`].
+//! [`crate::types::ExtractedDocument::llm_usage`].
 
 use crate::core::config::LlmConfig;
 use crate::types::LlmUsage;
@@ -23,7 +23,7 @@ const MAX_PROMPT_INPUT_CHARS: usize = 128 * 1024;
 ///
 /// `text` is the document content to summarise (already extracted by the
 /// pipeline). `max_tokens` softly bounds the requested summary length in
-/// natural-language tokens; `None` uses [`DEFAULT_MAX_TOKENS`].
+/// natural-language tokens; `None` uses `DEFAULT_MAX_TOKENS`.
 ///
 /// Returns the summary string and the (optional) usage record.
 ///

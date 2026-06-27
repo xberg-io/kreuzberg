@@ -4,8 +4,6 @@
 
 use crate::Result;
 use crate::core::config::LanguageDetectionConfig;
-use once_cell::sync::OnceCell;
-use std::sync::Arc;
 use whatlang::{Lang, detect};
 
 pub mod processor;
@@ -183,38 +181,6 @@ fn lang_to_iso639_3(lang: Lang) -> String {
         Lang::Cym => "cym",
     }
     .to_string()
-}
-
-/// Register the language detection processor with the global registry.
-///
-/// This function should be called once at application startup to register
-/// the language detection post-processor.
-///
-/// **Note:** This is called automatically on first use.
-/// Explicit calling is optional.
-pub(crate) fn register_language_detection_processor() -> Result<()> {
-    let registry = crate::plugins::registry::get_post_processor_registry();
-    let mut registry = registry.write();
-
-    registry.register(Arc::new(LanguageDetector))?;
-
-    Ok(())
-}
-
-/// One-time initialization guard for the language detection processor registry.
-///
-/// Set to `()` once registration succeeds. If registration fails the cell remains
-/// empty, allowing the next call to retry.
-static PROCESSOR_INITIALIZED: OnceCell<()> = OnceCell::new();
-
-/// Ensure the language detection processor is registered.
-///
-/// This function is called automatically when needed.
-/// It's safe to call multiple times - registration only happens once.
-pub(crate) fn ensure_initialized() -> Result<()> {
-    PROCESSOR_INITIALIZED
-        .get_or_try_init(register_language_detection_processor)
-        .map(|_| ())
 }
 
 #[cfg(test)]

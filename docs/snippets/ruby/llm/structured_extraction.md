@@ -22,6 +22,7 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('paper.pdf', config: config)
-puts result.structured_output
+input = Xberg::ExtractInput.new(uri: 'paper.pdf')
+result = Xberg.extract(input, config)
+puts result.results.first.structured_output
 ```

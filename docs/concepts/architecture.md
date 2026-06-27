@@ -91,7 +91,7 @@ flowchart LR
         Extraction["extraction/\nPDF · Excel · Email\nHTML · XML · Text"]
         OCR["ocr/\nTesseract\nTable detection"]
         Text["text/\nToken reduction\nQuality scoring"]
-        Types["types/\nExtractionResult\nMetadata · Chunk"]
+        Types["types/\nExtractionResult · ExtractedDocument\nMetadata · Chunk"]
         Error["error/\nXbergError"]
     end
 
@@ -112,13 +112,13 @@ flowchart LR
 
 | Module          | Responsibility                                                                                                                                                                                                          |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **core/**       | Main entry points (`extract`, `extract`), MIME detection, config loading, pipeline orchestration                                                                                                             |
+| **core/**       | Main entry points (`extract`, `extract_batch`), MIME detection, config loading, pipeline orchestration                                                                                                             |
 | **plugins/**    | Plugin trait definitions (`DocumentExtractor`, `OcrBackend`, `PostProcessor`, `Validator`, `Renderer`) and the registry system (ExtractorRegistry, OcrRegistry, ValidatorRegistry, ProcessorRegistry, RendererRegistry) |
 | **extractors/** | Maps MIME types to the correct extractor implementation and registers them with the plugin system                                                                                                                       |
 | **extraction/** | Format-specific extraction logic - PDF via pdf_oxide, Excel via calamine, email parsing, and so on.                                                                                                                     |
 | **ocr/**        | OCR orchestration - Tesseract bindings, HOCR parsing, table detection                                                                                                                                                   |
 | **text/**       | Text processing utilities - token reduction, quality scoring, string manipulation                                                                                                                                       |
-| **types/**      | Shared data structures: `ExtractionResult`, `Metadata`, `Chunk`, and friends                                                                                                                                            |
+| **types/**      | Shared data structures: `ExtractionResult`, `ExtractedDocument`, `Metadata`, `Chunk`, and friends                                                                                                                                            |
 | **error/**      | Centralized error handling with the `XbergError` enum                                                                                                                                                               |
 
 ---
@@ -132,8 +132,8 @@ output with full table, heading, and list support.
 
 ```mermaid
 flowchart LR
-    Extractor["Extractor"] --> ID["InternalDocument"]
-    ID --> RR["RendererRegistry"]
+    Extractor["Extractor"] --> Result["ExtractedDocument"]
+    Result --> RR["RendererRegistry"]
     RR --> GFM["GFM Markdown"]
     RR --> HTML["HTML5"]
     RR --> Djot["Djot"]
@@ -191,12 +191,15 @@ For detailed performance analysis, see [Performance](../guides/development.md#pe
 The Rust core is a standalone library. You don't need Python or Node.js to use it:
 
 ```rust title="main.rs"
-use xberg::{extract, ExtractionConfig};
+use xberg::{extract, ExtractInput, ExtractionConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
-    let result = extract("document.pdf", None, &config)?;
-    println!("Extracted: {}", result.content);
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    if let Some(document) = output.results.first() {
+        println!("Extracted: {}", document.content);
+    }
     Ok(())
 }
 ```

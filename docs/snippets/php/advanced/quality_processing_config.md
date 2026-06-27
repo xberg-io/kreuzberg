@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 
 $config = new ExtractionConfig(
@@ -10,7 +10,9 @@ $config = new ExtractionConfig(
     useCache: true
 );
 
-$result = Xberg::extractSync('document.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config);
+
+$result = $resultOutput->results[0];
 
 if ($result->getQualityScore() !== null) {
     echo "Quality score: " . $result->getQualityScore() . "\n";

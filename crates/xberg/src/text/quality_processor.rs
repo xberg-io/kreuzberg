@@ -13,7 +13,7 @@
 //! This avoids unnecessary string cloning for sparse metadata scenarios.
 
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
-use crate::{ExtractionConfig, ExtractionResult, Result};
+use crate::{ExtractedDocument, ExtractionConfig, Result};
 use async_trait::async_trait;
 #[cfg(test)]
 use std::borrow::Cow;
@@ -60,7 +60,7 @@ impl Plugin for QualityProcessor {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for QualityProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         let quality_score = if should_use_metadata(&result.metadata) {
             crate::text::quality::calculate_quality_score(&result.content, Some(&result.metadata.additional))
         } else {
@@ -76,11 +76,11 @@ impl PostProcessor for QualityProcessor {
         ProcessingStage::Early
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.enable_quality_processing
     }
 
-    fn estimated_duration_ms(&self, result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, result: &ExtractedDocument) -> u64 {
         let text_length = result.content.len();
         (text_length / 102400).max(1) as u64
     }
@@ -115,7 +115,7 @@ mod tests {
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "This is a well-written paragraph with proper structure. It contains multiple sentences. The quality should be good.".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -136,7 +136,7 @@ mod tests {
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Some text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -164,7 +164,7 @@ mod tests {
     fn test_quality_processor_should_process() {
         let processor = QualityProcessor;
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Sample text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -187,13 +187,13 @@ mod tests {
     fn test_quality_processor_estimated_duration() {
         let processor = QualityProcessor;
 
-        let short_result = ExtractionResult {
+        let short_result = ExtractedDocument {
             content: "Short".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        let long_result = ExtractionResult {
+        let long_result = ExtractedDocument {
             content: "a".repeat(1000000),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

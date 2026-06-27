@@ -6,7 +6,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::metadata::Metadata;
 use async_trait::async_trait;
@@ -62,7 +62,7 @@ impl Plugin for OpmlExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for OpmlExtractor {
+impl InternalDocumentExtractor for OpmlExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -73,7 +73,7 @@ impl DocumentExtractor for OpmlExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -174,7 +174,7 @@ mod tests {
 </opml>"#;
 
         let result = extractor
-            .extract_bytes(opml, "text/x-opml", &ExtractionConfig::default())
+            .extract_content(opml, "text/x-opml", &ExtractionConfig::default())
             .await
             .expect("Should extract OPML asynchronously");
         let result =

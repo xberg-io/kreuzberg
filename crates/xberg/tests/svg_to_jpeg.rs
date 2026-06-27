@@ -6,9 +6,11 @@
 
 #![cfg(all(feature = "html", feature = "svg", feature = "image-encode"))]
 
+mod helpers;
+use helpers::extract_bytes_document_blocking;
+
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
-use xberg::extract_bytes_sync;
 
 /// JPEG SOI marker: `\xFF\xD8\xFF`.
 const JPEG_MAGIC: &[u8] = b"\xFF\xD8\xFF";
@@ -46,7 +48,8 @@ fn config_jpeg(quality: u8) -> ExtractionConfig {
 #[test]
 fn svg_inline_in_html_rasterised_to_jpeg() {
     let config = config_jpeg(85);
-    let result = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
+    let result =
+        extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config).expect("extraction must succeed");
 
     let images = result
         .images
@@ -94,9 +97,9 @@ fn svg_to_jpeg_quality_parameter_affects_output_size() {
     let config_high = config_jpeg(95);
     let config_low = config_jpeg(20);
 
-    let result_high = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config_high)
+    let result_high = extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config_high)
         .expect("high-quality extraction must succeed");
-    let result_low = extract_bytes_sync(HTML_WITH_INLINE_SVG, "text/html", &config_low)
+    let result_low = extract_bytes_document_blocking(HTML_WITH_INLINE_SVG, "text/html", &config_low)
         .expect("low-quality extraction must succeed");
 
     let images_high = result_high

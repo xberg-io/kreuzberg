@@ -2,7 +2,7 @@
 import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final result = await XbergBridge.extract('document.pdf', null);
+  final result = await XbergBridge.extract(ExtractInput(kind: ExtractInputKind.uri, uri: 'document.pdf'), config: ExtractionConfig());
 
   final metadata = result.metadata;
 

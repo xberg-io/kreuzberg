@@ -67,11 +67,12 @@ func main() {
 	}()
 
 	// Extract and validate
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extraction or validation failed: %v", err)
 	}
 
-	log.Printf("Quality validation passed for: %s", result.MimeType)
+	log.Printf("Quality validation passed for: %s", result.Results[0].MimeType)
 }
 ```

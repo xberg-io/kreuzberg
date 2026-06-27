@@ -1,0 +1,28 @@
+{
+	"id": "extract_batch_uri_partial_failure",
+	"category": "batch",
+	"description": "extract_batch with mixed valid and missing URI inputs",
+	"tags": ["batch", "uri", "partial_failure"],
+	"call": "extract_batch",
+	"input": {
+		"inputs": [
+			{
+				"kind": "uri",
+				"uri": "text/plain.txt"
+			},
+			{
+				"kind": "uri",
+				"uri": "/nonexistent/missing.pdf"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		}
+	],
+	"skip": {
+		"languages": ["wasm"],
+		"reason": "WASM cannot access filesystem; use bytes input with file content instead"
+	}
+}

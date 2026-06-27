@@ -5,9 +5,10 @@ config = Xberg::ExtractionConfig.new(
   chunking: Xberg::ChunkingConfig.new(max_characters: 500, overlap: 50),
 )
 
-result = Xberg.extract_sync('document.pdf', config: config)
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+result = Xberg.extract(input, config)
 
-result.chunks&.each do |chunk|
+result.results.first.chunks&.each do |chunk|
   first = chunk.metadata.first_page
   last = chunk.metadata.last_page
   next if first.nil?

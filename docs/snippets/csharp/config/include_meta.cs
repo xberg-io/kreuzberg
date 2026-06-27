@@ -10,7 +10,7 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.ExtractSync("document.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 
 if (result.Metadata != null)
 {

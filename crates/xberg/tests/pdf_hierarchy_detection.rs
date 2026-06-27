@@ -5,9 +5,11 @@
 
 #![cfg(feature = "pdf")]
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 use std::path::Path;
 use xberg::core::config::{ExtractionConfig, HierarchyConfig, PageConfig, PdfConfig};
-use xberg::extract_bytes;
 
 // Note: All tests must run serially because Pdfium can only be initialized once.
 // Using tokio::test with single_threaded doesn't work well, so we use the serial_test crate.
@@ -56,7 +58,7 @@ async fn test_full_hierarchy_extraction() {
     };
 
     // Extract the PDF
-    let result = extract_bytes(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -169,7 +171,7 @@ async fn test_hierarchy_disabled() {
         ..Default::default()
     };
 
-    let result = extract_bytes(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -226,7 +228,7 @@ async fn test_hierarchy_with_explicit_disabled() {
         ..Default::default()
     };
 
-    let result = extract_bytes(&pdf_bytes, "application/pdf", &config)
+    let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
         .await
         .expect("PDF extraction failed");
 
@@ -284,7 +286,7 @@ async fn test_hierarchy_different_k_clusters() {
             ..Default::default()
         };
 
-        let result = extract_bytes(&pdf_bytes, "application/pdf", &config)
+        let result = extract_bytes_document(&pdf_bytes, "application/pdf", &config)
             .await
             .expect("PDF extraction failed");
 

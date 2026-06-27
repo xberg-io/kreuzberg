@@ -4,7 +4,7 @@
 //! extraction results and stores them in the result.
 
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
-use crate::{ExtractionConfig, ExtractionResult, Result, XbergError};
+use crate::{ExtractedDocument, ExtractionConfig, Result, XbergError};
 use async_trait::async_trait;
 
 /// Post-processor that detects languages in document content.
@@ -49,7 +49,7 @@ impl Plugin for LanguageDetector {
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for LanguageDetector {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let lang_config = match &config.language_detection {
             Some(cfg) => cfg,
             None => return Ok(()),
@@ -73,11 +73,11 @@ impl PostProcessor for LanguageDetector {
         ProcessingStage::Early
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.language_detection.is_some()
     }
 
-    fn estimated_duration_ms(&self, result: &ExtractionResult) -> u64 {
+    fn estimated_duration_ms(&self, result: &ExtractedDocument) -> u64 {
         let text_length = result.content.len();
         (text_length / 1024).max(1) as u64
     }
@@ -105,7 +105,7 @@ mod tests {
             ..Default::default()
         };
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Hello world! This is a test of the language detection system.".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -124,7 +124,7 @@ mod tests {
         let processor = LanguageDetector;
         let config = ExtractionConfig::default();
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Hello world!".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -154,7 +154,7 @@ mod tests {
     fn test_language_detector_should_process() {
         let processor = LanguageDetector;
 
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "Sample text".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -178,13 +178,13 @@ mod tests {
     fn test_language_detector_estimated_duration() {
         let processor = LanguageDetector;
 
-        let short_result = ExtractionResult {
+        let short_result = ExtractedDocument {
             content: "Short".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
         };
 
-        let long_result = ExtractionResult {
+        let long_result = ExtractedDocument {
             content: "a".repeat(10000),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

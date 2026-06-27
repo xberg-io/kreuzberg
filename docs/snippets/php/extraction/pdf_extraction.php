@@ -11,18 +11,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\PdfConfig;
+use Xberg\ExtractionConfig;
+use Xberg\PdfConfig;
 
-$xberg = new Xberg();
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "PDF Extraction Results:\n";
 echo str_repeat('=', 60) . "\n";
 echo "Content length: " . strlen($result->content) . " characters\n";
 echo "Tables found: " . count($result->tables) . "\n";
-echo "Pages: " . ($result->metadata->pageCount ?? 'unknown') . "\n\n";
+echo "Pages: " . ($result->metadata?->pdf?->page_count ?? 'unknown') . "\n\n";
 
 $config = new ExtractionConfig(
     extractImages: true,
@@ -33,8 +32,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('report.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Extracted Tables:\n";
 echo str_repeat('=', 60) . "\n";
@@ -77,13 +76,14 @@ $formattedConfig = new ExtractionConfig(
     outputFormat: 'markdown'
 );
 
-$xberg = new Xberg($formattedConfig);
-$result = $xberg->extract('formatted.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('formatted.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 file_put_contents('output.md', $result->content);
 echo "Saved formatted output to: output.md\n";
 
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 $content = $result->content;
 
 $sections = [];

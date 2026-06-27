@@ -20,7 +20,7 @@ use parking_lot::RwLock;
 use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use xberg_candle_ocr::DType;
 use xberg_candle_ocr::DevicePreference;
 use xberg_candle_ocr::models::DeepseekOCREngine;
@@ -185,7 +185,7 @@ impl OcrBackend for DeepseekOcrBackend {
     ///
     /// Returns an error if the image is empty, model_path is not provided,
     /// the model fails to initialize, or inference fails.
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         // Validate image data first so callers get the most specific error.
         if image_bytes.is_empty() {
             return Err(crate::XbergError::Validation {
@@ -222,7 +222,7 @@ impl OcrBackend for DeepseekOcrBackend {
             source: None,
         })??;
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content,
             mime_type: Cow::Borrowed("text/markdown"),
             ..Default::default()
@@ -234,7 +234,7 @@ impl OcrBackend for DeepseekOcrBackend {
     /// # Errors
     ///
     /// Returns an error if the file cannot be read or if inference fails.
-    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractedDocument> {
         let bytes = crate::core::io::read_file_async(path).await?;
         self.process_image(&bytes, config).await
     }

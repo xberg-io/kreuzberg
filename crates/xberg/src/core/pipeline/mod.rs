@@ -17,16 +17,16 @@ pub use format::apply_output_format;
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::types::internal::InternalDocument;
 
-use execution::{execute_processors, execute_validators};
+use execution::{execute_processor_stages, execute_validators};
 use features::{execute_chunking, execute_language_detection, execute_token_reduction};
 use initialization::{get_processors_from_cache, initialize_features, initialize_processor_cache};
 
 /// Run the post-processing pipeline on an `InternalDocument`.
 ///
-/// Derives `ExtractionResult` from `InternalDocument` via the derivation pipeline,
+/// Derives `ExtractedDocument` from `InternalDocument` via the derivation pipeline,
 /// then executes post-processing in the following order:
 /// 1. Post-Processors - Execute by stage (Early, Middle, Late) to modify/enhance the result
 /// 2. Quality Processing - Text cleaning and quality scoring
@@ -55,7 +55,7 @@ use initialization::{get_processors_from_cache, initialize_features, initialize_
     )
 ))]
 #[cfg_attr(alef, alef(skip))]
-pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractedDocument> {
     // Propagate rendering preferences from config into the document.
     doc.ocr_text_only = config.images.as_ref().map(|i| i.ocr_text_only).unwrap_or(false);
     doc.append_ocr_text = config.images.as_ref().map(|i| i.append_ocr_text).unwrap_or(false);
@@ -111,7 +111,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
     // render the document here and inject the result after derivation.
     #[cfg(feature = "html")]
     let styled_html_prerender: Option<String> = {
-        use crate::plugins::Renderer as _;
+        use crate::plugins::InternalRenderer as _;
         if config.output_format == crate::core::config::OutputFormat::Html {
             config.html_output.as_ref().and_then(|html_cfg| {
                 match crate::rendering::StyledHtmlRenderer::new(html_cfg.clone()) {
@@ -133,7 +133,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
         }
     };
 
-    // 2. Derive ExtractionResult from InternalDocument
+    // 2. Derive ExtractedDocument from InternalDocument
     // Clone the document before derivation consumes it so that downstream steps
     // (element-based result format) can walk the native reading order instead of
     // reassembling from per-page reconstruction. DOCX in particular has no native
@@ -176,27 +176,34 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
         apply_data_base64_pass(&mut result, image_cfg);
     }
 
-    // 2. Run post-processing pipeline
+    // 2. Prepare post-processing pipeline
     let pp_config = config.postprocessor.as_ref();
     let postprocessing_enabled = pp_config.is_none_or(|c| c.enabled);
 
-    if postprocessing_enabled {
+    let processor_stages = if postprocessing_enabled {
         initialize_features();
         initialize_processor_cache()?;
 
         let (early_processors, middle_processors, late_processors) = get_processors_from_cache()?;
+        Some((early_processors, middle_processors, late_processors))
+    } else {
+        None
+    };
 
-        execute_processors(
+    if let Some((early_processors, _, _)) = &processor_stages {
+        execute_processor_stages(
             &mut result,
             config,
             &pp_config,
-            early_processors,
-            middle_processors,
-            late_processors,
+            &[(
+                crate::plugins::ProcessingStage::Early,
+                std::sync::Arc::clone(early_processors),
+            )],
         )
         .await?;
     }
 
+    execute_language_detection(&mut result, config)?;
     execute_chunking(&mut result, config)?;
 
     // Clear temporary markdown if it was only stored for chunker heading context.
@@ -206,7 +213,25 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
         result.formatted_content = None;
     }
 
-    execute_language_detection(&mut result, config)?;
+    if let Some((_, middle_processors, late_processors)) = &processor_stages {
+        execute_processor_stages(
+            &mut result,
+            config,
+            &pp_config,
+            &[
+                (
+                    crate::plugins::ProcessingStage::Middle,
+                    std::sync::Arc::clone(middle_processors),
+                ),
+                (
+                    crate::plugins::ProcessingStage::Late,
+                    std::sync::Arc::clone(late_processors),
+                ),
+            ],
+        )
+        .await?;
+    }
+
     execute_token_reduction(&mut result, config)?;
     execute_validators(&result, config).await?;
 
@@ -278,7 +303,7 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
 /// - Async validators
 #[cfg(not(feature = "tokio-runtime"))]
 #[cfg_attr(alef, alef(skip))]
-pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Result<ExtractedDocument> {
     // Pre-render markdown for chunker heading context (same logic as async path).
     #[cfg(feature = "chunking")]
     let chunker_heading_source = {
@@ -296,7 +321,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
     // Pre-render styled HTML before `doc` is consumed (mirrors async path).
     #[cfg(feature = "html")]
     let styled_html_prerender: Option<String> = {
-        use crate::plugins::Renderer as _;
+        use crate::plugins::InternalRenderer as _;
         if config.output_format == crate::core::config::OutputFormat::Html {
             config.html_output.as_ref().and_then(|html_cfg| {
                 match crate::rendering::StyledHtmlRenderer::new(html_cfg.clone()) {
@@ -318,7 +343,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
         }
     };
 
-    // 1. Derive ExtractionResult from InternalDocument
+    // 1. Derive ExtractedDocument from InternalDocument
     // Clone the document before derivation so element-based transformation can use
     // the native reading order. Mirrors the async pipeline.
     let doc_for_elements = if config.result_format == crate::types::ResultFormat::ElementBased {
@@ -387,7 +412,7 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
 /// sanitization pass is still applied to SVG images if `config.svg.sanitize` is set.
 #[cfg(feature = "image-encode")]
 fn apply_output_format_pass(
-    result: &mut ExtractionResult,
+    result: &mut ExtractedDocument,
     config: &crate::core::config::extraction::ImageExtractionConfig,
 ) {
     use crate::core::config::extraction::ImageOutputFormat;
@@ -426,7 +451,7 @@ fn apply_output_format_pass(
 /// Populate `ExtractedImage::data_base64` when the caller opts in via
 /// `ImageExtractionConfig::include_data_base64`.
 fn apply_data_base64_pass(
-    result: &mut ExtractionResult,
+    result: &mut ExtractedDocument,
     config: &crate::core::config::extraction::ImageExtractionConfig,
 ) {
     if !config.include_data_base64 {
@@ -439,7 +464,7 @@ fn apply_data_base64_pass(
 }
 
 /// Transform to element-based output if requested by the config.
-fn apply_element_transform(result: &mut ExtractionResult, config: &ExtractionConfig) {
+fn apply_element_transform(result: &mut ExtractedDocument, config: &ExtractionConfig) {
     if config.result_format == crate::types::ResultFormat::ElementBased {
         result.elements = Some(crate::extraction::transform::transform_extraction_result_to_elements(
             result,
@@ -566,7 +591,7 @@ fn is_markdown_image_reference(text: &str) -> bool {
 ///
 /// Ensures consistent representation of composed characters (e.g., é vs e+combining accent)
 /// across all extraction backends (PDF, OCR, DOCX, HTML, etc.).
-fn normalize_nfc(result: &mut ExtractionResult) {
+fn normalize_nfc(result: &mut ExtractedDocument) {
     #[cfg(feature = "quality")]
     {
         use unicode_normalization::UnicodeNormalization;

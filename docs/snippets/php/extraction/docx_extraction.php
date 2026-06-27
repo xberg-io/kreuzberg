@@ -11,11 +11,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use function Xberg\extract;
+use Xberg\ExtractionConfig;
 
-$result = extract('document.docx');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.docx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Word Document Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -24,8 +23,8 @@ echo $result->content . "\n\n";
 
 echo "Document Metadata:\n";
 echo str_repeat('=', 60) . "\n";
-echo "Title: " . ($result->metadata->title ?? 'N/A') . "\n";
-echo "Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'N/A') . "\n";
+echo "Title: " . ($result->metadata?->title ?? 'N/A') . "\n";
+echo "Authors: " . (isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'N/A') . "\n";
 echo "Created: " . ($result->metadata->createdAt ?? 'N/A') . "\n";
 echo "Modified: " . ($result->metadata->modifiedAt ?? 'N/A') . "\n";
 echo "Subject: " . ($result->metadata->subject ?? 'N/A') . "\n";
@@ -36,8 +35,8 @@ $config = new ExtractionConfig(
     preserveFormatting: true
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('report.docx');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('report.docx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 foreach ($result->tables as $index => $table) {
     echo "Table " . ($index + 1) . ":\n";
@@ -63,32 +62,36 @@ foreach ($conversions as $name => $format) {
         preserveFormatting: $format !== null
     );
 
-    $xberg = new Xberg($config);
-    $result = $xberg->extract('document.docx');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.docx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
     $outputFile = "output_$name.txt";
     file_put_contents($outputFile, $result->content);
     echo "Saved $name format to: $outputFile\n";
 }
 
-use function Xberg\extract_batch;
-
 $docxFiles = glob('*.docx');
 if (!empty($docxFiles)) {
     echo "\nBatch processing " . count($docxFiles) . " DOCX files...\n";
 
-    $results = extract_batch($docxFiles);
+    $inputs = array_map(
+        static fn (string $file): \Xberg\ExtractInput => \Xberg\ExtractInput::fromUri($file),
+        $docxFiles
+    );
+    $output = Xberg::extractBatch($inputs, \Xberg\ExtractionConfig::default());
+    $results = $output->results;
 
     foreach ($results as $index => $result) {
         $filename = basename($docxFiles[$index]);
         echo "\n$filename:\n";
         echo "  Characters: " . strlen($result->content) . "\n";
         echo "  Tables: " . count($result->tables) . "\n";
-        echo "  Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown') . "\n";
+        echo "  Authors: " . (isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'Unknown') . "\n";
     }
 }
 
-$result = extract('reviewed_document.docx');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('reviewed_document.docx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 if (!empty($result->metadata->createdBy)) {
     echo "\nDocument Information:\n";
@@ -99,7 +102,8 @@ if (!empty($result->metadata->producer)) {
     echo "Producer: " . $result->metadata->producer . "\n";
 }
 
-$result = extract('document.docx');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.docx'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 $content = $result->content;
 
 $stats = [

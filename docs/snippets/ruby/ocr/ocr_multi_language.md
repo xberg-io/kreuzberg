@@ -8,6 +8,7 @@ config = Xberg::ExtractionConfig.new(
   )
 )
 
-result = Xberg.extract_sync('multilingual.pdf', config: config)
-puts result.content
+input = Xberg::ExtractInput.new(uri: 'multilingual.pdf')
+result = Xberg.extract(input, config)
+puts result.results.first.content
 ```

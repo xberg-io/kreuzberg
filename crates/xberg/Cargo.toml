@@ -332,19 +332,9 @@ presets = [
     "dep:sha2",
 ] # Preset format + registry + loader + resolver; pure-Rust.
 
-# LLM vision structured-extraction orchestrator: rasterize → token-aware batch → vision call →
-# schema-validate+merge → citation-fuse. Needs native http (liter-llm) + pdf rendering, so it is
-# excluded from no-ort-target/wasm-target and joins full/android-target/windows-target instead.
-# The module is additionally gated `#[cfg(not(target_arch = "wasm32"))]` in source.
-structured = [
-    "liter-llm",
-    "presets",
-    "heuristics",
-    "pdf",
-    "ocr-pipeline",
-    "dep:moka",
-    "tokio-runtime",
-]
+# Compatibility feature for public LLM structured extraction through
+# `ExtractionConfig::structured_extraction`.
+structured = ["liter-llm", "tokio-runtime"]
 
 redaction = ["dep:sha2"] # Pattern-based PII engine; pure-Rust.
 redaction-ml = ["redaction", "ner"] # Couple in NER for PERSON/ORG/LOC redaction.
@@ -862,7 +852,7 @@ required-features = ["structured"]
 
 [[test]]
 name = "structured_live"
-required-features = ["structured"]
+required-features = ["structured", "pdf"]
 
 [[bench]]
 name = "text_quality"

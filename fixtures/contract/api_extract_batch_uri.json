@@ -1,0 +1,35 @@
+{
+	"id": "api_extract_batch_uri",
+	"description": "Tests batch URI extraction API (extract_batch)",
+	"tags": ["contract", "api", "batch"],
+	"call": "extract_batch",
+	"input": {
+		"inputs": [
+			{
+				"kind": "uri",
+				"uri": "pdf/fake_memo.pdf"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "results[0].mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min_length",
+			"field": "results[0].content",
+			"value": 10
+		},
+		{
+			"type": "contains_any",
+			"field": "results[0].content",
+			"values": ["May 5, 2023", "Mallori"]
+		}
+	],
+	"skip": {
+		"languages": ["wasm"],
+		"reason": "WASM cannot access filesystem; use bytes input with file content instead"
+	}
+}

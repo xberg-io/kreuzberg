@@ -10,6 +10,6 @@ var config = new ExtractionConfig
     }
 };
 
-var result = XbergLib.ExtractSync("scanned.pdf", config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("scanned.pdf"), config)).Results[0];
 Console.WriteLine(result.Content);
 ```

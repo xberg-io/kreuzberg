@@ -87,7 +87,7 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         let t = Instant::now();
         let result_a = match tokio::time::timeout(
             std::time::Duration::from_secs(180),
-            xberg::extract_file(&doc.document_path, None, &config_a),
+            crate::extract_xberg_file(&doc.document_path, &config_a),
         )
         .await
         {
@@ -112,7 +112,7 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         let t = Instant::now();
         let result_b = match tokio::time::timeout(
             std::time::Duration::from_secs(180),
-            xberg::extract_file(&doc.document_path, None, &config_b),
+            crate::extract_xberg_file(&doc.document_path, &config_b),
         )
         .await
         {

@@ -9,16 +9,18 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil, xberg.ExtractionConfig{
+	config := xberg.ExtractionConfig{
 		Ocr: &xberg.OcrConfig{
 			Backend: "tesseract",
 		},
 		ForceOcr: true,
-	})
+	}
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	fmt.Println(result.Content)
+	fmt.Println(result.Results[0].Content)
 }
 ```

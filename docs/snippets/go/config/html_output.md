@@ -13,7 +13,7 @@ func main() {
 	theme := xberg.HTMLThemeGitHub
 	embedCSS := true
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		OutputFormat: &outputFormat,
 		HTMLOutput: &xberg.HTMLOutputConfig{
 			Theme:    &theme,
@@ -21,11 +21,12 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("document.pdf", config)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	fmt.Println(result.Content) // HTML with kb-* classes
+	fmt.Println(result.Results[0].Content) // HTML with kb-* classes
 }
 ```

@@ -1,9 +1,10 @@
 ```rust title="Rust"
 use xberg::{
-    extract_sync, ChunkingConfig, ExtractionConfig, LanguageDetectionConfig, OcrConfig,
+    extract, ChunkingConfig, ExtractionConfig, ExtractInput, LanguageDetectionConfig, OcrConfig,
 };
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "tesseract".to_string(),
@@ -29,16 +30,17 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("document.pdf", None, &config)?;
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    let result = &output.results[0];
 
-    if let Some(chunks) = result.chunks {
+    if let Some(chunks) = &result.chunks {
         for chunk in chunks {
             let preview: String = chunk.content.chars().take(100).collect();
             println!("Chunk: {}...", preview);
         }
     }
 
-    if let Some(languages) = result.detected_languages {
+    if let Some(languages) = &result.detected_languages {
         println!("Languages: {:?}", languages);
     }
     Ok(())

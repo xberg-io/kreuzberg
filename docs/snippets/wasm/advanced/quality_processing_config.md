@@ -1,14 +1,14 @@
 ```typescript title="WASM - Enable Quality Processing"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   enableQualityProcessing: true,
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 console.log(`Quality score: ${result.qualityScore?.toFixed(3) || "N/A"}`);
 console.log(`Content: ${result.content.substring(0, 100)}...`);
@@ -20,9 +20,9 @@ if (result.qualityScore && result.qualityScore < 0.5) {
 ```
 
 ```typescript title="WASM - Quality Monitoring"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface ExtractionQuality {
   contentLength: number;
@@ -35,7 +35,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 const quality: ExtractionQuality = {
   contentLength: result.content.length,
@@ -62,9 +62,9 @@ if (quality.assessedAs === "low") {
 ```
 
 ```typescript title="WASM - Quality with OCR Fallback"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 async function extractWithQualityCheck(
   bytes: Uint8Array,
@@ -74,7 +74,7 @@ async function extractWithQualityCheck(
     enableQualityProcessing: true,
   };
 
-  const result = await extract(bytes, mimeType, config);
+  const result = await extract({ kind: "bytes", bytes, mimeType: mimeType }, config);
   const qualityScore = result.qualityScore || 0;
 
   // If quality is low, consider text extraction failed or use OCR

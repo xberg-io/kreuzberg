@@ -23,8 +23,13 @@ func main() {
 		PdfOptions: &pdfConfigBasic,
 	}
 
-	// Use with ExtractSync or ExtractSync
-	// result, err := xberg.ExtractSync("document.pdf", extractionConfigBasic)
+	// Use with Extract
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, extractionConfigBasic)
+	if err != nil {
+		// Handle error
+	}
+	_ = result
 
 
 	// Example 2: Custom KClusters for minimal structure

@@ -1,7 +1,9 @@
-import xberg.config.HierarchyConfig;
-import xberg.config.PdfConfig;
-import xberg.config.ExtractionConfig;
-import xberg.Xberg;
+import io.xberg.HierarchyConfig;
+import io.xberg.PdfConfig;
+import io.xberg.ExtractionConfig;
+import io.xberg.ExtractInput;
+import io.xberg.ExtractInputKind;
+import io.xberg.Xberg;
 
 public class HierarchyConfigExample {
     public static void main(String[] args) throws Exception {
@@ -23,8 +25,12 @@ public class HierarchyConfigExample {
             .pdfOptions(pdfConfigBasic)
             .build();
 
-        Xberg xberg = new Xberg(extractionConfigBasic);
-        // var result = xberg.extractSync("document.pdf");
+        // Extract using the static Xberg.extract() API
+        var input = ExtractInput.builder()
+            .withKind(ExtractInputKind.Uri)
+            .withUri("document.pdf")
+            .build();
+        var result = Xberg.extract(input, extractionConfigBasic).results().get(0);
 
 
         // Example 2: Custom kClusters for minimal structure

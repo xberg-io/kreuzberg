@@ -11,10 +11,10 @@
 use xberg::core::config::ChunkingConfig;
 use xberg::core::config::ExtractionConfig;
 use xberg::core::config::OutputFormat;
-use xberg::core::extractor::extract_bytes;
 use xberg::types::ResultFormat;
 
 mod helpers;
+use helpers::extract_bytes_document;
 
 /// Test output_format Plain produces text without formatting
 ///
@@ -29,7 +29,7 @@ async fn test_output_format_plain_produces_plain() {
         ..Default::default()
     };
 
-    let result = extract_bytes(plain_text, "text/plain", &config)
+    let result = extract_bytes_document(plain_text, "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -56,7 +56,7 @@ async fn test_output_format_markdown_produces_markdown() {
         ..Default::default()
     };
 
-    let result = extract_bytes(html, "text/html", &config)
+    let result = extract_bytes_document(html, "text/html", &config)
         .await
         .expect("Should extract successfully");
 
@@ -80,7 +80,7 @@ async fn test_output_format_html_produces_html() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -102,7 +102,7 @@ async fn test_result_format_unified_structure() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -126,7 +126,7 @@ async fn test_result_format_element_based_structure() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -155,7 +155,7 @@ async fn test_chunking_max_chars_limits_chunk_size() {
         ..Default::default()
     };
 
-    let result = extract_bytes(long_text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(long_text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -191,7 +191,7 @@ async fn test_chunking_overlap_creates_overlap() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -222,7 +222,7 @@ async fn test_chunking_disabled_produces_no_chunks() {
         ..Default::default()
     };
 
-    let result = extract_bytes(long_text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(long_text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -240,11 +240,11 @@ async fn test_cache_enabled_allows_caching() {
     };
 
     // Extract twice with same content
-    let result1 = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result1 = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("First extraction should succeed");
 
-    let result2 = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result2 = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Second extraction should succeed");
 
@@ -265,7 +265,7 @@ async fn test_cache_disabled_does_not_crash() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Extraction with cache disabled should succeed");
 
@@ -283,7 +283,7 @@ async fn test_quality_processing_enabled_produces_score() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -305,7 +305,7 @@ async fn test_quality_processing_disabled_no_score() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -327,7 +327,7 @@ async fn test_output_format_with_element_based() {
         ..Default::default()
     };
 
-    let result = extract_bytes(html, "text/html", &config)
+    let result = extract_bytes_document(html, "text/html", &config)
         .await
         .expect("Should extract successfully");
 
@@ -356,7 +356,7 @@ async fn test_chunking_overlap_maximum() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -391,7 +391,7 @@ async fn test_large_document_with_combined_config() {
         ..Default::default()
     };
 
-    let result = extract_bytes(large_text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(large_text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 
@@ -424,7 +424,7 @@ async fn test_element_based_auto_normalizes_page_extraction() {
         ..Default::default()
     };
 
-    let result = extract_bytes(text.as_bytes(), "text/plain", &config)
+    let result = extract_bytes_document(text.as_bytes(), "text/plain", &config)
         .await
         .expect("Should extract successfully");
 

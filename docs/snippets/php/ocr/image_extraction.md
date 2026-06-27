@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\ImageExtractionConfig;
+use Xberg\XbergApi;
+use Xberg\ExtractionConfig;
+use Xberg\ImageExtractionConfig;
 
 // Extract images from documents alongside text
 $config = new ExtractionConfig(
@@ -17,8 +17,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('document_with_images.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document_with_images.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Extracted Content:\n";
 echo $result->content . "\n\n";

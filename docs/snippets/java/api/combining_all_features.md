@@ -1,6 +1,7 @@
 ```java title="Java"
 import io.xberg.Xberg;
-import io.xberg.ExtractionResult;
+import io.xberg.ExtractInputKind;
+import io.xberg.ExtractedDocument;
 import io.xberg.*;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -16,8 +17,14 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build()))
     .withEnableQualityProcessing(true)
     .build();
-
-ExtractionResult result = Xberg.extractSync(Paths.get("document.pdf"), config);
+var resultOutput = Xberg.extract(
+    io.xberg.ExtractInput.builder()
+        .withKind(io.xberg.ExtractInputKind.Uri)
+        .withUri("document.pdf")
+        .build(),
+    config
+);
+ExtractedDocument result = resultOutput.results().get(0);
 System.out.println("Content: " + result.content().substring(0, 100) + "...");
 if (result.tables() != null) {
     System.out.println("Tables: " + result.tables().size());

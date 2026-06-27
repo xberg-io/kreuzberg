@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, OcrConfig, PdfConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, OcrConfig, PdfConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "tesseract".to_string(),
@@ -14,7 +15,7 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("scanned.pdf", None, &config)?;
+    let _output = extract(ExtractInput::from_uri("scanned.pdf"), &config).await?;
     Ok(())
 }
 ```

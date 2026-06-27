@@ -17,7 +17,7 @@ mod region_vlm;
 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::{ExtractionMethod, Metadata};
 use async_trait::async_trait;
@@ -138,8 +138,8 @@ impl Plugin for PdfExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PdfExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for PdfExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -149,7 +149,7 @@ impl DocumentExtractor for PdfExtractor {
     }
 
     #[cfg(feature = "tokio-runtime")]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         // Set the PDF file path for pdf_oxide text extraction (thread-local).
         #[cfg(feature = "pdf")]
         crate::pdf::oxide_text::set_current_pdf_path(Some(path.to_path_buf()));
@@ -834,7 +834,7 @@ impl PdfExtractor {
         }
 
         // Carry formulas on the InternalDocument; derive_extraction_result moves
-        // them into ExtractionResult.formulas (mirrors form_fields/llm_usage).
+        // them into ExtractedDocument.formulas (mirrors form_fields/llm_usage).
         #[cfg(any(feature = "ocr", feature = "ocr-pipeline"))]
         if !ocr_formulas.is_empty() {
             doc.formulas = ocr_formulas;
@@ -929,7 +929,7 @@ mod tests {
     }
 
     #[cfg(feature = "pdf")]
-    fn extraction_method(result: &crate::types::ExtractionResult) -> Option<ExtractionMethod> {
+    fn extraction_method(result: &crate::types::ExtractedDocument) -> Option<ExtractionMethod> {
         result.extraction_method
     }
 
@@ -985,8 +985,8 @@ mod tests {
             &self,
             _image_bytes: &[u8],
             _config: &crate::core::config::OcrConfig,
-        ) -> crate::Result<crate::types::ExtractionResult> {
-            Ok(crate::types::ExtractionResult {
+        ) -> crate::Result<crate::types::ExtractedDocument> {
+            Ok(crate::types::ExtractedDocument {
                 content: self.content.to_string(),
                 mime_type: std::borrow::Cow::Borrowed("text/plain"),
                 ..Default::default()
@@ -1220,7 +1220,7 @@ mod tests {
         let pdf_path =
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/google_doc_document.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF with page config: {:?}",
@@ -1249,7 +1249,7 @@ mod tests {
         let pdf_path =
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/google_doc_document.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF without page config: {:?}",
@@ -1287,7 +1287,7 @@ mod tests {
 
         let pdf_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/multi_page.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
             assert!(
                 result.is_ok(),
                 "Failed to extract PDF with page markers: {:?}",
@@ -1319,7 +1319,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("native PDF extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1353,7 +1353,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("forced OCR extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1387,7 +1387,7 @@ mod tests {
 
         if let Ok(content) = std::fs::read(pdf_path) {
             let result = extractor
-                .extract_bytes(&content, "application/pdf", &config)
+                .extract_content(&content, "application/pdf", &config)
                 .await
                 .expect("mixed OCR/native extraction should succeed");
             let result = crate::extraction::derive::derive_extraction_result(
@@ -1415,7 +1415,7 @@ mod tests {
 
         let pdf_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/pdf/multi_page.pdf");
         if let Ok(content) = std::fs::read(pdf_path) {
-            let result = extractor.extract_bytes(&content, "application/pdf", &config).await;
+            let result = extractor.extract_content(&content, "application/pdf", &config).await;
 
             if let Err(e) = result {
                 assert!(
@@ -1433,7 +1433,7 @@ mod tests {
     async fn test_ocr_page_texts_override_native_page_content() {
         use crate::core::config::OcrConfig;
         use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-        use crate::types::ExtractionResult;
+        use crate::types::ExtractedDocument;
         use std::sync::Arc;
 
         struct PerPageMockBackend;
@@ -1446,10 +1446,10 @@ mod tests {
             fn supports_language(&self, _: &str) -> bool {
                 true
             }
-            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractionResult> {
+            async fn process_image(&self, _: &[u8], _: &OcrConfig) -> crate::Result<ExtractedDocument> {
                 static COUNTER: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
                 let n = COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-                Ok(ExtractionResult {
+                Ok(ExtractedDocument {
                     content: format!("ocr-page-{n}"),
                     ..Default::default()
                 })
@@ -1555,7 +1555,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Inline-image OCR extraction failed");
 
@@ -1754,7 +1754,7 @@ mod tests {
         let pdf_path = pdf_test_document("non_searchable.pdf");
         let content = std::fs::read(&pdf_path).unwrap_or_else(|e| panic!("non_searchable.pdf must be readable: {e}"));
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction should succeed");
         let result = crate::extraction::derive::derive_extraction_result(
@@ -1804,7 +1804,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Extraction should succeed even when there are no images to OCR");
 
@@ -1847,7 +1847,7 @@ mod tests {
 
         // Should complete without panicking; OCR may succeed or warn, but must not crash.
         let _result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("Extraction with ocr=None and ocr_inline_images=true must not panic");
     }
@@ -1940,7 +1940,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("force_ocr extraction with images should succeed");
 
@@ -1994,7 +1994,7 @@ mod tests {
         };
 
         let result = extractor
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("force_ocr extraction with pdf_options should succeed");
 
@@ -2211,9 +2211,9 @@ mod tests {
             &self,
             _image_bytes: &[u8],
             config: &crate::core::config::OcrConfig,
-        ) -> crate::Result<crate::types::ExtractionResult> {
+        ) -> crate::Result<crate::types::ExtractedDocument> {
             *self.received_config.lock().unwrap() = Some(config.clone());
-            Ok(crate::types::ExtractionResult {
+            Ok(crate::types::ExtractedDocument {
                 content: self.sentinel.to_string(),
                 mime_type: std::borrow::Cow::Borrowed("text/plain"),
                 ..Default::default()
@@ -2257,7 +2257,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2323,7 +2323,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2372,7 +2372,7 @@ mod tests {
         };
 
         let result = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2420,7 +2420,7 @@ mod tests {
         };
 
         let internal_doc = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2459,7 +2459,7 @@ mod tests {
         };
 
         let internal_doc = PdfExtractor::new()
-            .extract_bytes(&content, "application/pdf", &config)
+            .extract_content(&content, "application/pdf", &config)
             .await
             .expect("extraction must not fail");
 
@@ -2506,7 +2506,7 @@ mod tests {
             "metadata.additional should not contain _pdf_form_fields (leak check)"
         );
 
-        // Convert to ExtractionResult through the pipeline to verify the carrier works
+        // Convert to ExtractedDocument through the pipeline to verify the carrier works
         let result =
             crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
 
@@ -2529,7 +2529,7 @@ mod tests {
         // Verify metadata.additional does NOT contain _pdf_form_fields
         assert!(doc.metadata.additional.get("_pdf_form_fields").is_none());
 
-        // Convert to ExtractionResult and verify form_fields is empty
+        // Convert to ExtractedDocument and verify form_fields is empty
         let result =
             crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
 

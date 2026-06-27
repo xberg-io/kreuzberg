@@ -1,6 +1,5 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
@@ -14,7 +13,11 @@ fun main() {
         .withLanguageDetection(Optional.of(languageDetection))
         .build()
 
-    val result = Xberg.extractSync(Paths.get("document.pdf"), null, config)
-    println("Detected languages: ${result.detectedLanguages()}")
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
+    println("Detected languages: ${result.detectedLanguages}")
 }
 ```

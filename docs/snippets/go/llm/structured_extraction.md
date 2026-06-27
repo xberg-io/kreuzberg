@@ -35,13 +35,14 @@ func main() {
 		},
 	}
 
-	result, err := xberg.Extract("paper.pdf", nil, config)
+	input := xberg.ExtractInputFromURI("paper.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract: %v", err)
 	}
 
-	if result.StructuredOutput != nil {
-		fmt.Println(string(*result.StructuredOutput))
+	if result.Results[0].StructuredOutput != nil {
+		fmt.Println(string(*result.Results[0].StructuredOutput))
 	}
 }
 ```

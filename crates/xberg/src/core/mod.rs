@@ -17,12 +17,12 @@
 //! # Example
 //!
 //! ```rust,no_run
-//! use xberg::core::extractor::extract;
+//! use xberg::core::extract::extract;
 //! use xberg::core::config::{ExtractInput, ExtractionConfig};
 //!
 //! # async fn example() -> xberg::Result<()> {
 //! let config = ExtractionConfig::default();
-//! let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
+//! let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
 //! println!("Extracted content: {}", output.results[0].content);
 //! # Ok(())
 //! # }
@@ -34,7 +34,8 @@ pub mod batch_mode;
 pub mod batch_optimizations;
 pub mod config;
 pub mod config_validation;
-pub mod extractor;
+pub mod extract;
+pub(crate) mod extractor;
 pub mod formats;
 #[cfg(feature = "image-encode")]
 pub(crate) mod image_encode;
@@ -59,4 +60,4 @@ pub use server_config::ServerConfig;
 pub use batch_optimizations::{BatchProcessor, BatchProcessorConfig};
 #[cfg(feature = "pdf")]
 pub use config::PdfConfig;
-pub use extractor::{extract, extract_batch};
+pub use extract::{extract, extract_batch};

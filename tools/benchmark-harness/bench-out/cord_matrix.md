@@ -2,7 +2,7 @@
 
 **Timestamp**: 2026-06-02 13:00:30
 **Sample Size**: 10 documents (CORD v2 `test` split)
-**Strategy**: text-then-llm — `xberg::extract_file` (classical text extraction) → `liter-llm` structured extraction with the dataset schema attached.
+**Strategy**: text-then-llm — `xberg::extract` (classical text extraction) → `liter-llm` structured extraction with the dataset schema attached.
 
 | Provider | F1 | Type Corr | Valid % | Tokens | Est. Cost | p50 (ms) | p95 (ms) | Errors |
 |----------|-----|-----------|---------|--------|-----------|----------|----------|--------|

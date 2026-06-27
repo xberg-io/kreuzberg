@@ -2,8 +2,8 @@
 //!
 //! This module provides shared utilities used across extraction modules.
 
-use crate::plugins::DocumentExtractor;
-use crate::types::{ErrorMetadata, ExtractionResult, Metadata};
+use crate::plugins::InternalDocumentExtractor;
+use crate::types::{ErrorMetadata, ExtractedDocument, Metadata};
 use crate::{Result, XbergError};
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -21,10 +21,11 @@ use std::sync::Arc;
 ///
 /// RwLock read + HashMap lookup is ~100ns, fast enough without caching.
 /// Removed thread-local cache to avoid Tokio work-stealing scheduler issues.
-pub(in crate::core::extractor) fn get_extractor(mime_type: &str) -> Result<Arc<dyn DocumentExtractor>> {
+pub(in crate::core::extractor) fn get_extractor(mime_type: &str) -> Result<Arc<dyn InternalDocumentExtractor>> {
     let registry = crate::plugins::registry::get_document_extractor_registry();
     let registry_read = registry.read();
-    let extractor = registry_read.get(mime_type)?;
+    let extractor = registry_read.get_registered(mime_type)?;
+    let extractor: Arc<dyn InternalDocumentExtractor> = Arc::new(extractor);
 
     #[cfg(feature = "otel")]
     {
@@ -62,11 +63,11 @@ pub(in crate::core::extractor) fn get_extractor(mime_type: &str) -> Result<Arc<d
 /// let hint = get_pool_sizing_hint(5_000_000, "application/pdf");
 /// println!("Recommended string buffers: {}", hint.string_buffer_count);
 /// ```
-/// Build an error `ExtractionResult` for failed batch items.
+/// Build an error `ExtractedDocument` for failed batch items.
 ///
 /// Used by both tokio-based batch functions and WASM synchronous fallbacks
 /// to construct a uniform error result.
-pub(crate) fn error_extraction_result(e: &XbergError, elapsed_ms: Option<u64>) -> ExtractionResult {
+pub(crate) fn error_extraction_result(e: &XbergError, elapsed_ms: Option<u64>) -> ExtractedDocument {
     let metadata = Metadata {
         error: Some(ErrorMetadata {
             error_type: format!("{:?}", e),
@@ -76,7 +77,7 @@ pub(crate) fn error_extraction_result(e: &XbergError, elapsed_ms: Option<u64>) -
         ..Default::default()
     };
 
-    ExtractionResult {
+    ExtractedDocument {
         content: format!("Error: {}", e),
         mime_type: Cow::Borrowed("text/plain"),
         metadata,

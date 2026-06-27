@@ -19,41 +19,43 @@ int main(void) {
         return 1;
     }
 
-    XBERGExtractionResult *result =
-        xberg_extract_sync("document.pdf", NULL, config);
-    if (!result) {
-        fprintf(stderr, "extraction failed (code %d): %s\n",
+    XBERGExtractInput *input = xberg_extract_input_from_uri("document.pdf");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
                 xberg_last_error_code(),
                 xberg_last_error_context());
         xberg_extraction_config_free(config);
         return 1;
     }
 
-    char *content = xberg_extraction_result_content(result);
-    if (content) {
-        printf("Total content length: %zu bytes\n", strlen(content));
-        xberg_free_string(content);
+    XBERGExtractionResult *result = xberg_extract(input, config);
+    if (!result) {
+        fprintf(stderr, "extraction failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extract_input_free(input);
+        xberg_extraction_config_free(config);
+        return 1;
     }
 
-    XBERGMetadata *metadata = xberg_extraction_result_metadata(result);
-    if (metadata) {
-        XBERGPageStructure *pages = xberg_metadata_pages(metadata);
-        if (pages) {
-            printf("Total pages: %zu\n", xberg_page_structure_total_count(pages));
-
-            char *boundaries_json = xberg_page_structure_boundaries(pages);
-            if (boundaries_json) {
-                printf("Page boundaries (JSON): %s\n", boundaries_json);
-                xberg_free_string(boundaries_json);
-            } else {
-                printf("No page boundaries available\n");
-            }
-            xberg_page_structure_free(pages);
-        } else {
-            printf("No page structure available\n");
-        }
-        xberg_metadata_free(metadata);
+    char *results = xberg_extraction_result_results(result);
+    if (results) {
+        printf("Extraction results (JSON): %s\n", results);
+        xberg_free_string(results);
     }
+
+    XBERGExtractionSummary *summary = xberg_extraction_result_summary(result);
+    if (summary) {
+        // Access summary fields via xberg_extraction_summary_* accessors
+        // For page information, parse the results JSON array and access
+        // individual XBERGExtractedDocument page data
+        xberg_extraction_summary_free(summary);
+    } else {
+        printf("No extraction summary available\n");
+    }
+
+    xberg_extract_input_free(input);
+
 
     xberg_extraction_result_free(result);
     xberg_extraction_config_free(config);

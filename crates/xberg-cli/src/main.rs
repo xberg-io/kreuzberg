@@ -54,12 +54,12 @@
 #![deny(unsafe_code)]
 
 mod commands;
+mod input;
 mod logging;
 mod output;
 mod style;
 
 use anyhow::{Context, Result};
-use base64::{Engine as _, engine::general_purpose::STANDARD};
 use clap::{CommandFactory, Parser, Subcommand};
 #[cfg(feature = "embeddings")]
 use commands::embed_command;
@@ -69,10 +69,12 @@ use commands::overrides::ExtractionOverrides;
 #[cfg(feature = "api")]
 use commands::serve_command;
 use commands::{
-    BatchInputFormat, ExtractInputSource, batch_command, chunk_command, clear_command, extract_command,
-    extract_structured::{ExtractStructuredArgs, extract_structured_command},
-    load_batch_input_manifest, load_config, manifest_command, stats_command, uri_to_local_path, validate_batch_paths,
-    validate_chunk_params, validate_file_exists, validate_output_dir, warm_command,
+    BatchInputFormat, batch_command, chunk_command, clear_command, extract_command, load_config, manifest_command,
+    stats_command, validate_chunk_params, validate_file_exists, validate_output_dir, warm_command,
+};
+use input::{
+    apply_json_overrides, resolve_batch_inputs, resolve_extract_input, validate_batch_input_uris,
+    validate_extract_input,
 };
 use serde_json::json;
 use std::path::PathBuf;
@@ -146,44 +148,6 @@ enum Commands {
         /// Extraction configuration overrides
         #[command(flatten)]
         overrides: ExtractionOverrides,
-    },
-
-    /// Extract structured data from a document using an LLM
-    ExtractStructured {
-        /// Path to the document file
-        path: PathBuf,
-
-        /// Path to JSON schema file defining the output structure
-        #[arg(long)]
-        schema: PathBuf,
-
-        /// LLM model (e.g., "openai/gpt-4o")
-        #[arg(long)]
-        model: String,
-
-        /// API key for the LLM provider
-        #[arg(long)]
-        api_key: Option<String>,
-
-        /// Custom Jinja2 prompt template
-        #[arg(long)]
-        prompt: Option<String>,
-
-        /// Schema name
-        #[arg(long, default_value = "extraction")]
-        schema_name: Option<String>,
-
-        /// Enable strict mode
-        #[arg(long)]
-        strict: bool,
-
-        /// Config file path
-        #[arg(short, long)]
-        config: Option<PathBuf>,
-
-        /// Output format (text or json)
-        #[arg(short, long, default_value = "json")]
-        format: WireFormat,
     },
 
     /// Batch extract from multiple documents
@@ -574,106 +538,6 @@ impl From<ContentOutputFormatArg> for ContentOutputFormat {
     }
 }
 
-/// Apply inline JSON or base64 JSON overrides to an extraction config.
-fn apply_json_overrides(
-    config: &mut xberg::ExtractionConfig,
-    config_json: Option<String>,
-    config_json_base64: Option<String>,
-) -> Result<()> {
-    if let Some(json_str) = config_json {
-        let json_value: serde_json::Value =
-            serde_json::from_str(&json_str).context("Failed to parse --config-json as JSON")?;
-        *config =
-            merge_json_into_config(config, json_value).context("Failed to merge --config-json with file config")?;
-    } else if let Some(base64_str) = config_json_base64 {
-        let json_bytes = STANDARD
-            .decode(&base64_str)
-            .context("Failed to decode base64 in --config-json-base64")?;
-        let json_str = String::from_utf8(json_bytes).context("Base64-decoded content is not valid UTF-8")?;
-        let json_value: serde_json::Value =
-            serde_json::from_str(&json_str).context("Failed to parse decoded --config-json-base64 as JSON")?;
-        *config = merge_json_into_config(config, json_value)
-            .context("Failed to merge --config-json-base64 with file config")?;
-    }
-    Ok(())
-}
-
-/// Merges a JSON value into an existing extraction config via field-by-field override.
-fn merge_json_into_config(
-    base_config: &xberg::ExtractionConfig,
-    json_value: serde_json::Value,
-) -> Result<xberg::ExtractionConfig> {
-    let json_str = serde_json::to_string(&json_value).map_err(|e| anyhow::anyhow!("{}", e))?;
-    xberg::core::config::merge::merge_config_json(base_config, &json_str).map_err(|e| anyhow::anyhow!("{}", e))
-}
-
-fn resolve_extract_input(uri: Option<String>, url: Option<String>, stdin: bool) -> Result<ExtractInputSource> {
-    match (uri, url, stdin) {
-        (Some(uri), None, false) => Ok(ExtractInputSource::Uri(uri)),
-        (None, Some(url), false) => Ok(ExtractInputSource::Uri(url)),
-        (None, None, true) => Ok(ExtractInputSource::Stdin),
-        _ => anyhow::bail!("Provide exactly one extraction input: URI, --url, or --stdin."),
-    }
-}
-
-fn validate_extract_input(input: &ExtractInputSource) -> Result<()> {
-    match input {
-        ExtractInputSource::Stdin => Ok(()),
-        ExtractInputSource::Uri(uri) => {
-            if is_remote_uri(uri) {
-                return Ok(());
-            }
-            let path = uri_to_local_path(uri)?;
-            validate_file_exists(&path)
-        }
-    }
-}
-
-fn resolve_batch_inputs(
-    paths: Vec<PathBuf>,
-    input: Option<PathBuf>,
-    input_format: Option<BatchInputFormat>,
-) -> Result<Vec<String>> {
-    let mut uris: Vec<String> = paths
-        .into_iter()
-        .map(|path| path.to_string_lossy().to_string())
-        .collect();
-
-    if let Some(input_path) = input {
-        let format = input_format.unwrap_or_else(|| infer_batch_input_format(&input_path));
-        uris.extend(load_batch_input_manifest(&input_path, format)?);
-    }
-
-    if uris.is_empty() {
-        anyhow::bail!("No files provided for batch extraction. Provide paths or --input.");
-    }
-
-    Ok(uris)
-}
-
-fn infer_batch_input_format(path: &std::path::Path) -> BatchInputFormat {
-    match path.extension().and_then(|ext| ext.to_str()) {
-        Some(ext) if ext.eq_ignore_ascii_case("jsonl") || ext.eq_ignore_ascii_case("ndjson") => BatchInputFormat::Jsonl,
-        _ => BatchInputFormat::Json,
-    }
-}
-
-fn validate_batch_input_uris(uris: &[String]) -> Result<()> {
-    let local_paths: Vec<PathBuf> = uris
-        .iter()
-        .filter(|uri| !is_remote_uri(uri))
-        .map(|uri| uri_to_local_path(uri))
-        .collect::<Result<Vec<_>>>()?;
-    if local_paths.is_empty() {
-        return Ok(());
-    }
-    validate_batch_paths(&local_paths)
-}
-
-fn is_remote_uri(uri: &str) -> bool {
-    uri.starts_with("http://") || uri.starts_with("https://")
-}
-
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -709,32 +573,6 @@ fn main() -> Result<()> {
             overrides.apply(&mut config);
 
             extract_command(input, config, mime_type, format, output_dir)?;
-        }
-
-        Commands::ExtractStructured {
-            path,
-            schema,
-            model,
-            api_key,
-            prompt,
-            schema_name,
-            strict,
-            config,
-            format,
-        } => {
-            validate_file_exists(&path)?;
-            validate_file_exists(&schema)?;
-            extract_structured_command(ExtractStructuredArgs {
-                path,
-                schema_path: schema,
-                model,
-                api_key,
-                prompt,
-                schema_name,
-                strict,
-                config_path: config,
-                format,
-            })?;
         }
 
         Commands::Batch {

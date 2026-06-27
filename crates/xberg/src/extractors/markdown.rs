@@ -16,7 +16,7 @@ use super::frontmatter_utils::{extract_frontmatter, extract_metadata_from_yaml, 
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::uri::{ExtractedUri, UriKind, classify_uri};
@@ -569,8 +569,8 @@ impl Plugin for MarkdownExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for MarkdownExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for MarkdownExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -627,7 +627,7 @@ impl DocumentExtractor for MarkdownExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,
@@ -742,7 +742,7 @@ mod tests {
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/markdown", &ExtractionConfig::default())
+            .extract_content(content, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with tables");
         let result =
@@ -821,7 +821,7 @@ mod tests {
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(content, "text/x-markdown", &ExtractionConfig::default())
+            .extract_content(content, "text/x-markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with frontmatter and tables");
         let result =
@@ -1040,7 +1040,7 @@ nested:
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(md.as_bytes(), "text/markdown", &ExtractionConfig::default())
+            .extract_content(md.as_bytes(), "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown with data URI image");
         let result =
@@ -1058,7 +1058,7 @@ nested:
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
+            .extract_content(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should extract markdown without images");
         let result =
@@ -1075,7 +1075,7 @@ nested:
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
+            .extract_content(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should handle emoji in trimmed paragraph");
         let result =
@@ -1091,7 +1091,7 @@ nested:
 
         let extractor = MarkdownExtractor::new();
         let result = extractor
-            .extract_bytes(md, "text/markdown", &ExtractionConfig::default())
+            .extract_content(md, "text/markdown", &ExtractionConfig::default())
             .await
             .expect("Should handle CJK with bold formatting");
         let result =

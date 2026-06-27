@@ -109,7 +109,7 @@ pub enum FormatMetadata {
     #[cfg(feature = "transcription-types")]
     Audio(AudioMetadata),
     /// Code (tree-sitter analyzable source). The structured analysis result is exposed
-    /// via `ExtractionResult::code_intelligence`; this variant only tags the format.
+    /// via `ExtractedDocument::code_intelligence`; this variant only tags the format.
     #[cfg(feature = "tree-sitter")]
     Code,
 }

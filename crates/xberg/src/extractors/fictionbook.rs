@@ -17,7 +17,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::cells_to_markdown;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::uri::ExtractedUri;
@@ -1029,8 +1029,8 @@ impl Plugin for FictionBookExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for FictionBookExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for FictionBookExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,

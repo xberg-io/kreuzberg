@@ -2,8 +2,8 @@
 # Xberg Elixir extraction wrapper for benchmark harness.
 #
 # Supports two modes:
-# - sync: extract_file/2 - synchronous extraction
-# - batch: batch_extract_files/2 - synchronous batch extraction
+# - sync: synchronous extraction
+# - batch: batch extraction
 
 require Logger
 
@@ -75,6 +75,24 @@ defmodule XbergExtract do
     String.replace(no_control, ~r/\xED[\xA0-\xBF][\x80-\xBF]/, "")
   end
 
+  defp extract_input(file_path), do: %{"kind" => "uri", "uri" => file_path}
+  defp encoded_extract_input(file_path), do: file_path |> extract_input() |> Jason.encode!()
+
+  defp result_field(result, field, default \\ nil) do
+    Map.get(result, Atom.to_string(field), Map.get(result, field, default))
+  end
+
+  defp envelope_results(envelope) do
+    Map.get(envelope, "results", Map.get(envelope, :results, []))
+  end
+
+  defp first_result(envelope, file_path) do
+    case envelope_results(envelope) do
+      [result | _] -> result
+      _ -> raise "No extraction result produced for #{file_path}"
+    end
+  end
+
   @doc """
   Determine if OCR was actually used based on extraction result metadata.
   Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
@@ -136,7 +154,7 @@ defmodule XbergExtract do
     start_wall = DateTime.utc_now()
     debug_log("Timing start (monotonic): #{start_time}, wall: #{DateTime.to_iso8601(start_wall)}")
 
-    result = Xberg.extract_file(file_path, nil, config)
+    result = Xberg.extract(input: encoded_extract_input(file_path), config: config)
 
     end_time = System.monotonic_time(:microsecond)
     end_wall = DateTime.utc_now()
@@ -147,14 +165,15 @@ defmodule XbergExtract do
 
     case result do
       {:ok, extraction_result} ->
+        extraction_result = first_result(extraction_result, file_path)
         debug_log("Result class: Xberg.ExtractionResult")
         debug_log("Result has content: true")
-        debug_log("Content length: #{String.length(extraction_result.content)} characters")
+        debug_log("Content length: #{String.length(result_field(extraction_result, :content, ""))} characters")
         debug_log("Result has metadata: true")
         debug_log("Metadata type: map")
 
-        metadata = struct_to_map(extraction_result.metadata)
-        content = sanitize_content(extraction_result.content)
+        metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
+        content = sanitize_content(result_field(extraction_result, :content, ""))
         payload = %{
           "content" => content,
           "metadata" => metadata,
@@ -190,50 +209,36 @@ defmodule XbergExtract do
 
     batch_start = System.monotonic_time(:microsecond)
 
-    results_with_timing =
-      file_paths
-      |> Enum.with_index()
-      |> Enum.map(fn {file_path, idx} ->
-        file_start = System.monotonic_time(:microsecond)
+    {results_with_timing, total_duration_ms} =
+      case Xberg.extract_batch(inputs: Enum.map(file_paths, &extract_input/1), config: config) do
+        {:ok, envelope} ->
+          batch_end = System.monotonic_time(:microsecond)
+          total_duration_ms = (batch_end - batch_start) / 1000.0
+          per_file_duration_ms = if length(file_paths) > 0, do: total_duration_ms / length(file_paths), else: 0.0
 
-        result =
-          try do
-            Xberg.extract_file(file_path, nil, config)
-          rescue
-            e -> {:error, inspect(e)}
-          catch
-            _, reason -> {:error, inspect(reason)}
-          end
+          results =
+            envelope
+            |> envelope_results()
+            |> Enum.with_index()
+            |> Enum.map(fn {extraction_result, idx} ->
+              content = sanitize_content(result_field(extraction_result, :content, ""))
+              metadata = struct_to_map(result_field(extraction_result, :metadata, %{}))
+              debug_log("  Result[#{idx}] - content length: #{String.length(content)}, has metadata: true")
 
-        file_end = System.monotonic_time(:microsecond)
-        file_duration_ms = (file_end - file_start) / 1000.0
+              %{
+                "content" => content,
+                "metadata" => metadata,
+                "_extraction_time_ms" => per_file_duration_ms,
+                "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
+              }
+            end)
 
-        case result do
-          {:ok, extraction_result} ->
-            content_length = String.length(extraction_result.content || "")
-            debug_log("  Result[#{idx}] - content length: #{content_length}, has metadata: true")
+          {results, total_duration_ms}
 
-            metadata = struct_to_map(extraction_result.metadata)
-            content = sanitize_content(extraction_result.content)
-            %{
-              "content" => content,
-              "metadata" => metadata,
-              "_extraction_time_ms" => file_duration_ms,
-              "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
-            }
+        {:error, reason} ->
+          raise inspect(reason)
+      end
 
-          {:error, reason} ->
-            debug_log("  Result[#{idx}] - ERROR: #{inspect(reason)}")
-            %{
-              "error" => inspect(reason),
-              "_extraction_time_ms" => file_duration_ms,
-              "_ocr_used" => false
-            }
-        end
-      end)
-
-    batch_end = System.monotonic_time(:microsecond)
-    total_duration_ms = (batch_end - batch_start) / 1000.0
     debug_log("Total duration (milliseconds): #{total_duration_ms}")
     debug_log("=== BATCH EXTRACTION END ===")
 

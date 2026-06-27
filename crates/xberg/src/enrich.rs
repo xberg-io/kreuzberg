@@ -1,5 +1,5 @@
 //! Unified enrichment chokepoint composing captioning, NER, classification,
-//! and (future) transcription on top of an [`ExtractionResult`].
+//! and (future) transcription on top of an [`ExtractedDocument`].
 //!
 //! # Design
 //!
@@ -12,7 +12,7 @@
 //!
 //! 1. Classification — operates on the full document text (`content`)
 //! 2. NER — operates on the full document text (`content`)
-//! 3. Captioning — operates on images extracted into `ExtractionResult::images`
+//! 3. Captioning — operates on images extracted into `ExtractedDocument::images`
 //!
 //! Transcription is reserved for a future backend and is kept present in the
 //! config surface so callers can wire it today; any attempt to activate it
@@ -24,7 +24,7 @@
 //! use xberg::{ExtractInput, ExtractionConfig, extract, enrich, EnrichmentConfig};
 //!
 //! # async fn run() -> xberg::Result<()> {
-//! let output = extract(ExtractInput::uri("document.pdf"), &ExtractionConfig::default()).await?;
+//! let output = extract(ExtractInput::from_uri("document.pdf"), &ExtractionConfig::default()).await?;
 //! let extraction = output.results.into_iter().next().expect("one input yields one result");
 //! let config = EnrichmentConfig::default();
 //! let enriched = enrich(extraction, &config).await?;
@@ -33,7 +33,7 @@
 //! # }
 //! ```
 
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 #[cfg(feature = "ner")]
 use std::sync::Arc;
@@ -77,7 +77,7 @@ pub struct ClassificationEnrichmentConfig {
 /// Captioning enrichment knob: which LLM to use for image captions.
 ///
 /// The enrichment stage calls [`crate::captioning::caption_image`] for every
-/// image in `ExtractionResult::images` that has non-empty `data`. Images with
+/// image in `ExtractedDocument::images` that has non-empty `data`. Images with
 /// empty byte data (e.g. reference-only images populated via `source_path`) are
 /// skipped rather than forwarded to the VLM.
 #[cfg(feature = "captioning")]
@@ -126,7 +126,7 @@ pub struct EnrichmentConfig {
 
 /// Extraction result with optional enrichment layers applied.
 ///
-/// The `extraction` field carries the original [`ExtractionResult`] unchanged.
+/// The `extraction` field carries the original [`ExtractedDocument`] unchanged.
 /// Enrichment fields are `None` when the corresponding stage was not configured
 /// or when the feature was compiled out.
 // EnrichedResult cannot derive Debug automatically because the `ner` field
@@ -135,7 +135,7 @@ pub struct EnrichmentConfig {
 // rely on the public fields being individually accessible.
 pub struct EnrichedResult {
     /// The original extraction result, unchanged by the enrichment pipeline.
-    pub extraction: ExtractionResult,
+    pub extraction: ExtractedDocument,
 
     /// Detected named entities (populated by the NER stage).
     #[cfg(feature = "ner")]
@@ -173,7 +173,7 @@ pub struct EnrichedResult {
 /// use xberg::{ExtractInput, ExtractionConfig, extract, enrich, EnrichmentConfig};
 ///
 /// # async fn run() -> xberg::Result<()> {
-/// let output = extract(ExtractInput::uri("report.pdf"), &ExtractionConfig::default()).await?;
+/// let output = extract(ExtractInput::from_uri("report.pdf"), &ExtractionConfig::default()).await?;
 /// let extraction = output.results.into_iter().next().expect("one input yields one result");
 ///
 /// // Skip all stages — identity pass.
@@ -192,7 +192,8 @@ pub struct EnrichedResult {
 /// - [`crate::XbergError::Other`] when the NER or captioning backends fail.
 /// - [`crate::XbergError::Other`] when `config.transcription` is `Some`:
 ///   the transcription backend is not yet implemented.
-pub async fn enrich(extraction: ExtractionResult, config: &EnrichmentConfig) -> crate::Result<EnrichedResult> {
+#[cfg_attr(alef, alef(skip))]
+pub async fn enrich(extraction: ExtractedDocument, config: &EnrichmentConfig) -> crate::Result<EnrichedResult> {
     // When none of the enrichment features are enabled, `config` is only
     // read inside `#[cfg(...)]` branches that are all compiled out — silence
     // the unused-variable warning so `-D warnings` builds (e.g. Live HF preset)

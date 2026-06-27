@@ -6,7 +6,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::office_metadata;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::Metadata;
 use crate::types::internal::InternalDocument;
@@ -1145,7 +1145,7 @@ fn extract_node_text(node: roxmltree::Node) -> Option<String> {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for OdtExtractor {
+impl InternalDocumentExtractor for OdtExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -1156,7 +1156,7 @@ impl DocumentExtractor for OdtExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -1405,7 +1405,7 @@ mod tests {
             ..Default::default()
         };
         let result = extractor
-            .extract_bytes(&content, "application/vnd.oasis.opendocument.text", &config)
+            .extract_content(&content, "application/vnd.oasis.opendocument.text", &config)
             .await
             .expect("ODT extraction failed");
         let result =

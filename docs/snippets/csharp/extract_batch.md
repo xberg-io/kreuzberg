@@ -4,8 +4,8 @@ using Xberg;
 var output = await XbergConverter.ExtractBatchAsync(
     new List<ExtractInput>
     {
-        ExtractInput.Uri("document.pdf"),
-        ExtractInput.Bytes(
+        ExtractInput.FromUri("document.pdf"),
+        ExtractInput.FromBytes(
             System.Text.Encoding.UTF8.GetBytes("Hello from memory"),
             "text/plain",
             "note.txt"

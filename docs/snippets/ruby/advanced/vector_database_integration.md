@@ -20,7 +20,8 @@ class VectorDatabaseIntegration
       )
     )
 
-    result = Xberg.extract_sync(document_path, config: config)
+    output = Xberg.extract(Xberg::ExtractInput.new(kind: "uri", uri: document_path), config)
+result = output.results.first
     chunks = result.chunks || []
 
     vector_records = chunks.map.with_index do |chunk, idx|

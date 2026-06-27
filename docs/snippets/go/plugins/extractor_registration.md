@@ -13,10 +13,11 @@ func main() {
 		log.Fatalf("register extractor failed: %v", err)
 	}
 
-	result, err := xberg.ExtractSync("document.json", nil)
+	input := xberg.ExtractInputFromURI("document.json")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
-	log.Printf("Extracted content length: %d", len(result.Content))
+	log.Printf("Extracted content length: %d", len(result.Results[0].Content))
 }
 ```

@@ -5,28 +5,26 @@
 
 use crate::core::config::ExtractionConfig;
 use crate::plugins::ProcessingStage;
-use crate::types::{ExtractionResult, ProcessingWarning};
+use crate::types::{ExtractedDocument, ProcessingWarning};
 use crate::{Result, XbergError};
 use std::borrow::Cow;
+use std::sync::Arc;
 #[cfg(feature = "otel")]
 use std::time::Instant;
 #[cfg(feature = "otel")]
 use tracing::Instrument;
 
-/// Execute all registered post-processors by stage.
-pub(super) async fn execute_processors(
-    result: &mut ExtractionResult,
+type PostProcessorHandle = Arc<dyn crate::plugins::PostProcessor>;
+type ProcessorStage = (ProcessingStage, Arc<Vec<PostProcessorHandle>>);
+
+/// Execute registered post-processors for the supplied stages.
+pub(super) async fn execute_processor_stages(
+    result: &mut ExtractedDocument,
     config: &ExtractionConfig,
     pp_config: &Option<&crate::core::config::PostProcessorConfig>,
-    early_processors: std::sync::Arc<Vec<std::sync::Arc<dyn crate::plugins::PostProcessor>>>,
-    middle_processors: std::sync::Arc<Vec<std::sync::Arc<dyn crate::plugins::PostProcessor>>>,
-    late_processors: std::sync::Arc<Vec<std::sync::Arc<dyn crate::plugins::PostProcessor>>>,
+    stages: &[ProcessorStage],
 ) -> Result<()> {
-    for (_stage, processors_arc) in [
-        (ProcessingStage::Early, early_processors),
-        (ProcessingStage::Middle, middle_processors),
-        (ProcessingStage::Late, late_processors),
-    ] {
+    for (_stage, processors_arc) in stages {
         #[cfg(feature = "otel")]
         let stage_name = match _stage {
             ProcessingStage::Early => crate::telemetry::conventions::stages::POST_PROCESSING_EARLY,
@@ -109,7 +107,7 @@ fn should_processor_run(pp_config: &Option<&crate::core::config::PostProcessorCo
 }
 
 /// Execute all registered validators.
-pub(super) async fn execute_validators(result: &ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+pub(super) async fn execute_validators(result: &ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
     let validator_registry = crate::plugins::registry::get_validator_registry();
     let validators = {
         let registry = validator_registry.read();

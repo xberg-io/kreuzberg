@@ -1,5 +1,8 @@
 ```typescript title="TypeScript"
-const result = await extract("contract.pdf", {
+const output = await extract({
+    kind: "uri",
+    uri: "contract.pdf",
+}, {
     redaction: {
         strategy: "token_replace",
         customTerms: [

@@ -1,9 +1,137 @@
 //! Document extractor registry implementation.
 
-use crate::plugins::DocumentExtractor;
+use crate::core::config::{ExtractInput, ExtractionConfig};
+use crate::plugins::{DocumentExtractor, InternalDocumentExtractor, Plugin};
+use crate::types::internal::InternalDocument;
 use crate::{Result, XbergError};
 use std::collections::{BTreeMap, HashMap};
+use std::path::Path;
 use std::sync::Arc;
+
+/// Registered document extractor plus optional native pipeline capability.
+#[derive(Clone)]
+pub(crate) struct RegisteredDocumentExtractor {
+    extractor: Arc<dyn DocumentExtractor>,
+    internal: Option<Arc<dyn InternalDocumentExtractor>>,
+}
+
+impl RegisteredDocumentExtractor {
+    fn public(extractor: Arc<dyn DocumentExtractor>) -> Self {
+        Self {
+            extractor,
+            internal: None,
+        }
+    }
+
+    fn internal<T>(extractor: Arc<T>) -> Self
+    where
+        T: InternalDocumentExtractor + 'static,
+    {
+        Self {
+            extractor: extractor.clone(),
+            internal: Some(extractor),
+        }
+    }
+
+    pub(crate) fn extractor(&self) -> Arc<dyn DocumentExtractor> {
+        Arc::clone(&self.extractor)
+    }
+
+    pub(crate) fn plugin(&self) -> &dyn DocumentExtractor {
+        self.extractor.as_ref()
+    }
+
+    async fn extract_content_inner(
+        &self,
+        content: &[u8],
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        if let Some(internal) = &self.internal {
+            return internal.extract_content(content, mime_type, config).await;
+        }
+
+        let result = self
+            .extractor
+            .extract(
+                ExtractInput::from_bytes(content.to_vec(), mime_type.to_string(), None),
+                config,
+            )
+            .await?;
+        Ok(result.into())
+    }
+
+    async fn extract_path_inner(
+        &self,
+        path: &Path,
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        if let Some(internal) = &self.internal {
+            return internal.extract_path(path, mime_type, config).await;
+        }
+
+        let mut input = ExtractInput::from_uri(path.to_string_lossy().into_owned());
+        input.mime_type = Some(mime_type.to_string());
+        let result = self.extractor.extract(input, config).await?;
+        Ok(result.into())
+    }
+}
+
+impl Plugin for RegisteredDocumentExtractor {
+    fn name(&self) -> &str {
+        self.plugin().name()
+    }
+
+    fn version(&self) -> String {
+        self.plugin().version()
+    }
+
+    fn initialize(&self) -> Result<()> {
+        self.plugin().initialize()
+    }
+
+    fn shutdown(&self) -> Result<()> {
+        self.plugin().shutdown()
+    }
+
+    fn description(&self) -> &str {
+        self.plugin().description()
+    }
+
+    fn author(&self) -> &str {
+        self.plugin().author()
+    }
+}
+
+#[async_trait::async_trait]
+impl InternalDocumentExtractor for RegisteredDocumentExtractor {
+    async fn extract_content(
+        &self,
+        content: &[u8],
+        mime_type: &str,
+        config: &ExtractionConfig,
+    ) -> Result<InternalDocument> {
+        self.extract_content_inner(content, mime_type, config).await
+    }
+
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+        self.extract_path_inner(path, mime_type, config).await
+    }
+
+    fn supported_mime_types(&self) -> &[&str] {
+        self.plugin().supported_mime_types()
+    }
+
+    fn priority(&self) -> i32 {
+        self.plugin().priority()
+    }
+
+    fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
+        self.plugin().can_handle(path, mime_type)
+    }
+}
+
 #[cfg_attr(alef, alef(skip))]
 /// Registry for document extractor plugins.
 ///
@@ -13,7 +141,7 @@ use std::sync::Arc;
 ///
 /// The registry is thread-safe and can be accessed concurrently from multiple threads.
 pub struct DocumentExtractorRegistry {
-    extractors: HashMap<String, BTreeMap<i32, Arc<dyn DocumentExtractor>>>,
+    extractors: HashMap<String, BTreeMap<i32, RegisteredDocumentExtractor>>,
     name_index: HashMap<String, Vec<(String, i32)>>,
 }
 
@@ -39,6 +167,19 @@ impl DocumentExtractorRegistry {
     /// - `Ok(())` if registration succeeded
     /// - `Err(...)` if initialization failed
     pub fn register(&mut self, extractor: Arc<dyn DocumentExtractor>) -> Result<()> {
+        self.register_entry(RegisteredDocumentExtractor::public(extractor))
+    }
+
+    /// Register a native extractor with access to the internal pipeline representation.
+    pub(crate) fn register_internal<T>(&mut self, extractor: Arc<T>) -> Result<()>
+    where
+        T: InternalDocumentExtractor + 'static,
+    {
+        self.register_entry(RegisteredDocumentExtractor::internal(extractor))
+    }
+
+    fn register_entry(&mut self, entry: RegisteredDocumentExtractor) -> Result<()> {
+        let extractor = entry.extractor();
         let name = extractor.name().to_string();
         let priority = extractor.priority();
         let mime_types: Vec<String> = extractor.supported_mime_types().iter().map(|s| s.to_string()).collect();
@@ -70,7 +211,7 @@ impl DocumentExtractorRegistry {
             self.extractors
                 .entry(mime_type.clone())
                 .or_default()
-                .insert(priority, Arc::clone(&extractor));
+                .insert(priority, entry.clone());
             index_entries.push((mime_type.clone(), priority));
         }
 
@@ -102,28 +243,32 @@ impl DocumentExtractorRegistry {
         )
     ))]
     pub fn get(&self, mime_type: &str) -> Result<Arc<dyn DocumentExtractor>> {
+        Ok(self.get_registered(mime_type)?.extractor())
+    }
+
+    pub(crate) fn get_registered(&self, mime_type: &str) -> Result<RegisteredDocumentExtractor> {
         if let Some(priority_map) = self.extractors.get(mime_type)
-            && let Some((_priority, extractor)) = priority_map.iter().next_back()
+            && let Some((_priority, entry)) = priority_map.iter().next_back()
         {
             #[cfg(feature = "otel")]
             tracing::Span::current().record("registry.found", true);
-            return Ok(Arc::clone(extractor));
+            return Ok(entry.clone());
         }
 
-        let mut best_match: Option<(i32, Arc<dyn DocumentExtractor>)> = None;
+        let mut best_match: Option<(i32, RegisteredDocumentExtractor)> = None;
 
         for (registered_mime, priority_map) in &self.extractors {
             if registered_mime.ends_with("/*") {
                 let prefix = &registered_mime[..registered_mime.len() - 1];
                 if mime_type.starts_with(prefix)
-                    && let Some((_priority, extractor)) = priority_map.iter().next_back()
+                    && let Some((_priority, entry)) = priority_map.iter().next_back()
                 {
-                    let priority = extractor.priority();
+                    let priority = entry.extractor.priority();
                     match &best_match {
-                        None => best_match = Some((priority, Arc::clone(extractor))),
+                        None => best_match = Some((priority, entry.clone())),
                         Some((current_priority, _)) => {
                             if priority > *current_priority {
-                                best_match = Some((priority, Arc::clone(extractor)));
+                                best_match = Some((priority, entry.clone()));
                             }
                         }
                     }
@@ -131,10 +276,10 @@ impl DocumentExtractorRegistry {
             }
         }
 
-        if let Some((_priority, extractor)) = best_match {
+        if let Some((_priority, entry)) = best_match {
             #[cfg(feature = "otel")]
             tracing::Span::current().record("registry.found", true);
-            return Ok(extractor);
+            return Ok(entry);
         }
 
         #[cfg(feature = "otel")]
@@ -164,10 +309,10 @@ impl DocumentExtractorRegistry {
 
         for (mime_type, priority) in index_entries {
             if let Some(priority_map) = self.extractors.get_mut(&mime_type) {
-                if let Some(extractor) = priority_map.remove(&priority)
+                if let Some(entry) = priority_map.remove(&priority)
                     && extractor_to_shutdown.is_none()
                 {
-                    extractor_to_shutdown = Some(extractor);
+                    extractor_to_shutdown = Some(entry.extractor());
                 }
 
                 if priority_map.is_empty() {
@@ -227,7 +372,7 @@ impl Default for DocumentExtractorRegistry {
 mod tests {
     use super::*;
     use crate::core::config::ExtractionConfig;
-    use crate::plugins::Plugin;
+    use crate::plugins::{InternalDocumentExtractor, Plugin};
 
     use async_trait::async_trait;
 
@@ -253,8 +398,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for MockExtractor {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for MockExtractor {
+        async fn extract_content(
             &self,
             _: &[u8],
             _: &str,
@@ -489,8 +634,8 @@ mod tests {
     }
 
     #[async_trait]
-    impl DocumentExtractor for FailingExtractor {
-        async fn extract_bytes(
+    impl InternalDocumentExtractor for FailingExtractor {
+        async fn extract_content(
             &self,
             _: &[u8],
             _: &str,

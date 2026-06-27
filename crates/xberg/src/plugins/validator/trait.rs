@@ -5,7 +5,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::Plugin;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use async_trait::async_trait;
 
 /// Trait for validator plugins.
@@ -37,7 +37,7 @@ use async_trait::async_trait;
 ///
 /// ```rust
 /// use xberg::plugins::{Plugin, Validator};
-/// use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
+/// use xberg::{Result, ExtractedDocument, ExtractionConfig, XbergError};
 /// use async_trait::async_trait;
 ///
 /// /// Validate that extracted content has minimum length
@@ -54,7 +54,7 @@ use async_trait::async_trait;
 ///
 /// #[async_trait]
 /// impl Validator for MinimumLengthValidator {
-///     async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+///     async fn validate(&self, result: &ExtractedDocument, config: &ExtractionConfig)
 ///         -> Result<()> {
 ///         if result.content.len() < self.min_length {
 ///             return Err(XbergError::validation(format!(
@@ -94,7 +94,7 @@ pub trait Validator: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, Validator};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig, XbergError};
     /// # use async_trait::async_trait;
     /// # struct ContentLengthValidator { min: usize, max: usize }
     /// # impl Plugin for ContentLengthValidator {
@@ -105,7 +105,7 @@ pub trait Validator: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl Validator for ContentLengthValidator {
-    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    /// async fn validate(&self, result: &ExtractedDocument, config: &ExtractionConfig)
     ///     -> Result<()> {
     ///     let length = result.content.len();
     ///
@@ -132,7 +132,7 @@ pub trait Validator: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, Validator};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig, XbergError};
     /// # use async_trait::async_trait;
     /// # struct QualityValidator { min_score: f64 }
     /// # impl Plugin for QualityValidator {
@@ -143,7 +143,7 @@ pub trait Validator: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl Validator for QualityValidator {
-    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    /// async fn validate(&self, result: &ExtractedDocument, config: &ExtractionConfig)
     ///     -> Result<()> {
     ///     // Check if quality_score exists in metadata
     ///     let score = result.metadata
@@ -168,7 +168,7 @@ pub trait Validator: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, Validator};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig, XbergError};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig, XbergError};
     /// # use async_trait::async_trait;
     /// # struct SecurityValidator { blocked_patterns: Vec<String> }
     /// # impl Plugin for SecurityValidator {
@@ -179,7 +179,7 @@ pub trait Validator: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl Validator for SecurityValidator {
-    /// async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
+    /// async fn validate(&self, result: &ExtractedDocument, config: &ExtractionConfig)
     ///     -> Result<()> {
     ///     // Check for blocked patterns
     ///     for pattern in &self.blocked_patterns {
@@ -195,7 +195,7 @@ pub trait Validator: Plugin {
     /// }
     /// # }
     /// ```
-    async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> Result<()>;
+    async fn validate(&self, result: &ExtractedDocument, config: &ExtractionConfig) -> Result<()>;
 
     /// Optional: Check if this validator should run for a given result.
     ///
@@ -215,7 +215,7 @@ pub trait Validator: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, Validator};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct PdfValidator;
     /// # impl Plugin for PdfValidator {
@@ -226,14 +226,14 @@ pub trait Validator: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl Validator for PdfValidator {
-    /// #     async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// #     async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> { Ok(()) }
     /// /// Only validate PDF documents
-    /// fn should_validate(&self, result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    /// fn should_validate(&self, result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
     ///     result.mime_type == "application/pdf"
     /// }
     /// # }
     /// ```
-    fn should_validate(&self, _result: &ExtractionResult, _config: &ExtractionConfig) -> bool {
+    fn should_validate(&self, _result: &ExtractedDocument, _config: &ExtractionConfig) -> bool {
         true
     }
 
@@ -252,7 +252,7 @@ pub trait Validator: Plugin {
     ///
     /// ```rust
     /// # use xberg::plugins::{Plugin, Validator};
-    /// # use xberg::{Result, ExtractionResult, ExtractionConfig};
+    /// # use xberg::{Result, ExtractedDocument, ExtractionConfig};
     /// # use async_trait::async_trait;
     /// # struct FastValidator;
     /// # impl Plugin for FastValidator {
@@ -263,7 +263,7 @@ pub trait Validator: Plugin {
     /// # }
     /// # #[async_trait]
     /// # impl Validator for FastValidator {
-    /// #     async fn validate(&self, _: &ExtractionResult, _: &ExtractionConfig) -> Result<()> { Ok(()) }
+    /// #     async fn validate(&self, _: &ExtractedDocument, _: &ExtractionConfig) -> Result<()> { Ok(()) }
     /// /// Run this validator first (it's fast)
     /// fn priority(&self) -> i32 {
     ///     100

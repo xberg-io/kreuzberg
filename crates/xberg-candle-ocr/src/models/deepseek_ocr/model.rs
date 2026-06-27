@@ -751,7 +751,7 @@ impl NoTPTransformer {
 pub struct VitModel {
     embeddings: CLIPVisionEmbeddings,
     transformer: NoTPTransformer,
-    pre_layrnorm: LayerNorm,
+    pre_layernorm: LayerNorm,
 }
 
 impl VitModel {
@@ -785,7 +785,7 @@ impl VitModel {
         Ok(Self {
             embeddings,
             transformer,
-            pre_layrnorm,
+            pre_layernorm,
         })
     }
 
@@ -796,7 +796,7 @@ impl VitModel {
     /// Returns [`CandleOcrError`] if forward computation fails.
     pub fn forward(&self, xs: &Tensor, patch_embeds: Option<&Tensor>) -> Result<Tensor> {
         let x = self.embeddings.forward(xs, patch_embeds)?;
-        let hidden_states = self.pre_layrnorm.forward(&x)?;
+        let hidden_states = self.pre_layernorm.forward(&x)?;
         let output = self.transformer.forward(&hidden_states)?;
         Ok(output)
     }

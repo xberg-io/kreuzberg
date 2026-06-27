@@ -1,9 +1,10 @@
 ```rust title="Rust"
-use xberg::extract_sync;
+use xberg::{extract, ExtractInput};
 
-fn main() -> xberg::Result<()> {
-    let result = extract_sync("document.pdf", None, &Default::default())?;
-    println!("{}", result.content);
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
+    let output = extract(ExtractInput::from_uri("document.pdf"), &Default::default()).await?;
+    println!("{}", output.results[0].content);
     Ok(())
 }
 ```

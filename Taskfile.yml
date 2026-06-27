@@ -496,15 +496,13 @@ tasks:
   php:format:
     desc: "Format PHP binding with php-cs-fixer"
     cmds:
-      - php-cs-fixer fix
-    dir: packages/php
+      - composer format
 
   php:lint:
     desc: "Lint PHP binding with phpstan and php-cs-fixer"
     cmds:
-      - php-cs-fixer fix --dry-run --diff
-      - phpstan analyse --memory-limit=2G
-    dir: packages/php
+      - composer format:check
+      - composer phpstan
 
   python:build:sdist:publish:
     desc: "Build the Python sdist using maturin"
@@ -553,20 +551,20 @@ tasks:
     desc: "Format Kotlin/Android binding with ktlint via gradle"
     cmds:
       - gradle ktlintFormat --no-daemon
-    dir: packages/kotlin
+    dir: packages/kotlin-android
 
   kotlin-android:lint:
     desc: "Lint Kotlin/Android binding with ktlint via gradle"
     cmds:
       - gradle ktlintCheck --no-daemon
-    dir: packages/kotlin
+    dir: packages/kotlin-android
 
   kotlin-android:test:
     desc: "Run Kotlin/Android binding tests"
     cmds:
       - cargo build --locked --release -p xberg-ffi
       - gradle test --no-daemon
-    dir: packages/kotlin
+    dir: packages/kotlin-android
 
   swift:format:
     desc: "Format Swift binding with swift format"

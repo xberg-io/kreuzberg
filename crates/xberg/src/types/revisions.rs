@@ -62,7 +62,7 @@ pub struct CellChange {
 ///
 /// Populated by per-format extractors that understand change-tracking metadata
 /// (DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every
-/// extractor defaults to `ExtractionResult.revisions = None` until a
+/// extractor defaults to `ExtractedDocument.revisions = None` until a
 /// format-specific implementation is added.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]

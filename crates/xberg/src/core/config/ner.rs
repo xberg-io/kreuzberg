@@ -1,7 +1,7 @@
 //! NER (named-entity recognition) configuration.
 //!
 //! When `ExtractionConfig::ner` is `Some`, the NER post-processor runs after
-//! extraction and populates [`ExtractionResult::entities`](crate::types::ExtractionResult::entities).
+//! extraction and populates [`ExtractedDocument::entities`](crate::types::ExtractedDocument::entities).
 
 use crate::types::entity::EntityCategory;
 use serde::{Deserialize, Serialize};
@@ -24,7 +24,7 @@ pub struct NerConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub model: Option<String>,
     /// Optional LLM configuration — only used by [`NerBackendKind::Llm`]. Token usage
-    /// for LLM backends is recorded in `ExtractionResult::llm_usage`.
+    /// for LLM backends is recorded in `ExtractedDocument::llm_usage`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub llm: Option<super::llm::LlmConfig>,
     /// Arbitrary user-supplied entity labels for zero-shot detection.

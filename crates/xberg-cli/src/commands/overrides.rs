@@ -13,7 +13,6 @@ use crate::ContentOutputFormatArg;
 const VALID_OCR_BACKENDS: &[&str] = &[
     "tesseract",
     "paddle-ocr",
-    "easyocr",
     "vlm",
     "candle-trocr",
     "candle-paddleocr-vl",
@@ -92,12 +91,12 @@ pub struct ExtractionOverrides {
     #[arg(long)]
     pub ocr: Option<bool>,
 
-    /// OCR backend to use when --ocr is enabled (tesseract, paddle-ocr, easyocr).
+    /// OCR backend to use when --ocr is enabled (tesseract, paddle-ocr, vlm, or candle-*).
     #[arg(long)]
     pub ocr_backend: Option<String>,
 
     /// OCR language code. Tesseract uses ISO 639-3 (eng, fra, deu).
-    /// PaddleOCR/EasyOCR use short codes (en, ch, french, korean).
+    /// PaddleOCR uses short codes (en, ch, french, korean).
     #[arg(long)]
     pub ocr_language: Option<String>,
 
@@ -459,7 +458,6 @@ impl ExtractionOverrides {
             if ocr_flag {
                 let backend = match self.ocr_backend.as_deref() {
                     Some("paddle-ocr") => "paddle-ocr",
-                    Some("easyocr") => "easyocr",
                     Some("candle-trocr") => "candle-trocr",
                     Some("candle-paddleocr-vl") => "candle-paddleocr-vl",
                     Some("candle-glm-ocr") => "candle-glm-ocr",
@@ -468,7 +466,7 @@ impl ExtractionOverrides {
                 let language = match &self.ocr_language {
                     Some(lang) => vec![lang.clone()],
                     None => match backend {
-                        "paddle-ocr" | "easyocr" | "candle-paddleocr-vl" | "candle-glm-ocr" => vec!["en".to_string()],
+                        "paddle-ocr" | "candle-paddleocr-vl" | "candle-glm-ocr" => vec!["en".to_string()],
                         _ => vec!["eng".to_string()],
                     },
                 };
@@ -978,17 +976,13 @@ mod tests {
     }
 
     #[test]
-    fn test_ocr_default_language_easyocr() {
-        let mut config = ExtractionConfig::default();
+    fn test_validate_unknown_ocr_backend_rejected() {
         let overrides = ExtractionOverrides {
-            ocr: Some(true),
-            ocr_backend: Some("easyocr".to_string()),
+            ocr_backend: Some("unsupported-ocr".to_string()),
             ..default_overrides()
         };
-        overrides.apply(&mut config);
-        let ocr = config.ocr.unwrap();
-        assert_eq!(ocr.backend, "easyocr");
-        assert_eq!(ocr.language, vec!["en".to_string()]);
+        let err = overrides.validate().unwrap_err();
+        assert!(err.to_string().contains("Invalid OCR backend"));
     }
 
     #[test]
@@ -1421,7 +1415,7 @@ mod tests {
 
     #[test]
     fn test_validate_valid_ocr_backends() {
-        for backend in &["tesseract", "paddle-ocr", "easyocr"] {
+        for backend in &["tesseract", "paddle-ocr"] {
             let overrides = ExtractionOverrides {
                 ocr_backend: Some(backend.to_string()),
                 ..default_overrides()

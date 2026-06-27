@@ -18,6 +18,8 @@
 //! assert_eq!(doc.elements.len(), 4);
 //! ```
 
+#![allow(dead_code)]
+
 use ahash::AHashMap;
 
 use super::document_structure::{ContentLayer, TextAnnotation};

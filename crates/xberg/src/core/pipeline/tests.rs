@@ -363,7 +363,7 @@ async fn test_postprocessor_runs_before_validator() {
 
     #[async_trait]
     impl PostProcessor for TestPostProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             result
                 .metadata
                 .additional
@@ -394,7 +394,7 @@ async fn test_postprocessor_runs_before_validator() {
 
     #[async_trait]
     impl Validator for TestValidator {
-        async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             let should_validate = result
                 .metadata
                 .additional
@@ -501,7 +501,7 @@ async fn test_quality_processing_runs_before_validator() {
 
     #[async_trait]
     impl Validator for QualityValidator {
-        async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             let should_validate = result
                 .metadata
                 .additional
@@ -575,7 +575,7 @@ async fn test_multiple_postprocessors_run_before_validator() {
 
     #[async_trait]
     impl PostProcessor for EarlyProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             let mut order = result
                 .metadata
                 .additional
@@ -614,7 +614,7 @@ async fn test_multiple_postprocessors_run_before_validator() {
 
     #[async_trait]
     impl PostProcessor for LateProcessor {
-        async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             let mut order = result
                 .metadata
                 .additional
@@ -653,7 +653,7 @@ async fn test_multiple_postprocessors_run_before_validator() {
 
     #[async_trait]
     impl Validator for OrderValidator {
-        async fn validate(&self, result: &ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+        async fn validate(&self, result: &ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
             let should_validate = result
                 .metadata
                 .additional
@@ -725,6 +725,82 @@ async fn test_multiple_postprocessors_run_before_validator() {
     clear_processor_cache().unwrap();
 
     assert!(processed.is_ok(), "All processors should run before validator");
+}
+
+#[tokio::test]
+#[serial]
+#[cfg(feature = "chunking")]
+async fn test_middle_postprocessors_run_after_explicit_chunking() {
+    use crate::plugins::{Plugin, PostProcessor, ProcessingStage};
+    use async_trait::async_trait;
+    use std::sync::Arc;
+
+    const CHUNK_MARKER: &str = "middle_saw_chunks";
+
+    struct ChunkAwareMiddleProcessor;
+    impl Plugin for ChunkAwareMiddleProcessor {
+        fn name(&self) -> &str {
+            "chunk-aware-middle"
+        }
+        fn version(&self) -> String {
+            "1.0.0".to_string()
+        }
+        fn initialize(&self) -> Result<()> {
+            Ok(())
+        }
+        fn shutdown(&self) -> Result<()> {
+            Ok(())
+        }
+    }
+
+    #[async_trait]
+    impl PostProcessor for ChunkAwareMiddleProcessor {
+        async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
+            result.metadata.additional.insert(
+                Cow::Borrowed(CHUNK_MARKER),
+                serde_json::json!(result.chunks.as_ref().is_some_and(|chunks| !chunks.is_empty())),
+            );
+            Ok(())
+        }
+
+        fn processing_stage(&self) -> ProcessingStage {
+            ProcessingStage::Middle
+        }
+    }
+
+    let registry = crate::plugins::registry::get_post_processor_registry();
+    {
+        let mut reg = registry.write();
+        reg.register(Arc::new(ChunkAwareMiddleProcessor)).unwrap();
+    }
+    clear_processor_cache().unwrap();
+
+    let doc = make_doc(&"chunk me ".repeat(100), "text/plain");
+    let config = ExtractionConfig {
+        chunking: Some(crate::ChunkingConfig {
+            max_characters: 80,
+            overlap: 0,
+            trim: true,
+            chunker_type: crate::ChunkerType::Text,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let processed = run_pipeline(doc, &config).await;
+
+    {
+        let mut reg = registry.write();
+        reg.remove("chunk-aware-middle").unwrap();
+    }
+    clear_processor_cache().unwrap();
+
+    let processed = processed.unwrap();
+    assert_eq!(
+        processed.metadata.additional.get(CHUNK_MARKER),
+        Some(&serde_json::json!(true)),
+        "Middle-stage processors should see explicit chunking output"
+    );
 }
 
 #[tokio::test]
@@ -982,7 +1058,7 @@ fn test_append_ocr_text_for_pptx_images() {
         bits_per_component: None,
         is_mask: false,
         description: None,
-        ocr_result: Some(Box::new(crate::types::ExtractionResult {
+        ocr_result: Some(Box::new(crate::types::ExtractedDocument {
             content: "OCR text here".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -1012,7 +1088,7 @@ fn test_append_ocr_text_for_pptx_images() {
 
 /// Smoke tests for `apply_output_format_pass`.
 ///
-/// These operate directly on `ExtractionResult` without invoking the full extractor,
+/// These operate directly on `ExtractedDocument` without invoking the full extractor,
 /// proving the pass executes correctly when called at the pipeline level.
 #[cfg(feature = "image-encode")]
 mod output_format_pass_tests {
@@ -1023,7 +1099,7 @@ mod output_format_pass_tests {
     use image::{DynamicImage, ImageFormat};
 
     use crate::core::config::extraction::{ImageExtractionConfig, ImageOutputFormat};
-    use crate::types::{ExtractedImage, ExtractionResult};
+    use crate::types::{ExtractedDocument, ExtractedImage};
 
     use super::apply_output_format_pass;
 
@@ -1057,7 +1133,7 @@ mod output_format_pass_tests {
     /// Both decodable images are re-encoded to PNG; no warnings are pushed.
     #[test]
     fn both_images_re_encoded_to_png_no_warnings() {
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![
                 make_image(make_jpeg_bytes(), "jpeg"),
                 make_image(make_png_bytes(), "png"),
@@ -1090,7 +1166,7 @@ mod output_format_pass_tests {
         let svg_bytes = Bytes::from_static(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
         let original_svg = svg_bytes.clone();
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![
                 make_image(make_jpeg_bytes(), "jpeg"),
                 make_image(svg_bytes, "svg"),
@@ -1125,7 +1201,7 @@ mod output_format_pass_tests {
     fn svg_image_skipped_with_warning() {
         let svg_bytes = Bytes::from_static(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![
                 make_image(make_jpeg_bytes(), "jpeg"),
                 make_image(svg_bytes, "svg"),
@@ -1155,7 +1231,7 @@ mod output_format_pass_tests {
     #[test]
     fn native_target_is_no_op() {
         let original = make_jpeg_bytes();
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![make_image(original.clone(), "jpeg")]),
             ..Default::default()
         };
@@ -1185,7 +1261,7 @@ mod data_base64_pass_tests {
     use bytes::Bytes;
 
     use crate::core::config::extraction::ImageExtractionConfig;
-    use crate::types::{ExtractedImage, ExtractionResult};
+    use crate::types::{ExtractedDocument, ExtractedImage};
 
     use super::apply_data_base64_pass;
 
@@ -1204,7 +1280,7 @@ mod data_base64_pass_tests {
         let first_bytes = Bytes::from_static(b"\x89PNG\r\n\x1a\n");
         let second_bytes = Bytes::from_static(b"\xff\xd8\xff");
 
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![make_image(first_bytes.clone()), make_image(second_bytes.clone())]),
             ..Default::default()
         };
@@ -1233,7 +1309,7 @@ mod data_base64_pass_tests {
     /// its `data_base64` field populated.
     #[test]
     fn include_data_base64_false_leaves_field_none() {
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             images: Some(vec![
                 make_image(Bytes::from_static(b"\x89PNG\r\n\x1a\n")),
                 make_image(Bytes::from_static(b"\xff\xd8\xff")),

@@ -9,16 +9,18 @@ import (
 
 func main() {
 	preserve := true
-	result, err := xberg.ExtractSync("document.pdf", &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		TokenReduction: &xberg.TokenReductionConfig{
 			Mode:                  "moderate",
 			PreserveImportantWords: &preserve,
 		},
-	})
+	}
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Println("content length:", len(result.Content))
+	log.Println("content length:", len(result.Results[0].Content))
 }
 ```

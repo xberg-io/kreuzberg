@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\PdfConfig;
+use Xberg\ExtractionConfig;
+use Xberg\PdfConfig;
 
 // Hierarchy detection in PDF options array
 $config = new ExtractionConfig(
@@ -29,8 +28,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Hierarchy detection enabled\n";
 echo "Content length: " . strlen($result->content) . " characters\n";
@@ -48,8 +47,8 @@ $advancedConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($advancedConfig);
-$result = $xberg->extract('complex_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('complex_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Advanced hierarchy detection completed\n";
 echo "Detected structure preserved in output\n";
@@ -64,8 +63,8 @@ $fastConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($fastConfig);
-$result = $xberg->extract('simple_document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('simple_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Fast extraction without hierarchy detection\n";
 ```

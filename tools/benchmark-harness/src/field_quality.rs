@@ -119,7 +119,7 @@ async fn run_form_fields(args: &Args) -> Result<()> {
             ..Default::default()
         };
 
-        let result = xberg::extract_file(&doc_path, None, &extraction_config)
+        let result = crate::extract_xberg_file(&doc_path, &extraction_config)
             .await
             .with_context(|| format!("extraction failed for {}", doc_path.display()))?;
 
@@ -185,7 +185,7 @@ async fn run_formula(args: &Args) -> Result<()> {
         let doc_path = fixture.resolve_document_path(fixture_dir);
         let extraction_config = build_layout_config();
 
-        let result = xberg::extract_file(&doc_path, None, &extraction_config)
+        let result = crate::extract_xberg_file(&doc_path, &extraction_config)
             .await
             .with_context(|| format!("extraction failed for {}", doc_path.display()))?;
 
@@ -269,7 +269,7 @@ async fn run_structured(args: &Args) -> Result<()> {
     for fixture in &fixtures {
         let extraction_config = xberg::ExtractionConfig::default();
 
-        let result = match xberg::extract_file(&fixture.document_path, None, &extraction_config).await {
+        let result = match crate::extract_xberg_file(&fixture.document_path, &extraction_config).await {
             Ok(r) => r,
             Err(e) => {
                 eprintln!("  ERROR {}: {}", fixture.document_path.display(), e);
@@ -403,7 +403,7 @@ fn parse_formulas_array(value: &serde_json::Value, path: &Path) -> Result<Vec<St
 /// The harness depends on `xberg` with `features = ["full"]`, which includes
 /// `layout-detection`, so the layout config is always available.
 /// Config for formula extraction: GLM-OCR paired mode populates
-/// `ExtractionResult.formulas` only when layout detection runs over OCR'd pages,
+/// `ExtractedDocument.formulas` only when layout detection runs over OCR'd pages,
 /// so force OCR through the `candle-glm-ocr` backend (mirrors the
 /// `CandleGlmOcrLayout` benchmark pipeline). Requires the harness to be built
 /// with `--features glm-ocr-bench`.

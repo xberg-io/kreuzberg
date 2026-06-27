@@ -22,7 +22,7 @@ use parking_lot::{Mutex, RwLock};
 use crate::Result;
 use crate::core::config::OcrConfig;
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use xberg_candle_ocr::CandleOcrError;
 use xberg_candle_ocr::DType;
 use xberg_candle_ocr::DevicePreference;
@@ -415,7 +415,7 @@ impl Plugin for GlmOcrBackend {
 
 #[async_trait]
 impl OcrBackend for GlmOcrBackend {
-    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image(&self, image_bytes: &[u8], config: &OcrConfig) -> Result<ExtractedDocument> {
         // Parse configuration
         let opts = self.parse_options(config);
 
@@ -461,7 +461,7 @@ impl OcrBackend for GlmOcrBackend {
             }
         };
 
-        Ok(ExtractionResult {
+        Ok(ExtractedDocument {
             content,
             formulas,
             mime_type: Cow::Borrowed("text/markdown"),
@@ -469,7 +469,7 @@ impl OcrBackend for GlmOcrBackend {
         })
     }
 
-    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractionResult> {
+    async fn process_image_file(&self, path: &Path, config: &OcrConfig) -> Result<ExtractedDocument> {
         let bytes = crate::core::io::read_file_async(path).await?;
         self.process_image(&bytes, config).await
     }

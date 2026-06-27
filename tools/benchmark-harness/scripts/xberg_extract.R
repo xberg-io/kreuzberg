@@ -102,9 +102,9 @@ extract_sync <- function(file_path, config = NULL) {
 
   result <- tryCatch({
     if (is.null(config)) {
-      extract_file_sync(file_path)
+      extract(ExtractInput$from_uri(file_path), ExtractionConfig$default())
     } else {
-      extract_file_sync(file_path, config = config)
+      extract(ExtractInput$from_uri(file_path), config = config)
     }
   },
   error = function(e) {
@@ -112,6 +112,7 @@ extract_sync <- function(file_path, config = NULL) {
     debug_log(sprintf("Backtrace:\n%s", paste(e$call, collapse = "\n")))
     stop(e)
   })
+  result <- result$results[[1]]
 
   end_monotonic <- Sys.time()
   duration_s <- as.numeric(end_monotonic - start_monotonic)
@@ -162,10 +163,11 @@ extract_batch <- function(file_paths, config = NULL) {
   debug_log(sprintf("Timing start: %s", format(start_monotonic, "%Y-%m-%d %H:%M:%OS6")))
 
   results <- tryCatch({
+    inputs <- lapply(file_paths, ExtractInput$from_uri)
     if (is.null(config)) {
-      batch_extract_files_sync(file_paths)
+      extract_batch(inputs, ExtractionConfig$default())
     } else {
-      batch_extract_files_sync(file_paths, config = config)
+      extract_batch(inputs, config = config)
     }
   },
   error = function(e) {
@@ -173,6 +175,7 @@ extract_batch <- function(file_paths, config = NULL) {
     debug_log(sprintf("Backtrace:\n%s", paste(e$call, collapse = "\n")))
     stop(e)
   })
+  results <- results$results
 
   end_monotonic <- Sys.time()
   total_duration_s <- as.numeric(end_monotonic - start_monotonic)
@@ -241,14 +244,15 @@ extract_server <- function(ocr_enabled) {
     debug_log(sprintf("Processing file: %s, force_ocr: %s", file_path, force_ocr))
 
     tryCatch({
-      config <- extraction_config(use_cache = FALSE)
-
+      config_json <- list(use_cache = FALSE)
       if (ocr_enabled || force_ocr) {
-        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
+        config_json$ocr <- list(backend = "tesseract")
       }
+      config <- ExtractionConfig$from_json(toJSON(config_json, auto_unbox = TRUE))
 
       start <- Sys.time()
-      result <- extract_file_sync(file_path, config = config)
+      result <- extract(ExtractInput$from_uri(file_path), config = config)
+      result <- result$results[[1]]
       duration_ms <- as.numeric(Sys.time() - start) * 1000.0
 
       metadata <- result$metadata %||% list()
@@ -325,10 +329,11 @@ main <- function() {
       }
       debug_log(sprintf("Executing sync mode with file: %s", file_paths[1]))
 
-      config <- extraction_config(use_cache = FALSE)
+      config_json <- list(use_cache = FALSE)
       if (ocr_enabled) {
-        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
+        config_json$ocr <- list(backend = "tesseract")
       }
+      config <- ExtractionConfig$from_json(toJSON(config_json, auto_unbox = TRUE))
 
       payload <- extract_sync(file_paths[1], config)
       output <- toJSON(payload, auto_unbox = TRUE)
@@ -342,10 +347,11 @@ main <- function() {
       }
       debug_log(sprintf("Executing batch mode with %d files", length(file_paths)))
 
-      config <- extraction_config(use_cache = FALSE)
+      config_json <- list(use_cache = FALSE)
       if (ocr_enabled) {
-        config <- extraction_config(ocr = list(backend = "tesseract"), use_cache = FALSE)
+        config_json$ocr <- list(backend = "tesseract")
       }
+      config <- ExtractionConfig$from_json(toJSON(config_json, auto_unbox = TRUE))
 
       results <- extract_batch(file_paths, config)
 

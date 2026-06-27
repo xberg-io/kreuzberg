@@ -1,9 +1,11 @@
 //! Regression tests for #830: extraction_timeout_secs silently ignored in single-file paths.
 
+mod helpers;
+use helpers::{extract_bytes_document, extract_uri_document};
+
 use std::time::Instant;
 use xberg::XbergError;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::{extract_bytes, extract_file};
 
 /// A timeout of 0 seconds should fire immediately, before any real work is done.
 /// We use plain-text content so the test doesn't require external binaries (Tesseract, PDF extractor).
@@ -16,7 +18,7 @@ async fn test_extract_bytes_zero_timeout_returns_timeout_error() {
     };
 
     let content = b"Hello world, this is a plain-text document.";
-    let result = extract_bytes(content, "text/plain", &config).await;
+    let result = extract_bytes_document(content, "text/plain", &config).await;
 
     match result {
         Err(XbergError::Timeout { limit_ms, .. }) => {
@@ -29,7 +31,7 @@ async fn test_extract_bytes_zero_timeout_returns_timeout_error() {
     }
 }
 
-/// Same check for extract_file.
+/// Same check for extract_uri_document.
 #[cfg(feature = "tokio-runtime")]
 #[tokio::test]
 async fn test_extract_file_zero_timeout_returns_timeout_error() {
@@ -43,7 +45,7 @@ async fn test_extract_file_zero_timeout_returns_timeout_error() {
         ..Default::default()
     };
 
-    let result = extract_file(&path, None, &config).await;
+    let result = extract_uri_document(&path, None, &config).await;
 
     match result {
         Err(XbergError::Timeout { limit_ms, .. }) => {
@@ -60,7 +62,7 @@ async fn test_extract_file_zero_timeout_returns_timeout_error() {
 async fn test_extract_bytes_no_timeout_succeeds() {
     let config = ExtractionConfig::default();
     let content = b"No timeout configured.";
-    let result = extract_bytes(content, "text/plain", &config).await;
+    let result = extract_bytes_document(content, "text/plain", &config).await;
     assert!(result.is_ok(), "extraction without timeout should succeed: {result:?}");
 }
 
@@ -73,7 +75,7 @@ async fn test_extract_file_no_timeout_succeeds() {
     std::fs::write(&path, b"No timeout configured.").expect("write");
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&path, None, &config).await;
+    let result = extract_uri_document(&path, None, &config).await;
     assert!(result.is_ok(), "extraction without timeout should succeed: {result:?}");
 }
 
@@ -87,7 +89,7 @@ async fn test_extract_bytes_timeout_elapsed_is_plausible() {
     };
     let content = b"timing check";
     let start = Instant::now();
-    let _ = extract_bytes(content, "text/plain", &config).await;
+    let _ = extract_bytes_document(content, "text/plain", &config).await;
     let wall_ms = start.elapsed().as_millis() as u64;
     // We can't assert the timeout fired, but if it did, wall time should be <1 second.
     assert!(
@@ -105,7 +107,7 @@ async fn test_extract_bytes_timeout_without_tokio_returns_validation_error() {
         ..Default::default()
     };
     let content = b"testing";
-    let result = extract_bytes(content, "text/plain", &config).await;
+    let result = extract_bytes_document(content, "text/plain", &config).await;
     match result {
         Err(XbergError::Validation { message, .. }) => {
             assert!(message.contains("requires the 'tokio-runtime' feature"));
@@ -126,7 +128,7 @@ async fn test_extract_file_timeout_without_tokio_returns_validation_error() {
         extraction_timeout_secs: Some(5),
         ..Default::default()
     };
-    let result = extract_file(&file_path, Some("text/plain"), &config).await;
+    let result = extract_uri_document(&file_path, Some("text/plain"), &config).await;
     match result {
         Err(XbergError::Validation { message, .. }) => {
             assert!(message.contains("requires the 'tokio-runtime' feature"));

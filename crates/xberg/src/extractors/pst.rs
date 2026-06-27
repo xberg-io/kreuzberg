@@ -3,7 +3,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::SyncExtractor;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::metadata::PstMetadata;
 use crate::types::{FormatMetadata, Metadata};
@@ -96,8 +96,8 @@ impl SyncExtractor for PstExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for PstExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for PstExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -128,7 +128,7 @@ impl DocumentExtractor for PstExtractor {
             extractor.name = self.name(),
         )
     ))]
-    async fn extract_file(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
+    async fn extract_path(&self, path: &Path, mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         // Call extract_pst_from_path directly to avoid reading the whole file into memory
         // before writing it back out to a tempfile — PSTs can be multi-GB.
         let (messages, _processing_warnings) = crate::extraction::pst::extract_pst_from_path(path)?;
@@ -191,10 +191,6 @@ impl DocumentExtractor for PstExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        Some(self)
     }
 }
 

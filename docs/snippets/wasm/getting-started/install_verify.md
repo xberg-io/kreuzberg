@@ -1,6 +1,6 @@
 ```typescript title="WASM"
-import init from "xberg-wasm";
+import { initWasm } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 console.log("Xberg WASM loaded successfully");
 ```

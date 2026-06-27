@@ -170,7 +170,7 @@ impl ServerConfig {
     ///
     /// # Arguments
     ///
-    /// * `origin` - The origin to check (e.g., "https://example.com")
+    /// * `origin` - The origin to check (e.g., "<https://example.com>")
     ///
     /// # Example
     ///

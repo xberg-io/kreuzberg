@@ -9,7 +9,7 @@ import (
 
 func main() {
 	targetDpi := int32(300)
-	result, err := xberg.ExtractSync("scanned.pdf", nil, xberg.ExtractionConfig{
+	config := xberg.ExtractionConfig{
 		Ocr: &xberg.OcrConfig{
 			Backend: "tesseract",
 			TesseractConfig: &xberg.TesseractConfig{
@@ -18,11 +18,13 @@ func main() {
 				},
 			},
 		},
-	})
+	}
+	input := xberg.ExtractInputFromURI("scanned.pdf")
+	result, err := xberg.Extract(*input, config)
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
-	log.Println("content length:", len(result.Content))
+	log.Println("content length:", len(result.Results[0].Content))
 }
 ```

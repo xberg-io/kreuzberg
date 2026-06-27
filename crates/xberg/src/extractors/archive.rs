@@ -9,7 +9,7 @@ use crate::extraction::archive::{
 };
 use crate::extractors::SyncExtractor;
 use crate::extractors::security::ZipBombValidator;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
 use crate::types::{ArchiveMetadata, Metadata, ProcessingWarning};
 use ahash::AHashMap;
@@ -223,8 +223,8 @@ impl Plugin for ZipExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for ZipExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for ZipExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -262,10 +262,6 @@ impl DocumentExtractor for ZipExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -337,8 +333,8 @@ impl Plugin for TarExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for TarExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for TarExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -371,10 +367,6 @@ impl DocumentExtractor for TarExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -438,8 +430,8 @@ impl Plugin for SevenZExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for SevenZExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for SevenZExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -467,10 +459,6 @@ impl DocumentExtractor for SevenZExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -534,8 +522,8 @@ impl Plugin for GzipExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for GzipExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for GzipExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -561,10 +549,6 @@ impl DocumentExtractor for GzipExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 
@@ -607,7 +591,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(&bytes, "application/zip", &config)
+            .extract_content(&bytes, "application/zip", &config)
             .await
             .unwrap();
         let result =
@@ -648,7 +632,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(&bytes, "application/x-tar", &config)
+            .extract_content(&bytes, "application/x-tar", &config)
             .await
             .unwrap();
         let result =
@@ -674,7 +658,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(&invalid_bytes, "application/zip", &config)
+            .extract_content(&invalid_bytes, "application/zip", &config)
             .await;
         assert!(result.is_err());
     }
@@ -686,7 +670,7 @@ mod tests {
         let config = ExtractionConfig::default();
 
         let result = extractor
-            .extract_bytes(&invalid_bytes, "application/x-tar", &config)
+            .extract_content(&invalid_bytes, "application/x-tar", &config)
             .await;
         assert!(result.is_err());
     }
@@ -732,7 +716,9 @@ mod tests {
 
         let extractor = GzipExtractor::new();
         let config = ExtractionConfig::default();
-        let result = extractor.extract_bytes(&compressed, "application/gzip", &config).await;
+        let result = extractor
+            .extract_content(&compressed, "application/gzip", &config)
+            .await;
         assert!(result.is_ok());
         let extraction = result.unwrap();
         let extraction = crate::extraction::derive::derive_extraction_result(
@@ -748,7 +734,7 @@ mod tests {
         let extractor = GzipExtractor::new();
         let config = ExtractionConfig::default();
         let result = extractor
-            .extract_bytes(&[0, 1, 2, 3], "application/gzip", &config)
+            .extract_content(&[0, 1, 2, 3], "application/gzip", &config)
             .await;
         assert!(result.is_err());
     }

@@ -33,9 +33,9 @@
 
 use std::path::PathBuf;
 use xberg::core::config::ExtractionConfig;
-use xberg::core::extractor::extract_file;
 
 mod helpers;
+use helpers::extract_uri_document;
 
 /// Helper function to get path to RTF test document
 fn get_rtf_path(filename: &str) -> PathBuf {
@@ -71,7 +71,7 @@ async fn test_rtf_accent_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("accent.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for accent.rtf");
     let extraction = result.expect("Operation failed");
@@ -109,7 +109,7 @@ async fn test_rtf_bookmark_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("bookmark.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for bookmark.rtf");
     let extraction = result.expect("Operation failed");
@@ -134,7 +134,7 @@ async fn test_rtf_footnote_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("footnote.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for footnote.rtf");
     let extraction = result.expect("Operation failed");
@@ -173,7 +173,7 @@ async fn test_rtf_formatting_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("formatting.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for formatting.rtf");
     let extraction = result.expect("Operation failed");
@@ -220,7 +220,7 @@ async fn test_rtf_heading_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("heading.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for heading.rtf");
     let extraction = result.expect("Operation failed");
@@ -266,7 +266,7 @@ async fn test_rtf_image_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("image.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for image.rtf");
     let extraction = result.expect("Operation failed");
@@ -298,7 +298,7 @@ async fn test_rtf_link_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("link.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for link.rtf");
     let extraction = result.expect("Operation failed");
@@ -325,7 +325,7 @@ async fn test_rtf_list_complex_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("list_complex.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for list_complex.rtf");
     let extraction = result.expect("Operation failed");
@@ -378,7 +378,7 @@ async fn test_rtf_list_simple_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("list_simple.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for list_simple.rtf");
     let extraction = result.expect("Operation failed");
@@ -417,7 +417,7 @@ async fn test_rtf_table_error_codes_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("table_error_codes.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(
         result.is_ok(),
@@ -446,7 +446,7 @@ async fn test_rtf_table_simple_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("table_simple.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for table_simple.rtf");
     let extraction = result.expect("Operation failed");
@@ -468,7 +468,7 @@ async fn test_rtf_unicode_extraction() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("unicode.rtf");
 
-    let result = extract_file(&path, Some("application/rtf"), &config).await;
+    let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result.is_ok(), "RTF extraction should succeed for unicode.rtf");
     let extraction = result.expect("Operation failed");
@@ -489,8 +489,8 @@ async fn test_rtf_extraction_deterministic_unicode() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("unicode.rtf");
 
-    let result1 = extract_file(&path, Some("application/rtf"), &config).await;
-    let result2 = extract_file(&path, Some("application/rtf"), &config).await;
+    let result1 = extract_uri_document(&path, Some("application/rtf"), &config).await;
+    let result2 = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result1.is_ok() && result2.is_ok(), "Both extractions should succeed");
 
@@ -510,8 +510,8 @@ async fn test_rtf_extraction_deterministic_list_complex() {
     let config = ExtractionConfig::default();
     let path = get_rtf_path("list_complex.rtf");
 
-    let result1 = extract_file(&path, Some("application/rtf"), &config).await;
-    let result2 = extract_file(&path, Some("application/rtf"), &config).await;
+    let result1 = extract_uri_document(&path, Some("application/rtf"), &config).await;
+    let result2 = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
     assert!(result1.is_ok() && result2.is_ok(), "Both extractions should succeed");
 
@@ -544,7 +544,7 @@ async fn test_rtf_no_critical_content_loss() {
 
     for filename in must_extract {
         let path = get_rtf_path(filename);
-        let result = extract_file(&path, Some("application/rtf"), &config).await;
+        let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
         assert!(
             result.is_ok(),
@@ -579,7 +579,7 @@ async fn test_rtf_mime_type_preservation() {
 
     for filename in test_files {
         let path = get_rtf_path(filename);
-        let result = extract_file(&path, Some("application/rtf"), &config).await;
+        let result = extract_uri_document(&path, Some("application/rtf"), &config).await;
 
         assert!(result.is_ok(), "Extraction should succeed for {}", filename);
 
@@ -606,10 +606,10 @@ async fn test_rtf_word_sample_matches_docx_metadata_and_content() {
     }
 
     let config = ExtractionConfig::default();
-    let rtf_result = extract_file(&rtf_path, Some("application/rtf"), &config)
+    let rtf_result = extract_uri_document(&rtf_path, Some("application/rtf"), &config)
         .await
         .expect("RTF extraction should succeed for word_sample");
-    let docx_result = extract_file(&docx_path, None, &config)
+    let docx_result = extract_uri_document(&docx_path, None, &config)
         .await
         .expect("DOCX extraction should succeed for word_sample");
 
@@ -670,7 +670,7 @@ async fn test_rtf_lorem_ipsum_metadata_alignment() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file(&rtf_path, Some("application/rtf"), &config)
+    let result = extract_uri_document(&rtf_path, Some("application/rtf"), &config)
         .await
         .expect("RTF extraction should succeed for lorem_ipsum");
 
@@ -718,13 +718,13 @@ async fn test_rtf_comprehensive_extraction_alignment() {
     }
 
     let config = ExtractionConfig::default();
-    let rtf_result = extract_file(&rtf_path, Some("application/rtf"), &config)
+    let rtf_result = extract_uri_document(&rtf_path, Some("application/rtf"), &config)
         .await
         .expect("RTF extraction should succeed for extraction_test.rtf");
-    let docx_result = extract_file(&docx_path, None, &config)
+    let docx_result = extract_uri_document(&docx_path, None, &config)
         .await
         .expect("DOCX extraction should succeed for extraction_test.docx");
-    let odt_result = extract_file(&odt_path, None, &config)
+    let odt_result = extract_uri_document(&odt_path, None, &config)
         .await
         .expect("ODT extraction should succeed for extraction_test.odt");
 

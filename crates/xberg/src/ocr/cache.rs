@@ -253,7 +253,7 @@ mod tests {
 
         let key1 = cache.generate_cache_key("abc123", "tesseract", "eng");
         let key2 = cache.generate_cache_key("def456", "tesseract", "eng");
-        let key3 = cache.generate_cache_key("abc123", "easyocr", "eng");
+        let key3 = cache.generate_cache_key("abc123", "paddleocr", "eng");
         let key4 = cache.generate_cache_key("abc123", "tesseract", "fra");
 
         assert_ne!(key1, key2);

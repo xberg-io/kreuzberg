@@ -6,9 +6,9 @@
 
 ## What This Package Provides
 
-- **Python-native extraction** — sync and async APIs for files, bytes, URLs, and batch ingestion.
-- **Structured results** — text, tables, images, metadata, language detection, chunks, and warnings in typed Python objects.
-- **OCR choices** — Tesseract, EasyOCR, PaddleOCR, and VLM OCR where configured.
+- **Python-native extraction** — async APIs for URI, bytes, and batch inputs.
+- **Structured results** — an `ExtractionResult` envelope with `ExtractedDocument` items, errors, and summary counts.
+- **OCR choices** — Tesseract, PaddleOCR, Candle, and VLM OCR where configured.
 - **Same Rust engine as every binding** — behavior matches the Node.js, Ruby, Go, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Installation
@@ -20,7 +20,6 @@ pip install xberg
 ### With OCR Support
 
 ```bash
-pip install "xberg[easyocr]"
 pip install "xberg[paddleocr]"
 ```
 
@@ -34,57 +33,80 @@ pip install "xberg[all]"
 
 ### Basic Usage
 
-{{ 'getting-started/basic_usage.md' | include_snippet('python') }}
+```python
+import asyncio
+
+from xberg import ExtractInput, extract
+
+
+async def main() -> None:
+    output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+    document = output.results[0]
+
+    print(document.content)
+    print(f"Results: {output.summary.results}")
+
+
+asyncio.run(main())
+```
 
 ### Simple Extraction
 
-{{ 'getting-started/extract.md' | include_snippet('python') }}
+```python
+from xberg import ExtractInput, extract
+
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+document = output.results[0]
+
+print(document.content)
+```
 
 ### Reading Content
 
-{{ 'getting-started/read_content.md' | include_snippet('python') }}
+```python
+from xberg import ExtractInput, extract
+
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+document = output.results[0]
+
+print(document.content[:500])
+```
 
 ## OCR Support
 
 ### Using OCR
 
-{{ 'getting-started/extract_with_ocr.md' | include_snippet('python') }}
-
-### EasyOCR (GPU-Accelerated)
-
 ```python
-from xberg import extract, ExtractionConfig, OcrConfig
+from xberg import ExtractInput, ExtractionConfig, OcrConfig, extract
 
 config = ExtractionConfig(
-    ocr=OcrConfig(backend="easyocr", language="en")
+    ocr=OcrConfig(backend="tesseract", language="eng"),
+    force_ocr=True,
 )
 
-result = extract(
-    "photo.jpg",
-    config=config,
-    easyocr_kwargs={"use_gpu": True}
-)
+output = await extract(ExtractInput(kind="uri", uri="scanned.pdf"), config)
+document = output.results[0]
+
+print(document.content)
 ```
 
 ### PaddleOCR (Complex Layouts)
 
 ```python
-from xberg import extract, ExtractionConfig, OcrConfig
+from xberg import ExtractInput, ExtractionConfig, OcrConfig, extract
 
 config = ExtractionConfig(
     ocr=OcrConfig(backend="paddleocr", language="ch")
 )
 
-result = extract(
-    "invoice.pdf",
-    config=config,
-)
+output = await extract(ExtractInput(kind="uri", uri="invoice.pdf"), config)
+document = output.results[0]
 ```
 
 ## Table Extraction
 
 ```python
-from xberg import extract, ExtractionConfig, OcrConfig, TesseractConfig
+from xberg import ExtractInput, ExtractionConfig, OcrConfig, TesseractConfig, extract
 
 config = ExtractionConfig(
     ocr=OcrConfig(
@@ -95,9 +117,10 @@ config = ExtractionConfig(
     )
 )
 
-result = extract("invoice.pdf", config=config)
+output = await extract(ExtractInput(kind="uri", uri="invoice.pdf"), config)
+document = output.results[0]
 
-for table in result.tables:
+for table in document.tables:
     print(table.markdown)
     print(table.cells)
 ```
@@ -108,6 +131,7 @@ for table in result.tables:
 
 ```python
 from xberg import (
+    ExtractInput,
     extract,
     ExtractionConfig,
     OcrConfig,
@@ -115,7 +139,7 @@ from xberg import (
     ChunkingConfig,
     ImageExtractionConfig,
     PdfConfig,
-    TokenReductionConfig,
+    TokenReductionOptions,
     LanguageDetectionConfig,
 )
 
@@ -147,7 +171,7 @@ config = ExtractionConfig(
         passwords=["password1", "password2"],
         extract_metadata=True,
     ),
-    token_reduction=TokenReductionConfig(
+    token_reduction=TokenReductionOptions(
         mode="moderate",
         preserve_important_words=True,
     ),
@@ -158,55 +182,51 @@ config = ExtractionConfig(
     ),
 )
 
-result = extract("document.pdf", config=config)
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"), config)
+document = output.results[0]
 ```
 
 ### HTML Conversion Options & Batch Concurrency
 
 ```python
-from xberg import ExtractionConfig
+from xberg import ExtractionConfig, HtmlOutputConfig
 
 config = ExtractionConfig(
     max_concurrent_extractions=8,
-    html_options={
-        "extract_metadata": True,
-        "wrap": True,
-        "wrap_width": 100,
-        "strip_tags": ["script", "style"],
-        "preprocessing": {"enabled": True, "preset": "standard"},
-    },
+    html_output=HtmlOutputConfig(
+        theme="default",
+        class_prefix="xberg",
+        embed_css=True,
+    ),
 )
 ```
 
 ## Metadata Extraction
 
 ```python
-from xberg import extract
+from xberg import ExtractInput, extract
 
-result = extract("document.pdf")
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+document = output.results[0]
 
-if result.images:
-    print(f"Extracted {len(result.images)} inline images")
+if document.images:
+    print(f"Extracted {len(document.images)} inline images")
 
-if result.chunks:
-    print(f"First chunk tokens: {result.chunks[0]['metadata']['token_count']}")
+if document.chunks:
+    print(f"First chunk tokens: {document.chunks[0].metadata.token_count}")
 
-print(result.metadata.get("pdf", {}))
-print(result.metadata.get("language"))
-print(result.metadata.get("format"))
+if document.metadata:
+    print(document.metadata.title)
+    print(document.metadata.language)
+    print(document.metadata.format)
 
-if "pdf" in result.metadata:
-    pdf_meta = result.metadata["pdf"]
-    print(f"Title: {pdf_meta.get('title')}")
-    print(f"Author: {pdf_meta.get('author')}")
-    print(f"Pages: {pdf_meta.get('page_count')}")
-    print(f"Created: {pdf_meta.get('creation_date')}")
+print(f"Errors: {output.summary.errors}")
 ```
 
 ## Password-Protected PDFs
 
 ```python
-from xberg import extract, ExtractionConfig, PdfConfig
+from xberg import ExtractInput, ExtractionConfig, PdfConfig, extract
 
 config = ExtractionConfig(
     pdf_options=PdfConfig(
@@ -214,26 +234,29 @@ config = ExtractionConfig(
     )
 )
 
-result = extract("protected.pdf", config=config)
+output = await extract(ExtractInput(kind="uri", uri="protected.pdf"), config)
+document = output.results[0]
 ```
 
 ## Language Detection
 
 ```python
-from xberg import extract, ExtractionConfig, LanguageDetectionConfig
+from xberg import ExtractInput, ExtractionConfig, LanguageDetectionConfig, extract
 
 config = ExtractionConfig(
     language_detection=LanguageDetectionConfig(enabled=True)
 )
 
-result = extract("multilingual.pdf", config=config)
-print(result.detected_languages)
+output = await extract(ExtractInput(kind="uri", uri="multilingual.pdf"), config)
+document = output.results[0]
+
+print(document.detected_languages)
 ```
 
 ## Text Chunking
 
 ```python
-from xberg import extract, ExtractionConfig, ChunkingConfig
+from xberg import ExtractInput, ExtractionConfig, ChunkingConfig, extract
 
 config = ExtractionConfig(
     chunking=ChunkingConfig(
@@ -242,10 +265,11 @@ config = ExtractionConfig(
     )
 )
 
-result = extract("long_document.pdf", config=config)
+output = await extract(ExtractInput(kind="uri", uri="long_document.pdf"), config)
+document = output.results[0]
 
-for chunk in result.chunks:
-    print(chunk)
+for chunk in document.chunks:
+    print(chunk.content)
 ```
 
 ## Extract from Bytes
@@ -256,18 +280,20 @@ from xberg import ExtractInput, extract
 with open("document.pdf", "rb") as f:
     data = f.read()
 
-result = await extract(ExtractInput.bytes(data, mime_type="application/pdf"))
-print(result.content)
+output = await extract(ExtractInput(kind="bytes", bytes=data, mime_type="application/pdf"))
+document = output.results[0]
+
+print(document.content)
 ```
 
 ## API Reference
 
 ### Extraction Functions
 
-- `extract(input: ExtractInput, config=None, **kwargs)` – Extract one file or byte input
-- `extract_batch(inputs: list[ExtractInput], config=None, **kwargs)` – Extract mixed file and byte inputs
-- `ExtractInput.file(path, mime_type=None, **overrides)` – File path input
-- `ExtractInput.bytes(data, mime_type, **overrides)` – In-memory bytes input
+- `await extract(input: ExtractInput, config=None)` – Extract one URI or bytes input.
+- `await extract_batch(inputs: list[ExtractInput], config=None)` – Extract multiple URI or bytes inputs.
+- `ExtractInput(kind="uri", uri="document.pdf")` – Local path, `file://`, or HTTP(S) URI input.
+- `ExtractInput(kind="bytes", bytes=data, mime_type="application/pdf")` – In-memory bytes input.
 
 ### Configuration Classes
 
@@ -275,16 +301,18 @@ print(result.content)
 - `OcrConfig` – OCR settings
 - `TesseractConfig` – Tesseract-specific options
 - `ChunkingConfig` – Text chunking settings
+- `HtmlOutputConfig` – HTML rendering settings
 - `ImageExtractionConfig` – Image extraction settings
 - `PdfConfig` – PDF-specific options
-- `TokenReductionConfig` – Token reduction settings
+- `TokenReductionOptions` – Token reduction settings
 - `LanguageDetectionConfig` – Language detection settings
 
 ### Result Types
 
-- `ExtractionResult` – Main result object with `content`, `metadata`, `tables`, `detected_languages`, `chunks`
-- `ExtractedTable` – Table with `cells`, `markdown`, `page_number`
-- `Metadata` – Typed metadata dictionary
+- `ExtractionResult` – Envelope with `results`, `errors`, and `summary`.
+- `ExtractedDocument` – Per-document item at `output.results[0]` with `content`, `metadata`, `tables`, and chunks.
+- `Table` – Table with `cells`, `markdown`, and `page_number`.
+- `Metadata` – Typed document metadata.
 
 ### Exceptions
 
@@ -299,11 +327,12 @@ print(result.content)
 ### Custom Processing
 
 ```python
-from xberg import extract
+from xberg import ExtractInput, extract
 
-result = extract("document.pdf")
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+document = output.results[0]
 
-text = result.content
+text = document.content
 text = text.lower()
 text = text.replace("old", "new")
 
@@ -313,35 +342,38 @@ print(text)
 ### Multiple Files with Progress
 
 ```python
-from xberg import extract
 from pathlib import Path
 
+from xberg import ExtractInput, extract_batch
+
 files = list(Path("documents").glob("*.pdf"))
-results = []
 
-for i, file in enumerate(files, 1):
-    print(f"Processing {i}/{len(files)}: {file.name}")
-    result = extract(str(file))
-    results.append((file.name, result))
+inputs = [
+    ExtractInput(kind="uri", uri=str(file))
+    for file in files
+]
 
-for name, result in results:
-    print(f"{name}: {len(result.content)} characters")
+output = await extract_batch(inputs)
+
+for file, document in zip(files, output.results):
+    print(f"{file.name}: {len(document.content)} characters")
 ```
 
 ### Filter by Language
 
 ```python
-from xberg import extract, ExtractionConfig, LanguageDetectionConfig
+from xberg import ExtractInput, ExtractionConfig, LanguageDetectionConfig, extract
 
 config = ExtractionConfig(
     language_detection=LanguageDetectionConfig(enabled=True)
 )
 
-result = extract("document.pdf", config=config)
+output = await extract(ExtractInput(kind="uri", uri="document.pdf"), config)
+document = output.results[0]
 
-if result.detected_languages and "en" in result.detected_languages:
+if document.detected_languages and "en" in document.detected_languages:
     print("English document detected")
-    print(result.content)
+    print(document.content)
 ```
 
 ## System Requirements

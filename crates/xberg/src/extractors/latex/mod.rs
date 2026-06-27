@@ -22,7 +22,7 @@ mod utilities;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::SecurityBudget;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 use crate::types::internal::InternalDocument;
 use crate::types::internal::{RelationshipKind, RelationshipTarget};
@@ -1102,8 +1102,8 @@ impl Plugin for LatexExtractor {
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for LatexExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for LatexExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -1130,7 +1130,7 @@ impl DocumentExtractor for LatexExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,

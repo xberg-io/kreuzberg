@@ -14,7 +14,7 @@ func main() {
 	normalize := true
 	batchSize := int32(16)
 
-	config := &xberg.ExtractionConfig{
+	cfg := xberg.ExtractionConfig{
 		Chunking: &xberg.ChunkingConfig{
 			MaxChars:   &maxChars,
 			MaxOverlap: &maxOverlap,
@@ -26,12 +26,13 @@ func main() {
 		},
 	}
 
-	result, err := xberg.ExtractSync("research_paper.pdf", config)
+	input := xberg.ExtractInputFromURI("research_paper.pdf")
+	result, err := xberg.Extract(*input, cfg)
 	if err != nil {
 		log.Fatalf("RAG extraction failed: %v", err)
 	}
 
-	chunks := result.Chunks
+	chunks := result.Results[0].Chunks
 	fmt.Printf("Found %d chunks for RAG pipeline\n", len(chunks))
 
 	for i := 0; i < len(chunks) && i < 3; i++ {

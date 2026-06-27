@@ -3,25 +3,37 @@
 #include <stdio.h>
 
 int main(void) {
-    struct CExtractionResult *result = xberg_extract_sync("document.pdf");
-    if (!result || !result->success) {
-        fprintf(stderr, "Error: %s\n", xberg_get_error_details().message);
+    XBERGExtractInput *input = xberg_extract_input_from_uri("document.pdf");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
         return 1;
     }
 
-    printf("Content: %s\n", result->content);
-    printf("MIME: %s\n", result->mime_type);
+    XBERGExtractionResult *result = xberg_extract(input, NULL);
+    if (!result) {
+        fprintf(stderr, "extraction failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extract_input_free(input);
+        return 1;
+    }
 
-    if (result->language)
-        printf("Language: %s\n", result->language);
-    if (result->date)
-        printf("Date: %s\n", result->date);
-    if (result->subject)
-        printf("Subject: %s\n", result->subject);
-    if (result->metadata_json)
-        printf("Metadata: %s\n", result->metadata_json);
+    char *results_json = xberg_extraction_result_results(result);
+    if (results_json) {
+        printf("Results: %s\n", results_json);
+    }
+    xberg_free_string(results_json);
 
-    xberg_free_result(result);
+    char *full_json = xberg_extraction_result_to_json(result);
+    if (full_json) {
+        printf("Full result: %s\n", full_json);
+    }
+    xberg_free_string(full_json);
+
+    xberg_extract_input_free(input);
+    xberg_extraction_result_free(result);
     return 0;
 }
 ```

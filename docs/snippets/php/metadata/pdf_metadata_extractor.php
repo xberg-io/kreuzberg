@@ -13,8 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\PostProcessor\PostProcessorInterface;
-use Xberg\Types\ExtractionResult;
-use Xberg\Xberg;
+use Xberg\Types\ExtractedDocument;
 
 /**
  * Post-processor for extracting and enriching PDF metadata
@@ -63,7 +62,7 @@ readonly class PdfMetadataExtractor implements PostProcessorInterface
     /**
      * Determine if this processor should handle the result
      */
-    public function shouldProcess(ExtractionResult $result): bool
+    public function shouldProcess(ExtractedDocument $result): bool
     {
         return $result->mimeType === 'application/pdf';
     }
@@ -71,7 +70,7 @@ readonly class PdfMetadataExtractor implements PostProcessorInterface
     /**
      * Process the extraction result
      */
-    public function process(ExtractionResult $result): ExtractionResult
+    public function process(ExtractedDocument $result): ExtractedDocument
     {
         $this->processedCount++;
 

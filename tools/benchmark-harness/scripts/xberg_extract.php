@@ -4,8 +4,8 @@
  * Xberg PHP extraction wrapper for benchmark harness.
  *
  * Supports two modes:
- * - sync: extract_file() - synchronous extraction (default)
- * - batch: batch_extract_files() - batch extraction for multiple files
+ * - sync: synchronous extraction (default)
+ * - batch: batch extraction for multiple files
  */
 
 declare(strict_types=1);
@@ -29,9 +29,11 @@ if (!$autoloaded) {
     exit(1);
 }
 
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Exceptions\XbergException;
+use Xberg\ExtractInput;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\Xberg;
+use Xberg\XbergException;
 
 define('DEBUG', getenv('XBERG_BENCHMARK_DEBUG') === 'true');
 
@@ -89,6 +91,39 @@ function debug_log(string $message): void
 }
 
 /**
+ * Build the benchmark extraction config.
+ */
+function create_config(bool $ocrEnabled, bool $forceOcr = false): ExtractionConfig
+{
+    $defaults = ExtractionConfig::default();
+    return new ExtractionConfig(
+        useCache: false,
+        enableQualityProcessing: $defaults->enableQualityProcessing,
+        forceOcr: $forceOcr,
+        disableOcr: false,
+        resultFormat: $defaults->resultFormat,
+        outputFormat: $defaults->outputFormat,
+        useLayoutForMarkdown: $defaults->useLayoutForMarkdown,
+        includeDocumentStructure: $defaults->includeDocumentStructure,
+        url: $defaults->url,
+        maxArchiveDepth: $defaults->maxArchiveDepth,
+        ocr: ($ocrEnabled || $forceOcr) ? OcrConfig::default() : null,
+    );
+}
+
+/**
+ * Return the first document from a unified extraction envelope.
+ */
+function first_result(object $output, string $source): object
+{
+    $results = $output->results ?? [];
+    if (count($results) === 0) {
+        throw new RuntimeException("No extraction result produced for {$source}");
+    }
+    return $results[0];
+}
+
+/**
  * Extract a single file synchronously
  */
 function extract_sync(string $filePath, ?ExtractionConfig $config = null, bool $ocrEnabled = false): array
@@ -104,7 +139,7 @@ function extract_sync(string $filePath, ?ExtractionConfig $config = null, bool $
     debug_log("Timing start: {$start}");
 
     try {
-        $result = Xberg\extract_file($filePath, null, $config);
+        $result = first_result(Xberg::extract(ExtractInput::fromUri($filePath), $config ?? create_config($ocrEnabled)), $filePath);
     } catch (XbergException $e) {
         debug_log("ERROR during sync extraction: " . get_class($e) . " - " . $e->getMessage());
         throw $e;
@@ -152,7 +187,9 @@ function extract_batch(array $filePaths, ?ExtractionConfig $config = null, bool 
     debug_log("Timing start: {$start}");
 
     try {
-        $results = Xberg\batch_extract_files($filePaths, $config);
+        $inputs = array_map(fn (string $path): ExtractInput => ExtractInput::fromUri($path), $filePaths);
+        $output = Xberg::extractBatch($inputs, $config ?? create_config($ocrEnabled));
+        $results = $output->results;
     } catch (XbergException $e) {
         debug_log("ERROR during batch extraction: " . get_class($e) . " - " . $e->getMessage());
         throw $e;
@@ -220,14 +257,14 @@ function run_server(?ExtractionConfig $config = null, bool $ocrEnabled = false):
             $start = microtime(true);
             // Create request-specific config if forceOcr is true
             $requestConfig = $config;
-            if ($forceOcr && !$config?->ocr) {
-                $requestConfig = new ExtractionConfig(
-                    useCache: false,
-                    ocr: new OcrConfig(),
-                );
+            if ($forceOcr) {
+                $requestConfig = create_config(true, true);
             }
 
-            $result = Xberg\extract_file($filePath, null, $requestConfig);
+            $result = first_result(
+                Xberg::extract(ExtractInput::fromUri($filePath), $requestConfig ?? create_config($ocrEnabled, $forceOcr)),
+                $filePath
+            );
             $durationMs = (microtime(true) - $start) * 1000.0;
 
             $metadata = $result->metadata ?? [];
@@ -290,10 +327,7 @@ function main(): void
 
     $mode = $args[0];
     $filePaths = array_slice($args, 1);
-    $config = new ExtractionConfig(
-        useCache: false,
-        ocr: $ocrEnabled ? new OcrConfig() : null,
-    );
+    $config = create_config($ocrEnabled);
 
     debug_log("Mode: {$mode}");
     debug_log("OCR enabled: " . ($ocrEnabled ? 'true' : 'false'));

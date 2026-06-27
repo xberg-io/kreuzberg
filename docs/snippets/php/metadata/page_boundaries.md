@@ -1,18 +1,20 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\PageConfig;
 
-$config = new ExtractionConfig();
+$config = ExtractionConfig::default();
 $config->pages = new PageConfig(
     extractPages: true,
     insertPageMarkers: true,
     markerFormat: "\n\n=== PAGE {page_num} ===\n\n"
 );
 
-$result = Xberg::extract_sync("document.pdf", null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("document.pdf"), $config);
+
+$result = $resultOutput->results[0];
 
 // Content with inline page markers
 echo "Full content with markers:\n";

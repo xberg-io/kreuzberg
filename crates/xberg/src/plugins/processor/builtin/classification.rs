@@ -11,7 +11,7 @@ use async_trait::async_trait;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// Post-processor that asks an LLM to classify each page of the extracted content.
 #[cfg_attr(alef, alef(skip))]
@@ -38,7 +38,7 @@ impl Plugin for PageClassificationProcessor {
 
 #[async_trait]
 impl PostProcessor for PageClassificationProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         if let Some(pc_config) = config.page_classification.as_ref() {
             tracing::info!(
                 target: "xberg::classification",
@@ -56,7 +56,7 @@ impl PostProcessor for PageClassificationProcessor {
         ProcessingStage::Middle
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.page_classification.is_some()
     }
 
@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn should_process_only_when_config_present() {
         let p = PageClassificationProcessor;
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "x".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

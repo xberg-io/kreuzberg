@@ -1,7 +1,10 @@
 ```java title="Java"
 import io.xberg.Xberg;
+import io.xberg.ExtractInputKind;
 import io.xberg.ExtractionResult;
+import io.xberg.ExtractedDocument;
 import io.xberg.ExtractionConfig;
+import io.xberg.ExtractInput;
 import io.xberg.OcrConfig;
 
 ExtractionConfig config = ExtractionConfig.builder()
@@ -10,7 +13,10 @@ ExtractionConfig config = ExtractionConfig.builder()
         .build())
     .forceOcr(true)
     .build();
-
-ExtractionResult result = Xberg.extract("document.pdf", config);
-System.out.println(result.getContent());
+ExtractionResult output = Xberg.extract(
+    ExtractInput.builder().withKind(ExtractInputKind.Uri).withUri("document.pdf").build(),
+    config
+);
+ExtractedDocument result = output.results().get(0);
+System.out.println(result.content());
 ```

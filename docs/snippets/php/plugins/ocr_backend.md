@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 class CustomOcrBackend implements OcrBackend {
     private array $supportedLangs = ["eng", "deu", "fra"];
@@ -23,8 +23,8 @@ class CustomOcrBackend implements OcrBackend {
     }
 
     public function processImage(string $imageBytes, object $config): object {
-        // Process image bytes and return ExtractionResult
-        // This would call your OCR engine (Tesseract, EasyOCR, etc.)
+        // Process image bytes and return ExtractedDocument
+        // This would call your OCR engine (Tesseract, PaddleOCR, VLM OCR, etc.)
         return (object)[
             'content' => 'Extracted text from image',
             'mime_type' => 'image/png',

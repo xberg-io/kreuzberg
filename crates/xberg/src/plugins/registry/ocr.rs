@@ -323,7 +323,7 @@ mod tests {
     use super::*;
     use crate::core::config::OcrConfig;
     use crate::plugins::{OcrBackend, Plugin};
-    use crate::types::ExtractionResult;
+    use crate::types::ExtractedDocument;
     use async_trait::async_trait;
     use std::borrow::Cow;
 
@@ -349,8 +349,8 @@ mod tests {
 
     #[async_trait]
     impl OcrBackend for MockOcrBackend {
-        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractionResult> {
-            Ok(ExtractionResult {
+        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractedDocument> {
+            Ok(ExtractedDocument {
                 content: "test".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
                 ..Default::default()
@@ -508,8 +508,8 @@ mod tests {
 
     #[async_trait]
     impl OcrBackend for FailingOcrBackend {
-        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractionResult> {
-            Ok(ExtractionResult {
+        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> Result<ExtractedDocument> {
+            Ok(ExtractedDocument {
                 content: "test".to_string(),
                 mime_type: Cow::Borrowed("text/plain"),
                 ..Default::default()

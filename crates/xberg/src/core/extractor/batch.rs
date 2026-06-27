@@ -10,7 +10,7 @@ use crate::core::config::BatchBytesItem;
 use crate::core::config::BatchFileItem;
 use crate::core::config::ExtractionConfig;
 use crate::core::config::extraction::FileExtractionConfig;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::{Result, XbergError};
 use std::future::Future;
 use std::sync::Arc;
@@ -22,10 +22,10 @@ use super::helpers::error_extraction_result;
 
 /// Shared batch result collection: spawns tasks via callback, collects ordered results.
 #[cfg(feature = "tokio-runtime")]
-async fn collect_batch<F, Fut>(count: usize, config: &ExtractionConfig, spawn_task: F) -> Result<Vec<ExtractionResult>>
+async fn collect_batch<F, Fut>(count: usize, config: &ExtractionConfig, spawn_task: F) -> Result<Vec<ExtractedDocument>>
 where
     F: Fn(usize, Arc<tokio::sync::Semaphore>) -> Fut,
-    Fut: Future<Output = (usize, Result<ExtractionResult>, u64)> + Send + 'static,
+    Fut: Future<Output = (usize, Result<ExtractedDocument>, u64)> + Send + 'static,
 {
     use tokio::sync::Semaphore;
     use tokio::task::JoinSet;
@@ -47,7 +47,7 @@ where
         tasks.spawn(spawn_task(index, sem));
     }
 
-    let mut results: Vec<Option<ExtractionResult>> = vec![None; count];
+    let mut results: Vec<Option<ExtractedDocument>> = vec![None; count];
 
     while let Some(task_result) = tasks.join_next().await {
         match task_result {
@@ -81,10 +81,10 @@ async fn run_timed_extraction<F, Fut>(
     timeout_secs: Option<u64>,
     cancel_token: Option<crate::cancellation::CancellationToken>,
     extract_fn: F,
-) -> (usize, Result<ExtractionResult>, u64)
+) -> (usize, Result<ExtractedDocument>, u64)
 where
     F: FnOnce() -> Fut,
-    Fut: Future<Output = Result<ExtractionResult>>,
+    Fut: Future<Output = Result<ExtractedDocument>>,
 {
     let _permit = semaphore.acquire().await.unwrap();
     let start = Instant::now();
@@ -147,7 +147,7 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
 ///
 /// # Returns
 ///
-/// A vector of `ExtractionResult` in the same order as the input items.
+/// A vector of `ExtractedDocument` in the same order as the input items.
 ///
 /// # Errors
 ///
@@ -205,7 +205,7 @@ fn resolve_config(base: &ExtractionConfig, file_config: &Option<FileExtractionCo
 pub(crate) async fn batch_extract_files(
     items: Vec<BatchFileItem>,
     config: &ExtractionConfig,
-) -> Result<Vec<ExtractionResult>> {
+) -> Result<Vec<ExtractedDocument>> {
     let config_arc = Arc::new(config.clone());
     // Use Arc<Vec> for file items — paths are small, so keeping them all alive is fine.
     let items_arc = Arc::new(items);
@@ -248,7 +248,7 @@ pub(crate) async fn batch_extract_files(
 ///
 /// # Returns
 ///
-/// A vector of `ExtractionResult` in the same order as the input items.
+/// A vector of `ExtractedDocument` in the same order as the input items.
 ///
 /// # Examples
 ///
@@ -300,7 +300,7 @@ pub(crate) async fn batch_extract_files(
 pub(crate) async fn batch_extract_bytes(
     items: Vec<BatchBytesItem>,
     config: &ExtractionConfig,
-) -> Result<Vec<ExtractionResult>> {
+) -> Result<Vec<ExtractedDocument>> {
     let config_arc = Arc::new(config.clone());
     let count = items.len();
 

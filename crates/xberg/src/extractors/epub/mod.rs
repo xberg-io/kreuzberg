@@ -17,7 +17,7 @@ mod parsing;
 
 use crate::Result;
 use crate::core::config::{ExtractionConfig, OutputFormat};
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::Metadata;
 use crate::types::ProcessingWarning;
 use crate::types::internal::InternalDocument;
@@ -580,7 +580,7 @@ impl Plugin for EpubExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for EpubExtractor {
+impl InternalDocumentExtractor for EpubExtractor {
     #[cfg_attr(
         feature = "otel",
         tracing::instrument(
@@ -591,7 +591,7 @@ impl DocumentExtractor for EpubExtractor {
             )
         )
     )]
-    async fn extract_bytes(
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,

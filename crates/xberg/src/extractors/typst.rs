@@ -22,7 +22,7 @@ use crate::Result;
 #[cfg(feature = "office")]
 use crate::core::config::ExtractionConfig;
 #[cfg(feature = "office")]
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 #[cfg(feature = "office")]
 use crate::types::Metadata;
 #[cfg(feature = "office")]
@@ -527,8 +527,8 @@ impl Plugin for TypstExtractor {
 #[cfg(feature = "office")]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for TypstExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for TypstExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -545,7 +545,7 @@ impl DocumentExtractor for TypstExtractor {
         Ok(doc)
     }
 
-    async fn extract_file(
+    async fn extract_path(
         &self,
         path: &std::path::Path,
         mime_type: &str,

@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 use Xberg\TesseractConfig;
@@ -18,8 +18,10 @@ $config = new ExtractionConfig(
     )
 );
 
-$result = Xberg::extractSync('scanned.pdf', null, $config);
+$resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config);
 
-echo "OCR text: " . substr($result->getContent(), 0, 100) . "...\n";
+$result = $resultOutput->results[0];
+
+echo "OCR text: " . substr($result->content, 0, 100) . "...\n";
 ?>
 ```

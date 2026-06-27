@@ -2,9 +2,9 @@
 """Xberg Python extraction wrapper for benchmark harness.
 
 Supports four modes:
-- sync: extract_file_sync() - synchronous extraction
-- async: extract_file() - asynchronous extraction
-- batch: batch_extract_files_sync() - synchronous batch extraction
+- sync: local wrapper around asynchronous extraction
+- async: asynchronous extraction
+- batch: batch extraction for multiple files
 - server: persistent mode reading paths from stdin
 """
 
@@ -19,11 +19,11 @@ import time
 from typing import Any
 
 from xberg import (
+    ExtractInput,
     ExtractionConfig,
     OcrConfig,
-    batch_extract_files_sync,
-    extract_file,
-    extract_file_sync,
+    extract,
+    extract_batch,
 )
 
 
@@ -51,45 +51,64 @@ def _determine_ocr_used(metadata: dict[str, Any], ocr_enabled: bool) -> bool:
     return format_type in ("image", "pdf") and ocr_enabled
 
 
-def extract_sync(file_path: str, ocr_enabled: bool, *, force_ocr: bool = False) -> dict[str, Any]:
-    """Extract using synchronous API."""
+def _extract_input_from_uri(file_path: str) -> Any:
+    from_uri = getattr(ExtractInput, "from_uri", None)
+    if callable(from_uri):
+        return from_uri(file_path)
+    return ExtractInput(kind="uri", uri=file_path)
+
+
+def _envelope_results(envelope: Any) -> list[Any]:
+    if isinstance(envelope, dict):
+        return envelope.get("results") or []
+    return getattr(envelope, "results", None) or []
+
+
+def _first_result(envelope: Any, source: str) -> Any:
+    results = _envelope_results(envelope)
+    if not results:
+        raise RuntimeError(f"No extraction result produced for {source}")
+    return results[0]
+
+
+def _field(value: Any, name: str, default: Any = None) -> Any:
+    if isinstance(value, dict):
+        return value.get(name, default)
+    return getattr(value, name, default)
+
+
+def _create_config(ocr_enabled: bool, *, force_ocr: bool = False) -> Any:
     # Use minimal config with cache disabled for benchmarking
     config = ExtractionConfig(use_cache=False)
     if ocr_enabled:
-        config.ocr = OcrConfig(backend="tesseract")
+        if isinstance(config, dict):
+            config["ocr"] = OcrConfig(backend="tesseract")
+        else:
+            config.ocr = OcrConfig(backend="tesseract")
     if force_ocr:
-        config.force_ocr = True
+        if isinstance(config, dict):
+            config["force_ocr"] = True
+        else:
+            config.force_ocr = True
+    return config
 
-    start = time.perf_counter()
-    result = extract_file_sync(file_path, config=config)
-    duration_ms = (time.perf_counter() - start) * 1000.0
 
-    metadata = result.metadata or {}
-    return {
-        "content": result.content,
-        "metadata": metadata,
-        "_extraction_time_ms": duration_ms,
-        "_ocr_used": _determine_ocr_used(metadata, ocr_enabled or force_ocr),
-        "_peak_memory_bytes": _get_peak_memory_bytes(),
-    }
+def extract_sync(file_path: str, ocr_enabled: bool, *, force_ocr: bool = False) -> dict[str, Any]:
+    """Extract using the async API from a synchronous benchmark mode."""
+    return asyncio.run(extract_async(file_path, ocr_enabled, force_ocr=force_ocr))
 
 
 async def extract_async(file_path: str, ocr_enabled: bool, *, force_ocr: bool = False) -> dict[str, Any]:
     """Extract using asynchronous API."""
-    # Use minimal config with cache disabled for benchmarking
-    config = ExtractionConfig(use_cache=False)
-    if ocr_enabled:
-        config.ocr = OcrConfig(backend="tesseract")
-    if force_ocr:
-        config.force_ocr = True
+    config = _create_config(ocr_enabled, force_ocr=force_ocr)
 
     start = time.perf_counter()
-    result = await extract_file(file_path, config=config)
+    result = _first_result(await extract(_extract_input_from_uri(file_path), config), file_path)
     duration_ms = (time.perf_counter() - start) * 1000.0
 
-    metadata = result.metadata or {}
+    metadata = _field(result, "metadata", {}) or {}
     return {
-        "content": result.content,
+        "content": _field(result, "content", ""),
         "metadata": metadata,
         "_extraction_time_ms": duration_ms,
         "_ocr_used": _determine_ocr_used(metadata, ocr_enabled or force_ocr),
@@ -98,24 +117,22 @@ async def extract_async(file_path: str, ocr_enabled: bool, *, force_ocr: bool = 
 
 
 def extract_batch_sync(file_paths: list[str], ocr_enabled: bool) -> list[dict[str, Any]]:
-    """Extract multiple files using batch API."""
-    # Use minimal config with cache disabled for benchmarking
-    config = ExtractionConfig(use_cache=False)
-    if ocr_enabled:
-        config.ocr = OcrConfig(backend="tesseract")
+    """Extract multiple files using the async batch API from a synchronous benchmark mode."""
+    config = _create_config(ocr_enabled)
 
     start = time.perf_counter()
-    results = batch_extract_files_sync(file_paths, config=config)  # type: ignore[arg-type]
+    envelope = asyncio.run(extract_batch([_extract_input_from_uri(path) for path in file_paths], config))
+    results = _envelope_results(envelope)
     total_duration_ms = (time.perf_counter() - start) * 1000.0
 
     per_file_duration_ms = total_duration_ms / len(file_paths) if file_paths else 0
 
     output = []
     for result in results:
-        metadata = result.metadata or {}
+        metadata = _field(result, "metadata", {}) or {}
         output.append(
             {
-                "content": result.content,
+                "content": _field(result, "content", ""),
                 "metadata": metadata,
                 "_extraction_time_ms": per_file_duration_ms,
                 "_batch_total_ms": total_duration_ms,

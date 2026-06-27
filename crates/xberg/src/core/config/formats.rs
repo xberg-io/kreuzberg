@@ -9,7 +9,7 @@ use std::str::FromStr;
 
 /// Output format for extraction results.
 ///
-/// Controls the format of the `content` field in `ExtractionResult`.
+/// Controls the format of the `content` field in `ExtractedDocument`.
 /// When set to `Markdown`, `Djot`, or `Html`, the output uses that format.
 /// `Plain` returns the raw extracted text.
 /// `Structured` returns JSON with full OCR element data including bounding

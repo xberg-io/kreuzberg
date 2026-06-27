@@ -1,5 +1,5 @@
 ```rust title="Rust"
-use xberg::{extract, ExtractionConfig, TokenReductionConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, TokenReductionConfig};
 
 #[tokio::main]
 async fn main() -> xberg::Result<()> {
@@ -11,7 +11,8 @@ async fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract("document.pdf", None::<&str>, &config).await?;
+    let output = extract(ExtractInput::from_uri("document.pdf"), &config).await?;
+    let result = &output.results[0];
     println!("Original tokens: {}", result.token_count);
     println!("Reduced content: {}", result.content);
     Ok(())

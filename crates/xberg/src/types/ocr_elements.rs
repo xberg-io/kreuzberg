@@ -349,7 +349,7 @@ impl OcrElement {
 pub struct OcrElementConfig {
     /// Whether to include OCR elements in the extraction result.
     ///
-    /// When true, the `ocr_elements` field in `ExtractionResult` will be populated.
+    /// When true, the `ocr_elements` field in `ExtractedDocument` will be populated.
     #[serde(default)]
     pub include_elements: bool,
 

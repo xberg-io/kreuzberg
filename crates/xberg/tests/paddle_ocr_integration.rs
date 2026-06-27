@@ -24,7 +24,7 @@ use std::path::PathBuf;
 use xberg::core::config::OcrConfig;
 use xberg::paddle_ocr::{ModelManager, PaddleOcrBackend, PaddleOcrConfig};
 use xberg::plugins::OcrBackend;
-use xberg::types::ExtractionResult;
+use xberg::types::ExtractedDocument;
 
 /// Helper to get the test documents directory
 fn test_documents_dir() -> PathBuf {
@@ -128,10 +128,10 @@ async fn test_ocr_hello_world_english() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
     let text = extraction.content.to_lowercase();
 
     println!("OCR result: {}", extraction.content);
@@ -168,10 +168,10 @@ async fn test_ocr_newspaper_english() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
     let text = extraction.content.to_uppercase();
 
     println!(
@@ -214,10 +214,10 @@ async fn test_ocr_chinese_text() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
 
     println!("OCR result: {}", extraction.content);
 
@@ -264,7 +264,7 @@ async fn test_empty_image_error() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&[], &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&[], &ocr_config).await;
     assert!(result.is_err(), "Expected error for empty image");
 }
 
@@ -284,7 +284,7 @@ async fn test_invalid_image_error() {
     // Random bytes that aren't a valid image
     let invalid_bytes = vec![0u8, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&invalid_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&invalid_bytes, &ocr_config).await;
     assert!(result.is_err(), "Expected error for invalid image data");
 }
 
@@ -304,10 +304,10 @@ async fn test_process_image_file() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image_file(&image_path, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image_file(&image_path, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
     let text = extraction.content.to_lowercase();
 
     assert!(
@@ -347,10 +347,10 @@ async fn test_paddle_ocr_elements_geometry() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
 
     // Check that OCR elements are present
     assert!(
@@ -404,10 +404,10 @@ async fn test_paddle_ocr_elements_confidence() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
 
     assert!(
         extraction.ocr_elements.is_some(),
@@ -464,10 +464,10 @@ async fn test_paddle_ocr_rotation_detection() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
 
     assert!(
         extraction.ocr_elements.is_some(),
@@ -519,10 +519,10 @@ async fn test_paddle_ocr_table_reconstruction() {
         ..Default::default()
     };
 
-    let result: xberg::Result<ExtractionResult> = backend.process_image(&image_bytes, &ocr_config).await;
+    let result: xberg::Result<ExtractedDocument> = backend.process_image(&image_bytes, &ocr_config).await;
     assert!(result.is_ok(), "OCR failed: {:?}", result.err());
 
-    let extraction: ExtractionResult = result.unwrap();
+    let extraction: ExtractedDocument = result.unwrap();
 
     println!(
         "OCR result (first 500 chars): {}",

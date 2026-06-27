@@ -1,6 +1,5 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
@@ -8,8 +7,12 @@ fun main() {
         .withIncludeDocumentStructure(true)
         .build()
 
-    val result = Xberg.extractSync(Paths.get("document.pdf"), null, config)
-    val document = result.document()
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
+    val document = result.document
     if (document != null) {
         for (node in document.nodes()) {
             println(node)

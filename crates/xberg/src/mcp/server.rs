@@ -40,7 +40,7 @@ pub struct XbergMcp {
     /// while `XbergMcp` must be `Sync` for the MCP handler trait.
     /// The lock is held only long enough to clone the service.
     extraction_service:
-        std::sync::Mutex<BoxCloneService<ExtractionRequest, crate::types::ExtractionResult, crate::XbergError>>,
+        std::sync::Mutex<BoxCloneService<ExtractionRequest, crate::types::ExtractedDocument, crate::XbergError>>,
 }
 
 impl Clone for XbergMcp {
@@ -104,8 +104,8 @@ impl XbergMcp {
     #[tool(
         description = "Extract content from bytes, a local path, file:// URI, remote document URL, or website URL.",
         annotations(title = "Extract", read_only_hint = true, idempotent_hint = true, open_world_hint = true),
-        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ExtractionOutput>()
-            .expect("ExtractionOutput schema must be valid")
+        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ExtractionResult>()
+            .expect("ExtractionResult schema must be valid")
     )]
     async fn extract(
         &self,
@@ -124,7 +124,7 @@ impl XbergMcp {
         let input = parse_extract_input(params.input)?;
 
         let output = crate::extract(input, &config).await.map_err(map_xberg_error_to_mcp)?;
-        let response = format_extraction_output_for_wire(&output, use_toon);
+        let response = format_extraction_result_for_wire(&output, use_toon);
         let mut tool_result = CallToolResult::success(vec![Content::text(response)]);
         tool_result.structured_content = serde_json::to_value(&output).ok();
         Ok(tool_result)
@@ -134,8 +134,8 @@ impl XbergMcp {
     #[tool(
         description = "Extract content from multiple bytes, local paths, file:// URIs, remote document URLs, or website URLs.",
         annotations(title = "Extract Batch", read_only_hint = true, idempotent_hint = true, open_world_hint = true),
-        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ExtractionOutput>()
-            .expect("ExtractionOutput schema must be valid")
+        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ExtractionResult>()
+            .expect("ExtractionResult schema must be valid")
     )]
     async fn extract_batch(
         &self,
@@ -160,7 +160,7 @@ impl XbergMcp {
         let output = crate::extract_batch(inputs, &config)
             .await
             .map_err(map_xberg_error_to_mcp)?;
-        let response = format_extraction_output_for_wire(&output, use_toon);
+        let response = format_extraction_result_for_wire(&output, use_toon);
         let mut tool_result = CallToolResult::success(vec![Content::text(response)]);
         tool_result.structured_content = serde_json::to_value(&output).ok();
         Ok(tool_result)
@@ -542,70 +542,6 @@ impl XbergMcp {
             serde_json::to_string_pretty(&response).unwrap_or_default(),
         )]))
     }
-
-    /// Generate vector embeddings for text strings.
-    ///
-    /// Uses the specified preset model (or "balanced" by default) to generate
-    /// vector embeddings for the provided texts.
-    /// Requires the `embeddings` feature to be enabled.
-    #[tool(
-        description = "Generate vector embeddings for text strings. Use preset: 'speed', 'balanced', or 'quality'.",
-        annotations(
-            title = "Embed Text",
-            read_only_hint = true,
-            idempotent_hint = true,
-            open_world_hint = true
-        ),
-        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::EmbedTextOutput>()
-            .expect("EmbedTextOutput schema must be valid")
-    )]
-    fn embed_text(
-        &self,
-        Parameters(params): Parameters<super::params::EmbedTextParams>,
-    ) -> Result<CallToolResult, rmcp::ErrorData> {
-        embed_text_impl(params)
-    }
-
-    /// Extract structured data from a document using an LLM with a JSON schema.
-    ///
-    /// Extracts content from a file, then sends it to a specified LLM with a JSON
-    /// schema constraint to produce structured output conforming to the schema.
-    /// Requires the `liter-llm` feature to be enabled.
-    #[tool(
-        description = "Extract structured data from a document using an LLM with a JSON schema. Requires 'liter-llm' feature.",
-        annotations(
-            title = "Extract Structured",
-            read_only_hint = true,
-            idempotent_hint = false,
-            open_world_hint = true
-        ),
-        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ExtractStructuredOutput>()
-            .expect("ExtractStructuredOutput schema must be valid")
-    )]
-    async fn extract_structured(
-        &self,
-        Parameters(params): Parameters<super::params::ExtractStructuredParams>,
-    ) -> Result<CallToolResult, rmcp::ErrorData> {
-        extract_structured_impl(self, params).await
-    }
-
-    /// Split text into chunks with configurable size and overlap.
-    ///
-    /// Supports text, markdown, yaml, and semantic chunking modes. Useful for preparing
-    /// text for embedding generation or other downstream processing.
-    /// Requires the `chunking` feature to be enabled.
-    #[tool(
-        description = "Split text into chunks with configurable size and overlap. Supports 'text', 'markdown', 'yaml', and 'semantic' chunker types.",
-        annotations(title = "Chunk Text", read_only_hint = true, idempotent_hint = true),
-        output_schema = rmcp::handler::server::common::schema_for_output::<super::schema::ChunkTextOutput>()
-            .expect("ChunkTextOutput schema must be valid")
-    )]
-    fn chunk_text(
-        &self,
-        Parameters(params): Parameters<super::params::ChunkTextParams>,
-    ) -> Result<CallToolResult, rmcp::ErrorData> {
-        chunk_text_impl(params)
-    }
 }
 
 /// Resolve the cache base directory.
@@ -618,10 +554,10 @@ fn parse_extract_input(value: serde_json::Value) -> Result<crate::ExtractInput, 
         .map_err(|error| rmcp::ErrorData::invalid_params(format!("Invalid ExtractInput: {error}"), None))
 }
 
-fn format_extraction_output_for_wire(output: &crate::ExtractionOutput, use_toon: bool) -> String {
+fn format_extraction_result_for_wire(output: &crate::ExtractionResult, use_toon: bool) -> String {
     if use_toon {
         serde_toon::to_string(output).unwrap_or_else(|error| {
-            tracing::error!(%error, "Failed to serialize extraction output to TOON, falling back to JSON");
+            tracing::error!(%error, "Failed to serialize extraction result to TOON, falling back to JSON");
             serde_json::to_string_pretty(output).unwrap_or_default()
         })
     } else {
@@ -740,276 +676,6 @@ fn complete_output_formats(prefix: &str) -> Vec<String> {
         .filter(|f| f.starts_with(prefix))
         .map(|s| s.to_string())
         .collect()
-}
-
-/// Structured extraction implementation when liter-llm feature is enabled.
-#[cfg(all(feature = "liter-llm", not(target_arch = "wasm32")))]
-async fn extract_structured_impl(
-    mcp: &XbergMcp,
-    params: super::params::ExtractStructuredParams,
-) -> Result<CallToolResult, rmcp::ErrorData> {
-    use super::errors::map_xberg_error_to_mcp;
-    use tower::Service;
-
-    let config = build_config(&mcp.default_config, None).map_err(|e| rmcp::ErrorData::invalid_params(e, None))?;
-
-    let request = ExtractionRequest::file(&params.path, config.clone());
-
-    let mut svc = mcp
-        .extraction_service
-        .lock()
-        .expect("extraction service lock poisoned")
-        .clone();
-    let result = svc.call(request).await.map_err(map_xberg_error_to_mcp)?;
-
-    // Build structured extraction config from params
-    let structured_config = crate::core::config::llm::StructuredExtractionConfig {
-        schema: params.schema,
-        schema_name: params.schema_name,
-        schema_description: params.schema_description,
-        strict: params.strict,
-        prompt: params.prompt,
-        llm: crate::core::config::llm::LlmConfig {
-            model: params.model,
-            api_key: params.api_key,
-            base_url: None,
-            timeout_secs: None,
-            max_retries: None,
-            temperature: None,
-            max_tokens: None,
-        },
-    };
-
-    let (structured_output, _usage) = crate::llm::structured::extract_structured(&result.content, &structured_config)
-        .await
-        .map_err(map_xberg_error_to_mcp)?;
-
-    let dto = super::schema::ExtractStructuredOutput {
-        structured_output: structured_output.clone(),
-        content: result.content.clone(),
-        mime_type: Some(result.mime_type.as_ref().to_string()),
-    };
-    let response = serde_json::to_string_pretty(&dto).unwrap_or_default();
-    let mut tool_result = CallToolResult::success(vec![Content::text(response)]);
-    tool_result.structured_content = serde_json::to_value(&dto).ok();
-    Ok(tool_result)
-}
-
-/// Structured extraction implementation when liter-llm feature is disabled.
-#[cfg(any(not(feature = "liter-llm"), target_arch = "wasm32"))]
-async fn extract_structured_impl(
-    _mcp: &XbergMcp,
-    _params: super::params::ExtractStructuredParams,
-) -> Result<CallToolResult, rmcp::ErrorData> {
-    Err(rmcp::ErrorData::invalid_params(
-        "Structured extraction requires the 'liter-llm' feature to be enabled. Rebuild with --features liter-llm"
-            .to_string(),
-        None,
-    ))
-}
-
-/// Embed text implementation when embeddings feature is enabled.
-#[cfg(feature = "embeddings")]
-fn embed_text_impl(params: super::params::EmbedTextParams) -> Result<CallToolResult, rmcp::ErrorData> {
-    if params.texts.is_empty() {
-        return Err(rmcp::ErrorData::invalid_params(
-            "No texts provided for embedding generation",
-            None,
-        ));
-    }
-
-    if params.texts.iter().any(|t| t.is_empty()) {
-        return Err(rmcp::ErrorData::invalid_params(
-            "All text entries must be non-empty strings",
-            None,
-        ));
-    }
-
-    // Resolution order: embedding_plugin → model → preset.
-    let (config, model_name) = if let Some(ref plugin_name) = params.embedding_plugin {
-        if plugin_name.is_empty() {
-            return Err(rmcp::ErrorData::invalid_params(
-                "embedding_plugin must not be empty when set".to_string(),
-                None,
-            ));
-        }
-        // Pre-flight: surface unknown backends with a list of registered names
-        // (parity with the REST `embed_handler` and CLI `embed --provider plugin`).
-        let registry = crate::plugins::get_embedding_backend_registry();
-        let guard = registry.read();
-        if guard.get(plugin_name).is_err() {
-            let available = guard.list();
-            return Err(rmcp::ErrorData::invalid_params(
-                format!(
-                    "Embedding backend '{}' is not registered. Available backends: {}",
-                    plugin_name,
-                    if available.is_empty() {
-                        "(none registered)".to_string()
-                    } else {
-                        available.join(", ")
-                    }
-                ),
-                None,
-            ));
-        }
-        drop(guard);
-        let config = crate::core::config::EmbeddingConfig {
-            model: crate::core::config::EmbeddingModelType::Plugin {
-                name: plugin_name.clone(),
-            },
-            ..Default::default()
-        };
-        (config, plugin_name.clone())
-    } else if let Some(ref model) = params.model {
-        let llm_config = crate::core::config::llm::LlmConfig {
-            model: model.clone(),
-            api_key: params.api_key.clone(),
-            base_url: None,
-            timeout_secs: None,
-            max_retries: None,
-            temperature: None,
-            max_tokens: None,
-        };
-        let config = crate::core::config::EmbeddingConfig {
-            model: crate::core::config::EmbeddingModelType::Llm { llm: llm_config },
-            ..Default::default()
-        };
-        (config, model.clone())
-    } else {
-        let preset_name = params.preset.as_deref().unwrap_or("balanced");
-
-        if crate::embeddings::get_preset(preset_name).is_none() {
-            let available: Vec<String> = crate::embeddings::list_presets();
-            return Err(rmcp::ErrorData::invalid_params(
-                format!(
-                    "Unknown embedding preset '{}'. Available: {}",
-                    preset_name,
-                    available.join(", ")
-                ),
-                None,
-            ));
-        }
-
-        let config = crate::core::config::EmbeddingConfig {
-            model: crate::core::config::EmbeddingModelType::Preset {
-                name: preset_name.to_string(),
-            },
-            ..Default::default()
-        };
-        (config, preset_name.to_string())
-    };
-
-    let embeddings =
-        crate::embeddings::embed_texts(&params.texts, &config).map_err(super::errors::map_xberg_error_to_mcp)?;
-
-    let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
-    let count = params.texts.len();
-
-    let dto = super::schema::EmbedTextOutput {
-        embeddings: embeddings.clone(),
-        model: model_name.clone(),
-        dimensions,
-        count,
-    };
-    let response = serde_json::to_string_pretty(&dto).unwrap_or_default();
-    let mut tool_result = CallToolResult::success(vec![Content::text(response)]);
-    tool_result.structured_content = serde_json::to_value(&dto).ok();
-    Ok(tool_result)
-}
-
-/// Embed text implementation when embeddings feature is disabled.
-#[cfg(not(feature = "embeddings"))]
-fn embed_text_impl(_params: super::params::EmbedTextParams) -> Result<CallToolResult, rmcp::ErrorData> {
-    Err(rmcp::ErrorData::invalid_params(
-        "Embeddings feature is not enabled. Rebuild with --features embeddings".to_string(),
-        None,
-    ))
-}
-
-/// Chunk text implementation when chunking feature is enabled.
-#[cfg(feature = "chunking")]
-fn chunk_text_impl(params: super::params::ChunkTextParams) -> Result<CallToolResult, rmcp::ErrorData> {
-    use crate::chunking::{ChunkingConfig, chunk_text};
-    use crate::core::config::ChunkerType;
-
-    if params.text.is_empty() {
-        return Err(rmcp::ErrorData::invalid_params("Text cannot be empty", None));
-    }
-
-    let chunker_type = match params.chunker_type.as_deref().unwrap_or("text") {
-        "text" => ChunkerType::Text,
-        "markdown" => ChunkerType::Markdown,
-        "yaml" => ChunkerType::Yaml,
-        "semantic" => ChunkerType::Semantic,
-        other => {
-            return Err(rmcp::ErrorData::invalid_params(
-                format!(
-                    "Invalid chunker_type: '{}'. Valid values: 'text', 'markdown', 'yaml', 'semantic'",
-                    other
-                ),
-                None,
-            ));
-        }
-    };
-
-    let max_characters = params.max_characters.unwrap_or(2000);
-    let overlap = params.overlap.unwrap_or(100);
-
-    if max_characters == 0 || max_characters > 1_000_000 {
-        return Err(rmcp::ErrorData::invalid_params(
-            format!("max_characters must be between 1 and 1,000,000, got {}", max_characters),
-            None,
-        ));
-    }
-
-    if overlap >= max_characters {
-        return Err(rmcp::ErrorData::invalid_params(
-            format!(
-                "overlap ({}) must be less than max_characters ({})",
-                overlap, max_characters
-            ),
-            None,
-        ));
-    }
-
-    let config = ChunkingConfig {
-        max_characters,
-        overlap,
-        trim: true,
-        chunker_type,
-        topic_threshold: params.topic_threshold,
-        ..Default::default()
-    };
-
-    let result = chunk_text(&params.text, &config, None).map_err(super::errors::map_xberg_error_to_mcp)?;
-
-    let chunk_items: Vec<super::schema::ChunkItem> = result
-        .chunks
-        .iter()
-        .map(|c| super::schema::ChunkItem {
-            content: c.content.clone(),
-            chunk_index: c.metadata.chunk_index,
-            total_chunks: c.metadata.total_chunks,
-        })
-        .collect();
-
-    let dto = super::schema::ChunkTextOutput {
-        chunk_count: result.chunk_count,
-        chunks: chunk_items,
-    };
-    let response = serde_json::to_string_pretty(&dto).unwrap_or_default();
-    let mut tool_result = CallToolResult::success(vec![Content::text(response)]);
-    tool_result.structured_content = serde_json::to_value(&dto).ok();
-    Ok(tool_result)
-}
-
-/// Chunk text implementation when chunking feature is disabled.
-#[cfg(not(feature = "chunking"))]
-fn chunk_text_impl(_params: super::params::ChunkTextParams) -> Result<CallToolResult, rmcp::ErrorData> {
-    Err(rmcp::ErrorData::invalid_params(
-        "Chunking feature is not enabled. Rebuild with --features chunking".to_string(),
-        None,
-    ))
 }
 
 #[tool_handler]
@@ -1326,8 +992,6 @@ mod tests {
         assert!(router.has_route("get_version"));
         assert!(router.has_route("cache_manifest"));
         assert!(router.has_route("cache_warm"));
-        assert!(router.has_route("chunk_text"));
-        assert!(router.has_route("embed_text"));
     }
 
     #[test]
@@ -1456,12 +1120,9 @@ mod tests {
             "get_version",
             "cache_manifest",
             "cache_warm",
-            "chunk_text",
         ];
 
-        let expected_tools_extra = ["embed_text"];
-
-        for tool_name in expected_tools.iter().chain(expected_tools_extra.iter()) {
+        for tool_name in expected_tools.iter() {
             assert!(router.has_route(tool_name), "Tool '{}' should be registered", tool_name);
         }
     }
@@ -1471,7 +1132,7 @@ mod tests {
         let router = XbergMcp::tool_router();
         let tools = router.list_all();
 
-        assert_eq!(tools.len(), 12, "Expected 12 tools, found {}", tools.len());
+        assert_eq!(tools.len(), 9, "Expected 9 tools, found {}", tools.len());
     }
 
     #[tokio::test]
@@ -1512,7 +1173,6 @@ mod tests {
             "list_formats",
             "get_version",
             "cache_manifest",
-            "chunk_text",
         ] {
             let a = annotations_for(name);
             assert_eq!(a.read_only_hint, Some(true), "{name} should be read-only");
@@ -1545,24 +1205,6 @@ mod tests {
             "cache_warm is additive, not destructive"
         );
         assert_eq!(warm.open_world_hint, Some(true), "cache_warm fetches from HuggingFace");
-
-        // May fetch an embedding model from HuggingFace.
-        let embed = annotations_for("embed_text");
-        assert_eq!(embed.read_only_hint, Some(true), "embed_text does not mutate user data");
-        assert_eq!(embed.open_world_hint, Some(true), "embed_text may fetch a model");
-
-        // External LLM call: non-deterministic, open-world.
-        let structured = annotations_for("extract_structured");
-        assert_eq!(
-            structured.idempotent_hint,
-            Some(false),
-            "extract_structured is non-deterministic"
-        );
-        assert_eq!(
-            structured.open_world_hint,
-            Some(true),
-            "extract_structured calls an external LLM"
-        );
     }
 
     #[tokio::test]
@@ -1703,68 +1345,6 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "chunking")]
-    #[test]
-    fn test_chunk_text_returns_chunks() {
-        let server = XbergMcp::with_config(ExtractionConfig::default());
-        let params = crate::mcp::params::ChunkTextParams {
-            text: "Hello world. This is a test.".to_string(),
-            max_characters: None,
-            overlap: None,
-            chunker_type: None,
-            topic_threshold: None,
-        };
-
-        let result = server.chunk_text(rmcp::handler::server::wrapper::Parameters(params));
-
-        assert!(result.is_ok());
-        let call_result = result.unwrap();
-        if let Some(content) = call_result.content.first() {
-            match &content.raw {
-                RawContent::Text(text) => {
-                    let parsed: serde_json::Value = serde_json::from_str(&text.text).expect("Should be valid JSON");
-                    assert!(parsed.get("chunk_count").is_some());
-                    assert!(parsed.get("chunks").is_some());
-                }
-                _ => panic!("Expected text content"),
-            }
-        } else {
-            panic!("Expected content in result");
-        }
-    }
-
-    #[test]
-    fn test_chunk_text_rejects_empty_input() {
-        let server = XbergMcp::with_config(ExtractionConfig::default());
-        let params = crate::mcp::params::ChunkTextParams {
-            text: String::new(),
-            max_characters: None,
-            overlap: None,
-            chunker_type: None,
-            topic_threshold: None,
-        };
-
-        let result = server.chunk_text(rmcp::handler::server::wrapper::Parameters(params));
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err().code.0, -32602);
-    }
-
-    #[test]
-    fn test_chunk_text_rejects_invalid_chunker_type() {
-        let server = XbergMcp::with_config(ExtractionConfig::default());
-        let params = crate::mcp::params::ChunkTextParams {
-            text: "Some text".to_string(),
-            max_characters: None,
-            overlap: None,
-            chunker_type: Some("invalid".to_string()),
-            topic_threshold: None,
-        };
-
-        let result = server.chunk_text(rmcp::handler::server::wrapper::Parameters(params));
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err().code.0, -32602);
-    }
-
     #[tokio::test]
     async fn test_extract_batch_empty_inputs_returns_empty_envelope() {
         let server = XbergMcp::with_config(ExtractionConfig::default());
@@ -1784,50 +1364,6 @@ mod tests {
         assert_eq!(structured["summary"]["inputs"], 0);
         assert_eq!(structured["summary"]["results"], 0);
         assert_eq!(structured["summary"]["errors"], 0);
-    }
-
-    #[test]
-    fn test_chunk_text_max_characters_zero_returns_error() {
-        let server = XbergMcp::with_config(ExtractionConfig::default());
-        let params = crate::mcp::params::ChunkTextParams {
-            text: "Some text to chunk".to_string(),
-            max_characters: Some(0),
-            overlap: None,
-            chunker_type: None,
-            topic_threshold: None,
-        };
-
-        let result = server.chunk_text(rmcp::handler::server::wrapper::Parameters(params));
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert_eq!(err.code.0, -32602);
-        assert!(
-            err.message.contains("max_characters must be between"),
-            "Expected bounds error, got: {}",
-            err.message
-        );
-    }
-
-    #[test]
-    fn test_chunk_text_max_characters_too_large_returns_error() {
-        let server = XbergMcp::with_config(ExtractionConfig::default());
-        let params = crate::mcp::params::ChunkTextParams {
-            text: "Some text to chunk".to_string(),
-            max_characters: Some(2_000_000),
-            overlap: None,
-            chunker_type: None,
-            topic_threshold: None,
-        };
-
-        let result = server.chunk_text(rmcp::handler::server::wrapper::Parameters(params));
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert_eq!(err.code.0, -32602);
-        assert!(
-            err.message.contains("max_characters must be between"),
-            "Expected bounds error, got: {}",
-            err.message
-        );
     }
 
     // --- New tests for capabilities, resources, prompts, completions, output_schema ---
@@ -1863,8 +1399,6 @@ mod tests {
             "list_formats",
             "cache_stats",
             "cache_manifest",
-            "chunk_text",
-            "embed_text",
         ];
         for name in structured_tools {
             let tool = tools

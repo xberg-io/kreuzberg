@@ -1,4 +1,4 @@
-import type { ChunkingConfig, EmbeddingConfig, ExtractionConfig } from "xberg-wasm";
+import type { ChunkingConfig, EmbeddingConfig, ExtractionConfig } from "@xberg-io/xberg-wasm";
 
 // Example 1: Preset model (recommended)
 // Fast, balanced, or quality preset configurations optimized for common use cases.
@@ -73,11 +73,8 @@ const _extractionConfig: ExtractionConfig = {
   chunking: chunkingConfig,
 };
 
-// Create Xberg instance with embedding config
-// const xberg = new Xberg(extractionConfig);
-
-// Or update after initialization:
-// xberg.setConfig(extractionConfig);
+// Pass embedding config to extract function:
+// const output = await extract(input, _extractionConfig);
 
 // Key parameter explanations:
 //

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Xberg</RootNamespace>
-    <PackageId>Xberg</PackageId>
+    <PackageId>XbergIo.Xberg</PackageId>
     <Version>1.0.0-rc.1</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>

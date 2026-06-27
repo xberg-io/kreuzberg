@@ -11,13 +11,14 @@ func main() {
         xberg.WithIncludeDocumentStructure(true),
     )
 
-    result, err := xberg.ExtractSync("document.pdf", config)
+    input := xberg.ExtractInputFromURI("document.pdf")
+    result, err := xberg.Extract(*input, *config)
     if err != nil {
         panic(err)
     }
 
-    if result.Document != nil {
-        for _, node := range result.Document.Nodes {
+    if result.Results[0].Document != nil {
+        for _, node := range result.Results[0].Document.Nodes {
             fmt.Printf("[%s]\n", node.Content.NodeType)
         }
     }

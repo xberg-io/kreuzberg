@@ -11,12 +11,13 @@ import (
 func main() {
 	fmt.Println("Xberg CGO bindings loaded successfully")
 
-	result, err := xberg.ExtractSync("sample.pdf", nil)
+	input := xberg.ExtractInputFromURI("sample.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	fmt.Println("Installation verified!")
-	fmt.Printf("Extracted %d characters\n", len(result.Content))
+	fmt.Printf("Extracted %d characters\n", len(result.Results[0].Content))
 }
 ```

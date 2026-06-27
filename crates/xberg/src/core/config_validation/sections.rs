@@ -14,7 +14,7 @@ const VALID_BINARIZATION_METHODS: &[&str] = &["otsu", "adaptive", "sauvola"];
 const VALID_TOKEN_REDUCTION_LEVELS: &[&str] = &["off", "light", "moderate", "aggressive", "maximum"];
 
 /// Valid OCR backends.
-const VALID_OCR_BACKENDS: &[&str] = &["tesseract", "easyocr", "paddleocr", "paddle-ocr", "vlm"];
+const VALID_OCR_BACKENDS: &[&str] = &["tesseract", "paddleocr", "paddle-ocr", "vlm"];
 
 /// Common ISO 639-1 language codes (extended list).
 /// Covers most major languages and variants used in document processing.
@@ -173,7 +173,7 @@ pub(crate) fn validate_token_reduction_level(level: &str) -> Result<()> {
 ///
 /// # Arguments
 ///
-/// * `backend` - The OCR backend to validate (e.g., "tesseract", "easyocr", "paddleocr")
+/// * `backend` - The OCR backend to validate (e.g., "tesseract", "paddleocr")
 ///
 /// # Returns
 ///
@@ -185,7 +185,7 @@ pub(crate) fn validate_token_reduction_level(level: &str) -> Result<()> {
 /// use xberg::core::config_validation::validate_ocr_backend;
 ///
 /// assert!(validate_ocr_backend("tesseract").is_ok());
-/// assert!(validate_ocr_backend("easyocr").is_ok());
+/// assert!(validate_ocr_backend("paddleocr").is_ok());
 /// assert!(validate_ocr_backend("invalid").is_err());
 /// ```
 pub(crate) fn validate_ocr_backend(backend: &str) -> Result<()> {

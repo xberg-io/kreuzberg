@@ -18,8 +18,8 @@ final class WordCountProcessor: PostProcessor {
         50
     }
 
-    func process(result: ExtractionResult, config: ExtractionConfig) -> String {
-        let content = result.content()
+    func process(result: ExtractedDocument, config: ExtractionConfig) -> String {
+        let content = result.content
         let words = content.split(separator: " ").count
 
         // Metadata is not directly mutable via the FFI, so store in logs or use
@@ -27,11 +27,11 @@ final class WordCountProcessor: PostProcessor {
         return "{\"ok\": null}"
     }
 
-    func shouldProcess(result: ExtractionResult, config: ExtractionConfig) -> Bool {
-        !result.content().isEmpty
+    func shouldProcess(result: ExtractedDocument, config: ExtractionConfig) -> Bool {
+        !result.content.isEmpty
     }
 
-    func estimatedDurationMs(result: ExtractionResult) -> UInt64 {
+    func estimatedDurationMs(result: ExtractedDocument) -> UInt64 {
         5
     }
 

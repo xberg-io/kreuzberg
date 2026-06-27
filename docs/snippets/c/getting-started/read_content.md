@@ -5,16 +5,24 @@
 #include <string.h>
 
 int main(void) {
-    XBERGExtractionResult *result =
-        xberg_extract("document.pdf", NULL, NULL);
-    if (!result) {
-        fprintf(stderr, "extraction failed (code %d): %s\n",
+    XBERGExtractInput *input = xberg_extract_input_from_uri("document.pdf");
+    if (!input) {
+        fprintf(stderr, "Failed to create input (code %d): %s\n",
                 xberg_last_error_code(),
                 xberg_last_error_context());
         return 1;
     }
 
-    char *content = xberg_extraction_result_content(result);
+    XBERGExtractionResult *result = xberg_extract(input, NULL);
+    if (!result) {
+        fprintf(stderr, "extraction failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extract_input_free(input);
+        return 1;
+    }
+
+    char *content = xberg_extraction_result_results(result);
     if (content) {
         printf("content length: %zu bytes\n", strlen(content));
         printf("%s\n", content);
@@ -32,6 +40,7 @@ int main(void) {
     }
     xberg_free_string(tables_json);
 
+    xberg_extract_input_free(input);
     xberg_extraction_result_free(result);
     return 0;
 }

@@ -7,7 +7,7 @@ var config = new ExtractionConfig
     UseCache = true
 };
 
-var result = await XbergLib.Extract("document.pdf", null, config);
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine($"Quality score: {result.QualityScore}");
 Console.WriteLine($"Content length: {result.Content.Length}");
 ```

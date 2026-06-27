@@ -12,14 +12,13 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\OcrConfig;
-use Xberg\Config\TesseractConfig;
+use Xberg\ExtractionConfig;
+use Xberg\OcrConfig;
+use Xberg\TesseractConfig;
 
 $config = new ExtractionConfig(extractTables: true);
-$xberg = new Xberg($config);
-$result = $xberg->extract('financial_report.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('financial_report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Table Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -74,8 +73,8 @@ $ocrConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($ocrConfig);
-$result = $xberg->extract('scanned_table.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned_table.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "OCR Table Extraction:\n";
 echo str_repeat('=', 60) . "\n";
@@ -147,7 +146,8 @@ function tableToAssociativeArray(\Xberg\Types\Table $table): array
     return $result;
 }
 
-$result = $xberg->extract('quarterly_report.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('quarterly_report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 foreach ($result->tables as $index => $table) {
     $data = tableToAssociativeArray($table);

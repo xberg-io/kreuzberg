@@ -3,6 +3,9 @@
 //! Tests custom post-processor registration, execution, modifications,
 //! error handling, and cleanup with real file extraction.
 
+mod helpers;
+use helpers::extract_uri_document_blocking;
+
 use async_trait::async_trait;
 use serial_test::serial;
 use std::borrow::Cow;
@@ -12,8 +15,8 @@ use xberg::core::config::ExtractionConfig;
 use xberg::core::pipeline::clear_processor_cache;
 use xberg::plugins::registry::get_post_processor_registry;
 use xberg::plugins::{Plugin, PostProcessor, ProcessingStage};
-use xberg::types::ExtractionResult;
-use xberg::{Result, XbergError, extract_file_sync};
+use xberg::types::ExtractedDocument;
+use xberg::{Result, XbergError};
 
 struct AppendTextProcessor {
     name: String,
@@ -41,7 +44,7 @@ impl Plugin for AppendTextProcessor {
 
 #[async_trait]
 impl PostProcessor for AppendTextProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         self.call_count.fetch_add(1, Ordering::SeqCst);
         result.content.push_str(&self.text_to_append);
         Ok(())
@@ -79,7 +82,7 @@ impl Plugin for MetadataAddingProcessor {
 
 #[async_trait]
 impl PostProcessor for MetadataAddingProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         result
             .metadata
             .additional
@@ -120,7 +123,7 @@ impl Plugin for UppercaseProcessor {
 
 #[async_trait]
 impl PostProcessor for UppercaseProcessor {
-    async fn process(&self, result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         result.content = result.content.to_uppercase();
         Ok(())
     }
@@ -154,7 +157,7 @@ impl Plugin for FailingProcessor {
 
 #[async_trait]
 impl PostProcessor for FailingProcessor {
-    async fn process(&self, _result: &mut ExtractionResult, _config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, _result: &mut ExtractedDocument, _config: &ExtractionConfig) -> Result<()> {
         Err(XbergError::Plugin {
             message: "Processor intentionally failed".to_string(),
             plugin_name: self.name.clone(),
@@ -230,7 +233,7 @@ fn test_postprocessor_called_during_extraction() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok(), "Extraction failed: {:?}", result.err());
 
@@ -271,7 +274,7 @@ fn test_postprocessor_modifies_content() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -310,7 +313,7 @@ fn test_postprocessor_adds_metadata() {
     );
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -378,7 +381,7 @@ fn test_unregister_postprocessor() {
 
     let test_file = "../../test_documents/text/fake_text.txt";
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -458,7 +461,7 @@ fn test_postprocessor_error_handling() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     // NOTE: Plugin errors now bubble up and fail the extraction (design change)
     assert!(
@@ -547,7 +550,7 @@ fn test_multiple_postprocessors_execution_order() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 
@@ -583,7 +586,7 @@ fn test_postprocessor_preserves_mime_type() {
     }
 
     let config = ExtractionConfig::default();
-    let result = extract_file_sync(test_file, None, &config);
+    let result = extract_uri_document_blocking(test_file, None, &config);
 
     assert!(result.is_ok());
 

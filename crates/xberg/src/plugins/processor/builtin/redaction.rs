@@ -5,7 +5,7 @@
 //! is `Some(_)`. Runs the pure-Rust pattern engine, the optional NER backend
 //! (for PERSON / ORG / LOCATION), and rewrites every textual field on the
 //! result in place. Produces an audit trail in
-//! [`ExtractionResult::redaction_report`](crate::types::ExtractionResult::redaction_report).
+//! [`ExtractedDocument::redaction_report`](crate::types::ExtractedDocument::redaction_report).
 
 use std::sync::Arc;
 
@@ -15,7 +15,7 @@ use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::plugins::{Plugin, PostProcessor, ProcessingStage, register_post_processor};
 use crate::text::redaction::redact;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 
 /// Redaction post-processor.
 #[cfg_attr(alef, alef(skip))]
@@ -42,7 +42,7 @@ impl Plugin for RedactionProcessor {
 
 #[async_trait]
 impl PostProcessor for RedactionProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig) -> Result<()> {
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig) -> Result<()> {
         let Some(redaction_config) = config.redaction.as_ref() else {
             return Ok(());
         };
@@ -61,7 +61,7 @@ impl PostProcessor for RedactionProcessor {
         ProcessingStage::Late
     }
 
-    fn should_process(&self, _result: &ExtractionResult, config: &ExtractionConfig) -> bool {
+    fn should_process(&self, _result: &ExtractedDocument, config: &ExtractionConfig) -> bool {
         config.redaction.is_some()
     }
 
@@ -92,7 +92,7 @@ mod tests {
     #[test]
     fn should_process_only_when_redaction_configured() {
         let p = RedactionProcessor;
-        let result = ExtractionResult {
+        let result = ExtractedDocument {
             content: "hello".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()
@@ -109,7 +109,7 @@ mod tests {
     #[tokio::test]
     async fn redacts_email_in_content() {
         let p = RedactionProcessor;
-        let mut result = ExtractionResult {
+        let mut result = ExtractedDocument {
             content: "Contact me at alice@example.com.".to_string(),
             mime_type: Cow::Borrowed("text/plain"),
             ..Default::default()

@@ -3,7 +3,7 @@
 //! Records service-level counters, histograms, and gauges on every
 //! extraction request using the xberg OTel metric instruments.
 
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::{Result, XbergError};
 use std::future::Future;
 use std::pin::Pin;
@@ -49,12 +49,12 @@ pub struct MetricsService<S> {
 
 impl<S> Service<ExtractionRequest> for MetricsService<S>
 where
-    S: Service<ExtractionRequest, Response = ExtractionResult, Error = XbergError> + Clone + Send + 'static,
+    S: Service<ExtractionRequest, Response = ExtractedDocument, Error = XbergError> + Clone + Send + 'static,
     S::Future: Send,
 {
-    type Response = ExtractionResult;
+    type Response = ExtractedDocument;
     type Error = XbergError;
-    type Future = Pin<Box<dyn Future<Output = Result<ExtractionResult>> + Send>>;
+    type Future = Pin<Box<dyn Future<Output = Result<ExtractedDocument>> + Send>>;
 
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<()>> {
         self.inner.poll_ready(cx)

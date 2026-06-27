@@ -1,5 +1,5 @@
 //! Redaction engine: orchestrates pattern matching, optional NER, span merging,
-//! and the destructive rewrite of every textual field on [`ExtractionResult`].
+//! and the destructive rewrite of every textual field on [`ExtractedDocument`].
 //!
 //! The engine is invoked from the Late-stage post-processor at
 //! [`crate::plugins::processor::builtin::redaction`].
@@ -8,7 +8,7 @@ use std::collections::HashSet;
 
 use crate::Result;
 use crate::core::config::redaction::RedactionConfig;
-use crate::types::ExtractionResult;
+use crate::types::ExtractedDocument;
 use crate::types::redaction::{PiiCategory, RedactionFinding, RedactionReport};
 
 use super::patterns::{PatternMatch, scan_text};
@@ -16,7 +16,7 @@ use super::strategy::{TokenCounter, apply_strategy};
 
 /// Run pattern redaction (and optional NER-driven redaction) over `result` and
 /// rewrite every textual field. Populates `result.redaction_report`.
-pub async fn redact(result: &mut ExtractionResult, config: &RedactionConfig) -> Result<()> {
+pub async fn redact(result: &mut ExtractedDocument, config: &RedactionConfig) -> Result<()> {
     // Validate user-supplied terms/patterns up front so the engine never tries to
     // compile a malformed regex mid-pipeline.
     config.validate()?;

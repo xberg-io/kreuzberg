@@ -1,7 +1,8 @@
 ```rust title="Rust"
-use xberg::{extract_sync, ExtractionConfig, OcrConfig};
+use xberg::{extract, ExtractionConfig, ExtractInput, OcrConfig};
 
-fn main() -> xberg::Result<()> {
+#[tokio::main]
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         force_ocr: true,
         ocr: Some(OcrConfig {
@@ -12,9 +13,9 @@ fn main() -> xberg::Result<()> {
         ..Default::default()
     };
 
-    let result = extract_sync("scanned.pdf", None, &config)?;
-    println!("{}", result.content);
-    println!("Detected languages: {:?}", result.detected_languages);
+    let output = extract(ExtractInput::from_uri("scanned.pdf"), &config).await?;
+    println!("{}", output.results[0].content);
+    println!("Detected languages: {:?}", output.results[0].detected_languages);
     Ok(())
 }
 ```

@@ -7,9 +7,9 @@
 
 use std::path::PathBuf;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
-use xberg::core::extractor::extract_file;
 
 mod helpers;
+use helpers::{extract_uri_document, extract_uri_document_blocking};
 
 fn test_documents_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -20,7 +20,7 @@ fn test_documents_dir() -> PathBuf {
         .join("test_documents")
 }
 
-fn extract_markdown(relative_path: &str) -> xberg::types::ExtractionResult {
+fn extract_markdown(relative_path: &str) -> xberg::types::ExtractedDocument {
     use xberg::core::config::ImageExtractionConfig;
     let path = test_documents_dir().join(relative_path);
     let config = ExtractionConfig {
@@ -32,7 +32,7 @@ fn extract_markdown(relative_path: &str) -> xberg::types::ExtractionResult {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 #[test]
@@ -144,7 +144,7 @@ fn test_ghostscript_inline_images_completes_in_reasonable_time() {
 
     let start = std::time::Instant::now();
     let result = rt
-        .block_on(xberg::core::extractor::extract_file(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed for Ghostscript inline-image PDF");
     let elapsed = start.elapsed();
 
@@ -163,14 +163,14 @@ fn test_ghostscript_inline_images_completes_in_reasonable_time() {
 //
 // Before the fix, setting `images.extract_images = false` (or
 // `pdf_options.extract_images = false`) still caused full base64 image data to
-// appear in `ExtractionResult.images` when `output_format` was `Markdown` or
+// appear in `ExtractedDocument.images` when `output_format` was `Markdown` or
 // `Djot`. The root cause was that `inject_placeholders` in `extraction.rs`
 // defaulted to `true` without checking `extract_images`, allowing the structure
 // pipeline to call `populate_images_from_oxide` unconditionally.
 
 /// Helper: extract with a specific output format and images explicitly disabled
 /// via `ImageExtractionConfig.extract_images = false`.
-fn extract_no_images(relative_path: &str, fmt: OutputFormat) -> xberg::types::ExtractionResult {
+fn extract_no_images(relative_path: &str, fmt: OutputFormat) -> xberg::types::ExtractedDocument {
     use xberg::core::config::ImageExtractionConfig;
     let path = test_documents_dir().join(relative_path);
     let config = ExtractionConfig {
@@ -182,13 +182,12 @@ fn extract_no_images(relative_path: &str, fmt: OutputFormat) -> xberg::types::Ex
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(xberg::core::extractor::extract_file(&path, None, &config))
-        .unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Helper: extract with a specific output format and images disabled via
 /// `PdfConfig.extract_images = false`.
-fn extract_no_images_via_pdf_options(relative_path: &str, fmt: OutputFormat) -> xberg::types::ExtractionResult {
+fn extract_no_images_via_pdf_options(relative_path: &str, fmt: OutputFormat) -> xberg::types::ExtractedDocument {
     use xberg::core::config::pdf::PdfConfig;
     let path = test_documents_dir().join(relative_path);
     let config = ExtractionConfig {
@@ -200,14 +199,13 @@ fn extract_no_images_via_pdf_options(relative_path: &str, fmt: OutputFormat) -> 
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(xberg::core::extractor::extract_file(&path, None, &config))
-        .unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Regression #796: images must be absent when extract_images=false, output_format=Markdown.
 ///
 /// Uses `embedded_images_tables.pdf` — a known-image PDF. Before the fix, this
-/// returned `ExtractionResult.images` with full base64 data despite the flag.
+/// returned `ExtractedDocument.images` with full base64 data despite the flag.
 #[test]
 fn test_regression_796_markdown_no_images_when_disabled_via_images_config() {
     let result = extract_no_images("pdf/embedded_images_tables.pdf", OutputFormat::Markdown);
@@ -263,9 +261,7 @@ fn test_regression_796_markdown_images_present_when_enabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt
-        .block_on(xberg::core::extractor::extract_file(&path, None, &config))
-        .unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
     let images = result
         .images
         .as_ref()
@@ -374,9 +370,9 @@ fn test_djot_content_has_no_image_refs_when_disabled_via_pdf_options() {
 // ─── Page-level and chunk-level image index references ────────────────────────
 //
 // Pages carry `image_indices: Vec<usize>` — zero-based indices into the
-// top-level `ExtractionResult.images` collection. Chunks carry the same field.
+// top-level `ExtractedDocument.images` collection. Chunks carry the same field.
 
-fn extract_with_pages_and_images(relative_path: &str) -> xberg::types::ExtractionResult {
+fn extract_with_pages_and_images(relative_path: &str) -> xberg::types::ExtractedDocument {
     use xberg::core::config::{ImageExtractionConfig, PageConfig};
     let path = test_documents_dir().join(relative_path);
     let config = ExtractionConfig {
@@ -392,11 +388,11 @@ fn extract_with_pages_and_images(relative_path: &str) -> xberg::types::Extractio
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Pages that contain images must have non-empty `image_indices` pointing into
-/// `ExtractionResult.images`. Every index must be in-bounds.
+/// `ExtractedDocument.images`. Every index must be in-bounds.
 #[test]
 fn test_page_image_indices_are_valid_when_images_extracted() {
     let result = extract_with_pages_and_images("pdf/embedded_images_tables.pdf");
@@ -461,7 +457,7 @@ fn test_page_image_indices_empty_when_images_disabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     if let Some(pages) = result.pages.as_ref() {
         for page in pages {
@@ -475,7 +471,7 @@ fn test_page_image_indices_empty_when_images_disabled() {
 }
 
 #[cfg(feature = "chunking")]
-fn extract_with_pages_images_and_chunks(relative_path: &str) -> xberg::types::ExtractionResult {
+fn extract_with_pages_images_and_chunks(relative_path: &str) -> xberg::types::ExtractedDocument {
     use xberg::core::config::{ChunkingConfig, ImageExtractionConfig, PageConfig};
     let path = test_documents_dir().join(relative_path);
     let config = ExtractionConfig {
@@ -495,7 +491,7 @@ fn extract_with_pages_images_and_chunks(relative_path: &str) -> xberg::types::Ex
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(extract_file(&path, None, &config)).unwrap()
+    rt.block_on(extract_uri_document(&path, None, &config)).unwrap()
 }
 
 /// Chunks that span pages containing images must have non-empty `image_indices`.
@@ -588,7 +584,7 @@ fn test_max_images_per_page_cap_respected_in_output() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     let images = result
@@ -628,7 +624,7 @@ fn test_no_images_returned_when_extraction_disabled_on_dense_pdf() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     // No images should be returned when extraction is disabled.
@@ -660,7 +656,7 @@ fn test_image_positions_consistent_with_image_data() {
     };
 
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     let images = match result.images.as_ref() {
         Some(imgs) if !imgs.is_empty() => imgs,
@@ -710,7 +706,7 @@ fn test_no_decompression_when_images_disabled() {
     let config = ExtractionConfig::default();
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(xberg::core::extractor::extract_file(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction must succeed");
 
     // The text-only path must not return any image data.
@@ -803,7 +799,7 @@ fn test_no_decompression_trace_when_images_disabled() {
             .enable_all()
             .build()
             .unwrap()
-            .block_on(xberg::core::extractor::extract_file(&path, None, &config))
+            .block_on(extract_uri_document(&path, None, &config))
             .expect("extraction must succeed")
     });
 
@@ -875,7 +871,7 @@ fn test_ocr_inline_images_enters_decompression_path() {
     };
 
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     // Images must be decompressed even though extract_images=false, because
     // ocr_inline_images=true enters the extraction branch regardless.
@@ -894,7 +890,7 @@ fn test_ocr_inline_images_enters_decompression_path() {
 //
 // These tests exercise the full pipeline: ExtractionConfig with
 // include_page_rasters=true → PDF OCR via Tesseract (per-page rendering) →
-// merge/reindex in mod.rs → ExtractionResult.images contains PageRaster entries.
+// merge/reindex in mod.rs → ExtractedDocument.images contains PageRaster entries.
 //
 // They are the minimum proof that build_page_raster_image is actually called and
 // that the result survives the merge/reindex at mod.rs:501-507.  The unit tests
@@ -902,7 +898,7 @@ fn test_ocr_inline_images_enters_decompression_path() {
 // verify the integration path.
 
 /// Enabling `include_page_rasters` on a PDF with `force_ocr=true` must produce
-/// `ImageKind::PageRaster` entries in `ExtractionResult.images`.
+/// `ImageKind::PageRaster` entries in `ExtractedDocument.images`.
 ///
 /// Verifies:
 /// - At least one `PageRaster` entry is present (per-page rendering ran).
@@ -915,7 +911,6 @@ fn test_ocr_inline_images_enters_decompression_path() {
 #[test]
 fn test_include_page_rasters_produces_rasters_on_force_ocr_pdf() {
     use xberg::core::config::{ImageExtractionConfig, OcrConfig};
-    use xberg::extract_file_sync;
     use xberg::types::ImageKind;
 
     let path = test_documents_dir().join("pdf/fake_memo.pdf");
@@ -939,7 +934,7 @@ fn test_include_page_rasters_produces_rasters_on_force_ocr_pdf() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("force_ocr extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
 
     let images = result
         .images
@@ -1008,7 +1003,6 @@ fn test_include_page_rasters_produces_rasters_on_force_ocr_pdf() {
 #[test]
 fn test_include_page_rasters_false_does_not_capture_rasters() {
     use xberg::core::config::{ImageExtractionConfig, OcrConfig};
-    use xberg::extract_file_sync;
     use xberg::types::ImageKind;
 
     let path = test_documents_dir().join("pdf/fake_memo.pdf");
@@ -1032,7 +1026,7 @@ fn test_include_page_rasters_false_does_not_capture_rasters() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("force_ocr extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr extraction must succeed");
 
     let raster_count = result
         .images
@@ -1061,7 +1055,6 @@ fn test_include_page_rasters_false_does_not_capture_rasters() {
 #[test]
 fn test_include_page_rasters_on_force_ocr_pages_path() {
     use xberg::core::config::{ImageExtractionConfig, OcrConfig};
-    use xberg::extract_file_sync;
     use xberg::types::ImageKind;
 
     let path = test_documents_dir().join("pdf/fake_memo.pdf");
@@ -1085,7 +1078,7 @@ fn test_include_page_rasters_on_force_ocr_pages_path() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("force_ocr_pages extraction must succeed");
+    let result = extract_uri_document_blocking(&path, None, &config).expect("force_ocr_pages extraction must succeed");
 
     let images = result
         .images
@@ -1139,7 +1132,6 @@ fn test_include_page_rasters_on_force_ocr_pages_path() {
 #[test]
 fn test_include_page_rasters_no_warning_on_out_of_range_pages() {
     use xberg::core::config::{ImageExtractionConfig, OcrConfig};
-    use xberg::extract_file_sync;
 
     let path = test_documents_dir().join("pdf/fake_memo.pdf");
     if !path.exists() {
@@ -1162,7 +1154,8 @@ fn test_include_page_rasters_no_warning_on_out_of_range_pages() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&path, None, &config).expect("out-of-range force_ocr_pages must not error");
+    let result =
+        extract_uri_document_blocking(&path, None, &config).expect("out-of-range force_ocr_pages must not error");
 
     let raster_warning = result
         .processing_warnings
@@ -1198,9 +1191,8 @@ fn test_include_page_rasters_emits_warning_on_document_level_ocr_bypass() {
     use std::path::Path;
     use std::sync::Arc;
     use xberg::core::config::{ImageExtractionConfig, OcrConfig};
-    use xberg::core::extractor::extract_file;
     use xberg::plugins::{OcrBackend, OcrBackendType, Plugin};
-    use xberg::types::ExtractionResult;
+    use xberg::types::ExtractedDocument;
 
     let pdf_path = test_documents_dir().join("pdf/fake_memo.pdf");
     if !pdf_path.exists() {
@@ -1218,14 +1210,14 @@ fn test_include_page_rasters_emits_warning_on_document_level_ocr_bypass() {
         fn supports_language(&self, _: &str) -> bool {
             true
         }
-        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> xberg::Result<ExtractionResult> {
+        async fn process_image(&self, _: &[u8], _: &OcrConfig) -> xberg::Result<ExtractedDocument> {
             panic!("process_image must not be called for a document-level backend")
         }
         fn supports_document_processing(&self) -> bool {
             true
         }
-        async fn process_document(&self, _: &Path, _: &OcrConfig) -> xberg::Result<ExtractionResult> {
-            Ok(ExtractionResult::default())
+        async fn process_document(&self, _: &Path, _: &OcrConfig) -> xberg::Result<ExtractedDocument> {
+            Ok(ExtractedDocument::default())
         }
     }
 
@@ -1262,7 +1254,7 @@ fn test_include_page_rasters_emits_warning_on_document_level_ocr_bypass() {
 
     let rt = tokio::runtime::Runtime::new().unwrap();
     let result = rt
-        .block_on(extract_file(&pdf_path, None, &config))
+        .block_on(extract_uri_document(&pdf_path, None, &config))
         .expect("document-level OCR mock must succeed");
 
     xberg::plugins::unregister_ocr_backend("doc-level-mock-raster-warn").unwrap();
@@ -1313,7 +1305,7 @@ fn test_regression_1077_raw_pdf_images_re_encoded_as_png() {
     // Before the fix this errored with
     // "image dimension probe failed: The image format could not be determined".
     let result = rt
-        .block_on(extract_file(&path, None, &config))
+        .block_on(extract_uri_document(&path, None, &config))
         .expect("extraction of mp_axmp_rec_en.pdf must succeed without probe errors");
 
     let images = result
@@ -1374,7 +1366,7 @@ fn test_chunk_image_indices_empty_when_images_disabled() {
         ..Default::default()
     };
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let result = rt.block_on(extract_file(&path, None, &config)).unwrap();
+    let result = rt.block_on(extract_uri_document(&path, None, &config)).unwrap();
 
     if let Some(chunks) = result.chunks.as_ref() {
         for chunk in chunks {

@@ -10,17 +10,7 @@ const DocumentExtractorVTable = extern struct {
     shutdown_fn: ?*const fn (user_data: ?*anyopaque, out_error: ?*?[*c]u8) callconv(.C) i32,
     extract: ?*const fn (
         user_data: ?*anyopaque,
-        content: [*c]const u8,
-        content_len: usize,
-        mime_type: [*c]const u8,
-        config: [*c]const u8,
-        out_result: ?*?[*c]u8,
-        out_error: ?*?[*c]u8,
-    ) callconv(.C) i32,
-    extract: ?*const fn (
-        user_data: ?*anyopaque,
-        path: [*c]const u8,
-        mime_type: [*c]const u8,
+        input: [*c]const u8,
         config: [*c]const u8,
         out_result: ?*?[*c]u8,
         out_error: ?*?[*c]u8,
@@ -53,33 +43,49 @@ extern "xberg_ffi" fn xberg_free_string(ptr: [*c]u8) void;
 // Implement callback functions for the extractor.
 fn extract_fn(
     user_data: ?*anyopaque,
-    content: [*c]const u8,
-    content_len: usize,
-    mime_type: [*c]const u8,
+    input: [*c]const u8,
     config: [*c]const u8,
     out_result: ?*?[*c]u8,
     out_error: ?*?[*c]u8,
 ) callconv(.C) i32 {
     _ = user_data;
-    _ = content;
-    _ = content_len;
     _ = config;
 
-    const mime_str = std.mem.sliceTo(mime_type, 0);
-    if (std.mem.eql(u8, mime_str, "application/json")) {
-        const result = "{\"content\": \"Extracted from JSON\"}";
-        const result_cstr = std.heap.c_allocator.allocSentinel(u8, result.len, 0) catch return 1;
-        @memcpy(result_cstr[0..result.len], result);
-        if (out_result) |ptr| ptr.* = result_cstr.ptr;
-        return 0;
-    }
-    if (out_error) |ptr| {
-        const err_msg = "Unsupported MIME type";
-        const err_cstr = std.heap.c_allocator.allocSentinel(u8, err_msg.len, 0) catch return 1;
-        @memcpy(err_cstr[0..err_msg.len], err_msg);
-        ptr.* = err_cstr.ptr;
-    }
-    return 1;
+    const input_str = std.mem.sliceTo(input, 0);
+    // Minimal extraction: return wrapped JSON document
+    var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const result = std.fmt.allocPrint(
+        allocator,
+        "{{\"documents\": [{{\"text\": \"{s}\", \"metadata\": {{\"source\": \"zig-json-extractor\"}}}}]}}",
+        .{input_str},
+    ) catch {
+        if (out_error) |ptr| {
+            const err_msg = "OOM during extraction";
+            if (std.heap.c_allocator.allocSentinel(u8, err_msg.len, 0)) |cstr| {
+                @memcpy(cstr[0..err_msg.len], err_msg);
+                ptr.* = cstr.ptr;
+            }
+        }
+        return 1;
+    };
+
+    const result_cstr = std.heap.c_allocator.allocSentinel(u8, result.len, 0) catch {
+        if (out_error) |ptr| {
+            const err_msg = "OOM allocating result";
+            if (std.heap.c_allocator.allocSentinel(u8, err_msg.len, 0)) |cstr| {
+                @memcpy(cstr[0..err_msg.len], err_msg);
+                ptr.* = cstr.ptr;
+            }
+        }
+        return 1;
+    };
+    @memcpy(result_cstr[0..result.len], result);
+
+    if (out_result) |ptr| ptr.* = result_cstr.ptr;
+    return 0;
 }
 
 fn supported_mime_types_fn(user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.C) i32 {
@@ -137,7 +143,6 @@ pub fn main() !void {
         .initialize_fn = initialize_fn,
         .shutdown_fn = shutdown_fn,
         .extract = extract_fn,
-        .extract = null,
         .supported_mime_types = supported_mime_types_fn,
         .priority = priority_fn,
         .can_handle = null,

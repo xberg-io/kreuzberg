@@ -16,7 +16,7 @@
 //! derived from the configured thread budget to prevent resource
 //! exhaustion when documents contain many embedded images.
 
-use crate::types::{ExtractedImage, ExtractionResult};
+use crate::types::{ExtractedDocument, ExtractedImage};
 
 /// Process extracted images with OCR if configured.
 ///
@@ -29,7 +29,7 @@ use crate::types::{ExtractedImage, ExtractionResult};
 ///
 /// # Recursion Safety
 ///
-/// The produced `ExtractionResult` for each image explicitly sets
+/// The produced `ExtractedDocument` for each image explicitly sets
 /// `images: None`, preventing further image extraction cycles when
 /// OCR results are consumed by archive or recursive extraction paths.
 ///
@@ -60,7 +60,7 @@ pub(crate) async fn process_images_with_ocr(
     let semaphore = Arc::new(Semaphore::new(max_tasks));
 
     // Each spawned task returns `(image_index, ocr_result)`.
-    type OcrTaskResult = (usize, crate::Result<ExtractionResult>);
+    type OcrTaskResult = (usize, crate::Result<ExtractedDocument>);
     let mut join_set: JoinSet<OcrTaskResult> = JoinSet::new();
 
     for (idx, image) in images.iter().enumerate() {
@@ -119,12 +119,12 @@ pub(crate) async fn process_images_with_ocr(
 
         match ocr_result {
             Ok(extraction_result) => {
-                // Recursion prevention: the child ExtractionResult explicitly
+                // Recursion prevention: the child ExtractedDocument explicitly
                 // disables image extraction (`images: None`) and omits all
                 // expensive post-processing fields (chunking, language detection,
                 // keywords, etc.) to prevent further extraction cycles and
                 // minimize overhead.
-                images[idx].ocr_result = Some(Box::new(ExtractionResult {
+                images[idx].ocr_result = Some(Box::new(ExtractedDocument {
                     content: extraction_result.content,
                     mime_type: extraction_result.mime_type,
                     ocr_elements: extraction_result.ocr_elements,

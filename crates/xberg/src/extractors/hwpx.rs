@@ -11,7 +11,7 @@ use bytes::Bytes;
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extractors::security::ZipBombValidator;
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
@@ -176,8 +176,8 @@ fn build_hwpx_internal_document(doc: unhwp::model::Document, mime_type: &str) ->
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for HwpxExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for HwpxExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,
@@ -240,7 +240,7 @@ mod tests {
         let content = std::fs::read(path).expect("test_documents/hwpx/simple.hwpx must exist");
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&content, "application/haansofthwpx", &ExtractionConfig::default())
+            .extract_content(&content, "application/haansofthwpx", &ExtractionConfig::default())
             .await
             .expect("extraction of simple.hwpx must succeed");
 
@@ -255,7 +255,7 @@ mod tests {
     async fn test_hwpx_extract_corrupted_returns_err() {
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(b"not a zip", "application/haansofthwpx", &ExtractionConfig::default())
+            .extract_content(b"not a zip", "application/haansofthwpx", &ExtractionConfig::default())
             .await;
         assert!(result.is_err(), "corrupted input must return Err, not panic");
     }
@@ -289,7 +289,7 @@ mod tests {
         let zip_bytes = make_zip_with_ratio(256 * 1024);
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&zip_bytes, "application/haansofthwpx", &ExtractionConfig::default())
+            .extract_content(&zip_bytes, "application/haansofthwpx", &ExtractionConfig::default())
             .await;
         assert!(result.is_err(), "default limits must block a >100:1 zip bomb");
         let err = result.unwrap_err().to_string();
@@ -312,7 +312,7 @@ mod tests {
         };
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&zip_bytes, "application/haansofthwpx", &config)
+            .extract_content(&zip_bytes, "application/haansofthwpx", &config)
             .await;
         assert!(result.is_err(), "zip bomb must be rejected");
         let err = result.unwrap_err().to_string();
@@ -336,7 +336,7 @@ mod tests {
         let oversized = vec![0u8; 11];
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&oversized, "application/haansofthwpx", &config)
+            .extract_content(&oversized, "application/haansofthwpx", &config)
             .await;
         assert!(result.is_err(), "oversized file must be rejected");
         let err = result.unwrap_err().to_string();
@@ -359,7 +359,7 @@ mod tests {
         };
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&zip_bytes, "application/haansofthwpx", &config)
+            .extract_content(&zip_bytes, "application/haansofthwpx", &config)
             .await;
         assert!(result.is_err(), "archive exceeding file-count limit must be rejected");
         let err = result.unwrap_err().to_string();
@@ -384,7 +384,7 @@ mod tests {
         };
         let extractor = HwpxExtractor::new();
         let result = extractor
-            .extract_bytes(&zip_bytes, "application/haansofthwpx", &config)
+            .extract_content(&zip_bytes, "application/haansofthwpx", &config)
             .await;
         // The ZIP is valid but not a real HWPX — we expect a parse error, not a security error.
         let is_parse_err = match &result {

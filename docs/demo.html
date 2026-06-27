@@ -541,11 +541,11 @@
       //   setTimeout, which can never fire on a blocked main-thread event loop)
       // - ArrayBuffer is transferred (not copied) to avoid peak memory doubling
       // - Worker emits progress phases so the UI can show what is happening
-      function extractInWorker(fileBytes, mimeType, cdnBase, onProgress) {
+      function extractInWorker(fileBytes, fileName, mimeType, cdnBase, onProgress) {
         return new Promise((resolve, reject) => {
           const workerCode = `
             self.onmessage = async (e) => {
-              const { fileBytes, mimeType, cdnBase } = e.data;
+              const { fileBytes, fileName, mimeType, cdnBase } = e.data;
               try {
                 self.postMessage({ type: 'progress', msg: 'Loading WASM module…' });
                 const mod = await import(cdnBase + '/dist/index.js');
@@ -553,8 +553,13 @@
                 await mod.initWasm(cdnBase + '/dist/pkg/xberg_wasm_bg.wasm');
                 await mod.enableOcr();
                 self.postMessage({ type: 'progress', msg: 'Extracting content…' });
-                const blob = new Blob([new Uint8Array(fileBytes)]);
-                const result = await mod.extractFromFile(blob, mimeType || null);
+                const output = await mod.extract({
+                  kind: 'bytes',
+                  bytes: new Uint8Array(fileBytes),
+                  mimeType: mimeType || undefined,
+                  filename: fileName,
+                }, {});
+                const result = output.results?.[0] ?? {};
                 // WASM bindgen instances expose data via prototype getters only;
                 // structured clone (postMessage) and JSON.stringify both miss them.
                 // Build a plain object from known scalar/array getters, then
@@ -619,7 +624,7 @@
 
           // Transfer the ArrayBuffer so the worker owns the memory — avoids
           // a full copy and halves peak memory for large files.
-          worker.postMessage({ fileBytes, mimeType, cdnBase }, [fileBytes]);
+          worker.postMessage({ fileBytes, fileName, mimeType, cdnBase }, [fileBytes]);
         });
       }
 
@@ -671,6 +676,7 @@
           log.info("worker dispatched", { file: file.name, bytes: fileBytes.byteLength, mime: file.type || "(auto)" });
           const result = await extractInWorker(
             fileBytes,
+            file.name,
             file.type || null,
             wasmCdnBase,
             (msg) => {

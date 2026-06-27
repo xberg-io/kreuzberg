@@ -252,8 +252,9 @@ pub struct OcrExtractionResult {
     /// Carries paragraph structure, bounding boxes, and confidence scores
     /// that the flattened `content` string discards.
     #[serde(skip)]
+    #[allow(dead_code)]
     #[cfg_attr(alef, alef(skip))]
-    pub internal_document: Option<super::internal::InternalDocument>,
+    pub(crate) internal_document: Option<super::internal::InternalDocument>,
 }
 
 /// Table detected via OCR.

@@ -1,7 +1,7 @@
 ```typescript title="WASM - Token Counting and Cost Estimation"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   tokenReduction: {
@@ -11,7 +11,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 // Simple token counting (approximation: 1 token ≈ 4 chars)
 function estimateTokenCount(text: string): number {
@@ -45,9 +45,9 @@ console.log(`  Total cost (est.): $${costEstimate.totalEstimate.toFixed(6)}`);
 ```
 
 ```typescript title="WASM - Token Reduction for Context Windows"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface ContextWindowFit {
   contentLength: number;
@@ -80,7 +80,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 const contextFit = checkContextWindowFit(result.content, 4096);
 
@@ -96,9 +96,9 @@ if (!contextFit.fitsInWindow) {
 ```
 
 ```typescript title="WASM - Selective Token Preservation"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   tokenReduction: {
@@ -108,7 +108,7 @@ const config = {
 };
 
 const bytes = new Uint8Array(buffer);
-const result = await extract(bytes, "application/pdf", config);
+const result = await extract({ kind: "bytes", bytes, mimeType: "application/pdf" }, config);
 
 // Extract important terms manually
 interface ImportantTerm {

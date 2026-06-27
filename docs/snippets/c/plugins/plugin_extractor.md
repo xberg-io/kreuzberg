@@ -18,25 +18,36 @@ int main(void) {
     const uint8_t *bytes = (const uint8_t *)json_payload;
     uintptr_t bytes_len = (uintptr_t)strlen(json_payload);
 
-    XBERGExtractionResult *result = xberg_extract_sync(
+    XBERGExtractInput *input = xberg_extract_input_from_bytes(
         bytes,
         bytes_len,
         "application/json",
-        NULL
+        "note.json"
     );
 
-    if (!result) {
-        fprintf(stderr, "extraction failed (code %d): %s\n",
+    if (!input) {
+        fprintf(stderr, "input create failed (code %d): %s\n",
                 xberg_last_error_code(),
                 xberg_last_error_context());
         return 1;
     }
 
-    char *content = xberg_extraction_result_content(result);
-    printf("Extracted JSON content: %s\n", content ? content : "(empty)");
+    XBERGExtractionResult *result = xberg_extract(input, NULL);
 
-    xberg_free_string(content);
+    if (!result) {
+        fprintf(stderr, "extraction failed (code %d): %s\n",
+                xberg_last_error_code(),
+                xberg_last_error_context());
+        xberg_extract_input_free(input);
+        return 1;
+    }
+
+    char *results = xberg_extraction_result_results(result);
+    printf("Extracted JSON content: %s\n", results ? results : "(empty)");
+
+    xberg_free_string(results);
     xberg_extraction_result_free(result);
+    xberg_extract_input_free(input);
     return 0;
 }
 ```

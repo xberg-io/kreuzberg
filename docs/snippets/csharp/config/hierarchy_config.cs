@@ -3,7 +3,7 @@ using Xberg;
 
 public class HierarchyConfigExample
 {
-    public static void Main()
+    public static async Task Main()
     {
         // Example 1: Basic hierarchy extraction
         // Enabled with default KClusters=6 for standard H1-H6 heading hierarchy.
@@ -26,8 +26,8 @@ public class HierarchyConfigExample
             PdfOptions = pdfConfigBasic
         };
 
-        var xberg = new Xberg(extractionConfigBasic);
-        // var result = xberg.ExtractSync("document.pdf");
+        var result = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), extractionConfigBasic);
+        var content = result.Results[0].Content;
 
 
         // Example 2: Custom KClusters for minimal structure

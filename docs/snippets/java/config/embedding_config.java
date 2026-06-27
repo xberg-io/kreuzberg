@@ -1,7 +1,7 @@
-import xberg.config.EmbeddingConfig;
-import xberg.config.EmbeddingModelType;
-import xberg.config.ChunkingConfig;
-import xberg.config.ExtractionConfig;
+import io.xberg.EmbeddingConfig;
+import io.xberg.EmbeddingModelType;
+import io.xberg.ChunkingConfig;
+import io.xberg.ExtractionConfig;
 
 public class EmbeddingConfigExample {
     public static void main(String[] args) {

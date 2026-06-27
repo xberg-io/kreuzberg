@@ -3,9 +3,9 @@
 Register a custom validator that checks extraction results for quality or correctness.
 
 ```typescript title="WASM"
-import init, { registerValidator, extract } from "xberg-wasm";
+import { initWasm, registerValidator, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a custom validator
 const customValidator = {
@@ -53,7 +53,7 @@ try {
 
 // Extract and validate
 async function extractAndValidate(fileBytes, mimeType) {
-  const result = await extract(fileBytes, mimeType, {});
+  const result = await extract({ kind: "bytes", bytes: fileBytes, mimeType: mimeType }, {});
 
   const validation = customValidator.validate(result);
   if (!validation.valid) {

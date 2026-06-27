@@ -12,13 +12,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
+use Xberg\ExtractionConfig;
 use Xberg\Exceptions\XbergException;
-use function Xberg\extract;
 
 try {
-    $result = extract('document.pdf');
+    $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
     echo "Extraction successful!\n";
     echo "Content length: " . strlen($result->content) . "\n";
 } catch (XbergException $e) {
@@ -40,7 +39,8 @@ function safeExtract(string $filePath): ?string
     }
 
     try {
-        $result = extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         return $result->content;
     } catch (XbergException $e) {
         error_log("Extraction error for $filePath: " . $e->getMessage());
@@ -65,7 +65,8 @@ function extractWithRetry(
 
     while ($attempt < $maxRetries) {
         try {
-            $result = extract($filePath);
+            $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
             return $result->content;
         } catch (XbergException $e) {
             $attempt++;
@@ -91,7 +92,8 @@ if ($content !== null) {
 function validateExtractionResult(string $filePath): bool
 {
     try {
-        $result = extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
         if (empty($result->content)) {
             error_log("Empty content extracted from $filePath");
@@ -129,7 +131,8 @@ $failed = [];
 
 foreach ($files as $file) {
     try {
-        $result = extract($file);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         $successful[] = [
             'file' => $file,
             'content_length' => strlen($result->content),
@@ -159,7 +162,8 @@ if (!empty($failed)) {
 function extractWithFallback(string $filePath): ?string
 {
     try {
-        $result = extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         if (!empty($result->content)) {
             return $result->content;
         }
@@ -169,13 +173,13 @@ function extractWithFallback(string $filePath): ?string
 
     try {
         $config = new ExtractionConfig(
-            ocr: new \Xberg\Config\OcrConfig(
+            ocr: new \Xberg\OcrConfig(
                 backend: 'tesseract',
                 language: 'eng'
             )
         );
-        $xberg = new Xberg($config);
-        $result = $xberg->extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         if (!empty($result->content)) {
             echo "Fallback: OCR extraction succeeded\n";
             return $result->content;
@@ -209,7 +213,8 @@ function extractWithTimeout(string $filePath, int $timeoutSeconds = 30): ?string
     try {
         set_time_limit($timeoutSeconds);
 
-        $result = extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
         $elapsed = time() - $startTime;
 
         if ($elapsed > $timeoutSeconds) {
@@ -241,7 +246,8 @@ class DocumentExtractionException extends \Exception
 function extractOrThrow(string $filePath): string
 {
     try {
-        $result = extract($filePath);
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
         if (empty($result->content)) {
             throw new DocumentExtractionException(
@@ -275,7 +281,6 @@ try {
 class LoggingXberg
 {
     public function __construct(
-        private Xberg $xberg,
         private \Psr\Log\LoggerInterface $logger
     ) {}
 
@@ -285,7 +290,8 @@ class LoggingXberg
         $startTime = microtime(true);
 
         try {
-            $result = $this->xberg->extract($filePath, $mimeType);
+            $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($filePath), \Xberg\ExtractionConfig::default());
+            $result = $output->results[0];
             $elapsed = microtime(true) - $startTime;
 
             $this->logger->info("Extraction successful", [

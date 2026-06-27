@@ -6,7 +6,7 @@
 use crate::Result;
 use crate::core::config::ExtractionConfig;
 use crate::extraction::hwp::model::{CharShape, HwpDocument};
-use crate::plugins::{DocumentExtractor, Plugin};
+use crate::plugins::{InternalDocumentExtractor, Plugin};
 use crate::types::ExtractedImage;
 use crate::types::document_structure::{AnnotationKind, TextAnnotation};
 use crate::types::internal::InternalDocument;
@@ -173,8 +173,8 @@ fn apply_char_shapes(text: &str, runs: &[(u32, u16)], char_shapes: &[CharShape])
 
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
-impl DocumentExtractor for HwpExtractor {
-    async fn extract_bytes(
+impl InternalDocumentExtractor for HwpExtractor {
+    async fn extract_content(
         &self,
         content: &[u8],
         mime_type: &str,

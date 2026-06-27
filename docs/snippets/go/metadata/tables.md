@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	result, err := xberg.ExtractSync("document.pdf", nil)
+	input := xberg.ExtractInputFromURI("document.pdf")
+	result, err := xberg.Extract(*input, xberg.ExtractionConfig{})
 	if err != nil {
 		log.Fatalf("extract failed: %v", err)
 	}
 
 	// Iterate over tables
-	for _, table := range result.Tables {
+	for _, table := range result.Results[0].Tables {
 		fmt.Printf("Table with %d rows\n", len(table.Cells))
 		fmt.Println(table.Markdown) // Markdown representation
 

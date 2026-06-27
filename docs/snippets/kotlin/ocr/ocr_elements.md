@@ -1,6 +1,5 @@
 ```kotlin title="Kotlin"
 import io.xberg.*
-import java.nio.file.Paths
 import java.util.Optional
 
 fun main() {
@@ -18,10 +17,14 @@ fun main() {
         .withOcr(Optional.of(ocr))
         .build()
 
-    val result = Xberg.extractSync(Paths.get("scanned.pdf"), null, config)
+    val resultOutput = Xberg.extract(
+        ExtractInput(kind = ExtractInputKind.URI, uri = "scanned.pdf"),
+        config,
+    )
+    val result = resultOutput.results.first()
 
-    result.ocrElements()?.forEach { element ->
-        println("Text: ${element.text()}")
+    result.ocrElements?.forEach { element ->
+        println("Text: ${element.text}")
         println("Confidence: ${element.confidence().recognition()}")
         println("Geometry: ${element.geometry()}")
         element.rotation()?.let { println("Rotation: ${it}") }

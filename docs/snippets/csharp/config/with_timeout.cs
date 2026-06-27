@@ -3,8 +3,9 @@ using Xberg;
 var config = new ExtractionConfig
 {
     UseCache = true,
-    EnableQualityProcessing = true
+    EnableQualityProcessing = true,
+    ExtractionTimeoutSecs = 30
 };
 
-var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(30));
-var result = await XbergLib.ExtractAsync("document.pdf", config, cts.Token);
+var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
+var result = output.Results[0];

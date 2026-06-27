@@ -17,11 +17,11 @@
 #![cfg(all(feature = "ocr", feature = "pdf"))]
 
 mod helpers;
+use helpers::extract_uri_document_blocking;
 
 use helpers::*;
 use std::collections::HashMap;
 use xberg::core::config::{ExtractionConfig, OcrConfig};
-use xberg::extract_file_sync;
 
 #[derive(Debug, Clone)]
 struct TokenScores {
@@ -150,8 +150,8 @@ fn test_ocr_quality_simple_text_high_accuracy() {
 
     let file_path = get_test_file_path("pdfs/fake_memo.pdf");
 
-    let truth_result =
-        extract_file_sync(&file_path, None, &ExtractionConfig::default()).expect("Should extract ground truth text");
+    let truth_result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
+        .expect("Should extract ground truth text");
 
     assert!(
         truth_result.chunks.is_none(),
@@ -172,7 +172,7 @@ fn test_ocr_quality_simple_text_high_accuracy() {
         ..Default::default()
     };
 
-    let ocr_result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with OCR");
+    let ocr_result = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with OCR");
 
     assert!(
         ocr_result.chunks.is_none(),
@@ -224,8 +224,8 @@ fn test_ocr_quality_numeric_accuracy() {
 
     let file_path = get_test_file_path("pdfs/embedded_images_tables.pdf");
 
-    let truth_result =
-        extract_file_sync(&file_path, None, &ExtractionConfig::default()).expect("Should extract ground truth text");
+    let truth_result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
+        .expect("Should extract ground truth text");
 
     assert!(
         truth_result.chunks.is_none(),
@@ -246,7 +246,7 @@ fn test_ocr_quality_numeric_accuracy() {
         ..Default::default()
     };
 
-    let ocr_result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with OCR");
+    let ocr_result = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with OCR");
 
     assert!(
         ocr_result.chunks.is_none(),
@@ -289,8 +289,8 @@ fn test_ocr_quality_layout_preservation() {
 
     let file_path = get_test_file_path("pdfs/fake_memo.pdf");
 
-    let truth_result =
-        extract_file_sync(&file_path, None, &ExtractionConfig::default()).expect("Should extract ground truth text");
+    let truth_result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
+        .expect("Should extract ground truth text");
 
     assert!(
         truth_result.chunks.is_none(),
@@ -311,7 +311,7 @@ fn test_ocr_quality_layout_preservation() {
         ..Default::default()
     };
 
-    let ocr_result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with OCR");
+    let ocr_result = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with OCR");
 
     assert!(
         ocr_result.chunks.is_none(),
@@ -348,8 +348,8 @@ fn test_ocr_quality_technical_document() {
 
     let file_path = get_test_file_path("pdfs/code_and_formula.pdf");
 
-    let truth_result =
-        extract_file_sync(&file_path, None, &ExtractionConfig::default()).expect("Should extract ground truth text");
+    let truth_result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
+        .expect("Should extract ground truth text");
 
     assert!(
         truth_result.chunks.is_none(),
@@ -370,7 +370,7 @@ fn test_ocr_quality_technical_document() {
         ..Default::default()
     };
 
-    let ocr_result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with OCR");
+    let ocr_result = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with OCR");
 
     assert!(
         ocr_result.chunks.is_none(),
@@ -415,9 +415,9 @@ fn test_ocr_consistency_across_runs() {
         ..Default::default()
     };
 
-    let result1 = extract_file_sync(&file_path, None, &ocr_config).expect("First OCR run should succeed");
-    let result2 = extract_file_sync(&file_path, None, &ocr_config).expect("Second OCR run should succeed");
-    let result3 = extract_file_sync(&file_path, None, &ocr_config).expect("Third OCR run should succeed");
+    let result1 = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("First OCR run should succeed");
+    let result2 = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Second OCR run should succeed");
+    let result3 = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Third OCR run should succeed");
 
     assert!(
         result1.chunks.is_none(),
@@ -494,8 +494,10 @@ fn test_ocr_consistency_with_different_psm() {
         ..Default::default()
     };
 
-    let result_psm3 = extract_file_sync(&file_path, None, &config_psm3).expect("PSM 3 extraction should succeed");
-    let result_psm6 = extract_file_sync(&file_path, None, &config_psm6).expect("PSM 6 extraction should succeed");
+    let result_psm3 =
+        extract_uri_document_blocking(&file_path, None, &config_psm3).expect("PSM 3 extraction should succeed");
+    let result_psm6 =
+        extract_uri_document_blocking(&file_path, None, &config_psm6).expect("PSM 6 extraction should succeed");
 
     assert!(
         result_psm3.chunks.is_none(),
@@ -542,8 +544,8 @@ fn test_ocr_quality_multi_page_consistency() {
 
     let file_path = get_test_file_path("pdfs/a_course_in_machine_learning_ciml_v0_9_all.pdf");
 
-    let truth_result =
-        extract_file_sync(&file_path, None, &ExtractionConfig::default()).expect("Should extract ground truth text");
+    let truth_result = extract_uri_document_blocking(&file_path, None, &ExtractionConfig::default())
+        .expect("Should extract ground truth text");
 
     assert!(
         truth_result.chunks.is_none(),
@@ -564,7 +566,7 @@ fn test_ocr_quality_multi_page_consistency() {
         ..Default::default()
     };
 
-    let ocr_result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with OCR");
+    let ocr_result = extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with OCR");
 
     assert!(
         ocr_result.chunks.is_none(),
@@ -616,7 +618,8 @@ fn test_ocr_quality_with_tables() {
         ..Default::default()
     };
 
-    let result = extract_file_sync(&file_path, None, &ocr_config).expect("Should extract with table detection");
+    let result =
+        extract_uri_document_blocking(&file_path, None, &ocr_config).expect("Should extract with table detection");
 
     assert!(result.chunks.is_none(), "Chunks should be None without chunking config");
     assert!(result.detected_languages.is_none(), "Language detection not enabled");

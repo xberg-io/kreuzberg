@@ -246,7 +246,6 @@ namespace_packages = true
 [[tool.mypy.overrides]]
 module = [
   "keybert",
-  "easyocr",
   "torch",
   "xberg._internal_bindings",
   "docling.*",
@@ -316,4 +315,3 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 report.fail_under = 90
-report.omit = [ "packages/python/xberg/ocr/easyocr.py" ]

@@ -1,6 +1,7 @@
 ```python title="Python"
 import asyncio
 from xberg import (
+    ExtractInput,
     ExtractionConfig,
     OcrConfig,
     TesseractConfig,
@@ -22,8 +23,8 @@ async def main() -> None:
             )
         )
     )
-    result = await extract("scanned.pdf", config=config)
-    print(f"Content: {result.content[:100]}")
+    result = await extract(ExtractInput.from_uri("scanned.pdf"), config)
+    print(f"Content: {result.results[0].content[:100]}")
 
 asyncio.run(main())
 ```

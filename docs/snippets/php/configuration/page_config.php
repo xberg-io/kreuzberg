@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-use Xberg\Config\ExtractionConfig;
-use Xberg\Config\PageConfig;
+use Xberg\ExtractionConfig;
+use Xberg\PageConfig;
 
 $config = new ExtractionConfig(
     page: new PageConfig(
@@ -24,8 +23,8 @@ $config = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($config);
-$result = $xberg->extract('report.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('report.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 echo "Content with page markers:\n";
 echo str_repeat('=', 60) . "\n";
@@ -38,8 +37,8 @@ $pageConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($pageConfig);
-$result = $xberg->extract('multi_page.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('multi_page.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 foreach ($result->pages ?? [] as $page) {
     echo "Page {$page->pageNumber}:\n";
@@ -57,8 +56,8 @@ $customConfig = new ExtractionConfig(
     )
 );
 
-$xberg = new Xberg($customConfig);
-$result = $xberg->extract('document.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 $pages = preg_split('/={10} PAGE \d+ ={10}/', $result->content);
 echo "Split into " . count($pages) . " sections\n";
@@ -67,8 +66,8 @@ $allPagesConfig = new ExtractionConfig(
     page: new PageConfig(extractPages: true)
 );
 
-$xberg = new Xberg($allPagesConfig);
-$result = $xberg->extract('large_doc.pdf');
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('large_doc.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$result = $output->results[0];
 
 $selectedPages = array_filter(
     $result->pages ?? [],

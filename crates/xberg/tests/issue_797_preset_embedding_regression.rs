@@ -6,10 +6,12 @@
 //! `generate_embeddings_for_chunks()` to run and populate embeddings that the
 //! caller never requested.
 
+mod helpers;
+use helpers::extract_bytes_document;
+
 #[cfg(feature = "chunking")]
 mod preset_no_embedding {
     use xberg::core::config::{ChunkingConfig, ExtractionConfig};
-    use xberg::core::extractor::extract_bytes;
 
     /// A preset with no explicit `EmbeddingConfig` must not produce chunk embeddings.
     #[tokio::test]
@@ -27,7 +29,7 @@ mod preset_no_embedding {
         let text = b"Hello world. This is a short document used to verify that preset-based \
                      chunking does not unexpectedly generate embeddings.";
 
-        let result = extract_bytes(text, "text/plain", &config)
+        let result = extract_bytes_document(text, "text/plain", &config)
             .await
             .expect("extraction should succeed");
 
@@ -59,7 +61,7 @@ mod preset_no_embedding {
 
         let text = b"Short text that will be chunked without any embedding configuration.";
 
-        let result = extract_bytes(text, "text/plain", &config)
+        let result = extract_bytes_document(text, "text/plain", &config)
             .await
             .expect("extraction should succeed");
 

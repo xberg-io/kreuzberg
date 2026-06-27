@@ -111,9 +111,8 @@ fn default_schema_name() -> String {
 /// How a structured-extraction preset is dispatched to the model.
 ///
 /// This is the preset-facing call mode (the `preferred_call_mode` field of a
-/// [`crate::presets::Preset`]). The richer runtime decision enum used by the
-/// structured pipeline — which adds `Skip` and `TextOnlyWithVisionFallback` —
-/// lives in `crate::heuristics::structured::StructuredCallMode`; this 3-variant
+/// [`crate::presets::Preset`]). The structured pipeline has a richer
+/// runtime-only decision enum with skip and fallback states; this 3-variant
 /// type is the stable, serializable surface presets and bindings depend on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]

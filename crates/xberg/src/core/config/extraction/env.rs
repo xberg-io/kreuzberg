@@ -17,7 +17,7 @@ impl ExtractionConfig {
     /// loaded from configuration files. This method supports the following environment variables:
     ///
     /// - `XBERG_OCR_LANGUAGE`: OCR language (ISO 639-1 or 639-3 code, e.g., "eng", "fra", "deu")
-    /// - `XBERG_OCR_BACKEND`: OCR backend ("tesseract", "easyocr", or "paddleocr")
+    /// - `XBERG_OCR_BACKEND`: OCR backend ("tesseract", "paddleocr", "paddle-ocr", or "vlm")
     /// - `XBERG_CHUNKING_MAX_CHARS`: Maximum characters per chunk (positive integer)
     /// - `XBERG_CHUNKING_MAX_OVERLAP`: Maximum overlap between chunks (non-negative integer)
     /// - `XBERG_CACHE_ENABLED`: Cache enabled flag ("true" or "false")

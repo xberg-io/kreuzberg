@@ -1,19 +1,20 @@
 //! Renderer plugin trait.
 //!
 //! This module defines the trait for implementing custom document renderers
-//! that convert [`InternalDocument`] to output format strings.
+//! that convert extraction results to output format strings.
 
 use std::sync::Arc;
 
 use crate::Result;
 use crate::plugins::Plugin;
+use crate::types::ExtractedDocument;
 use crate::types::internal::InternalDocument;
 
-/// Trait for document renderers that convert [`InternalDocument`] to output strings.
+/// Trait for document renderers that convert extraction results to output strings.
 ///
-/// Renderers are typically stateless converters that transform the internal
-/// document representation into a specific output format (Markdown, HTML,
-/// Djot, plain text, etc.). They participate in the standard [`Plugin`]
+/// Renderers are typically stateless converters that transform extracted
+/// content into a specific output format (Markdown, HTML, Djot, plain text,
+/// etc.). They participate in the standard [`Plugin`]
 /// lifecycle so custom renderers can be registered from any supported binding
 /// language.
 ///
@@ -29,8 +30,7 @@ use crate::types::internal::InternalDocument;
 ///
 /// ```rust
 /// use xberg::plugins::{Plugin, Renderer};
-/// use xberg::types::internal::InternalDocument;
-/// use xberg::Result;
+/// use xberg::{ExtractedDocument, Result};
 ///
 /// struct CustomRenderer;
 ///
@@ -39,26 +39,34 @@ use crate::types::internal::InternalDocument;
 /// }
 ///
 /// impl Renderer for CustomRenderer {
-///     fn render(&self, doc: &InternalDocument) -> Result<String> {
-///         Ok(format!("Custom output with {} elements", doc.elements.len()))
+///     fn render_result(&self, result: &ExtractedDocument) -> Result<String> {
+///         Ok(result.content.to_uppercase())
 ///     }
 /// }
 /// ```
 pub trait Renderer: Plugin {
-    /// Render an [`InternalDocument`] to the output format.
+    /// Binding-safe rendering entry point for foreign-language plugin bridges.
     ///
-    /// # Arguments
-    ///
-    /// * `doc` - The internal document to render
-    ///
-    /// # Returns
-    ///
-    /// The rendered output as a string.
-    ///
-    /// # Errors
-    ///
-    /// Returns an error if rendering fails.
+    /// Accepts one public extraction result and returns the rendered output.
+    fn render_result(&self, result: &ExtractedDocument) -> Result<String> {
+        Ok(result.content.clone())
+    }
+}
+
+/// Crate-private rendering capability used by native Rust renderers.
+pub(crate) trait InternalRenderer: Plugin {
+    /// Render the pipeline representation to the output format.
     fn render(&self, doc: &InternalDocument) -> Result<String>;
+}
+
+impl<T> Renderer for T
+where
+    T: InternalRenderer + ?Sized,
+{
+    fn render_result(&self, result: &ExtractedDocument) -> Result<String> {
+        let doc = InternalDocument::from(result.clone());
+        InternalRenderer::render(self, &doc)
+    }
 }
 
 /// Register a renderer plugin with the global registry.
@@ -73,7 +81,6 @@ pub trait Renderer: Plugin {
 /// trait-bridge codegen. The underlying `parking_lot::RwLock` cannot be
 /// poisoned (parking_lot provides no poisoning semantics), so this function
 /// never returns `Err` in practice.
-#[cfg_attr(alef, alef(skip))]
 pub fn register_renderer(renderer: Arc<dyn Renderer>) -> Result<()> {
     use crate::plugins::registry::get_renderer_registry;
 
@@ -87,7 +94,6 @@ pub fn register_renderer(renderer: Arc<dyn Renderer>) -> Result<()> {
 /// # Errors
 ///
 /// Returns an error if the registry lock is poisoned.
-#[cfg_attr(alef, alef(skip))]
 pub fn unregister_renderer(name: &str) -> Result<()> {
     use crate::plugins::registry::get_renderer_registry;
 
@@ -140,7 +146,7 @@ mod tests {
         }
     }
 
-    impl Renderer for MockRenderer {
+    impl InternalRenderer for MockRenderer {
         fn render(&self, doc: &crate::types::internal::InternalDocument) -> crate::Result<String> {
             Ok(format!("mock-{}-{}", self.format, doc.elements.len()))
         }

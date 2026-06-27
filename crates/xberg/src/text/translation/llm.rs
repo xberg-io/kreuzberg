@@ -7,7 +7,7 @@
 
 use crate::core::config::TranslationConfig;
 use crate::types::translation::Translation;
-use crate::types::{ExtractionResult, LlmUsage};
+use crate::types::{ExtractedDocument, LlmUsage};
 
 /// Default Jinja2 template for LLM translation. Receives `target_lang`,
 /// `source_lang` (may be `"auto"`), `preserve_markup`, and `text` variables.
@@ -62,7 +62,7 @@ async fn translate_segment(
 /// translated `formatted_content` (when `preserve_markup = true`), and rewrites
 /// every chunk's `content` field. Every LLM call's usage is appended to
 /// `result.llm_usage`.
-pub async fn translate_result(result: &mut ExtractionResult, config: &TranslationConfig) -> crate::Result<()> {
+pub async fn translate_result(result: &mut ExtractedDocument, config: &TranslationConfig) -> crate::Result<()> {
     if config.target_lang.trim().is_empty() {
         return Err(crate::XbergError::validation(
             "TranslationConfig.target_lang must not be empty",
