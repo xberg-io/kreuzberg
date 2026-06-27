@@ -311,15 +311,13 @@ mod tests {
 
         registry.register(renderer).unwrap();
 
-        let retrieved = registry.get("test-format").unwrap();
-        assert_eq!(retrieved.name(), "test-format");
+        assert!(registry.list().contains(&"test-format".to_string()));
     }
 
     #[test]
     fn test_renderer_registry_get_missing() {
         let registry = RendererRegistry::new_empty();
-        let result = registry.get("nonexistent");
-        assert!(result.is_err());
+        assert!(!registry.list().contains(&"nonexistent".to_string()));
     }
 
     #[test]

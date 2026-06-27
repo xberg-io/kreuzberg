@@ -161,7 +161,7 @@ mod tests {
             priority: 50,
         };
 
-        let supported = extractor.supported_mime_types();
+        let supported = InternalDocumentExtractor::supported_mime_types(&extractor);
         assert_eq!(supported.len(), 2);
         assert!(supported.contains(&"text/plain"));
         assert!(supported.contains(&"text/markdown"));
@@ -179,8 +179,8 @@ mod tests {
             priority: 100,
         };
 
-        assert_eq!(low_priority.priority(), 10);
-        assert_eq!(high_priority.priority(), 100);
+        assert_eq!(InternalDocumentExtractor::priority(&low_priority), 10);
+        assert_eq!(InternalDocumentExtractor::priority(&high_priority), 100);
     }
 
     #[test]
@@ -193,8 +193,12 @@ mod tests {
         use std::path::PathBuf;
         let path = PathBuf::from("test.txt");
 
-        assert!(extractor.can_handle(&path, "text/plain"));
-        assert!(extractor.can_handle(&path, "application/pdf"));
+        assert!(InternalDocumentExtractor::can_handle(&extractor, &path, "text/plain"));
+        assert!(InternalDocumentExtractor::can_handle(
+            &extractor,
+            &path,
+            "application/pdf"
+        ));
     }
 
     #[tokio::test]
@@ -304,7 +308,7 @@ mod tests {
         }
 
         let extractor = DefaultPriorityExtractor;
-        assert_eq!(extractor.priority(), 50);
+        assert_eq!(InternalDocumentExtractor::priority(&extractor), 50);
     }
 
     #[test]
@@ -314,7 +318,7 @@ mod tests {
             priority: 50,
         };
 
-        assert_eq!(extractor.supported_mime_types().len(), 0);
+        assert_eq!(InternalDocumentExtractor::supported_mime_types(&extractor).len(), 0);
     }
 
     #[test]
@@ -324,7 +328,7 @@ mod tests {
             priority: 50,
         };
 
-        let supported = extractor.supported_mime_types();
+        let supported = InternalDocumentExtractor::supported_mime_types(&extractor);
         assert_eq!(supported.len(), 2);
         assert!(supported.contains(&"text/*"));
         assert!(supported.contains(&"image/*"));
@@ -353,10 +357,10 @@ mod tests {
             priority: 100,
         };
 
-        assert!(fallback.priority() < alternative.priority());
-        assert!(alternative.priority() < default.priority());
-        assert!(default.priority() < premium.priority());
-        assert!(premium.priority() < specialized.priority());
+        assert!(InternalDocumentExtractor::priority(&fallback) < InternalDocumentExtractor::priority(&alternative));
+        assert!(InternalDocumentExtractor::priority(&alternative) < InternalDocumentExtractor::priority(&default));
+        assert!(InternalDocumentExtractor::priority(&default) < InternalDocumentExtractor::priority(&premium));
+        assert!(InternalDocumentExtractor::priority(&premium) < InternalDocumentExtractor::priority(&specialized));
     }
 
     #[tokio::test]
