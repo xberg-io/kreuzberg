@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.29.5"
+alef_version = "0.30.0"
 languages = [
   "python",
   "node",
@@ -69,6 +69,27 @@ async_wrappers = false
 
 [workspace.format]
 enabled = false
+
+[workspace.docs]
+reference_output = "docs/reference"
+
+[workspace.docs.cli]
+sources = ["crates/xberg-cli/src/main.rs"]
+
+[workspace.docs.mcp]
+sources = ["crates/xberg/src/mcp/server.rs"]
+
+[workspace.docs.llms]
+template = "templates/docs/llms.txt.jinja"
+output = "docs/llms.txt"
+adopt_existing = true
+
+[workspace.docs.skills]
+template_dir = "templates/docs/skills"
+outputs = [".codex/skills", ".agents/skills", ".github/skills", ".claude/skills"]
+
+[workspace.docs.snippets]
+dirs = ["docs/snippets"]
 
 # Disable the default format_generated pass for node (pnpm dlx oxfmt .) which runs
 # from the repo root and chokes on vendored HTML fixtures and deployment YAML.
