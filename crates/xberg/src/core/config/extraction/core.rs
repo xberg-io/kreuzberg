@@ -376,9 +376,14 @@ pub struct ExtractionConfig {
     /// code extractor can fall back to extension-based detection when
     /// content-based detection (e.g. shebang) is inconclusive. Excluded from
     /// serialization and bindings — it is not a user-facing configuration value.
+    ///
+    /// `pub` (not `pub(crate)`) so binding crates can construct `ExtractionConfig`
+    /// via struct-update syntax (`..Default::default()`); a single private field
+    /// would make that construction illegal across crates (E0451), matching the
+    /// existing `cancel_token` precedent.
     #[serde(skip)]
     #[cfg_attr(alef, alef(skip))]
-    pub(crate) source_name: Option<String>,
+    pub source_name: Option<String>,
 }
 
 impl Default for ExtractionConfig {
