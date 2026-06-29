@@ -268,8 +268,14 @@ sources = [
 ]
 roots = ["crawlberg::CrawlConfig"]
 
+# Pin crawlberg to its concrete registry version rather than `workspace = true`.
+# The publish out-of-workspace build scripts strip `workspace = true` markers
+# (s/workspace = true//) to detach the crate from the repo workspace; an
+# external workspace-dep like crawlberg would be left sourceless ("dependency
+# (crawlberg) specified without providing a version"). Keep this in sync with
+# the root Cargo.toml [workspace.dependencies] entry.
 [crates.extra_dependencies]
-crawlberg = { workspace = true }
+crawlberg = { version = "1.0.1", default-features = false }
 
 [crates.python]
 module_name = "_xberg"

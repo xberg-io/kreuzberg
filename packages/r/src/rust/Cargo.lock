@@ -1143,9 +1143,9 @@ dependencies = [
 
 [[package]]
 name = "crawlberg"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cbb15b6e54dc6c9507a690017152f348672af0f0da7865bd36963d4096ca40df"
+checksum = "3b29d0b66d3886745ab12e56e17a9127dc91f30b7261a2080c9eed67074c34f6"
 dependencies = [
  "ahash 0.8.12",
  "aho-corasick",
@@ -2350,7 +2350,7 @@ dependencies = [
  "bitflags 2.13.0",
  "html-escape",
  "html5ever",
- "image 0.25.10",
+ "image",
  "lru 0.18.0",
  "memchr",
  "once_cell",
@@ -2681,18 +2681,6 @@ checksum = "cb68373c0d6620ef8105e855e7745e18b0d00d3bdb07fb532e434244cdb9a714"
 dependencies = [
  "icu_normalizer",
  "icu_properties",
-]
-
-[[package]]
-name = "image"
-version = "0.24.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5690139d2f55868e080017335e4b94cb7414274c74f1669c84fb5feba2c9f69d"
-dependencies = [
- "bytemuck",
- "byteorder",
- "color_quant",
- "num-traits",
 ]
 
 [[package]]
@@ -3998,7 +3986,7 @@ dependencies = [
  "getrandom 0.4.3",
  "hayro-jbig2",
  "hayro-jpeg2000 0.4.0",
- "image 0.25.10",
+ "image",
  "jpeg-decoder",
  "libc",
  "log",
@@ -4926,7 +4914,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ffbe87d9e8db95652c25ded2418150e00b08c2fde09e23ec15896d2c470c6631"
 dependencies = [
  "g2p",
- "image 0.24.9",
+ "image",
  "lru 0.16.4",
 ]
 
@@ -7184,7 +7172,7 @@ dependencies = [
  "html-to-markdown-rs",
  "icu_provider",
  "icu_segmenter",
- "image 0.25.10",
+ "image",
  "include_dir",
  "indexmap",
  "infer",
@@ -7282,6 +7270,7 @@ name = "xberg-r"
 version = "1.0.0-rc.1"
 dependencies = [
  "async-trait",
+ "crawlberg",
  "extendr-api",
  "serde",
  "serde_json",

@@ -1229,9 +1229,9 @@ dependencies = [
 
 [[package]]
 name = "crawlberg"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cbb15b6e54dc6c9507a690017152f348672af0f0da7865bd36963d4096ca40df"
+checksum = "3b29d0b66d3886745ab12e56e17a9127dc91f30b7261a2080c9eed67074c34f6"
 dependencies = [
  "ahash 0.8.12",
  "aho-corasick",
@@ -5515,7 +5515,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ffbe87d9e8db95652c25ded2418150e00b08c2fde09e23ec15896d2c470c6631"
 dependencies = [
  "g2p",
- "image 0.24.9",
+ "image 0.25.10",
  "lru 0.16.4",
 ]
 

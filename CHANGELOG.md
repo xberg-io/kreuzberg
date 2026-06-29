@@ -25,6 +25,12 @@ The changelog starts fresh at `1.0.0-rc.1`. For the Kreuzberg v1–v4 history, s
   worker-thread stack frame. Together with the stack the binding runtimes provision for
   the async path, this stops scanned / image-only PDFs from aborting the process with a
   stack overflow (SIGBUS) during OCR.
+- **Tesseract image OCR no longer fails on an empty language list.** `OcrConfig { language: [] }`
+  joined to an empty Tesseract language string, which the native backend tried to load as a
+  language pack named `""` — surfacing as the confusing `Failed to download language pack ''`.
+  An empty language now defaults to English consistently across every OCR backend, matching the
+  documented `OcrConfig` default. PaddleOCR results also report English in their metadata instead
+  of an empty language when none is configured.
 
 ## [1.0.0-rc.1] - 2026-06-26
 

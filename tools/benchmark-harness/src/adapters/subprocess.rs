@@ -469,41 +469,60 @@ impl SubprocessAdapter {
             )));
         }
 
-        // Read output files and construct per-file JSON results, in the same order
-        // as `file_paths` so the caller can zip results back to inputs by index.
+        // Map outputs back to inputs by the unique `<idx>_` staging prefix each
+        // input was symlinked under. `lit batch-parse` mirrors that prefix onto its
+        // output, but the produced extension can vary by liteparse version
+        // (.md/.markdown, .txt/.text) and it may keep or drop the source extension,
+        // so we scan the dir once and match by prefix rather than reconstructing an
+        // exact filename (the old exact-name match silently produced empty results).
+        let preferred_exts: [&str; 2] = match output_format {
+            OutputFormat::Markdown => ["md", "markdown"],
+            OutputFormat::Plaintext => ["txt", "text"],
+        };
+        let produced: Vec<(String, std::path::PathBuf)> = fs::read_dir(&output_dir)
+            .map_err(|e| Error::Benchmark(format!("Failed to read lit output dir {}: {}", output_dir.display(), e)))?
+            .filter_map(|entry| entry.ok())
+            .map(|entry| (entry.file_name().to_string_lossy().into_owned(), entry.path()))
+            .collect();
+
         let mut results = Vec::new();
-        for (idx, path) in file_paths.iter().enumerate() {
-            let file_name = path
-                .file_name()
-                .ok_or_else(|| Error::Benchmark("Invalid file path".to_string()))?
-                .to_string_lossy();
+        for (idx, _path) in file_paths.iter().enumerate() {
+            // `<idx>_` is unique: "1_" matches "1_foo.md" but not "10_foo.md".
+            let prefix = format!("{idx}_");
+            let matches: Vec<&(String, std::path::PathBuf)> =
+                produced.iter().filter(|(name, _)| name.starts_with(&prefix)).collect();
+            // Prefer the text/markdown payload if liteparse also emits sidecars.
+            let hit = matches
+                .iter()
+                .find(|(name, _)| preferred_exts.iter().any(|e| name.ends_with(&format!(".{e}"))))
+                .or_else(|| matches.first());
 
-            // lit batch-parse mirrors the input filename, replacing the last
-            // extension: `<idx>_<stem>.pdf` → `<idx>_<stem>.{txt|md}`.
-            let ext = match output_format {
-                OutputFormat::Markdown => "md",
-                OutputFormat::Plaintext => "txt",
-            };
-
-            // Stem = everything before the LAST '.', matching liteparse's
-            // `Path::with_extension` semantics (e.g. "a.b.pdf" → "a.b").
-            let file_stem = file_name.rsplit_once('.').map(|(stem, _)| stem).unwrap_or(&file_name);
-            let output_file_name = format!("{}_{}.{}", idx, file_stem, ext);
-            let output_file_path = output_dir.join(&output_file_name);
-
-            // Read the extracted content
-            let content = fs::read_to_string(&output_file_path).unwrap_or_else(|_| String::new());
-
-            // Build per-file JSON result in the expected format
-            let result_json = serde_json::json!({
-                "content": content,
-                "metadata": {
-                    "framework": "liteparse",
-                    "output_format": output_format.to_string()
+            match hit {
+                Some((_, output_path)) => {
+                    let content = fs::read_to_string(output_path).map_err(|e| {
+                        Error::Benchmark(format!("Failed to read lit output {}: {}", output_path.display(), e))
+                    })?;
+                    results.push(serde_json::json!({
+                        "content": content,
+                        "metadata": {
+                            "framework": "liteparse",
+                            "output_format": output_format.to_string()
+                        }
+                    }));
                 }
-            });
-
-            results.push(result_json);
+                None => {
+                    // Fail loud (never silently emit empty results) and list what
+                    // liteparse actually wrote so a naming mismatch is diagnosable.
+                    let listing: Vec<&String> = produced.iter().map(|(name, _)| name).collect();
+                    return Err(Error::Benchmark(format!(
+                        "lit batch-parse produced no output for input #{idx} (prefix '{prefix}'). \
+                         Output dir {} contains {} file(s): {:?}",
+                        output_dir.display(),
+                        produced.len(),
+                        listing
+                    )));
+                }
+            }
         }
 
         let stdout = serde_json::to_string(&results)

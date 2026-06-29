@@ -23,7 +23,11 @@ dev = [
 ]
 bench-docling = [ "docling>=2.64.1" ]
 bench-markitdown = [ "markitdown[all]>=0.1.4" ]
-bench-mineru = [ "mineru[pipeline]>=2.6.7", "onnxruntime" ]
+# `six` is an undeclared runtime import in mineru's pytorch_paddle OCR module
+# (mineru.model.utils.pytorchocr) — without it every extraction dies with
+# `ModuleNotFoundError: No module named 'six'`. Pin it in until mineru fixes
+# its own metadata.
+bench-mineru = [ "mineru[pipeline]>=2.6.7", "onnxruntime", "six" ]
 bench-pymupdf4llm = [ "pillow>=10.0.0", "pymupdf-layout>=0.0.1", "pymupdf4llm>=0.0.17" ]
 # Format-specific extras for the `fast` (no-OCR) partition strategy the
 # benchmark uses (pdfminer/python-docx/python-pptx/openpyxl). Avoids the

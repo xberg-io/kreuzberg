@@ -848,7 +848,10 @@ impl BenchmarkRunner {
                                 results.extend(batch_results);
                             }
                             Err(e) => {
-                                eprintln!("Batch benchmark task failed for {}: {}", adapter_name, e);
+                                // Batch errors must fail the benchmark, not silently continue
+                                // This prevents silent data loss when adapters like liteparse
+                                // fail to produce output files.
+                                return Err(e);
                             }
                         }
                     } else {

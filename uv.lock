@@ -40,6 +40,7 @@ bench-markitdown = [{ name = "markitdown", extras = ["all"], specifier = ">=0.1.
 bench-mineru = [
     { name = "mineru", extras = ["pipeline"], specifier = ">=2.6.7" },
     { name = "onnxruntime" },
+    { name = "six" },
 ]
 bench-pymupdf4llm = [
     { name = "pillow", specifier = ">=10.0.0" },

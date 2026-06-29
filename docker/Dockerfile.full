@@ -59,6 +59,7 @@ RUN mkdir -p /build/onnxruntime && \
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
 COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-gliner/ crates/xberg-gliner/
 COPY crates/xberg-cli/ crates/xberg-cli/
 COPY crates/xberg-libheif/ crates/xberg-libheif/
 COPY crates/xberg-tesseract/ crates/xberg-tesseract/

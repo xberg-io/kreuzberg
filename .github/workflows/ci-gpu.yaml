@@ -116,10 +116,103 @@ jobs:
           RUST_LOG: "xberg=debug"
           TEST_DOCUMENTS_DIR: ${{ github.workspace }}/test_documents
 
+  build-candle:
+    # Compile the candle/CUDA test binaries on cheap, abundant ubuntu-latest
+    # runners (nvcc compiles CUDA kernels without needing a physical GPU). All
+    # five model builds fan out in parallel here, so the scarce GPU runner only
+    # ever runs inference — never a ~12-minute CUDA compile.
+    name: "Build Candle (${{ matrix.model.name }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        model:
+          - { name: trocr, feature: candle-trocr }
+          - { name: glm-ocr, feature: candle-glm-ocr }
+          - { name: hunyuan-ocr, feature: candle-hunyuan-ocr }
+          - { name: deepseek-ocr, feature: candle-deepseek-ocr }
+          - { name: paddleocr-vl, feature: candle-paddleocr-vl }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Rust
+        uses: xberg-io/actions/setup-rust@v1
+        with:
+          toolchain: "1.95"
+          cache-key-prefix: candle-build-${{ matrix.model.name }}
+          use-sccache: "true"
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup CUDA toolkit (nvcc)
+        # candle-cuda compiles CUDA kernels via cudarc at build time, which needs
+        # nvcc. ubuntu-latest has no CUDA toolkit; install it from NVIDIA's apt repo.
+        run: |
+          set -euxo pipefail
+          if command -v nvcc >/dev/null 2>&1; then
+            echo "nvcc already present: $(command -v nvcc)"
+          elif [ -x /usr/local/cuda/bin/nvcc ]; then
+            echo "/usr/local/cuda/bin" >> "$GITHUB_PATH"
+            echo "CUDA_PATH=/usr/local/cuda" >> "$GITHUB_ENV"
+            echo "CUDA_HOME=/usr/local/cuda" >> "$GITHUB_ENV"
+          else
+            arch="$(uname -m)"
+            case "$arch" in
+              x86_64) repo_arch="x86_64" ;;
+              aarch64) repo_arch="sbsa" ;;
+              *) echo "Unsupported arch: $arch"; exit 1 ;;
+            esac
+            . /etc/os-release
+            distro="${ID}${VERSION_ID//./}"
+            keyring="cuda-keyring_1.1-1_all.deb"
+            curl -fsSL -o "${keyring}" "https://developer.download.nvidia.com/compute/cuda/repos/${distro}/${repo_arch}/${keyring}"
+            sudo dpkg -i "${keyring}"
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends cuda-toolkit-12-6
+            echo "/usr/local/cuda-12.6/bin" >> "$GITHUB_PATH"
+            echo "CUDA_PATH=/usr/local/cuda-12.6" >> "$GITHUB_ENV"
+            echo "CUDA_HOME=/usr/local/cuda-12.6" >> "$GITHUB_ENV"
+          fi
+
+      - name: Verify nvcc
+        run: nvcc --version
+
+      - name: Setup ONNX Runtime
+        # candle-glm-ocr pulls layout-detection, which links ONNX Runtime.
+        if: matrix.model.name == 'glm-ocr'
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Build candle test binary
+        uses: xberg-io/actions/build-gpu-test-binary@v1
+        with:
+          package: xberg
+          test-name: candle_backends
+          features: "${{ matrix.model.feature }},candle-cuda"
+          output-name: candle-test-${{ matrix.model.name }}
+
+      - name: Upload test binary
+        uses: actions/upload-artifact@v7
+        with:
+          name: candle-test-${{ matrix.model.name }}
+          path: candle-test-${{ matrix.model.name }}
+          retention-days: 1
+
   candle-gpu-tests:
     name: "Candle GPU (${{ matrix.model.name }})"
+    needs: build-candle
     runs-on: runner-gpu-l4
-    timeout-minutes: 90
+    # Inference + weight download only (the CUDA compile is offloaded to the
+    # build-candle fan-out on cheap runners). Generous ceiling: large VLM
+    # weights (multi-GB) plus first-token latency on cold model loads.
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
@@ -167,22 +260,14 @@ jobs:
           echo "GPU detected:"
           nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 
-      - name: Setup Rust
-        # setup-rust wires sccache (use-sccache) so the heavy candle/CUDA build is
-        # cached across matrix entries and runs.
-        uses: xberg-io/actions/setup-rust@v1
-        with:
-          toolchain: "1.95"
-          cache-key-prefix: candle-gpu-${{ matrix.model.name }}
-          use-sccache: "true"
-
       - name: Install system dependencies
         uses: ./.github/actions/install-system-deps
 
-      - name: Setup CUDA toolkit (nvcc)
-        # candle-cuda compiles CUDA kernels via cudarc at build time, which needs
-        # nvcc. The L4 runner ships the driver (nvidia-smi) but no CUDA toolkit.
-        # Install it from NVIDIA's apt repo (idempotent: skip if nvcc already present).
+      - name: Setup CUDA runtime libraries
+        # The prebuilt candle-cuda test binary (compiled in build-candle) links
+        # libcudart at runtime. The L4 runner ships the driver (nvidia-smi) but no
+        # CUDA runtime libs, so install the toolkit package which provides them.
+        # No Rust toolchain or nvcc compile happens here — inference only.
         run: |
           set -euxo pipefail
           if command -v nvcc >/dev/null 2>&1; then
@@ -247,6 +332,11 @@ jobs:
             "${{ matrix.model.hf_repo }}" \
             --local-dir "${{ github.workspace }}/models/${{ matrix.model.name }}"
 
+      - name: Download candle test binary
+        uses: actions/download-artifact@v8
+        with:
+          name: candle-test-${{ matrix.model.name }}
+
       - name: Run ${{ matrix.model.name }} GPU inference
         # XBERG_REQUIRE_MODELS=1 turns a missing model/weights into a hard failure
         # instead of a silent skip, so a misconfigured matrix entry cannot pass green.
@@ -262,7 +352,6 @@ jobs:
           if [ -n "${{ matrix.model.env_var }}" ]; then
             export ${{ matrix.model.env_var }}="${{ github.workspace }}/models/${{ matrix.model.name }}"
           fi
-          cargo test --locked -p xberg \
-            --features "${{ matrix.model.feature }},candle-cuda" \
-            --test candle_backends ${{ matrix.model.test }} \
-            -- --ignored --nocapture
+          # Run the binary compiled in build-candle (no recompile on the GPU runner).
+          chmod +x "candle-test-${{ matrix.model.name }}"
+          "./candle-test-${{ matrix.model.name }}" "${{ matrix.model.test }}" --ignored --nocapture

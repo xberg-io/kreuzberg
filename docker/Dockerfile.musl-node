@@ -60,6 +60,7 @@ ENV RUSTFLAGS="-C target-feature=-crt-static"
 # Copy workspace manifests and crates
 COPY Cargo.toml Cargo.lock ./
 COPY crates/xberg/ crates/xberg/
+COPY crates/xberg-gliner/ crates/xberg-gliner/
 COPY crates/xberg-node/ crates/xberg-node/
 COPY crates/xberg-ffi/ crates/xberg-ffi/
 COPY crates/xberg-tesseract/ crates/xberg-tesseract/
