@@ -17,21 +17,29 @@ use std::sync::Arc;
 use crate::Result;
 use crate::core::config::{ExtractInput, ExtractionConfig, ExtractionResult};
 
+mod crawl_handle;
 mod extract_impl;
 
 /// Internal engine state.
 ///
-/// Minimal for now — this phase introduces the engine seam without any
-/// configurable behavior. Future phases attach the extraction seams here.
-#[derive(Debug, Default)]
-struct EngineInner {}
+/// Holds the process-shared, fingerprinted crawl-engine memo so that multi-URL
+/// batch extraction can reuse a single [`crawlberg::CrawlEngine`] (and its
+/// shared middleware/cache/rate-limiter) across all URLs in a batch. The
+/// single-URL `extract` path does not touch this state.
+#[derive(Default)]
+struct EngineInner {
+    /// Single-slot, fingerprinted memo of the last-built crawl engine. The slot
+    /// is reused when the incoming [`crawlberg::CrawlConfig`] fingerprint
+    /// matches, otherwise a fresh engine is built and stored.
+    #[cfg(feature = "url-ingestion")]
+    crawl: parking_lot::Mutex<Option<crawl_handle::CrawlHandleMemo>>,
+}
 
 /// A reusable, cheaply-cloneable extraction engine.
 ///
 /// Cloning an [`Engine`] shares the same underlying state via [`Arc`].
 #[derive(Clone)]
 pub struct Engine {
-    #[allow(dead_code)]
     inner: Arc<EngineInner>,
 }
 
@@ -57,7 +65,7 @@ impl Engine {
         inputs: Vec<ExtractInput>,
         config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
-        extract_impl::extract_batch(inputs, config).await
+        extract_impl::extract_batch(&self.inner, inputs, config).await
     }
 }
 

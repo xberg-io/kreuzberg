@@ -45,14 +45,19 @@ pub(crate) async fn extract(input: ExtractInput, config: &ExtractionConfig) -> R
 }
 
 /// Extract content from multiple bytes or URI inputs.
-pub(crate) async fn extract_batch(inputs: Vec<ExtractInput>, config: &ExtractionConfig) -> Result<ExtractionResult> {
+pub(crate) async fn extract_batch(
+    inner: &super::EngineInner,
+    inputs: Vec<ExtractInput>,
+    config: &ExtractionConfig,
+) -> Result<ExtractionResult> {
     #[cfg(feature = "tokio-runtime")]
     {
-        extract_batch_concurrent(inputs, config).await
+        extract_batch_concurrent(inner, inputs, config).await
     }
 
     #[cfg(not(feature = "tokio-runtime"))]
     {
+        let _ = inner;
         extract_batch_sequential(inputs, config).await
     }
 }
@@ -83,7 +88,11 @@ async fn extract_batch_sequential(inputs: Vec<ExtractInput>, config: &Extraction
 }
 
 #[cfg(feature = "tokio-runtime")]
-async fn extract_batch_concurrent(inputs: Vec<ExtractInput>, config: &ExtractionConfig) -> Result<ExtractionResult> {
+async fn extract_batch_concurrent(
+    inner: &super::EngineInner,
+    inputs: Vec<ExtractInput>,
+    config: &ExtractionConfig,
+) -> Result<ExtractionResult> {
     use tokio::sync::Semaphore;
     use tokio::task::JoinSet;
 
@@ -116,8 +125,41 @@ async fn extract_batch_concurrent(inputs: Vec<ExtractInput>, config: &Extraction
     let base_config = Arc::new(config.clone());
     let mut tasks = JoinSet::new();
 
+    let mut items: Vec<Option<BatchItemResult>> = Vec::with_capacity(input_count);
+    items.resize_with(input_count, || None);
+
+    // Shared-URL group: http(s) URIs whose resolved crawl config + mode match
+    // the batch base config. These reuse ONE crawlberg engine via crawlberg's
+    // batch API instead of building a fresh engine per item.
+    #[cfg(feature = "url-ingestion")]
+    let mut shared_items: Vec<SharedUrlItem> = Vec::new();
+    #[cfg(feature = "url-ingestion")]
+    let base_crawl_fingerprint = super::crawl_handle::crawl_fingerprint(&base_config.url.crawl);
+
     for (index, input) in inputs.into_iter().enumerate() {
         let source = input_source(&input);
+
+        // Partition: route matching http(s) URIs into the shared group; every
+        // other input (bytes, file, file://, scheme-overriding URIs) keeps the
+        // existing per-item JoinSet + Semaphore + timeout path verbatim.
+        #[cfg(feature = "url-ingestion")]
+        {
+            if let Some(uri) = shared_group_uri(&input) {
+                let resolved_config = resolve_input_config(&input, &base_config);
+                if resolved_config.url.mode == base_config.url.mode
+                    && super::crawl_handle::crawl_fingerprint(&resolved_config.url.crawl) == base_crawl_fingerprint
+                {
+                    shared_items.push(SharedUrlItem {
+                        index,
+                        source,
+                        uri,
+                        config: resolved_config,
+                    });
+                    continue;
+                }
+            }
+        }
+
         let semaphore = Arc::clone(&semaphore);
         let base_config = Arc::clone(&base_config);
         tasks.spawn(async move {
@@ -130,9 +172,6 @@ async fn extract_batch_concurrent(inputs: Vec<ExtractInput>, config: &Extraction
             .await
         });
     }
-
-    let mut items: Vec<Option<BatchItemResult>> = Vec::with_capacity(input_count);
-    items.resize_with(input_count, || None);
 
     while let Some(task_result) = tasks.join_next().await {
         match task_result {
@@ -150,6 +189,13 @@ async fn extract_batch_concurrent(inputs: Vec<ExtractInput>, config: &Extraction
         }
     }
 
+    #[cfg(feature = "url-ingestion")]
+    if !shared_items.is_empty() {
+        run_shared_url_group(inner, &base_config, shared_items, &mut items).await;
+    }
+    #[cfg(not(feature = "url-ingestion"))]
+    let _ = inner;
+
     for item in items.into_iter().flatten() {
         match item.result {
             Ok(item_output) => append_extraction_output(&mut output, item_output),
@@ -160,6 +206,168 @@ async fn extract_batch_concurrent(inputs: Vec<ExtractInput>, config: &Extraction
     output.refresh_counts();
     follow_recursive_document_urls(&mut output, config, &mut seen, &seed_hosts).await?;
     Ok(output)
+}
+
+/// Owned http(s) URI of an input eligible for the shared-URL batch group.
+///
+/// Returns `None` for non-URI inputs and for URIs that are not http(s) (bytes,
+/// file paths, `file://`, and other schemes stay on the per-item path).
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+fn shared_group_uri(input: &ExtractInput) -> Option<String> {
+    if !matches!(input.kind, ExtractInputKind::Uri) {
+        return None;
+    }
+    let uri = input.uri.as_deref()?;
+    if uri.starts_with(HTTP_SCHEME) || uri.starts_with(HTTPS_SCHEME) {
+        Some(uri.to_string())
+    } else {
+        None
+    }
+}
+
+/// One http(s) URL routed through the shared crawl engine, carrying everything
+/// needed to map the (completion-order) batch result back to its input slot.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+struct SharedUrlItem {
+    index: usize,
+    source: String,
+    uri: String,
+    config: ExtractionConfig,
+}
+
+/// Run the shared-URL group through ONE crawlberg engine and write each result
+/// back into its input slot.
+///
+/// Timeout semantics in batch mode: the actual network fetch happens inside
+/// crawlberg's `batch_scrape` / `batch_crawl`, which manages concurrency and
+/// per-request timeouts internally via the shared [`crawlberg::CrawlConfig`]
+/// (e.g. `request_timeout_ms`, `rate_limit_ms`). The per-item
+/// `extraction_timeout_secs` therefore governs only the *conversion* stage
+/// (the [`extract_bytes`] pipeline run by `output_from_scrape` /
+/// `output_from_crawl`), which is what [`finalize_shared_item`] wraps. This is
+/// the precise nuance that differs from the per-item path, where the same
+/// timeout also bounds the fetch.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+async fn run_shared_url_group(
+    inner: &super::EngineInner,
+    base_config: &ExtractionConfig,
+    shared_items: Vec<SharedUrlItem>,
+    items: &mut [Option<BatchItemResult>],
+) {
+    use std::collections::HashMap;
+
+    // Build the crawl engine ONCE for the shared batch config.
+    let engine = match inner.crawl_engine_for(&base_config.url.crawl) {
+        Ok(engine) => engine,
+        Err(error) => {
+            // Construction/validation fails identically for every shared URL
+            // (they share one crawl config): isolate it into each error slot.
+            for shared in &shared_items {
+                items[shared.index] = Some(BatchItemResult {
+                    index: shared.index,
+                    source: shared.source.clone(),
+                    result: Err(duplicate_construction_error(&error)),
+                });
+            }
+            return;
+        }
+    };
+
+    // crawlberg returns results PAIRED WITH THE SEED URL IN COMPLETION ORDER,
+    // not input order. A per-URL queue of positions restores input order and
+    // maps duplicate URLs to the correct successive input slots.
+    let mut positions_for_url: HashMap<&str, VecDeque<usize>> = HashMap::new();
+    for (position, shared) in shared_items.iter().enumerate() {
+        positions_for_url
+            .entry(shared.uri.as_str())
+            .or_default()
+            .push_back(position);
+    }
+    let urls: Vec<&str> = shared_items.iter().map(|shared| shared.uri.as_str()).collect();
+
+    match base_config.url.mode {
+        UrlExtractionMode::Auto | UrlExtractionMode::Document => {
+            for (url, result) in engine.batch_scrape(&urls).await {
+                let Some(position) = positions_for_url.get_mut(url.as_str()).and_then(VecDeque::pop_front) else {
+                    continue;
+                };
+                let shared = &shared_items[position];
+                let conversion = async {
+                    match result {
+                        Ok(scrape) => output_from_scrape(scrape, &shared.config, shared.index).await,
+                        Err(error) => Err(map_crawl_error(error)),
+                    }
+                };
+                items[shared.index] = Some(finalize_shared_item(shared, conversion).await);
+            }
+        }
+        UrlExtractionMode::Crawl => {
+            for (url, result) in engine.batch_crawl(&urls).await {
+                let Some(position) = positions_for_url.get_mut(url.as_str()).and_then(VecDeque::pop_front) else {
+                    continue;
+                };
+                let shared = &shared_items[position];
+                let conversion = async {
+                    match result {
+                        Ok(crawl) => output_from_crawl(crawl, &shared.config, shared.index).await,
+                        Err(error) => Err(map_crawl_error(error)),
+                    }
+                };
+                items[shared.index] = Some(finalize_shared_item(shared, conversion).await);
+            }
+        }
+    }
+}
+
+/// Apply batch-mode context, the per-item conversion timeout, and duration
+/// metadata to a shared-URL conversion future, mirroring `run_batch_item`.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+async fn finalize_shared_item<Fut>(shared: &SharedUrlItem, conversion: Fut) -> BatchItemResult
+where
+    Fut: Future<Output = Result<ExtractionResult>>,
+{
+    let start = Instant::now();
+    let future = Box::pin(crate::core::batch_mode::with_batch_mode(conversion));
+
+    let mut result = match shared.config.extraction_timeout_secs {
+        Some(secs) => match tokio::time::timeout(std::time::Duration::from_secs(secs), future).await {
+            Ok(inner) => inner,
+            Err(_elapsed) => {
+                if let Some(ref token) = shared.config.cancel_token {
+                    token.cancel();
+                }
+                Err(XbergError::Timeout {
+                    elapsed_ms: start.elapsed().as_millis() as u64,
+                    limit_ms: secs * 1000,
+                })
+            }
+        },
+        None => future.await,
+    };
+
+    if let Ok(ref mut item_output) = result {
+        let elapsed_ms = start.elapsed().as_millis() as u64;
+        for extraction_result in &mut item_output.results {
+            extraction_result.metadata.extraction_duration_ms = Some(elapsed_ms);
+        }
+    }
+
+    BatchItemResult {
+        index: shared.index,
+        source: shared.source.clone(),
+        result,
+    }
+}
+
+/// Rebuild a non-cloneable crawl-engine construction error so the identical
+/// failure can be isolated into every shared-URL error slot.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+fn duplicate_construction_error(error: &XbergError) -> XbergError {
+    match error {
+        XbergError::Validation { message, .. } => XbergError::validation(message.clone()),
+        XbergError::UnsupportedFormat(message) => XbergError::UnsupportedFormat(message.clone()),
+        other => XbergError::Other(other.to_string()),
+    }
 }
 
 #[cfg(feature = "tokio-runtime")]
@@ -668,7 +876,7 @@ fn links_to_uris<'a>(links: impl Iterator<Item = (&'a String, &'a String)>) -> V
 }
 
 #[cfg(feature = "url-ingestion")]
-fn map_crawl_error(error: crawlberg::CrawlError) -> XbergError {
+pub(crate) fn map_crawl_error(error: crawlberg::CrawlError) -> XbergError {
     XbergError::validation(format!("crawlberg URL extraction failed: {error}"))
 }
 
