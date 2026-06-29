@@ -887,6 +887,25 @@ jobs:
           fetch-depth: 0
 
           submodules: recursive
+
+      - name: Bootstrap manylinux container (protoc + rustup HOME)
+        if: contains(matrix.target, '-linux-gnu')
+        shell: bash
+        run: |
+          set -euxo pipefail
+          # setup-rust installs protoc via `sudo apt-get` (Debian), but the
+          # manylinux_2_28 base is AlmaLinux 8 with no apt/sudo — its protoc step
+          # exits 127. Pre-install protoc from EPEL so setup-rust's
+          # `command -v protoc` short-circuits before reaching the apt branch.
+          yum install -y epel-release || dnf install -y epel-release || true
+          yum install -y protobuf-compiler || dnf install -y protobuf-compiler || true
+          # GitHub sets HOME=/github/home for container jobs, but the container
+          # runs as root (euid home /root); rustup aborts on the mismatch. Pin
+          # HOME=/root for later steps and seed its gitconfig so git ops under the
+          # new HOME don't trip "dubious ownership" on the checkout.
+          echo "HOME=/root" >> "$GITHUB_ENV"
+          HOME=/root git config --global --add safe.directory '*' || true
+
       - uses: xberg-io/actions/setup-rust@v1
         with:
           target: ${{ matrix.target }}
