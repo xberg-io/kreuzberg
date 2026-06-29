@@ -111,15 +111,16 @@ async fn extract_batch_collects_mixed_inputs() {
     File::create(&path).unwrap().write_all(b"hello batch path").unwrap();
 
     let config = ExtractionConfig::default();
-    let output = extract_batch(
-        vec![
-            ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
-            ExtractInput::from_uri(path.to_string_lossy()),
-        ],
-        &config,
-    )
-    .await
-    .unwrap();
+    let output = crate::engine::Engine::new_default()
+        .extract_batch(
+            vec![
+                ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
+                ExtractInput::from_uri(path.to_string_lossy()),
+            ],
+            &config,
+        )
+        .await
+        .unwrap();
 
     assert_eq!(output.results.len(), 2);
     assert_eq!(output.summary.inputs, 2);
@@ -129,15 +130,16 @@ async fn extract_batch_collects_mixed_inputs() {
 #[tokio::test]
 async fn extract_batch_collects_unsupported_scheme_error() {
     let config = ExtractionConfig::default();
-    let output = extract_batch(
-        vec![
-            ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
-            ExtractInput::from_uri("s3://bucket/doc.txt"),
-        ],
-        &config,
-    )
-    .await
-    .unwrap();
+    let output = crate::engine::Engine::new_default()
+        .extract_batch(
+            vec![
+                ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
+                ExtractInput::from_uri("s3://bucket/doc.txt"),
+            ],
+            &config,
+        )
+        .await
+        .unwrap();
 
     assert_eq!(output.results.len(), 1);
     assert_eq!(output.errors.len(), 1);
