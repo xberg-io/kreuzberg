@@ -5,10 +5,9 @@
 //! re-encoded as a single PNG. The module is lazy: when the call mode decides
 //! `Skip` or `TextOnly`, no rasterization happens at all.
 //!
-//! Unlike the enterprise worker this port came from, the mechanism has no
-//! notion of object-storage persistence: there is no `PersistContext` and no
-//! storage write loop. Persisting rasters is a caller concern, layered on top
-//! of the returned [`PageImage`] values.
+//! The mechanism has no notion of object-storage persistence: there is no
+//! persistence context and no storage write loop. Persisting rasters is a
+//! caller concern, layered on top of the returned [`PageImage`] values.
 
 use std::io::Cursor;
 
@@ -44,8 +43,8 @@ pub enum RasterizeError {
 /// heuristic does not require vision (`Skip` / `TextOnly` /
 /// `TextOnlyWithVisionFallback`).
 ///
-/// `dpi` is supplied by the caller (the enterprise worker uses 200 DPI); the
-/// mechanism does not impose a default. `TextOnlyWithVisionFallback` is handled
+/// `dpi` is a caller parameter; the mechanism does not impose a default.
+/// `TextOnlyWithVisionFallback` is handled
 /// by the orchestrator — rasterization only happens if a fallback escalates.
 pub async fn pages_for_call(
     bytes: &[u8],
@@ -82,13 +81,20 @@ pub(crate) fn render_all_pages(bytes: &[u8], mime: &str, dpi: u32) -> Result<Vec
 }
 
 fn render_pdf(bytes: &[u8], dpi: u32) -> Result<Vec<PageImage>, RasterizeError> {
-    let page_count = crate::pdf::render::pdf_page_count(bytes, None)
+    // Parse the document once and render every page from the same handle. The
+    // expensive work is the xref/trailer parse in `open_pdf_document`; rendering
+    // a page only reads the already-parsed structures, so reusing the handle
+    // avoids re-parsing the file once per page.
+    let document = crate::pdf::render::open_pdf_document(bytes, None)
+        .map_err(|e| RasterizeError::Pdf(format!("failed to open PDF: {e}")))?;
+
+    let page_count = crate::pdf::render::document_page_count(&document)
         .map_err(|e| RasterizeError::Pdf(format!("failed to read page count: {e}")))?;
 
     let mut pages = Vec::with_capacity(page_count);
 
     for page_idx in 0..page_count {
-        let png_bytes = crate::pdf::render::render_pdf_page_to_png(bytes, page_idx, Some(dpi as i32), None)
+        let png_bytes = crate::pdf::render::render_open_pdf_page_to_png(&document, page_idx, Some(dpi as i32))
             .map_err(|e| RasterizeError::Pdf(format!("failed to render page {}: {e}", page_idx + 1)))?;
 
         pages.push(PageImage {
@@ -173,5 +179,32 @@ mod tests {
         .await
         .unwrap();
         assert!(pages.is_empty());
+    }
+
+    // No multi-page PDF fixture exists under crates/xberg, so this exercises the
+    // open-once batch path (`render_pdf` -> `open_pdf_document` +
+    // `render_open_pdf_page_to_png`) on a single-page document and asserts the
+    // output is byte-identical to the per-call public path
+    // (`render_pdf_page_to_png`, which opens then delegates to the same
+    // primitive). 1-based page ordering is covered by the `page_number`
+    // assignment exercised here; broader multi-page ordering coverage would need
+    // a real multi-page fixture (limitation).
+    #[cfg(feature = "pdf")]
+    #[tokio::test]
+    async fn pdf_render_open_once_matches_per_call_bytes() {
+        const DPI: u32 = 200;
+        let pdf = crate::pdf::render::build_minimal_pdf_with_mediabox(612.0, 792.0);
+
+        let pages = render_all_pages(&pdf, "application/pdf", DPI).expect("render_all_pages should succeed");
+        assert_eq!(pages.len(), 1, "single-page PDF must yield exactly one page");
+        assert_eq!(pages[0].page_number, 1, "page numbering must be 1-based");
+        assert!(pages[0].png_bytes.starts_with(&[0x89, 0x50, 0x4E, 0x47]), "PNG magic");
+
+        let per_call = crate::pdf::render::render_pdf_page_to_png(&pdf, 0, Some(DPI as i32), None)
+            .expect("per-call render should succeed");
+        assert_eq!(
+            pages[0].png_bytes, per_call,
+            "open-once path must produce byte-identical output to the per-call path"
+        );
     }
 }
