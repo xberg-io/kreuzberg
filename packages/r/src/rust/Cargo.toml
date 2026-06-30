@@ -1,6 +1,6 @@
 [package]
 name = "xberg-r"
-version = "1.0.0-rc.1"
+version = "1.0.0-rc.2"
 edition = "2024"
 license = "MIT"
 description = "High-performance document intelligence library"
@@ -18,7 +18,7 @@ extendr-api = "0.9"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
-xberg = { version = "1.0.0-rc.1", path = "../../../../crates/xberg", default-features = false, features = ["wasm-target", "url-ingestion"] }
+xberg = { version = "1.0.0-rc.2", path = "../../../../crates/xberg", default-features = false, features = ["wasm-target", "url-ingestion"] }
 
 [features]
 api = ["xberg/api"]

@@ -28,7 +28,7 @@ default-members = ["crates/xberg", "crates/xberg-cli"]
 resolver = "2"
 
 [workspace.package]
-version = "1.0.0-rc.1"
+version = "1.0.0-rc.2"
 edition = "2024"
 rust-version = "1.91"
 authors = ["Na'aman Hirschfeld <naaman@xberg.io>"]
@@ -68,9 +68,9 @@ html-to-markdown-rs = { version = "3.8.0", default-features = false }
 image = { version = "0.25.10", default-features = false }
 itertools = "0.15"
 js-sys = "0.3"
-xberg = { path = "./crates/xberg", version = "1.0.0-rc.1", default-features = false }
-xberg-gliner = { path = "./crates/xberg-gliner", version = "1.0.0-rc.1", default-features = false }
-xberg-rag = { path = "./crates/xberg-rag", version = "1.0.0-rc.1", default-features = false }
+xberg = { path = "./crates/xberg", version = "1.0.0-rc.2", default-features = false }
+xberg-gliner = { path = "./crates/xberg-gliner", version = "1.0.0-rc.2", default-features = false }
+xberg-rag = { path = "./crates/xberg-rag", version = "1.0.0-rc.2", default-features = false }
 
 lazy_static = "1.5.0"
 libc = "0.2.186"
