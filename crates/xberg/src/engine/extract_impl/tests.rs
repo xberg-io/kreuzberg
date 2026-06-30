@@ -111,15 +111,16 @@ async fn extract_batch_collects_mixed_inputs() {
     File::create(&path).unwrap().write_all(b"hello batch path").unwrap();
 
     let config = ExtractionConfig::default();
-    let output = extract_batch(
-        vec![
-            ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
-            ExtractInput::from_uri(path.to_string_lossy()),
-        ],
-        &config,
-    )
-    .await
-    .unwrap();
+    let output = crate::engine::Engine::new_default()
+        .extract_batch(
+            vec![
+                ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
+                ExtractInput::from_uri(path.to_string_lossy()),
+            ],
+            &config,
+        )
+        .await
+        .unwrap();
 
     assert_eq!(output.results.len(), 2);
     assert_eq!(output.summary.inputs, 2);
@@ -129,15 +130,16 @@ async fn extract_batch_collects_mixed_inputs() {
 #[tokio::test]
 async fn extract_batch_collects_unsupported_scheme_error() {
     let config = ExtractionConfig::default();
-    let output = extract_batch(
-        vec![
-            ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
-            ExtractInput::from_uri("s3://bucket/doc.txt"),
-        ],
-        &config,
-    )
-    .await
-    .unwrap();
+    let output = crate::engine::Engine::new_default()
+        .extract_batch(
+            vec![
+                ExtractInput::from_bytes(b"hello batch bytes".to_vec(), "text/plain", None),
+                ExtractInput::from_uri("s3://bucket/doc.txt"),
+            ],
+            &config,
+        )
+        .await
+        .unwrap();
 
     assert_eq!(output.results.len(), 1);
     assert_eq!(output.errors.len(), 1);
@@ -267,4 +269,93 @@ fn refine_downloaded_mime_type_no_filename_returns_octet_stream() {
         refined, "application/octet-stream",
         "no filename means no refinement; extract_bytes handles sniffing"
     );
+}
+
+/// Regression: a shared-URL batch result that maps to no input slot (e.g.
+/// crawlberg drops a panicked task as an empty-URL pair) must NOT cause its
+/// input to vanish. The sweep fills every unfilled slot with an error so
+/// `results + errors == inputs` always holds.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+#[test]
+fn fill_dropped_shared_slots_reattaches_or_synthesizes_errors() {
+    use std::collections::VecDeque;
+
+    let shared_items = vec![
+        SharedUrlItem {
+            index: 0,
+            source: "http://a/".into(),
+            uri: "http://a/".into(),
+            config: ExtractionConfig::default(),
+        },
+        SharedUrlItem {
+            index: 1,
+            source: "http://b/".into(),
+            uri: "http://b/".into(),
+            config: ExtractionConfig::default(),
+        },
+        SharedUrlItem {
+            index: 2,
+            source: "http://c/".into(),
+            uri: "http://c/".into(),
+            config: ExtractionConfig::default(),
+        },
+    ];
+    // Slots 0 and 2 were written by the batch loop; slot 1 was dropped.
+    let mut items: Vec<Option<BatchItemResult>> = vec![
+        Some(BatchItemResult {
+            index: 0,
+            source: "http://a/".into(),
+            result: Err(crate::XbergError::Other("a".into())),
+        }),
+        None,
+        Some(BatchItemResult {
+            index: 2,
+            source: "http://c/".into(),
+            result: Err(crate::XbergError::Other("c".into())),
+        }),
+    ];
+    let mut unmatched = VecDeque::new();
+    unmatched.push_back(crate::XbergError::Other("task panicked: boom".into()));
+
+    fill_dropped_shared_slots(&shared_items, &mut items, unmatched);
+
+    // No input silently dropped: every slot is filled.
+    assert!(items.iter().all(Option::is_some), "every shared slot must be filled");
+    let filled = items[1].as_ref().expect("slot 1 filled");
+    assert_eq!(filled.index, 1);
+    assert_eq!(filled.source, "http://b/");
+    // The captured panic error was re-attached rather than discarded.
+    match &filled.result {
+        Err(crate::XbergError::Other(message)) => {
+            assert!(message.contains("task panicked: boom"), "got: {message}");
+        }
+        _ => panic!("expected the re-attached panic error in slot 1"),
+    }
+}
+
+/// When no unmatched error was captured, the synthesized error names the URL.
+#[cfg(all(feature = "tokio-runtime", feature = "url-ingestion"))]
+#[test]
+fn fill_dropped_shared_slots_synthesizes_when_no_captured_error() {
+    use std::collections::VecDeque;
+
+    let shared_items = vec![SharedUrlItem {
+        index: 0,
+        source: "http://x/".into(),
+        uri: "http://x/".into(),
+        config: ExtractionConfig::default(),
+    }];
+    let mut items: Vec<Option<BatchItemResult>> = vec![None];
+
+    fill_dropped_shared_slots(&shared_items, &mut items, VecDeque::new());
+
+    match &items[0].as_ref().expect("slot 0 filled").result {
+        Err(crate::XbergError::Other(message)) => {
+            assert!(
+                message.contains("http://x/"),
+                "synthesized error names the URL, got: {message}"
+            );
+        }
+        _ => panic!("expected a synthesized error naming the URL"),
+    }
 }

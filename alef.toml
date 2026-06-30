@@ -1431,6 +1431,81 @@ types = [
   "BatchFileItem",
 
   "SyncExtractor",
+
+  # Rust-only extraction engine (crates/xberg/src/engine/). Not part of the
+  # binding surface: declared as a bare `pub mod engine;` in lib.rs and its
+  # files are not listed in `sources`. Listed here as belt-and-suspenders so a
+  # future codegen pass cannot re-emit them as transitive container fields.
+  "Engine",
+  "EngineBuilder",
+  "xberg::engine::Engine",
+  "xberg::engine::EngineBuilder",
+
+  # Rust-only engine extension seams (crates/xberg/src/engine/seams/). Same
+  # isolation as Engine/EngineBuilder above: traits + in-core defaults that live
+  # under the bare `pub mod engine;`, are not listed in `sources`, and are not
+  # re-exported from lib.rs. Listed here as belt-and-suspenders against a future
+  # codegen pass re-emitting them as transitive container fields.
+  "CacheBackend",
+  "NoopCache",
+  "ProgressSink",
+  "ProgressEvent",
+  "NoopProgressSink",
+  "StructuredPolicy",
+  "DefaultStructuredPolicy",
+  "PresetResolver",
+  "CorePresetResolver",
+  "LlmClient",
+  "LiterLlmClient",
+  "ModelProvider",
+  "DefaultModelProvider",
+  "ModelId",
+  "xberg::engine::seams::CacheBackend",
+  "xberg::engine::seams::NoopCache",
+  "xberg::engine::seams::ProgressSink",
+  "xberg::engine::seams::ProgressEvent",
+  "xberg::engine::seams::NoopProgressSink",
+  "xberg::engine::seams::StructuredPolicy",
+  "xberg::engine::seams::DefaultStructuredPolicy",
+  "xberg::engine::seams::PresetResolver",
+  "xberg::engine::seams::CorePresetResolver",
+  "xberg::engine::seams::LlmClient",
+  "xberg::engine::seams::LiterLlmClient",
+  "xberg::engine::seams::ModelProvider",
+  "xberg::engine::seams::DefaultModelProvider",
+  "xberg::engine::seams::ModelId",
+
+  # Rust-only structured-extraction mechanism (crates/xberg/src/engine/structured/).
+  # Same isolation as the seams above: generic mechanism types that live under the
+  # bare `pub mod engine;`, are not listed in `sources`, and are not re-exported
+  # from lib.rs. Listed here as belt-and-suspenders against a future codegen pass
+  # re-emitting them as transitive container fields.
+  "PageImage",
+  "RasterizeError",
+  "Batch",
+  "ChunkerConfig",
+  "Outcome",
+  "MergedOutput",
+  "CitationSource",
+  "CitedField",
+  "CitationOutput",
+  "BuiltPrompt",
+  "xberg::engine::structured::rasterize::PageImage",
+  "xberg::engine::structured::rasterize::RasterizeError",
+  "xberg::engine::structured::chunk::Batch",
+  "xberg::engine::structured::chunk::ChunkerConfig",
+  "xberg::engine::structured::schema::Outcome",
+  "xberg::engine::structured::schema::MergedOutput",
+  "xberg::engine::structured::citations::CitationSource",
+  "xberg::engine::structured::citations::CitedField",
+  "xberg::engine::structured::citations::CitationOutput",
+  "xberg::engine::structured::prompts::BuiltPrompt",
+
+  # Rust-only single-operation parse memo (engine/parsed.rs). Same isolation as
+  # the engine/structured types above: lives under the bare `pub mod engine`,
+  # not in `sources`, not re-exported from lib.rs.
+  "ParsedDocument",
+  "xberg::engine::parsed::ParsedDocument",
 ]
 methods = [
   # From<T> trait impls — auto-emitted by derive/trait-bridge

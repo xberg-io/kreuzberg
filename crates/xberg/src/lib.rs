@@ -37,6 +37,11 @@ pub mod cache;
 pub(crate) mod cache_dir;
 pub mod cancellation;
 pub mod core;
+// Rust-only extraction engine. Declared as a bare `pub mod` whose files are NOT
+// listed in `alef.toml` `sources`, so the binding generator emits nothing for
+// it. Do NOT add `pub use engine::...` re-exports here — that would pull the
+// engine types into the scanned public surface.
+pub mod engine;
 pub mod error;
 /// Format-specific document extraction implementations and office metadata types.
 pub mod extraction;

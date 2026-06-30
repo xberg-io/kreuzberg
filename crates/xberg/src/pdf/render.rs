@@ -69,6 +69,71 @@ pub(crate) fn render_page_with_safeguards(
     pdf_oxide::rendering::render_page(doc, page_index, &options)
 }
 
+/// Open (and optionally authenticate) a PDF document from raw bytes.
+///
+/// Parsing the cross-reference table and trailer is the expensive part of
+/// working with a PDF; rendering a page only reads the already-parsed
+/// structures. Callers that need several pages should open the document once
+/// with this helper and reuse the returned handle across
+/// [`render_open_pdf_page_to_png`] calls rather than re-opening per page.
+///
+/// # Errors
+///
+/// Returns `XbergError::Parsing` if the PDF cannot be opened or authenticated.
+pub(crate) fn open_pdf_document(pdf_bytes: &[u8], password: Option<&str>) -> Result<pdf_oxide::PdfDocument> {
+    let doc = pdf_oxide::PdfDocument::from_bytes(pdf_bytes.to_vec()).map_err(|e| XbergError::Parsing {
+        message: format!("Failed to open PDF: {e}"),
+        source: None,
+    })?;
+
+    if let Some(pwd) = password {
+        doc.authenticate(pwd.as_bytes()).map_err(|e| XbergError::Parsing {
+            message: format!("Failed to authenticate PDF: {e}"),
+            source: None,
+        })?;
+    }
+
+    Ok(doc)
+}
+
+/// Read the page count from an already-open document.
+///
+/// # Errors
+///
+/// Returns `XbergError::Parsing` if the page count cannot be read.
+pub(crate) fn document_page_count(doc: &pdf_oxide::PdfDocument) -> Result<usize> {
+    doc.page_count().map_err(|e| XbergError::Parsing {
+        message: format!("Failed to read page count: {e}"),
+        source: None,
+    })
+}
+
+/// Render one page of an already-open document to PNG bytes via the
+/// extreme-dimension DPI safeguard.
+///
+/// This is the per-page primitive shared by [`render_pdf_page_to_png`] (which
+/// opens the document, then delegates) and batch callers that open once and
+/// render every page from a single parsed handle. `page_index` is assumed to be
+/// in range; out-of-range indices surface as the underlying rasterizer error.
+///
+/// # Errors
+///
+/// Returns `XbergError::Parsing` if the page cannot be rendered.
+pub(crate) fn render_open_pdf_page_to_png(
+    doc: &pdf_oxide::PdfDocument,
+    page_index: usize,
+    dpi: Option<i32>,
+) -> Result<Vec<u8>> {
+    let render_dpi = dpi.unwrap_or(150).max(1) as u32;
+    // Use the safeguarded path so callers also benefit from the wide-page fix.
+    let rendered = render_page_with_safeguards(doc, page_index, render_dpi).map_err(|e| XbergError::Parsing {
+        message: format!("Failed to render page {page_index}: {e}"),
+        source: None,
+    })?;
+
+    Ok(rendered.data)
+}
+
 /// Render a single PDF page to PNG bytes.
 ///
 /// Returns raw PNG-encoded bytes for the specified page at the given DPI.
@@ -95,23 +160,9 @@ pub fn render_pdf_page_to_png(
     dpi: Option<i32>,
     password: Option<&str>,
 ) -> Result<Vec<u8>> {
-    let doc = pdf_oxide::PdfDocument::from_bytes(pdf_bytes.to_vec()).map_err(|e| XbergError::Parsing {
-        message: format!("Failed to open PDF: {e}"),
-        source: None,
-    })?;
+    let doc = open_pdf_document(pdf_bytes, password)?;
 
-    if let Some(pwd) = password {
-        doc.authenticate(pwd.as_bytes()).map_err(|e| XbergError::Parsing {
-            message: format!("Failed to authenticate PDF: {e}"),
-            source: None,
-        })?;
-    }
-
-    let page_count = doc.page_count().map_err(|e| XbergError::Parsing {
-        message: format!("Failed to read page count: {e}"),
-        source: None,
-    })?;
-
+    let page_count = document_page_count(&doc)?;
     if page_index >= page_count {
         return Err(XbergError::Parsing {
             message: format!("Page index {page_index} out of range (document has {page_count} pages)"),
@@ -119,14 +170,7 @@ pub fn render_pdf_page_to_png(
         });
     }
 
-    let render_dpi = dpi.unwrap_or(150).max(1) as u32;
-    // Use the safeguarded path so public API also benefits from the wide-page fix.
-    let rendered = render_page_with_safeguards(&doc, page_index, render_dpi).map_err(|e| XbergError::Parsing {
-        message: format!("Failed to render page {page_index}: {e}"),
-        source: None,
-    })?;
-
-    Ok(rendered.data)
+    render_open_pdf_page_to_png(&doc, page_index, dpi)
 }
 
 /// Count the pages in a PDF without rendering any of them.

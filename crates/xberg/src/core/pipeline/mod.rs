@@ -272,6 +272,23 @@ pub async fn run_pipeline(mut doc: InternalDocument, config: &ExtractionConfig) 
     // Apply output format conversion as the final step
     result = apply_output_format(result, config.output_format.clone());
 
+    // Populate the typed extraction-quality confidence (P5). Downstream
+    // consumers read a real `ocr_aggregate` — the mean of OCR recognition
+    // confidences — from this typed field instead of reparsing JSON. The core
+    // does not yet compute per-page text coverage, so `text_coverage` defaults
+    // to 1.0 (matching prior behavior); schema compliance is unknown at extract
+    // time and recorded as `AllValid`. Structured consumers recompute the
+    // combined score with their own schema-compliance signal.
+    #[cfg(feature = "heuristics")]
+    {
+        use crate::heuristics::confidence::{ConfidenceSignals, ConfidenceWeights, SchemaCompliance, score_confidence};
+        // Placeholder until per-page text coverage is computed in core.
+        const DEFAULT_TEXT_COVERAGE: f32 = 1.0;
+        let signals =
+            ConfidenceSignals::from_extraction_result(&result, SchemaCompliance::AllValid, DEFAULT_TEXT_COVERAGE);
+        result.extraction_confidence = Some(score_confidence(signals, ConfidenceWeights::default()));
+    }
+
     Ok(result)
 }
 
@@ -397,6 +414,23 @@ pub fn run_pipeline_sync(doc: InternalDocument, config: &ExtractionConfig) -> Re
 
     // Apply output format conversion as the final step
     result = apply_output_format(result, config.output_format.clone());
+
+    // Populate the typed extraction-quality confidence (P5). Downstream
+    // consumers read a real `ocr_aggregate` — the mean of OCR recognition
+    // confidences — from this typed field instead of reparsing JSON. The core
+    // does not yet compute per-page text coverage, so `text_coverage` defaults
+    // to 1.0 (matching prior behavior); schema compliance is unknown at extract
+    // time and recorded as `AllValid`. Structured consumers recompute the
+    // combined score with their own schema-compliance signal.
+    #[cfg(feature = "heuristics")]
+    {
+        use crate::heuristics::confidence::{ConfidenceSignals, ConfidenceWeights, SchemaCompliance, score_confidence};
+        // Placeholder until per-page text coverage is computed in core.
+        const DEFAULT_TEXT_COVERAGE: f32 = 1.0;
+        let signals =
+            ConfidenceSignals::from_extraction_result(&result, SchemaCompliance::AllValid, DEFAULT_TEXT_COVERAGE);
+        result.extraction_confidence = Some(score_confidence(signals, ConfidenceWeights::default()));
+    }
 
     Ok(result)
 }
