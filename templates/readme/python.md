@@ -9,7 +9,7 @@
 - **Python-native extraction** — async APIs for URI, bytes, and batch inputs.
 - **Structured results** — an `ExtractionResult` envelope with `ExtractedDocument` items, errors, and summary counts.
 - **OCR choices** — Tesseract, PaddleOCR, Candle, and VLM OCR where configured.
-- **Same Rust engine as every binding** — behavior matches the Node.js, Ruby, Go, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
+- **Same Rust engine as every binding** — behavior matches the Node.js, Ruby, Go, Java, .NET, PHP, Elixir, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Installation
 

@@ -192,10 +192,6 @@ jobs:
           - lang: rust
             runs-on: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          - lang: r
-            r-version: "4.3"
-            runs-on: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
           - lang: dart
             dart-version: "3.11"
             runs-on: ubuntu-24.04-arm
@@ -286,7 +282,7 @@ jobs:
         uses: ./.github/actions/setup-onnx-runtime
         with:
           ort-version: ${{ env.ORT_VERSION }}
-          strategy: ${{ matrix.lang == 'r' && 'bundled' || 'system' }}
+          strategy: system
 
       - name: Stage ORT libraries alongside FFI
         shell: bash
@@ -395,16 +391,6 @@ jobs:
           elixir-version: ${{ matrix.elixir-version }}
           otp-version: ${{ matrix.otp-version }}
 
-      - name: Setup R
-        if: matrix.r-version
-        uses: xberg-io/actions/setup-r@v1
-        with:
-          r-version: ${{ matrix.r-version }}
-
-      - name: Install R test packages
-        if: matrix.lang == 'r'
-        run: R -e 'install.packages(c("testthat","jsonlite","devtools"), repos="https://cloud.r-project.org")'
-
       - name: Setup Dart
         if: matrix.dart-version
         uses: dart-lang/setup-dart@v1
@@ -427,7 +413,7 @@ jobs:
         if: |
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
-          matrix.lang == 'r' || matrix.lang == 'kotlin-android' ||
+          matrix.lang == 'kotlin-android' ||
           matrix.lang == 'swift' || matrix.lang == 'zig' ||
           matrix.lang == 'rust' || matrix.lang == 'python'
         shell: bash

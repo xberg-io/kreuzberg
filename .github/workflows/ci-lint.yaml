@@ -115,12 +115,6 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Setup R
-        uses: xberg-io/actions/setup-r@v1
-        with:
-          r-version: "release"
-          install-deps: "false"
-
       - name: Install Task
         uses: xberg-io/actions/install-task@v1
 

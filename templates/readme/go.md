@@ -12,7 +12,7 @@ High-performance document intelligence for Go backed by the Rust core that power
 - **Go module over the Rust core** — context-aware extraction with Go structs and errors.
 - **Structured results** — text, tables, images, metadata, language detection, chunks, and warnings.
 - **Static-link workflow** — build against `xberg-ffi` and ship a self-contained Go binary.
-- **Cross-binding parity** — output matches the Python, Node.js, Ruby, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
+- **Cross-binding parity** — output matches the Python, Node.js, Ruby, Java, .NET, PHP, Elixir, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Install
 

@@ -18,7 +18,7 @@ members = [
     "packages/swift/rust",
     "tools/benchmark-harness",
 ]
-exclude = ["e2e/rust", "packages/elixir/native/xberg_nif", "packages/r/src/rust", "packages/ruby/ext/xberg_rb"]
+exclude = ["e2e/rust", "packages/elixir/native/xberg_nif", "packages/ruby/ext/xberg_rb"]
 default-members = ["crates/xberg", "crates/xberg-cli"]
 resolver = "2"
 

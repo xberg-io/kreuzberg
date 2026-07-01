@@ -33,7 +33,7 @@ Xberg is a polyglot project with many areas where you can help:
 | Area                  | Description                                                    |
 | --------------------- | -------------------------------------------------------------- |
 | **Rust core**         | Parser implementations, extraction pipeline, performance       |
-| **Language bindings** | Python, TypeScript, Ruby, Go, Java, C#, PHP, R, Elixir, WASM   |
+| **Language bindings** | Python, TypeScript, Ruby, Go, Java, C#, PHP, Elixir, WASM   |
 | **Documentation**     | Guides, API references, examples, tutorials                    |
 | **Testing**           | Unit tests, E2E test fixtures, cross-language coverage         |
 | **Plugins**           | New extraction plugins, plugin system improvements             |
@@ -65,7 +65,6 @@ Xberg is a polyglot project with many areas where you can help:
 | .NET     | 10+     | `dotnet`                                 |
 | PHP      | 8.1+    | `composer`                               |
 | Elixir   | 1.14+   | `mix` (OTP 25+)                          |
-| R        | 4.1+    | [CRAN](https://cran.r-project.org/)      |
 
 ### Getting started
 

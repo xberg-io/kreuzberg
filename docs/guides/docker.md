@@ -223,7 +223,7 @@ The published Core and Full images cover most use cases. For specialized needs, 
 | ------------------------- | ------------------------------------------------------------------------------------- |
 | `Dockerfile.cli`          | Minimal image with just the `xberg` binary — good for CI pipelines and batch jobs |
 | `Dockerfile.musl-build`   | Fully static Linux binaries via MUSL — runs on any distro, no dynamic libs            |
-| `Dockerfile.musl-ffi`     | Static C FFI library for language bindings (Go, Ruby, R, PHP, Elixir)                 |
+| `Dockerfile.musl-ffi`     | Static C FFI library for language bindings (Go, Ruby, PHP, Elixir)                    |
 | `Dockerfile.musl-rustler` | MUSL-based Rustler NIF for Elixir                                                     |
 
 ### CLI Image
@@ -247,7 +247,7 @@ docker build -f docker/Dockerfile.musl-build -t xberg-musl-build .
 docker build -f docker/Dockerfile.musl-ffi -t xberg-musl-ffi .
 ```
 
-The FFI variant builds a shared library used by the Go, Ruby, R, PHP, and Elixir bindings for portable cross-platform distribution.
+The FFI variant builds a shared library used by the Go, Ruby, PHP, and Elixir bindings for portable cross-platform distribution.
 
 ## Troubleshooting
 

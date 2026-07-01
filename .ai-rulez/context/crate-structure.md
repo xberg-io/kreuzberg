@@ -27,7 +27,6 @@ Version source of truth: root `Cargo.toml` `[workspace.package] version`.
 - `packages/java/` — Maven; Foreign Function & Memory API over xberg-ffi
 - `packages/csharp/` — NuGet; P/Invoke over xberg-ffi
 - `packages/elixir/` — Hex; Rustler NIF (workspace member at `packages/elixir/native/xberg_rustler`)
-- `packages/r/` — CRAN; extendr (excluded from workspace)
 
 ## Tools (`tools/`)
 

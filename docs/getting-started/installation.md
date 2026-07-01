@@ -197,18 +197,6 @@ No SDK, no code — just your terminal.
   [API Reference](../reference/api-elixir.md){ .install-api-link }
   [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid .install-btn--sm }
 
-- :simple-r:{ .lg .middle } **R**
-
-  ***
-
-  ```r
-  install.packages("xberg",
-    repos = "https://xberg-io.r-universe.dev")
-  ```
-
-  [API Reference](../reference/api-r.md){ .install-api-link }
-  [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid .install-btn--sm }
-
 - :simple-cplusplus:{ .lg .middle } **C / C++**
 
   ***

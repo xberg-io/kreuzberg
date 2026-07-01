@@ -90,7 +90,6 @@ nav = [
             { "Ruby" = "reference/api-ruby.md" },
             { "PHP" = "reference/api-php.md" },
             { "Elixir" = "reference/api-elixir.md" },
-            { "R" = "reference/api-r.md" },
             { "Dart" = "reference/api-dart.md" },
             { "Zig" = "reference/api-zig.md" },
             { "C" = "reference/api-c.md" },

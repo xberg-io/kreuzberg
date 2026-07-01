@@ -50,7 +50,6 @@ You only need the toolchains for the areas you plan to work on.
 | .NET     | 10+     | `dotnet`                                 |
 | PHP      | 8.1+    | `composer`                               |
 | Elixir   | 1.14+   | `mix` (OTP 25+)                          |
-| R        | 4.1+    | [CRAN](https://cran.r-project.org/)      |
 
 For platform-specific build dependencies (compilers, OpenSSL, etc.), see the [Installation guide](getting-started/installation.md).
 

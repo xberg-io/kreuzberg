@@ -18,7 +18,6 @@ tasks:
       - task: smoke:elixir
       - task: smoke:csharp
       - task: smoke:php
-      - task: smoke:r
       - task: smoke:rust
       - task: smoke:wasm
       - task: smoke:dart
@@ -87,12 +86,6 @@ tasks:
     cmds:
       - composer install
       - vendor/bin/phpunit
-
-  smoke:r:
-    desc: Run R test_app smoke test
-    dir: "{{.ROOT_DIR}}/test_apps/r"
-    cmds:
-      - Rscript -e 'library(testthat); test_file("tests/test_smoke.R")'
 
   smoke:rust:
     desc: Run Rust test_app smoke test

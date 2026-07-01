@@ -171,14 +171,6 @@ const xberg_dep = b.dependency("{{ package_name }}", .{
 exe.root_module.addImport("{{ package_name }}", xberg_dep.module("{{ package_name }}"));
 ```
 
-{% elif pm == "install.packages" %}
-Install from the xberg R-universe:
-
-```r
-install.packages("{{ package_name }}",
-  repos = c("https://xberg-io.r-universe.dev", getOption("repos")))
-```
-
 {% elif pm == "cargo" %}
 Build the shared library from the workspace:
 
@@ -242,9 +234,6 @@ Pre-built binaries available for:
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "wasm" %}
 - Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
-- Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
-{% elif language == "r" %}
-- **R 4.1+** required (extendr bindings)
 - Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
 {% elif language == "ffi" %}
 - A C/C++ toolchain (clang, gcc, or MSVC) and a Rust toolchain (`rustup`) for building from source

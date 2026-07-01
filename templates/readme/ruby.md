@@ -9,7 +9,7 @@
 - **Ruby-native extraction** — idiomatic Ruby objects over the shared Rust document engine.
 - **Structured results** — an `ExtractionResult` envelope with `ExtractedDocument` items, errors, and summary counts.
 - **OCR support** — Tesseract and PaddleOCR through the same configuration model as other bindings.
-- **Cross-binding parity** — output matches the Python, Node.js, Go, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
+- **Cross-binding parity** — output matches the Python, Node.js, Go, Java, .NET, PHP, Elixir, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Installation
 

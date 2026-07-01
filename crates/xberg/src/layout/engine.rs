@@ -241,7 +241,7 @@ impl LayoutEngine {
     /// Timing note: `preprocess_ms` and `onnx_ms` in each `DetectTimings` are the
     /// amortized per-image share of the batch operation (total / N), not independent
     /// per-image measurements.
-    // consumed via vendored xberg in packages/ruby/, packages/r/
+    // consumed via vendored xberg in packages/ruby/
     #[allow(dead_code)]
     pub(crate) fn detect_batch(
         &mut self,

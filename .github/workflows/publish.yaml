@@ -5,7 +5,6 @@ name: Publish Release
 # Orchestrates 16 alef language targets:
 #   crates · python · node · wasm · ruby · php · cli · homebrew · go · c-ffi
 #   java · csharp · elixir · dart · swift · zig · kotlin
-# (R is excluded — distributed automatically by R-Universe from this repo's HEAD.)
 #
 # Mirrors html-to-markdown's publish.yaml composition: every registry
 # interaction, every multi-platform build, and every release-asset upload

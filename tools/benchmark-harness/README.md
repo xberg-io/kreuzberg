@@ -129,7 +129,7 @@ Fixtures are JSON files organized by format directory under `fixtures/`:
 
 Each binding is benchmarked in both single-file (sequential, fair latency) and batch (concurrent, throughput) modes:
 
-Rust, Python, Node.js, Ruby, Go, Java, C#, PHP, Elixir, R, WASM, C, Rust+PaddleOCR
+Rust, Python, Node.js, Ruby, Go, Java, C#, PHP, Elixir, WASM, C, Rust+PaddleOCR
 
 ### Reference Frameworks (7)
 

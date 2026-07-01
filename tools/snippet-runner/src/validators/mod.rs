@@ -6,7 +6,6 @@ pub mod go;
 pub mod java;
 pub mod php;
 pub mod python;
-pub mod r;
 pub mod ruby;
 pub mod rust;
 pub mod toml_validator;
@@ -56,7 +55,6 @@ impl ValidatorRegistry {
         reg.register(Box::new(php::PhpValidator));
         reg.register(Box::new(ruby::RubyValidator));
         reg.register(Box::new(elixir::ElixirValidator));
-        reg.register(Box::new(r::RValidator));
         reg.register(Box::new(c::CValidator));
         reg.register(Box::new(bash::BashValidator));
         reg.register(Box::new(toml_validator::TomlValidator));

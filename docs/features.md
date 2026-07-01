@@ -475,7 +475,7 @@ For the architecture overview, see [Plugin System](concepts/plugin-system.md). F
 
 | Mode           | When to Use                                            | Details                                                                                  |
 | -------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, Ruby, C#, PHP, Elixir, R, Dart, Swift, Zig, C, or Wasm |
+| **Library**    | Embedding extraction into your application             | Import the package in Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, Ruby, C#, PHP, Elixir, Dart, Swift, Zig, C, or Wasm |
 | **CLI**        | One-off extractions, scripting, CI pipelines           | `xberg extract document.pdf --format json` -- see [CLI Usage](cli/usage.md)          |
 | **REST API**   | Multi-service architectures, language-agnostic access  | `xberg serve --port 8000` -- see [API Server Guide](guides/api-server.md)            |
 | **MCP Server** | AI agent integration (Claude Desktop, Continue.dev)    | `xberg mcp` -- stdio transport with JSON-RPC 2.0                                     |
@@ -493,7 +493,7 @@ Polyglot bindings share the Rust core and expose the same generated types where 
 
 **Full features, synchronous API** -- Go, Ruby, C#, Java, PHP, Elixir
 
-**Native FFI surfaces** -- C, R, Dart, Swift, Zig, Kotlin Android
+**Native FFI surfaces** -- C, Dart, Swift, Zig, Kotlin Android
 
 **TypeScript: Two flavors**
 

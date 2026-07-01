@@ -53,7 +53,7 @@ Full content intelligence from one engine. Turn documents, URLs, code, and media
 
 - :material-translate:{ .lg .middle } **16-Language Native SDKs**
 
-  Python, TypeScript, Rust, Go, Java, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C FFI—plus CLI, REST API, MCP server, Docker, and WASM.
+  Python, TypeScript, Rust, Go, Java, C#, Ruby, PHP, Elixir, Dart, Swift, Zig, C FFI—plus CLI, REST API, MCP server, Docker, and WASM.
 
 </div>
 
@@ -76,7 +76,6 @@ Full content intelligence from one engine. Turn documents, URLs, code, and media
 | **Ruby**                | `gem install xberg`                        | [API Reference](reference/api-ruby.md)       |
 | **PHP**                 | `composer require xberg-io/xberg`         | [API Reference](reference/api-php.md)        |
 | **Elixir**              | `{:xberg, "~> 1.0"}`               | [API Reference](reference/api-elixir.md)     |
-| **R**                   | r-universe `xberg`                         | [API Reference](reference/api-r.md)          |
 | **Dart / Flutter**      | `dart pub add xberg`                       | [API Reference](reference/api-dart.md)       |
 | **Swift**               | Swift Package Manager                          | [API Reference](reference/api-swift.md)      |
 | **Zig**                 | `zig fetch --save` from GitHub                 | [API Reference](reference/api-zig.md)        |

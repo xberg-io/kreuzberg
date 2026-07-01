@@ -7,9 +7,9 @@ multi-ecosystem-groups:
 
 updates:
   - package-ecosystem: "cargo"
-    # Explicitly list root only — packages/ruby/ext and packages/r/src have
-    # standalone workspaces with path deps to vendored crates that only exist
-    # at build time. Dependabot cannot resolve these paths.
+    # Explicitly list root only — packages/ruby/ext has a standalone workspace
+    # with path deps to vendored crates that only exist at build time.
+    # Dependabot cannot resolve these paths.
     directories:
       - "/"
     ignore:

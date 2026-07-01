@@ -34,7 +34,6 @@ version: "3"
 #   task dart:*        -> Dart-specific tasks
 #   task swift:*       -> Swift-specific tasks
 #   task kotlin-android:* -> Kotlin/Android-specific tasks
-#   task r:*           -> R-specific tasks
 #   task zig:*         -> Zig-specific tasks
 # ============================================================================
 
@@ -63,8 +62,6 @@ includes:
     taskfile: ./.task/languages/swift.yml
   kotlin-android:
     taskfile: ./.task/languages/kotlin_android.yml
-  r:
-    taskfile: ./.task/languages/r.yml
   zig:
     taskfile: ./.task/languages/zig.yml
   version:
@@ -221,7 +218,6 @@ tasks:
       - task: dart:update
       - task: swift:update
       - task: kotlin-android:update
-      - task: r:update
       - task: zig:update
       - alef update
 
@@ -241,7 +237,6 @@ tasks:
       - task: dart:upgrade
       - task: swift:upgrade
       - task: kotlin-android:upgrade
-      - task: r:upgrade
       - task: zig:upgrade
       - cmd: alef update --latest
         ignore_error: true
@@ -305,7 +300,7 @@ tasks:
   e2e:build:
     desc: "Build all language bindings used by e2e suites (release)"
     cmds:
-      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,r,dart,kotlin_android,swift,zig
+      - alef build --release --lang python,node,ruby,php,ffi,go,java,csharp,elixir,wasm,dart,kotlin_android,swift,zig
 
   e2e:all:
     desc: "Generate, build, and run all e2e test suites"
@@ -317,7 +312,7 @@ tasks:
   e2e:test:
     desc: "Run all e2e test suites across all languages"
     cmds:
-      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,r,dart,kotlin_android,swift,zig
+      - alef test --e2e --lang rust,python,node,ruby,php,go,java,csharp,elixir,wasm,dart,kotlin_android,swift,zig
 
   e2e:quick:
     desc: "Run quick Rust e2e tests"
@@ -389,11 +384,6 @@ tasks:
     desc: "Run C# e2e tests (builds xberg-ffi first)"
     cmds:
       - alef test --e2e --lang csharp
-
-  r:e2e:
-    desc: "Run R e2e tests"
-    cmds:
-      - alef test --e2e --lang r
 
   dart:codegen:
     desc: "Generate flutter_rust_bridge bindings for Dart"

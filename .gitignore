@@ -109,11 +109,6 @@ TestResults/
 # Generated test apps (e2e-generator --mode published)
 test_apps/
 
-# R
-packages/r/src/.cargo/
-.Rhistory
-.RData
-
 # Elixir
 .nox/
 
@@ -308,8 +303,6 @@ erl_crash.dump
 packages/go/.lib/
 
 .build/
-
-packages/r/src/*.o
 
 # basemind code-map index (local tooling)
 .basemind/

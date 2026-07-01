@@ -34,7 +34,7 @@ Documents · Images · Spreadsheets · Email · Archives · Code · Audio · Vid
 
 ## What you get
 
-Xberg is a full content-intelligence engine. One Rust core with fast, accurate extraction from 96 file formats and 306 programming languages. Language bindings for Rust, Python, Node.js, Go, Java, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, WASM, Kotlin, and C FFI. Use it as a library, CLI tool, REST API, or MCP server.
+Xberg is a full content-intelligence engine. One Rust core with fast, accurate extraction from 96 file formats and 306 programming languages. Language bindings for Rust, Python, Node.js, Go, Java, C#, Ruby, PHP, Elixir, Dart, Swift, Zig, WASM, Kotlin, and C FFI. Use it as a library, CLI tool, REST API, or MCP server.
 
 | What it does | How |
 |---|---|
@@ -179,13 +179,6 @@ npm install @xberg-io/xberg-wasm
 ```
 
 See [WebAssembly README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-wasm) for full documentation.
-
-</details>
-
-<details>
-<summary><strong>R</strong></summary>
-
-Install from r-universe. See [R README](https://github.com/xberg-io/xberg/tree/main/packages/r) for full documentation.
 
 </details>
 

@@ -60,7 +60,6 @@ const FRAMEWORKS: &[(&str, &str, &str)] = &[
     ("xberg-elixir", "hex_package", "Elixir hex package with NIF"),
     ("xberg-php", "php_extension", "PHP extension"),
     ("xberg-c", "binary_size", "C FFI binding"),
-    ("xberg-r", "binary_size", "R native package"),
     ("xberg-rust-paddle", "binary_size", "Native Rust core with PaddleOCR"),
     // Third-party frameworks
     ("docling", "pip_package", "IBM Docling document processing"),
@@ -502,12 +501,12 @@ fn measure_binary(name: &str) -> Result<Option<u64>> {
     let binary_name = match name {
         "xberg-rust" => "xberg",
         s if s.starts_with("xberg-go") => "xberg-go",
-        "xberg-c" | "xberg-r" | "xberg-rust-paddle" => name,
+        "xberg-c" | "xberg-rust-paddle" => name,
         _ => return Ok(None),
     };
 
-    // For xberg-rust/c/r/rust-paddle, measure the FFI shared library (used by all bindings)
-    if matches!(name, "xberg-rust" | "xberg-c" | "xberg-r" | "xberg-rust-paddle") {
+    // For xberg-rust/c/rust-paddle, measure the FFI shared library (used by all bindings)
+    if matches!(name, "xberg-rust" | "xberg-c" | "xberg-rust-paddle") {
         let target_paths = [
             "target/release/libxberg_ffi.so",
             "target/release/libxberg_ffi.dylib",
