@@ -1113,4 +1113,80 @@ mod tests {
         let output = normalize_html_markdown(input);
         assert!(output.is_empty(), "empty input should produce empty output");
     }
+
+    /// Test that extract_metadata=false is respected (issue #1171).
+    /// When the user explicitly sets extract_metadata to false, no metadata
+    /// should be returned, even if the HTML contains meta tags.
+    #[test]
+    fn test_extract_metadata_false_is_respected() {
+        let html = r#"<!DOCTYPE html>
+<html>
+  <head>
+    <title>This Is A Title</title>
+    <meta name="description" content="This is the description">
+    <meta name="author" content="John Doe">
+  </head>
+  <body>
+    <h1>Content Heading</h1>
+    <p>Some content here.</p>
+  </body>
+</html>"#;
+
+        let mut options = html_to_markdown_rs::ConversionOptions::default();
+        options.extract_metadata = false;
+
+        let (content, metadata, _, _) =
+            crate::extraction::html::convert_html_to_markdown_with_tables(html, Some(options), None).unwrap();
+
+        // Content should still be extracted
+        assert!(content.contains("Content Heading"));
+
+        // But metadata should be None when extract_metadata=false
+        assert!(
+            metadata.is_none() || metadata.as_ref().unwrap().is_empty(),
+            "Metadata should be None or empty when extract_metadata=false, but got: {:?}",
+            metadata
+        );
+    }
+
+    /// Test that extract_metadata=true returns metadata (default behavior).
+    #[test]
+    fn test_extract_metadata_true_returns_metadata() {
+        let html = r#"<!DOCTYPE html>
+<html>
+  <head>
+    <title>This Is A Title</title>
+    <meta name="description" content="This is the description">
+    <meta name="author" content="Jane Doe">
+  </head>
+  <body>
+    <h1>Content Heading</h1>
+    <p>Some content here.</p>
+  </body>
+</html>"#;
+
+        let mut options = html_to_markdown_rs::ConversionOptions::default();
+        options.extract_metadata = true;
+
+        let (content, metadata, _, _) =
+            crate::extraction::html::convert_html_to_markdown_with_tables(html, Some(options), None).unwrap();
+
+        // Content should be extracted
+        assert!(content.contains("Content Heading"));
+
+        // Metadata should be present when extract_metadata=true
+        assert!(metadata.is_some(), "Metadata should be Some when extract_metadata=true");
+        let meta = metadata.unwrap();
+        assert_eq!(
+            meta.title,
+            Some("This Is A Title".to_string()),
+            "Title should be extracted"
+        );
+        assert_eq!(
+            meta.description,
+            Some("This is the description".to_string()),
+            "Description should be extracted"
+        );
+        assert_eq!(meta.author, Some("Jane Doe".to_string()), "Author should be extracted");
+    }
 }
