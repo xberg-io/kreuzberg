@@ -100,9 +100,6 @@ impl TesseractAPI {
     /// Returns [`TesseractError::NullPointerError`] when `TessBaseAPICreate` returns a
     /// null pointer, which indicates an allocation failure in the Tesseract C library.
     pub fn new() -> Result<Self> {
-        // Register global cleanup handler once at first instance creation
-        ensure_tesseract_cleanup_registered();
-
         // SAFETY: TessBaseAPICreate() is a C FFI function that allocates and initializes
         // a new Tesseract engine handle. It returns a valid opaque pointer on success or
         // null on allocation failure. The returned handle is owned exclusively by this
@@ -111,6 +108,11 @@ impl TesseractAPI {
         if handle.is_null() {
             return Err(TesseractError::NullPointerError);
         }
+        // Track this engine so the process-exit cleanup can finalize it if its owner never
+        // runs Drop (e.g. a thread-local cache at interpreter shutdown). The atexit handler
+        // itself is registered only after the first recognition (see `recognize` /
+        // `get_utf8_text`), so it runs before tesseract's DawgCache static destructor.
+        register_engine(handle);
         Ok(TesseractAPI {
             handle: Arc::new(Mutex::new(handle)),
             config: Arc::new(Mutex::new(TesseractConfiguration {
@@ -409,6 +411,9 @@ impl TesseractAPI {
         if result != 0 {
             Err(TesseractError::OcrError)
         } else {
+            // DawgCache is now constructed; register the exit cleanup after it so the
+            // handler runs before the DawgCache destructor at teardown.
+            ensure_tesseract_cleanup_registered();
             Ok(())
         }
     }
@@ -1610,6 +1615,9 @@ impl TesseractAPI {
             result
         };
 
+        // Recognition has run and DawgCache is constructed; register the exit cleanup
+        // after it so the handler runs before the DawgCache destructor at teardown.
+        ensure_tesseract_cleanup_registered();
         Ok(result)
     }
 
@@ -2128,7 +2136,10 @@ impl Drop for TesseractAPI {
             // 6. Drop impl never panics (we use .ok() on mutex lock), ensuring cleanup always executes
             // 7. If mutex is poisoned, handle cleanup is skipped but OS will clean up process memory
             unsafe {
-                if !(*handle).is_null() {
+                // Claim finalization by removing this engine from the live set. If the
+                // process-exit cleanup already finalized it, unregister returns false and
+                // we skip, avoiding a double End/Delete.
+                if !(*handle).is_null() && unregister_engine(*handle) {
                     TessBaseAPIEnd(*handle);
                     TessBaseAPIDelete(*handle);
                 }
@@ -2158,6 +2169,9 @@ impl Clone for TesseractAPI {
             });
 
         let new_handle = unsafe { TessBaseAPICreate() };
+        if !new_handle.is_null() {
+            register_engine(new_handle);
+        }
         let new_api = TesseractAPI {
             handle: Arc::new(Mutex::new(new_handle)),
             config: Arc::new(Mutex::new(config.clone())),
@@ -2177,9 +2191,58 @@ impl Clone for TesseractAPI {
     }
 }
 
-/// Global registry of active Tesseract instances for cleanup at process shutdown.
-/// This ensures TessBaseAPIEnd is called on at least one instance before process exit,
-/// which helps finalize Tesseract's internal singleton ObjectCache and reduces leak warnings.
+/// Addresses of live Tesseract engine handles (`TessBaseAPICreate` pointers, held as
+/// `usize`).
+///
+/// A per-thread engine cache in the extraction pipeline keeps an initialized engine so
+/// tessdata isn't reloaded per image. When the process exits through C `exit()` — as an
+/// embedded extension does at interpreter shutdown — Rust does not run thread-local
+/// destructors, so those cached engines never `Drop` and never call `TessBaseAPIEnd`.
+/// Their shared dictionary DAWG references then stay in tesseract's process-global
+/// `DawgCache`, whose C++ static destructor reports them as leaks. Tracking live handles
+/// lets the `atexit` handler `End` them first, so the cache is empty at teardown.
+static LIVE_ENGINES: Mutex<Vec<usize>> = Mutex::new(Vec::new());
+
+/// Records a freshly created engine handle as live.
+fn register_engine(handle: *mut c_void) {
+    if let Ok(mut live) = LIVE_ENGINES.lock() {
+        live.push(handle as usize);
+    }
+}
+
+/// Removes `handle` from the live set. Returns `true` if it was present — meaning the
+/// caller now owns finalizing it; `false` means the process-exit cleanup already did.
+fn unregister_engine(handle: *mut c_void) -> bool {
+    if let Ok(mut live) = LIVE_ENGINES.lock()
+        && let Some(pos) = live.iter().position(|&h| h == handle as usize)
+    {
+        live.swap_remove(pos);
+        return true;
+    }
+    false
+}
+
+/// Finalizes every still-live engine: `End` (releases its DAWG refs) then `Delete`.
+/// Draining under the lock keeps finalization exactly-once against a concurrent `Drop`.
+fn finalize_live_engines() {
+    let handles: Vec<usize> = match LIVE_ENGINES.lock() {
+        Ok(mut live) => std::mem::take(&mut *live),
+        Err(_) => return,
+    };
+    for h in handles {
+        let handle = h as *mut c_void;
+        if !handle.is_null() {
+            // SAFETY: `handle` came from `TessBaseAPICreate` and has not been deleted (its
+            // owner's Drop, which unregisters before deleting, never ran). At process exit
+            // no other thread is still using it.
+            unsafe {
+                TessBaseAPIEnd(handle);
+                TessBaseAPIDelete(handle);
+            }
+        }
+    }
+}
+
 static TESSERACT_CLEANUP: OnceLock<()> = OnceLock::new();
 
 // SAFETY: atexit is a standard C library function that registers a function to be called
@@ -2188,29 +2251,24 @@ unsafe extern "C" {
     fn atexit(f: extern "C" fn()) -> c_int;
 }
 
-/// Global Tesseract cleanup handler called at process exit.
-/// Creates a temporary engine instance and calls End to finalize ObjectCache.
+/// Process-exit handler: finalize every engine whose owner never ran `Drop`, so
+/// tesseract's global `DawgCache` static destructor finds an empty cache.
 extern "C" fn tesseract_atexit_cleanup() {
-    unsafe {
-        // SAFETY: TessBaseAPICreate, TessBaseAPIEnd, and TessBaseAPIDelete are defined below.
-        // This function is only called once at process exit.
-        // Create a temporary engine instance
-        let handle = TessBaseAPICreate();
-        if !handle.is_null() {
-            // Call End to finalize ObjectCache and global state
-            TessBaseAPIEnd(handle);
-            // Clean up the handle
-            TessBaseAPIDelete(handle);
-        }
-    }
+    finalize_live_engines();
 }
 
-/// Register the global Tesseract cleanup handler.
-/// Called once when the first TesseractAPI instance is created.
+/// Registers [`tesseract_atexit_cleanup`] once.
+///
+/// Called only *after* a successful recognition (not at engine creation) so the handler
+/// is registered after tesseract's function-local `DawgCache` static is constructed.
+/// C++ destroys atexit-registered work in reverse order, so registering later makes this
+/// handler run *before* the `DawgCache` destructor — while its mutex is still alive, so
+/// the `End` calls are safe. Registering at engine creation instead runs the handler
+/// after the `DawgCache` destructor, which both misses the leak and crashes on a
+/// destroyed mutex.
 fn ensure_tesseract_cleanup_registered() {
     let _ = TESSERACT_CLEANUP.get_or_init(|| {
-        // Register the cleanup handler to run at process exit
-        // SAFETY: tesseract_atexit_cleanup is a valid extern "C" fn() defined above
+        // SAFETY: tesseract_atexit_cleanup is a valid extern "C" fn() defined above.
         unsafe {
             let _ = atexit(tesseract_atexit_cleanup);
         }
@@ -2391,5 +2449,44 @@ mod shim {
             script_name: *mut *mut c_char,
             script_conf: *mut c_float,
         ) -> c_int;
+    }
+}
+
+#[cfg(all(test, feature = "build-tesseract", not(target_arch = "wasm32")))]
+mod live_engine_tests {
+    use super::*;
+
+    fn is_registered(handle: usize) -> bool {
+        LIVE_ENGINES.lock().unwrap().contains(&handle)
+    }
+
+    #[test]
+    fn engine_registered_on_create_and_released_on_drop() {
+        let api = TesseractAPI::new().expect("create engine");
+        let addr = *api.handle.lock().unwrap() as usize;
+        assert!(is_registered(addr), "a new engine should be tracked as live");
+        drop(api);
+        assert!(!is_registered(addr), "a dropped engine should be unregistered");
+    }
+
+    #[test]
+    fn forgotten_engine_stays_registered_for_exit_cleanup() {
+        let api = TesseractAPI::new().expect("create engine");
+        let addr = *api.handle.lock().unwrap() as usize;
+        // Model the thread-local cache whose Drop never runs at process exit.
+        std::mem::forget(api);
+        assert!(
+            is_registered(addr),
+            "a forgotten engine must stay registered so the exit cleanup can End it"
+        );
+        // Finalize just this engine (what the atexit drain does) so the test process
+        // doesn't leak it, and confirm it leaves the live set exactly once.
+        assert!(unregister_engine(addr as *mut c_void));
+        // SAFETY: `addr` is a live handle from TessBaseAPICreate, not yet deleted.
+        unsafe {
+            TessBaseAPIEnd(addr as *mut c_void);
+            TessBaseAPIDelete(addr as *mut c_void);
+        }
+        assert!(!is_registered(addr));
     }
 }
