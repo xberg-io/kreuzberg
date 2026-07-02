@@ -200,6 +200,53 @@ fn test_multipage_no_noise() {
     );
 }
 
+// ── Layout detection regression: large multi-page PDFs ───────────────
+
+/// Regression test: nougat_014.pdf (105 pages) must complete layout extraction
+/// without error or panic.  Previously failed in CI because the single-shot
+/// N=105 ONNX batch tensor exceeded available memory on constrained runners.
+#[cfg(feature = "layout-detection")]
+#[test]
+fn test_nougat_014_layout_extraction_completes() {
+    if !test_documents_available() {
+        return;
+    }
+    let path = get_test_file_path("pdf/nougat_014.pdf");
+    if !path.exists() {
+        return;
+    }
+    let content = extract_markdown_with_layout("pdf/nougat_014.pdf");
+    // Should produce non-trivial content from a 105-page academic PDF.
+    assert!(
+        content.len() > 500,
+        "nougat_014.pdf layout extraction produced unexpectedly short output ({} chars)",
+        content.len()
+    );
+}
+
+/// Regression test: iso_21111_10 (214 pages) must complete layout extraction
+/// without error or panic.  Previously failed in CI because the single-shot
+/// N=214 ONNX batch tensor (~1 GB) was too large for constrained runners.
+#[cfg(feature = "layout-detection")]
+#[test]
+fn test_iso_21111_10_layout_extraction_completes() {
+    if !test_documents_available() {
+        return;
+    }
+    let path = get_test_file_path("pdf/iso_21111_10_2021_road_vehicles_in_vehicle_ethernet_conformance_test_plans.pdf");
+    if !path.exists() {
+        return;
+    }
+    let content = extract_markdown_with_layout(
+        "pdf/iso_21111_10_2021_road_vehicles_in_vehicle_ethernet_conformance_test_plans.pdf",
+    );
+    assert!(
+        content.len() > 500,
+        "iso_21111_10 layout extraction produced unexpectedly short output ({} chars)",
+        content.len()
+    );
+}
+
 // ── Reading order: PDF coordinate system ─────────────────────────────
 
 /// Regression test for reading-order inversion caused by coordinate system mismatch.

@@ -134,6 +134,17 @@ impl RtDetrModel {
         let pad_x_f = pad_x as f32;
         let pad_y_f = pad_y as f32;
 
+        // Guard against malformed model output before any indexing.
+        if scores.len() < num_detections || label_data.len() < num_detections || boxes.len() < num_detections * 4 {
+            return Err(LayoutError::InvalidOutput(format!(
+                "RT-DETR output shape mismatch: num_detections={num_detections} \
+                 but scores.len()={}, labels.len()={}, boxes.len()={}",
+                scores.len(),
+                label_data.len(),
+                boxes.len()
+            )));
+        }
+
         let mut detections = Vec::new();
         for i in 0..num_detections {
             let score = scores[i];
@@ -289,6 +300,18 @@ impl RtDetrModel {
 
         // Publish timings via side-channel (amortized preprocess per batch).
         crate::layout::inference_timings::set(preprocess_ms / batch as f64, onnx_ms / batch as f64);
+
+        // Guard against malformed batch output before any indexing.
+        let expected_flat = batch * num_queries;
+        if scores.len() < expected_flat || label_data.len() < expected_flat || boxes.len() < expected_flat * 4 {
+            return Err(LayoutError::InvalidOutput(format!(
+                "RT-DETR batch output shape mismatch: batch={batch} num_queries={num_queries} \
+                 but scores.len()={}, labels.len()={}, boxes.len()={}",
+                scores.len(),
+                label_data.len(),
+                boxes.len()
+            )));
+        }
 
         // --- Split outputs by batch index ---
         let mut results: Vec<Vec<LayoutDetection>> = Vec::with_capacity(batch);
