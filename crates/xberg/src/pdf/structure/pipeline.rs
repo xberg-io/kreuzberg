@@ -191,6 +191,96 @@ fn build_heading_map_from_assigned_roles(all_page_segments: &[Vec<SegmentData>])
     heading_map
 }
 
+/// Promote an untagged document-title font tier above structure-tree headings.
+///
+/// Word processors tag the document title with a non-heading structure type
+/// (e.g. LibreOffice's "Title" style resolves to a non-`H*` element), so
+/// `build_heading_map_from_assigned_roles` classifies it as body text even
+/// though it is visually the top-level heading. When such a tier exists —
+/// strictly larger than every tagged heading font, bold, few segments, and
+/// present on the first page — assign it level 1 and demote all tagged
+/// heading levels by one (Title = h1, tagged H1 = h2, ...), matching the
+/// pandoc/HTML convention that the document title outranks section headings.
+///
+/// Returns `true` when a title tier was promoted. The caller must then also
+/// demote the per-segment `assigned_role` values (see
+/// `demote_assigned_roles`), because paragraph classification honours
+/// `assigned_role` directly, bypassing the heading map.
+fn promote_untagged_document_title(
+    heading_map: &mut [(f32, Option<u8>)],
+    all_page_segments: &[Vec<SegmentData>],
+) -> bool {
+    /// A title is a handful of segments at most; more means a body/pull-quote tier.
+    const MAX_TITLE_SEGMENTS: usize = 3;
+
+    let Some(max_heading_font) = heading_map
+        .iter()
+        .filter(|(_, level)| level.is_some())
+        .map(|(font, _)| *font)
+        .fold(None, |acc: Option<f32>, f| Some(acc.map_or(f, |a| a.max(f))))
+    else {
+        return false; // No tagged headings — nothing to demote against.
+    };
+
+    // Candidate tiers: body-classified fonts strictly above the largest tagged heading.
+    // heading_map is sorted descending, so the first match is the largest candidate.
+    let candidate = heading_map
+        .iter()
+        .position(|(font, level)| level.is_none() && *font > max_heading_font);
+    let Some(candidate_idx) = candidate else {
+        return false;
+    };
+    let candidate_font = heading_map[candidate_idx].0;
+
+    // Validate against actual segments: small tier, bold, first occurrence on page 0.
+    let mut tier_segments = 0usize;
+    let mut all_bold = true;
+    let mut on_first_page = false;
+    for (page_idx, page_segs) in all_page_segments.iter().enumerate() {
+        for seg in page_segs {
+            if seg.text.trim().is_empty() || (seg.font_size - candidate_font).abs() >= 0.05 {
+                continue;
+            }
+            tier_segments += 1;
+            all_bold &= seg.is_bold;
+            on_first_page |= page_idx == 0;
+        }
+    }
+    if tier_segments == 0 || tier_segments > MAX_TITLE_SEGMENTS || !all_bold || !on_first_page {
+        return false;
+    }
+
+    tracing::debug!(
+        title_font = candidate_font,
+        max_heading_font,
+        tier_segments,
+        "structure tree: promoting untagged document-title tier to h1, demoting tagged levels"
+    );
+    for (font, level) in heading_map.iter_mut() {
+        if let Some(l) = level {
+            *level = Some((*l + 1).min(6));
+        } else if (*font - candidate_font).abs() < 0.05 {
+            *level = Some(1);
+        }
+    }
+    true
+}
+
+/// Demote every structure-tree-assigned heading role by one level (capped at 6).
+///
+/// Companion to `promote_untagged_document_title`: paragraph classification
+/// (`bridge.rs`) uses `assigned_role` directly as "the author's stated intent",
+/// so the map-level demotion must be mirrored on the segments themselves.
+fn demote_assigned_roles(all_page_segments: &mut [Vec<SegmentData>]) {
+    for page_segs in all_page_segments.iter_mut() {
+        for seg in page_segs.iter_mut() {
+            if let Some(role) = seg.assigned_role {
+                seg.assigned_role = Some((role + 1).min(6));
+            }
+        }
+    }
+}
+
 /// Per-page input bundle for Stage 3 parallel processing.
 ///
 /// Each page's data is pre-extracted before `into_par_iter` so all threads
@@ -845,7 +935,12 @@ pub(crate) fn extract_document_structure_from_segments(
     let (heading_map, doc_body_font_size) = if used_structure_tree {
         // Build heading map from structure-tree-assigned roles.
         // Each unique (font_size, assigned_role) pair is honoured directly.
-        let heading_map = build_heading_map_from_assigned_roles(&all_page_segments);
+        let mut heading_map = build_heading_map_from_assigned_roles(&all_page_segments);
+        // An untagged document-title tier (e.g. LibreOffice "Title" style) outranks
+        // the tagged headings: promote it to h1 and shift the tagged hierarchy down.
+        if promote_untagged_document_title(&mut heading_map, &all_page_segments) {
+            demote_assigned_roles(&mut all_page_segments);
+        }
         let doc_body_font_size: Option<f32> = heading_map
             .iter()
             .find(|(_, level)| level.is_none())
@@ -1860,6 +1955,92 @@ mod tests {
     use super::*;
     use crate::pdf::hierarchy::SegmentData;
     use crate::pdf::structure::types::{PdfLine, PdfParagraph};
+
+    /// Helper: segment with font metadata for title-promotion tests.
+    fn role_seg(text: &str, font_size: f32, is_bold: bool, assigned_role: Option<u8>) -> SegmentData {
+        SegmentData {
+            text: text.to_string(),
+            x: 72.0,
+            y: 700.0,
+            width: 200.0,
+            height: font_size,
+            font_size,
+            is_bold,
+            is_italic: false,
+            is_monospace: false,
+            baseline_y: 700.0,
+            assigned_role,
+        }
+    }
+
+    /// A bold, first-page, larger-than-any-tagged-heading tier must be promoted
+    /// to h1 with the tagged hierarchy shifted down one level.
+    #[test]
+    fn promote_title_shifts_tagged_heading_levels_down() {
+        let pages = vec![vec![
+            role_seg("Titre du document", 28.0, true, None),
+            role_seg("Titre 1", 18.0, true, Some(1)),
+            role_seg("Titre 2", 16.0, true, Some(2)),
+            role_seg("body text", 12.0, false, None),
+        ]];
+        let mut map = build_heading_map_from_assigned_roles(&pages);
+        assert!(promote_untagged_document_title(&mut map, &pages));
+
+        let level_of = |font: f32| map.iter().find(|(f, _)| (*f - font).abs() < 0.05).and_then(|(_, l)| *l);
+        assert_eq!(level_of(28.0), Some(1), "title tier must become h1");
+        assert_eq!(level_of(18.0), Some(2), "tagged H1 must demote to h2");
+        assert_eq!(level_of(16.0), Some(3), "tagged H2 must demote to h3");
+        assert_eq!(level_of(12.0), None, "body must stay body");
+    }
+
+    /// No untagged tier above the largest tagged heading → no promotion.
+    #[test]
+    fn promote_title_no_candidate_leaves_map_unchanged() {
+        let pages = vec![vec![
+            role_seg("Heading", 18.0, true, Some(1)),
+            role_seg("body", 12.0, false, None),
+        ]];
+        let mut map = build_heading_map_from_assigned_roles(&pages);
+        let before = map.clone();
+        assert!(!promote_untagged_document_title(&mut map, &pages));
+        assert_eq!(map, before);
+    }
+
+    /// A non-bold large tier (e.g. a pull quote) must not be mistaken for a title.
+    #[test]
+    fn promote_title_requires_bold() {
+        let pages = vec![vec![
+            role_seg("large quote", 28.0, false, None),
+            role_seg("Heading", 18.0, true, Some(1)),
+        ]];
+        let mut map = build_heading_map_from_assigned_roles(&pages);
+        assert!(!promote_untagged_document_title(&mut map, &pages));
+    }
+
+    /// A large tier appearing only after page 0 is not a document title.
+    #[test]
+    fn promote_title_requires_first_page() {
+        let pages = vec![
+            vec![role_seg("Heading", 18.0, true, Some(1))],
+            vec![role_seg("Big banner later", 28.0, true, None)],
+        ];
+        let mut map = build_heading_map_from_assigned_roles(&pages);
+        assert!(!promote_untagged_document_title(&mut map, &pages));
+    }
+
+    /// Role demotion mirrors the map shift on segments (bridge.rs reads roles directly).
+    #[test]
+    fn demote_assigned_roles_shifts_and_caps() {
+        let mut pages = vec![vec![
+            role_seg("h1", 18.0, true, Some(1)),
+            role_seg("h6", 8.0, true, Some(6)),
+            role_seg("body", 12.0, false, None),
+        ]];
+        demote_assigned_roles(&mut pages);
+        assert_eq!(pages[0][0].assigned_role, Some(2));
+        assert_eq!(pages[0][1].assigned_role, Some(6), "level 6 must cap, not overflow");
+        assert_eq!(pages[0][2].assigned_role, None);
+    }
 
     /// Helper: create a segment with positional data.
     fn seg(text: &str, x: f32, width: f32) -> SegmentData {
